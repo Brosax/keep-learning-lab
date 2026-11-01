@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M23 Redes · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+
+.sorter { display: flex; flex-direction: column; gap: .8rem; }
+.sorter .pool { min-height: 2.4rem; }
+.sorter .bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 10px; }
+.sorter .bin { text-align: left; cursor: pointer; transition: border-color .2s, background .2s; }
+.sorter .bin:hover { border-color: var(--accent); }
+.sorter .bin b { font-family: var(--f-display); font-size: 1rem; }
+.sorter .bin .sub { font-size: 12.5px; color: var(--muted); }
+.sorter .bin.miss { border-color: var(--bad); background: var(--bad-soft); }
+.sorter .bin.hit { border-color: var(--good); background: var(--good-soft); }
+.sorter .got { display: flex; flex-wrap: wrap; gap: 4px; margin-top: .3rem; }
+.sorter .got span { font-size: 12px; line-height: 1.4; padding: 2px 8px; border-radius: 999px; background: var(--good-soft); color: var(--good); }
+.sorter .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.sorter .cnt { font: 600 12px/1.4 var(--f-mono); color: var(--muted); }
+
+
+.ws-tv { fill: var(--sunk); stroke: var(--muted); stroke-width: 1.2; }
+.ws-free { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.4; }
+.ws-lab { font: 600 11px var(--f-mono); fill: var(--muted); }
+.ws-lab.free { fill: var(--good); }
+
+
+.m23-tl .cell { fill: var(--bg); stroke: var(--line); stroke-width: 1; }
+.m23-tl .cell.bo { fill: var(--sunk); stroke: var(--muted); }
+.m23-tl .cell.cca { fill: var(--accent-soft); stroke: var(--accent); }
+.m23-tl .cell.busy { fill: var(--signal-soft); stroke: var(--signal); }
+.m23-tl .cell.tx { fill: var(--accent); stroke: var(--accent); }
+.m23-tl .cell.ok { fill: var(--good-soft); stroke: var(--good); }
+.m23-tl .cell.bad { fill: var(--bad-soft); stroke: var(--bad); }
+.m23-tl .lab { font: 600 10px var(--f-mono); fill: var(--ink); pointer-events: none; }
+.m23-tl .lab.inv { fill: var(--surface); }
+.m23-tl .cur { fill: none; stroke: var(--signal); stroke-width: 2; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 400 12px/1.4 var(--f-mono); color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -2px; margin-right: 4px; border: 1px solid var(--line); }
+.legend i.bo { background: var(--sunk); border-color: var(--muted); }
+.legend i.cca { background: var(--accent-soft); border-color: var(--accent); }
+.legend i.busy { background: var(--signal-soft); border-color: var(--signal); }
+.legend i.tx { background: var(--accent); border-color: var(--accent); }
+.legend i.ok { background: var(--good-soft); border-color: var(--good); }
+.legend i.bad { background: var(--bad-soft); border-color: var(--bad); }
+.sim-sum { font: 600 13px/1.5 var(--f-mono); color: var(--accent); }
+.sim-sum:empty { display: none; }
+
+
+.m23-mesh .edge { stroke: var(--line); stroke-width: 2; }
+.m23-mesh .edge.on { stroke: var(--signal); stroke-width: 3.5; }
+.m23-mesh .edge.off { stroke-dasharray: 4 4; opacity: .45; }
+.m23-mesh .nd { cursor: pointer; }
+.m23-mesh .nd circle { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; }
+.m23-mesh .nd.path circle { stroke: var(--signal); stroke-width: 2.4; }
+.m23-mesh .nd.src circle { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 2.8; }
+.m23-mesh .nd.dead circle { fill: var(--bad-soft); stroke: var(--bad); stroke-dasharray: 3 3; }
+.m23-mesh .nd.dead text { fill: var(--bad); }
+.m23-mesh .sink rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+.m23-mesh .nd:focus { outline: none; }
+.m23-mesh .nd:focus-visible circle, .m23-mesh .nd:focus-visible rect { stroke-width: 3.2; }
+
+
+details.m23-orig { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 6px 12px; }
+details.m23-orig > summary { cursor: pointer; font: 600 13px/1.6 var(--f-mono); color: var(--accent); }
+details.m23-orig[open] > summary { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="章节" class="chain" data-chain="M23"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Arquitecturas y Tecnologías · M23</div>
+<h1>Redes</h1>
+<p class="zh">网络</p>
+<div class="meta">
+
+<span><b>9</b> 个学习目标</span>
+<span>阅读约 40 分钟</span>
+
+
+</div>
+<p class="lede">智能环境里的设备要互相连起来、接入 Internet、再连到云。这一章先回答“数据该在哪里处理”：fog 还是 cloud？再看 <b class="t">WSN (Wireless Sensor Network) / red de sensores inalámbrica (ES)</b>——无线传感器网络：它的三种类型、恶劣的无线环境、MAC 与路由、组成它的 mota，以及让它说 IP 的 IPSO 协议栈。最后看 5G 的三类使用场景，以及背后的 network slicing、SDN 和 NFV。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">2.3.1</span>
+<div class="txt"><span>区分 fog computing 和 cloud computing</span><span class="es">Distinguir entre fog computing y cloud computing.</span><a href="#s1">→ §1 Cloud 与 fog</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.2</span>
+<div class="txt"><span>区分固定、移动和个人 WSN</span><span class="es">Distinguir entre redes WSN fijas, móviles y personales.</span><a href="#s2">→ §2 三种 WSN</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.3</span>
+<div class="txt"><span>定义 white space（空白频谱）</span><span class="es">Definir el concepto de white space.</span><a href="#s3">→ §3 White space</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.4</span>
+<div class="txt"><span>定义 WSN 中的 MAC 层</span><span class="es">Definir el concepto de nivel MAC en WSN.</span><a href="#s4">→ §4 恶劣环境与 MAC</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.5</span>
+<div class="txt"><span>定义 WSN 中的路由（encaminamiento）</span><span class="es">Definir el concepto de encaminamiento en WSN.</span><a href="#s5">→ §5 路由与多跳</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.6</span>
+<div class="txt"><span>定义 WSN 中的 mota（传感节点）</span><span class="es">Definir el concepto de mota en el contexto de WSN.</span><a href="#s6">→ §6 Mota</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.7</span>
+<div class="txt"><span>比较 TCP/IP 和 IPSO 协议栈</span><span class="es">Comparar los protocolos TCP/IP e IPSO.</span><a href="#s7">→ §7 TCP/IP 与 IPSO</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.8</span>
+<div class="txt"><span>把应用对应到 IMT 2020 的使用场景（eMBB、uRLLC、mMTC）</span><span class="es">Asociar aplicaciones a los escenarios de uso de IMT 2020.</span><a href="#s8">→ §8 IMT-2020</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.3.9</span>
+<div class="txt"><span>区分 network slicing、SDN 和 NFV</span><span class="es">Distinguir entre network slicing, SDN (Software Defined Networking) y NFV (Network Function Virtualization).</span><a href="#s9">→ §9 Slicing、SDN、NFV</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.3.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M23"><span class="val">0 / 9 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Cloud 与 fog：数据在哪里处理 <span class="tag">2.3.1</span></h2>
+<p>智能环境用到的网络五花八门，取决于速度、移动性、覆盖、频谱效率、是否需要牌照等（基本概念在 M11 第 8 节复习过）。今天的范式是一个基于 IP 的全球网络：一切都连起来（<b class="t">Internet of Everything (EN)</b>——万物互联），送进 <b class="t">cloud computing (EN)</b>——云计算 里，用 deep learning 对 big data 做智能处理。几乎所有拓扑都靠 <b class="t">pasarela (ES) / gateway (EN)</b>——网关 把设备接到云。网关分两种：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Pasarela sencilla</span><h3>只负责把数据送上云</h3><p>例：一个 Wi-Fi 接入点，只做 IP 路由，把 Ethernet / Wi-Fi 转成 ADSL 等固定线路。要求不高的 IoT 应用（简单、低带宽、能容忍延迟）也属于这一类：把很多设备的数据汇总送上云，在云里分析和决策。</p></div>
+<div class="cell"><span class="eyebrow">Pasarela + fog computing</span><h3>网关自己会处理、会决策</h3><p>例：自动驾驶汽车的应用，需要极低的延迟和非常可靠、安全的协议，等不起数据去云里绕一圈。</p></div>
+</div>
+<p>把这幅全景画出来，就是下面这张图：几乎每条路都经过某种网关才到云。</p>
+
+<p>图里能认出四种“中转站”：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>网关（图中标签）</th><th>下面连什么</th><th>怎么上云</th></tr></thead>
+<tbody>
+<tr><td class="mono">WiFiAP</td><td>手机、温度传感器、POS 终端（WiFi），Consumer gateway（Ethernet）</td><td>ADSL → Cable/fiber</td></tr>
+<tr><td class="mono">Consumer gateway</td><td>灯泡等家居设备（Thread、ZigBee、Z-Wave）</td><td>经 Ethernet 到 WiFiAP</td></tr>
+<tr><td class="mono">Smartphone</td><td>汽车、门锁、手表（Bluetooth），银行卡、POS（NFC）</td><td>Cellular（e.g. LTE）</td></tr>
+<tr><td class="mono">Industrial, vehicle, maritime, aviation gateways</td><td>摄像头（WiFi）、宠物追踪（LoRa）、停车（SIGFOX）、阀门（ISA 100.11a）、电表（Wi-SUN）、路灯（Telensa）</td><td>Cellular（e.g. LTE）或 Satellite（e.g. Iridium）</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note">
+<span class="lbl">定义 · 2.3.1</span>
+<p><b class="t">fog computing (EN)</b>——雾计算（也叫 <i>edge computing</i>）：把 cloud <b>延伸到离“物”更近的地方</b>。在网络边缘、靠近数据产生处分析最紧急的数据，按策略在<b>毫秒级</b>做出反应，只把挑选过的数据送到云里做历史分析和长期存储。</p>
+<p><b>cloud computing</b>：数据集中送到数据中心（云）处理，擅长大数据分析、长期存储和全局视图；但把所有数据都从网络边缘搬进数据中心，会增加延迟，成千上万台设备的流量也很快会超出带宽。</p>
+</div>
+<p>为什么需要 fog？IoT 每天产生超过 2 exabytes 的数据；一座海上钻井平台每周产生 500 GB，一架商用喷气机每飞 30 分钟产生 10 TB，全部送上云既不现实也没必要。还有些机器说的是工业协议而不是 IP，送云之前得先翻译成 IP；有些数据受法规和隐私限制，不能存到外面。</p>
+<p>fog 节点把云延伸到网络边缘，从设备到云分成几层。<b>点击每一层</b>：</p>
+<div class="stack" data-explain="nodo">
+<div aria-label="从设备到云的分层" class="layers" role="group">
+<button aria-pressed="false" class="layer full" data-key="cloud" type="button"><span class="es">Cloud</span><span class="zh">云 · 分钟到数周 · 全球</span></button>
+<button aria-pressed="false" class="layer full" data-key="agreg" type="button"><span class="es">Fog aggregation node</span><span class="zh">雾汇聚节点 · 秒到分钟 · 更大区域</span></button>
+<button aria-pressed="false" class="layer full" data-key="nodo" type="button"><span class="es">Fog node（最靠近设备）</span><span class="zh">雾节点 · 毫秒到亚秒 · 非常局部</span></button>
+<button aria-pressed="false" class="layer full l1" data-key="disp" type="button"><span class="es">Dispositivos IoT</span><span class="zh">设备：传感器、执行器、机器</span></button>
+</div>
+<p class="aside">越往上：反应越慢、数据存得越久、覆盖越广。</p>
+<div class="panel" data-panel="cloud" hidden="">
+<h3>Cloud · 云</h3>
+<p>响应时间：几分钟、几天、几周。典型应用：big data analytics、图形化 dashboard。数据保存：几个月到几年。地理覆盖：全球。</p>
+<p>它接收并汇总许多 fog 节点发来的数据摘要，结合其他来源的数据做分析、获得商业洞察，还可以据此给 fog 节点下发新的应用规则。</p>
+</div>
+<div class="panel" data-panel="agreg" hidden="">
+<h3>Fog aggregation node · 雾汇聚节点</h3>
+<p>响应时间：几秒到几分钟。典型应用：可视化、简单分析。数据保存：短期，可能几小时、几天或几周。覆盖：比单个 fog 节点更大。</p>
+<p class="aside">Smart Grid 的例子：每个变电站可以有自己的汇聚节点，报告下游每条 feeder 和 lateral 的运行状态。</p>
+</div>
+<div class="panel" data-panel="nodo" hidden="">
+<h3>Fog node · 最靠近设备的雾节点</h3>
+<p>响应时间：毫秒到亚秒。典型应用：M2M 通信、haptics（用触觉控制技术，包括远程医疗和培训；要有真实感，反馈必须在 1 ms 以内）。数据保存：transient（暂存，常为 1–2 小时）。覆盖：非常局部，例如一个街区。</p>
+<p>任何有计算、存储和网络连接能力的设备都可以当 fog 节点：工业控制器、交换机、路由器、嵌入式服务器、视频监控摄像头。它用<b>任何协议</b>实时接收设备的数据，并定期把摘要发给云。</p>
+</div>
+<div class="panel" data-panel="disp" hidden="">
+<h3>Dispositivos IoT · 设备</h3>
+<p>产生数据、执行动作的“物”：机器上的温度传感器、管道上的压力传感器、阀门、列车的刹车……很多是用工业协议连到控制器的机器，不是 IP 设备。它们持续不断地产生数据，而且常常要求非常快的分析。</p>
+<p class="aside">例如：化工罐的温度逼近上限时，必须几乎立刻纠正；等读数传到云里再分析，这一批可能已经坏了。</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">什么时候考虑 fog</span>
+<ul>
+<li>数据在极端边缘采集：车辆、船舶、工厂车间、公路、铁路……</li>
+<li>大范围内有成千上万、甚至数百万个“物”在产生数据。</li>
+<li>必须在 1 秒以内分析数据并采取行动。</li>
+</ul>
+</div>
+<p><b>练一练：</b>这件事该在哪一层处理？先点一个任务，再点它该去的那一层。</p>
+<div class="sorter">
+<div aria-label="待归类的任务" class="pool chips" role="group">
+<button aria-pressed="false" class="chip" data-c="nodo" data-short="化工罐纠偏" data-why="需要几乎立即的动作，绕道云端就晚了。" type="button">化工罐温度逼近上限，立刻纠正</button>
+<button aria-pressed="false" class="chip" data-c="nodo" data-short="压力读数开阀" data-why="监测实时数据后立刻触发动作，是典型的 fog 应用。" type="button">根据压力读数打开阀门</button>
+<button aria-pressed="false" class="chip" data-c="nodo" data-short="haptics" data-why="haptics（含远程医疗）属于最靠近设备的 fog 节点，要求 1 ms 内反馈。" type="button">触觉远程医疗（反馈要在 1 ms 内）</button>
+<button aria-pressed="false" class="chip" data-c="nodo" data-short="自动驾驶" data-why="自动驾驶汽车需要极低延迟和非常可靠、安全的协议，所以用有处理能力的网关（fog）。" type="button">自动驾驶汽车的应用</button>
+<button aria-pressed="false" class="chip" data-c="agreg" data-short="变电站汇总" data-why="能等几秒到几分钟的数据交给汇聚节点（Smart Grid 的例子）。" type="button">变电站汇报下游各 feeder 的运行状态</button>
+<button aria-pressed="false" class="chip" data-c="agreg" data-short="可视化" data-why="汇聚节点的典型应用就是 visualization 和 simple analytics。" type="button">给运维人员做可视化和简单分析</button>
+<button aria-pressed="false" class="chip" data-c="cloud" data-short="历史分析" data-why="不那么紧急的数据送云，做历史分析、大数据分析。" type="button">对几十万个节点发来的电网摘要做历史分析</button>
+<button aria-pressed="false" class="chip" data-c="cloud" data-short="长期存储" data-why="存几个月到几年、图形化 dashboard，都属于 Cloud 这一层。" type="button">把数据存好几年，做图形化 dashboard</button>
+<button aria-pressed="false" class="chip" data-c="cloud" data-short="简单 IoT 应用" data-why="简单、低带宽、能容忍延迟的 IoT 应用，用简单网关把数据汇总送云就够了。" type="button">低带宽、能容忍延迟的简单 IoT 应用</button>
+</div>
+<div class="bins">
+<button class="cell bin" data-bin="nodo" type="button"><span class="eyebrow">Fog node</span><b>最靠近设备的雾节点</b><span class="sub">毫秒 · 暂存 · 一个街区</span><span class="got"></span></button>
+<button class="cell bin" data-bin="agreg" type="button"><span class="eyebrow">Fog aggregation</span><b>雾汇聚节点</b><span class="sub">秒到分钟 · 存几天 · 更大区域</span><span class="got"></span></button>
+<button class="cell bin" data-bin="cloud" type="button"><span class="eyebrow">Cloud</span><b>云</b><span class="sub">分钟到数周 · 存数年 · 全球</span><span class="got"></span></button>
+</div>
+<div class="foot"><span class="cnt"></span><button class="btn" data-reset="" type="button">重来</button></div>
+<div aria-live="polite" class="log"></div>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>三种 WSN：固定、移动、个人 <span class="tag">2.3.2</span></h2>
+<p>WSN 最大的优点：部署非常简单、便宜，省掉了布线的成本。按<b>移动性</b>和<b>覆盖范围</b>，WSN 分成三类。切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换 WSN 类型" class="seg" role="group">
+<button aria-pressed="true" data-view="fija" type="button">WSN fijas</button>
+<button aria-pressed="false" data-view="movil" type="button">WSN móviles</button>
+<button aria-pressed="false" data-view="personal" type="button">WSN personales</button>
+</div>
+<div class="panel" data-pane="fija">
+<h3>WSN fijas · 固定 WSN</h3>
+<ul>
+<li><b>覆盖：</b>一个 WLAN 的范围，再加一点 WPAN。</li>
+<li><b>预先确定：</b>传感器数量、覆盖范围、拓扑和数据传输通常事先就定好了。</li>
+<li><b>拓扑：</b>estrella（星型，用于集中式应用）、árbol（树型，用于数据采集）、mallada（网状，能容忍链路和节点失效）。下图画成 Star、Cluster Tree、Mesh 三种，节点分三种角色：Coordinator（协调器）、Router（路由节点）、End-Device（终端设备）。</li>
+<li><b>技术：</b>Zigbee、6LoWPAN、WiFi，选哪个取决于节点的要求。</li>
+<li><b>一定有 pasarela</b>，用来接入服务器或其他网络。</li>
+<li><b>应用：</b>远程监控、销售点、工业设施、智能建筑。</li>
+</ul>
+<p class="aside">Zigbee Alliance 在 2021 年 5 月改名为 CSA（Connectivity Standards Alliance）。</p>
+</div>
+<div class="panel" data-pane="movil" hidden="">
+<h3>WSN móviles · 移动 WSN</h3>
+<ul>
+<li><b>覆盖：</b>非常大；连接是 ad hoc（临时建立）的。</li>
+<li><b>例子：</b>一辆在旅途中的汽车，想发现附近的加油站并获取它们的信息。</li>
+<li><b>技术：</b>典型的 M2M 技术，例如蜂窝网（2G、3G、LTE-M、NB-IoT……）或 white spaces（§3）。下图这一栏写的是 M2M、3G 和 TV（white spaces 用的是电视频段），配图是一座大楼、自动售货机、ATM、电表、货车围着一个基站。</li>
+<li>也可以算上 <b class="t">LPWAN (Low Power Wide Area Network)</b>——低功耗广域网：LoRa、Sigfox、HaLow、White-Fi。后两者是 WiFi 标准的版本，分别是 802.11ah 和 802.11af。</li>
+</ul>
+</div>
+<div class="panel" data-pane="personal" hidden="">
+<h3>WSN personales · 个人 WSN</h3>
+<ul>
+<li><b>覆盖：</b>非常短，是 WPAN 和 WBAN（体域网）的范围。</li>
+<li><b>用途：</b>连接个人使用的设备：智能手机、平板 ↔ 可穿戴设备（手表、手环、眼镜……）。</li>
+<li><b>技术：</b>Bluetooth、NFC、WiFi Direct；下图还多列了 BLE (Bluetooth Low Energy) 和 WiGig。</li>
+</ul>
+</div>
+</div>
+
+<p class="aside">记忆口诀：固定看拓扑，移动看覆盖，个人看身体。</p>
+<p>覆盖范围到底有多大？看几个量级：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>类别</th><th>典型距离</th><th>例子</th><th>对应的 WSN</th></tr></thead>
+<tbody>
+<tr><td class="mono">NFC</td><td>≤ 4 cm</td><td>把卡或标签贴近读卡器（支付、签到）</td><td>personal</td></tr>
+<tr><td class="mono">PAN</td><td>约 10 m</td><td>智能手机经 Bluetooth 连耳机、手表、健身设备</td><td>personal（WPAN / WBAN）</td></tr>
+<tr><td class="mono">WLAN</td><td>≤ 100 m</td><td>家里的 Wi-Fi 网络</td><td>fija（WLAN + 部分 WPAN）</td></tr>
+<tr><td class="mono">NAN</td><td>&gt; 25 km</td><td>智能电表经 900 MHz 专有协议把读数传给电力公司</td><td>móvil 的“很大覆盖”</td></tr>
+<tr><td class="mono">WAN</td><td>全球</td><td>Internet</td><td>móvil（如蜂窝网）</td></tr>
+</tbody>
+</table>
+</div>
+<p>下面两张图也在讲距离。第一张把技术沿一条覆盖范围的轴排开：从左边 Proximity（&lt;10 cm）一直到右边 WWAN（&lt;100 km），每类下面列着代表技术。</p>
+
+<p>第二张图把常见 WSN 技术放在四个维度上比较：覆盖、吞吐量、典型电源和典型拓扑。</p>
+
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>White space：当地没人用的广播频率 <span class="tag">2.3.3</span></h2>
+<p>White spaces 是移动 WSN 可以用的 M2M 技术之一（§2）；White-Fi（IEEE 802.11af）就是利用它的 WiFi 版本。</p>
+<div class="note">
+<span class="lbl">定义 · 2.3.3</span>
+<p><b class="t">espacio blanco (ES) / white space (EN)</b>——空白频谱：分配给 <b>radiodifusión</b>（广播）服务、但<b>在当地没有被使用</b>的频率：<i>servicios de radiodifusión que no se usan localmente</i>。</p>
+</div>
+<p>回到 <a href="#s2">§2 那张 WSN 类型图</a>：móviles 一栏下方有一张 <b>White Spaces Network</b> 小图（点开大图看得更清楚），标的频段是 <b>TV</b>，并画出了它怎么运作：</p>
+<ol>
+<li>电视塔旁的 <b>Fixed Device Master</b>（固定主设备）经 Internet 做 <i>Device Location Registration</i>（登记自己的位置）；</li>
+<li>从 <b>Geo Location Database</b>（地理位置数据库）拿回 <i>Channels Allowed</i>：这个位置允许用哪些频道；</li>
+<li>再把 <i>Available Channels</i> 告诉客户端，双方建立 <i>Data Link</i>。客户端有两类：<b>FD Client</b>（Fixed Device，固定设备，图里标注必须装室外天线）和 <b>P/P Client</b>（Personal/Portable，个人便携设备）；固定客户端还要做 <i>Fixed Client Registration</i>。</li>
+</ol>
+<p class="aside">在那张小图里：左边电视塔旁是 Fixed Device Master，底部的 INTERNET 线上是两步登记和查库，右边房子上是 FD Client 和 P/P Client。</p>
+<p>也就是说，“当地哪些频道空闲”不是设备自己猜的，而是按位置查数据库得到的。这些频道通常是 VHF/UHF 电视频段里某地没有电视台使用的频道；频率较低，传播远、穿墙好。切换两个地区看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换地区" class="seg" role="group">
+<button aria-pressed="true" data-view="za" type="button">Zona A</button>
+<button aria-pressed="false" data-view="zb" type="button">Zona B</button>
+</div>
+<div data-pane="za">
+<figure>
+<div class="fig">
+<svg aria-label="Zona A：12 个电视频道中 C1、C2、C4、C7、C8、C11 被广播占用，其余 6 个是 white space" role="img" viewbox="0 0 560 124">
+<text class="s-tm" x="20" y="16">Zona A · banda de TV（示意）</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="20" y="26"></rect><text class="ws-lab" text-anchor="middle" x="40" y="55">TV</text><text class="s-tm" text-anchor="middle" x="40" y="92">C1</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="64" y="26"></rect><text class="ws-lab" text-anchor="middle" x="84" y="55">TV</text><text class="s-tm" text-anchor="middle" x="84" y="92">C2</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="108" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="128" y="55">libre</text><text class="s-tm" text-anchor="middle" x="128" y="92">C3</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="152" y="26"></rect><text class="ws-lab" text-anchor="middle" x="172" y="55">TV</text><text class="s-tm" text-anchor="middle" x="172" y="92">C4</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="196" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="216" y="55">libre</text><text class="s-tm" text-anchor="middle" x="216" y="92">C5</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="240" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="260" y="55">libre</text><text class="s-tm" text-anchor="middle" x="260" y="92">C6</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="284" y="26"></rect><text class="ws-lab" text-anchor="middle" x="304" y="55">TV</text><text class="s-tm" text-anchor="middle" x="304" y="92">C7</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="328" y="26"></rect><text class="ws-lab" text-anchor="middle" x="348" y="55">TV</text><text class="s-tm" text-anchor="middle" x="348" y="92">C8</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="372" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="392" y="55">libre</text><text class="s-tm" text-anchor="middle" x="392" y="92">C9</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="416" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="436" y="55">libre</text><text class="s-tm" text-anchor="middle" x="436" y="92">C10</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="460" y="26"></rect><text class="ws-lab" text-anchor="middle" x="480" y="55">TV</text><text class="s-tm" text-anchor="middle" x="480" y="92">C11</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="504" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="524" y="55">libre</text><text class="s-tm" text-anchor="middle" x="524" y="92">C12</text>
+<rect class="ws-tv" height="12" rx="2" width="12" x="20" y="104"></rect><text class="s-tm" x="38" y="114">radiodifusión en uso</text>
+<rect class="ws-free" height="12" rx="2" width="12" x="230" y="104"></rect><text class="s-tm" x="248" y="114">white space：aquí libre</text>
+</svg>
+</div>
+<figcaption>Zona A：C3、C5、C6、C9、C10、C12 是 white space。</figcaption>
+</figure>
+</div>
+<div data-pane="zb" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="Zona B：12 个电视频道中 C2、C3、C5、C6、C9、C12 被广播占用，其余 6 个是 white space" role="img" viewbox="0 0 560 124">
+<text class="s-tm" x="20" y="16">Zona B · banda de TV（示意）</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="20" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="40" y="55">libre</text><text class="s-tm" text-anchor="middle" x="40" y="92">C1</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="64" y="26"></rect><text class="ws-lab" text-anchor="middle" x="84" y="55">TV</text><text class="s-tm" text-anchor="middle" x="84" y="92">C2</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="108" y="26"></rect><text class="ws-lab" text-anchor="middle" x="128" y="55">TV</text><text class="s-tm" text-anchor="middle" x="128" y="92">C3</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="152" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="172" y="55">libre</text><text class="s-tm" text-anchor="middle" x="172" y="92">C4</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="196" y="26"></rect><text class="ws-lab" text-anchor="middle" x="216" y="55">TV</text><text class="s-tm" text-anchor="middle" x="216" y="92">C5</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="240" y="26"></rect><text class="ws-lab" text-anchor="middle" x="260" y="55">TV</text><text class="s-tm" text-anchor="middle" x="260" y="92">C6</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="284" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="304" y="55">libre</text><text class="s-tm" text-anchor="middle" x="304" y="92">C7</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="328" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="348" y="55">libre</text><text class="s-tm" text-anchor="middle" x="348" y="92">C8</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="372" y="26"></rect><text class="ws-lab" text-anchor="middle" x="392" y="55">TV</text><text class="s-tm" text-anchor="middle" x="392" y="92">C9</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="416" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="436" y="55">libre</text><text class="s-tm" text-anchor="middle" x="436" y="92">C10</text>
+<rect class="ws-free" height="48" rx="4" width="40" x="460" y="26"></rect><text class="ws-lab free" text-anchor="middle" x="480" y="55">libre</text><text class="s-tm" text-anchor="middle" x="480" y="92">C11</text>
+<rect class="ws-tv" height="48" rx="4" width="40" x="504" y="26"></rect><text class="ws-lab" text-anchor="middle" x="524" y="55">TV</text><text class="s-tm" text-anchor="middle" x="524" y="92">C12</text>
+<rect class="ws-tv" height="12" rx="2" width="12" x="20" y="104"></rect><text class="s-tm" x="38" y="114">radiodifusión en uso</text>
+<rect class="ws-free" height="12" rx="2" width="12" x="230" y="104"></rect><text class="s-tm" x="248" y="114">white space：aquí libre</text>
+</svg>
+</div>
+<figcaption>Zona B：C1、C4、C7、C8、C10、C11 空闲。A 地空闲的 C3，在 B 地被占用了：所以叫“当地”没用的频率。</figcaption>
+</figure>
+</div>
+</div>
+<p class="aside">频道编号和占用情况只是示意，不对应任何真实地区。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>恶劣的无线环境与 MAC 层 <span class="tag">2.3.4</span></h2>
+<p>固定和个人 WSN 的无线通信工作在一个“hostil”（恶劣）的环境里：到处是噪声、干扰和不想要的衰减。要处理的问题有这些（下图把它们画成从 WSN 伸出的六个分支）：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Frecuencia</span><h3>挤在 ISM 频段</h3><p>通常用 <b class="t">bandas ISM (Industrial, Scientific and Medical)</b>——工业、科学、医疗频段：433 MHz、868 MHz、915 MHz、2,4 GHz。免许可，只要遵守发射功率限制，谁都能用，所以要和其他网络、设备竞争。</p></div>
+<div class="cell"><span class="eyebrow">Medio</span><h3>共享的无线介质</h3><p>各种各样的设备共用同一个介质，会互相干扰，所以需要介质访问控制（MAC，见下）。</p></div>
+<div class="cell"><span class="eyebrow">Transmisión</span><h3>只在必要时发送</h3><p>发射模块要保证最小覆盖，并且只在必要时发送，以降低功耗、延长续航。经典做法是 <b class="t">ciclo de trabajo (ES) / duty cycle (EN)</b>——占空比：节点大部分时间“睡着”（功耗可忽略），按间隔“醒来”收发数据。</p></div>
+<div class="cell"><span class="eyebrow">Red</span><h3>路由与可靠性</h3><p>要有 encaminamiento（路由，§5）机制、拥塞控制，以及保证数据可靠的机制。下图把这些归为 <i>Requisitos</i>：MAC、Routing、Controles de congestión、Seguridad（安全）、Fiabilidad（可靠性）……</p></div>
+<div class="cell"><span class="eyebrow">Pasarela</span><h3>接到其他网络</h3><p>加一个网关，把 WSN 接到其他网络（例如 Internet），方便远程访问、控制和配置。图中：Sensor Node → <b>Sink Node</b>（汇聚节点，即接入 Internet 的网关）→ Internet → User。</p></div>
+<div class="cell"><span class="eyebrow">Hardware</span><h3>又小又省</h3><p>以上一切都要用简单（escalable、bajo coste、bajo consumo）的硬件完成。图中单列一项 <i>Alimentación autónoma</i>（自主供电）：电池、<b class="t">energy harvesting (EN)</b>——能量收集、低占空比（ciclos de trabajo reducidos）。</p></div>
+</div>
+
+<div class="note">
+<span class="lbl">定义 · 2.3.4</span>
+<p><b class="t">nivel MAC (ES) / Media Access Control layer (EN)</b>——介质访问控制层：OSI 模型中<b>数据链路层（nivel de enlace）的一个子层</b>。在 WSN 里，无线电介质被各种各样的设备共享，它们可能互相干扰，所以需要 MAC 来<b>控制对这个共享介质的访问</b>。</p>
+<p class="aside">整个数据链路层的职责可以概括为：数据流复用、帧检测、介质访问和差错控制，保证点到点和点到多点的可靠连接。</p>
+</div>
+<p>真实的 WSN 标准里，MAC 是怎么做的？</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>标准 / 做法</th><th>MAC 层要点</th></tr></thead>
+<tbody>
+<tr><td class="mono">IEEE 802.15.4</td><td>为低速率无线个域网定义<b>物理层和 MAC 层</b>，是 WSN 最常用的标准之一，ZigBee 和 6LoWPAN 都建在它上面。信道接入用 CSMA-CA；速率 250 / 40 / 20 kbps；2,4 GHz 有 16 个信道，915 MHz 有 10 个，868 MHz 有 1 个。</td></tr>
+<tr><td class="mono">IEEE 802.15.4e</td><td>802.15.4-2006 的 MAC 修订版，关键技术是 channel hopping（跳信道），大大增强对噪声、丢包和持续多径衰落的抵抗力。6LoWPAN 的 MAC 就用它。</td></tr>
+<tr><td class="mono">WirelessHART</td><td>面向工业过程自动化的网状网络；在数据链路层用 TDMA 来仲裁和协调设备间的通信。</td></tr>
+<tr><td class="mono">duty cycling MAC</td><td>让无线电尽量关着。实验表明，CoAP 跑在支持 radio duty cycling 的 MAC 上，能效最高可达不做 duty cycling 时的 26 倍。</td></tr>
+</tbody>
+</table>
+</div>
+<p>Libelium 的节点也靠 duty cycle 省电：平时处于 latencia（休眠）状态，周期性的闹钟一响，<b>全网同时醒来</b>，互相通信，把数据送到收集点。他们把这个机制叫作“el latir de la red”（网络的心跳）。</p>
+<p><b>动手试试：</b>三个节点共用一个信道，各有一帧要发。比较“没有介质访问控制”和 802.15.4 用的 <b class="t">CSMA-CA (Carrier Sense Multiple Access with Collision Avoidance)</b>——载波侦听多路访问 / 冲突避免。</p>
+<div class="stepper" id="csma">
+<div aria-label="选择场景" class="seg" role="group">
+<button aria-pressed="true" data-mode="nomac" type="button">Sin control de acceso</button>
+<button aria-pressed="false" data-mode="csma" type="button">CSMA-CA</button>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="时隙图：节点 A、B、C 和共享信道在 t0 到 t10 的状态" class="m23-tl" role="img" viewbox="0 0 600 196"></svg>
+</div>
+<figcaption>示意：每帧占 2 个时隙。backoff（随机退避）和 CCA（信道空闲检测）是 CSMA-CA 的两个步骤。</figcaption>
+</figure>
+<div aria-hidden="true" class="legend">
+<span><i class="bo"></i>BO 随机等待</span><span><i class="cca"></i>CCA 监听：空闲</span><span><i class="busy"></i>监听：忙</span><span><i class="tx"></i>正在发送</span><span><i class="ok"></i>送达</span><span><i class="bad"></i>碰撞作废</span>
+</div>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+<p class="sim-sum"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="reset" type="button">从头开始</button>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>路由与多跳 <span class="tag">2.3.5</span></h2>
+<div class="note">
+<span class="lbl">定义 · 2.3.5</span>
+<p><b class="t">encaminamiento (ES) / routing (EN)</b>——路由：<b>把信息从源节点（nodo fuente）送到目的节点（nodo destino）</b>的机制。它和拥塞控制、保证数据可靠性的机制一样，是 WSN 必须解决的问题之一（§4）。</p>
+</div>
+<p>在网状（mallada）网络里，路由靠 <b class="t">comunicación multisalto (ES) / multi-hop (EN)</b>——多跳通信：节点把信息发给离它最近的节点，这个节点再转发给另一个邻近节点，如此逐跳传下去，直到目的节点。每一跳距离都很短，所以<b>发射功率和功耗都能大大降低</b>。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Flat</span><h3>平面拓扑</h3><p>传感节点同时充当路由器，经多跳把数据送到 sink（汇聚节点，可接入 Internet 等基础设施网络）。</p></div>
+<div class="cell"><span class="eyebrow">Clustered</span><h3>分层（分簇）拓扑</h3><p>由能力更强的固定或移动中继（cluster head）收集并转发传感数据到 sink。</p></div>
+<div class="cell"><span class="eyebrow">Diseño</span><h3>网络层要考虑</h3><p>能效、以数据为中心的通信、数据聚合等。</p></div>
+</div>
+<p>网状网络能用多跳扩大覆盖、保持低发射功率，并有多条路径提高可靠性；代价是设计更复杂、经过多跳的延迟更长。mota（§6）还会定期自动组织、查看可用的通信路径，所以可以把它们挪到别处去监测另一片区域。</p>
+<p><b>动手试试：</b>点一个 mota 当源节点，看它的数据怎样逐跳到达 pasarela；再让路上的节点故障，看网络怎么绕路。</p>
+<div class="stepper" id="mesh">
+<div aria-label="点击模式" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-mode="src" type="button">点节点 = 设为源节点</button>
+<button aria-pressed="false" class="chip" data-mode="kill" type="button">点节点 = 故障 / 修复</button>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="10 个 mota 组成的网状网络，右侧是 pasarela；高亮的是从源节点到 pasarela 的多跳路径" class="m23-mesh" role="img" viewbox="0 0 620 310"></svg>
+</div>
+<figcaption>示意。路径按最少跳数（BFS）计算，这是简化；真实的 RPL 用 rank 和 ETX 等动态指标选父节点（见下）。</figcaption>
+</figure>
+<div class="panel"><p aria-live="polite" class="step-txt"></p></div>
+<div class="stepper-ctl">
+<button class="btn primary" data-act="hop" type="button">让下一跳故障</button>
+<button class="btn" data-act="fix" type="button">全部修复</button>
+</div>
+</div>
+<div class="panel">
+<h3>WSN 接入 IP 之后的路由：RPL</h3>
+<p>IETF 的 RoLL 工作组评估了 OSPF、IS-IS、AODV、OLSR 等已有路由协议，结论是：没有一个能在 <b class="t">LLN (Low-power and Lossy Network)</b>——低功耗有损网络 的特殊条件下表现令人满意。于是制定了 <b class="t">RPL (IPv6 Routing Protocol for LLNs)</b>。</p>
+<ul>
+<li>最主要的流量是 multipoint-to-point：很多节点 → 少数几个连接 Internet 的 edge router。RPL 为此建一个以目的地为根的 <b>DODAG</b>（destination oriented directed acyclic graph，面向目的地的有向无环图）来路由。</li>
+<li>每个节点有一个 <b>rank</b>，表示它在 DODAG 里的位置。除了 preferred parent，还保留几个备选父节点（spatial diversity），链路坏了可以马上切换。</li>
+<li>用 Trickle 算法传播路由状态：有变化时反应快，稳定后逐渐少发；用 ETX（估计传输次数）等动态链路指标。</li>
+</ul>
+<p class="aside">上面的模拟器相当于一个简化的 DODAG：所有路都指向 pasarela。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Mota：像尘埃一样的传感节点 <span class="tag">2.3.6</span></h2>
+<div class="note">
+<span class="lbl">定义 · 2.3.6</span>
+<p><b class="t">mota (ES) / mote (EN)</b>——传感节点（“微尘”）：WSN 里的小型电子设备，通过传感器接触外部世界。名字来自英语 mote，即“mota de polvo”（一粒尘埃），一个词同时表达两个核心概念：<b>尺寸很小</b>，<b>可以放在任何地方</b>。</p>
+<ul>
+<li>能放在任何地方，一靠<b>自主供电</b>：用电池（类似手机电池），需要时还能用太阳能板充电；</li>
+<li>二靠<b>低功耗无线协议</b>（如 ZigBee）：从休眠状态醒来，完成必要的传输，再迅速回到最低功耗状态。</li>
+</ul>
+<p>多个 mota 能组成网状网络，把采集的信息逐跳转发到控制点；它们会定期自动组织通信路径。</p>
+</div>
+<p>休眠时的电流可以低到几微安，不充电也能工作好几年，加一块小太阳能板甚至能不间断运行，所以可以挂在树冠上探测森林火灾，或者放在河岸边监测洪水。</p>
+<p><b>拆开一个 mota：</b>点击每个模块。</p>
+<div class="stack" data-explain="mcu">
+<figure>
+<div class="fig">
+<svg aria-label="mota 的硬件框图：传感器、嵌入式处理器、无线收发器、存储器和电源" role="img" viewbox="0 0 600 300">
+<defs>
+<marker id="m23a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-dash" height="288" rx="12" width="588" x="6" y="6"></rect>
+<text class="s-tm" x="18" y="26">MOTA · nodo sensor</text>
+<path class="s-life" d="M220,256 L88,256 L88,184"></path>
+<path class="s-life" d="M380,256 L512,256 L512,184"></path>
+<text class="s-tm" x="100" y="248">alimenta a todos</text>
+<line class="s-line" marker-end="url(#m23a)" x1="152" x2="230" y1="150" y2="150"></line>
+<text class="s-tm" text-anchor="middle" x="191" y="141">datos</text>
+<line class="s-line" marker-end="url(#m23a)" marker-start="url(#m23a)" x1="370" x2="446" y1="150" y2="150"></line>
+<text class="s-tm" text-anchor="middle" x="408" y="141">paquetes</text>
+<line class="s-line" marker-end="url(#m23a)" marker-start="url(#m23a)" x1="300" x2="300" y1="76" y2="110"></line>
+<line class="s-line" marker-end="url(#m23a)" x1="300" x2="300" y1="228" y2="190"></line>
+<g aria-label="Sensores" class="hot" data-key="sensor" role="button" tabindex="0">
+<rect class="s-box" height="64" rx="6" width="128" x="24" y="118"></rect>
+<text class="s-t" text-anchor="middle" x="88" y="145">Sensores</text>
+<text class="s-t2" text-anchor="middle" x="88" y="164">+ ADC</text>
+</g>
+<g aria-label="Procesador embebido" class="hot" data-key="mcu" role="button" tabindex="0">
+<rect class="s-box" height="76" rx="6" width="136" x="232" y="112"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="143">Procesador</text>
+<text class="s-t2" text-anchor="middle" x="300" y="163">embebido · MCU</text>
+</g>
+<g aria-label="Transceptor radio" class="hot" data-key="radio" role="button" tabindex="0">
+<rect class="s-box" height="64" rx="6" width="128" x="448" y="118"></rect>
+<text class="s-t" text-anchor="middle" x="512" y="145">Transceptor</text>
+<text class="s-t2" text-anchor="middle" x="512" y="164">radio RF</text>
+<path class="s-line" d="M560,118 L560,90 M551,82 L560,92 L569,82"></path>
+</g>
+<g aria-label="Memoria" class="hot" data-key="mem" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="120" x="240" y="22"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="44">Memoria</text>
+<text class="s-t2" text-anchor="middle" x="300" y="62">flash + RAM</text>
+</g>
+<g aria-label="Energía" class="hot" data-key="energia" role="button" tabindex="0">
+<rect class="s-box" height="56" rx="6" width="160" x="220" y="228"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="251">Energía</text>
+<text class="s-t2" text-anchor="middle" x="300" y="270">baterías · harvesting</text>
+</g>
+</svg>
+</div>
+<figcaption>mota 的五类硬件组件：处理器居中，传感器送数据进来，收发器收发数据包，存储器在上，电源给所有模块供电。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="sensor" hidden="">
+<h3>Sensores · 传感器</h3>
+<p>对温度、压力、湿度等物理条件的变化产生可测量响应信号的硬件。连续的模拟信号经 ADC（模数转换器）数字化后交给处理器。因为节点靠有限的电源工作，传感器也必须小、功耗极低。一个节点可以集成或外接一种或几种传感器。</p>
+</div>
+<div class="panel" data-panel="mcu" hidden="">
+<h3>Procesador embebido · 嵌入式处理器</h3>
+<p>调度任务、处理数据、控制其他硬件组件。可选 microcontrolador（MCU）、DSP、FPGA 或 ASIC，其中 MCU 用得最多：容易连接其他设备，而且便宜。</p>
+<p class="aside">例：TI（原 Chipcon）的 CC2531 开发板用 8051 MCU；Crossbow 的 Mica2 Mote 用 ATMega128L。</p>
+</div>
+<div class="panel" data-panel="radio" hidden="">
+<h3>Transceptor · 无线收发器</h3>
+<p>负责节点的无线通信。介质可以是 RF、激光或红外，大多数 WSN 应用适合用 RF。收发器的工作状态有 Transmit、Receive、Idle、Sleep 四种。</p>
+<p class="aside">Mica2 Mote 用 RFM TR1000 和 Chipcon CC1000 两种射频芯片，室外传输距离约 150 m。</p>
+</div>
+<div class="panel" data-panel="mem" hidden="">
+<h3>Memoria · 存储器</h3>
+<p>包括 MCU 片内的 flash 和 RAM，以及外部 flash。</p>
+<p class="aside">例：Mica2 上的 ATMega128L 有 128 KB flash 程序存储器和 4 KB 静态 RAM；还可以外接一片 4 Mbit 的串行 flash。</p>
+</div>
+<div class="panel" data-panel="energia" hidden="">
+<h3>Energía · 电源</h3>
+<p>感知、通信、数据处理都要耗电，其中<b>通信比感知和处理耗得多</b>。电能存在电池或电容里，电池是主要来源（Mica2 Mote 用 2 节 AA 电池）。电池容量有限，所以尽量降低功耗始终是 WSN 运行的关键；energy harvesting 把太阳能、风能等环境能量转成电能，目标是彻底改变节点的供电方式。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>TCP/IP 与 IPSO：让 WSN 说 IP <span class="tag">2.3.7</span></h2>
+<p>今天常把 WSN 的协议和 Internet 集成起来，以利用它的性能、可扩展性和互操作性，这就是 Internet de las Cosas。可是 IP 网络当初并不是为此设计的：对 WSN 来说它<b>太耗电</b>，也没有针对<b>丢包严重的无线介质</b>做优化。于是有了新的标准和协议：</p>
+<ul>
+<li><b class="t">6LoWPAN (IPv6 over Low-power Wireless Personal Area Networks)</b>——低功耗无线个域网上的 IPv6：面向 LLN、使用 IPv6 包的协议；</li>
+<li>物理层和 MAC 用新版 IEEE 802.15.4，更能抵抗噪声、丢包和衰落（物理层 802.15.4-2006，MAC 802.15.4e）；</li>
+<li>应用层（相当于 HTTP）有 <b class="t">CoAP (Constrained Application Protocol)</b>——受限应用协议，轻得多、功耗更低。</li>
+</ul>
+<p>合起来就是 <b class="t">IPSO (IP for Smart Objects)</b>——智能物体的 IP 协议栈，也写作 IP Smart Objects Protocol suite；推广它的行业组织叫 IPSO Alliance。<b>点击每一层</b>，看看为什么要换：</p>
+<div class="stack" data-explain="app">
+<figure>
+<div class="fig">
+<svg aria-label="TCP/IP 与 IPSO 协议栈的逐层对比：应用层 HTTP 对 CoAP，传输层 TCP/UDP 对 UDP，网络层 IPv4/IPv6 对 6LoWPAN，链路层 802.3/802.11 对 IEEE 802.15.4e" role="img" viewbox="0 0 640 284">
+<defs>
+<marker id="m23b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" text-anchor="middle" x="230" y="26">Internet Protocol suite · TCP/IP</text>
+<text class="s-tm" text-anchor="middle" x="510" y="26">IP Smart Objects suite · IPSO</text>
+<g aria-label="Nivel de aplicación: HTTP frente a CoAP" class="hot" data-key="app" role="button" tabindex="0">
+<text class="s-t" text-anchor="end" x="100" y="66">Aplicación</text>
+<text class="s-t2" text-anchor="end" x="100" y="83">application</text>
+<rect class="s-box" height="50" rx="5" width="236" x="112" y="44"></rect>
+<text class="s-t" text-anchor="middle" x="230" y="75">HTTP / FTP / SMTP…</text>
+<line class="s-line" marker-end="url(#m23b)" x1="352" x2="388" y1="69" y2="69"></line>
+<rect class="s-box" height="50" rx="5" width="236" x="392" y="44"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="66">CoAP</text>
+<text class="s-t2" text-anchor="middle" x="510" y="83">REST ligero</text>
+</g>
+<g aria-label="Nivel de transporte: TCP/UDP frente a UDP" class="hot" data-key="tra" role="button" tabindex="0">
+<text class="s-t" text-anchor="end" x="100" y="126">Transporte</text>
+<text class="s-t2" text-anchor="end" x="100" y="143">transport</text>
+<rect class="s-box" height="50" rx="5" width="236" x="112" y="104"></rect>
+<text class="s-t" text-anchor="middle" x="230" y="135">TCP / UDP</text>
+<line class="s-line" marker-end="url(#m23b)" x1="352" x2="388" y1="129" y2="129"></line>
+<rect class="s-box" height="50" rx="5" width="236" x="392" y="104"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="126">UDP</text>
+<text class="s-t2" text-anchor="middle" x="510" y="143">sin conexión</text>
+</g>
+<g aria-label="Nivel de red: IPv4/IPv6 frente a 6LoWPAN" class="hot" data-key="red" role="button" tabindex="0">
+<text class="s-t" text-anchor="end" x="100" y="186">Red</text>
+<text class="s-t2" text-anchor="end" x="100" y="203">network</text>
+<rect class="s-box" height="50" rx="5" width="236" x="112" y="164"></rect>
+<text class="s-t" text-anchor="middle" x="230" y="195">IPv4 / IPv6</text>
+<line class="s-line" marker-end="url(#m23b)" x1="352" x2="388" y1="189" y2="189"></line>
+<rect class="s-box" height="50" rx="5" width="236" x="392" y="164"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="186">6LoWPAN</text>
+<text class="s-t2" text-anchor="middle" x="510" y="203">IPv6 sobre 802.15.4</text>
+</g>
+<g aria-label="Nivel de enlace: Ethernet y WLAN frente a IEEE 802.15.4e" class="hot" data-key="enl" role="button" tabindex="0">
+<text class="s-t" text-anchor="end" x="100" y="246">Enlace</text>
+<text class="s-t2" text-anchor="end" x="100" y="263">link</text>
+<rect class="s-box" height="50" rx="5" width="236" x="112" y="224"></rect>
+<text class="s-t" text-anchor="middle" x="230" y="255">802.3 Ethernet / 802.11 WLAN</text>
+<line class="s-line" marker-end="url(#m23b)" x1="352" x2="388" y1="249" y2="249"></line>
+<rect class="s-box" height="50" rx="5" width="236" x="392" y="224"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="246">IEEE 802.15.4e</text>
+<text class="s-t2" text-anchor="middle" x="510" y="263">channel hopping</text>
+</g>
+</svg>
+</div>
+<figcaption>左边 TCP/IP，右边 IPSO，同一层并排：分层完全一样，每层换了一个协议。右栏的灰色小字是提示，不是协议名。<span class="hint">点击每一行看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="app" hidden="">
+<h3>Aplicación · HTTP → CoAP</h3>
+<p>CoAP 由 IETF 的 CoRE 工作组定义，是一个基于 REST 的 web 传输协议：保留了 HTTP 的若干功能，但为 IoT 设备有限的处理能力和能耗重新设计。它像 HTTP 一样用 URI 标识资源，用 GET、PUT、POST、DELETE 等方法操作资源，但“不只是 HTTP 的简单压缩”。</p>
+<p>一项在 Contiki 系统上的对比实验：请求同一资源，CoAP 每次事务 <b>154 字节</b>，HTTP <b>1451 字节</b>；功耗 0,774 mW 对 1,333 mW，<b>CoAP 少约 42%</b>。CoAP 还有 observe 功能：客户端登记一次就能收到资源的更新，不必像 HTTP 那样频繁轮询。</p>
+</div>
+<div class="panel" data-panel="tra" hidden="">
+<h3>Transporte · TCP/UDP → UDP</h3>
+<p>CoAP 建在 UDP 上，因为它需要的最低限度的可靠性由 CoAP 自己的事务层提供。事务层有四类消息：confirmable（需要 ACK）、non-confirmable（不需要 ACK）、acknowledgement（对 confirmable 消息的 ACK）、reset（收到了 confirmable 消息，但缺少处理它的上下文）。</p>
+<p class="aside">出于性能考虑，IoT 的传输层常用 UDP。</p>
+</div>
+<div class="panel" data-panel="red" hidden="">
+<h3>Red · IPv4/IPv6 → 6LoWPAN</h3>
+<p>6LoWPAN 让 IPv6 包能在低功耗有损个域网（LLN）上传输。难点在于 802.15.4 的帧（MTU）只有 <b>127 字节</b>，而 Ethernet 和 WiFi 是 1500 字节，IPv6 又要求链路 MTU 不少于 <b>1280 字节</b>。所以 6LoWPAN 定义了：</p>
+<ul>
+<li>链路层的<b>分片与重组</b>（分片头只有 4–5 字节）；</li>
+<li>不需要每条流保存状态的<b>头部压缩</b>：去掉链路层、网络层、传输层之间的冗余信息，并假设常见字段取常用值；</li>
+<li>优化的邻居发现，尽量少用 multicast。</li>
+</ul>
+<p class="aside">路由不归 6LoWPAN 管，由 RoLL 工作组的 RPL 负责（§5）。</p>
+</div>
+<div class="panel" data-panel="enl" hidden="">
+<h3>Enlace · 802.3 / 802.11 → IEEE 802.15.4e</h3>
+<p>6LoWPAN 的物理层是 IEEE 802.15.4-2006，面向低功耗、低速率（250 kbit/s）的 LLN；MAC 是修订版 802.15.4e，用来更好地支持工业市场。它的关键技术是 <b>channel hopping</b>（跳信道），大大增强了对噪声、丢包和持续多径衰落的抵抗力。</p>
+</div>
+</div>
+<p>先想再<b>点击右列</b>揭晓：TCP/IP 在 WSN 里遇到的问题，IPSO 怎么解决？</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>TCP/IP 的问题</th><th>IPSO 的对策（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>HTTP 太重：请求同一资源要 1451 字节</td><td class="ans">CoAP：154 字节，功耗少约 42%</td></tr>
+<tr class="reveal"><td>IPv6 要求 MTU ≥ 1280 字节，可 802.15.4 帧只有 127 字节</td><td class="ans">6LoWPAN：分片重组 + 头部压缩</td></tr>
+<tr class="reveal"><td>TCP 的连接开销</td><td class="ans">UDP；可靠性交给 CoAP 的事务层（confirmable + ACK）</td></tr>
+<tr class="reveal"><td>ISM 频段噪声大、多径衰落、丢包</td><td class="ans">IEEE 802.15.4e 的 channel hopping</td></tr>
+<tr class="reveal"><td>OSPF、AODV 等路由协议在 LLN 里表现不佳</td><td class="ans">RPL（建 DODAG，用动态链路指标）</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note">
+<span class="lbl">一句话比较 · 2.3.7</span>
+<p>两套协议栈的<b>分层一模一样</b>（应用 / 传输 / 网络 / 链路），IPSO 只是把每一层换成为低功耗、有损、帧很小的网络设计的协议。关键在于 IPSO <b>仍然是 IP</b>：6LoWPAN 设备可以和 Internet 上任何 IP 设备通信，网关只在 IP 层转换；ZigBee 网络则需要一个应用层网关来翻译。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>IMT-2020：5G 的三类使用场景 <span class="tag">2.3.8</span></h2>
+<p>5G 不是被当作 4G 的演进，而是一场必要的革命：用户不断增加，应用越来越苛刻，IoT 呈指数增长。<b class="t">ITU (International Telecommunication Union)</b>——国际电信联盟 在 IMT 2020 的建议（ITU-R M.2083-0，2015 年 9 月）中，把 5G 移动网络的服务分成三类 <b class="t">escenarios de uso (ES) / usage scenarios (EN)</b>——使用场景：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">eMBB</span><h3>Enhanced Mobile Broadband</h3><p>增强移动宽带：对带宽要求很高的服务，例如高清视频、虚拟现实和增强现实。</p></div>
+<div class="cell"><span class="eyebrow">uRLLC</span><h3>Ultra-reliable and Low-latency Communications</h3><p>超高可靠低延迟通信：自动驾驶和辅助驾驶、远程管理。</p></div>
+<div class="cell"><span class="eyebrow">mMTC</span><h3>Massive Machine Type Communications</h3><p>海量机器类通信：大规模 IoT。</p></div>
+</div>
+<p>为此要发展新技术，实现更大容量、更高速度、低延迟、海量设备连接、更低成本和 QoE（Quality of Experience，体验质量）。其中最突出的有：毫米波（ondas milimétricas）、massive MIMO（大规模多天线）、由微型小区组成的密集网络、full duplex、beamforming（波束成形）。</p>
+<p>把三类场景画成一个三角形：三个角是三类场景，三条边是它们之间的权衡维度，应用放在离它最需要的那个角最近的地方。注意图里的叫法：uRLLC 那个角写作 <b>Critical machine type communication</b>。<b>点击三个角</b>：</p>
+<div class="stack" data-explain="embb">
+<figure>
+<div class="fig">
+<svg aria-label="5G 使用场景三角形：顶角 Massive Broadband（eMBB），左下角 Massive machine type communication（mMTC），右下角 Critical machine type communication（uRLLC），三角形内按位置放着各类应用" role="img" viewbox="0 0 600 340">
+<polygon class="s-soft" points="300,58 70,282 530,282"></polygon>
+<text class="s-tm" text-anchor="end" x="150" y="160">Throughput</text>
+<text class="s-tm" x="450" y="160">Latency | Reliability</text>
+<text class="s-tm" text-anchor="middle" x="300" y="300"># of Devices | Cost | Power</text>
+<text class="s-t2" text-anchor="middle" x="300" y="126">3D video · 4K</text>
+<text class="s-t2" text-anchor="middle" x="300" y="148">Capacity for everyone</text>
+<text class="s-t2" text-anchor="middle" x="300" y="170">Work in the cloud</text>
+<text class="s-t2" text-anchor="middle" x="222" y="198">Smart city cameras</text>
+<text class="s-t2" text-anchor="middle" x="378" y="187">VR gaming</text>
+<text class="s-t2" text-anchor="middle" x="378" y="207">Industry 4.0</text>
+<text class="s-tm" text-anchor="middle" x="290" y="226">Flexibility for the unknown</text>
+<text class="s-t2" text-anchor="middle" x="150" y="266">Sensor NW</text>
+<text class="s-t2" text-anchor="middle" x="292" y="266">Mission critical broadcast</text>
+<text class="s-t2" text-anchor="middle" x="414" y="247">Remote control of robot</text>
+<text class="s-t2" text-anchor="middle" x="452" y="268">Autonomous driving</text>
+<g aria-label="Massive Broadband (eMBB)" class="hot" data-key="embb" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="200" x="200" y="6"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="25">Massive Broadband</text>
+<text class="s-t2" text-anchor="middle" x="300" y="42">eMBB</text>
+</g>
+<g aria-label="Massive machine type communication (mMTC)" class="hot" data-key="mmtc" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="200" x="8" y="290"></rect>
+<text class="s-t" text-anchor="middle" x="108" y="309">Massive MTC</text>
+<text class="s-t2" text-anchor="middle" x="108" y="326">mMTC</text>
+</g>
+<g aria-label="Critical machine type communication (uRLLC)" class="hot" data-key="urllc" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="200" x="392" y="290"></rect>
+<text class="s-t" text-anchor="middle" x="492" y="309">Critical MTC</text>
+<text class="s-t2" text-anchor="middle" x="492" y="326">uRLLC</text>
+</g>
+</svg>
+</div>
+<figcaption>三个角是三类使用场景，三条边是权衡的维度；应用离哪个角越近，就越需要那个角的能力。方框里的 eMBB / uRLLC / mMTC 是对应的 IMT-2020 场景名。<span class="hint">点击三个角</span></figcaption>
+</figure>
+<div class="panel" data-panel="embb" hidden="">
+<h3>Massive Broadband · eMBB</h3>
+<p><b>这个角的指标：</b>&gt;10 Gbps 峰值速率；任何需要时都有 100 Mbps；流量是现在的 10 000 倍。</p>
+<p><b>靠近这个角的应用：</b>Capacity for everyone、3D video / 4K screens、Work in the cloud。VR gaming、Industry 4.0 在通往 Critical MTC 的那条边上（既要带宽也要低延迟）；Smart city cameras 在通往 Massive MTC 的那条边上。</p>
+<p class="aside">IMT-2020 的典型例子：高清视频、虚拟现实和增强现实。</p>
+</div>
+<div class="panel" data-panel="mmtc" hidden="">
+<h3>Massive machine type communication · mMTC</h3>
+<p><b>这个角的指标：</b>设备数是现在的 10–100 倍；M2M 成本极低；电池能用 10 年。</p>
+<p><b>靠近这个角的应用：</b>Sensor NW（传感器网络）；Smart city cameras 在它和 Massive Broadband 之间。</p>
+<p class="aside">IMT-2020 的典型例子：IoT masiva。</p>
+</div>
+<div class="panel" data-panel="urllc" hidden="">
+<h3>Critical machine type communication · uRLLC</h3>
+<p><b>这个角的指标：</b>Ultra reliability（超高可靠）；无线延迟 &lt;1 ms。</p>
+<p><b>靠近这个角的应用：</b>Remote control of robot、Autonomous driving；Mission critical broadcast 在它和 Massive MTC 之间的底边上。</p>
+<p class="aside">IMT-2020 的典型例子：自动驾驶和辅助驾驶、远程管理。</p>
+</div>
+
+</div>
+<p><b>练一练：</b>先点一个应用，再点它所属的使用场景。</p>
+<div class="sorter">
+<div aria-label="待归类的应用" class="pool chips" role="group">
+<button aria-pressed="false" class="chip" data-c="embb" data-short="高清视频" data-why="eMBB 用于高带宽需求，如高清视频。" type="button">高清视频</button>
+<button aria-pressed="false" class="chip" data-c="urllc" data-short="自动驾驶" data-why="uRLLC 用于自动驾驶和辅助驾驶。" type="button">自动驾驶、辅助驾驶</button>
+<button aria-pressed="false" class="chip" data-c="mmtc" data-short="海量 IoT" data-why="mMTC 就是为 IoT masiva 设计的。" type="button">城市里成千上万个传感器（IoT 海量连接）</button>
+<button aria-pressed="false" class="chip" data-c="embb" data-short="VR / AR" data-why="虚拟现实和增强现实属于 eMBB。" type="button">虚拟现实和增强现实</button>
+<button aria-pressed="false" class="chip" data-c="urllc" data-short="机器人手术" data-why="机器人手术归为 uRLLC。" type="button">远程机器人手术</button>
+<button aria-pressed="false" class="chip" data-c="mmtc" data-short="自动化工厂" data-why="强调“大量机器”时归 mMTC；有些资料的三角图另有说法，见下方“注意”。" type="button">自动化工厂里的大量机器</button>
+<button aria-pressed="false" class="chip" data-c="embb" data-short="手机宽带" data-why="智能手机是 eMBB 的典型应用。" type="button">智能手机上的移动宽带</button>
+<button aria-pressed="false" class="chip" data-c="urllc" data-short="V2V" data-why="自动驾驶车辆之间的 V2V 通信属于 uRLLC。" type="button">自动驾驶车辆之间的 V2V 通信</button>
+<button aria-pressed="false" class="chip" data-c="urllc" data-short="远程管理" data-why="gestión remota（远程管理）列在 uRLLC 下。" type="button">远程管理（gestión remota）</button>
+<button aria-pressed="false" class="chip" data-c="mmtc" data-short="Sensor NW" data-why="三角图里 Sensor NW 就在 Massive machine type communication 那个角上。" type="button">传感器网络（三角图里的 Sensor NW）</button>
+<button aria-pressed="false" class="chip" data-c="urllc" data-short="远程控制机器人" data-why="三角图里 Remote control of robot 靠近 Critical machine type communication 的角（&lt;1 ms 延迟、超高可靠）。" type="button">远程控制机器人（三角图里的 Remote control of robot）</button>
+<button aria-pressed="false" class="chip" data-c="embb" data-short="云端办公" data-why="三角图里 Work in the cloud 靠近 Massive Broadband 的角。" type="button">在云端工作（三角图里的 Work in the cloud）</button>
+</div>
+<div class="bins">
+<button class="cell bin" data-bin="embb" type="button"><span class="eyebrow">eMBB</span><b>增强移动宽带</b><span class="sub">要带宽</span><span class="got"></span></button>
+<button class="cell bin" data-bin="urllc" type="button"><span class="eyebrow">uRLLC</span><b>超高可靠低延迟</b><span class="sub">要可靠、要快</span><span class="got"></span></button>
+<button class="cell bin" data-bin="mmtc" type="button"><span class="eyebrow">mMTC</span><b>海量机器类通信</b><span class="sub">要连得多</span><span class="got"></span></button>
+</div>
+<div class="foot"><span class="cnt"></span><button class="btn" data-reset="" type="button">重来</button></div>
+<div aria-live="polite" class="log"></div>
+</div>
+<div class="note">
+<span class="lbl">注意</span>
+<p>有些资料的三角图把 Industry 4.0 放在 Massive Broadband 和 Critical MTC 之间的边上（VR gaming 也在这条边上）；也有资料把“自动化工厂”归为 mMTC。所以“工厂”类应用要看题目强调的是“大量机器”（mMTC）还是“控制要快、要可靠”（uRLLC）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>Network slicing、SDN 与 NFV <span class="tag">2.3.9</span></h2>
+<p>三个词常一起出现，但说的是三件不同的事。切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换概念" class="seg" role="group">
+<button aria-pressed="true" data-view="slicing" type="button">Network slicing</button>
+<button aria-pressed="false" data-view="sdn" type="button">SDN</button>
+<button aria-pressed="false" data-view="nfv" type="button">NFV</button>
+</div>
+<div class="stack" data-pane="slicing">
+<div class="panel">
+<h3>Network slicing · 网络切片</h3>
+<p>5G 用 <b class="t">network slicing (EN)</b>——网络切片 把<b>一张物理网络划分成多张虚拟网络</b>（slices）。每个 slice 有自己的需求、特性和服务类型，而且彼此<b>逻辑隔离</b>，互不干扰。一大优点：部署一张（虚拟）网络只需要很短的时间。</p>
+<p class="aside">打个比方：如果全部带宽是一条信息高速公路，network slicing 就是划出能力不同、按流量类型优化的车道，为不同的流量保证不同的服务质量。</p>
+</div>
+<div class="stack" data-explain="sl1">
+<figure>
+<div class="fig">
+<svg aria-label="五层叠放的 5G Network Slice。Slice 1 Mobile Broadband 有自己的 C-Plane 和 U-Plane；Slice 2 C2X-Automotive 有 Mobile Edge Cloud；Slice 3 Massive IoT 有自己的 U-plane、C-plane 和 App-Server；Slice 4 到 Slice n 是其他切片" role="img" viewbox="0 0 600 330">
+<g aria-label="5G Network Slice 1: Mobile Broadband" class="hot" data-key="sl1" role="button" tabindex="0">
+<path class="s-box" d="M70,14 L560,14 L530,66 L40,66 Z"></path>
+<text class="s-t" x="74" y="36">Mobile Broadband</text>
+<text class="s-t2" x="66" y="56">5G mmWave · WiFi · LTE</text>
+<rect class="s-soft" height="20" rx="4" width="96" x="300" y="22"></rect>
+<text class="s-tm" text-anchor="middle" x="348" y="36">C-Plane</text>
+<rect class="s-soft" height="20" rx="4" width="96" x="406" y="22"></rect>
+<text class="s-tm" text-anchor="middle" x="454" y="36">U-Plane</text>
+<text class="s-tm" text-anchor="end" x="520" y="60">5G Network Slice 1</text>
+</g>
+<g aria-label="5G Network Slice 2: C2X-Automotive" class="hot" data-key="sl2" role="button" tabindex="0">
+<path class="s-box" d="M70,72 L560,72 L530,124 L40,124 Z"></path>
+<text class="s-t" x="74" y="94">C2X-Automotive</text>
+<text class="s-t2" x="66" y="114">D2D · Safety · Autonomous Cars</text>
+<rect class="s-soft" height="20" rx="4" width="172" x="330" y="80"></rect>
+<text class="s-tm" text-anchor="middle" x="416" y="94">Mobile Edge Cloud</text>
+<text class="s-tm" text-anchor="end" x="520" y="118">5G Network Slice 2</text>
+</g>
+<g aria-label="5G Network Slice 3: Massive IoT" class="hot" data-key="sl3" role="button" tabindex="0">
+<path class="s-box" d="M70,130 L560,130 L530,182 L40,182 Z"></path>
+<text class="s-t" x="74" y="152">Massive IoT</text>
+<text class="s-t2" x="66" y="172">eHealth · CCTV · meters · energy</text>
+<rect class="s-soft" height="20" rx="4" width="96" x="300" y="138"></rect>
+<text class="s-tm" text-anchor="middle" x="348" y="152">U-plane</text>
+<rect class="s-soft" height="20" rx="4" width="96" x="406" y="138"></rect>
+<text class="s-tm" text-anchor="middle" x="454" y="152">C-plane</text>
+<text class="s-tm" text-anchor="end" x="520" y="176">5G Network Slice 3</text>
+</g>
+<g aria-label="Other Slices: Slice 4 a Slice n" class="hot" data-key="otros" role="button" tabindex="0">
+<path class="s-soft" d="M70,188 L560,188 L530,240 L40,240 Z"></path>
+<text class="s-t" x="74" y="214">Other Slices</text>
+<text class="s-tm" text-anchor="end" x="520" y="234">5G Network Slice 4</text>
+<path class="s-soft" d="M70,246 L560,246 L530,298 L40,298 Z"></path>
+<text class="s-t2" text-anchor="middle" x="300" y="276">…</text>
+<text class="s-tm" text-anchor="end" x="520" y="292">5G Network Slice n</text>
+</g>
+<text class="s-tm" text-anchor="middle" x="300" y="320">todas sobre la misma red física</text>
+</svg>
+</div>
+<figcaption>五层叠放的切片，每层写出名字和里面的部件（图标改成了文字）。最下面一行提醒：所有切片都建在同一张物理网络上。<span class="hint">点击每一层</span></figcaption>
+</figure>
+<div class="panel" data-panel="sl1" hidden="">
+<h3>Slice 1 · Mobile Broadband</h3>
+<p>用户经 5G mmWave、WiFi、LTE 接入；这个切片有<b>自己的 C-Plane</b> 和<b>自己的 U-Plane</b>。图这一层画着用户的手机、笔记本，C-Plane 里是 Mobility Management 和云，U-Plane 里是路由器和服务器。</p>
+<p class="aside">对应 §8 的 eMBB。</p>
+</div>
+<div class="panel" data-panel="sl2" hidden="">
+<h3>Slice 2 · C2X-Automotive</h3>
+<p>车与车之间的 D2D 通信、Safety、Autonomous Cars，旁边是 <b>Mobile Edge Cloud</b>（移动边缘云）。图这一层还画着 Intelligent Control（红绿灯）、Opportunistic D2D Communication 的车辆、公交车和基站。</p>
+<p class="aside">对应 §8 的 uRLLC。把计算放到靠近道路的 edge cloud，思路和 §1 的 fog computing 相同。</p>
+</div>
+<div class="panel" data-panel="sl3" hidden="">
+<h3>Slice 3 · Massive IoT</h3>
+<p>eHealth、CCTV、meters、energy 这类海量设备；这个切片也有自己的 U-plane 和 C-plane。图这一层画着 Home Management、eHealth、CCTV、drones、meters、sensors、energy，以及 App-Server。</p>
+<p class="aside">对应 §8 的 mMTC。</p>
+</div>
+<div class="panel" data-panel="otros" hidden="">
+<h3>Other Slices · Slice 4 … Slice n</h3>
+<p>需要新的服务类型时，再切一张新的虚拟网络；部署一张（虚拟）网络只需要很短的时间。</p>
+</div>
+<div class="note warm">
+<span class="lbl">从图里看三者的关系</span>
+<p>注意 Slice 1 和 Slice 3 里都画着<b>各自的 C-Plane 和 U-Plane</b>：控制平面和用户（数据）平面分开，这正是 SDN 的做法；图里每个切片的路由器、服务器、App-Server 都是“自己的”，在同一套物理设备上靠软件实现，这是 NFV 的作用。所以说 slicing“se basa en SDN y NFV”。</p>
+</div>
+
+</div>
+</div>
+<div class="stack" data-pane="sdn" hidden="">
+<div class="panel">
+<h3>SDN · 软件定义网络</h3>
+<p><b class="t">SDN (Software-Defined Networking)</b>——软件定义网络：把<b>控制平面</b>（网络管理和维护的流量）和<b>数据平面</b>（发往各种服务的流量）<b>解耦</b>，让控制可以编程。好处：便于扩展、更灵活，也便于网络虚拟化。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="SDN：上方的可编程控制器（控制平面）向下方三个只转发数据的网络节点（数据平面）下发规则" role="img" viewbox="0 0 540 232">
+<defs>
+<marker id="m23d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="54" rx="6" width="220" x="160" y="14"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="37">Controlador SDN</text>
+<text class="s-t2" text-anchor="middle" x="270" y="56">plano de control · programable</text>
+<line class="s-dash" x1="230" x2="100" y1="68" y2="148"></line>
+<line class="s-dash" x1="270" x2="270" y1="68" y2="148"></line>
+<line class="s-dash" x1="310" x2="440" y1="68" y2="148"></line>
+<text class="s-tm" x="278" y="112">reglas</text>
+<rect class="s-box" height="46" rx="6" width="120" x="40" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="170">Nodo de red</text>
+<text class="s-t2" text-anchor="middle" x="100" y="187">solo reenvía</text>
+<rect class="s-box" height="46" rx="6" width="120" x="210" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="170">Nodo de red</text>
+<text class="s-t2" text-anchor="middle" x="270" y="187">solo reenvía</text>
+<rect class="s-box" height="46" rx="6" width="120" x="380" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="440" y="170">Nodo de red</text>
+<text class="s-t2" text-anchor="middle" x="440" y="187">solo reenvía</text>
+<line class="s-line" marker-end="url(#m23d)" x1="6" x2="38" y1="173" y2="173"></line>
+<line class="s-line" marker-end="url(#m23d)" x1="160" x2="208" y1="173" y2="173"></line>
+<line class="s-line" marker-end="url(#m23d)" x1="330" x2="378" y1="173" y2="173"></line>
+<line class="s-line" marker-end="url(#m23d)" x1="500" x2="532" y1="173" y2="173"></line>
+<text class="s-tm" text-anchor="middle" x="270" y="222">plano de datos: tráfico de los servicios</text>
+</svg>
+</div>
+<figcaption>示意：虚线是控制平面，实线是数据平面。对照上面的切片图：那里每个切片的 C-Plane / U-Plane 就是这两个平面。</figcaption>
+</figure>
+</div>
+<div class="stack" data-pane="nfv" hidden="">
+<div class="panel">
+<h3>NFV · 网络功能虚拟化</h3>
+<p><b class="t">NFV (Network Function Virtualization)</b>——网络功能虚拟化：把硬件设备提供的服务（路由器、负载均衡器、防火墙……）<b>抽象出来，用软件实现</b>。这样的网络更灵活、更省钱。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="NFV：左边三台专用硬件（路由器、负载均衡器、防火墙）被虚拟化为右边同一台硬件上运行的三个软件功能" role="img" viewbox="0 0 540 232">
+<defs>
+<marker id="m23e" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" text-anchor="middle" x="95" y="22">hardware dedicado</text>
+<rect class="s-box" height="44" rx="4" width="150" x="20" y="34"></rect>
+<text class="s-t" text-anchor="middle" x="95" y="61">Router</text>
+<rect class="s-box" height="44" rx="4" width="150" x="20" y="90"></rect>
+<text class="s-t" text-anchor="middle" x="95" y="117">Balanceador</text>
+<rect class="s-box" height="44" rx="4" width="150" x="20" y="146"></rect>
+<text class="s-t" text-anchor="middle" x="95" y="173">Cortafuegos</text>
+<line class="s-line" marker-end="url(#m23e)" x1="182" x2="262" y1="112" y2="112"></line>
+<text class="s-tm" text-anchor="middle" x="222" y="102">virtualiza</text>
+<rect class="s-box" height="164" rx="8" width="244" x="276" y="30"></rect>
+<text class="s-t2" text-anchor="middle" x="398" y="50">hardware genérico</text>
+<rect class="s-soft" height="34" rx="4" width="212" x="292" y="62"></rect>
+<text class="s-t" text-anchor="middle" x="398" y="84">Router · software</text>
+<rect class="s-soft" height="34" rx="4" width="212" x="292" y="104"></rect>
+<text class="s-t" text-anchor="middle" x="398" y="126">Balanceador · software</text>
+<rect class="s-soft" height="34" rx="4" width="212" x="292" y="146"></rect>
+<text class="s-t" text-anchor="middle" x="398" y="168">Cortafuegos · software</text>
+<text class="s-tm" text-anchor="middle" x="270" y="220">más flexible · más económica</text>
+</svg>
+</div>
+<figcaption>示意：同样的三种功能，从各自的专用设备搬到软件里。Balanceador = balanceador de carga（负载均衡器）。</figcaption>
+</figure>
+</div>
+</div>
+<div class="note">
+<span class="lbl">区分 · 2.3.9</span>
+<ul>
+<li><b>Network slicing</b> 切的是<b>网络</b>：一张物理网络 → 多张逻辑隔离的虚拟网络。它是 5G 的技术，<b>建立在 SDN 和 NFV 之上</b>。</li>
+<li><b>SDN</b> 分开的是<b>平面</b>：控制平面和数据平面解耦，控制可编程。</li>
+<li><b>NFV</b> 虚拟化的是<b>功能</b>：硬件设备提供的服务 → 软件。</li>
+</ul>
+<p class="aside">口诀：slicing 切网，SDN 分平面，NFV 去硬件。</p>
+</div>
+<p>先想再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>描述</th><th>是哪一个？（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>每张虚拟网络有自己的需求、特性和服务类型，互不干扰</td><td class="ans">Network slicing</td></tr>
+<tr class="reveal"><td>让网络控制可以编程，便于扩展、灵活，也便于虚拟化</td><td class="ans">SDN</td></tr>
+<tr class="reveal"><td>不再为防火墙、负载均衡器单独买一台设备</td><td class="ans">NFV</td></tr>
+<tr class="reveal"><td>它建立在另外两者之上</td><td class="ans">Network slicing（se basa en SDN y NFV）</td></tr>
+<tr class="reveal"><td>管理和维护网络的流量走这里</td><td class="ans">SDN 的控制平面</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s10">
+<h2><span class="n">§10</span>6G：下一步 <span class="tag plain">了解即可</span></h2>
+<p>移动网络的演进：先是连接人，然后变成连接任何“物”的全球传感器网络，再变得智能。下一步是 6G：它不再是“智能的传感器网络”，而是“传感化的网络智能”（una inteligencia en red sensorizada）。6G 想把空间、海上、地面的固定和移动技术结合起来，覆盖地球上的每一个点，各项特性都远超 5G：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>指标</th><th>6G 目标</th></tr></thead>
+<tbody>
+<tr><td>Peak Rate · 峰值速率</td><td class="mono">1 Tbit/s</td></tr>
+<tr><td>Experienced Rate · 用户体验速率</td><td class="mono">10–100 Gbit/s</td></tr>
+<tr><td>Network Capacity · 网络容量</td><td class="mono">5G 的 1000 倍</td></tr>
+<tr><td>Air Interface Latency · 空口延迟</td><td class="mono">0.1 ms</td></tr>
+<tr><td>Air Interface Jitter · 空口抖动</td><td class="mono">±0.1 µs</td></tr>
+<tr><td>Reliability · 可靠性</td><td class="mono">99.99999%</td></tr>
+<tr><td>Device Density · 设备密度</td><td class="mono">1000 万 / km²</td></tr>
+<tr><td>Energy Efficiency · 能效</td><td class="mono">5G 的 100 倍，总能耗 &lt; 5G</td></tr>
+<tr><td>Sensing Battery Life · 传感电池寿命</td><td class="mono">20 年</td></tr>
+<tr><td>Sensing / Position Accuracy · 感知定位精度</td><td class="mono">室外 50 cm，室内 1 cm</td></tr>
+<tr><td>Sensing / Imaging Resolution · 感知成像分辨率</td><td class="mono">1–3 mm</td></tr>
+<tr><td>Network Coverage · 覆盖</td><td class="mono">10 dB+</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>和 §8 的 5G 指标对比：延迟 &lt;1 ms → 0.1 ms，峰值 &gt;10 Gbps → 1 Tbit/s，电池 10 年 → 20 年。</p>
+<p class="aside">延伸阅读：5G 围绕 eMBB、URLLC、mMTC 三根支柱，6G 要超越它们；数据速率要从现在的个位数 Gbps 提升到数百 Gbps，甚至 1000 Gbps；还要能按某个区域的需要，动态地即时建立 network slices。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M23">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>最紧急（time-sensitive）的 IoT 数据应该在哪里分析？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>云里的数据中心</button>
+<button data-o="b" type="button"><span class="k">B</span>Fog aggregation node</button>
+<button data-o="c" type="button"><span class="k">C</span>最靠近设备的 fog node</button>
+<button data-o="d" type="button"><span class="k">D</span>用户的手机</button>
+</div>
+<p class="why"><b>C。</b>最紧急的数据在最靠近“物”的 fog 节点上分析，毫秒级响应；能等几秒到几分钟的交给汇聚节点；不着急的送云做历史分析（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">02</span>fog 节点上的 IoT 数据通常保存多久？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>暂存，常为 1–2 小时</button>
+<button data-o="b" type="button"><span class="k">B</span>几个月到几年</button>
+<button data-o="c" type="button"><span class="k">C</span>永久保存</button>
+<button data-o="d" type="button"><span class="k">D</span>完全不保存，只转发</button>
+</div>
+<p class="why"><b>A。</b>fog 节点提供 transient storage（暂存），常为 1–2 小时。几个月到几年是 cloud（§1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>一辆在旅途中的汽车想发现附近的加油站并获取它们的信息。这属于哪类 WSN？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>WSN fija</button>
+<button data-o="b" type="button"><span class="k">B</span>WSN personal</button>
+<button data-o="c" type="button"><span class="k">C</span>星型 WSN</button>
+<button data-o="d" type="button"><span class="k">D</span>WSN móvil</button>
+</div>
+<p class="why"><b>D。</b>这是 WSN móviles 的例子：覆盖范围很大，连接是 ad hoc 的，用蜂窝网、white spaces、LPWAN 等（§2）。星型是拓扑，不是这三类之一。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>关于 white space，哪一项是正确的定义？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>2,4 GHz 的 ISM 频段</button>
+<button data-o="b" type="button"><span class="k">B</span>分配给广播服务、但当地没有使用的频率</button>
+<button data-o="c" type="button"><span class="k">C</span>MAC 层留给协调器的空闲时隙</button>
+<button data-o="d" type="button"><span class="k">D</span>没有蜂窝网覆盖的地区</button>
+</div>
+<p class="why"><b>B。</b>定义：servicios de radiodifusión que no se usan localmente。White-Fi（802.11af）就利用它（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>WSN 中的 MAC 层是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>数据链路层的一个子层，控制对共享无线介质的访问</button>
+<button data-o="b" type="button"><span class="k">B</span>负责把数据从源节点送到目的节点的网络层功能</button>
+<button data-o="c" type="button"><span class="k">C</span>一种轻量级的应用层协议</button>
+<button data-o="d" type="button"><span class="k">D</span>把 WSN 接到 Internet 的网关</button>
+</div>
+<p class="why"><b>A。</b>MAC 是 nivel de enlace 的子层；无线介质被许多设备共享、会互相干扰，所以要控制访问（§4）。B 是路由，C 是 CoAP，D 是 pasarela。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>网状 WSN 使用多跳通信（multisalto），主要好处是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>不再需要 pasarela</button>
+<button data-o="b" type="button"><span class="k">B</span>每个节点都能直接连到云</button>
+<button data-o="c" type="button"><span class="k">C</span>每一跳只传给邻近节点，发射功率和功耗能大大降低</button>
+<button data-o="d" type="button"><span class="k">D</span>消除了所有延迟</button>
+</div>
+<p class="why"><b>C。</b>逐跳转发到目的节点，能大大降低发射功率和功耗。代价是网状网络更复杂，经过多跳的延迟更长（§5）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>“mote” 这个名字想表达什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它是 Mobile Telemetry 的缩写</button>
+<button data-o="b" type="button"><span class="k">B</span>它是 Libelium 的注册商标</button>
+<button data-o="c" type="button"><span class="k">C</span>它只用在移动 WSN 里</button>
+<button data-o="d" type="button"><span class="k">D</span>来自“mota de polvo”：体积小，可以放在任何地方</button>
+</div>
+<p class="why"><b>D。</b>一个词同时表达尺寸小和可以放在任何地方这两个核心概念（§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>在 IPSO 协议栈里，网络层用的是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>IPv4</button>
+<button data-o="b" type="button"><span class="k">B</span>6LoWPAN</button>
+<button data-o="c" type="button"><span class="k">C</span>UDP</button>
+<button data-o="d" type="button"><span class="k">D</span>IEEE 802.15.4e</button>
+</div>
+<p class="why"><b>B。</b>IPSO：应用层 CoAP，传输层 UDP，网络层 6LoWPAN，链路层 IEEE 802.15.4e（§7 的协议栈图）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>在 §7 提到的 Contiki 对比实验里，请求同一资源时，CoAP 和 HTTP 相比怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CoAP 每次事务 154 字节，HTTP 1451 字节；CoAP 功耗少约 42%</button>
+<button data-o="b" type="button"><span class="k">B</span>两者字节数相同，只是 CoAP 更快</button>
+<button data-o="c" type="button"><span class="k">C</span>HTTP 154 字节，CoAP 1451 字节</button>
+<button data-o="d" type="button"><span class="k">D</span>CoAP 的功耗是 HTTP 的 26 倍</button>
+</div>
+<p class="why"><b>A。</b>功耗 0,774 mW 对 1,333 mW（§7）。“26 倍”是 CoAP 跑在 duty cycling MAC 上带来的能效提升，不是这个实验（§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>远程机器人手术、自动驾驶车辆之间的 V2V 通信，属于 IMT-2020 的哪个使用场景？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>eMBB</button>
+<button data-o="b" type="button"><span class="k">B</span>mMTC</button>
+<button data-o="c" type="button"><span class="k">C</span>uRLLC</button>
+<button data-o="d" type="button"><span class="k">D</span>network slicing</button>
+</div>
+<p class="why"><b>C。</b>它们要求超高可靠和超低延迟；§8 里 uRLLC 的例子是自动/辅助驾驶和远程管理。network slicing 是一种技术，不是使用场景（§8）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>“把控制平面和数据平面解耦，让控制可以编程”，说的是哪一个？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>NFV</button>
+<button data-o="b" type="button"><span class="k">B</span>SDN</button>
+<button data-o="c" type="button"><span class="k">C</span>Network slicing</button>
+<button data-o="d" type="button"><span class="k">D</span>6LoWPAN</button>
+</div>
+<p class="why"><b>B。</b>SDN。NFV 是把路由器、防火墙等硬件提供的功能用软件实现；network slicing 是把物理网络切成多张隔离的虚拟网络（§9）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">12</span>network slicing 建立在什么之上？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CoAP 和 UDP</button>
+<button data-o="b" type="button"><span class="k">B</span>fog computing</button>
+<button data-o="c" type="button"><span class="k">C</span>IEEE 802.15.4</button>
+<button data-o="d" type="button"><span class="k">D</span>SDN 和 NFV</button>
+</div>
+<p class="why"><b>D。</b>network slicing se basa en SDN y NFV（§9）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">20 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">fog computing<small>也叫 edge computing</small></span><span class="back"><b>雾计算</b><br/>把云延伸到网络边缘，在数据产生处附近毫秒级处理最紧急的数据。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pasarela<small>gateway</small></span><span class="back"><b>网关</b><br/>把设备或 WSN 接到云、Internet 或其他网络。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">WSN<small>Wireless Sensor Network</small></span><span class="back"><b>无线传感器网络</b><br/>部署简单便宜、省掉布线；分 fija、móvil、personal 三类。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">LPWAN<small>Low Power Wide Area Network</small></span><span class="back"><b>低功耗广域网</b><br/>LoRa、Sigfox、HaLow、White-Fi 等，用于移动 WSN。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">white space<small>espacio blanco</small></span><span class="back"><b>空白频谱</b><br/>分配给广播服务、但当地没有使用的频率。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bandas ISM<small>Industrial, Scientific and Medical</small></span><span class="back"><b>免许可频段</b><br/>433、868、915 MHz 和 2,4 GHz，遵守功率限制即可使用。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MAC<small>Media Access Control</small></span><span class="back"><b>介质访问控制</b><br/>数据链路层的子层，控制对共享无线介质的访问。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">encaminamiento<small>routing</small></span><span class="back"><b>路由</b><br/>把信息从源节点送到目的节点；网状网络里靠多跳。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RPL<small>IPv6 Routing Protocol for LLNs</small></span><span class="back"><b>LLN 的 IPv6 路由协议</b><br/>建一个以目的地为根的 DODAG 来路由。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mota<small>mote</small></span><span class="back"><b>传感节点（微尘）</b><br/>来自“mota de polvo”：小，可以放在任何地方。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IEEE 802.15.4</span><span class="back"><b>低速率 WPAN 标准</b><br/>定义物理层和 MAC 层；ZigBee、6LoWPAN 都建在它上面。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">6LoWPAN<small>IPv6 over Low-power WPAN</small></span><span class="back"><b>低功耗个域网上的 IPv6</b><br/>靠分片和头部压缩，让 IPv6 跑在 127 字节的帧里。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CoAP<small>Constrained Application Protocol</small></span><span class="back"><b>受限应用协议</b><br/>轻量的 REST 协议，跑在 UDP 上，相当于 IPSO 里的 HTTP。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IPSO<small>IP for Smart Objects</small></span><span class="back"><b>智能物体 IP 协议栈</b><br/>CoAP · UDP · 6LoWPAN · IEEE 802.15.4e。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">eMBB<small>Enhanced Mobile Broadband</small></span><span class="back"><b>增强移动宽带</b><br/>高带宽：高清视频、虚拟现实、增强现实。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">uRLLC<small>Ultra-reliable and Low-latency Communications</small></span><span class="back"><b>超高可靠低延迟通信</b><br/>自动驾驶和辅助驾驶、远程管理。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mMTC<small>Massive Machine Type Communications</small></span><span class="back"><b>海量机器类通信</b><br/>大规模 IoT。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">network slicing</span><span class="back"><b>网络切片</b><br/>一张物理网络 → 多张逻辑隔离的虚拟网络；基于 SDN 和 NFV。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SDN<small>Software-Defined Networking</small></span><span class="back"><b>软件定义网络</b><br/>控制平面与数据平面解耦，控制可编程。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">NFV<small>Network Function Virtualization</small></span><span class="back"><b>网络功能虚拟化</b><br/>把路由器、防火墙等硬件提供的功能用软件实现。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M23"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  Array.prototype.forEach.call(document.querySelectorAll(".sorter"), function (root) {
+    var items = Array.prototype.slice.call(root.querySelectorAll("[data-c]"));
+    var bins = Array.prototype.slice.call(root.querySelectorAll("[data-bin]"));
+    var log = root.querySelector(".log"), cnt = root.querySelector(".cnt"), reset = root.querySelector("[data-reset]");
+    var sel = null, done = 0;
+    function say(s) {
+      var d = document.createElement("div");
+      d.textContent = s;
+      log.insertBefore(d, log.firstChild);
+    }
+    function upd() { cnt.textContent = done === items.length ? "全部归类正确 ✓" : "已归类 " + done + " / " + items.length; }
+    function pick(b) {
+      items.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      sel = b;
+    }
+    function flash(bin, cls) {
+      bin.classList.add(cls);
+      setTimeout(function () { bin.classList.remove(cls); }, 600);
+    }
+    items.forEach(function (b) { b.addEventListener("click", function () { pick(b); }); });
+    bins.forEach(function (bin) {
+      bin.addEventListener("click", function () {
+        var name = bin.querySelector(".eyebrow").textContent;
+        if (!sel) { say("先点上面的一个条目，再点它所属的类别。"); return; }
+        var label = sel.textContent;
+        if (sel.getAttribute("data-c") === bin.getAttribute("data-bin")) {
+          var s = document.createElement("span");
+          s.textContent = sel.getAttribute("data-short") || label;
+          bin.querySelector(".got").appendChild(s);
+          sel.hidden = true;
+          sel.setAttribute("aria-pressed", "false");
+          say("✓ " + label + " → " + name + "。" + (sel.getAttribute("data-why") || ""));
+          sel = null; done++; upd();
+          flash(bin, "hit");
+        } else {
+          flash(bin, "miss");
+          say("✗ “" + label + "”不属于 " + name + "，再想想。");
+        }
+      });
+    });
+    reset.addEventListener("click", function () {
+      items.forEach(function (x) { x.hidden = false; x.setAttribute("aria-pressed", "false"); });
+      bins.forEach(function (bin) { bin.querySelector(".got").innerHTML = ""; });
+      sel = null; done = 0; log.innerHTML = "";
+      say("先点上面的一个条目，再点它所属的类别。");
+      upd();
+    });
+    say("先点上面的一个条目，再点它所属的类别。");
+    upd();
+  });
+})();
+
+
+(function () {
+  var root = document.getElementById("csma");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = root.querySelector("svg");
+  var txt = root.querySelector(".step-txt"), cnt = root.querySelector(".step-n"), sum = root.querySelector(".sim-sum");
+  var prev = root.querySelector('[data-act="prev"]'), next = root.querySelector('[data-act="next"]'), rst = root.querySelector('[data-act="reset"]');
+  var modeBtns = Array.prototype.slice.call(root.querySelectorAll("[data-mode]"));
+  var NODES = ["A", "B", "C"], N = 11, X0 = 84, W = 44, H = 30, YS = [14, 54, 94, 134];
+  var SC = {
+    nomac: {
+      frames: [{ n: "A", s: 0 }, { n: "B", s: 1 }, { n: "C", s: 3 }, { n: "A", s: 5 }, { n: "B", s: 6 }, { n: "B", s: 8 }],
+      marks: {},
+      intro: "没有任何介质访问控制：节点一有数据就发。A 在 t0、B 在 t1、C 在 t3 有数据要发。点「下一步」逐个时隙播放。",
+      T: [
+        "t0：A 有数据，立刻发送。",
+        "t1：B 也立刻发送。A、B 的信号在空中重叠：<b>碰撞</b>，两帧都作废。",
+        "t2：B 还在发那份已经坏掉的帧，电池白白消耗。",
+        "t3：C 发送，这时信道上只有它。",
+        "t4：C 继续发送，没人打扰。",
+        "t5：C 送达。A 的帧没有送到，于是重发。",
+        "t6：B 也重发，又和 A 撞上了。没有协调，重传照样会撞。",
+        "t7：B 的第二次尝试也作废。",
+        "t8：B 第三次尝试，这次信道空着。",
+        "t9：B 继续发送。",
+        "t10：B 终于送达；A 两次都失败，还在等。切换到 CSMA-CA 比较一下。"
+      ]
+    },
+    csma: {
+      frames: [{ n: "A", s: 2 }, { n: "C", s: 5 }, { n: "B", s: 9 }],
+      marks: {
+        A: { 0: "bo", 1: "cca" },
+        B: { 1: "bo", 2: "busy", 3: "bo", 4: "bo", 5: "bo", 6: "busy", 7: "bo", 8: "cca" },
+        C: { 3: "bo", 4: "cca" }
+      },
+      intro: "CSMA-CA：先听后发。有数据时先随机等一会儿（BO），再监听信道（CCA）；空闲才发，忙就再等。数据到达时间与另一个场景相同：A 在 t0、B 在 t1、C 在 t3。",
+      T: [
+        "t0：A 有数据，先随机退避（BO）。",
+        "t1：A 监听信道：空闲。B 有数据了，先退避。",
+        "t2：A 开始发送。B 监听：<b>忙</b>，所以不发，重新退避，这次等得更久。",
+        "t3：A 继续发送。C 有数据，先退避。",
+        "t4：A 送达。C 监听：空闲。",
+        "t5：C 开始发送。B 还在退避。",
+        "t6：C 继续发送。B 再次监听：又是忙，再退避。",
+        "t7：C 送达。B 还在等。",
+        "t8：B 监听：空闲。",
+        "t9：B 开始发送。",
+        "t10：B 送达。三帧全部成功，一次碰撞也没有；代价是 B 多等了一会儿。"
+      ]
+    }
+  };
+  function mk(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    if (text != null) e.textContent = text;
+    svg.appendChild(e);
+    return e;
+  }
+  var cells = [];
+  ["Nodo A", "Nodo B", "Nodo C", "Canal"].forEach(function (lab, r) {
+    mk("text", { "class": "s-t", x: 8, y: YS[r] + 20 }, lab);
+    cells[r] = [];
+    for (var t = 0; t < N; t++) {
+      var x = X0 + t * W;
+      cells[r][t] = {
+        r: mk("rect", { "class": "cell", x: x + 2, y: YS[r], width: W - 4, height: H, rx: 3 }),
+        t: mk("text", { "class": "lab", x: x + W / 2, y: YS[r] + 19, "text-anchor": "middle" }, "")
+      };
+    }
+  });
+  for (var t0 = 0; t0 < N; t0++) mk("text", { "class": "s-tm", x: X0 + t0 * W + W / 2, y: 186, "text-anchor": "middle" }, "t" + t0);
+  var cur = mk("rect", { "class": "cur", x: X0, y: 8, width: W, height: 162, rx: 4 });
+  var mode = "nomac", k = 0;
+  function active(sc, t) { return sc.frames.filter(function (f) { return t >= f.s && t < f.s + 2; }); }
+  function collided(sc, f, upto) {
+    for (var t = f.s; t < f.s + 2 && t <= upto; t++) if (active(sc, t).length > 1) return true;
+    return false;
+  }
+  function set(c, cls, lab, inv) {
+    c.r.setAttribute("class", "cell" + (cls ? " " + cls : ""));
+    c.t.textContent = lab || "";
+    c.t.setAttribute("class", "lab" + (inv ? " inv" : ""));
+  }
+  function render() {
+    var sc = SC[mode], last = k - 1;
+    NODES.forEach(function (n, r) {
+      for (var t = 0; t < N; t++) {
+        var c = cells[r][t];
+        if (t > last) { set(c, "", ""); continue; }
+        var f = sc.frames.filter(function (x) { return x.n === n && t >= x.s && t < x.s + 2; })[0];
+        if (f) {
+          if (collided(sc, f, last)) set(c, "bad", "✕");
+          else if (f.s + 1 < last || k === N) set(c, "ok", "TX");
+          else set(c, "tx", "TX", true);
+        } else {
+          var m = sc.marks[n] && sc.marks[n][t];
+          if (m === "bo") set(c, "bo", "BO");
+          else if (m === "cca") set(c, "cca", "CCA");
+          else if (m === "busy") set(c, "busy", "忙");
+          else set(c, "", "");
+        }
+      }
+    });
+    for (var t = 0; t < N; t++) {
+      var cc = cells[3][t];
+      if (t > last) { set(cc, "", ""); continue; }
+      var a = active(sc, t);
+      if (!a.length) set(cc, "", "");
+      else if (a.length > 1) set(cc, "bad", "碰撞");
+      else set(cc, "tx", a[0].n, true);
+    }
+    if (k === 0) cur.setAttribute("visibility", "hidden");
+    else { cur.setAttribute("visibility", "visible"); cur.setAttribute("x", X0 + last * W); }
+    txt.innerHTML = k === 0 ? sc.intro : sc.T[last];
+    cnt.textContent = k === 0 ? "概览" : "时隙 t" + last + " · " + k + " / " + N;
+    if (k === N) {
+      var ok = sc.frames.filter(function (f) { return !collided(sc, f, N); }).length;
+      sum.textContent = "发射时隙 " + sc.frames.length * 2 + " · 送达 " + ok + " 帧（3 个节点各有 1 帧要发）";
+    } else sum.textContent = "";
+    prev.disabled = k === 0;
+    next.disabled = k === N;
+  }
+  prev.addEventListener("click", function () { if (k > 0) { k--; render(); } });
+  next.addEventListener("click", function () { if (k < N) { k++; render(); } });
+  rst.addEventListener("click", function () { k = 0; render(); });
+  modeBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      mode = b.getAttribute("data-mode"); k = 0;
+      modeBtns.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      render();
+    });
+  });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("mesh");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = root.querySelector("svg"), out = root.querySelector(".step-txt");
+  var modeBtns = Array.prototype.slice.call(root.querySelectorAll("[data-mode]"));
+  var P = {
+    "1": [60, 70], "2": [60, 240], "3": [170, 40], "4": [180, 150], "5": [170, 270],
+    "6": [300, 80], "7": [300, 215], "8": [420, 45], "9": [430, 150], "10": [420, 265], "G": [545, 155]
+  };
+  var E = [["1", "3"], ["1", "4"], ["2", "4"], ["2", "5"], ["3", "4"], ["3", "6"], ["4", "6"], ["4", "7"], ["5", "7"],
+    ["6", "7"], ["6", "8"], ["6", "9"], ["7", "9"], ["7", "10"], ["8", "9"], ["9", "10"], ["8", "G"], ["9", "G"], ["10", "G"]];
+  var adj = {}, edges = {}, nodes = {};
+  Object.keys(P).forEach(function (n) { adj[n] = []; });
+  function key(a, b) { return a < b ? a + "|" + b : b + "|" + a; }
+  function mk(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    if (text != null) e.textContent = text;
+    parent.appendChild(e);
+    return e;
+  }
+  E.forEach(function (e) {
+    adj[e[0]].push(e[1]); adj[e[1]].push(e[0]);
+    edges[key(e[0], e[1])] = mk("line", { "class": "edge", x1: P[e[0]][0], y1: P[e[0]][1], x2: P[e[1]][0], y2: P[e[1]][1] }, svg);
+  });
+  Object.keys(P).forEach(function (n) {
+    var g = mk("g", { "class": "nd", tabindex: "0", role: "button", "aria-label": n === "G" ? "Pasarela (sink)" : "Mota " + n }, svg);
+    if (n === "G") {
+      mk("rect", { x: 503, y: 131, width: 84, height: 48, rx: 6 }, g);
+      mk("text", { "class": "s-t", x: 545, y: 152, "text-anchor": "middle" }, g, "Pasarela");
+      mk("text", { "class": "s-t2", x: 545, y: 169, "text-anchor": "middle" }, g, "sink");
+    } else {
+      mk("circle", { cx: P[n][0], cy: P[n][1], r: 17 }, g);
+      mk("text", { "class": "s-t", x: P[n][0], y: P[n][1] + 5, "text-anchor": "middle" }, g, n);
+    }
+    nodes[n] = g;
+  });
+  var src = "1", dead = {}, kill = false;
+  function bfs() {
+    var from = {}, seen = {}, q = [src];
+    seen[src] = true;
+    while (q.length) {
+      var u = q.shift();
+      if (u === "G") break;
+      adj[u].forEach(function (v) {
+        if (!seen[v] && !dead[v]) { seen[v] = true; from[v] = u; q.push(v); }
+      });
+    }
+    if (!seen.G) return null;
+    var p = ["G"];
+    while (p[0] !== src) p.unshift(from[p[0]]);
+    return p;
+  }
+  function nm(n) { return n === "G" ? "Pasarela" : n; }
+  function render(msg) {
+    var p = bfs();
+    Object.keys(nodes).forEach(function (n) {
+      var c = "nd" + (n === "G" ? " sink" : "") + (dead[n] ? " dead" : "") + (n === src ? " src" : "") +
+        (p && n !== "G" && n !== src && p.indexOf(n) > 0 ? " path" : "");
+      nodes[n].setAttribute("class", c);
+    });
+    E.forEach(function (e) {
+      edges[key(e[0], e[1])].setAttribute("class", "edge" + (dead[e[0]] || dead[e[1]] ? " off" : ""));
+    });
+    var line;
+    if (p) {
+      for (var i = 0; i < p.length - 1; i++) edges[key(p[i], p[i + 1])].setAttribute("class", "edge on");
+      line = "路径：" + p.map(nm).join(" → ") + "（" + (p.length - 1) + " 跳）。每一跳只到邻居，发射功率可以很低。";
+    } else {
+      line = "Mota " + src + " 找不到通往 pasarela 的路：它的邻居都故障了，它被孤立了。";
+    }
+    out.innerHTML = (msg ? msg + "<br>" : "") + line;
+  }
+  function act(n) {
+    if (n === "G") { render("Pasarela 是终点（sink），不能当源节点，也不会故障。"); return; }
+    if (!kill) {
+      if (dead[n]) { render("Mota " + n + " 故障中。先切换到“故障 / 修复”模式把它修好。"); return; }
+      src = n;
+      render("源节点换成 mota " + n + "。");
+    } else {
+      if (n === src) { render("源节点不能设为故障，先换一个源节点。"); return; }
+      dead[n] = !dead[n];
+      render(dead[n] ? "Mota " + n + " 故障，路由重新计算。" : "Mota " + n + " 修复了。");
+    }
+  }
+  Object.keys(nodes).forEach(function (n) {
+    nodes[n].addEventListener("click", function () { act(n); });
+    nodes[n].addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(n); }
+    });
+  });
+  modeBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      kill = b.getAttribute("data-mode") === "kill";
+      modeBtns.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    });
+  });
+  root.querySelector('[data-act="hop"]').addEventListener("click", function () {
+    var p = bfs();
+    if (!p) { render("现在没有可用路径。点「全部修复」重来。"); return; }
+    if (p.length < 3) { render("源节点直接连着 pasarela，中间没有可以故障的节点。"); return; }
+    dead[p[1]] = true;
+    render("下一跳 mota " + p[1] + " 故障，路由重新计算。");
+  });
+  root.querySelector('[data-act="fix"]').addEventListener("click", function () {
+    dead = {};
+    render("所有 mota 都修好了。");
+  });
+  render("点任意一个 mota 把它设为源节点，或点「让下一跳故障」看网络怎么绕路。");
+})();
+</script>
+</body>
+</html>

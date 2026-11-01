@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M32 PWM · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .hi { fill: color-mix(in srgb, var(--c) 20%, transparent); stroke: none; }
+.stage .dz { fill: color-mix(in srgb, var(--st-yellow) 15%, transparent); stroke: none; }
+.captions .c-t, .stage .c-t { color: var(--st-teal); }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini[aria-pressed="true"] { border-color: var(--st-yellow); color: var(--st-yellow); background: color-mix(in srgb, var(--st-yellow) 14%, transparent); }
+.press:disabled, .mini:disabled { opacity: .35; cursor: default; }
+.ctl-g { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ctl-g .k { font: 600 12px/1.4 var(--f-mono); color: var(--st-muted); margin-right: 2px; }
+.ctl-g input[type="range"] { accent-color: var(--st-yellow); width: 9rem; max-width: 46vw; }
+.ctl-g output { font: 700 13px/1.4 var(--f-mono); color: var(--st-yellow); min-width: 2.2ch; }
+.ctl-sep { flex-basis: 100%; height: 0; }
+.mt td:nth-child(1), .mt td:nth-child(2) { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.mt td.y { color: var(--green); font-weight: 600; }
+.mt td.n { color: var(--muted); }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m32-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m32-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m32-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m32-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m32-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 3 章节" class="chain" data-chain="M32"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 3 · Temporizadores y comunicaciones serie · M32</div>
+<h1>PWM</h1>
+<p class="zh">用定时器生成 PWM</p>
+<div class="meta">
+
+
+<span><b>9</b> 个要点</span>
+<span>阅读约 17 分钟</span>
+
+
+</div>
+<p class="lede">M31 里定时器只会"数到某个数就举手"（置 flag、请求中断）。这一章给每个比较通道接上一个<b class="t">unidad de salida (ES) / output unit (EN)</b>——输出单元：TAR 每碰到一次比较值，硬件就直接改写一个引脚，不需要 CPU 插手。改写的规则由 OUTMOD 选择；选得合适，引脚上就是一串 <b class="t">PWM (Modulación de Anchura de Pulso) / pulse-width modulation</b>——脉宽调制信号。</p>
+</section>
+
+<section class="sec" id="m32-obj">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M32.1</span>
+<div class="txt"><span>说出输出单元用到的 TAxR、TAxCCRn、EQU0、EQUn，以及 OUTn 怎样连到引脚 TAx.n；说明输出变化不需要 ISR</span><span class="es">Unidad de salida: aspectos básicos.</span><a href="#m32-s1">→ §1 输出单元</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.2</span>
+<div class="txt"><span>背出 OUTMOD 0–7 每种模式在 EQUn 和 EQU0 时做什么</span><span class="es">Modos de salida (OUTMOD en TAxCCTLn).</span><a href="#m32-s2">→ §2 八种输出模式</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.3</span>
+<div class="txt"><span>说明模式 0 用 OUT 位、其余模式在定时器时钟上升沿同步变化、模式 2/3/6/7 不能用于 OUT0</span><span class="es">Otras características: OUT, sincronismo, usabilidad.</span><a href="#m32-s2b">→ §2 三条规则</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.4</span>
+<div class="txt"><span>up 模式：周期 CCR0 + 1；四种 PWM 模式的占空比公式和最大占空比</span><span class="es">PWM en modo ascendente: período y ciclo de trabajo.</span><a href="#m32-s3">→ §3 up 模式的占空比</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.5</span>
+<div class="txt"><span>读懂 CCR0 = 9、CCR1 = 3 的时序图，数出高电平占几个时钟</span><span class="es">Ejemplo TACCR0 = 9; TACCR1 = 3.</span><a href="#m32-s3">→ §3 数格子</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.6</span>
+<div class="txt"><span>up/down 模式：周期 2·CCR0；四种公式和各自的限制（偶数个时钟、≥ 50 %、≤ 50 %）</span><span class="es">PWM en modo ascendente/descendente.</span><a href="#m32-s4">→ §4 up/down</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.7</span>
+<div class="txt"><span>解释 up/down 的两路输出怎样留出 dead time，为什么 H 桥需要它</span><span class="es">Puente en H con banda muerta (dead band).</span><a href="#m32-s4b">→ §4 死区</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.8</span>
+<div class="txt"><span>用 OUT0 的 Toggle 模式生成方波，并算出 f = f<sub>clk</sub> / (2·(CCR0 + 1))</span><span class="es">Generación de onda cuadrada.</span><a href="#m32-s5">→ §5 方波</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M32.9</span>
+<div class="txt"><span>按顺序写出 PWM 的配置：PxDIR/PxSEL、TAxCCR0、TAxCCTLn 的 OUTMOD、TAxCCRn、TAxCTL</span><span class="es">Configuración en CCS.</span><a href="#m32-s6">→ §6 在 CCS 里配置</a></div>
+<button aria-pressed="false" class="chk" data-obj="M32.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M32"><span class="val">0 / 9 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="m32-s0">
+<h2><span class="n">§0</span>只有 0 和 1，怎样"半亮"？</h2>
+<p class="hook"><span class="zh">数字引脚只能输出 0 V 或 V<sub>CC</sub>。怎样让一个 LED 只亮四分之一？</span><span class="es">Modulación de Anchura de Pulso: variar el ancho del pulso, no la amplitud.</span></p>
+<figure class="stage" data-scene="" id="m32-sc-intro">
+<div class="stage-title"><span>Escena 0 · ciclo de trabajo</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：占空比与平均值，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-intro-t" role="img" viewbox="0 0 800 320">
+<title id="m32-sc-intro-t">三个周期相同的方波，占空比分别为 25 %、50 %、75 %；虚线是平均值，右边的 LED 亮度随占空比增加</title>
+<g data-step="1"><text class="tm sm m" x="20" y="94">D = 25 %</text><path class="ln thin m" d="M102 110 H598"></path><path class="ln g draw" d="M110 110 V64 H150 V110 H270 V64 H310 V110 H430 V64 H470 V110 H590"></path></g><g data-step="3"><path class="ln y dash" d="M110 98.5 H590"></path><text class="tm sm y" x="602" y="103.5">0.25·V<tspan dy="4" font-size="10">CC</tspan></text></g><g data-step="5"><circle class="sl g" cx="740" cy="88" r="18" style="opacity:0.28"></circle><circle class="ln thin g" cx="740" cy="88" r="18"></circle></g><g data-step="4"><text class="tm sm m" x="20" y="184">D = 50 %</text><path class="ln thin m" d="M102 200 H598"></path><path class="ln g draw" d="M110 200 V154 H190 V200 H270 V154 H350 V200 H430 V154 H510 V200 H590"></path></g><g data-step="4"><path class="ln y dash" d="M110 177 H590"></path><text class="tm sm y" x="602" y="182">0.50·V<tspan dy="4" font-size="10">CC</tspan></text></g><g data-step="5"><circle class="sl g" cx="740" cy="178" r="18" style="opacity:0.55"></circle><circle class="ln thin g" cx="740" cy="178" r="18"></circle></g><g data-step="4"><text class="tm sm m" x="20" y="274">D = 75 %</text><path class="ln thin m" d="M102 290 H598"></path><path class="ln g draw" d="M110 290 V244 H230 V290 H270 V244 H390 V290 H430 V244 H550 V290 H590"></path></g><g data-step="4"><path class="ln y dash" d="M110 255.5 H590"></path><text class="tm sm y" x="602" y="260.5">0.75·V<tspan dy="4" font-size="10">CC</tspan></text></g><g data-step="5"><circle class="sl g" cx="740" cy="268" r="18" style="opacity:0.95"></circle><circle class="ln thin g" cx="740" cy="268" r="18"></circle></g>
+<g data-step="1">
+<path class="ln thin o" d="M110 120 V128 H270 V120"></path>
+<text class="tm xs o mid" x="190" y="142">T · 周期</text>
+</g>
+<g data-step="2">
+<path class="ln thin y" d="M110 56 V50 H150 V56"></path>
+<text class="tm xs y mid" x="130" y="42">t<tspan dy="3" font-size="9">on</tspan></text>
+<text class="tm y" x="600" y="40">D = t<tspan dy="4" font-size="11">on</tspan><tspan dy="-4"> / T</tspan></text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>一个周期为 <b>T</b> 的方波：一段时间是高电平，其余是低电平。频率不变，我们只改高电平的宽度。</li>
+<li>高电平持续的时间叫 t<sub>on</sub>。它占整个周期的比例，就是<b class="c-y">ciclo de trabajo</b>（duty cycle）——占空比 D = t<sub>on</sub> / T。这里是 25 %。</li>
+<li data-dur="3400">如果负载"跟不上"这么快的开关（LED 在人眼里、电机因为惯性），它感受到的是<span class="c-y">平均值</span>：D · V<sub>CC</sub>。</li>
+<li>周期不变，把 D 改成 50 %、75 %，平均值跟着线性上升。</li>
+<li data-dur="3600">所以只用 0 和 1，也能表达"多少"：信息藏在<b>脉冲宽度</b>里。剩下的问题是——谁来精确地按时开、关引脚？答案是定时器的输出单元。</li>
+</ol>
+</figure>
+<div class="formula" data-tex="D = \frac{t_{on}}{T}, \qquad \overline{V} = D \cdot V_{CC}">D = t_on / T，平均值 = D · V_CC</div>
+<div class="grid3">
+<div class="cell g">
+<span class="k c-g">LED</span>
+<h3>亮度与颜色</h3>
+<p>改 D 就改平均亮度；RGB LED 的三路各用一个 PWM，就能调出颜色。频率要足够高，人眼才看到"变暗"而不是"闪烁"。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">servo</span>
+<h3>舵机角度</h3>
+<p>舵机（servomotor）的 PWM 周期固定 <b>20 ms</b>（50 Hz），角度由脉宽决定：<b>1 ms → 0°</b>、1.5 ms → 90°（中位）、<b>2 ms → 180°</b>。也就是占空比只在 5 %–10 % 之间变（见下图）。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">motor</span>
+<h3>电机速度</h3>
+<p>直流电机的转速、经由 H 桥的方向控制都可以用 PWM（H 桥见 §4）。</p>
+</div>
+</div>
+
+<p class="takeaway">PWM 固定周期、改变脉宽：占空比 D = t<sub>on</sub> / T 决定负载感受到的平均值。MSP430 的定时器可以在硬件里生成它。</p>
+
+</section>
+
+<section class="sec" id="m32-s1">
+<h2><span class="n">§1</span>输出单元 <span class="tag">M32.1</span></h2>
+<p class="hook"><span class="zh">定时器已经会数数了。怎样让它不经过 CPU，直接在引脚上"画"出波形？</span><span class="es">Modo comparación con salida: la cuenta modifica un pin de salida.</span></p>
+<p>回忆 <a href="m31.html">M31</a>：TAxR 由定时器时钟驱动计数；每个 <b class="t">bloque de captura/comparación (ES) / capture/compare block (EN)</b>——捕获/比较块里有一个 TAxCCRn，在比较模式下，TAxR 数到 TAxCCRn 时内部信号 <b class="t">EQUn</b> 变成 1（同时置 CCIFG）。每个比较块还带一个输出单元：</p>
+<figure class="stage" data-scene="" id="m32-sc-unit">
+<div class="stage-title"><span>Escena 1 · unidad de salida</span><b>5 步</b></div>
+<div aria-label="动画：输出单元的组成，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-unit-t" role="img" viewbox="0 0 800 300">
+<title id="m32-sc-unit-t">TAxR 与 TAxCCR0、TAxCCRn 比较，产生 EQU0 和 EQUn；输出单元按 OUTMOD 改写 OUTn，经 PxSEL 连到引脚 TAx.n</title>
+<g data-step="1">
+<rect class="bx o" height="48" rx="8" width="140" x="20" y="206"></rect>
+<text class="tm sm o mid" x="90" y="230">timer clock</text>
+<text class="tm xs m mid" x="90" y="246">TASSEL · ID</text>
+<path class="ln o" d="M90 206 V140" marker-end="url(#m32-ah-o)"></path>
+<rect class="bx b" height="78" rx="8" width="140" x="20" y="56"></rect>
+<text class="tx b mid" x="90" y="92">TAxR</text>
+<text class="tm xs m mid" x="90" y="118">0, 1, 2, …</text>
+</g>
+<g data-step="2">
+<path class="ln thin b" d="M160 95 H190 V168 H214" marker-end="url(#m32-ah-b)"></path>
+<rect class="bx y" data-hl="2" height="56" rx="8" width="170" x="220" y="140"></rect>
+<text class="tm y mid" x="305" y="164">TAxCCRn</text>
+<text class="tm xs m mid" x="305" y="184">TAxR = CCRn ?</text>
+<path class="ln r draw" d="M390 168 H430 C 452 168, 456 150, 474 150" id="m32-p-equn" marker-end="url(#m32-ah-r)"></path>
+<text class="tm sm r" x="400" y="194">EQUn</text>
+</g>
+<circle class="sl r" data-move="#m32-p-equn" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<path class="ln thin b" d="M190 95 V64 H214" marker-end="url(#m32-ah-b)"></path>
+<rect class="bx b" data-hl="3" height="56" rx="8" width="170" x="220" y="36"></rect>
+<text class="tm b mid" x="305" y="60">TAxCCR0</text>
+<text class="tm xs m mid" x="305" y="80">TAxR = CCR0 ?</text>
+<path class="ln r draw" d="M390 64 H430 C 452 64, 456 100, 474 100" id="m32-p-equ0" marker-end="url(#m32-ah-r)"></path>
+<text class="tm sm r" x="400" y="54">EQU0</text>
+</g>
+<circle class="sl r" data-move="#m32-p-equ0" data-out="4" data-step="3" r="6"></circle>
+<g data-step="4">
+<rect class="bx g" data-hl="4" height="110" rx="10" width="170" x="480" y="70"></rect>
+<text class="tz sm g mid" x="565" y="96">输出单元</text>
+<text class="tm g mid" x="565" y="124">OUTMOD</text>
+<text class="tm xs m mid" x="565" y="144">TAxCCTLn · bits 7–5</text>
+<text class="tm xs m mid" x="565" y="166">模式 0 → OUT 位</text>
+<path class="ln thin o dash" d="M160 230 H565 V186" marker-end="url(#m32-ah-o)"></path>
+<text class="tz sm o mid" x="380" y="222">时钟上升沿同步</text>
+</g>
+<g data-step="5">
+<path class="ln g draw" d="M650 125 H714" id="m32-p-out" marker-end="url(#m32-ah-g)"></path>
+<text class="tm sm g mid" x="682" y="113">OUTn</text>
+<circle class="bx w" cx="742" cy="125" r="18"></circle>
+<text class="tm xs w mid" x="742" y="162">TAx.n</text>
+<text class="tm xs m mid" x="742" y="180">PxSEL = 1</text>
+<text class="tz sm y mid" x="565" y="282">整条链都是硬件：不经过 CPU，也不需要 ISR</text>
+</g>
+<circle class="sl g" data-move="#m32-p-out" data-step="5" r="6"></circle>
+</svg>
+</div>
+<ol class="captions">
+<li>起点还是 M31 的计数器：<span class="c-o">定时器时钟</span>（TASSEL 选源、ID/IDEX 分频）推动 <span class="c-b">TAxR</span> 一格一格地数。</li>
+<li data-dur="3400">比较块 n 拿 TAxR 和 <span class="c-y">TAxCCRn</span> 比；相等时内部信号 <span class="c-r">EQUn</span> 有效。</li>
+<li data-dur="3600">CCR0 的比较块同样产生 <span class="c-r">EQU0</span>。CCR0 往往还决定计数周期（up、up/down 模式），所以 EQU0 标出"一个周期结束"。</li>
+<li data-dur="5200">输出单元按 <b>OUTMOD</b>（TAxCCTLn 的第 7–5 位）决定：收到 EQUn、EQU0 时，把 OUTn 置 1、清 0 还是翻转。它的结果先进一个由<span class="c-o">定时器时钟</span>打入的 D 触发器（flip-flop），所以除模式 0 外，改动都对齐时钟上升沿；模式 0 时 OUT 位直接置位/复位这个触发器，立即生效。上电复位（POR）把它清 0。</li>
+<li data-dur="4200">OUTn 接到固定的引脚 <b>TAx.n</b>（Timer Ax 的 OUTn），把这个引脚设成外设功能（PxSEL）后，波形就出现在引脚上。整个过程是硬件自动完成的。</li>
+</ol>
+
+</figure>
+<div class="note">
+<span class="lbl">引脚是固定的</span>
+<p>哪个引脚能输出哪一路 OUTn（记作 TAx.n），由芯片决定，要查芯片的引脚功能表。例如 F5529 上 P1.7 = TA1.0、P2.0 = TA1.1、P2.1 = TA1.2。选定后：<span class="reg">PxDIR</span> 置 1（输出）、<span class="reg">PxSEL</span> 置 1（外设功能）。</p>
+</div>
+<p class="takeaway">输出单元 = TAxR + TAxCCRn + EQU0/EQUn + OUTMOD。TAxR 碰到比较值时，硬件按模式改写 OUTn，再送到引脚 TAx.n。</p>
+
+</section>
+
+<section class="sec" id="m32-s2">
+<h2><span class="n">§2</span>八种输出模式 <span class="tag">M32.2 · M32.3</span></h2>
+<p class="hook"><span class="zh">TAR 碰到 CCRn 的那一刻，引脚应该做什么？有 8 种答案。</span><span class="es">Los bits OUTMOD0–2 de TAxCCTLn seleccionan el modo de salida.</span></p>
+<p>每个名字都是"<b>EQUn 时做什么 / EQU0 时做什么</b>"的缩写。记住这一点，表格就不用死背：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>OUTMOD</th><th>常量</th><th>模式</th><th>EQUn 时</th><th>EQU0 时</th><th>能调占空比</th></tr></thead>
+<tbody>
+<tr><td>000</td><td>OUTMOD_0</td><td>Output</td><td colspan="2">OUTn = OUT 位，写 OUT 立即生效</td><td class="n">—</td></tr>
+<tr><td>001</td><td>OUTMOD_1</td><td>Set</td><td>置 1</td><td>—</td><td class="n">— 只动一次</td></tr>
+<tr><td>010</td><td>OUTMOD_2</td><td>Toggle/Reset</td><td>翻转</td><td>清 0</td><td class="y">✓</td></tr>
+<tr><td>011</td><td>OUTMOD_3</td><td>Set/Reset</td><td>置 1</td><td>清 0</td><td class="y">✓</td></tr>
+<tr><td>100</td><td>OUTMOD_4</td><td>Toggle</td><td>翻转</td><td>—</td><td class="n">见下方说明</td></tr>
+<tr><td>101</td><td>OUTMOD_5</td><td>Reset</td><td>清 0</td><td>—</td><td class="n">— 只动一次</td></tr>
+<tr><td>110</td><td>OUTMOD_6</td><td>Toggle/Set</td><td>翻转</td><td>置 1</td><td class="y">✓</td></tr>
+<tr><td>111</td><td>OUTMOD_7</td><td>Reset/Set</td><td>清 0</td><td>置 1</td><td class="y">✓</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">Set 置 1 后一直保持，直到定时器复位或换成别的模式；Reset 同理。常量名来自 <code>msp430f5529.h</code>。</p>
+<p>OUTMOD 和 OUT 在 TAxCCTLn 里的位置：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>bit</th><th>8</th><th>7–5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>0</th></tr></thead>
+<tbody>
+<tr><td>TAxCCTLn</td><td>CAP</td><td><b>OUTMOD</b></td><td>CCIE</td><td>CCI</td><td><b>OUT</b></td><td>COV</td><td>CCIFG</td></tr>
+<tr><td>本章</td><td>0 = 比较</td><td>输出模式 0–7</td><td>中断，PWM 不需要</td><td>—</td><td>只在模式 0 起作用</td><td>—</td><td>EQUn 时置位</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">高字节的 CM、CCIS、SCS、SCCI 是捕获用的（M31）。可写的位复位后都是 0，所以 CAP 默认就是比较模式、OUTMOD 默认是模式 0。</p>
+
+<p>在 up 模式下把 7 种模式并排画出来（CCR0 = 9、CCR1 = 3）。注意每条竖线：<span class="c-y">黄</span>色是 EQU1（TAR 数到 CCR1），<span class="c-r">红</span>色是 EQU0（TAR 从 CCR0 回到 0）。</p>
+<figure class="stage" data-ms="3000" data-scene="" id="m32-sc-modes">
+<div class="stage-title"><span>Escena 2 · OUTMOD 1–7 · modo ascendente</span><b>8 步</b></div>
+<div aria-label="动画：up 模式下七种输出模式的波形，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-modes-t" role="img" viewbox="0 0 800 460">
+<title id="m32-sc-modes-t">TAxR 在 0 到 9 之间重复计数，CCR1 = 3；下面七行是输出模式 1 到 7 的 OUT1 波形</title>
+<g data-step="1"><text class="tm sm b" x="12" y="84">TAxR</text><path class="ln thin w dash" d="M150 40 H780"></path><text class="tm xs w end" x="142" y="44">CCR0 = 9</text><path class="ln thin y dash" d="M150 100 H780"></path><text class="tm xs y end" x="142" y="104">CCR1 = 3</text><path class="ln b draw" d="M150 130 H171 V120 H192 V110 H213 V100 H234 V90 H255 V80 H276 V70 H297 V60 H318 V50 H339 V40 H360 V130 H381 V120 H402 V110 H423 V100 H444 V90 H465 V80 H486 V70 H507 V60 H528 V50 H549 V40 H570 V130 H591 V120 H612 V110 H633 V100 H654 V90 H675 V80 H696 V70 H717 V60 H738 V50 H759 V40 H780"></path><path class="ln thin dash y" d="M213 26 V446 M423 26 V446 M633 26 V446"></path><path class="ln thin dash r" d="M360 26 V446 M570 26 V446"></path><text class="tm xs y mid" x="213" y="20">EQU1</text><text class="tm xs r mid" x="360" y="20">EQU0</text></g><g data-step="2"><text class="tm xs m" x="12" y="195">1 · Set</text><path class="ln thin m" d="M150 200 H780"></path><rect class="hi g" height="22" width="567" x="213" y="178"></rect><path class="ln t draw" d="M150 200 H213 V178 H780"></path></g><g data-step="3"><text class="tm xs g" x="12" y="235">2 · Toggle/Reset</text><path class="ln thin m" d="M150 240 H780"></path><rect class="hi g" height="22" width="147" x="213" y="218"></rect><rect class="hi g" height="22" width="147" x="423" y="218"></rect><rect class="hi g" height="22" width="147" x="633" y="218"></rect><path class="ln g draw" d="M150 240 H213 V218 H360 V240 H423 V218 H570 V240 H633 V218 H780"></path></g><g data-step="4"><text class="tm xs g" x="12" y="275">3 · Set/Reset</text><path class="ln thin m" d="M150 280 H780"></path><rect class="hi g" height="22" width="147" x="213" y="258"></rect><rect class="hi g" height="22" width="147" x="423" y="258"></rect><rect class="hi g" height="22" width="147" x="633" y="258"></rect><path class="ln g draw" d="M150 280 H213 V258 H360 V280 H423 V258 H570 V280 H633 V258 H780"></path></g><g data-step="5"><text class="tm xs m" x="12" y="315">4 · Toggle</text><path class="ln thin m" d="M150 320 H780"></path><rect class="hi g" height="22" width="210" x="213" y="298"></rect><rect class="hi g" height="22" width="147" x="633" y="298"></rect><path class="ln t draw" d="M150 320 H213 V298 H423 V320 H633 V298 H780"></path></g><g data-step="6"><text class="tm xs m" x="12" y="355">5 · Reset</text><path class="ln thin m" d="M150 360 H780"></path><rect class="hi g" height="22" width="63" x="150" y="338"></rect><path class="ln t draw" d="M150 338 H213 V360 H780"></path></g><g data-step="7"><text class="tm xs g" x="12" y="395">6 · Toggle/Set</text><path class="ln thin m" d="M150 400 H780"></path><rect class="hi g" height="22" width="63" x="150" y="378"></rect><rect class="hi g" height="22" width="63" x="360" y="378"></rect><rect class="hi g" height="22" width="63" x="570" y="378"></rect><path class="ln g draw" d="M150 378 H213 V400 H360 V378 H423 V400 H570 V378 H633 V400 H780"></path></g><g data-step="8"><text class="tm xs g" x="12" y="435">7 · Reset/Set</text><path class="ln thin m" d="M150 440 H780"></path><rect class="hi g" height="22" width="63" x="150" y="418"></rect><rect class="hi g" height="22" width="63" x="360" y="418"></rect><rect class="hi g" height="22" width="63" x="570" y="418"></rect><path class="ln g draw" d="M150 418 H213 V440 H360 V418 H423 V440 H570 V418 H633 V440 H780"></path></g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">up 模式：TAxR 从 0 数到 CCR0 = 9，再回到 0。每个周期有一个 <span class="c-y">EQU1</span>（TAR 数到 3）和一个 <span class="c-r">EQU0</span>（从 9 回到 0）。</li>
+<li>模式 1 <b>Set</b>：第一个 EQU1 置 1，之后保持。只动一次，不是周期信号。</li>
+<li>模式 2 <b>Toggle/Reset</b>：EQU1 翻转，EQU0 清 0。</li>
+<li>模式 3 <b>Set/Reset</b>：EQU1 置 1，EQU0 清 0。稳态下和模式 2 一模一样。</li>
+<li data-dur="3400">模式 4 <b>Toggle</b>：每个 EQU1 翻转一次，所以输出周期是定时器周期的两倍，高低各占一半。</li>
+<li>模式 5 <b>Reset</b>：第一个 EQU1 清 0，之后保持。（这一行假设 OUT1 原来是 1，否则看不出变化。）</li>
+<li>模式 6 <b>Toggle/Set</b>：EQU1 翻转，EQU0 置 1。</li>
+<li data-dur="3800">模式 7 <b>Reset/Set</b>：EQU1 清 0，EQU0 置 1。稳态下和模式 6 一样，并且正好是模式 2、3 的反相。绿色的四行（2、3、6、7）就是能调占空比的 PWM。</li>
+</ol>
+<p class="stage-note">左端视为刚发生过一次 EQU0，所以模式 2、3 从低、6、7 从高开始；模式 1、4 设初值 0，模式 5 设初值 1。§3 的探索器可以看到初值不同时的过渡。</p>
+
+</figure>
+<h3 id="m32-s2b">三条规则</h3>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">modo 0</span>
+<h3>OUT 位</h3>
+<p>模式 0 下 OUTn 直接等于 TAxCCTLn 里的 <b>OUT</b> 位（bit 2），软件写多少就是多少，<b>立即</b>更新——相当于把这个引脚当成普通输出。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">sincronismo</span>
+<h3>上升沿同步</h3>
+<p>除模式 0 外，OUTn 都在<b>定时器时钟的上升沿</b>改变，所以输出的边沿和计数严格对齐，不受 CPU 正在做什么影响。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">usabilidad</span>
+<h3>OUT0 的限制</h3>
+<p>对输出单元 0 来说，EQUn 就是 EQU0。模式 2、3、6、7 要在同一时刻既"翻转/置 1"又"清 0/置 1"，没有意义，所以<b>不能用于 OUT0</b>。OUT0 只适合 0、1、4、5。</p>
+</div>
+</div>
+<h3>换成 up/down、continuous 计数</h3>
+<div class="note warm">
+<span class="lbl">模式 4 算不算 PWM？</span>
+<p>有些资料把能生成 PWM 的模式列为 2、3、4、6、7。模式 4 每个 EQUn 只翻转一次：在 up 模式（Escena 2 的第 4 行）里输出周期是定时器周期的两倍、高低各半，<b>占空比固定 50 %，不能用 CCRn 调</b>——它正适合 §5 的方波。在 up/down 模式（下图第 4 行）里 TAR 每周期经过 CCRn 两次，Toggle 也翻两次，得到以顶点为中心、宽度随 CCRn 变的脉冲——大概这就是有些资料把 4 算进去的原因。但模式 4 没有 EQU0 动作来"对齐"，哪一段为高取决于 OUT 的初值（下图用虚线画出了另一种），所以调占空比首选 2、3、6、7。在 §3 的探索器里切到 up/down、选 4、再切换 OUT 位就能看到。</p>
+</div>
+
+<div class="note">
+<span class="lbl">continuous 模式</span>
+<p>表格不变，变的是事件的位置：TAR 从 0 数到 0FFFFh 再回 0，周期固定 65 536 个时钟（回 0 时置 TAIFG）；EQUn 在 TAR = CCRn，<b>EQU0 在 TAR = CCR0</b>，不是回 0 的时刻。所以在下图里（CCR1 &lt; CCR0）Toggle/Reset、Set/Reset 从 TAR = CCR1 高到 TAR = CCR0，Toggle/Set、Reset/Set 正好相反；Toggle 的输出周期是 2 × 65 536 个时钟。周期不能调，所以做可调 PWM 还是用 up 或 up/down（§3、§4）。</p>
+</div>
+
+<p class="takeaway">模式名 = "EQUn 动作 / EQU0 动作"。2、3、6、7 是可调占空比的 PWM 模式；模式 0 看 OUT 位；2、3、6、7 不能用于 OUT0。</p>
+
+</section>
+
+<section class="sec" id="m32-s3">
+<h2><span class="n">§3</span>up 模式的占空比 <span class="tag">M32.4 · M32.5</span></h2>
+<p class="hook"><span class="zh">CCR0 = 9、CCR1 = 3：高电平到底占 3 个时钟、6 个，还是 7 个？</span><span class="es">Ejemplo: TACCR0 = 9; TACCR1 = 3; salida OUT1.</span></p>
+<p>把时间切成一格一格：每个计数值占一个定时器时钟。OUTn 在 "TAR 数到 CCRn" 和 "TAR 从 CCR0 回到 0" 的时刻改变。数格子就行：</p>
+<figure class="stage" data-ms="3200" data-scene="" id="m32-sc-up">
+<div class="stage-title"><span>Escena 3 · contar ciclos · CCR0 = 9, CCR1 = 3</span><b>5 步</b></div>
+<div aria-label="动画：数出 up 模式下高电平的时钟数" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-up-t" role="img" viewbox="0 0 800 380">
+<title id="m32-sc-up-t">TAxR 从 0 到 9 的阶梯，周期 10 个时钟；Reset/Set 高电平 3 格（30 %），Set/Reset 高电平 7 格（70 %）</title>
+<g data-step="1"><text class="tm sm b" x="12" y="120">TAxR</text><path class="ln b draw" d="M120 170 H152 V158 H184 V146 H216 V134 H248 V122 H280 V110 H312 V98 H344 V86 H376 V74 H408 V62 H440 V170 H472 V158 H504 V146 H536 V134 H568 V122 H600 V110 H632 V98 H664 V86 H696 V74 H728 V62 H760"></path><text class="tm xs b mid" x="136" y="165">0</text><text class="tm xs b mid" x="168" y="153">1</text><text class="tm xs b mid" x="200" y="141">2</text><text class="tm xs b mid" x="232" y="129">3</text><text class="tm xs b mid" x="264" y="117">4</text><text class="tm xs b mid" x="296" y="105">5</text><text class="tm xs b mid" x="328" y="93">6</text><text class="tm xs b mid" x="360" y="81">7</text><text class="tm xs b mid" x="392" y="69">8</text><text class="tm xs b mid" x="424" y="57">9</text><text class="tm xs b mid" x="456" y="165">0</text><text class="tm xs b mid" x="488" y="153">1</text><text class="tm xs b mid" x="520" y="141">2</text><text class="tm xs b mid" x="552" y="129">3</text><text class="tm xs b mid" x="584" y="117">4</text><text class="tm xs b mid" x="616" y="105">5</text><text class="tm xs b mid" x="648" y="93">6</text><text class="tm xs b mid" x="680" y="81">7</text><text class="tm xs b mid" x="712" y="69">8</text><text class="tm xs b mid" x="744" y="57">9</text><path class="ln thin w dash" d="M120 62 H760"></path><text class="tm xs w end" x="112" y="66">CCR0 = 9</text><path class="ln thin o" d="M120 192 V202 H440 V192"></path><text class="tz sm o mid" x="280" y="222">周期 = CCR0 + 1 = 10 个时钟</text></g><g data-step="2"><path class="ln thin y dash" d="M120 134 H760"></path><text class="tm xs y end" x="112" y="138">CCR1 = 3</text><path class="ln thin dash y" d="M216 40 V340 M536 40 V340"></path><path class="ln thin dash r" d="M120 40 V340 M440 40 V340"></path><text class="tm xs y mid" x="216" y="34">EQU1</text><text class="tm xs r mid" x="440" y="34">EQU0 · TAIFG</text><path class="ln r" d="M408 44 V58 M728 44 V58"></path><text class="tm xs r end" x="402" y="54">CC0IFG</text></g><g data-step="3"><text class="tm xs g" x="12" y="258">7 Reset/Set</text><text class="tm sm y" x="12" y="276">3/10 = 30 %</text><path class="ln thin m" d="M120 268 H760"></path><rect class="hi g" height="26" width="96" x="120" y="242"></rect><rect class="hi g" height="26" width="96" x="440" y="242"></rect><path class="ln g draw" d="M120 242 H216 V268 H440 V242 H536 V268 H760"></path><text class="tm xs y mid" x="168" y="236">3 个</text></g><g data-step="4"><text class="tm xs g" x="12" y="324">3 Set/Reset</text><text class="tm sm y" x="12" y="342">7/10 = 70 %</text><path class="ln thin m" d="M120 334 H760"></path><rect class="hi g" height="26" width="224" x="216" y="308"></rect><rect class="hi g" height="26" width="224" x="536" y="308"></rect><path class="ln g draw" d="M120 334 H216 V308 H440 V334 H536 V308 H760"></path><text class="tm xs y mid" x="328" y="302">7 个</text></g>
+<g data-step="5">
+<text class="tz sm y mid" x="440" y="368">两行互为反相：30 % + 70 % = 100 %　·　最大占空比 = CCR0/(CCR0 + 1) = 90 %</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">TAxR 依次取 0, 1, …, 9，每个值占一个时钟。一个周期 = <b>CCR0 + 1 = 10</b> 个时钟（不是 9！0 也要算一格）。</li>
+<li data-dur="4800"><span class="c-y">EQU1</span> 在 TAR 变成 3 的那一格开头（CC1IFG 同时置位）；输出的 <span class="c-r">EQU0</span> 动作在 TAR 从 9 回到 0 的时刻，和 TAIFG 同时。注意 <span class="c-r">CC0IFG</span> 早一格：TAR 刚变成 9 就置位。</li>
+<li data-dur="3800"><b>Reset/Set</b>（7）：EQU0 置 1，EQU1 清 0。高电平是 TAR = 0, 1, 2 这 3 格 → 3/10 = <span class="c-y">30 %</span>，正好是 CCR1/(CCR0 + 1)。</li>
+<li data-dur="3800"><b>Set/Reset</b>（3）：EQU1 置 1，EQU0 清 0。高电平是 TAR = 3 … 9 这 7 格 → 7/10 = <span class="c-y">70 %</span> = (CCR0 − CCR1 + 1)/(CCR0 + 1)。</li>
+<li data-dur="4200">Toggle/Reset 稳态等于 Set/Reset，Toggle/Set 稳态等于 Reset/Set。CCR1 取到 CCR0 时，Reset/Set 的高电平最多 9 格：最大占空比 CCR0/(CCR0 + 1) = 90 %。</li>
+</ol>
+
+</figure>
+<p>把数格子的结果写成公式，就是下面四条：</p>
+<div class="formula" data-tex="T_{PWM} = (\class{c-b}{\mathtt{CCR0}} + 1)\,T_{clk} \qquad D_{\text{Toggle/Reset}} = D_{\text{Set/Reset}} = \frac{\class{c-b}{\mathtt{CCR0}} - \class{c-y}{\mathtt{CCRn}} + 1}{\class{c-b}{\mathtt{CCR0}} + 1} \qquad D_{\text{Toggle/Set}} = D_{\text{Reset/Set}} = \frac{\class{c-y}{\mathtt{CCRn}}}{\class{c-b}{\mathtt{CCR0}} + 1}">周期 = (CCR0 + 1) 个时钟；Toggle/Reset、Set/Reset：D = (CCR0 − CCRn + 1)/(CCR0 + 1)；Toggle/Set、Reset/Set：D = CCRn/(CCR0 + 1)</div>
+<div class="formula" data-tex="D_{max} = \frac{\class{c-b}{\mathtt{CCR0}}}{\class{c-b}{\mathtt{CCR0}} + 1}">最大占空比 = CCR0 / (CCR0 + 1)</div>
+<p class="aside">记法：<b>…/Set</b> 结尾的模式在周期开头（EQU0）就是高，高电平从 0 数到 CCRn − 1，共 CCRn 格；<b>…/Reset</b> 结尾的模式在周期开头是低，高电平从 CCRn 数到 CCR0，共 CCR0 − CCRn + 1 格。CCR0 只管周期，CCRn 只管脉宽：改占空比不会改频率。</p>
+<p>现在自己动手。下面的探索器按同一个规则逐格模拟：选计数模式（up 或 up/down，<a href="m31.html">M31</a> 讲过）、OUTMOD、CCR0 和 CCRn，看 TAxR 和 OUTn 怎样变化，读出公式和实测值。</p>
+<figure class="stage" id="m32-ex">
+<div class="stage-title"><span>Explorador · OUTMOD × modo de cuenta</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m32-ex-t" id="m32-ex-svg" role="img" viewbox="0 0 800 300">
+<title id="m32-ex-t">探索器：上面是 TAxR 的计数阶梯和比较值，竖线是 EQUn 与 EQU0 事件，下面是 OUTn 的波形</title>
+<g id="m32-ex-g"></g>
+<path class="ln y" d="M0 0" id="m32-ex-cur" style="opacity:0"></path>
+<text class="tm xs y" id="m32-ex-curt" x="80" y="18"></text>
+</svg>
+</div>
+<div class="stage-ctl">
+<div aria-label="计数模式" class="ctl-g" role="group">
+<span class="k">MC</span>
+<button aria-pressed="true" class="mini" data-m32-cnt="up" type="button">up</button>
+<button aria-pressed="false" class="mini" data-m32-cnt="ud" type="button">up/down</button>
+</div>
+<div aria-label="输出通道" class="ctl-g" role="group">
+<span class="k">通道</span>
+<button aria-pressed="true" class="mini" data-m32-ch="1" type="button">OUT1</button>
+<button aria-pressed="false" class="mini" data-m32-ch="0" type="button">OUT0</button>
+</div>
+<div aria-label="时钟" class="ctl-g" role="group">
+<span class="k">f<sub>clk</sub></span>
+<button aria-pressed="true" class="mini" data-m32-clk="32768" type="button">ACLK</button>
+<button aria-pressed="false" class="mini" data-m32-clk="1048576" type="button">SMCLK</button>
+</div>
+<span class="ctl-sep"></span>
+<div aria-label="OUTMOD 输出模式" class="ctl-g" role="group">
+<span class="k">OUTMOD</span>
+<button aria-pressed="false" class="mini" data-m32-mode="0" title="Output（OUT 位）" type="button">0</button>
+<button aria-pressed="false" class="mini" data-m32-mode="1" title="Set" type="button">1</button>
+<button aria-pressed="false" class="mini" data-m32-mode="2" title="Toggle/Reset" type="button">2</button>
+<button aria-pressed="false" class="mini" data-m32-mode="3" title="Set/Reset" type="button">3</button>
+<button aria-pressed="false" class="mini" data-m32-mode="4" title="Toggle" type="button">4</button>
+<button aria-pressed="false" class="mini" data-m32-mode="5" title="Reset" type="button">5</button>
+<button aria-pressed="false" class="mini" data-m32-mode="6" title="Toggle/Set" type="button">6</button>
+<button aria-pressed="true" class="mini" data-m32-mode="7" title="Reset/Set" type="button">7</button>
+</div>
+<span class="ctl-sep"></span>
+<div class="ctl-g">
+<label class="k" for="m32-c0">CCR0</label>
+<input id="m32-c0" max="19" min="3" step="1" type="range" value="9"/>
+<output for="m32-c0" id="m32-c0v">9</output>
+</div>
+<div class="ctl-g">
+<label class="k" for="m32-cn">CCRn</label>
+<input id="m32-cn" max="9" min="1" step="1" type="range" value="3"/>
+<output for="m32-cn" id="m32-cnv">3</output>
+</div>
+<button aria-pressed="false" class="sw" id="m32-outbit" type="button"><span class="knob"></span><span class="lab">OUT 位 = 0</span></button>
+<button class="press" id="m32-sweep" type="button">逐格扫一遍</button>
+<p aria-live="polite" class="out" id="m32-ex-out">载入中……</p>
+</div>
+</figure>
+<div class="note">
+<span class="lbl">试试看</span>
+<p>① 默认就是 Escena 3 的例子：模式 7，CCR0 = 9、CCRn = 3 → 30 %。换成 3，变成 70 %。② 把 CCRn 拉到 CCR0：模式 7 达到最大 90 %。③ 留意第一个周期：OUT 位的初值和稳态不一致时，第一个周期是不规则的，要等第一次 EQU0 才对齐（默认的模式 7、OUT 位 = 0 就是这样）。选模式 2 再打开 OUT 位，看第一个周期变成全低。④ 换到 OUT0，选模式 3：探索器会告诉你为什么不行。</p>
+</div>
+<div class="drill" data-drill="pwm"></div>
+<p class="takeaway">up 模式：周期 = CCR0 + 1 个时钟；…/Reset 模式 D = (CCR0 − CCRn + 1)/(CCR0 + 1)，…/Set 模式 D = CCRn/(CCR0 + 1)，最大 CCR0/(CCR0 + 1)。</p>
+
+</section>
+
+<section class="sec" id="m32-s4">
+<h2><span class="n">§4</span>up/down：居中的脉冲 <span class="tag">M32.6 · M32.7</span></h2>
+<p class="hook"><span class="zh">同样的 CCRn，换成 up/down 计数，为什么 TAR 每个周期要碰到它两次？</span><span class="es">Modo ascendente/descendente: período 2·TAxCCR0.</span></p>
+<p>up/down 模式里 TAR 从 0 数到 CCR0，再倒数回 0（<a href="m31.html">M31</a>）。一个周期是 <b>2·CCR0</b> 个时钟，而 TAR 在上行和下行时各经过 CCRn 一次，所以 EQUn 每周期出现两次，EQU0 只在顶点出现一次。以 CCR0 = 5、CCR1 = 3 为例：</p>
+<figure class="stage" data-ms="3200" data-scene="" id="m32-sc-ud">
+<div class="stage-title"><span>Escena 4 · up/down · CCR0 = 5, CCR1 = 3</span><b>6 步</b></div>
+<div aria-label="动画：up/down 模式下四种 PWM 模式的占空比" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-ud-t" role="img" viewbox="0 0 800 440">
+<title id="m32-sc-ud-t">TAxR 在 0 和 5 之间往返，周期 10 个时钟；EQU1 每周期两次；四种模式的占空比分别是 60 %、80 %、40 %、20 %</title>
+<g data-step="1"><text class="tm sm b" x="12" y="120">TAxR</text><path class="ln b draw" d="M120 170 H152 V150 H184 V130 H216 V110 H248 V90 H280 V70 H312 V90 H344 V110 H376 V130 H408 V150 H440 V170 H472 V150 H504 V130 H536 V110 H568 V90 H600 V70 H632 V90 H664 V110 H696 V130 H728 V150 H760"></path><text class="tm xs b mid" x="136" y="165">0</text><text class="tm xs b mid" x="168" y="145">1</text><text class="tm xs b mid" x="200" y="125">2</text><text class="tm xs b mid" x="232" y="105">3</text><text class="tm xs b mid" x="264" y="85">4</text><text class="tm xs b mid" x="296" y="65">5</text><text class="tm xs b mid" x="328" y="85">4</text><text class="tm xs b mid" x="360" y="105">3</text><text class="tm xs b mid" x="392" y="125">2</text><text class="tm xs b mid" x="424" y="145">1</text><text class="tm xs b mid" x="456" y="165">0</text><text class="tm xs b mid" x="488" y="145">1</text><text class="tm xs b mid" x="520" y="125">2</text><text class="tm xs b mid" x="552" y="105">3</text><text class="tm xs b mid" x="584" y="85">4</text><text class="tm xs b mid" x="616" y="65">5</text><text class="tm xs b mid" x="648" y="85">4</text><text class="tm xs b mid" x="680" y="105">3</text><text class="tm xs b mid" x="712" y="125">2</text><text class="tm xs b mid" x="744" y="145">1</text><path class="ln thin w dash" d="M120 70 H760"></path><text class="tm xs w end" x="112" y="74">CCR0 = 5</text><path class="ln thin o" d="M120 186 V196 H440 V186"></path><text class="tz sm o mid" x="280" y="216">周期 = 2·CCR0 = 10 个时钟</text></g><g data-step="2"><path class="ln thin y dash" d="M120 110 H760"></path><text class="tm xs y end" x="112" y="114">CCR1 = 3</text><path class="ln thin dash y" d="M216 46 V426 M344 46 V426 M536 46 V426 M664 46 V426"></path><path class="ln thin dash r" d="M280 46 V426 M600 46 V426"></path><text class="tm xs y mid" x="216" y="40">EQU1</text><text class="tm xs r mid" x="280" y="40">EQU0</text><text class="tm xs y mid" x="344" y="40">EQU1</text></g><g data-step="3"><text class="tm xs g" x="12" y="260">2 Toggle/Reset</text><text class="tm xs y" x="12" y="276">6/10 = 60 %</text><path class="ln thin m" d="M120 270 H760"></path><rect class="hi g" height="24" width="96" x="120" y="246"></rect><rect class="hi g" height="24" width="192" x="344" y="246"></rect><rect class="hi g" height="24" width="96" x="664" y="246"></rect><path class="ln g draw" d="M120 246 H216 V270 H344 V246 H536 V270 H664 V246 H760"></path></g><g data-step="4"><text class="tm xs g" x="12" y="310">3 Set/Reset</text><text class="tm xs y" x="12" y="326">8/10 = 80 %</text><path class="ln thin m" d="M120 320 H760"></path><rect class="hi g" height="24" width="160" x="120" y="296"></rect><rect class="hi g" height="24" width="256" x="344" y="296"></rect><rect class="hi g" height="24" width="96" x="664" y="296"></rect><path class="ln g draw" d="M120 296 H280 V320 H344 V296 H600 V320 H664 V296 H760"></path></g><g data-step="5"><text class="tm xs g" x="12" y="360">6 Toggle/Set</text><text class="tm xs y" x="12" y="376">4/10 = 40 %</text><path class="ln thin m" d="M120 370 H760"></path><rect class="hi g" height="24" width="128" x="216" y="346"></rect><rect class="hi g" height="24" width="128" x="536" y="346"></rect><path class="ln g draw" d="M120 370 H216 V346 H344 V370 H536 V346 H664 V370 H760"></path></g><g data-step="6"><text class="tm xs g" x="12" y="410">7 Reset/Set</text><text class="tm xs y" x="12" y="426">2/10 = 20 %</text><path class="ln thin m" d="M120 420 H760"></path><rect class="hi g" height="24" width="64" x="280" y="396"></rect><rect class="hi g" height="24" width="64" x="600" y="396"></rect><path class="ln g draw" d="M120 420 H280 V396 H344 V420 H600 V396 H664 V420 H760"></path></g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">TAxR：0, 1, 2, 3, 4, 5, 4, 3, 2, 1，然后重复。一个周期 = <b>2·CCR0 = 10</b> 个时钟。</li>
+<li data-dur="3600">CCR1 = 3：<span class="c-y">EQU1</span> 在上行和下行各出现一次；<span class="c-r">EQU0</span> 只在顶点 TAR = 5。</li>
+<li data-dur="3800"><b>Toggle/Reset</b>：顶点清 0，两次 EQU1 各翻转一次。高电平围绕谷底，共 2·CCR1 = 6 格 → CCR1/CCR0 = 60 %。高电平总是<b>偶数</b>个时钟。</li>
+<li data-dur="3800"><b>Set/Reset</b>：只有从顶点到下行 EQU1 这段是低。高电平 = CCR0 + CCR1 = 8 格 → (CCR0 + CCR1)/(2·CCR0) = 80 %。它不可能低于 50 %。</li>
+<li data-dur="3600"><b>Toggle/Set</b>：Toggle/Reset 的反相。高电平围绕顶点，2·(CCR0 − CCR1) = 4 格 → 40 %，同样只能是偶数个时钟。</li>
+<li data-dur="4200"><b>Reset/Set</b>：Set/Reset 的反相，高电平 CCR0 − CCR1 = 2 格 → (CCR0 − CCR1)/(2·CCR0) = 20 %，不可能高于 50 %。注意所有脉冲都<b>对称地</b>落在顶点或谷底两侧。</li>
+</ol>
+
+</figure>
+<div class="formula" data-tex="T_{PWM} = 2\,\class{c-b}{\mathtt{CCR0}}\;T_{clk} \qquad \begin{array}{ll} \text{Toggle/Reset:}\ \dfrac{\class{c-y}{\mathtt{CCRn}}}{\class{c-b}{\mathtt{CCR0}}}\ (\text{偶数}) &amp; \text{Set/Reset:}\ \dfrac{\class{c-b}{\mathtt{CCR0}} + \class{c-y}{\mathtt{CCRn}}}{2\,\class{c-b}{\mathtt{CCR0}}}\ (\geq 50\%) \\[10pt] \text{Toggle/Set:}\ \dfrac{\class{c-b}{\mathtt{CCR0}} - \class{c-y}{\mathtt{CCRn}}}{\class{c-b}{\mathtt{CCR0}}}\ (\text{偶数}) &amp; \text{Reset/Set:}\ \dfrac{\class{c-b}{\mathtt{CCR0}} - \class{c-y}{\mathtt{CCRn}}}{2\,\class{c-b}{\mathtt{CCR0}}}\ (\leq 50\%) \end{array}">周期 = 2·CCR0 个时钟；Toggle/Reset：CCRn/CCR0（只有偶数个时钟）；Set/Reset：(CCR0 + CCRn)/(2·CCR0)（≥ 50 %）；Toggle/Set：(CCR0 − CCRn)/CCR0（只有偶数个时钟）；Reset/Set：(CCR0 − CCRn)/(2·CCR0)（≤ 50 %）</div>
+<p class="aside">括号里是各自的限制：两个 Toggle 类只有偶数个时钟（solo ciclos de trabajo con número par de ciclos），Set/Reset ≥ 50 %，Reset/Set ≤ 50 %。在探索器里切到 up/down 可以逐一验证。</p>
+<h3 id="m32-s4b">两路输出之间的空档：dead time</h3>
+<p>up/down 的脉冲以顶点、谷底为中心。如果一路用"围绕顶点"的 Toggle/Set、另一路用"围绕谷底"的 Toggle/Reset，并让两个阈值错开，两路就<b>永远不会同时为高</b>，中间夹着一段两路都是低的 <b class="t">banda muerta (ES) / dead time (EN)</b>——死区。下面以 CCR0 = 10、CCR1 = 7、CCR2 = 4 为例画出来：</p>
+<figure class="stage" data-ms="3200" data-scene="" id="m32-sc-dead">
+<div class="stage-title"><span>Escena 4b · banda muerta · puente en H</span><b>5 步</b></div>
+<div aria-label="动画：up/down 模式下两路互不重叠的输出和死区" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-dead-t" role="img" viewbox="0 0 800 400">
+<title id="m32-sc-dead-t">CCR0 = 10 的三角计数；OUT1 用 Toggle/Set、CCR1 = 7，在顶点附近为高；OUT2 用 Toggle/Reset、CCR2 = 4，在谷底附近为高；两者之间各有 3 个时钟的死区</title>
+<g data-step="1"><text class="tm sm b" x="12" y="120">TAxR</text><path class="ln b draw" d="M120 170 H136 V160 H152 V150 H168 V140 H184 V130 H200 V120 H216 V110 H232 V100 H248 V90 H264 V80 H280 V70 H296 V80 H312 V90 H328 V100 H344 V110 H360 V120 H376 V130 H392 V140 H408 V150 H424 V160 H440 V170 H456 V160 H472 V150 H488 V140 H504 V130 H520 V120 H536 V110 H552 V100 H568 V90 H584 V80 H600 V70 H616 V80 H632 V90 H648 V100 H664 V110 H680 V120 H696 V130 H712 V140 H728 V150 H744 V160 H760"></path><path class="ln thin w dash" d="M120 70 H760"></path><text class="tm xs w end" x="112" y="74">CCR0 = 10</text><path class="ln thin g dash" d="M120 100 H760"></path><text class="tm xs g end" x="112" y="104">CCR1 = 7</text><path class="ln thin t dash" d="M120 130 H760"></path><text class="tm xs t end" x="112" y="134">CCR2 = 4</text></g><g data-step="4"><rect class="dz" height="290" width="48" x="184" y="40"></rect><rect class="dz" height="290" width="48" x="328" y="40"></rect><rect class="dz" height="290" width="48" x="504" y="40"></rect><rect class="dz" height="290" width="48" x="648" y="40"></rect><text class="tz sm y mid" x="208" y="352">t<tspan dy="4" font-size="11">dead</tspan><tspan dy="-4"> = (CCR1 − CCR2)·t</tspan><tspan dy="4" font-size="11">timer</tspan><tspan dy="-4"> = 3 个时钟</tspan></text></g><g data-step="2"><text class="tm xs g" x="12" y="226">OUT1 · 6</text><text class="tm xs m" x="12" y="242">Toggle/Set</text><path class="ln thin m" d="M120 236 H760"></path><rect class="hi g" height="26" width="96" x="232" y="210"></rect><rect class="hi g" height="26" width="96" x="552" y="210"></rect><path class="ln g draw" d="M120 236 H232 V210 H328 V236 H552 V210 H648 V236 H760"></path></g><g data-step="3"><text class="tm xs t" x="12" y="290">OUT2 · 2</text><text class="tm xs m" x="12" y="306">Toggle/Reset</text><path class="ln thin m" d="M120 300 H760"></path><rect class="hi t" height="26" width="64" x="120" y="274"></rect><rect class="hi t" height="26" width="128" x="376" y="274"></rect><rect class="hi t" height="26" width="64" x="696" y="274"></rect><path class="ln t draw" d="M120 274 H184 V300 H376 V274 H504 V300 H696 V274 H760"></path></g>
+<g data-step="5">
+<text class="tz sm w mid" x="440" y="384">两路永不同时为高；加大 CCR1 − CCR2，死区就变长</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>三角形的计数，再画两条阈值：<span class="c-g">CCR1 = 7</span>（高）、<span class="c-t">CCR2 = 4</span>（低）。</li>
+<li data-dur="3600"><span class="c-g">OUT1</span> 用 <b>Toggle/Set</b>：TAR 在 7 以上时为高，脉冲以顶点为中心。占空比 (10 − 7)/10 = 30 %。</li>
+<li data-dur="3600"><span class="c-t">OUT2</span> 用 <b>Toggle/Reset</b>：TAR 在 4 以下时为高，脉冲以谷底为中心。占空比 4/10 = 40 %。</li>
+<li data-dur="4200">TAR 在 4 和 7 之间时，两路都是低：这就是<span class="c-y">死区</span>，每个周期两次，每次 CCR1 − CCR2 = 3 个时钟。写成公式：t<sub>dead</sub> = t<sub>timer</sub> × (TAxCCR1 − TAxCCR2)。</li>
+<li data-dur="4200">为什么要死区？用 PWM 控制 H 桥时，电机有惯性，换向前需要一段"什么信号都不给"的时间等它停下；而且驱动 H 桥的两路输出绝不能同时为高，否则会过载。</li>
+</ol>
+<p class="stage-note">TAxCCRn 没有缓冲，写入立即生效，死区不会自动维持——运行中改阈值要自己保证 CCR1 &gt; CCR2。</p>
+
+</figure>
+<p>把这两路接到一个 <b class="t">puente en H (ES) / H-bridge (EN)</b>——H 桥上：Toggle/Reset 接 "Forwards"，Toggle/Set 接 "Reverse"，每路各驱动<b>一条对角线</b>上的两只三极管。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m32-sc-hbridge">
+<div class="stage-title"><span>Escena 4c · puente en H</span><b>4 步</b></div>
+<div aria-label="动画：两路 PWM 驱动 H 桥的正转、反转和直通短路" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-hbridge-t" role="img" viewbox="0 0 800 320">
+<title id="m32-sc-hbridge-t">H 桥：上面 +V、下面 Gnd，左臂 Q1、Q2，右臂 Q3、Q4，电机 M 在中间。Forwards（OUT2）驱动 Q1 和 Q4，Reverse（OUT1）驱动 Q3 和 Q2；两路同时为 1 会使 Q1、Q2 同时导通而短路</title>
+<g data-step="1">
+<path class="ln thin w" d="M260 50 H540 M260 270 H540"></path>
+<text class="tm sm w mid" x="400" y="36">+V</text>
+<text class="tm sm w mid" x="400" y="296">Gnd</text>
+<path class="ln thin w" d="M300 50 V74 M300 118 V202 M300 246 V270 M500 50 V74 M500 118 V202 M500 246 V270 M300 160 H374 M426 160 H500"></path>
+<rect class="bx t" data-hl="2" height="44" rx="6" width="64" x="268" y="74"></rect><text class="tm t mid" x="300" y="102">Q1</text>
+<rect class="bx g" data-hl="3" height="44" rx="6" width="64" x="268" y="202"></rect><text class="tm g mid" x="300" y="230">Q2</text>
+<rect class="bx g" data-hl="3" height="44" rx="6" width="64" x="468" y="74"></rect><text class="tm g mid" x="500" y="102">Q3</text>
+<rect class="bx t" data-hl="2" height="44" rx="6" width="64" x="468" y="202"></rect><text class="tm t mid" x="500" y="230">Q4</text>
+<circle class="bx w" cx="400" cy="160" r="26"></circle><text class="tm w mid" x="400" y="166">M</text>
+<text class="tm sm t" x="20" y="92">OUT2 · Toggle/Reset</text>
+<text class="tm xs t" x="20" y="112">Forwards → Q1 + Q4</text>
+<text class="tm sm g end" x="780" y="212">OUT1 · Toggle/Set</text>
+<text class="tm xs g end" x="780" y="232">Reverse → Q3 + Q2</text>
+</g>
+<g data-out="3" data-step="2">
+<path class="ln y draw" d="M286 56 V160 H372 M428 160 H486 V264" marker-end="url(#m32-ah-y)"></path>
+<text class="tz sm y mid" x="400" y="124">正转 →</text>
+</g>
+<g data-out="4" data-step="3">
+<path class="ln y draw" d="M514 56 V160 H428 M372 160 H314 V264" marker-end="url(#m32-ah-y)"></path>
+<text class="tz sm y mid" x="400" y="124">← 反转</text>
+</g>
+<g data-step="4">
+<path class="ln r dash" d="M286 56 V264 M514 56 V264"></path>
+<text class="tz sm r mid" x="400" y="124">两路同时为 1 → 直通短路</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">H 桥：+V 和 Gnd 之间两条桥臂，左臂 Q1、Q2，右臂 Q3、Q4，电机接在两臂中点之间。四只开关是三极管，每只旁边并联一个二极管。</li>
+<li><span class="c-t">Forwards</span>（OUT2，Toggle/Reset）= 1：Q1、Q4 导通，电流从左向右流过电机。</li>
+<li><span class="c-g">Reverse</span>（OUT1，Toggle/Set）= 1：Q3、Q2 导通，电流反过来，电机反转。</li>
+<li data-dur="5200">如果两路同时为 1，Q1 和 Q2（Q3 和 Q4）同时导通，+V 经一条桥臂直接短路到 Gnd——这就是"过载"。死区让两组之间总有一段两路都是 0：四只管子全关，电机靠惯性转（tiempo de inactividad），电流经并联的二极管泄放。</li>
+</ol>
+</figure>
+<p class="takeaway">up/down：周期 2·CCR0，EQUn 每周期两次，脉冲以顶点或谷底为中心；Toggle 类只有偶数个时钟，Set/Reset ≥ 50 %，Reset/Set ≤ 50 %。两路错开阈值就得到死区，用于 H 桥：一路管正转对角线、一路管反转对角线，死区保证两组永不同时导通。</p>
+
+</section>
+
+<section class="sec" id="m32-s5">
+<h2><span class="n">§5</span>方波 <span class="tag">M32.8</span></h2>
+<p class="hook"><span class="zh">不需要调占空比，只要一个固定音调的方波。最省事的办法是什么？</span><span class="es">Generación de onda cuadrada: modo TOGGLE en la salida del bloque CCR0.</span></p>
+<p>用 <b>Toggle</b> 模式，而且<b>必须用 CCR0 那一路的输出（OUT0）</b>。up 模式下 TAR 每 CCR0 + 1 个时钟回到 0 一次，每次 EQU0 翻转 OUT0，翻转两次才是一个完整周期：</p>
+<figure class="stage" data-scene="" id="m32-sc-square">
+<div class="stage-title"><span>Escena 5 · onda cuadrada · OUT0 en Toggle</span><b>4 步</b></div>
+<div aria-label="动画：OUT0 的 Toggle 模式生成方波" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m32-sc-square-t" role="img" viewbox="0 0 800 330">
+<title id="m32-sc-square-t">CCR0 = 4 的 up 计数，每次回到 0 时 OUT0 翻转；输出周期是 2·(CCR0 + 1) = 10 个时钟</title>
+<g data-step="1"><text class="tm sm b" x="12" y="110">TAxR</text><path class="ln b draw" d="M120 150 H152 V130 H184 V110 H216 V90 H248 V70 H280 V150 H312 V130 H344 V110 H376 V90 H408 V70 H440 V150 H472 V130 H504 V110 H536 V90 H568 V70 H600 V150 H632 V130 H664 V110 H696 V90 H728 V70 H760"></path><text class="tm xs b mid" x="136" y="145">0</text><text class="tm xs b mid" x="168" y="125">1</text><text class="tm xs b mid" x="200" y="105">2</text><text class="tm xs b mid" x="232" y="85">3</text><text class="tm xs b mid" x="264" y="65">4</text><text class="tm xs b mid" x="296" y="145">0</text><text class="tm xs b mid" x="328" y="125">1</text><text class="tm xs b mid" x="360" y="105">2</text><text class="tm xs b mid" x="392" y="85">3</text><text class="tm xs b mid" x="424" y="65">4</text><text class="tm xs b mid" x="456" y="145">0</text><text class="tm xs b mid" x="488" y="125">1</text><text class="tm xs b mid" x="520" y="105">2</text><text class="tm xs b mid" x="552" y="85">3</text><text class="tm xs b mid" x="584" y="65">4</text><text class="tm xs b mid" x="616" y="145">0</text><text class="tm xs b mid" x="648" y="125">1</text><text class="tm xs b mid" x="680" y="105">2</text><text class="tm xs b mid" x="712" y="85">3</text><text class="tm xs b mid" x="744" y="65">4</text><path class="ln thin w dash" d="M120 70 H760"></path><text class="tm xs w end" x="112" y="74">CCR0 = 4</text><path class="ln thin dash r" d="M280 40 V250 M440 40 V250 M600 40 V250"></path><text class="tm xs r mid" x="280" y="34">EQU0</text></g><g data-step="2"><text class="tm xs g" x="12" y="224">OUT0 · 4</text><text class="tm xs m" x="12" y="240">Toggle</text><path class="ln thin m" d="M120 236 H760"></path><rect class="hi g" height="30" width="160" x="280" y="206"></rect><rect class="hi g" height="30" width="160" x="600" y="206"></rect><path class="ln g draw" d="M120 236 H280 V206 H440 V236 H600 V206 H760"></path></g><g data-step="3"><path class="ln thin o" d="M280 252 V262 H600 V252"></path><text class="tz sm o mid" x="440" y="284">输出周期 = 2·(CCR0 + 1) = 10 个时钟</text><path class="ln thin y" d="M120 162 V172 H280 V162"></path><text class="tm xs y mid" x="200" y="188">CCR0 + 1</text></g>
+<g data-step="4">
+<text class="tz sm r mid" x="440" y="316">OUT0 上：EQUn = EQU0，模式 2、3、6、7 无意义；Toggle 正好合适</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>up 模式，CCR0 = 4：TAR 每 5 个时钟回到 0 一次，每次都有一个 <span class="c-r">EQU0</span>。</li>
+<li>OUT0 设为 <b>Toggle</b>（模式 4）：每个 EQU0 翻转一次。</li>
+<li data-dur="3800">高 5 格、低 5 格：占空比固定 50 %，输出周期 = <b>2·(CCR0 + 1)</b> = 10 个时钟。频率只由 CCR0 决定。</li>
+<li data-dur="3800">为什么一定是 OUT0？只需要一个比较值，CCR0 同时决定翻转时刻，其他 CCRn 还能空出来做别的事。对 OUT0 来说 EQUn = EQU0，所以只有 Toggle 这类"单事件"模式有意义（§2）。</li>
+</ol>
+
+</figure>
+<div class="formula" data-tex="f_{out} = \frac{\class{c-o}{f_{clk}}}{2\,(\class{c-b}{\mathtt{CCR0}} + 1)}">f = f_clk / (2·(CCR0 + 1))</div>
+<div class="note">
+<span class="lbl">算一个音</span>
+<p>SMCLK = 1 048 576 Hz（M24 的默认值），CCR0 = 1191：f = 1 048 576 / (2 × 1192) ≈ <b>439.8 Hz</b>，接近标准音 A4（440 Hz）。反过来：CCR0 = f<sub>clk</sub> / (2f) − 1，取整。交替改变方波的周期和持续时间，就能拼出简单的"合成旋律"（音质不高）。</p>
+</div>
+<p class="takeaway">方波 = OUT0 + Toggle：每个 EQU0 翻转一次，f = f<sub>clk</sub> / (2·(CCR0 + 1))，占空比固定 50 %。</p>
+
+</section>
+
+<section class="sec" id="m32-s6">
+<h2><span class="n">§6</span>在 CCS 里配置 <span class="tag">M32.9</span></h2>
+<p class="hook"><span class="zh">从上电到引脚上出现 PWM，需要几行代码？之后 CPU 还要做什么？</span><span class="es">Configuración: pin, período, modo de salida, ciclo de trabajo, arranque.</span></p>
+<p>不管哪种波形，配置都是同一个顺序。前五步对应 §1 那条链上的每个零件：</p>
+<ol>
+<li><b>引脚</b>：<span class="reg">PxDIR</span> |= BITy、<span class="reg">PxSEL</span> |= BITy，把 TAx.n 所在的引脚交给定时器。</li>
+<li><b>周期</b>：<span class="reg">TAxCCR0</span>（up：CCR0 + 1 个时钟；up/down：2·CCR0 个时钟）。</li>
+<li><b>模式</b>：<span class="reg">TAxCCTLn</span> = OUTMOD_x（§2 的表）。</li>
+<li><b>脉宽</b>：<span class="reg">TAxCCRn</span>（§3、§4 的公式）。</li>
+<li><b>启动</b>：<span class="reg">TAxCTL</span> = TASSEL_x + MC_x + TACLR——选时钟、选计数模式、清零。放在最后，计数从一个干净的起点开始。</li>
+<li><b>CPU 去睡觉</b>：波形由硬件维持，不需要中断。只要所选时钟在该低功耗模式下仍在运行（<a href="index.html#bloque2">Bloque 2</a> 的 LPM），PWM 就照常输出。</li>
+</ol>
+<p>两个例子：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="sq" type="button">方波 · TA1.0</button>
+<button aria-pressed="false" data-view="db" type="button">两路 + 死区 · TA1.1/TA1.2</button>
+</div>
+<pre class="code" data-pane="sq"><code><span class="ln-row"><span class="rg">WDTCTL</span>   = WDTPW + WDTHOLD;             <span class="cm">// 停 watchdog</span></span><span class="ln-row"><span class="rg">P1DIR</span>   |= BIT7;                        <span class="cm">// P1.7 设为输出……</span></span><span class="ln-row"><span class="rg">P1SEL</span>   |= BIT7;                        <span class="cm">// ……并交给外设：TA1.0 = OUT0</span></span><span class="ln-row"><span class="rg">TA1CCR0</span>  = 1191;                        <span class="cm">// 每 1192 个时钟翻转一次</span></span><span class="ln-row"><span class="rg">TA1CCTL0</span> = OUTMOD_4;                    <span class="cm">// OUT0：Toggle</span></span><span class="ln-row"><span class="rg">TA1CTL</span>   = TASSEL_2 + MC_1 + TACLR;     <span class="cm">// SMCLK，up 模式，清零后开始</span></span><span class="ln-row"><span class="fn">__low_power_mode_0</span>();                  <span class="cm">// CPU 睡觉；SMCLK 在 LPM0 下仍运行</span></span></code></pre>
+<pre class="code" data-pane="db" hidden=""><code><span class="ln-row"><span class="rg">WDTCTL</span>   = WDTPW + WDTHOLD;</span><span class="ln-row"><span class="rg">P2DIR</span>   |= BIT0 + BIT1;                 <span class="cm">// P2.0、P2.1 设为输出……</span></span><span class="ln-row"><span class="rg">P2SEL</span>   |= BIT0 + BIT1;                 <span class="cm">// ……外设功能：TA1.1、TA1.2</span></span><span class="ln-row"><span class="rg">TA1CCR0</span>  = 400;                         <span class="cm">// 周期 = 2 × 400 = 800 个时钟</span></span><span class="ln-row"><span class="rg">TA1CCR1</span>  = 230;                         <span class="cm">// OUT1：TAR 高于 230 时为高</span></span><span class="ln-row"><span class="rg">TA1CCR2</span>  = 170;                         <span class="cm">// OUT2：TAR 低于 170 时为高</span></span><span class="ln-row"><span class="rg">TA1CCTL1</span> = OUTMOD_6;                    <span class="cm">// Toggle/Set</span></span><span class="ln-row"><span class="rg">TA1CCTL2</span> = OUTMOD_2;                    <span class="cm">// Toggle/Reset</span></span><span class="ln-row"><span class="rg">TA1CTL</span>   = TASSEL_2 + MC_3 + TACLR;     <span class="cm">// SMCLK，up/down 模式</span></span><span class="ln-row"><span class="fn">__low_power_mode_0</span>();</span></code></pre>
+</div>
+<p class="aside">方波：f = 1 048 576 / (2 × 1192) ≈ 439.8 Hz。两路 + 死区：OUT1 = (400 − 230)/400 = 42.5 %，OUT2 = 170/400 = 42.5 %，每个周期两段死区，各 230 − 170 = 60 个时钟（SMCLK ≈ 1.05 MHz 时约 57 µs）。42.5 + 42.5 + 2 × 7.5 = 100 %。</p>
+<div class="note alert">
+<span class="lbl">运行中改参数</span>
+<p>两条提醒：① <b>TAxCCRn 没有缓冲</b>，写入立即生效。运行中改 CCRn 可以直接改占空比，但新值如果正好跨过当前计数值，可能出现一个不规则的周期。② <b>换输出模式时</b>，三位 OUTMOD 不要同时经过 000（模式 0），否则可能毛刺；安全做法是先 <code>TAxCCTLn |= OUTMOD_7</code>，再清掉不要的位。</p>
+</div>
+<p class="takeaway">配置顺序：引脚（PxDIR、PxSEL）→ 周期（TAxCCR0）→ 模式（OUTMOD）→ 脉宽（TAxCCRn）→ 启动（TAxCTL）。之后 CPU 可以睡觉，PWM 由硬件维持。</p>
+
+</section>
+
+<section class="sec" id="m32-practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。答完会显示步骤。第二个练习复习 <a href="m31.html">M31</a> 的周期计算，PWM 的周期就是这样定的。</p>
+<div class="drills">
+<div class="drill" data-drill="pwm"></div>
+<div class="drill" data-drill="timer"></div>
+</div>
+</section>
+
+<section class="sec" id="m32-quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M32">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>Timer 在比较模式下生成 PWM 时，OUTn 的每次变化是怎样完成的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CCIFG 触发中断，由 ISR 改写 PxOUT</button>
+<button data-o="b" type="button"><span class="k">B</span>输出单元根据 EQUn、EQU0 和 OUTMOD 由硬件自动改写</button>
+<button data-o="c" type="button"><span class="k">C</span>主循环轮询 TAxR，到值时改写 PxOUT</button>
+<button data-o="d" type="button"><span class="k">D</span>DMA 把 TAxCCRn 的值复制到 PxOUT</button>
+</div>
+<p class="why"><b>B。</b>输出单元是硬件：TAxR 等于比较值时产生 EQUn/EQU0，按 OUTMOD 改写 OUTn，不需要 ISR（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>输出模式由哪里选择？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>TAxCTL 的 MC 位</button>
+<button data-o="b" type="button"><span class="k">B</span>TAxCCRn 的低 3 位</button>
+<button data-o="c" type="button"><span class="k">C</span>TAxCCTLn 的 OUTMOD 位（OUTMOD0–2）</button>
+<button data-o="d" type="button"><span class="k">D</span>PxSEL 寄存器</button>
+</div>
+<p class="why"><b>C。</b>OUTMOD 是 TAxCCTLn 的第 7–5 位。MC 选的是计数模式，PxSEL 只是把引脚交给外设（§1、§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>模式 6（Toggle/Set）在 EQUn 和 EQU0 时分别做什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>EQUn 翻转，EQU0 置 1</button>
+<button data-o="b" type="button"><span class="k">B</span>EQUn 置 1，EQU0 翻转</button>
+<button data-o="c" type="button"><span class="k">C</span>EQUn 翻转，EQU0 清 0</button>
+<button data-o="d" type="button"><span class="k">D</span>EQUn 清 0，EQU0 置 1</button>
+</div>
+<p class="why"><b>A。</b>名字就是"EQUn 动作 / EQU0 动作"。C 是模式 2，D 是模式 7（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>为什么模式 2、3、6、7 不能用于 OUT0？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>OUT0 没有连到任何引脚</button>
+<button data-o="b" type="button"><span class="k">B</span>TAxCCR0 只能工作在捕获模式</button>
+<button data-o="c" type="button"><span class="k">C</span>OUT0 只能用模式 0</button>
+<button data-o="d" type="button"><span class="k">D</span>对输出单元 0 来说 EQUn = EQU0，两个动作会在同一时刻发生</button>
+</div>
+<p class="why"><b>D。</b>这四种模式需要两个不同时刻的事件。OUT0 仍可用 0、1、4、5，方波正是用 OUT0 的 Toggle（§2、§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>关于模式 0，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>OUTn 在定时器时钟的上升沿跟随 OUT 位</button>
+<button data-o="b" type="button"><span class="k">B</span>OUTn 等于 TAxCCTLn 的 OUT 位，写入后立即更新</button>
+<button data-o="c" type="button"><span class="k">C</span>OUTn 在每个 EQU0 翻转</button>
+<button data-o="d" type="button"><span class="k">D</span>模式 0 下引脚变成输入</button>
+</div>
+<p class="why"><b>B。</b>只有模式 0 不和定时器时钟同步；其余模式都在定时器时钟的上升沿改变 OUTn（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">06</span>up 模式，TAxCCR0 = 49、TAxCCR1 = 10，OUT1 用 Reset/Set。占空比是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>20 %</button>
+<button data-o="b" type="button"><span class="k">B</span>20.4 %</button>
+<button data-o="c" type="button"><span class="k">C</span>80 %</button>
+<button data-o="d" type="button"><span class="k">D</span>82 %</button>
+</div>
+<p class="why"><b>A。</b>Reset/Set：CCRn/(CCR0 + 1) = 10/50 = 20 %。20.4 % 是忘了 +1（10/49）；80 % 是 Set/Reset 的结果（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span>up 模式，TAxCCR0 = 99、TAxCCR2 = 25，OUT2 用 Set/Reset。占空比是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>25 %</button>
+<button data-o="b" type="button"><span class="k">B</span>74 %</button>
+<button data-o="c" type="button"><span class="k">C</span>75 %</button>
+<button data-o="d" type="button"><span class="k">D</span>76 %</button>
+</div>
+<p class="why"><b>C。</b>(CCR0 − CCRn + 1)/(CCR0 + 1) = (99 − 25 + 1)/100 = 75 %：从 TAR = 25 到 99 共 75 格（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>up/down 模式，TAxCCR0 = 200。PWM 的周期是多少个定时器时钟？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>200</button>
+<button data-o="b" type="button"><span class="k">B</span>201</button>
+<button data-o="c" type="button"><span class="k">C</span>400</button>
+<button data-o="d" type="button"><span class="k">D</span>402</button>
+</div>
+<p class="why"><b>C。</b>up/down 的周期是 2·CCR0 = 400。201 是 up 模式的 CCR0 + 1（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">09</span>up/down 模式下，哪种输出模式得到的占空比一定 ≤ 50 %？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Toggle/Reset</button>
+<button data-o="b" type="button"><span class="k">B</span>Set/Reset</button>
+<button data-o="c" type="button"><span class="k">C</span>Toggle/Set</button>
+<button data-o="d" type="button"><span class="k">D</span>Reset/Set</button>
+</div>
+<p class="why"><b>D。</b>Reset/Set = (CCR0 − CCRn)/(2·CCR0) ≤ 50 %；Set/Reset 则 ≥ 50 %；两个 Toggle 类覆盖 0–100 %，但只有偶数个时钟（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>up/down 模式，TAxCCR0 = 500；OUT1 用 Toggle/Set、TAxCCR1 = 300，OUT2 用 Toggle/Reset、TAxCCR2 = 260。每段死区有多长？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>20 个时钟</button>
+<button data-o="b" type="button"><span class="k">B</span>40 个时钟</button>
+<button data-o="c" type="button"><span class="k">C</span>80 个时钟</button>
+<button data-o="d" type="button"><span class="k">D</span>没有死区，两路会重叠</button>
+</div>
+<p class="why"><b>B。</b>OUT1 在 TAR 高于 300 时为高，OUT2 在低于 260 时为高；中间 300 − 260 = 40 个时钟两路都低，每周期两段（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>f<sub>clk</sub> = 32 768 Hz，up 模式，OUT0 用 Toggle，TAxCCR0 = 15。输出方波的频率是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>1024 Hz</button>
+<button data-o="b" type="button"><span class="k">B</span>1092 Hz</button>
+<button data-o="c" type="button"><span class="k">C</span>2048 Hz</button>
+<button data-o="d" type="button"><span class="k">D</span>2185 Hz</button>
+</div>
+<p class="why"><b>A。</b>f = 32 768 / (2 × 16) = 1024 Hz。2048 Hz 是忘了除以 2；1092 Hz 是忘了 +1（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>定时器已经配置好（OUTMOD、CCR0、CCRn、TAxCTL），但引脚 P2.0（TA1.1）上没有波形。最可能漏了什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>没有开 GIE</button>
+<button data-o="b" type="button"><span class="k">B</span>没有写 TA1.1 的 ISR</button>
+<button data-o="c" type="button"><span class="k">C</span>没有把 P2.0 设为输出并选外设功能（P2DIR、P2SEL）</button>
+<button data-o="d" type="button"><span class="k">D</span>没有在主循环里读 TA1R</button>
+</div>
+<p class="why"><b>C。</b>OUTn 要经过 PxSEL 才能到引脚；PWM 输出不需要中断，所以 GIE 和 ISR 都无关（§1、§6）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="m32-terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">PWM<small>Modulación de Anchura de Pulso · pulse-width modulation</small></span><span class="back"><b>脉宽调制</b><br/>周期固定、改变高电平宽度来传递"多少"。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ciclo de trabajo<small>duty cycle</small></span><span class="back"><b>占空比</b><br/>D = t<sub>on</sub> / T，高电平占一个周期的比例。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">unidad de salida<small>output unit</small></span><span class="back"><b>输出单元</b><br/>每个比较块都有：按 OUTMOD、EQUn、EQU0 改写 OUTn。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">OUTn · TAx.n<small>señal de salida · pin</small></span><span class="back"><b>输出信号与引脚</b><br/>Timer Ax 的第 n 路输出，连到固定引脚，需 PxSEL = 1。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">EQUn · EQU0<small>señales internas</small></span><span class="back"><b>相等信号</b><br/>TAxR 数到 TAxCCRn / TAxCCR0 时有效，驱动输出单元。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">OUTMOD<small>TAxCCTLn · bits 7–5</small></span><span class="back"><b>输出模式字段</b><br/>三位，选 0–7 共 8 种输出模式。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bit OUT<small>modo 0 · Output</small></span><span class="back"><b>OUT 位</b><br/>TAxCCTLn 的 bit 2。模式 0 下 OUTn 直接等于它，写入立即更新。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Reset/Set<small>OUTMOD_7</small></span><span class="back"><b>复位/置位</b><br/>EQUn 清 0、EQU0 置 1。up：D = CCRn/(CCR0 + 1)。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Set/Reset<small>OUTMOD_3</small></span><span class="back"><b>置位/复位</b><br/>EQUn 置 1、EQU0 清 0。up：D = (CCR0 − CCRn + 1)/(CCR0 + 1)。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Toggle/Reset<small>OUTMOD_2</small></span><span class="back"><b>翻转/复位</b><br/>EQUn 翻转、EQU0 清 0。up/down：D = CCRn/CCR0。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Toggle/Set<small>OUTMOD_6</small></span><span class="back"><b>翻转/置位</b><br/>EQUn 翻转、EQU0 置 1。up/down：D = (CCR0 − CCRn)/CCR0。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Toggle<small>OUTMOD_4</small></span><span class="back"><b>翻转</b><br/>每个 EQUn 翻转；用在 OUT0 上得到 50 % 方波。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modo ascendente/descendente<small>up/down mode · MC_3</small></span><span class="back"><b>增减计数</b><br/>0 → CCR0 → 0，周期 2·CCR0；PWM 脉冲居中对称。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">banda muerta<small>dead time · dead band</small></span><span class="back"><b>死区</b><br/>两路输出都为低的间隔，H 桥需要它；= (CCR1 − CCR2) 个时钟。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">puente en H<small>H-bridge</small></span><span class="back"><b>H 桥</b><br/>用两路 PWM 控制直流电机的速度和方向，两侧不能同时导通。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">onda cuadrada<small>square wave</small></span><span class="back"><b>方波</b><br/>OUT0 + Toggle：f = f<sub>clk</sub> / (2·(CCR0 + 1))。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M32"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  if (window.__m32Explorer) return;
+  window.__m32Explorer = true;
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+  function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  var g = $("m32-ex-g"), out = $("m32-ex-out"), cur = $("m32-ex-cur"), curt = $("m32-ex-curt");
+  if (!g || !out) return;
+
+  var NAMES = ["Output", "Set", "Toggle/Reset", "Set/Reset", "Toggle", "Reset", "Toggle/Set", "Reset/Set"];
+  var st = { cnt: "up", ch: 1, mode: 7, c0: 9, cn: 3, init: 0, clk: 32768 };
+  var X0 = 80, X1 = 740, YT = 34, YB = 150, OH = 214, OL = 252;
+  var anim = 0, last = null;
+
+  function r1(x) { return Math.round(x * 10) / 10; }
+  function num(x, d) { var s = (+x).toFixed(d == null ? 2 : d); return s.indexOf(".") >= 0 ? s.replace(/0+$/, "").replace(/\.$/, "") : s; }
+  function hz(x) { return x >= 1000 ? num(x / 1000, 3) + " kHz" : num(x, 2) + " Hz"; }
+  function pct(x) { return num(x * 100, 2) + " %"; }
+  function invalid() { return st.ch === 0 && [2, 3, 6, 7].indexOf(st.mode) >= 0; }
+
+  function simulate() {
+    var up = st.cnt === "up";
+    var P = up ? st.c0 + 1 : 2 * st.c0, K = up ? 3 : 2, S = K * P;
+    var cn = st.ch === 0 ? st.c0 : st.cn;
+    var tar = [], o = [], en = [], e0 = [], v = st.init, j, m, t, a, b, md = st.mode;
+    for (j = 0; j < S; j++) {
+      m = j % P;
+      t = up ? m : (m <= st.c0 ? m : P - m);
+      a = false; b = false;
+      if (up) { if (st.ch === 1 && t === cn) a = true; if (m === 0 && j > 0) b = true; }
+      else { if (st.ch === 1 && t === cn) a = true; if (t === st.c0) b = true; }
+      if (st.ch === 0) a = b;
+      if (md === 0) v = st.init;
+      else if (!invalid()) {
+        if (md === 1 && a) v = 1;
+        if (md === 2) { if (a) v ^= 1; if (b) v = 0; }
+        if (md === 3) { if (a) v = 1; if (b) v = 0; }
+        if (md === 4 && a) v ^= 1;
+        if (md === 5 && a) v = 0;
+        if (md === 6) { if (a) v ^= 1; if (b) v = 1; }
+        if (md === 7) { if (a) v = 0; if (b) v = 1; }
+      }
+      tar.push(t); o.push(v); en.push(a && st.ch === 1); e0.push(b);
+    }
+    var Pout = 0;
+    if ([2, 3, 6, 7].indexOf(md) >= 0 && !invalid()) Pout = P;
+    if (md === 4) Pout = (st.ch === 0 || up) ? 2 * P : P;
+    var hi = 0, k;
+    for (k = S - Pout; k < S; k++) hi += o[k];
+    var trans = false;
+    if (Pout && md !== 4) for (k = 0; k < Pout; k++) if (o[k] !== o[S - Pout + k]) { trans = true; break; }
+    return { P: P, S: S, tar: tar, out: o, en: en, e0: e0, Pout: Pout, hi: hi, trans: trans, cn: cn };
+  }
+
+  function libro(r) {
+    var c0 = st.c0, cn = st.cn, md = st.mode;
+    if (st.ch !== 1 || [2, 3, 6, 7].indexOf(md) < 0) return null;
+    if (st.cnt === "up") {
+      if (md === 2 || md === 3) return { f: "(CCR0 − CCRn + 1)/(CCR0 + 1) = " + (c0 - cn + 1) + "/" + (c0 + 1), v: (c0 - cn + 1) / (c0 + 1), note: "" };
+      return { f: "CCRn/(CCR0 + 1) = " + cn + "/" + (c0 + 1), v: cn / (c0 + 1), note: cn === c0 ? "（CCRn = CCR0：最大占空比）" : "" };
+    }
+    if (md === 2) return { f: "CCRn/CCR0 = " + cn + "/" + c0, v: cn / c0, note: "（高电平 2·CCRn，只能是偶数个时钟）" };
+    if (md === 3) return { f: "(CCR0 + CCRn)/(2·CCR0) = " + (c0 + cn) + "/" + (2 * c0), v: (c0 + cn) / (2 * c0), note: "（≥ 50 %）" };
+    if (md === 6) return { f: "(CCR0 − CCRn)/CCR0 = " + (c0 - cn) + "/" + c0, v: (c0 - cn) / c0, note: "（高电平 2·(CCR0 − CCRn)，只能是偶数个时钟）" };
+    return { f: "(CCR0 − CCRn)/(2·CCR0) = " + (c0 - cn) + "/" + (2 * c0), v: (c0 - cn) / (2 * c0), note: "（≤ 50 %）" };
+  }
+
+  function draw(r) {
+    var w = (X1 - X0) / r.S, sc = (YB - YT) / st.c0, s = "", j, d, x;
+    function X(j) { return r1(X0 + j * w); }
+    function Y(t) { return r1(YB - t * sc); }
+    s += '<text class="tm sm b" x="12" y="' + r1((YT + YB) / 2 + 5) + '">TAxR</text>';
+    s += '<text class="tm sm g" x="12" y="' + (OL - 10) + '">OUT' + st.ch + "</text>";
+    s += '<text class="tm xs y" x="560" y="18">┆ EQUn</text><text class="tm xs r" x="640" y="18">┆ EQU0</text>';
+    s += '<path class="ln thin w dash" d="M' + X0 + " " + Y(st.c0) + " H" + X1 + '"/>';
+    s += '<text class="tm xs w end" x="' + (X0 - 6) + '" y="' + r1(Y(st.c0) + 4) + '">CCR0</text>';
+    if (st.ch === 1) {
+      s += '<path class="ln thin y dash" d="M' + X0 + " " + Y(r.cn) + " H" + X1 + '"/>';
+      s += '<text class="tm xs y" x="' + (X1 + 6) + '" y="' + r1(Y(r.cn) + 4) + '">CCRn</text>';
+    }
+    d = "";
+    for (j = 0; j < r.S; j++) {
+      x = X(j);
+      if (r.en[j]) d += "M" + x + " " + (YT - 8) + " V" + (OL + 6) + " ";
+    }
+    if (d) s += '<path class="ln thin dash y" d="' + d + '"/>';
+    d = "";
+    for (j = 0; j < r.S; j++) if (r.e0[j]) d += "M" + X(j) + " " + (YT - 8) + " V" + (OL + 6) + " ";
+    if (d) s += '<path class="ln thin dash r" d="' + d + '"/>';
+    d = "M" + X(0) + " " + Y(r.tar[0]);
+    for (j = 1; j < r.S; j++) d += " H" + X(j) + " V" + Y(r.tar[j]);
+    d += " H" + X(r.S);
+    s += '<path class="ln b" d="' + d + '"/>';
+    s += '<path class="ln thin m" d="M' + X0 + " " + OL + " H" + X1 + '"/>';
+    if (invalid()) {
+      s += '<text class="tz sm r mid" x="' + r1((X0 + X1) / 2) + '" y="' + (OL - 12) + '">OUT0：EQUn = EQU0，模式 ' + st.mode + " 无意义</text>";
+    } else {
+      j = 0;
+      while (j < r.S) {
+        if (r.out[j]) { var k = j; while (k < r.S && r.out[k]) k++; s += '<rect class="hi g" x="' + X(j) + '" y="' + OH + '" width="' + r1((k - j) * w) + '" height="' + (OL - OH) + '"/>'; j = k; }
+        else j++;
+      }
+      d = "M" + X(0) + " " + (r.out[0] ? OH : OL);
+      for (j = 1; j < r.S; j++) if (r.out[j] !== r.out[j - 1]) d += " H" + X(j) + " V" + (r.out[j] ? OH : OL);
+      d += " H" + X(r.S);
+      s += '<path class="ln g" d="' + d + '"/>';
+    }
+    if (r.Pout) {
+      var a = X(r.S - r.Pout), b = X(r.S);
+      s += '<path class="ln thin o" d="M' + a + " " + (OL + 12) + " V" + (OL + 20) + " H" + b + " V" + (OL + 12) + '"/>';
+      s += '<text class="tm xs o mid" x="' + r1((a + b) / 2) + '" y="' + (OL + 36) + '">1 个周期 = ' + r.Pout + " 个时钟 · 高 " + r.hi + " 个</text>";
+    }
+    g.innerHTML = s;
+  }
+
+  function say(r) {
+    var up = st.cnt === "up", md = st.mode, L = libro(r), clk = st.clk === 32768 ? "ACLK" : "SMCLK";
+    var head = "<b>" + (up ? "up" : "up/down") + "</b> · OUT" + st.ch + " · 模式 " + md + " " + NAMES[md] + " · 计数周期 = " + (up ? "CCR0 + 1 = " : "2·CCR0 = ") + r.P + " 个时钟";
+    var body = "";
+    if (invalid()) {
+      body = "OUT0 的 EQUn 就是 EQU0：模式 " + md + " 要在同一时刻做两个相反的动作，没有意义（§2：2、3、6、7 不能用于 OUT0）。";
+    } else if (md === 0) {
+      body = "模式 0：OUT" + st.ch + " = OUT 位 = " + st.init + "，写入立即更新，和计数无关。点右边的开关改 OUT 位。";
+    } else if (md === 1) {
+      body = "Set：第一次 " + (st.ch ? "EQUn" : "EQU0") + " 置 1，之后一直保持（直到定时器复位或换模式）。不是周期信号。";
+    } else if (md === 5) {
+      body = "Reset：第一次 " + (st.ch ? "EQUn" : "EQU0") + " 清 0，之后一直保持。" + (st.init ? "" : "OUT 位初值是 0，所以看不出变化——把 OUT 位打开试试。");
+    } else if (md === 4) {
+      if (up || st.ch === 0) {
+        body = "Toggle：每个周期翻转一次 → 输出周期 = " + r.Pout + " 个时钟，占空比固定 <b>50 %</b>。f = f<sub>clk</sub>/" + r.Pout + " = <b>" + hz(st.clk / r.Pout) + "</b>（" + clk + "）";
+        if (st.ch === 0 && up) body += "。这就是 §5 的方波：f = f<sub>clk</sub>/(2·(CCR0 + 1))。";
+      } else {
+        body = "up/down 里 TAR 每周期经过 CCRn 两次，所以翻转两次：输出周期 = " + r.Pout + " 个时钟，实测高 " + r.hi + "/" + r.Pout + " = <b>" + pct(r.hi / r.Pout) + "</b>。哪一段为高取决于 OUT 初值（试试切换 OUT 位）。";
+      }
+    } else if (L) {
+      body = "占空比（公式）= " + L.f + " = <b>" + pct(L.v) + "</b>" + L.note + " · 实测：高 " + r.hi + "/" + r.Pout + " 个时钟" +
+        (Math.abs(L.v - r.hi / r.Pout) < 1e-9 ? " ✓" : " ≠ 公式") + "<br>f<sub>PWM</sub> = f<sub>clk</sub>/" + r.Pout + " = <b>" + hz(st.clk / r.Pout) + "</b>（" + clk + "）";
+      if (r.trans) body += "<br>第一个周期和稳态不同：它受 OUT 初值影响，要等第一次 EQU0 才对齐。占空比按最后一个周期算。";
+    }
+    out.innerHTML = head + "<br>" + body;
+  }
+
+  function stopSweep() {
+    anim++;
+    if (cur) cur.style.opacity = 0;
+    if (curt) curt.textContent = "";
+    $("m32-sweep").disabled = false;
+  }
+
+  function render() {
+    stopSweep();
+    var cnMax = st.cnt === "up" ? st.c0 : st.c0 - 1;
+    if (st.cn > cnMax) st.cn = cnMax;
+    if (st.cn < 1) st.cn = 1;
+    var c0i = $("m32-c0"), cni = $("m32-cn");
+    c0i.value = st.c0; cni.max = cnMax; cni.value = st.cn; cni.disabled = st.ch === 0;
+    $("m32-c0v").textContent = st.c0;
+    $("m32-cnv").textContent = st.ch === 0 ? "= CCR0" : st.cn;
+    $$("[data-m32-cnt]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-m32-cnt") === st.cnt ? "true" : "false"); });
+    $$("[data-m32-ch]").forEach(function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-m32-ch") === st.ch ? "true" : "false"); });
+    $$("[data-m32-clk]").forEach(function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-m32-clk") === st.clk ? "true" : "false"); });
+    $$("[data-m32-mode]").forEach(function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-m32-mode") === st.mode ? "true" : "false"); });
+    var ob = $("m32-outbit");
+    ob.setAttribute("aria-pressed", st.init ? "true" : "false");
+    ob.querySelector(".lab").textContent = "OUT 位 = " + st.init;
+    last = simulate();
+    draw(last);
+    say(last);
+  }
+
+  function sweep() {
+    if (!last || !cur) return;
+    stopSweep();
+    var token = anim, r = last, w = (X1 - X0) / r.S;
+    var btn = $("m32-sweep");
+    function at(j) {
+      var x = r1(X0 + (j + 0.5) * w);
+      cur.setAttribute("d", "M" + x + " " + (YT - 10) + " V" + (OL + 8));
+      cur.style.opacity = 1;
+      curt.textContent = "TAxR = " + r.tar[j] + " · OUT" + st.ch + " = " + (invalid() ? "—" : r.out[j]);
+    }
+    if (reduce) { at(r.S - 1); return; }
+    btn.disabled = true;
+    var dur = Math.min(6000, Math.max(2400, r.S * 90)), t0 = null;
+    function frame(ts) {
+      if (token !== anim) return;
+      if (t0 == null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur);
+      at(Math.min(r.S - 1, Math.floor(k * r.S)));
+      if (k < 1) requestAnimationFrame(frame);
+      else { btn.disabled = false; setTimeout(function () { if (token === anim) { cur.style.opacity = 0; curt.textContent = ""; } }, 1200); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  $$("[data-m32-cnt]").forEach(function (b) { b.addEventListener("click", function () { st.cnt = b.getAttribute("data-m32-cnt"); render(); }); });
+  $$("[data-m32-ch]").forEach(function (b) { b.addEventListener("click", function () { st.ch = +b.getAttribute("data-m32-ch"); render(); }); });
+  $$("[data-m32-clk]").forEach(function (b) { b.addEventListener("click", function () { st.clk = +b.getAttribute("data-m32-clk"); render(); }); });
+  $$("[data-m32-mode]").forEach(function (b) { b.addEventListener("click", function () { st.mode = +b.getAttribute("data-m32-mode"); render(); }); });
+  $("m32-c0").addEventListener("input", function () { st.c0 = +this.value; render(); });
+  $("m32-cn").addEventListener("input", function () { st.cn = +this.value; render(); });
+  $("m32-outbit").addEventListener("click", function () { st.init = st.init ? 0 : 1; render(); });
+  $("m32-sweep").addEventListener("click", sweep);
+  render();
+})();
+</script>
+</body>
+</html>

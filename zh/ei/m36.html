@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M36 Aplicaciones II · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.msg .s-box { transition: fill .25s, stroke .25s; }
+.msg.on .s-box { stroke: var(--signal); stroke-width: 2; fill: var(--signal-soft); }
+.m36-net { stroke-dasharray: 5 3; }
+.hot.on .m36-band { fill: var(--signal-soft); }
+.m36-dot { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 2 4; }
+.m36-gw { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.4; }
+.vina-q h3 { font-size: 1rem; }
+.vina-q .fb { font-size: 14px; color: var(--muted); }
+.vina-q .fb:empty { display: none; }
+.vina-q .fb .verdict { margin-right: 6px; }
+.vina-sum .vina-score { font: 600 13px/1.5 var(--f-mono); color: var(--accent); }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 3 章节" class="chain" data-chain="M36"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Otros aspectos · M36</div>
+<h1>Aplicaciones II</h1>
+<p class="zh">应用（二）：智慧城市、智能电网与农业 WSN</p>
+<div class="meta">
+
+<span><b>5</b> 个学习目标</span>
+<span>阅读约 25 分钟</span>
+
+
+</div>
+<p class="lede">这一章的课文很短，几乎每一段都是一个 TAREA（读一篇案例文章）。所以内容围绕三个实际案例展开：桑坦德的城市级 IoT 试验床、Iberdrola 的智能电网通信网、一片葡萄园里的无线传感器网络。贯穿三者的主角是 <b class="t">contador inteligente (ES) / smart meter (EN)</b>——智能电表：它是智能电网的末梢，也是智慧城市的一块拼图。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">3.6.1</span>
+<div class="txt"><span>定义 contador inteligente（智能电表）</span><span class="es">Definir el concepto de contador inteligente.</span><a href="#s1">→ §1 Contador inteligente</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.6.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.6.2</span>
+<div class="txt"><span>描述智慧城市的架构（以 Santander 为例）</span><span class="es">Describir arquitecturas de smart cities (Santander).</span><a href="#s2">→ §2 SmartSantander 的架构 · §3 部署与硬件</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.6.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.6.3</span>
+<div class="txt"><span>描述智能电网的架构（以 Iberdrola 为例）</span><span class="es">Describir arquitecturas de smart grids (Iberdrola).</span><a href="#s4">→ §4 Iberdrola 的智能电网</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.6.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.6.4</span>
+<div class="txt"><span>描述 smart meter 的特点</span><span class="es">Describir las características de un smart meter.</span><a href="#s5">→ §5 Smart meter 的特点</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.6.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.6.5</span>
+<div class="txt"><span>识别农业 WSN 的需求（占空比、拓扑等）</span><span class="es">Identificar requerimientos de WSN en agricultura (ciclo de trabajo, topología, etc.).</span><a href="#s6">→ §6 农业 WSN</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.6.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M36"><span class="val">0 / 5 已掌握</span><span class="bar"><i></i></span></div>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Contador inteligente：电网的末梢 <span class="tag">3.6.1</span></h2>
+<p>西班牙推动智能电网部署的直接动力是一条法规：<b>RD 1110/2007</b>。它要求电力公司把全部传统电表换成智能电表，并配上远程管理系统，2018 年前完成。这次大规模替换由西班牙和欧洲的法规推动，法规规定了这些设备的最低功能。</p>
+<div class="note">
+<span class="lbl">定义 · 3.6.1</span>
+<p>contador inteligente（smart meter）——智能电表：取代传统机电式电表的<b>电子式电表</b>，具备两项关键能力：</p>
+<ul>
+<li><b class="t">telegestión (ES)</b>——远程管理：一个对电表进行远程、自动管理的集成系统，不用上门就能读数和操作；</li>
+<li><b class="t">discriminación horaria (ES)</b>——分时计量：按时段区分用电，从而实行分时电价。</li>
+</ul>
+<p>它不是孤立的设备，而是一个<b>系统的终端</b>：要实现远程功能，还需要装在 <b class="t">centro de transformación, CT (ES)</b>——配电变压站里的 <b class="t">concentrador (ES)</b>——集中器、通信网络，以及配电公司的信息系统。</p>
+</div>
+<p><b>三代电表：</b>切换看看，电表“聪明”到了什么程度。</p>
+<div class="stack" data-seg="">
+<div aria-label="切换电表类型" class="seg" role="group">
+<button aria-pressed="true" data-view="mec" type="button">Electromecánico</button>
+<button aria-pressed="false" data-view="smart" type="button">Contador inteligente</button>
+<button aria-pressed="false" data-view="cmeter" type="button">c-meter</button>
+</div>
+<div class="panel" data-pane="mec">
+<h3>机电式电表 · 被替换的对象</h3>
+<p>要被换掉的旧计量设备：靠转盘机械计数，抄表员定期上门读数，没有通信能力，也做不了分时计价。</p>
+</div>
+<div class="panel" data-pane="smart" hidden="">
+<h3>Contador inteligente · 可以远程管理</h3>
+<ul>
+<li>开户、销户、断电、复电、功率控制、改费率，都能远程<b>几乎即时</b>完成，不需要用户或工人到场；</li>
+<li>读数准确、按时；可以远程设定按时段计价的复杂费率，计费更灵活；</li>
+<li>给配电网提供可靠的运行信息；用户更了解自己的用电，在电力系统里扮演更主动的角色。</li>
+</ul>
+<p class="aside">规模感：Smartcity Málaga 项目装了 17.751 块单相表、181 块三相表，以及 103 台 concentradores。</p>
+</div>
+<div class="panel" data-pane="cmeter" hidden="">
+<h3>Cognitive power meter · 再聪明一点</h3>
+<p>有一种观点认为 smart meter 本身并不聪明：它只是带增强通信能力的数字电表，只给<b>整屋</b>读数。看一个例子：电网发来 demand response（需求响应）请求，要住户 2 分钟内少用 5 kW；屋内显示器（IHD）只显示“当前 15 kW”，住户根本不知道该关哪台电器。</p>
+<p>在电表里加上 <b class="t">load disaggregation (EN)</b>——负荷分解（也叫 NILM / NIALM，非侵入式负荷监测），从整屋功率分辨出哪些电器在运行，就成了 <b class="t">cognitive power meter, c-meter (EN)</b>——认知电表。提出 c-meter 的研究者也承认：当时的负荷分解还不可行（算法要塞进嵌入式 MCU，还要在不同住户之间泛化）。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>SmartSantander：城市级 IoT 试验床的架构 <span class="tag">3.6.2</span></h2>
+<p>先看全景：一座城市里，几乎每个领域都可以“智能化”，每个领域都要有自己的传感器和网络。</p>
+
+<p><b>SmartSantander</b> 是欧盟 Future Internet Research and Experimentation（FIRE）计划下的项目，在桑坦德市建了一个城市规模的 IoT 实验设施。它有双重身份：给研究者做实验的 <b class="t">testbed (EN)</b>——试验床，同时为市民提供真实的智慧城市服务：户外停车管理、环境监测、公园精准灌溉、增强现实、参与式感知。</p>
+<p>设计时要满足这些要求：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Realism</span><h3>真实</h3><p>真实环境里的试验床，最细的仿真也比不上；IoT 技术很依赖部署环境。</p></div>
+<div class="cell"><span class="eyebrow">Scale</span><h3>规模</h3><p>WSN 实验以前几十到几百个节点就够，IoT 实验要大一个数量级：上千个节点。</p></div>
+<div class="cell"><span class="eyebrow">Heterogeneity</span><h3>异构</h3><p>传感器、执行器、QR/NFC 标签、手机；不同网络技术，固定或移动。</p></div>
+<div class="cell"><span class="eyebrow">Mobility</span><h3>移动</h3><p>部分设备装在公交、市政车辆、出租车上；市民的手机也参与感知。</p></div>
+<div class="cell"><span class="eyebrow">Users</span><h3>用户参与</h3><p>不只面向研究者，也面向智慧城市服务的开发者和市民。</p></div>
+<div class="cell"><span class="eyebrow">Reliability</span><h3>可靠</h3><p>要提供真实服务，整个系统必须平稳、不中断。</p></div>
+</div>
+<p>平台是 <b>three-tiered</b>（三层）架构，横向再分成两个逻辑平面。<b>点击某一列</b>看这一层；<b>点击左边的标签或背景色带</b>看平面：</p>
+<div class="stack" data-explain="gw">
+<figure>
+<div class="fig">
+<svg aria-label="SmartSantander 的三层架构：服务器层、网关层、节点层，横向分为观测与管理平面和实验平面" role="img" viewbox="0 0 712 330">
+<g aria-label="Testbed observation and management plane" class="hot" data-key="gestion" role="button" tabindex="0">
+<rect class="s-soft m36-band" height="94" rx="6" width="562" x="144" y="56"></rect>
+<rect class="s-box" height="78" rx="6" width="128" x="8" y="64"></rect>
+<text class="s-t" text-anchor="middle" x="72" y="88">Observation &amp;</text>
+<text class="s-t" text-anchor="middle" x="72" y="105">management</text>
+<text class="s-t2" text-anchor="middle" x="72" y="128">观测与管理平面</text>
+</g>
+<g aria-label="IoT experimentation plane" class="hot" data-key="experimentacion" role="button" tabindex="0">
+<rect class="s-soft m36-band" height="162" rx="6" width="562" x="144" y="160"></rect>
+<rect class="s-box" height="78" rx="6" width="128" x="8" y="186"></rect>
+<text class="s-t" text-anchor="middle" x="72" y="210">IoT</text>
+<text class="s-t" text-anchor="middle" x="72" y="227">experimentation</text>
+<text class="s-t2" text-anchor="middle" x="72" y="250">实验平面</text>
+</g>
+<line class="s-line" x1="316" x2="346" y1="102" y2="102"></line>
+<line class="s-line" x1="502" x2="532" y1="102" y2="102"></line>
+<line class="s-line" x1="316" x2="346" y1="204" y2="204"></line>
+<line class="s-line" x1="502" x2="532" y1="204" y2="204"></line>
+<line class="s-line" x1="238" x2="238" y1="130" y2="176"></line>
+<line class="s-line" x1="424" x2="424" y1="130" y2="176"></line>
+<line class="s-line" x1="610" x2="610" y1="130" y2="176"></line>
+<line class="s-line" x1="610" x2="610" y1="232" y2="250"></line>
+<g aria-label="Server tier" class="hot" data-key="server" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="176" x="150" y="8"></rect>
+<text class="s-t" text-anchor="middle" x="238" y="25">Server tier</text>
+<text class="s-t2" text-anchor="middle" x="238" y="41">服务器层</text>
+<rect class="s-box" height="56" rx="5" width="156" x="160" y="74"></rect>
+<text class="s-t" text-anchor="middle" x="238" y="97">Testbed</text>
+<text class="s-t" text-anchor="middle" x="238" y="115">management servers</text>
+<rect class="s-box" height="56" rx="5" width="156" x="160" y="176"></rect>
+<text class="s-t" text-anchor="middle" x="238" y="199">Application &amp;</text>
+<text class="s-t" text-anchor="middle" x="238" y="217">data servers</text>
+</g>
+<g aria-label="IoT gateway tier" class="hot" data-key="gw" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="176" x="336" y="8"></rect>
+<text class="s-t" text-anchor="middle" x="424" y="25">IoT gateway tier</text>
+<text class="s-t2" text-anchor="middle" x="424" y="41">网关层</text>
+<rect class="s-box" height="56" rx="5" width="156" x="346" y="74"></rect>
+<text class="s-t" text-anchor="middle" x="424" y="97">GW observer</text>
+<text class="s-t" text-anchor="middle" x="424" y="115">&amp; mgmt node</text>
+<rect class="s-box" height="56" rx="5" width="156" x="346" y="176"></rect>
+<text class="s-t" text-anchor="middle" x="424" y="199">Embedded</text>
+<text class="s-t" text-anchor="middle" x="424" y="217">GW node</text>
+</g>
+<g aria-label="IoT node tier" class="hot" data-key="node" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="176" x="522" y="8"></rect>
+<text class="s-t" text-anchor="middle" x="610" y="25">IoT node tier</text>
+<text class="s-t2" text-anchor="middle" x="610" y="41">节点层</text>
+<rect class="s-box" height="56" rx="5" width="156" x="532" y="74"></rect>
+<text class="s-t" text-anchor="middle" x="610" y="97">IoT observer</text>
+<text class="s-t" text-anchor="middle" x="610" y="115">&amp; mgmt node</text>
+<rect class="s-box" height="56" rx="5" width="156" x="532" y="176"></rect>
+<text class="s-t" text-anchor="middle" x="610" y="208">IoT node</text>
+<rect class="s-box" height="56" rx="5" width="156" x="532" y="250"></rect>
+<text class="s-t" text-anchor="middle" x="610" y="273">Multi-modal</text>
+<text class="s-t" text-anchor="middle" x="610" y="291">sensing unit</text>
+</g>
+</svg>
+</div>
+<figcaption>三层（竖列）× 两个平面（横带）。<span class="hint">点击列或平面看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="server" hidden="">
+<h3>Server tier · 服务器层</h3>
+<p>更强大的服务器，直接连在核心网上。托管 IoT 数据仓库和应用服务器，可以配置成各种 IoT 服务，也用来研究真实世界数据的挖掘和知识工程。部署在云上并虚拟化，保证高可靠、高可用。</p>
+<p class="aside">桑坦德的 Platform Servers 通过 Universidad de Cantabria 的网络接入核心网。</p>
+</div>
+<div class="panel" data-panel="gw" hidden="">
+<h3>IoT gateway tier · 网关层</h3>
+<p>把网络边缘的 IoT 设备连到核心网。网关本身也是可编程的实验对象，可以试验设备和网络之间的各种互通方案。它比节点强，但仍然是嵌入式设备，比服务器受限。</p>
+<p class="aside">在桑坦德，每个节点簇围绕一台网关组织，网关就是 cluster head（簇头），簇内所有流量都经过它（§3）。</p>
+</div>
+<div class="panel" data-panel="node" hidden="">
+<h3>IoT node tier · 节点层</h3>
+<p>设备最多的一层：传感器、执行器等，资源受限（功率、内存、能量），对外提供感知或执行能力。它们装在户外，要扛住破坏、天气和供电问题，所以采取了这些措施：</p>
+<ul>
+<li>装在难以触及的位置，减少人为破坏；</li>
+<li><b>双电源</b>（电网 + 电池）和<b>双通信接口</b>；</li>
+<li>到网关有多条通信路径，用来收数据和远程维护（例如空中升级固件和应用）；</li>
+<li>一套管理流程，快速发现故障节点。</li>
+</ul>
+</div>
+<div class="panel" data-panel="gestion" hidden="">
+<h3>Testbed observation and management plane · 观测与管理平面</h3>
+<p>负责试验床的动态管理、即插即用配置和自动故障管理，目标是尽量减少人工干预。每一层都有对应的 observer &amp; mgmt 组件。</p>
+</div>
+<div class="panel" data-panel="experimentacion" hidden="">
+<h3>IoT experimentation plane · 实验平面</h3>
+<p>试验床用户通过这个平面提供的 API 配置、运行和控制实验。大多数实验只用节点层；端到端实验或整体方案评估还会用到网关层和服务器层。</p>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">两个要点</span>
+<ul>
+<li>两个平面的分离是<b>逻辑上</b>的：同一台设备可以同时承担两个平面的功能。物理分开能避免管理功能干扰实验结果，代价是多花硬件。</li>
+<li>这个架构与通信技术<b>无关</b>（agnostic）：各层之间用什么技术，由具体部署决定（桑坦德的选择见 §3）。</li>
+</ul>
+</div>
+<p>在这个参考模型里，试验床的功能由四个子系统提供，每个子系统通过一个接口（一组 API）对外开放：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>子系统</th><th>接口</th><th>做什么</th></tr></thead>
+<tbody>
+<tr><td>AAA · Authentication, Authorisation and Accounting</td><td class="mono">ACI</td><td>认证用户，按权限授权调用服务，统计平台使用量</td></tr>
+<tr><td>Testbed Management</td><td class="mono">MSI</td><td>资源发现、动态注册、重配置、监控与故障管理；主要给管理员用</td></tr>
+<tr><td>Experimentation Support (ESS)</td><td class="mono">ESI</td><td>选资源、定义和预约实验、调度、部署和控制、收集分析数据；主要给研究者用</td></tr>
+<tr><td>Application Support (ASS)</td><td class="mono">ASI</td><td>发现和选择传感器数据流、给执行器发命令、订阅事件、读取历史数据；给智慧城市服务用</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>SmartSantander：部署与硬件 <span class="tag">3.6.2</span></h2>
+<p>这一部分的重点是试验床用的<b>硬件</b>。先看规模：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">第一期</span><h3>740 个点位</h3><p>50 多个噪声、600 个温度、500 个光照、30 个 CO 传感器；另有 390 个车位检测节点、23 台网关。集中在市中心约 1 km²。</p></div>
+<div class="cell"><span class="eyebrow">第二期</span><h3>移动与标签</h3><p>约 50 个公园灌溉节点；150 台装在公交、市政车辆和出租车上的移动设备；2.000 个 QR/NFC 标签。</p></div>
+<div class="cell"><span class="eyebrow">另外</span><h3>市民的手机</h3><p>用项目开发的参与式感知 App 发送测量和观察。到 2017 年，设施里的 IoT 设备已超过 10.000 台。</p></div>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>设备</th><th>硬件</th><th>通信</th></tr></thead>
+<tbody>
+<tr><td>Gateway</td><td>基于 ALIX 板的嵌入式 PC：500 MHz 处理器、256 MB RAM、最多 32 GB 存储；运行 Linux；IP67 防破坏外壳</td><td>2 个 XBee-Pro 连 WSN；WiFi、3G、Bluetooth、Ethernet 连其余设施</td></tr>
+<tr><td>路灯上的节点</td><td>ATmega1281 MCU：8 KB SRAM、4 KB EEPROM、128 KB Flash，另加 2 GB SD；7 路模拟、8 路数字、1 PWM、2 UART、1 I2C、1 USB；传感器板叠在主板上</td><td>2 个 XBee-Pro（2.4 GHz）：一个原生 IEEE 802.15.4，一个 Digimesh</td></tr>
+<tr><td>车载节点</td><td>NO₂、CO、O₃、悬浮颗粒、温湿度传感器 + GPS（报告位置、速度和方向）</td><td>原生 802.15.4（实验）+ GPRS（服务与管理）</td></tr>
+<tr><td>车位传感器</td><td>铁磁式无线传感器，埋在每个车位的沥青下</td><td>无线，经中继（repeater）接入</td></tr>
+<tr><td>QR / NFC 标签</td><td>贴在景点、公交站和市政建筑上，支撑增强现实服务</td><td>用手机读取</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note">
+<span class="lbl">一个节点，两张网</span>
+<p>路灯节点上的两个 XBee-Pro 组成两张<b>物理上独立</b>的无线网：</p>
+<ul>
+<li><b>原生 IEEE 802.15.4</b>：完全留给实验，研究者可以自由搭自己想要的拓扑；</li>
+<li><b>IEEE 802.15.4 + <b class="t">Digimesh</b></b>——一种专有的多跳路由协议：把服务数据和全部管理流量送到簇的网关。用低速率接口，主要是为了<b>省电</b>。</li>
+</ul>
+<p>为什么不共用一张网？共用会争抢射频模块、互相干扰，实验就不可重复。传统 WSN 试验床用有线（USB）做管理，但节点散布全城，有线回传不现实。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="桑坦德试验床的物理网络：节点组成簇，网关经市政或大学内网或 GPRS 接入 Internet，再到平台服务器" role="img" viewbox="0 0 700 350">
+<rect class="s-box" height="42" rx="6" width="180" x="260" y="8"></rect>
+<text class="s-t" text-anchor="middle" x="350" y="26">Platform servers</text>
+<text class="s-t2" text-anchor="middle" x="350" y="43">red de la U. de Cantabria</text>
+<line class="s-line" x1="350" x2="350" y1="50" y2="66"></line>
+<rect class="s-soft" height="36" rx="18" width="240" x="230" y="66"></rect>
+<text class="s-t" text-anchor="middle" x="350" y="89">Internet</text>
+<line class="s-line" x1="262" x2="100" y1="102" y2="128"></line>
+<line class="s-line" x1="350" x2="350" y1="102" y2="128"></line>
+<line class="s-line" x1="438" x2="600" y1="102" y2="128"></line>
+<rect class="s-box" height="36" rx="6" width="160" x="20" y="128"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="151">GPRS / 3G</text>
+<rect class="s-box" height="36" rx="6" width="160" x="270" y="128"></rect>
+<text class="s-t" text-anchor="middle" x="350" y="151">Intranet municipal</text>
+<rect class="s-box" height="36" rx="6" width="160" x="520" y="128"></rect>
+<text class="s-t" text-anchor="middle" x="600" y="151">Intranet universidad</text>
+<line class="s-line" x1="100" x2="100" y1="164" y2="236"></line>
+<line class="s-line" x1="350" x2="350" y1="164" y2="196"></line>
+<line class="s-line" x1="600" x2="600" y1="164" y2="196"></line>
+<rect class="s-box" height="48" rx="6" width="160" x="20" y="236"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="256">Nodo en autobús</text>
+<text class="s-t2" text-anchor="middle" x="100" y="274">GPS · NO₂ · CO · O₃</text>
+<rect class="s-dash" height="130" rx="14" width="250" x="220" y="186"></rect>
+<text class="s-tm" x="232" y="204">Cluster 1</text>
+<rect class="s-dash" height="130" rx="14" width="200" x="490" y="186"></rect>
+<text class="s-tm" x="502" y="204">Cluster 2</text>
+<line class="s-dash" x1="350" x2="290" y1="222" y2="246"></line>
+<line class="s-dash" x1="350" x2="400" y1="222" y2="246"></line>
+<line class="s-dash" x1="290" x2="255" y1="246" y2="290"></line>
+<line class="s-dash" x1="290" x2="345" y1="246" y2="292"></line>
+<line class="s-dash" x1="400" x2="345" y1="246" y2="292"></line>
+<line class="s-dash" x1="400" x2="440" y1="246" y2="292"></line>
+<line class="s-dash" x1="600" x2="530" y1="222" y2="250"></line>
+<line class="s-dash" x1="600" x2="650" y1="222" y2="250"></line>
+<line class="s-dash" x1="530" x2="580" y1="250" y2="292"></line>
+<line class="s-dash" x1="650" x2="580" y1="250" y2="292"></line>
+<line class="s-dash" x1="650" x2="660" y1="250" y2="294"></line>
+<line class="m36-dot" x1="440" x2="530" y1="292" y2="250"></line>
+<line class="m36-dot" x1="180" x2="255" y1="262" y2="290"></line>
+<rect class="m36-gw" height="26" rx="4" width="60" x="320" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="350" y="214">GW</text>
+<rect class="m36-gw" height="26" rx="4" width="60" x="570" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="600" y="214">GW</text>
+<circle class="s-box" cx="290" cy="246" r="7"></circle>
+<circle class="s-box" cx="400" cy="246" r="7"></circle>
+<circle class="s-box" cx="255" cy="290" r="7"></circle>
+<circle class="s-box" cx="345" cy="292" r="7"></circle>
+<circle class="s-box" cx="440" cy="292" r="7"></circle>
+<circle class="s-box" cx="530" cy="250" r="7"></circle>
+<circle class="s-box" cx="650" cy="250" r="7"></circle>
+<circle class="s-box" cx="580" cy="292" r="7"></circle>
+<circle class="s-box" cx="660" cy="294" r="7"></circle>
+<line class="s-line" x1="20" x2="50" y1="334" y2="334"></line>
+<text class="s-tm" x="56" y="338">backhaul IP</text>
+<line class="s-dash" x1="150" x2="180" y1="334" y2="334"></line>
+<text class="s-tm" x="186" y="338">Digimesh: servicio y gestión</text>
+<line class="m36-dot" x1="400" x2="430" y1="334" y2="334"></line>
+<text class="s-tm" x="436" y="338">802.15.4 nativo: experimentación</text>
+</svg>
+</div>
+<figcaption>简化画法。固定节点按簇组成网状网，单跳走原生 802.15.4，多跳经 Digimesh 送到簇头（网关）；簇内全部流量都经网关出去。网关尽量装在市政或大学建筑里接有线内网，否则用 GPRS。车载节点不属于任何簇，直接用 GPRS；它们的原生 802.15.4 接口可以和路过的固定节点通信。节点超出网关无线范围时，用 repeater（中继）补覆盖。</figcaption>
+</figure>
+
+<p><b>配对：</b>城市里很难保证每台设备都有电。先点左边的设备，再点右边它的供电方式。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="farola" type="button">路灯上的节点</button>
+<button data-l="parking" type="button">车位传感器 <span class="es">埋在沥青下</span></button>
+<button data-l="gw" type="button">网关 <span class="es">Gateway</span></button>
+<button data-l="bus" type="button">车载节点 <span class="es">公交、出租车</span></button>
+<button data-l="nfc" type="button">NFC / QR 标签</button>
+</div>
+<div class="col">
+<button data-r="gw" type="button">持续供电 + Internet：装进市政建筑接光纤环，没有就用 3G</button>
+<button data-r="nfc" type="button">无源：被外部设备（例如手机）读取时才获得能量</button>
+<button data-r="farola" type="button">白天用电池；夜里路灯通电时直接供电，并给电池充电</button>
+<button data-r="bus" type="button">车辆电池供电，回传走 GPRS</button>
+<button data-r="parking" type="button">只靠电池 + 节能机制，寿命 3 年以上</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p class="aside">路灯节点的这种方式叫 <b class="t">mixed duty-cycle (EN)</b>——混合占空比：路灯网只在夜里通电，白天靠电池。为了接路灯电网，每个节点要加一个电源保护开关，成本增加 10–25%。</p>
+<p>部署几年之后，回头看 SmartSantander 的教训。先想想你会怎么办，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>遇到的问题</th><th>他们的办法（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>第一代车位传感器要一直检测车位状态，太耗电</td><td class="ans">改为周期采样，只在状态变化时上报，其余时间进入 deep sleep (EN)——深度睡眠</td></tr>
+<tr class="reveal"><td>只靠电池的节点如果当中继，就得一直醒着</td><td class="ans">把它们配置成末端节点（final nodes），不做中继</td></tr>
+<tr class="reveal"><td>车停在车位上，挡住埋地传感器的 2.4 GHz 信号：丢包、重传多、电池掉得快</td><td class="ans">限制重传；新一代改用传播损耗更小的 868 MHz，并改为状态变化才通知（事件驱动）</td></tr>
+<tr class="reveal"><td>部分设备时不时“失联”，原来附近建筑装了间歇工作的 ISM 频段干扰器</td><td class="ans">查明原因后，把设备移出该区域</td></tr>
+<tr class="reveal"><td>雨水积在外壳顶上，从天线孔渗进去，设备被泡坏</td><td class="ans">用 IP67 认证的标准外壳，顶部尽量不开孔，补防水涂层；新外壳改用内置 patch 天线</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>Hojea los dos artículos sobre SmartSantander，特别是它们用的硬件：“SmartSantander: IoT experimentation over a smart city testbed” 和 “Practical lessons from the deployment and management of a smart city Internet-of-Things infrastructure”。两篇都在本模块的资料里。MWC 2022 的 Smart Cities 讲座 拓展。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Iberdrola 的智能电网：数据要走哪几段网 <span class="tag">3.6.3</span></h2>
+<p><b class="t">red eléctrica inteligente (ES) / smart grid (EN)</b>——智能电网：把现有电网和 TIC（信息与通信技术）的功能结合起来。一百多年来电网一直需要自己的通信网（遥控、继电保护、固定和移动通信），智能电网让通信的角色大大加重。下面先用通用模型 SGAM 描述架构，再看 Iberdrola 的实际部署。</p>
+
+<p><b class="t">SGAM (Smart Grids Architecture Model)</b>——智能电网架构模型，由 CEN-CENELEC-ETSI Smart Grid Coordination Group 制定。它用<b>五层</b>、技术中立地表示现有电网和未来智能电网的所有互操作场景，可以用来描述用例，以及这些用例由哪些标准支持。<b>点击每一层：</b></p>
+<div class="stack" data-explain="comunicaciones">
+<div aria-label="SGAM 的五层" class="layers" role="group">
+<button aria-pressed="false" class="layer full" data-key="negocio" type="button"><span class="es">Capa de negocio</span><span class="zh">业务层</span></button>
+<button aria-pressed="false" class="layer full" data-key="funciones" type="button"><span class="es">Capa de funciones</span><span class="zh">功能层</span></button>
+<button aria-pressed="false" class="layer full" data-key="informacion" type="button"><span class="es">Capa de información</span><span class="zh">信息层</span></button>
+<button aria-pressed="false" class="layer full" data-key="comunicaciones" type="button"><span class="es">Capa de comunicaciones</span><span class="zh">通信层</span></button>
+<button aria-pressed="false" class="layer full l1" data-key="componentes" type="button"><span class="es">Capa de componentes</span><span class="zh">组件层</span></button>
+</div>
+<div class="panel" data-panel="negocio" hidden="">
+<h3>Capa de negocio · 业务层</h3>
+<p>智能电网的业务视角：市场、监管、政策、商业模式、产品与服务、参与者等。</p>
+<p class="aside">Iberdrola 案例：业务层只限于<b>受监管的业务</b>，因为在西班牙配电是受监管的。</p>
+</div>
+<div class="panel" data-panel="funciones" hidden="">
+<h3>Capa de funciones · 功能层</h3>
+<p>描述功能、服务以及它们之间的关系，独立于具体的参与者、实现、系统和组件。</p>
+</div>
+<div class="panel" data-panel="informacion" hidden="">
+<h3>Capa de información · 信息层</h3>
+<p>描述功能、服务和组件之间使用和交换的信息。包含对象和数据模型，之后由通信层传送。例子：<b>CIM</b>（Common Information Model）。</p>
+</div>
+<div class="panel" data-panel="comunicaciones" hidden="">
+<h3>Capa de comunicaciones · 通信层</h3>
+<p>描述组件之间交换信息所用的<b>协议和机制</b>。它规定每个域、每个区适用的电信网络，形成各种子网，用 IEEE、IPv6、GSM、MPLS、SDH、Internet、PLC、无线接入等标准化技术实现。</p>
+<p class="aside">Iberdrola 案例用到的子网：field area、DA、inter-substation、wide area；还用了运营商提供的新方案，例如托管 ADSL 和 cablemodem。卫星这类最初没列入的技术，实践中也能用。</p>
+</div>
+<div class="panel" data-panel="componentes" hidden="">
+<h3>Capa de componentes · 组件层</h3>
+<p>描述组件及其物理分布：参与者、应用、电力设备、保护和遥控设备、通信基础设施（服务器、路由器……）等。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">层 × 域 × 区</span>
+<p>每一层又和两根轴对应：<b>dominios</b>（域，电力业务的传统价值链：发电、输电、配电、分布式发电 DER、用户）和 <b>zonas</b>（区，电力系统管理的层级，基于聚合和功能分离）。Iberdrola 的案例主要在<b>配电域</b>，部分在<b>用户域</b>（电表），覆盖 procesos、campo、subestación、operación、compañía 这几个区，五层全都用到。</p>
+</div>
+<p>Iberdrola 选择在配电网的最后一段（一直到用户电表）只建<b>一张</b>通信网，同时满足电表远程管理和现在、将来所有的通信需求，由此形成智能电网。设计时考虑的要点：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>要点</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>Flexibilidad</td><td>能接入将来的服务、技术和协议（IP）</td></tr>
+<tr><td>Escalabilidad</td><td>能扩展到数百万个连接</td></tr>
+<tr><td>Disponibilidad</td><td>满足各项服务要求的质量（QoS）</td></tr>
+<tr><td>Seguridad</td><td>有足够的安全措施，保障供电安全</td></tr>
+<tr><td>Plug and Play</td><td>新设备接上就能自动工作</td></tr>
+<tr><td>Multiproveedor</td><td>每种设备都有多家供应商</td></tr>
+<tr><td>Económica</td><td>按技术要求和成本，选择私网或公网</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>跟着一条电表读数走：</b>从用户家到中心系统，数据要经过<b>三段网络</b>。点「下一步」逐段看：</p>
+<div class="stepper" id="ib">
+<figure>
+<div class="fig">
+<svg aria-label="Iberdrola 智能电网的数据路径：电表经 PLC 到配电变压站，经接入汇聚层和骨干网到中心系统，再到售电公司和用户" role="img" viewbox="0 0 640 520">
+<defs>
+<marker id="m36a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" x="20" y="38">EQUIPO</text>
+<text class="s-tm" x="20" y="106">RED 1</text>
+<text class="s-tm" x="20" y="174">EQUIPO</text>
+<text class="s-tm" x="20" y="251">RED 2</text>
+<text class="s-tm" x="20" y="326">RED 3</text>
+<g class="msg" data-step="1">
+<rect class="s-box" height="48" rx="6" width="340" x="150" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="30">Contadores inteligentes</text>
+<text class="s-t2" text-anchor="middle" x="320" y="48">en casa del cliente · red BT · ×10⁶</text>
+</g>
+<g class="msg" data-step="2">
+<line class="s-line" marker-end="url(#m36a)" x1="320" x2="320" y1="58" y2="78"></line>
+<rect class="s-box m36-net" height="44" rx="20" width="260" x="190" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="99">PLC PRIME · banda estrecha</text>
+<text class="s-t2" text-anchor="middle" x="320" y="117">banda CENELEC · ITU-T G.9904</text>
+<line class="s-line" marker-end="url(#m36a)" x1="320" x2="320" y1="124" y2="144"></line>
+</g>
+<g class="msg" data-step="3">
+<rect class="s-box" height="48" rx="6" width="340" x="150" y="146"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="166">Centro de transformación (CT)</text>
+<text class="s-t2" text-anchor="middle" x="320" y="184">×10⁴ · switch para añadir servicios</text>
+</g>
+<g class="msg" data-step="4">
+<line class="s-line" marker-end="url(#m36a)" x1="320" x2="320" y1="194" y2="214"></line>
+<rect class="s-box m36-net" height="62" rx="20" width="300" x="170" y="216"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="236">Capa de agregación de acceso</text>
+<text class="s-t2" text-anchor="middle" x="320" y="254">privada: BPL · fibra óptica · radio digital</text>
+<text class="s-t2" text-anchor="middle" x="320" y="270">pública: ADSL · cablemodem · GPRS/UMTS</text>
+<line class="s-line" marker-end="url(#m36a)" x1="320" x2="320" y1="278" y2="298"></line>
+</g>
+<g class="msg" data-step="5">
+<rect class="s-box m36-net" height="44" rx="20" width="260" x="190" y="300"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="319">Capa troncal · MPLS sobre IP</text>
+<text class="s-t2" text-anchor="middle" x="320" y="337">una subred VPLS por servicio</text>
+</g>
+<g class="msg" data-step="6">
+<line class="s-line" marker-end="url(#m36a)" x1="300" x2="110" y1="344" y2="374"></line>
+<line class="s-line" marker-end="url(#m36a)" x1="320" x2="320" y1="344" y2="374"></line>
+<line class="s-line" marker-end="url(#m36a)" x1="340" x2="530" y1="344" y2="374"></line>
+<rect class="s-box" height="52" rx="6" width="190" x="10" y="376"></rect>
+<text class="s-t" text-anchor="middle" x="105" y="398">Sistemas de negocio</text>
+<text class="s-t2" text-anchor="middle" x="105" y="416">SCADA · planificación</text>
+<rect class="s-box" height="52" rx="6" width="190" x="225" y="376"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="398">Sistema de telegestión</text>
+<text class="s-t2" text-anchor="middle" x="320" y="416">lecturas · órdenes de trabajo</text>
+<rect class="s-box" height="52" rx="6" width="190" x="440" y="376"></rect>
+<text class="s-t" text-anchor="middle" x="535" y="398">Sistema de información</text>
+<text class="s-t2" text-anchor="middle" x="535" y="416">de puntos de suministro</text>
+</g>
+<g class="msg" data-step="7">
+<line class="s-line" marker-end="url(#m36a)" x1="535" x2="535" y1="428" y2="458"></line>
+<rect class="s-box" height="48" rx="6" width="190" x="440" y="460"></rect>
+<text class="s-t" text-anchor="middle" x="535" y="480">Comercializadoras</text>
+<text class="s-t2" text-anchor="middle" x="535" y="498">facturas · lecturas · cortes</text>
+<line class="s-line" marker-end="url(#m36a)" x1="440" x2="417" y1="484" y2="484"></line>
+<rect class="s-box" height="48" rx="6" width="190" x="225" y="460"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="480">Consumidores</text>
+<text class="s-t2" text-anchor="middle" x="320" y="498">relación con el cliente</text>
+</g>
+</svg>
+</div>
+<figcaption>简化画法：实线框是设备或系统，虚线圆角框是网络；×10⁶、×10⁴ 是数量级。</figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+
+<p>同一张网，让不同 CT 的“智能程度”可以不一样。按智能程度可以把 CT 分成三级，<b>点击看每一级</b>：</p>
+<div class="stack" data-explain="basico">
+<div aria-label="CT 的三个级别" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="basico" type="button">Nivel básico</button>
+<button aria-pressed="false" class="chip" data-key="supervisado" type="button">Nivel supervisado</button>
+<button aria-pressed="false" class="chip" data-key="automatizado" type="button">Nivel automatizado</button>
+</div>
+<div class="panel" data-panel="basico" hidden="">
+<span class="verdict ok">理由：Obligación legal</span>
+<p>只做电表的 <b>telegestión</b>。这是法规（RD 1110/2007）要求的，所以每个 CT 至少要到这一级。</p>
+</div>
+<div class="panel" data-panel="supervisado" hidden="">
+<span class="verdict ok">理由：Oportunidad</span>
+<p>基本级 + <b>中压（MT）测量、低压（BT）测量、方向性故障通过检测（paso de falta direccional）、告警</b>。</p>
+</div>
+<div class="panel" data-panel="automatizado" hidden="">
+<span class="verdict star">理由：按监管和运营效率调整</span>
+<p>监督级 + <b>telecontrol（遥控）+ automatización（自动化）</b>。这一级的 CT 里，SCADA 和 telegestión 都走 IP 通信，站内设备用 IEC-104 协议（即 IEC 60870-5-104 远动协议）。</p>
+</div>
+</div>
+
+<p class="aside">注意：这三级还有另一种叫法：第二级也叫“telegestión + nivel básico”，第三级也叫“CT supervisado”，所以 supervisado 可能指第二级，也可能指第三级。本页用 básico / supervisado / automatizado。</p>
+<div class="note">
+<span class="lbl">公网能不能用？</span>
+<p>智能电网的通信服务常常要求很苛刻：时延、流量优先级、有保障的供电、可用性、维修时间，还有环境条件和电磁兼容。运营商的公网一般不是按这些要求设计的，需要运营商对话并作出承诺；否则电力公司只能自建通信网，享受不到公网的规模经济。</p>
+<p>结果：这张网目前覆盖<b>一百多万块电表和五千个 CT</b>，全部使用标准协议，跑在 IP 骨干网上，也考虑了分布式发电和电动汽车的需求。</p>
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>Lee el artículo de Pedro Blanco y Miguel Ángel Sánchez “Redes de Telecomunicación para el desarrollo de las redes eléctricas inteligentes (smart grids)”，在本模块的资料里。本模块另一项 TAREA 是浏览 Endesa 的 smart city 科普网页（web educativa）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Smart meter 有哪些特点 <span class="tag">3.6.4</span></h2>
+<p>从电力的角度看，smart grid 建立在三项基础技术上，它们共享基础设施、不能分开考虑：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">AMI</span><h3>Advanced Metering Infrastructure</h3><p>先进计量基础设施：远程计量（telemedida），刻画用电习惯，和用户在线通信；更进一步，配电公司可以直接干预非优先负荷，做主动需求管理。</p></div>
+<div class="cell"><span class="eyebrow">DER</span><h3>Distributed Energy Resources</h3><p>分布式能源：分布式发电和储能。发电点靠近用户，减少输配损耗；电源多样化，增加冗余；把可再生能源存起来。</p></div>
+<div class="cell"><span class="eyebrow">ADA</span><h3>Advanced Distribution Automation</h3><p>先进配电自动化：除了遥控，还要自动化维护和预测，扩展保护方案，让设备实时自适应调整。</p></div>
+</div>
+<p>家用智能电表同时参与这三类功能。它的主要功能如下。先猜它属于哪一类，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>功能</th><th>类别（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>按时段计价（tarificación según franjas horarias）</td><td class="ans">AMI</td></tr>
+<tr class="reveal"><td>按合同限制功率（limitación de potencia）</td><td class="ans">AMI</td></tr>
+<tr class="reveal"><td>欠费断电，以及恢复供电</td><td class="ans">AMI</td></tr>
+<tr class="reveal"><td>净用电为负时，计量反向电能（energía inversa）</td><td class="ans">DER</td></tr>
+<tr class="reveal"><td>向配电公司发送信息</td><td class="ans">ADA 和 AMI</td></tr>
+<tr class="reveal"><td>测量电能质量（电压暂降，huecos de tensión）</td><td class="ans">ADA 和 AMI</td></tr>
+</tbody>
+</table>
+</div>
+<p>这些功能的目的：把用电习惯的信息交给用户，促使他们改变习惯，实现高效的需求管理。分时电价在统计上能削平峰谷差：低谷时多用、高峰时少用，相当于电网多了一份储能。</p>
+<p><b>拆开一块电表：</b>下图是一块 smart meter 的内部结构。<b>点击模块：</b></p>
+<div class="stack" data-explain="medida">
+<figure>
+<div class="fig">
+<svg aria-label="智能电表的内部结构：计量核心连接通断开关、存储、本地付费终端、广域网通信、光学口和家庭网络通信，负荷分解模块挂在家庭网络一侧" role="img" viewbox="0 0 640 330">
+<line class="s-line" x1="240" x2="192" y1="150" y2="56"></line>
+<line class="s-line" x1="240" x2="192" y1="150" y2="150"></line>
+<line class="s-line" x1="240" x2="192" y1="150" y2="244"></line>
+<line class="s-line" x1="400" x2="448" y1="150" y2="56"></line>
+<line class="s-line" x1="400" x2="448" y1="150" y2="150"></line>
+<line class="s-line" x1="400" x2="448" y1="150" y2="244"></line>
+<line class="s-line" x1="536" x2="536" y1="270" y2="288"></line>
+<g aria-label="Electricity Measurement" class="hot" data-key="medida" role="button" tabindex="0">
+<rect class="s-box" height="64" rx="8" width="160" x="240" y="118"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="140">Electricity</text>
+<text class="s-t" text-anchor="middle" x="320" y="157">Measurement</text>
+<text class="s-t2" text-anchor="middle" x="320" y="174">计量核心</text>
+</g>
+<g aria-label="Service Connection" class="hot" data-key="conexion" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="176" x="16" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="104" y="52">Service Connection</text>
+<text class="s-t2" text-anchor="middle" x="104" y="70">通断开关</text>
+</g>
+<g aria-label="Memory Map" class="hot" data-key="memoria" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="176" x="16" y="124"></rect>
+<text class="s-t" text-anchor="middle" x="104" y="146">Memory Map</text>
+<text class="s-t2" text-anchor="middle" x="104" y="164">存储</text>
+</g>
+<g aria-label="Local Payment Terminal" class="hot" data-key="pago" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="176" x="16" y="218"></rect>
+<text class="s-t" text-anchor="middle" x="104" y="240">Local Payment Terminal</text>
+<text class="s-t2" text-anchor="middle" x="104" y="258">本地付费终端</text>
+</g>
+<g aria-label="WAN Comm IC" class="hot" data-key="wan" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="176" x="448" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="536" y="52">WAN Comm IC</text>
+<text class="s-t2" text-anchor="middle" x="536" y="70">→ 配电公司</text>
+</g>
+<g aria-label="Optical Comm Port" class="hot" data-key="optico" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="176" x="448" y="124"></rect>
+<text class="s-t" text-anchor="middle" x="536" y="146">Optical Comm Port</text>
+<text class="s-t2" text-anchor="middle" x="536" y="164">光学通信口</text>
+</g>
+<g aria-label="HAN Comm IC" class="hot" data-key="han" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="176" x="448" y="218"></rect>
+<text class="s-t" text-anchor="middle" x="536" y="240">HAN Comm IC</text>
+<text class="s-t2" text-anchor="middle" x="536" y="258">→ 家庭网络</text>
+</g>
+<g aria-label="Load Disaggregation" class="hot" data-key="nilm" role="button" tabindex="0">
+<rect class="s-box m36-net" height="34" rx="6" width="176" x="448" y="288"></rect>
+<text class="s-t" text-anchor="middle" x="536" y="310">Load Disaggregation</text>
+</g>
+<text class="s-tm" text-anchor="end" x="436" y="310">c-meter 加上的部分</text>
+</svg>
+</div>
+<figcaption>虚线框是 c-meter 额外加上的负荷分解模块。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="medida" hidden="">
+<h3>Electricity Measurement · 计量核心</h3>
+<p>测量用电。smart meter 可以每 1–5 秒（0.2–1 Hz）通报一次有功功率（kW）和电能（kWh）读数。这些读数配上屋内显示器（IHD），住户就能实时看到<b>整屋</b>的功率和用电量。</p>
+</div>
+<div class="panel" data-panel="conexion" hidden="">
+<h3>Service Connection · 通断开关</h3>
+<p>可以远程接通或切断供电。对应上面表里的功能：欠费断电和恢复、按合同限制功率。</p>
+</div>
+<div class="panel" data-panel="memoria" hidden="">
+<h3>Memory Map · 存储</h3>
+<p>保存读数、配置和费率时段等数据。</p>
+</div>
+<div class="panel" data-panel="pago" hidden="">
+<h3>Local Payment Terminal · 本地付费终端</h3>
+<p>在表上就地付费或充值，例如预付费电表。</p>
+</div>
+<div class="panel" data-panel="wan" hidden="">
+<h3>WAN Comm IC · 广域网通信</h3>
+<p>连向配电公司的一侧。在 §4 的 Iberdrola 方案里，这一段就是沿低压电线到 CT 的 PLC PRIME。Málaga 的 Endesa 方案同样走电力线：电表和 concentradores 用基于开放协议 <b>Meters and More</b> 的 PLC 通信。</p>
+</div>
+<div class="panel" data-panel="optico" hidden="">
+<h3>Optical Comm Port · 光学通信口</h3>
+<p>用于在现场用手持设备读取或配置电表。</p>
+</div>
+<div class="panel" data-panel="han" hidden="">
+<h3>HAN Comm IC · 家庭网络通信</h3>
+<p><b class="t">HAN, Home Area Network (EN)</b>——家庭局域网：电表把读数送给屋里的设备，例如 IHD。在 §1 的需求响应例子里，DR 信号经 smart meter 显示在 IHD 上，但电表“只是充当了通信网关”，没有帮住户判断该关哪台电器。</p>
+</div>
+<div class="panel" data-panel="nilm" hidden="">
+<h3>Load Disaggregation · 负荷分解</h3>
+<p>c-meter 比 smart meter “更聪明”的部分：从整屋功率读数分辨出哪些电器在运行。为了隐私，c-meter 的设计主张把它放在 <b>HAN 一侧</b>，只和家庭网络上的设备通信，避免电力公司知道你在用什么电器。</p>
+<p>难点：多台电器同时开关、电力信号有噪声、电器和使用习惯会变、计算量大难以放进嵌入式处理器、隐私。c-meter 的提出者认为准确率至少要 95%。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">小结 · 3.6.4</span>
+<p>综合本章内容，smart meter 的特点：</p>
+<ul>
+<li><b>电子式计量</b>，取代机电式电表；高频给出功率和电能读数；</li>
+<li><b>双向通信</b>：向配电公司（WAN）和家里的设备（HAN）发送信息；</li>
+<li><b>远程管理</b>（telegestión）：远程读数、开户销户、断电复电、功率限制、改费率；</li>
+<li><b>分时计量</b>（discriminación horaria），支持分时和动态电价；</li>
+<li>计量<b>反向电能</b>（用户自己发电时），测量<b>电能质量</b>；</li>
+<li>是 <b>AMI 系统的终端</b>：要配合 CT 里的 concentradores、通信网和中心系统才能工作；</li>
+<li>局限：只给整屋读数，分不出单个电器（→ c-meter）。</li>
+</ul>
+</div>
+<p class="aside">补充：在 SmartHouse/SmartGrid 项目的 Mannheim 试点里，smart meter 负责数字化地测量用电，开关家用电器则由另一台设备（Energy Butler 加 switchbox）完成。电表负责“量”，不负责“控”。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>农业 WSN：葡萄园需要什么样的网 <span class="tag">3.6.5</span></h2>
+<p>这一节看葡萄园。农业的方法大多基于传统和反复试错，可田地在空间和时间上都不均匀：土壤可能在很短的距离内就变了（养分、pH、地形、孔隙度）。所以要<b>在田里测</b>，而且要<b>全年</b>测，不只是 4 月到 10 月的生长期，因为冬季条件也会影响之后植株和果实的发育。</p>
+<p>测什么：最先埋的是根旁边的传感器，看土里还剩多少水、植株能吸收多少；再按需要加上太阳辐射、气温、降雨、风、叶片湿度和温度，甚至树干粗细的微米级变化（<b class="t">dendrometría (ES)</b>——树干测径）。</p>
+<figure>
+<div class="fig">
+<svg aria-label="农业监测网络：一个节点测气象参数，四个节点测土壤和植株参数，节点组成网状网，经网关和 3G 路由器接入 Internet" role="img" viewbox="0 0 650 290">
+<line class="s-dash" x1="150" x2="190" y1="55" y2="55"></line>
+<line class="s-dash" x1="360" x2="490" y1="55" y2="55"></line>
+<line class="s-dash" x1="300" x2="370" y1="96" y2="140"></line>
+<line class="s-dash" x1="440" x2="510" y1="140" y2="80"></line>
+<line class="s-dash" x1="560" x2="560" y1="80" y2="150"></line>
+<line class="s-dash" x1="460" x2="490" y1="165" y2="175"></line>
+<line class="s-dash" x1="350" x2="290" y1="190" y2="228"></line>
+<line class="s-line" x1="85" x2="85" y1="80" y2="120"></line>
+<line class="s-line" x1="85" x2="85" y1="160" y2="196"></line>
+<rect class="m36-gw" height="50" rx="6" width="130" x="20" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="85" y="51">Gateway</text>
+<text class="s-t2" text-anchor="middle" x="85" y="69">PC + radio por USB</text>
+<rect class="s-box" height="40" rx="6" width="130" x="20" y="120"></rect>
+<text class="s-t" text-anchor="middle" x="85" y="145">Router 3G</text>
+<rect class="s-soft" height="40" rx="18" width="130" x="20" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="85" y="221">Internet</text>
+<text class="s-t2" text-anchor="middle" x="85" y="258">→ base de datos · DSS</text>
+<rect class="s-box" height="66" rx="6" width="170" x="190" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="275" y="50">Nodo 0</text>
+<text class="s-t2" text-anchor="middle" x="275" y="68">气温 · 湿度 · 太阳辐射</text>
+<text class="s-t2" text-anchor="middle" x="275" y="85">降雨 · 风速风向</text>
+<rect class="s-box" height="50" rx="6" width="140" x="490" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="560" y="51">Nodo 1</text>
+<text class="s-t2" text-anchor="middle" x="560" y="69">土壤 · 植株</text>
+<rect class="s-box" height="50" rx="6" width="140" x="490" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="560" y="171">Nodo 2</text>
+<text class="s-t2" text-anchor="middle" x="560" y="189">土壤 · 植株</text>
+<rect class="s-box" height="50" rx="6" width="140" x="320" y="140"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="161">Nodo 3</text>
+<text class="s-t2" text-anchor="middle" x="390" y="179">土壤 · 植株</text>
+<rect class="s-box" height="50" rx="6" width="140" x="200" y="228"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="249">Nodo 4</text>
+<text class="s-t2" text-anchor="middle" x="270" y="267">土壤 · 植株</text>
+</svg>
+</div>
+<figcaption>气象参数只在一个点（Nodo 0）测，土壤和植株参数在多个区域测。节点之间的虚线表示 <b class="t">topología mallada (ES)</b>——网状拓扑，它给田间网络带来 robustez y escalabilidad（健壮、可扩展）。</figcaption>
+</figure>
+
+<div class="note">
+<span class="lbl">ciclo de trabajo · 占空比</span>
+<p><b class="t">ciclo de trabajo (ES) / duty cycle (EN)</b>——占空比：节点醒着工作（测量、发送）的时间占整个周期的比例，D = t<sub>activo</sub> / T（见 Tema 2 的 M26）。</p>
+<p>田间测量的能耗不高：这是个“慢”系统，“实时”以 “fracciones de cuarto de hora”（几分之一刻钟）计。这意味着节点可以大部分时间睡眠、以很低的占空比运行，所以小太阳能板就够用。</p>
+<p>桑坦德的经验（§3）讲得更直接：优化节点<b>何时、多久</b>离开 deep sleep，能显著延长电池寿命；桑坦德的车位传感器就从“一直检测”改成了“周期采样、变化才上报”。网状网也有代价：中继节点要常醒着，所以只靠电池的节点被设成不做中继。</p>
+</div>
+<p><b>情景：替一座葡萄园设计 WSN。</b>每一步选一个方案，看它和本节讲的做法是否一致。可以随时改选。</p>
+<div class="stack" id="vina">
+<div class="panel vina-q" data-label="布线" data-q="cable">
+<h3>① 布线</h3>
+<p>葡萄园面积大，一年里要多次下田作业（修枝、耕作、采收）。节点之间怎么连？</p>
+<div aria-label="布线方案" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-c="a" type="button">埋地电缆</button>
+<button aria-pressed="false" class="chip" data-c="b" type="button">无线节点</button>
+</div>
+<p aria-live="polite" class="fb"></p>
+</div>
+<div class="panel vina-q" data-label="供电" data-q="energia">
+<h3>② 供电</h3>
+<p>节点散在田里。用什么供电？</p>
+<div aria-label="供电方案" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-c="a" type="button">拉市电到每个节点</button>
+<button aria-pressed="false" class="chip" data-c="b" type="button">一次性电池，没电就换</button>
+<button aria-pressed="false" class="chip" data-c="c" type="button">可充电电池 + 小太阳能板</button>
+</div>
+<p aria-live="polite" class="fb"></p>
+</div>
+<div class="panel vina-q" data-label="采样节奏" data-q="ciclo">
+<h3>③ 采样节奏（占空比）</h3>
+<p>假设节点每次醒来测量 + 发送要 2 秒（假设值）。多久醒一次？</p>
+<div aria-label="采样节奏" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-c="a" type="button">一直醒着，每秒上报</button>
+<button aria-pressed="false" class="chip" data-c="b" type="button">每 5 分钟醒一次，其余时间睡眠</button>
+<button aria-pressed="false" class="chip" data-c="c" type="button">每天醒一次</button>
+</div>
+<p aria-live="polite" class="fb"></p>
+</div>
+<div class="panel vina-q" data-label="拓扑" data-q="topo">
+<h3>④ 拓扑</h3>
+<p>节点之间、节点和网关之间怎么组网？</p>
+<div aria-label="拓扑方案" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-c="a" type="button">星形：每个节点直连网关</button>
+<button aria-pressed="false" class="chip" data-c="b" type="button">网状：节点互相转发</button>
+<button aria-pressed="false" class="chip" data-c="c" type="button">每个节点各插一张 SIM 卡</button>
+</div>
+<p aria-live="polite" class="fb"></p>
+</div>
+<div class="panel vina-q" data-label="测点布置" data-q="puntos">
+<h3>⑤ 测点布置</h3>
+<p>气象参数和土壤、植株参数，各在哪里测？</p>
+<div aria-label="测点布置" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-c="a" type="button">每个节点都配一套气象站</button>
+<button aria-pressed="false" class="chip" data-c="b" type="button">气象一个点，土壤和植株多点</button>
+<button aria-pressed="false" class="chip" data-c="c" type="button">地块中心测一个点就够</button>
+</div>
+<p aria-live="polite" class="fb"></p>
+</div>
+<div class="panel vina-q" data-label="无线链路" data-q="radio">
+<h3>⑥ 无线链路</h3>
+<p>田间是开阔空间，传播条件总体不错。什么时候链路最容易变差？</p>
+<div aria-label="无线链路" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-c="a" type="button">冬天落叶以后</button>
+<button aria-pressed="false" class="chip" data-c="b" type="button">春天发芽（brotación）以后</button>
+<button aria-pressed="false" class="chip" data-c="c" type="button">夜里气温低的时候</button>
+</div>
+<p aria-live="polite" class="fb"></p>
+</div>
+<div aria-live="polite" class="panel vina-sum">
+<h3>你的设计</h3>
+<p class="vina-score">还没开始选。</p>
+<ul class="vina-list"></ul>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-do="reset" type="button">重新设计</button>
+</div>
+</div>
+<p>数据收上来以后呢？<b>MODEM_IVM</b> 项目（MOnitoring and DEcision Making for Integrated Vineyard Management）把整条链路串起来。它的思路很简单：<b>测量，然后建议怎么做</b>。下图画的就是这个项目。<b>点击图中的方框：</b></p>
+<div class="stack" data-explain="dss">
+<figure>
+<div class="fig">
+<svg aria-label="MODEM_IVM 项目图：监测数据经 WSN、巡查数据经手持设备，通过 GPRS 送到 DSS；科研人员和 DSS 服务商更新 DSS；葡萄园管理者上传现场数据、获得决策支持，并与服务商互相咨询，最后做决策、执行田间作业" role="img" viewbox="0 0 720 410">
+<defs>
+<marker id="m36b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m36b)" x1="160" x2="188" y1="100" y2="100"></line>
+<line class="s-line" marker-end="url(#m36b)" x1="160" x2="188" y1="225" y2="225"></line>
+<line class="s-dash" marker-end="url(#m36b)" x1="290" x2="340" y1="88" y2="52"></line>
+<line class="s-dash" marker-end="url(#m36b)" x1="282" x2="372" y1="200" y2="52"></line>
+<line class="s-dash" marker-end="url(#m36b)" x1="430" x2="452" y1="40" y2="52"></line>
+<line class="s-line" marker-end="url(#m36b)" x1="600" x2="562" y1="80" y2="80"></line>
+<text class="s-tm" text-anchor="middle" x="581" y="44">Updating</text>
+<line class="s-dash" marker-end="url(#m36b)" x1="380" x2="452" y1="278" y2="114"></line>
+<line class="s-dash" marker-end="url(#m36b)" x1="492" x2="420" y1="114" y2="278"></line>
+<text class="s-tm" text-anchor="end" x="404" y="186">Site-specific data</text>
+<text class="s-tm" x="468" y="214">Decision supports</text>
+<line class="s-line" marker-end="url(#m36b)" x1="600" x2="536" y1="278" y2="114"></line>
+<text class="s-tm" x="584" y="190">Updating</text>
+<line class="s-line" marker-end="url(#m36b)" x1="660" x2="660" y1="112" y2="276"></line>
+<text class="s-tm" x="666" y="190">Training</text>
+<line class="s-line" marker-end="url(#m36b)" x1="462" x2="558" y1="296" y2="296"></line>
+<line class="s-line" marker-end="url(#m36b)" x1="558" x2="462" y1="314" y2="314"></line>
+<text class="s-tm" text-anchor="middle" x="510" y="288">Consulting</text>
+<line class="s-line" marker-end="url(#m36b)" x1="395" x2="395" y1="332" y2="358"></line>
+<line class="s-line" marker-end="url(#m36b)" x1="462" x2="516" y1="378" y2="378"></line>
+<g aria-label="Monitoring: environment and plant" class="hot" data-key="monitoring" role="button" tabindex="0">
+<rect class="s-box" height="120" rx="6" width="150" x="10" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="85" y="64">Monitoring</text>
+<text class="s-t2" text-anchor="middle" x="85" y="82">监测</text>
+<text class="s-t2" text-anchor="middle" x="85" y="112">Environment 环境</text>
+<text class="s-t2" text-anchor="middle" x="85" y="136">Plant 植株</text>
+</g>
+<g aria-label="Scouting: pests and diseases" class="hot" data-key="scouting" role="button" tabindex="0">
+<rect class="s-box" height="90" rx="6" width="150" x="10" y="180"></rect>
+<text class="s-t" text-anchor="middle" x="85" y="206">Scouting</text>
+<text class="s-t2" text-anchor="middle" x="85" y="224">田间巡查</text>
+<text class="s-t2" text-anchor="middle" x="85" y="250">Pests &amp; diseases</text>
+</g>
+<g aria-label="WSN" class="hot" data-key="monitoring" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="100" x="190" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="240" y="105">WSN</text>
+</g>
+<g aria-label="PDA, hand-held devices" class="hot" data-key="scouting" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="110" x="190" y="200"></rect>
+<text class="s-t" text-anchor="middle" x="245" y="221">PDA</text>
+<text class="s-t2" text-anchor="middle" x="245" y="239">Hand-held devices</text>
+</g>
+<g aria-label="GPRS" class="hot" data-key="gprs" role="button" tabindex="0">
+<rect class="s-box m36-net" height="40" rx="18" width="110" x="320" y="8"></rect>
+<text class="s-t" text-anchor="middle" x="375" y="33">GPRS</text>
+</g>
+<g aria-label="DSS, Decision Support System" class="hot" data-key="dss" role="button" tabindex="0">
+<rect class="s-box" height="60" rx="6" width="140" x="420" y="52"></rect>
+<text class="s-t" text-anchor="middle" x="490" y="78">DSS</text>
+<text class="s-t2" text-anchor="middle" x="490" y="97">决策支持系统</text>
+</g>
+<g aria-label="Scientist (RTD)" class="hot" data-key="scientist" role="button" tabindex="0">
+<rect class="s-box" height="60" rx="6" width="110" x="600" y="52"></rect>
+<text class="s-t" text-anchor="middle" x="655" y="78">Scientist</text>
+<text class="s-t2" text-anchor="middle" x="655" y="97">(RTD) 科研</text>
+</g>
+<g aria-label="Grape manager" class="hot" data-key="manager" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="130" x="330" y="280"></rect>
+<text class="s-t" text-anchor="middle" x="395" y="302">Grape manager</text>
+<text class="s-t2" text-anchor="middle" x="395" y="320">葡萄园管理者</text>
+</g>
+<g aria-label="DSS provider (SME)" class="hot" data-key="provider" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="150" x="560" y="280"></rect>
+<text class="s-t" text-anchor="middle" x="635" y="302">DSS provider</text>
+<text class="s-t2" text-anchor="middle" x="635" y="320">(SME) 服务商</text>
+</g>
+<g aria-label="Decision making and management actions" class="hot" data-key="acciones" role="button" tabindex="0">
+<rect class="s-box" height="38" rx="6" width="130" x="330" y="360"></rect>
+<text class="s-t" text-anchor="middle" x="395" y="384">Decision making</text>
+<rect class="s-box" height="38" rx="6" width="192" x="518" y="360"></rect>
+<text class="s-t" text-anchor="middle" x="614" y="384">Management actions</text>
+</g>
+<line class="s-dash" x1="10" x2="40" y1="404" y2="404"></line>
+<text class="s-tm" x="46" y="407">无线数据</text>
+<line class="s-line" x1="120" x2="150" y1="404" y2="404"></line>
+<text class="s-tm" x="156" y="407">人与系统之间</text>
+</svg>
+</div>
+<figcaption>左边是两路数据来源，中间是 DSS，右边和下面是参与的人和最后的田间作业。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="monitoring" hidden="">
+<h3>Monitoring → WSN · 监测</h3>
+<p>图左上：<b>环境</b>（气象）和<b>植株</b>两类参数由 WSN 自动测量，也就是本节前面讲的节点网。传感器网络实时收集信息，送进数据库。</p>
+<p class="aside">目前有三张网，分别在西班牙 La Rioja、意大利 Ziano Piacentino、葡萄牙 Vila Real 的葡萄园，由三所大学管理；气候和地形各不相同，数据才够异构。</p>
+</div>
+<div class="panel" data-panel="scouting" hidden="">
+<h3>Scouting → PDA · 田间巡查</h3>
+<p>图左下：<b>病虫害</b>（pests &amp; diseases）这类信息传感器测不出来，要靠人到田里看，用 <b>PDA / hand-held devices</b>（手持设备）录入。具体做法：田间技术员在葡萄园里用一个 tablet 应用回答专门的问卷，补充难以量化的数据。</p>
+</div>
+<div class="panel" data-panel="gprs" hidden="">
+<h3>GPRS · 数据上传</h3>
+<p>图里 WSN 和手持设备的数据都用虚线箭头经 <b>GPRS</b> 送到 DSS。实际的链路更细：节点的数据先传到 <b>Gateways</b>，再经 Internet 到主数据库，手持设备的数据也汇进来；本节第一张图里网关用的是 3G 路由器。</p>
+<p class="aside">这张图做了简化：只写了 GPRS，没有画网关和数据库。</p>
+</div>
+<div class="panel" data-panel="dss" hidden="">
+<h3>DSS · 决策支持系统</h3>
+<p><b class="t">DSS, Decision Support System (EN)</b>——决策支持系统：基于一系列数学模型和算法，分析每片葡萄园的具体情况，估计最佳工作计划，为最终用户（葡萄种植者本人或合作顾问）提供决策支持。</p>
+<p>图里有四路箭头连着它：数据从 WSN 和手持设备进来；grape manager 送来 site-specific data（现场数据）、收到 decision supports（决策支持）；scientist 和 DSS provider 负责 updating（更新）它。</p>
+</div>
+<div class="panel" data-panel="scientist" hidden="">
+<h3>Scientist (RTD) · 科研人员</h3>
+<p>图右上：科研人员<b>更新</b> DSS（模型和算法），并<b>培训</b> DSS provider。这个项目的联合体结合了数学建模、农业研究、图像分析和无线传输等学科。</p>
+<p class="aside">RTD 指 Research and Technological Development（研究与技术开发）。</p>
+</div>
+<div class="panel" data-panel="provider" hidden="">
+<h3>DSS provider (SME) · 服务商</h3>
+<p>图右下：提供 DSS 服务的公司。它接受科研人员的培训，<b>更新</b> DSS，并和 grape manager <b>互相咨询</b>（Consulting 是双向箭头）。DSS 的最终用户里提到的 “consultor asociado”（合作顾问），大概就是这个角色。</p>
+<p class="aside">SME 指 small and medium-sized enterprise（中小企业）。</p>
+</div>
+<div class="panel" data-panel="manager" hidden="">
+<h3>Grape manager · 葡萄园管理者</h3>
+<p>系统的最终用户（viticultor，葡萄种植者）。他向 DSS 提供现场数据，从 DSS 得到决策支持，还可以向服务商咨询；最后由<b>他</b>来做决定。DSS 只是“支持”，不替人决策。</p>
+</div>
+<div class="panel" data-panel="acciones" hidden="">
+<h3>Decision making → Management actions · 决策与田间作业</h3>
+<p>图最下面：管理者做出决定，变成田间作业，例如灌溉、病害防治。</p>
+<p>怎么验证效果？每片试验葡萄园分成两半：一半按 DSS 的建议管理，一半按传统做法，之后比较结果，找出系统帮了忙和还要改进的地方；以后每年在更多地方装传感器网络，加快学习。</p>
+</div>
+</div>
+
+<ul>
+<li><b>灌溉</b>：只经过一个月左右的学习期，就记录到 40–50% 的节水。</li>
+<li><b>病害预警</b>：多个传感器组合起来估计 botrytis、oidio、mildiu 的发病风险；这里“预见”比精确定位更重要。只要治疗次数减少 10%，经济和环境上的节约就很可观。</li>
+<li><b>下一步</b>：最需要改进的是传感器本身；其次是网关的能源管理（农村要靠替代能源）、移动网覆盖（方便数据上云）、节点的传输距离。</li>
+</ul>
+<p class="aside">补充：部署农业 WSN 时要定几件事：传感器和网关放在哪、要几个、多久采一次数据、数据包多大、要不要电源（电池或太阳能）。典型结构是传感器组成 mesh 网，把数据交给同一片地里的网关，网关再经广域网送到农场管理信息系统（FMIS）；长续航、低速率的场景可以用 LPWAN。</p>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>Lee el artículo de Jorge del Valle y Rodrigo Palacios “Trabajar la tierra con WSN”，在本模块的资料里。补充材料里的 Libelium 白皮书、IoT Analytics 和 KPMG 的报告都 拓展。</p>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M36">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>RD 1110/2007 要求西班牙的电力公司把传统电表换成什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只能现场读数的电子表</button>
+<button data-o="b" type="button"><span class="k">B</span>具备 telegestión 和 discriminación horaria、接入 telegestión 系统的 contador inteligente</button>
+<button data-o="c" type="button"><span class="k">C</span>预付费 IC 卡电表</button>
+<button data-o="d" type="button"><span class="k">D</span>带负荷分解功能的 cognitive power meter</button>
+</div>
+<p class="why"><b>B。</b>要换成能远程管理、能分时计量的智能电表，并接入远程管理系统，2018 年前完成（§1）。c-meter 只是研究者提出的设想。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">02</span>SmartSantander 平台的三层架构是哪三层？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>IoT node tier、IoT gateway tier、server tier</button>
+<button data-o="b" type="button"><span class="k">B</span>感知层、网络层、应用层</button>
+<button data-o="c" type="button"><span class="k">C</span>接入层、汇聚层、骨干层</button>
+<button data-o="d" type="button"><span class="k">D</span>现场区、变电站区、运营区</button>
+</div>
+<p class="why"><b>A。</b>见 §2。B 是常见的 IoT 分层说法，不是 SmartSantander 的；C 更像 Iberdrola 的通信网；D 是 SGAM 的 zonas。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>SmartSantander 在逻辑上把功能分成哪两个 plane？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>control plane 和 data plane</button>
+<button data-o="b" type="button"><span class="k">B</span>公网平面和私网平面</button>
+<button data-o="c" type="button"><span class="k">C</span>用户平面和信令平面</button>
+<button data-o="d" type="button"><span class="k">D</span>testbed observation and management plane 和 IoT experimentation plane</button>
+</div>
+<p class="why"><b>D。</b>见 §2。这种分离是逻辑上的，同一台设备可以同时承担两个平面的功能。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>桑坦德的路灯节点为什么装两个 XBee-Pro 模块？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一个负责接收，一个负责发送</button>
+<button data-o="b" type="button"><span class="k">B</span>一个用 2.4 GHz，一个用 868 MHz</button>
+<button data-o="c" type="button"><span class="k">C</span>一个跑原生 802.15.4 给实验用，一个跑 Digimesh 传服务和管理流量，互不干扰</button>
+<button data-o="d" type="button"><span class="k">D</span>互为备份，一个坏了另一个顶上</button>
+</div>
+<p class="why"><b>C。</b>两张物理上独立的网，避免管理流量干扰实验，实验才可重复（§3）。两个模块都工作在 2.4 GHz；868 MHz 是后来新一代车位传感器才用的。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>在 Iberdrola 的方案里，电表数据的第一段网络是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>GPRS</button>
+<button data-o="b" type="button"><span class="k">B</span>窄带 PLC（PRIME，ITU-T G.9904），沿低压电线到 CT</button>
+<button data-o="c" type="button"><span class="k">C</span>每户一条 ADSL</button>
+<button data-o="d" type="button"><span class="k">D</span>ZigBee mesh</button>
+</div>
+<p class="why"><b>B。</b>见 §4 的数据路径。ADSL、GPRS 出现在 CT 往上的接入汇聚层。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>下面哪项<b>不是</b> Iberdrola 方案里列出的 CT 接入汇聚层技术？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>BPL（宽带 PLC）</button>
+<button data-o="b" type="button"><span class="k">B</span>ADSL</button>
+<button data-o="c" type="button"><span class="k">C</span>光纤</button>
+<button data-o="d" type="button"><span class="k">D</span>LoRaWAN</button>
+</div>
+<p class="why"><b>D。</b>见 §4：私网用 BPL、光纤、数字无线电；公网用 ADSL、cablemodem、GPRS/UMTS。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>SGAM 五层中，描述“组件之间交换信息的协议和机制”的是哪一层？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>capa de comunicaciones</button>
+<button data-o="b" type="button"><span class="k">B</span>capa de información</button>
+<button data-o="c" type="button"><span class="k">C</span>capa de funciones</button>
+<button data-o="d" type="button"><span class="k">D</span>capa de componentes</button>
+</div>
+<p class="why"><b>A。</b>见 §4。capa de información 描述交换的信息和数据模型（例如 CIM）；capa de componentes 描述设备及其物理分布。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>按 §5 的分类，智能电表“在净用电为负时计量反向电能”属于哪类功能？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>AMI</button>
+<button data-o="b" type="button"><span class="k">B</span>ADA</button>
+<button data-o="c" type="button"><span class="k">C</span>DER</button>
+<button data-o="d" type="button"><span class="k">D</span>SCADA</button>
+</div>
+<p class="why"><b>C。</b>见 §5。反向电能来自用户自己的发电，属于 Distributed Energy Resources。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>有一种观点说 smart meter“其实并不智能”，理由是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它只是通信能力更强的数字电表，只给整屋读数，分不出是哪台电器在用电</button>
+<button data-o="b" type="button"><span class="k">B</span>它不能远程读数</button>
+<button data-o="c" type="button"><span class="k">C</span>它不支持分时电价</button>
+<button data-o="d" type="button"><span class="k">D</span>它没有家庭网络（HAN）接口</button>
+</div>
+<p class="why"><b>A。</b>见 §1 和 §5。由此提出的 c-meter = smart meter + load disaggregation。这是一种观点，用来说明 smart meter 的局限。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">10</span>葡萄园 WSN 的节点为什么靠小太阳能板就能自给？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>葡萄园阳光特别充足</button>
+<button data-o="b" type="button"><span class="k">B</span>节点只在生长期工作</button>
+<button data-o="c" type="button"><span class="k">C</span>节点不需要无线通信</button>
+<button data-o="d" type="button"><span class="k">D</span>田间测量能耗不高：这是个“慢”系统，“实时”以几分之一刻钟计</button>
+</div>
+<p class="why"><b>D。</b>见 §6。§6 还强调要全年测量，不只是 4–10 月的生长期，所以 B 不对。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">11</span>葡萄园 WSN 推荐的拓扑及其理由是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>星形：简单、便宜</button>
+<button data-o="b" type="button"><span class="k">B</span>总线：布线方便</button>
+<button data-o="c" type="button"><span class="k">C</span>网状（mallada）：健壮、可扩展</button>
+<button data-o="d" type="button"><span class="k">D</span>环形：时延固定</button>
+</div>
+<p class="why"><b>C。</b>见 §6。网状拓扑提供田间需要的 robustez y escalabilidad，也解决了“到处都要测”的问题。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>§6 的农业监测网络图里，测点是怎么布置的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>每个节点都配一套完整的气象站</button>
+<button data-o="b" type="button"><span class="k">B</span>气象参数只在一个点测，土壤和植株参数在多个区域测</button>
+<button data-o="c" type="button"><span class="k">C</span>所有参数只在地块中心测</button>
+<button data-o="d" type="button"><span class="k">D</span>只测土壤，不测气象</button>
+</div>
+<p class="why"><b>B。</b>见 §6 的图。土壤可能在很短的距离内就变了（variabilidad espacial），所以土壤和植株要多点测。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">19 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">contador inteligente<small>smart meter</small></span><span class="back"><b>智能电表</b><br/>取代机电式电表的电子电表，能远程管理、分时计量。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">telegestión</span><span class="back"><b>远程管理</b><br/>对电表进行远程、自动的读数和操作：开户、断电、改费率……</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">discriminación horaria</span><span class="back"><b>分时计量</b><br/>按时段区分用电，实行分时电价；RD 1110/2007 要求的能力。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">concentrador</span><span class="back"><b>集中器</b><br/>装在 CT 里，汇集一片电表的数据。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CT<small>centro de transformación</small></span><span class="back"><b>配电变压站</b><br/>电表数据的第一个汇聚点；Iberdrola 要连上数以万计的 CT。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PLC PRIME<small>ITU-T G.9904</small></span><span class="back"><b>窄带电力线通信</b><br/>电表数据沿低压电线传到 CT。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MPLS · VPLS</span><span class="back"><b>骨干网技术</b><br/>Iberdrola 的骨干网基于 MPLS，每个服务一个独立的 VPLS 子网。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SCADA</span><span class="back"><b>数据采集与监控系统</b><br/>Iberdrola 方案里的业务应用之一；全称 Supervisory Control And Data Acquisition。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SGAM<small>Smart Grids Architecture Model</small></span><span class="back"><b>智能电网架构模型</b><br/>五层 × 域 × 区，由 CEN-CENELEC-ETSI 制定。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AMI · DER · ADA</span><span class="back"><b>计量 · 分布式能源 · 配电自动化</b><br/>smart grid 建立在这三项技术上（§5）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">load disaggregation<small>NILM · NIALM</small></span><span class="back"><b>负荷分解</b><br/>从整屋功率读数分辨出是哪台电器在用电。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">c-meter<small>cognitive power meter</small></span><span class="back"><b>认知电表</b><br/>smart meter + 负荷分解。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">HAN<small>Home Area Network</small></span><span class="back"><b>家庭局域网</b><br/>电表把读数送给屋内显示器等设备的一侧。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">testbed</span><span class="back"><b>试验床</b><br/>SmartSantander 既供研究者做实验，也提供真实城市服务。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">cluster head<small>gateway</small></span><span class="back"><b>簇头</b><br/>桑坦德每个节点簇的网关，簇内所有流量都经过它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Digimesh</span><span class="back"><b>多跳路由协议</b><br/>XBee 上的专有协议，桑坦德用它传服务和管理流量。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ciclo de trabajo<small>duty cycle</small></span><span class="back"><b>占空比</b><br/>节点醒着工作的时间占周期的比例，越低越省电。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">topología mallada<small>mesh</small></span><span class="back"><b>网状拓扑</b><br/>节点互相转发，健壮、可扩展；农业 WSN 推荐。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DSS<small>Decision Support System</small></span><span class="back"><b>决策支持系统</b><br/>MODEM_IVM 用它把田间数据变成操作建议。</span><span class="flipcue"></span></button>
+</div>
+
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M36"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var box = document.getElementById("ib");
+  if (!box) return;
+  var msgs = Array.prototype.slice.call(box.querySelectorAll(".msg"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var N = 7;
+  var T = [
+    "一条读数从用户家里的电表出发，到达配电公司的中心系统，要经过<b>三段网络</b>：低压电线上的 PLC、接入汇聚层、骨干网。点「下一步」逐段看。",
+    "<b>Contadores inteligentes</b>：装在用户家里，挂在低压网（red BT）上。Iberdrola 要连上的电表<b>数以百万计</b>（图中标 ×10⁶）。这是 RD 1110/2007 带来的要求。",
+    "<b>第一段网络：窄带 PLC</b>。数据就在电线上传：Power Line Communication，CENELEC 频段，遵循 ITU-T G.9904（PRIME）。这项建议由西班牙工程界主导制定，Iberdrola 参与其中。",
+    "<b>Centro de transformación (CT)</b>——配电变压站，数以万计（×10⁴）。电表的读数从 CT 采集。每个 CT 里有一台 switch，需要新服务时就能加进来。",
+    "<b>第二段网络：接入汇聚层</b>（capa de agregación de acceso）。CT 用多种技术接上来：自建的私网有宽带 PLC（BPL）、光纤（FO）、数字无线电；运营商的公网有 ADSL、cablemodem、GPRS/UMTS。按技术要求和成本选（“Económica”原则）。",
+    "<b>第三段网络：骨干网</b>（capa troncal）。基于 MPLS，每个服务一个独立的 VPLS 子网，全部跑在 IP 上。所以智能电网可以逐步建设：先满足眼前的需要，以后再加服务。",
+    "<b>中心系统</b>：骨干网让所有数据都能到达各个“gestores”。一边是业务应用，例如 SCADA 和规划系统；另一边是 <b>sistema de información de puntos de suministro</b>（供电点信息系统）。图中，sistema de telegestión 和它之间交换读数（lecturas）和工单（órdenes de trabajo）。",
+    "<b>供电点信息系统 → comercializadoras</b>（售电公司）：发送计费数据、开户销户和变更、电表读数、断电和复电、投诉。和<b>用户打交道是售电公司的事</b>。整张网目前覆盖一百多万块电表和五千个 CT。"
+  ];
+  var i = 0;
+  function render() {
+    msgs.forEach(function (m) {
+      var s = +m.getAttribute("data-step");
+      m.classList.toggle("on", i > 0 && s === i);
+      m.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 步";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("vina");
+  if (!root) return;
+  var Q = {
+    cable: {
+      a: { ok: false, t: "在面积大、需要周期性作业的地方，布线方案不现实（irreal）。" },
+      b: { ok: true, t: "这就是 red de sensores inalámbricos（无线传感器网络）。" }
+    },
+    energia: {
+      a: { ok: false, t: "田里通常没有电网可接；拉线又回到了布线的问题。" },
+      b: { ok: false, t: "能用，但要定期下田换电池。更好的做法是自主节点用小太阳能板给电池充电。" },
+      c: { ok: true, t: "自主节点用小太阳能板给电池充电；田间测量的能耗本来就不高。" }
+    },
+    ciclo: {
+      a: { ok: false, t: "占空比 D = 100%，小太阳能板撑不住。这是个慢系统，“实时”以几分之一刻钟计。" },
+      b: { ok: true, t: "D = 2 s / 300 s ≈ 0.67%：节点 99% 以上的时间在睡眠，符合“能耗不高”的判断（数值只作演示）。" },
+      c: { ok: false, t: "D = 2 s / 86 400 s ≈ 0.002%，最省电，但太粗：环境传感器要预警即将到来的霜冻，灌溉也要按土壤的反应及时调整。" }
+    },
+    topo: {
+      a: { ok: false, t: "单跳覆盖有限。要考虑节点间最大距离、地形和植被衰减，星形下一个节点被挡住就断线。" },
+      b: { ok: true, t: "topología mallada 提供田间需要的 robustez y escalabilidad。代价是中继节点要常醒着（桑坦德的经验，见 §3）。" },
+      c: { ok: false, t: "只有网关用 3G 路由器上网。另外，农村蜂窝覆盖弱，长续航、低速率的场景连 2G 都嫌贵（补充）。" }
+    },
+    puntos: {
+      a: { ok: false, t: "浪费：本节第一张图里气象参数只在一个点测。" },
+      b: { ok: true, t: "正是本节第一张图的布置。土壤在很短距离内就会变化（养分、pH、地形、孔隙度），所以土壤和植株要多点测。" },
+      c: { ok: false, t: "要考虑 variabilidad espacial：土壤类型可能在很短的距离内就变了，一个点代表不了整块地。" }
+    },
+    radio: {
+      a: { ok: false, t: "叶子少了，衰减反而更小。" },
+      b: { ok: true, t: "要考虑植被造成的信号衰减，发芽以后尤其关键。另外两点是节点间最大距离和地形。" },
+      c: { ok: false, t: "要考虑的三点是节点间最大距离、地形和植被衰减，气温不在其中。" }
+    }
+  };
+  var steps = Array.prototype.slice.call(root.querySelectorAll("[data-q]"));
+  var score = root.querySelector(".vina-score"), list = root.querySelector(".vina-list");
+  var picks = {};
+  function summary() {
+    var done = 0, ok = 0;
+    list.innerHTML = "";
+    steps.forEach(function (st) {
+      var p = picks[st.getAttribute("data-q")];
+      if (!p) return;
+      done++; if (p.ok) ok++;
+      var li = document.createElement("li");
+      li.textContent = st.getAttribute("data-label") + "：" + p.label + (p.ok ? " ✓" : " ✗");
+      list.appendChild(li);
+    });
+    if (!done) { score.textContent = "还没开始选。"; return; }
+    score.textContent = done < steps.length
+      ? "已选 " + done + " / " + steps.length + " · 与本节做法一致 " + ok
+      : "设计完成 · 与本节做法一致 " + ok + " / " + steps.length + (ok === steps.length ? " · 这就是本节的方案" : " · 标 ✗ 的项可以改选");
+  }
+  steps.forEach(function (st) {
+    var id = st.getAttribute("data-q");
+    var fb = st.querySelector(".fb");
+    var btns = Array.prototype.slice.call(st.querySelectorAll("button[data-c]"));
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var o = Q[id][b.getAttribute("data-c")];
+        if (!o) return;
+        btns.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        fb.innerHTML = '<span class="verdict ' + (o.ok ? "ok" : "no") + '">' + (o.ok ? "符合本节做法" : "再想想") + "</span>" + o.t;
+        picks[id] = { ok: o.ok, label: b.textContent };
+        summary();
+      });
+    });
+  });
+  root.querySelector('[data-do="reset"]').addEventListener("click", function () {
+    picks = {};
+    steps.forEach(function (st) {
+      st.querySelector(".fb").innerHTML = "";
+      Array.prototype.slice.call(st.querySelectorAll("button[data-c]")).forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+    });
+    summary();
+  });
+  summary();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T3 Señales y temporización · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp td.num { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp .bad { color: var(--red); }
+.code .st { color: var(--st-teal); }
+.cell.m { border-top: 3px solid var(--muted); }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t3-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t3-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t3-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t3-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 3 章节" class="chain" data-chain="T3"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Señales y temporización POSIX</div>
+<h1>Señales y temporización POSIX</h1>
+<p class="zh">信号与定时：让进程在对的时刻做事</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 30 分钟</span>
+
+
+</div>
+<p class="lede">在微控制器上，定时器溢出会直接打断 CPU。到了跑 Linux 的板子上，硬件中断归内核管，程序拿不到。内核把"时间到了""有人叫你""你访问了非法内存"这类事件，换成发给进程的 <b class="t">señal (ES) / signal (EN)</b>——信号。这一章先讲信号怎样产生、投递、被处理和被挡住，再讲 POSIX 怎样读时钟、睡眠、创建定时器，最后讲周期任务为什么会越跑越慢，以及怎样用绝对时间把它拉回来。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T3.1</span>
+<div class="txt"><span>说出信号是什么、和硬件中断的异同；列出信号的来源（内核、其他进程的 kill、终端、定时器）</span><span class="es">Señal: evento software asíncrono; fuentes de señal.</span><a href="#s1">→ §1 信号是什么</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.2</span>
+<div class="txt"><span>说出收到信号的三种处置和常见信号的默认动作；哪两个信号不能捕获、阻塞或忽略</span><span class="es">Acción por defecto, ignorar, capturar; SIGKILL y SIGSTOP.</span><a href="#s1">→ §1 信号是什么</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.3</span>
+<div class="txt"><span>用 signal() 安装处理函数，用 SIG_DFL / SIG_IGN 恢复或忽略；用 kill、raise 发信号，用 pause 等信号</span><span class="es">signal, kill, raise, pause.</span><a href="#s2">→ §2 捕获信号</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.4</span>
+<div class="txt"><span>用 sigaction 安装处理函数：sa_handler 与 sa_sigaction、SA_SIGINFO、sa_mask、常用 sa_flags；说明处理函数里为什么只能调用 async-signal-safe 函数</span><span class="es">sigaction, siginfo_t, sa_flags; funciones async-signal-safe.</span><a href="#s2">→ §2 捕获信号</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.5</span>
+<div class="txt"><span>区分阻塞和忽略；用 sigset_t 系列函数和 sigprocmask（SIG_BLOCK / SIG_UNBLOCK / SIG_SETMASK）保护临界区；说出 sigpending、sigsuspend 的作用</span><span class="es">Máscara de señales: sigprocmask, señales pendientes.</span><a href="#s3">→ §3 掩码与阻塞</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.6</span>
+<div class="txt"><span>在多线程程序里用 pthread_sigmask 阻塞信号，再用 sigwait / sigwaitinfo 在一个专门的线程里同步地等信号</span><span class="es">pthread_sigmask, sigwait, sigwaitinfo.</span><a href="#s3b">→ §3 线程里的信号</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.7</span>
+<div class="txt"><span>说出实时信号和标准信号的三点不同（排队、按顺序、带数据）；写出 SIGRTMIN + n 的编号；用 sigqueue 和 si_value 传一个值</span><span class="es">Señales de tiempo real: SIGRTMIN…SIGRTMAX, sigqueue, si_value.</span><a href="#s4">→ §4 实时信号</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.8</span>
+<div class="txt"><span>区分 CLOCK_REALTIME 和 CLOCK_MONOTONIC；用 clock_gettime 量时间、做 timespec 的加法和进位；比较 sleep、usleep、nanosleep、clock_nanosleep</span><span class="es">Relojes POSIX, struct timespec, retardos.</span><a href="#s5">→ §5 时钟与睡眠</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.9</span>
+<div class="txt"><span>用 timer_create（struct sigevent：SIGEV_SIGNAL / SIGEV_THREAD / SIGEV_NONE）和 timer_settime（struct itimerspec：it_value / it_interval）做单次和周期定时器；说出 overrun 的含义，和 alarm / setitimer 比较</span><span class="es">Temporizadores POSIX: timer_create, timer_settime, timer_getoverrun.</span><a href="#s6">→ §6 POSIX 定时器</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.10</span>
+<div class="txt"><span>区分局部漂移和累积漂移；解释相对睡眠为什么会累积误差，以及怎样用绝对时间（TIMER_ABSTIME）消除累积漂移</span><span class="es">Deriva local y deriva acumulativa; temporización absoluta.</span><a href="#s7">→ §7 漂移</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T3"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>信号是什么 <span class="tag">T3.1 · T3.2</span></h2>
+<p class="hook"><span class="zh">硬件中断被内核拿走了。那进程怎么知道"时间到了"？</span><span class="es">Una señal es una interrupción software que el kernel entrega a un proceso.</span></p>
+<p>信号是发给进程的一个异步事件：进程正在执行某一行代码，信号一到，执行流跳去运行一段事先指定的函数，跑完再回到原来的位置继续。听起来和中断一模一样，区别在于<b>谁产生、发给谁</b>：</p>
+<div class="grid2">
+<div class="cell r">
+<span class="k c-r">hardware</span>
+<h3>中断 · interrupción</h3>
+<p>由<b>物理设备</b>产生，送到 <b>CPU</b>。在 Linux 上只有内核的驱动能处理它。</p>
+</div>
+<div class="cell p">
+<span class="k c-p">software</span>
+<h3>信号 · señal</h3>
+<p>由<b>内核或其他进程</b>产生，送到某个<b>进程</b>。定时器到期时，是内核替时钟产生信号。</p>
+</div>
+</div>
+<p>为什么绕这么一圈？硬件只有一个时钟，只产生一种中断。内核接住这个中断，再按需要给许多进程各发各的信号；要是某个用户进程自己抢走了时钟中断，别的进程就都用不上它了。</p>
+<p>信号从哪里来：</p>
+
+<p>下面跟着一个 SIGUSR1，从产生一直看到处理完：</p>
+<figure class="stage" data-scene="" id="sc-life">
+<div class="stage-title"><span>Escena 1 · generación → entrega → manejador</span><b>6 步</b></div>
+<div aria-label="动画：一个信号从产生、挂起、投递到处理函数执行完返回，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-life-t" role="img" viewbox="0 0 800 400">
+<title id="sc-life-t">左边是三个信号来源；中间是内核里进程 A 的挂起位、阻塞位和处置；右边是进程 A 的执行时间线，main 被打断，处理函数运行后经 sigreturn 回到原处</title>
+
+<rect class="bx b" data-hl="1" height="60" rx="8" width="170" x="20" y="48"></rect>
+<text class="tz sm b mid" x="105" y="74">Proceso B</text>
+<text class="tm xs w mid" x="105" y="96">kill(pidA, SIGUSR1)</text>
+<rect class="bx o" height="60" rx="8" width="170" x="20" y="168"></rect>
+<text class="tz sm o mid" x="105" y="194">timer · 定时器</text>
+<text class="tm xs m mid" x="105" y="216">到期 → 信号</text>
+<rect class="bx m" height="60" rx="8" width="170" x="20" y="288"></rect>
+<text class="tz sm m mid" x="105" y="314">terminal</text>
+<text class="tm xs m mid" x="105" y="336">Ctrl+C → SIGINT</text>
+
+<rect class="ln p" height="332" rx="12" width="310" x="222" y="28"></rect>
+<text class="tz sm p" x="238" y="54">Kernel · 进程 A 的信号状态</text>
+<text class="tm xs m mid" x="337" y="96">INT</text>
+<text class="tm xs m mid" x="377" y="96">USR1</text>
+<text class="tm xs m mid" x="417" y="96">USR2</text>
+<text class="tm xs m mid" x="457" y="96">ALRM</text>
+<text class="tm xs m mid" x="497" y="96">TERM</text>
+<text class="tz sm w" x="238" y="131">pendiente</text>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="320" y="108"></rect>
+<rect class="bx hollow r" data-hl="2" height="34" rx="4" width="34" x="360" y="108"></rect>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="400" y="108"></rect>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="440" y="108"></rect>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="480" y="108"></rect>
+<text class="tm sm m mid" x="337" y="130">0</text>
+<text class="tm sm m mid" data-out="2" x="377" y="130">0</text>
+<text class="tm sm r mid" data-out="4" data-step="2" x="377" y="130">1</text>
+<text class="tm sm m mid" data-step="4" x="377" y="130">0</text>
+<text class="tm sm m mid" x="417" y="130">0</text>
+<text class="tm sm m mid" x="457" y="130">0</text>
+<text class="tm sm m mid" x="497" y="130">0</text>
+<text class="tz sm w" x="238" y="191">bloqueada</text>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="320" y="168"></rect>
+<rect class="bx hollow m" data-hl="3" height="34" rx="4" width="34" x="360" y="168"></rect>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="400" y="168"></rect>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="440" y="168"></rect>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="480" y="168"></rect>
+<text class="tm sm m mid" x="337" y="190">0</text>
+<text class="tm sm m mid" x="377" y="190">0</text>
+<text class="tm sm m mid" x="417" y="190">0</text>
+<text class="tm sm m mid" x="457" y="190">0</text>
+<text class="tm sm m mid" x="497" y="190">0</text>
+<text class="tz sm w" x="238" y="251">处置</text>
+<text class="tm xs m mid" x="337" y="250">DFL</text>
+<text class="tm xs y mid" data-hl="4" x="377" y="250">hdl</text>
+<text class="tm xs m mid" x="417" y="250">DFL</text>
+<text class="tm xs m mid" x="457" y="250">DFL</text>
+<text class="tm xs m mid" x="497" y="250">DFL</text>
+<text class="tz sm r" data-out="3" data-step="2" x="238" y="300">产生了，还没投递：挂起</text>
+<text class="tz sm g" data-step="3" x="238" y="300">USR1 没被阻塞 → 可以投递</text>
+<text class="tz sm m" data-step="3" x="238" y="330">（被阻塞的话就一直挂着）</text>
+<path class="ln r draw" d="M190 70 C 260 66, 320 64, 377 106" data-step="1" id="t3-p-kill" marker-end="url(#t3-ah-r)"></path>
+<circle class="sl r" data-move="#t3-p-kill" data-out="2" data-step="1" r="7"></circle>
+
+<text class="tz sm g" x="560" y="54">Proceso A</text>
+<text class="tm xs m" x="560" y="96">main</text>
+<text class="tm xs m" x="560" y="176">manejador</text>
+<rect class="bx g" height="24" rx="4" width="100" x="560" y="104"></rect>
+<g data-step="4">
+<path class="ln r draw" d="M532 160 C 590 160, 620 196, 656 196" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin y dash" d="M660 128 V184"></path>
+<rect class="bx y" height="24" rx="4" width="80" x="660" y="184"></rect>
+<text class="tm xs y mid" x="700" y="230">sig_usr(10)</text>
+<text class="tz sm y" x="664" y="150">被打断</text>
+</g>
+<g data-step="5">
+<path class="ln p draw" d="M740 184 C 752 160, 752 140, 742 130" marker-end="url(#t3-ah-p)"></path>
+<rect class="bx g" height="24" rx="4" width="48" x="742" y="104"></rect>
+<text class="tm xs p mid" x="700" y="262">sigreturn</text>
+<text class="tz sm g mid" x="690" y="290">从原处继续</text>
+</g>
+<text class="tz sm y mid" data-hl="6" data-step="6" x="400" y="388">产生 ≠ 投递：两者之间，信号处于 pendiente（挂起）状态</text>
+</svg>
+</div>
+<ol class="captions">
+<li>进程 B 调用 <code>kill(pidA, SIGUSR1)</code>。这一刻叫 <b class="t">generación (ES) / generation (EN)</b>——产生。来源也可以是定时器（内核替它发）或终端（Ctrl+C）。</li>
+<li data-dur="3800">内核并不马上打断进程 A，而是在 A 的<b>挂起集合</b>里把 USR1 那一位置 1。从产生到投递之间，信号是 <b class="t">pendiente (ES) / pending (EN)</b>——挂起的。</li>
+<li data-dur="3800">内核查 A 的<b>阻塞集合</b>（掩码）：USR1 那一位是 0，没被阻塞，可以投递。如果是 1，信号就一直挂着，直到 A 解除阻塞（§3）。</li>
+<li data-dur="4400">A 下一次从内核返回用户态时，内核看到挂起位，清掉它，按"处置"一栏去做：这里装了处理函数 <code>hdl</code>，于是 A 的 main 被打断，转去执行 <code>sig_usr(10)</code>——参数就是信号编号。这叫 <b class="t">entrega (ES) / delivery (EN)</b>——投递。</li>
+<li data-dur="3800">处理函数返回时，经过一次 <code>sigreturn</code> 系统调用回到内核，内核恢复 A 被打断时的寄存器，main 从原处继续，好像什么都没发生过。</li>
+<li data-dur="4200">要记住的是：产生和投递是两个时刻。中间这段时间，信号只是内核里的一位；同一个标准信号挂着时再来一次，还是这一位（§4 会看到实时信号不一样）。</li>
+</ol>
+</figure>
+<p>收到信号后，进程有三种处置，按信号分别设定：</p>
+<div class="grid3">
+<div class="cell m">
+<span class="k">SIG_DFL</span>
+<h3>默认动作</h3>
+<p>由内核执行。多数信号的默认动作是<b>终止进程</b>，有的还会写 core dump，有的是暂停、继续或忽略（见下表）。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">SIG_IGN</span>
+<h3>忽略</h3>
+<p>信号到了直接丢掉。注意：忽略不等于阻塞。阻塞的信号会挂着等，忽略的信号就没了（§3）。</p>
+</div>
+<div class="cell y">
+<span class="k c-y">handler</span>
+<h3>捕获</h3>
+<p>执行程序员写的 <b class="t">manejador (ES) / signal handler (EN)</b>——处理函数。程序不会终止，除非处理函数自己决定退出。</p>
+</div>
+</div>
+<p>常用信号和它们的默认动作（编号是 Linux 上的值，写程序时永远用名字）：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>信号</th><th>Linux 编号</th><th>什么时候产生</th><th>默认动作</th></tr></thead>
+<tbody>
+<tr><td>SIGHUP</td><td class="num">1</td><td>终端挂断</td><td>终止</td></tr>
+<tr><td>SIGINT</td><td class="num">2</td><td>终端里按 Ctrl+C</td><td>终止</td></tr>
+<tr><td>SIGQUIT</td><td class="num">3</td><td>终端里按 Ctrl+\</td><td>终止 + core</td></tr>
+<tr><td>SIGILL</td><td class="num">4</td><td>非法指令</td><td>终止 + core</td></tr>
+<tr><td>SIGABRT</td><td class="num">6</td><td>调用 abort()</td><td>终止 + core</td></tr>
+<tr><td>SIGFPE</td><td class="num">8</td><td>算术异常（整数除以 0 等）</td><td>终止 + core</td></tr>
+<tr><td class="bad">SIGKILL</td><td class="num">9</td><td>强制杀死（<code>kill -9</code>）</td><td>终止 · <b>不能捕获、阻塞、忽略</b></td></tr>
+<tr><td>SIGUSR1 · SIGUSR2</td><td class="num">10 · 12</td><td>由应用自己定义含义</td><td>终止</td></tr>
+<tr><td>SIGSEGV</td><td class="num">11</td><td>非法内存访问</td><td>终止 + core</td></tr>
+<tr><td>SIGPIPE</td><td class="num">13</td><td>往没有读者的管道 / socket 里写</td><td>终止</td></tr>
+<tr><td>SIGALRM</td><td class="num">14</td><td>alarm / setitimer 到期</td><td>终止</td></tr>
+<tr><td>SIGTERM</td><td class="num">15</td><td>请求终止（<code>kill</code> 的默认信号）</td><td>终止</td></tr>
+<tr><td>SIGCHLD</td><td class="num">17</td><td>子进程结束（发给父进程）</td><td>忽略</td></tr>
+<tr><td>SIGCONT</td><td class="num">18</td><td>让暂停的进程继续</td><td>继续 · 不管怎样处置，进程都会被继续</td></tr>
+<tr><td class="bad">SIGSTOP</td><td class="num">19</td><td>暂停进程</td><td>暂停 · <b>不能捕获、阻塞、忽略</b></td></tr>
+<tr><td>SIGTSTP</td><td class="num">20</td><td>终端里按 Ctrl+Z</td><td>暂停</td></tr>
+<tr><td>SIGTTIN · SIGTTOU</td><td class="num">21 · 22</td><td>后台进程读 / 写控制终端</td><td>暂停</td></tr>
+<tr><td>SIGRTMIN … SIGRTMAX</td><td class="num">34 … 64</td><td>应用自定义的实时信号（§4）</td><td>终止</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="takeaway">信号是内核送给进程的软件事件。每个信号有一个处置：默认、忽略或处理函数。SIGKILL 和 SIGSTOP 是例外：内核保证总能杀死或停住一个进程，所以它们不能被捕获、阻塞或忽略。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>捕获信号：signal 和 sigaction <span class="tag">T3.3 · T3.4</span></h2>
+<p class="hook"><span class="zh">装一个处理函数只要一行。难的是：处理函数里能做什么？</span><span class="es">Armado de la función de tratamiento de señal.</span></p>
+<h3>最简单的 signal()</h3>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="kw">void</span> (*<span class="fn">signal</span>(<span class="kw">int</span> signum, <span class="kw">void</span> (*handler)(<span class="kw">int</span>)))(<span class="kw">int</span>);</span></code></pre>
+<p>声明看着吓人，读法是：signal 接收一个信号编号和一个"参数为 int、返回 void 的函数指针"，返回<b>原来的</b>那个函数指针（失败时返回 <code>SIG_ERR</code>）。第二个参数也可以是常量 <code>SIG_DFL</code>（恢复默认）或 <code>SIG_IGN</code>（忽略）。处理函数收到的 int 就是信号编号，所以同一个函数可以处理好几种信号。</p>
+<p>例：前两次 Ctrl+C 只打印提示，第三次恢复默认动作，第四次 Ctrl+C 才真正结束程序。</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static volatile sig_atomic_t</span> veces = <span class="nm">0</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static void</span> <span class="fn">on_int</span>(<span class="kw">int</span> sig) {</span><span class="ln-row">    veces++;</span><span class="ln-row">    <span class="kw">if</span> (veces == <span class="nm">3</span>)</span><span class="ln-row">        <span class="fn">signal</span>(<span class="fl">SIGINT</span>, SIG_DFL);           <span class="cm">// 下一次 Ctrl+C 走默认动作：终止</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">signal</span>(<span class="fl">SIGINT</span>, on_int) == SIG_ERR) { <span class="fn">perror</span>(<span class="st">"signal"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">pause</span>();                              <span class="cm">// 睡到任何一个被处理的信号到来</span></span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"Ctrl+C 第 %d 次\n"</span>, (<span class="kw">int</span>)veces);  <span class="cm">// printf 放在主程序里，不放在处理函数里</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<ul>
+<li><code>pause()</code> 让进程睡到一个信号被<b>处理</b>为止，然后返回 −1（errno = EINTR）。在这里 −1 不表示出错，它只会这样返回。</li>
+<li>发信号：<code>kill(pid, sig)</code> 发给别的进程（pid &gt; 0 是那个进程；pid = −1 是所有有权限发的进程，init 除外；pid &lt; −1 是进程组 −pid）；<code>raise(sig)</code> 发给自己，等于 <code>kill(getpid(), sig)</code>。命令行里是 <code>kill -USR1 &lt;pid&gt;</code>。</li>
+<li>处理函数可以随时换：再调用一次 signal，生效的是最后一次装的那个。</li>
+</ul>
+<h3 id="s2b">完整的 sigaction()</h3>
+<p>signal() 的行为在不同 Unix 上不完全一样（处理完要不要自动恢复默认、被打断的系统调用要不要重启），而且拿不到"谁发的"这类信息。POSIX 推荐用 <code>sigaction</code>：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">sigaction</span>(<span class="kw">int</span> signum, <span class="kw">const struct</span> sigaction *act, <span class="kw">struct</span> sigaction *oldact);</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> sigaction {</span><span class="ln-row">    <span class="kw">void</span>     (*sa_handler)(<span class="kw">int</span>);                       <span class="cm">// 基本形式：和 signal 一样</span></span><span class="ln-row">    <span class="kw">void</span>     (*sa_sigaction)(<span class="kw">int</span>, siginfo_t *, <span class="kw">void</span> *);  <span class="cm">// 扩展形式：多两个参数</span></span><span class="ln-row">    sigset_t   sa_mask;                                  <span class="cm">// 处理函数运行期间额外阻塞的信号</span></span><span class="ln-row">    <span class="kw">int</span>        sa_flags;                                 <span class="cm">// 行为选项，用 | 组合</span></span><span class="ln-row">};</span></code></pre>
+<p><code>sa_handler</code> 和 <code>sa_sigaction</code> <b>只能用一个</b>。想用扩展形式，必须在 <code>sa_flags</code> 里置 <b>SA_SIGINFO</b>，这时处理函数收到三个参数：信号编号、一个 <code>siginfo_t *</code>（谁发的、为什么发、带了什么值）和上下文指针。<code>oldact</code> 不为 NULL 时，返回原来的设置，方便以后恢复。</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>sa_flags</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>SA_SIGINFO</td><td>使用 sa_sigaction（扩展形式，拿到 siginfo_t）</td></tr>
+<tr><td>SA_RESTART</td><td>被这个信号打断的系统调用（read、write、wait…）自动重新开始，而不是返回 −1 / EINTR</td></tr>
+<tr><td>SA_RESETHAND</td><td>处理一次之后恢复成 SIG_DFL（"只捕获一次"）</td></tr>
+<tr><td>SA_NODEFER</td><td>处理函数运行期间<b>不</b>自动阻塞这个信号本身，允许它嵌套</td></tr>
+<tr><td>SA_NOCLDSTOP</td><td>（用于 SIGCHLD）子进程暂停时不发 SIGCHLD</td></tr>
+<tr><td>SA_NOCLDWAIT</td><td>（用于 SIGCHLD）子进程结束后不变成僵尸进程</td></tr>
+<tr><td>SA_ONSTACK</td><td>在 sigaltstack 设定的备用栈上运行处理函数</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">默认情况下，处理函数运行期间，正在处理的这个信号会被自动阻塞（除非 SA_NODEFER），再加上 sa_mask 里列的信号。处理函数返回时，掩码自动恢复。</p>
+<p>siginfo_t 里常用的字段：<code>si_signo</code>（编号）、<code>si_code</code>（来源：<code>SI_USER</code> 是 kill，<code>SI_QUEUE</code> 是 sigqueue，<code>SI_TIMER</code> 是 POSIX 定时器）、<code>si_pid</code> / <code>si_uid</code>（发送者）、<code>si_value</code>（随信号带来的值，§4）。</p>
+<p>例：用扩展形式记下是谁发来的 SIGUSR1，处理期间顺便挡住 SIGUSR2。</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">static volatile sig_atomic_t</span> quien = <span class="nm">0</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static void</span> <span class="fn">on_usr1</span>(<span class="kw">int</span> sig, siginfo_t *si, <span class="kw">void</span> *ctx) {</span><span class="ln-row">    (<span class="kw">void</span>)sig; (<span class="kw">void</span>)ctx;</span><span class="ln-row">    quien = si-&gt;si_pid;                          <span class="cm">// 只存一个值</span></span><span class="ln-row">    <span class="fn">write</span>(STDOUT_FILENO, <span class="st">"USR1\n"</span>, <span class="nm">5</span>);           <span class="cm">// write 是 async-signal-safe</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">struct</span> sigaction sa;</span><span class="ln-row">    <span class="fn">memset</span>(&amp;sa, <span class="nm">0</span>, <span class="kw">sizeof</span> sa);</span><span class="ln-row">    sa.sa_sigaction = on_usr1;                   <span class="cm">// 扩展形式……</span></span><span class="ln-row">    sa.sa_flags = SA_SIGINFO | SA_RESTART;       <span class="cm">// ……必须配 SA_SIGINFO</span></span><span class="ln-row">    <span class="fn">sigemptyset</span>(&amp;sa.sa_mask);</span><span class="ln-row">    <span class="fn">sigaddset</span>(&amp;sa.sa_mask, <span class="fl">SIGUSR2</span>);             <span class="cm">// 处理期间额外挡住 SIGUSR2</span></span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">sigaction</span>(<span class="fl">SIGUSR1</span>, &amp;sa, NULL) == -<span class="nm">1</span>) { <span class="fn">perror</span>(<span class="st">"sigaction"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">pause</span>();</span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"SIGUSR1 来自 PID %d\n"</span>, (<span class="kw">int</span>)quien);</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<h3>处理函数里能做什么</h3>
+<p>处理函数可能在主程序的<b>任何</b>一条指令之后插进来，包括主程序正在 <code>printf</code> 或 <code>malloc</code> 的半中间。如果处理函数也调用 printf，两边会同时改 stdio 的内部缓冲区，结果可能是输出错乱，甚至死锁（主程序拿着锁，处理函数等这把锁，而主程序要等处理函数返回才能放锁）。</p>
+<p>所以处理函数里只能调用 <b class="t">async-signal-safe</b>——异步信号安全的函数：可重入，或者在执行期间屏蔽了信号。</p>
+<div class="grid2">
+<div class="cell g">
+<span class="k c-g">可以</span>
+<p><code>write</code>、<code>read</code>、<code>_exit</code>、<code>kill</code>、<code>raise</code>、<code>sigaction</code>、<code>sigprocmask</code>、<code>clock_gettime</code>、<code>timer_getoverrun</code>、<code>sem_post</code>，以及读写 <code>volatile sig_atomic_t</code> 变量。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">不可以</span>
+<p><code>printf</code> 家族、<code>malloc</code> / <code>free</code>、<code>exit</code>（会刷 stdio 缓冲区）、<code>pthread_mutex_lock</code>，以及大多数库函数。</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">做法</span>
+<p>和微控制器上"中断服务程序要短"是同一个道理：处理函数只置一个 <code>volatile sig_atomic_t</code> 标志（或者 sem_post），真正的工作放回主程序。<code>volatile</code> 让编译器每次都去内存里读这个变量；<code>sig_atomic_t</code> 保证一次读写不会被信号从中间打断。更彻底的办法是根本不写处理函数，用 §3 的 sigwait 同步地等。课程里不少示例在处理函数里用 printf，那是为了演示方便，正式程序不要这样写。</p>
+</div>
+<div class="panel">
+<h3>跳出处理函数：sigsetjmp / siglongjmp</h3>
+<p>处理函数正常是"返回原处"。有时原处已经没意义（比如出了错，或者主程序卡在一个阻塞调用里），可以用非局部跳转直接回到之前设好的位置：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;setjmp.h&gt;</span></span><span class="ln-row"><span class="kw">int</span>  <span class="fn">sigsetjmp</span>(sigjmp_buf env, <span class="kw">int</span> savesigs);   <span class="cm">// 设跳转点：直接执行到这里时返回 0</span></span><span class="ln-row"><span class="kw">void</span> <span class="fn">siglongjmp</span>(sigjmp_buf env, <span class="kw">int</span> val);      <span class="cm">// 跳回去：sigsetjmp 这次返回 val（不能是 0）</span></span></code></pre>
+<p class="aside">sigsetjmp 的返回值告诉你是"第一次执行到这里"（0）还是"跳回来的"（val）。savesigs 不为 0 时，跳回去会恢复当时的信号掩码，所以从处理函数里跳出要用 sig 版本，而不是 setjmp / longjmp。还要用一个 <code>volatile sig_atomic_t</code> 标志确认跳转点已经设好，再允许跳。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>信号掩码与阻塞 <span class="tag">T3.5 · T3.6</span></h2>
+<p class="hook"><span class="zh">有一段代码绝对不能被打断。怎样让信号"等一等"？</span><span class="es">Enmascarado de señales: bloquear no es ignorar.</span></p>
+<p>每个线程有一个 <b class="t">máscara de señales (ES) / signal mask (EN)</b>——信号掩码：一个信号集合，里面的信号被<b>阻塞</b>。被阻塞的信号照样产生，但不投递，而是挂起，等解除阻塞的那一刻再投递。这和 SIG_IGN 完全不同：</p>
+<div class="grid2">
+<div class="cell b">
+<span class="k c-b">bloquear · sigprocmask</span>
+<h3>阻塞：先挂着</h3>
+<p>信号留在挂起集合里，解除阻塞后立刻投递。不会丢（但同一个标准信号挂着时再来，只记一次）。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">ignorar · SIG_IGN</span>
+<h3>忽略：直接丢</h3>
+<p>信号一到就被扔掉，什么也不留下。之后改回处理函数，也找不回来。</p>
+</div>
+</div>
+<h3>信号集合 sigset_t</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">sigemptyset</span>(sigset_t *set);              <span class="cm">// 清空</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigfillset</span>(sigset_t *set);               <span class="cm">// 放进所有信号</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigaddset</span>(sigset_t *set, <span class="kw">int</span> signo);     <span class="cm">// 加一个</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigdelset</span>(sigset_t *set, <span class="kw">int</span> signo);     <span class="cm">// 去掉一个</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigismember</span>(<span class="kw">const</span> sigset_t *set, <span class="kw">int</span> signo);  <span class="cm">// 在不在里面：1 / 0</span></span></code></pre>
+<p class="aside">sigset_t 是不透明类型，使用前一定要先 sigemptyset 或 sigfillset。早期 Unix 用一个 int 当掩码（sigblock、siggetmask、sigsetmask），只能表示前 32 个信号；POSIX 的 sigset_t 能表示系统里所有信号，包括实时信号。</p>
+<h3>sigprocmask</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">sigprocmask</span>(<span class="kw">int</span> how, <span class="kw">const</span> sigset_t *set, sigset_t *oldset);</span></code></pre>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>how</th><th>新的掩码</th></tr></thead>
+<tbody>
+<tr><td>SIG_BLOCK</td><td>旧掩码 ∪ set（再多挡几个）</td></tr>
+<tr><td>SIG_UNBLOCK</td><td>旧掩码 − set（放开这几个）</td></tr>
+<tr><td>SIG_SETMASK</td><td>就是 set（整个替换）</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>oldset</code> 不为 NULL 时返回原来的掩码；set 为 NULL 时只读不改。保护临界区的标准写法：先 SIG_BLOCK 并保存旧掩码，做完再用 SIG_SETMASK 恢复旧掩码（而不是 SIG_UNBLOCK，因为这些信号进来之前可能本来就是被阻塞的）。</p>
+<pre class="code"><code><span class="ln-row">sigset_t set, old;</span><span class="ln-row"><span class="fn">sigemptyset</span>(&amp;set);</span><span class="ln-row"><span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGINT</span>);</span><span class="ln-row"><span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGUSR1</span>);</span><span class="ln-row"><span class="fn">sigprocmask</span>(SIG_BLOCK, &amp;set, &amp;old);     <span class="cm">// 进入临界区：挡住这两个</span></span><span class="ln-row"><span class="fn">actualizar_tabla</span>();                     <span class="cm">// 处理函数也会读这张表，不能读到改了一半的</span></span><span class="ln-row"><span class="fn">sigprocmask</span>(SIG_SETMASK, &amp;old, NULL);   <span class="cm">// 恢复：期间挂起的信号在这一刻投递</span></span></code></pre>
+<ul>
+<li><code>sigpending(&amp;set)</code>：把当前<b>挂起</b>（已产生、因阻塞还没投递）的信号放进 set，用来查询。</li>
+<li><code>sigsuspend(&amp;mask)</code>：<b>原子地</b>把掩码换成 mask 并睡下，等一个信号被处理后返回，同时把掩码换回原来的。"先解除阻塞，再 pause"分两步写会有空隙：信号恰好落在两步之间，就被处理掉了，pause 会一直睡下去。sigsuspend 把两步合成一步，没有这个空隙。</li>
+</ul>
+<p>下面这个模拟器把挂起集合画出来。打开"阻塞"后多发几次，再解除阻塞，看处理函数执行了几次：</p>
+<figure class="stage" id="sc-mask">
+<div class="stage-title"><span>Simulador · máscara y señales pendientes</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="sc-mask-t" role="img" viewbox="0 0 800 250">
+<title id="sc-mask-t">模拟器：上面是 SIGUSR1 的一个挂起位，中间是 SIGRTMIN+2 的排队格子，下面是处理函数的执行记录</title>
+<text class="tz sm w" x="24" y="66">SIGUSR1 · pendiente</text>
+<rect class="bx hollow m" height="40" id="t3-pu" rx="6" width="60" x="210" y="40"></rect>
+<text class="tm r mid" id="t3-puv" x="240" y="66">0</text>
+<text class="tm sm b" id="t3-mk" x="320" y="66">bloqueadas: USR1, RTMIN+2</text>
+<text class="tz sm w" x="24" y="132">SIGRTMIN+2 · cola</text>
+<rect class="bx hollow m" height="40" id="t3-qb0" rx="6" width="96" x="210" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb1" rx="6" width="96" x="316" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb2" rx="6" width="96" x="422" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb3" rx="6" width="96" x="528" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb4" rx="6" width="96" x="634" y="106"></rect>
+<text class="tm xs r mid" id="t3-q0" x="258" y="131"></text>
+<text class="tm xs r mid" id="t3-q1" x="364" y="131"></text>
+<text class="tm xs r mid" id="t3-q2" x="470" y="131"></text>
+<text class="tm xs r mid" id="t3-q3" x="576" y="131"></text>
+<text class="tm xs r mid" id="t3-q4" x="682" y="131"></text>
+<path class="ln thin m" d="M24 180 H776"></path>
+<text class="tz sm y" x="24" y="212">manejador</text>
+<text class="tm sm y" id="t3-log" x="130" y="212">—</text>
+</svg>
+</div>
+<div class="stage-ctl">
+<button class="press" id="t3-kill" type="button">kill SIGUSR1</button>
+<button class="press" id="t3-queue" type="button">sigqueue SIGRTMIN+2</button>
+<button aria-pressed="true" class="sw" id="t3-blk" type="button"><span class="knob"></span><span class="lab">bloquear</span></button>
+<button class="mini" id="t3-reset" type="button">重来</button>
+<p aria-live="polite" class="out" id="t3-out">现在两个信号都被阻塞。点几次 kill SIGUSR1 和 sigqueue，再关掉"bloquear"。</p>
+</div>
+</figure>
+<div class="note">
+<span class="lbl">试试看</span>
+<p>阻塞时连点三次 kill SIGUSR1：挂起位一直是 1，第二、三次就这样丢了。连点三次 sigqueue：排了三个，各带一个值。解除阻塞：SIGUSR1 处理一次，实时信号按顺序处理三次。为什么不一样，见 §4。</p>
+</div>
+<h3 id="s3b">线程里的信号：pthread_sigmask + sigwait</h3>
+<p>多线程程序里，掩码是<b>每个线程</b>各自的（新线程继承创建者的掩码），而处置（处理函数）是整个进程共用的。一个发给"进程"的信号（kill、定时器），内核会把它交给<b>任意一个没有阻塞它的线程</b>，你事先不知道是哪一个。</p>
+<p>线程里改掩码用 <code>pthread_sigmask</code>，参数和 sigprocmask 一样（多线程程序里 sigprocmask 的行为没有定义）。常用的做法是根本不写处理函数：</p>
+<ol>
+<li>在 main 里、创建任何线程<b>之前</b>，用 pthread_sigmask 把要处理的信号全部阻塞。之后创建的线程都继承这个掩码，所以没有哪个线程会被这些信号异步打断。</li>
+<li>开一个专门的线程，循环调用 <code>sigwait(&amp;set, &amp;sig)</code>：它睡到 set 里的某个信号挂起，把它取走（不调用处理函数），把编号放进 sig 后返回。</li>
+</ol>
+<pre class="code"><code><span class="ln-row"><span class="kw">static void</span> *<span class="fn">hilo_senales</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    sigset_t *set = arg;</span><span class="ln-row">    <span class="kw">int</span> sig;</span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">sigwait</span>(set, &amp;sig);                 <span class="cm">// 同步地等：这里不是处理函数，什么函数都能调用</span></span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"收到信号 %d\n"</span>, sig);</span><span class="ln-row">        <span class="kw">if</span> (sig == <span class="fl">SIGTERM</span>) <span class="fn">exit</span>(<span class="nm">0</span>);</span><span class="ln-row">    }</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">static</span> sigset_t set;</span><span class="ln-row">    <span class="fn">sigemptyset</span>(&amp;set);</span><span class="ln-row">    <span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGUSR1</span>);</span><span class="ln-row">    <span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGTERM</span>);</span><span class="ln-row">    <span class="fn">pthread_sigmask</span>(SIG_BLOCK, &amp;set, NULL);       <span class="cm">// ① 先阻塞：之后创建的线程都继承</span></span><span class="ln-row">    pthread_t th;</span><span class="ln-row">    <span class="fn">pthread_create</span>(&amp;th, NULL, hilo_senales, &amp;set);  <span class="cm">// ② 专门等信号的线程</span></span><span class="ln-row">    <span class="cm">/* ③ 其他线程做正事，不会被这两个信号打断 */</span></span><span class="ln-row">    <span class="fn">pthread_join</span>(th, NULL);</span><span class="ln-row">}</span></code></pre>
+<ul>
+<li><code>sigwaitinfo(&amp;set, &amp;info)</code>：同上，但把完整的 <code>siginfo_t</code> 带回来（谁发的、si_value），返回值就是信号编号。</li>
+<li><code>sigtimedwait(&amp;set, &amp;info, &amp;timeout)</code>：最多等 timeout，超时返回 −1，errno = EAGAIN。</li>
+<li>要等的信号<b>必须先阻塞</b>：没阻塞的话，信号可能在 sigwait 拿到之前就按处置被投递掉（甚至按默认动作把进程杀了）。</li>
+</ul>
+<p class="takeaway">异步的处理函数受 async-signal-safe 的限制；把信号阻塞起来，再用 sigwait 在一个线程里同步地取，就变成了普通的"等一个事件"，代码里怎么写都行。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>实时信号 <span class="tag">T3.7</span></h2>
+<p class="hook"><span class="zh">标准信号只有一位，来三次只记一次。要是每一次都不能丢呢？</span><span class="es">Señales de tiempo real: SIGRTMIN…SIGRTMAX.</span></p>
+<p>POSIX.1b 加了一段编号 <b class="t">SIGRTMIN … SIGRTMAX</b>——实时信号，没有预先规定的含义，全部留给应用使用，默认动作是终止进程。和标准信号比，有三点不同：</p>
+<figure class="stage" data-scene="" id="sc-rt">
+<div class="stage-title"><span>Escena 4 · estándar vs tiempo real</span><b>5 步</b></div>
+<div aria-label="动画：阻塞期间标准信号三次合成一次，实时信号三次排队并带着各自的值" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-rt-t" role="img" viewbox="0 0 800 360">
+<title id="sc-rt-t">左边：被阻塞的 SIGUSR1 发三次，只留下一个挂起位，解除阻塞后处理一次；右边：被阻塞的 SIGRTMIN+2 用 sigqueue 发三次，排成三项，各带 si_value 7、8、9，解除阻塞后按顺序处理三次</title>
+<rect class="ln thin m" height="300" rx="12" width="380" x="12" y="12"></rect>
+<text class="tx sm w" x="30" y="46">Estándar · SIGUSR1</text>
+<text class="tz sm b" x="30" y="72">bloqueada</text>
+<circle class="sl r" cx="60" cy="110" r="6"></circle><text class="tm xs m" x="74" y="114">kill #1</text>
+<circle class="sl r" cx="60" cy="150" r="6"></circle><text class="tm xs m" x="74" y="154">kill #2</text>
+<circle class="sl r" cx="60" cy="190" r="6"></circle><text class="tm xs m" x="74" y="194">kill #3</text>
+<text class="tz sm m mid" x="290" y="118">pendiente</text>
+<rect class="bx hollow r" height="44" rx="6" width="70" x="255" y="128"></rect>
+<g data-step="1">
+<path class="ln thin r draw" d="M136 110 L252 142" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M136 150 L252 150" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M136 190 L252 158" marker-end="url(#t3-ah-r)"></path>
+<text class="tm lg r mid" x="290" y="158">1</text>
+</g>
+<text class="tz sm y" data-step="2" x="30" y="232">三次挂起，只剩一位：合成一次</text>
+<g data-step="4">
+<rect class="bx y" height="30" rx="4" width="80" x="30" y="256"></rect>
+<text class="tm xs y mid" x="70" y="276">hdl ×1</text>
+<text class="tz sm m" x="122" y="276">解除阻塞后只处理一次</text>
+</g>
+<rect class="ln thin m" height="300" rx="12" width="380" x="408" y="12"></rect>
+<text class="tx sm w" x="426" y="46">Tiempo real · SIGRTMIN+2</text>
+<text class="tz sm b" x="426" y="72">bloqueada</text>
+<circle class="sl r" cx="446" cy="110" r="6"></circle><text class="tm xs m" x="460" y="114">sigqueue(7)</text>
+<circle class="sl r" cx="446" cy="150" r="6"></circle><text class="tm xs m" x="460" y="154">sigqueue(8)</text>
+<circle class="sl r" cx="446" cy="190" r="6"></circle><text class="tm xs m" x="460" y="194">sigqueue(9)</text>
+<g data-step="3">
+<path class="ln thin r draw" d="M552 110 L620 110" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M552 150 L620 156" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M552 190 L620 202" marker-end="url(#t3-ah-r)"></path>
+<rect class="bx r" height="36" rx="4" width="150" x="622" y="92"></rect>
+<rect class="bx r" height="36" rx="4" width="150" x="622" y="138"></rect>
+<rect class="bx r" height="36" rx="4" width="150" x="622" y="184"></rect>
+<text class="tm xs r mid" x="697" y="115">si_value = 7</text>
+<text class="tm xs r mid" x="697" y="161">si_value = 8</text>
+<text class="tm xs r mid" x="697" y="207">si_value = 9</text>
+<text class="tz sm y" x="426" y="242">排成三项，各带一个值</text>
+</g>
+<g data-step="4">
+<rect class="bx y" height="30" rx="4" width="72" x="426" y="256"></rect>
+<rect class="bx y" height="30" rx="4" width="72" x="506" y="256"></rect>
+<rect class="bx y" height="30" rx="4" width="72" x="586" y="256"></rect>
+<text class="tm xs y mid" x="462" y="276">hdl(7)</text>
+<text class="tm xs y mid" x="542" y="276">hdl(8)</text>
+<text class="tm xs y mid" x="622" y="276">hdl(9)</text>
+<text class="tz sm m" x="668" y="276">按顺序</text>
+</g>
+<text class="tz sm y mid" data-hl="5" data-step="5" x="400" y="342">实时信号：排队 · 按顺序 · 带数据 · 编号小的先投递</text>
+</svg>
+</div>
+<ol class="captions">
+<li>两边的信号都被阻塞。左边，别的进程用 kill 连发三次 SIGUSR1：挂起集合里 USR1 那一位置成 1。</li>
+<li data-dur="3600">第二次、第三次到达时，那一位已经是 1，再置一次还是 1。标准信号<b>不排队</b>：挂着的时候来多少次，都只记一次。</li>
+<li data-dur="4400">右边，用 <code>sigqueue</code> 连发三次 SIGRTMIN+2，每次带一个值 7、8、9。实时信号<b>排队</b>：内核为每一次都留一项，连同它的 <code>si_value</code>。</li>
+<li data-dur="4400">解除阻塞。左边处理函数只执行一次；右边执行三次，<b>按发送顺序</b>，每次从 <code>siginfo_t</code> 里拿到各自的值。</li>
+<li data-dur="4200">总结：实时信号会排队、同一个信号按发送顺序投递、可以带一个 int 或指针。几个不同的实时信号同时挂着时，编号小的先投递。</li>
+</ol>
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>标准信号</th><th>实时信号</th></tr></thead>
+<tbody>
+<tr><td>含义</td><td>大多预先规定（SIGINT、SIGALRM…），只有 SIGUSR1/2 留给应用</td><td>全部留给应用</td></tr>
+<tr><td>挂起时再来</td><td>合成一次</td><td>排队，一次一项</td></tr>
+<tr><td>投递顺序</td><td>没有规定</td><td>编号小的先；同一信号按发送顺序</td></tr>
+<tr><td>附带数据</td><td>没有</td><td>si_value（sival_int 或 sival_ptr）</td></tr>
+</tbody>
+</table>
+</div>
+<h3>编号</h3>
+<p>SIGRTMIN 和 SIGRTMAX 在 Linux 上<b>不是编译期常量</b>，而是运行时才确定的值：内核提供 32 到 64，glibc 的线程库自己占用了最前面两个，所以程序看到的 SIGRTMIN 通常是 <b>34</b>，SIGRTMAX 是 <b>64</b>。所以：</p>
+<div class="formula">SIGRTMIN + n = 34 + n　　SIGRTMAX − n = 64 − n</div>
+<p class="aside">程序里一律写 <code>SIGRTMIN + n</code>，不要写死数字；用之前确认 <code>SIGRTMIN + n &lt;= SIGRTMAX</code>。系统能排队的实时信号总数可以用 <code>sysconf(_SC_RTSIG_MAX)</code> 查。</p>
+<div class="drill" data-drill="rtsig"></div>
+<h3>带一个值：sigqueue 和 si_value</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">union</span> sigval { <span class="kw">int</span> sival_int; <span class="kw">void</span> *sival_ptr; };</span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigqueue</span>(pid_t pid, <span class="kw">int</span> sig, <span class="kw">const union</span> sigval value);</span></code></pre>
+<p>sigqueue 和 kill 一样发信号，多带一个 <code>union sigval</code>。接收方用 SA_SIGINFO 的处理函数，或者用 sigwaitinfo，从 <code>si-&gt;si_value</code> 取出来；<code>si_code</code> 是 <code>SI_QUEUE</code>。跨进程时只有 <code>sival_int</code> 有意义（指针在别的进程的地址空间里没用）；进程内部，比如 §6 的定时器，传指针最常见。</p>
+<pre class="code"><code><span class="ln-row"><span class="cm">/* 发送方 */</span></span><span class="ln-row"><span class="kw">union</span> sigval v = { .sival_int = <span class="nm">42</span> };</span><span class="ln-row"><span class="fn">sigqueue</span>(pid_receptor, <span class="fl">SIGRTMIN</span> + <span class="nm">3</span>, v);</span><span class="ln-row"> </span><span class="ln-row"><span class="cm">/* 接收方：阻塞后用 sigwaitinfo 同步地取 */</span></span><span class="ln-row">sigset_t set;  siginfo_t si;</span><span class="ln-row"><span class="fn">sigemptyset</span>(&amp;set);</span><span class="ln-row"><span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGRTMIN</span> + <span class="nm">3</span>);</span><span class="ln-row"><span class="fn">sigprocmask</span>(SIG_BLOCK, &amp;set, NULL);</span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">sigwaitinfo</span>(&amp;set, &amp;si);</span><span class="ln-row">    <span class="fn">printf</span>(<span class="st">"值 %d，来自 PID %d\n"</span>, si.si_value.sival_int, (<span class="kw">int</span>)si.si_pid);</span><span class="ln-row">}</span></code></pre>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>POSIX 时钟与睡眠 <span class="tag">T3.8</span></h2>
+<p class="hook"><span class="zh">"现在几点"和"过了多久"，是两个不同的问题。</span><span class="es">Relojes: CLOCK_REALTIME y CLOCK_MONOTONIC.</span></p>
+<p>实时系统要能在规定的时刻做事，需要三样东西：量时间的 <b class="t">reloj (ES) / clock (EN)</b>——时钟、在指定时刻唤醒任务的机制，以及发现"等太久了"的 <b class="t">timeout</b>——超时机制。</p>
+<h3>时钟是一个计数器</h3>
+<p>时钟 = 一个产生周期脉冲的振荡器 + 一个累计脉冲数的计数器，软件再把计数换算成时间。两个指标：<b>精度</b>（granularidad，一个计数代表多长时间）和<b>范围</b>（计数器装满之前能表示多长时间）。两者互相牵制：同样 32 位，精度越细，越快溢出。</p>
+<div class="formula">范围 = 2³² × 精度 ≈ 4.29 × 10⁹ × 精度</div>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>精度</th><th>32 位计数器的范围</th></tr></thead>
+<tbody>
+<tr><td>100 ns</td><td>约 429 s（7.2 min）</td></tr>
+<tr><td>1 µs</td><td>约 4295 s（72 min）</td></tr>
+<tr><td>100 µs</td><td>约 119 h</td></tr>
+<tr><td>1 ms</td><td>约 50 天</td></tr>
+<tr><td>1 s</td><td>约 136 年</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">注意：有些资料的表里 100 ns 一行写的是 4.3 s；按 2³² × 100 ns 计算是约 429 s，4.3 s 对应的是 1 ns 的精度。</p>
+
+<h3>时间的表示</h3>
+<p>Unix 把绝对时间表示成从 <b>1970-01-01 00:00:00 UTC</b>（Epoch）起经过的秒数，类型是 <code>time_t</code>（在 64 位 Linux 上是 64 位）。更细的精度用结构体：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timeval  { time_t tv_sec; suseconds_t tv_usec; };  <span class="cm">// 微秒：0 … 999 999</span></span><span class="ln-row"><span class="kw">struct</span> timespec { time_t tv_sec; <span class="kw">long</span>        tv_nsec; };  <span class="cm">// 纳秒：0 … 999 999 999（POSIX 用这个）</span></span></code></pre>
+<p class="aside">旧接口：<code>time()</code>（秒）、<code>gettimeofday()</code> / <code>settimeofday()</code>（timeval，微秒）、<code>difftime()</code>（两个 time_t 之差）、<code>struct tm</code>（年月日时分秒，tm_year 从 1900 起算，tm_mon 是 0–11）和 <code>mktime</code> / <code>timelocal</code>（tm → time_t）。改系统时间需要超级用户权限。</p>
+<h3>POSIX 时钟</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">clock_gettime</span>(clockid_t clk, <span class="kw">struct</span> timespec *tp);        <span class="cm">// 读</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">clock_getres</span>(clockid_t clk, <span class="kw">struct</span> timespec *res);       <span class="cm">// 分辨率</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">clock_settime</span>(clockid_t clk, <span class="kw">const struct</span> timespec *tp);  <span class="cm">// 设（只对 REALTIME，要权限）</span></span></code></pre>
+<div class="grid2">
+<div class="cell o">
+<span class="k c-o">CLOCK_REALTIME</span>
+<h3>墙上时钟</h3>
+<p>"现在几点"：从 Epoch 起的时间。会<b>跳</b>：管理员改时间、NTP 同步，都可能让它向前或向后跳一下。适合打时间戳、"在某个日期时刻做某事"。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">CLOCK_MONOTONIC</span>
+<h3>单调时钟</h3>
+<p>"过了多久"：从某个没有规定的起点（通常是开机）开始，只增不减，不受改时间、NTP 跳变的影响。量时间间隔、排周期任务，都用它。</p>
+</div>
+</div>
+<p>量一段代码用了多久：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timespec t0, t1;</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;t0);</span><span class="ln-row"><span class="fn">trabajo</span>();</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;t1);</span><span class="ln-row"><span class="kw">long long</span> ns = (t1.tv_sec - t0.tv_sec) * <span class="nm">1000000000LL</span> + (t1.tv_nsec - t0.tv_nsec);</span></code></pre>
+<p>timespec 做加法时，<code>tv_nsec</code> 必须保持在 0 到 999 999 999 之间，超出就要<b>进位</b>到 tv_sec。很多函数（nanosleep、timer_settime）收到 tv_nsec ≥ 10⁹ 会直接返回 EINVAL。一个通用的小函数：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#define NS_POR_S 1000000000L</span></span><span class="ln-row"><span class="kw">static void</span> <span class="fn">ts_add_ns</span>(<span class="kw">struct</span> timespec *t, <span class="kw">long</span> ns) {</span><span class="ln-row">    t-&gt;tv_nsec += ns;</span><span class="ln-row">    <span class="kw">while</span> (t-&gt;tv_nsec &gt;= NS_POR_S) {          <span class="cm">// 注意是 &gt;= 10⁹，减的也是 10⁹</span></span><span class="ln-row">        t-&gt;tv_nsec -= NS_POR_S;</span><span class="ln-row">        t-&gt;tv_sec++;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<div class="drill" data-drill="ts"></div>
+<h3>让任务睡一会儿</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>函数</th><th>单位</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>sleep(s)</td><td>秒</td><td>返回没睡完的秒数（被信号打断时）</td></tr>
+<tr><td>usleep(us)</td><td>微秒</td><td>旧接口，POSIX 已经删掉，新代码用 nanosleep</td></tr>
+<tr><td>nanosleep(&amp;req, &amp;rem)</td><td>timespec</td><td>相对时间。被处理函数打断时返回 −1、errno = EINTR，剩下的时间写进 rem</td></tr>
+<tr><td>clock_nanosleep(clk, flags, &amp;req, &amp;rem)</td><td>timespec</td><td>可以选时钟；flags = <b>TIMER_ABSTIME</b> 时 req 是<b>绝对时刻</b>："睡到那个时刻为止"。出错时直接返回错误号（不是 −1）</td></tr>
+</tbody>
+</table>
+</div>
+<p>nanosleep 睡到三种情况之一才返回：时间到了；有信号的处理函数被执行；进程被终止。被打断后接着睡剩下的时间，常见写法：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timespec req = { .tv_sec = <span class="nm">0</span>, .tv_nsec = <span class="nm">200</span> * <span class="nm">1000000L</span> }, rem;   <span class="cm">// 200 ms</span></span><span class="ln-row"><span class="kw">while</span> (<span class="fn">nanosleep</span>(&amp;req, &amp;rem) == -<span class="nm">1</span> &amp;&amp; errno == EINTR)</span><span class="ln-row">    req = rem;                                <span class="cm">// 接着睡剩下的</span></span></code></pre>
+<div class="note">
+<span class="lbl">实际睡多久</span>
+<p>睡眠时间只会<b>比要求的长</b>，不会短：请求会向上取整到系统时钟的粒度，醒来后还要等调度器让任务重新运行。粒度和延迟取决于平台和内核配置，用 <code>clock_getres</code> 能查到时钟的分辨率。另外，上面的"接着睡剩下的"每被打断一次就多一点误差；要避免误差，用绝对时间（§7）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>POSIX 定时器 <span class="tag">T3.9</span></h2>
+<p class="hook"><span class="zh">睡眠会把整个任务停住。能不能让内核到点了"拍一下"，任务自己接着干活？</span><span class="es">timer_create, timer_settime, struct sigevent, struct itimerspec.</span></p>
+<h3>先看老办法：alarm 和 setitimer</h3>
+<ul>
+<li><code>unsigned alarm(unsigned s)</code>：s 秒后给自己发一个 <b>SIGALRM</b>。再调用一次会重设（返回上次剩下的秒数），<code>alarm(0)</code> 取消。只有秒级精度。</li>
+<li><code>setitimer(ITIMER_REAL, &amp;it, &amp;old)</code>：用 <code>struct itimerval</code>（两个 timeval：it_value 第一次、it_interval 之后每次）设一个微秒级、可以自动重复的定时器，到期同样发 SIGALRM。</li>
+<li>SIGALRM 的默认动作是终止进程：<b>先装处理函数，再启动定时器</b>，否则第一次到期程序就结束了。</li>
+</ul>
+<p>它们的局限：每个进程只有一个这样的定时器；全都用同一个 SIGALRM；只能"多久之后"（相对时间）。POSIX 定时器把这三点都解决了：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;time.h&gt;</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_create</span>(clockid_t clk, <span class="kw">struct</span> sigevent *evp, timer_t *timerid);</span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_settime</span>(timer_t timerid, <span class="kw">int</span> flags, <span class="kw">const struct</span> itimerspec *nuevo, <span class="kw">struct</span> itimerspec *viejo);</span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_gettime</span>(timer_t timerid, <span class="kw">struct</span> itimerspec *actual);   <span class="cm">// 还剩多久</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_getoverrun</span>(timer_t timerid);</span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_delete</span>(timer_t timerid);</span></code></pre>
+<p class="aside">在较旧的 glibc 上要加链接选项 <code>-lrt</code>；新版本已经把这些函数并进了 libc，加上也无妨。</p>
+<div class="grid2">
+<div class="panel">
+<h3>到期时做什么：struct sigevent</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sigevent {</span><span class="ln-row">  <span class="kw">int</span>          sigev_notify;   <span class="cm">// 通知方式</span></span><span class="ln-row">  <span class="kw">int</span>          sigev_signo;    <span class="cm">// 发哪个信号</span></span><span class="ln-row">  <span class="kw">union</span> sigval sigev_value;    <span class="cm">// 带给接收方的值</span></span><span class="ln-row">  <span class="kw">void</span> (*sigev_notify_function)(<span class="kw">union</span> sigval);</span><span class="ln-row">  pthread_attr_t *sigev_notify_attributes;</span><span class="ln-row">};</span></code></pre>
+<ul>
+<li><b>SIGEV_SIGNAL</b>：发 sigev_signo 指定的信号，si_value = sigev_value，si_code = SI_TIMER。</li>
+<li><b>SIGEV_THREAD</b>：新开一个线程执行 sigev_notify_function(sigev_value)。那是普通线程，不受 async-signal-safe 限制。</li>
+<li><b>SIGEV_NONE</b>：不通知，只能自己用 timer_gettime 去查。</li>
+<li><code>evp = NULL</code>：等于 SIGEV_SIGNAL + SIGALRM，sigev_value 是定时器的 id。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>什么时候到期：struct itimerspec</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> itimerspec {</span><span class="ln-row">  <span class="kw">struct</span> timespec it_interval; <span class="cm">// 之后每隔多久</span></span><span class="ln-row">  <span class="kw">struct</span> timespec it_value;    <span class="cm">// 第一次到期</span></span><span class="ln-row">};</span></code></pre>
+<ul>
+<li><b>it_value ≠ 0</b>：启动（armar）。flags = 0 时它是"从现在起多久"；flags = <b>TIMER_ABSTIME</b> 时它是所选时钟上的<b>绝对时刻</b>（已经过去的时刻会立刻到期）。</li>
+<li><b>it_value = 0</b>：停止（desarmar），不管 it_interval 是多少。</li>
+<li><b>it_interval ≠ 0</b>：周期定时器，每次到期后自动重装这个值。</li>
+<li><b>it_interval = 0</b>：单次定时器，只响一次。</li>
+</ul>
+</div>
+</div>
+<p>把一个周期定时器的时间线画出来（it_value = 300 ms，it_interval = 200 ms）：</p>
+<figure class="stage" data-scene="" id="sc-timer">
+<div class="stage-title"><span>Escena 6 · un temporizador periódico</span><b>6 步</b></div>
+<div aria-label="动画：周期定时器的时间线，第一次到期、之后的周期到期、处理函数执行和 overrun" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-timer-t" role="img" viewbox="0 0 800 340">
+<title id="sc-timer-t">时间轴从 0 到 1300 毫秒：300 毫秒处第一次到期，之后每 200 毫秒一次；每次到期发一个信号，处理函数执行；进程忙的期间两次到期只投递一个信号，overrun 为 1</title>
+<path class="ln thin m" d="M60 200 H770"></path>
+<text class="tm xs m mid" x="60" y="222">0</text>
+<text class="tm xs m mid" x="210" y="222">300</text>
+<text class="tm xs m mid" x="310" y="222">500</text>
+<text class="tm xs m mid" x="410" y="222">700</text>
+<text class="tm xs m mid" x="510" y="222">900</text>
+<text class="tm xs m mid" x="610" y="222">1100</text>
+<text class="tm xs m mid" x="710" y="222">1300</text>
+<text class="tm xs m" x="760" y="222">ms</text>
+<text class="tm xs y" x="14" y="266">hdl</text>
+<g data-step="1">
+<rect class="bx p" height="40" rx="6" width="250" x="60" y="30"></rect>
+<text class="tm sm p" x="74" y="56">timer_create() → tid</text>
+</g>
+<text class="tz sm m" data-out="6" data-step="1" x="330" y="56">已创建，还没启动（desarmado）</text>
+<text class="tz sm y" data-hl="6" data-step="6" x="330" y="56">it_interval = 0 → 只响一次；it_value = 0 → 停止</text>
+<g data-step="2">
+<text class="tm xs p" x="60" y="100">timer_settime(tid, 0, &amp;its, NULL)</text>
+<path class="ln o draw" d="M60 152 V142 H210 V152"></path>
+<text class="tm xs o mid" x="135" y="134">it_value = 300 ms</text>
+<path class="ln r" d="M210 160 V200"></path>
+<circle class="sl r" cx="210" cy="200" r="5"></circle>
+</g>
+<g data-step="3">
+<path class="ln o draw" d="M210 152 V142 H310 V152"></path>
+<text class="tm xs o mid" x="290" y="118">it_interval = 200 ms</text>
+<path class="ln r" d="M310 160 V200 M410 160 V200 M510 160 V200 M610 160 V200 M710 160 V200"></path>
+<circle class="sl r" cx="310" cy="200" r="5"></circle>
+<circle class="sl r" cx="410" cy="200" r="5"></circle>
+<circle class="sl r" cx="510" cy="200" r="5"></circle>
+<circle class="sl r" cx="610" cy="200" r="5"></circle>
+<circle class="sl r" cx="710" cy="200" r="5"></circle>
+</g>
+<g data-step="4">
+<path class="ln thin r dash" d="M210 205 V252 M310 205 V252 M410 205 V252 M710 205 V252"></path>
+<rect class="bx y" height="24" rx="3" width="26" x="212" y="252"></rect>
+<rect class="bx y" height="24" rx="3" width="26" x="312" y="252"></rect>
+<rect class="bx y" height="24" rx="3" width="26" x="412" y="252"></rect>
+<path class="ln thin r dash" d="M510 205 V252 M610 205 V252" data-out="5"></path>
+<rect class="bx y" data-out="5" height="24" rx="3" width="26" x="512" y="252"></rect>
+<rect class="bx y" data-out="5" height="24" rx="3" width="26" x="612" y="252"></rect>
+<rect class="bx y" height="24" rx="3" width="26" x="712" y="252"></rect>
+</g>
+<g data-step="5">
+<rect class="bx m" height="44" rx="4" width="170" x="470" y="240"></rect>
+<text class="tz sm m mid" x="555" y="304">进程忙 / 信号被阻塞</text>
+<rect class="bx y" data-hl="5" height="24" rx="3" width="26" x="642" y="252"></rect>
+<text class="tm sm r mid" x="600" y="118">2 次到期 → 1 个信号 · overrun = 1</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><code>timer_create</code> 只是创建定时器，拿到一个 <code>timer_t</code>，同时用 sigevent 说好"到期时发什么"。这时它还没启动。</li>
+<li data-dur="3800"><code>timer_settime</code> 用 flags = 0（相对时间）启动它：<code>it_value</code> = 300 ms，表示从现在起 300 ms 后第一次到期。</li>
+<li data-dur="3800">因为 <code>it_interval</code> = 200 ms 不为 0，每次到期后内核自动重装，于是 500、700、900……一直响下去。</li>
+<li data-dur="3600">每次到期，内核按 sigevent 发一个信号（或开一个线程）。进程收到信号，处理函数执行一次。</li>
+<li data-dur="5200">如果进程在 900 ms 和 1100 ms 两次到期时都没机会处理（比如信号被阻塞，或者进程一直没被调度），同一个定时器一次只挂一个信号：第二次到期不再发新信号，而是让 <b class="t">overrun</b>——超限计数加 1。信号投递后，<code>timer_getoverrun(tid)</code> 返回 1：真实的到期次数是 1 + 1。</li>
+<li data-dur="4200">单次定时器：<code>it_interval</code> 设成 0，只响一次（适合做超时）。随时可以用 <code>it_value</code> = 0 再调一次 timer_settime 把它停掉；不用了就 <code>timer_delete</code>。</li>
+</ol>
+</figure>
+<div class="drill" data-drill="itspec"></div>
+<h3>例：SIGEV_SIGNAL 的周期定时器</h3>
+<p>每 250 ms 发一次 SIGRTMIN，主程序数到 20 次就停。顺序是：先装处理函数，再创建定时器，最后启动。</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;time.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static volatile sig_atomic_t</span> ticks = <span class="nm">0</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static void</span> <span class="fn">on_tick</span>(<span class="kw">int</span> sig, siginfo_t *si, <span class="kw">void</span> *uc) {</span><span class="ln-row">    (<span class="kw">void</span>)sig; (<span class="kw">void</span>)si; (<span class="kw">void</span>)uc;</span><span class="ln-row">    ticks++;                                     <span class="cm">// 只记一笔；si-&gt;si_value.sival_ptr 指向 tid</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">struct</span> sigaction sa = {<span class="nm">0</span>};</span><span class="ln-row">    sa.sa_sigaction = on_tick;</span><span class="ln-row">    sa.sa_flags = SA_SIGINFO;</span><span class="ln-row">    <span class="fn">sigemptyset</span>(&amp;sa.sa_mask);</span><span class="ln-row">    <span class="fn">sigaction</span>(<span class="fl">SIGRTMIN</span>, &amp;sa, NULL);             <span class="cm">// ① 先装处理函数</span></span><span class="ln-row"> </span><span class="ln-row">    timer_t tid;</span><span class="ln-row">    <span class="kw">struct</span> sigevent sev = {<span class="nm">0</span>};</span><span class="ln-row">    sev.sigev_notify = SIGEV_SIGNAL;             <span class="cm">// ② 到期时发信号</span></span><span class="ln-row">    sev.sigev_signo  = <span class="fl">SIGRTMIN</span>;</span><span class="ln-row">    sev.sigev_value.sival_ptr = &amp;tid;</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">timer_create</span>(CLOCK_MONOTONIC, &amp;sev, &amp;tid) == -<span class="nm">1</span>) { <span class="fn">perror</span>(<span class="st">"timer_create"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">struct</span> itimerspec its = {<span class="nm">0</span>};</span><span class="ln-row">    its.it_value.tv_nsec    = <span class="nm">250</span> * <span class="nm">1000000L</span>;   <span class="cm">// ③ 第一次：250 ms 后</span></span><span class="ln-row">    its.it_interval.tv_nsec = <span class="nm">250</span> * <span class="nm">1000000L</span>;   <span class="cm">//    之后每 250 ms</span></span><span class="ln-row">    <span class="fn">timer_settime</span>(tid, <span class="nm">0</span>, &amp;its, NULL);           <span class="cm">//    flags = 0：相对时间</span></span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">while</span> (ticks &lt; <span class="nm">20</span>) {</span><span class="ln-row">        <span class="fn">pause</span>();</span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"tick %d\n"</span>, (<span class="kw">int</span>)ticks);</span><span class="ln-row">    }</span><span class="ln-row">    <span class="fn">timer_delete</span>(tid);</span><span class="ln-row">    <span class="kw">return</span> <span class="nm">0</span>;</span><span class="ln-row">}</span></code></pre>
+<h3>例：SIGEV_THREAD 的单次超时</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">static void</span> <span class="fn">timeout</span>(<span class="kw">union</span> sigval v) {             <span class="cm">// 在一个新线程里执行</span></span><span class="ln-row">    <span class="fn">printf</span>(<span class="st">"超时：%s\n"</span>, (<span class="kw">char</span> *)v.sival_ptr);    <span class="cm">// 普通线程，可以用 printf</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> sigevent sev = {<span class="nm">0</span>};</span><span class="ln-row">sev.sigev_notify = SIGEV_THREAD;</span><span class="ln-row">sev.sigev_notify_function = timeout;</span><span class="ln-row">sev.sigev_value.sival_ptr = <span class="st">"esperando respuesta"</span>;</span><span class="ln-row">timer_t tid;</span><span class="ln-row"><span class="fn">timer_create</span>(CLOCK_MONOTONIC, &amp;sev, &amp;tid);</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> itimerspec once = {<span class="nm">0</span>};</span><span class="ln-row">once.it_value.tv_sec = <span class="nm">3</span>;                         <span class="cm">// 3 s 后；it_interval = 0 → 只响一次</span></span><span class="ln-row"><span class="fn">timer_settime</span>(tid, <span class="nm">0</span>, &amp;once, NULL);</span></code></pre>
+<div class="note">
+<span class="lbl">别的等法</span>
+<p><b>timeout</b>：限制等待一个事件的时间，可以用单次定时器（到期的处理函数让等待结束），也可以用 <code>select()</code> 的 timeout 参数：它在一组文件描述符上等"可读 / 可写 / 异常"，最多等 timeout 这么久（NULL 表示一直等），到期时返回 0、所有集合清零。<b>timerfd</b>（Linux 专有）：<code>timerfd_create</code> + <code>timerfd_settime</code> 得到一个文件描述符，<code>read</code> 会阻塞到定时器到期，读出一个 uint64_t：上次读之后到期了几次。完全不用信号。异步 I/O（<code>aio_read</code> 等）完成时的通知，用的也是同一个 struct sigevent。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>漂移：相对时间与绝对时间 <span class="tag">T3.10</span></h2>
+<p class="hook"><span class="zh">每圈睡 50 ms，跑 100 圈，为什么用了不止 5 秒？</span><span class="es">Deriva local y deriva acumulativa.</span></p>
+<p>最直观的周期任务写法是"做一次，睡一个周期"：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">tarea_periodica</span>();</span><span class="ln-row">    <span class="fn">nanosleep</span>(&amp;periodo, NULL);     <span class="cm">// 相对时间：从"现在"起睡一个周期</span></span><span class="ln-row">}</span></code></pre>
+<p>它有两个毛病：没有扣掉任务自己执行的时间；醒来时还可能被别的任务、时钟粒度、调度粒度再耽误一点。每一圈晚一点叫 <b class="t">deriva local (ES) / local drift (EN)</b>——局部漂移；因为下一圈从"晚了的现在"重新算，这些误差一圈圈加起来，就是 <b class="t">deriva acumulativa (ES) / cumulative drift (EN)</b>——累积漂移。</p>
+<figure class="stage" data-scene="" id="sc-drift">
+<div class="stage-title"><span>Escena 7 · relativo vs absoluto</span><b>5 步</b></div>
+<div aria-label="动画：相对睡眠的周期任务越来越晚，绝对时间的周期任务始终贴着理想时刻" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-drift-t" role="img" viewbox="0 0 800 340">
+<title id="sc-drift-t">金色虚线是每 50 毫秒的理想时刻；上一行用相对睡眠，每圈晚 14 毫秒，到第五圈累积晚 56 毫秒；下一行用绝对时刻，每圈只晚 4 毫秒，不累积</title>
+<g data-step="1">
+<path class="ln thin o dash" d="M60 60 V300 M190 60 V300 M320 60 V300 M450 60 V300 M580 60 V300 M710 60 V300"></path>
+<text class="tm xs o mid" x="60" y="48">0</text>
+<text class="tm xs o mid" x="190" y="48">50</text>
+<text class="tm xs o mid" x="320" y="48">100</text>
+<text class="tm xs o mid" x="450" y="48">150</text>
+<text class="tm xs o mid" x="580" y="48">200</text>
+<text class="tm xs o mid" x="710" y="48">250 ms</text>
+</g>
+<text class="tz sm w" x="66" y="92">relativo · nanosleep(50 ms)</text>
+<path class="ln thin m" d="M60 120 H790"></path>
+<g data-step="2">
+<rect class="bx g" height="24" rx="3" width="26" x="60" y="108"></rect>
+<path class="ln thin o" d="M86 120 H216"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="226.4" y="108"></rect>
+</g>
+<g data-step="3">
+<path class="ln thin o" d="M252.4 120 H382.4"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="392.8" y="108"></rect>
+<path class="ln thin o" d="M418.8 120 H548.8"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="559.2" y="108"></rect>
+<path class="ln thin o" d="M585.2 120 H715.2"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="725.6" y="108"></rect>
+<path class="ln r draw" d="M580 146 V154 H725.6 V146"></path>
+<text class="tm xs r mid" x="652" y="172">累积 +56 ms</text>
+</g>
+<text class="tz sm w" x="66" y="212">absoluto · clock_nanosleep(TIMER_ABSTIME)</text>
+<path class="ln thin m" d="M60 240 H790"></path>
+<g data-step="4">
+<rect class="bx g" height="24" rx="3" width="26" x="70.4" y="228"></rect>
+<path class="ln thin o" d="M96.4 240 H190"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="200.4" y="228"></rect>
+<path class="ln thin o" d="M226.4 240 H320"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="330.4" y="228"></rect>
+<path class="ln thin o" d="M356.4 240 H450"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="460.4" y="228"></rect>
+<path class="ln thin o" d="M486.4 240 H580"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="590.4" y="228"></rect>
+<path class="ln thin o" d="M616.4 240 H710"></path>
+</g>
+<g data-step="5">
+<path class="ln r" d="M580 262 V270 H590.4 V262"></path>
+<text class="tm xs r" x="596" y="276">+4 ms</text>
+<text class="tz sm y mid" data-hl="5" x="400" y="326">绝对时间：只剩局部漂移，不会累积</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>金色虚线是理想的周期起点：0、50、100……ms。任务每次要做 10 ms 的工作，醒来时还会晚 4 ms 左右（调度延迟）。</li>
+<li data-dur="3800">相对睡眠：0 ms 开始工作，10 ms 时睡 50 ms，到 60 ms 才睡醒，再晚 4 ms，第二圈在 64 ms 才开始。每圈晚 10 + 4 = 14 ms。</li>
+<li data-dur="4200">下一圈从"晚了的现在"再睡 50 ms，误差一圈圈叠加：第五圈本该在 200 ms 开始，实际在 256 ms，晚了 4 × 14 = 56 ms，而且只会越来越多。</li>
+<li data-dur="4400">绝对时间：每圈开始时算好下一个目标时刻 = 上一个目标 + 50 ms，然后"睡到那个时刻"。工作花多久都不影响下一个目标，睡眠时间自动变短。</li>
+<li data-dur="4200">每圈仍然晚 4 ms（唤醒延迟，这是局部漂移，消除不了），但不会传到下一圈：第五圈在 204 ms 开始。累积漂移没有了。</li>
+</ol>
+<p class="stage-note">周期 50 ms、工作 10 ms、唤醒延迟 4 ms（数值只作演示）。</p>
+
+</figure>
+<div class="formula">相对睡眠：第 n 圈的累积漂移 ≈ n × (执行时间 + 唤醒延迟)　　绝对时间：每圈 ≈ 唤醒延迟，不累积</div>
+<div class="drill" data-drill="drift"></div>
+<h3>用绝对时间排周期</h3>
+<p>思路是让延时"可变"：每次只睡到下一个周期的起点。最方便的写法是在 <code>CLOCK_MONOTONIC</code> 上算出绝对的目标时刻，用 <code>clock_nanosleep(…, TIMER_ABSTIME, …)</code>：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timespec next;</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;next);              <span class="cm">// 起点</span></span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">ts_add_ns</span>(&amp;next, <span class="nm">50</span> * <span class="nm">1000000L</span>);                <span class="cm">// 下一个目标 = 上一个目标 + 周期（§5 的函数）</span></span><span class="ln-row">    <span class="kw">while</span> (<span class="fn">clock_nanosleep</span>(CLOCK_MONOTONIC, TIMER_ABSTIME, &amp;next, NULL) == EINTR)</span><span class="ln-row">        ;                                             <span class="cm">// 被信号打断：目标时刻不变，接着睡</span></span><span class="ln-row">    <span class="fn">tarea_periodica</span>();</span><span class="ln-row">}</span></code></pre>
+<ul>
+<li>关键在 <code>next</code> 是在<b>上一个目标</b>上加周期，而不是在"现在"上加。读一次时钟只在开头。</li>
+<li>被信号打断时，绝对时间的写法直接重试同一个目标，不会像相对睡眠那样每次多一点误差。</li>
+<li>如果某一圈的工作超过了一个周期，目标时刻已经过去，clock_nanosleep 立刻返回：任务会连着补跑，直到追上。需要的话可以检测这种情况（相当于定时器的 overrun）。</li>
+</ul>
+<p>同样的思路也适用于 POSIX 定时器：调用 timer_settime 时 flags 写 <code>TIMER_ABSTIME</code>，<code>it_value</code> 就是绝对时刻，每次处理完再把它加上一个周期、重新设。片段如下（定时器要建在同一个时钟上，周期这里是 500 ms）：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> itimerspec its = {<span class="nm">0</span>};                        <span class="cm">// it_interval = 0：每次手动排下一次</span></span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;its.it_value);</span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">ts_add_ns</span>(&amp;its.it_value, <span class="nm">500</span> * <span class="nm">1000000L</span>);       <span class="cm">// 下一个绝对时刻</span></span><span class="ln-row">    <span class="fn">timer_settime</span>(tid, TIMER_ABSTIME, &amp;its, NULL);</span><span class="ln-row">    <span class="fn">pause</span>();                                         <span class="cm">// 等这一次到期的通知</span></span><span class="ln-row">    <span class="cm">/* …这一周期的工作… */</span></span><span class="ln-row">}</span></code></pre>
+<div class="note warm">
+<span class="lbl">it_interval 会不会漂</span>
+<p>周期定时器（it_interval ≠ 0）的下一次到期，是内核在<b>上一次到期时刻</b>上加 it_interval 算出来的，和处理函数什么时候执行无关，所以它本身不会因为任务的执行时间而累积漂移。有些资料的说法比较保守："不确定 it_interval 有没有修正漂移，就自己在代码里用绝对时间修正"。真正一定会累积的，是上面"做一次、相对地睡一个周期"的写法。</p>
+</div>
+<p class="takeaway">累积漂移来自"每次从现在起算"。把下一个时刻定义成"上一个目标 + 周期"，并用绝对时间去等（TIMER_ABSTIME），误差就停在局部漂移那一点，不再一圈圈加上去。局部漂移消除不了。</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">4 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。重点是方法，答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="ts"></div>
+<div class="drill" data-drill="itspec"></div>
+<div class="drill" data-drill="rtsig"></div>
+<div class="drill" data-drill="drift"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="T3">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>信号和硬件中断最根本的区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>信号是同步的，中断是异步的</button>
+<button data-o="b" type="button"><span class="k">B</span>信号由内核或其他进程产生、发给进程；中断由物理设备产生、送到 CPU</button>
+<button data-o="c" type="button"><span class="k">C</span>信号处理完不会回到原处，中断会</button>
+<button data-o="d" type="button"><span class="k">D</span>信号只能由定时器产生</button>
+</div>
+<p class="why"><b>B。</b>两者都是异步的，处理完都回到原处；不同在于谁产生、送给谁（§1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>哪一组信号既不能捕获，也不能阻塞或忽略？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>SIGINT 和 SIGTERM</button>
+<button data-o="b" type="button"><span class="k">B</span>SIGALRM 和 SIGCHLD</button>
+<button data-o="c" type="button"><span class="k">C</span>SIGSEGV 和 SIGFPE</button>
+<button data-o="d" type="button"><span class="k">D</span>SIGKILL 和 SIGSTOP</button>
+</div>
+<p class="why"><b>D。</b>内核要保证总能杀死或停住一个进程（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>用 sigaction 安装一个三参数的处理函数 <code>void h(int, siginfo_t *, void *)</code>，必须怎样设置？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>写进 sa_sigaction，并在 sa_flags 里置 SA_SIGINFO</button>
+<button data-o="b" type="button"><span class="k">B</span>写进 sa_handler，并在 sa_flags 里置 SA_RESTART</button>
+<button data-o="c" type="button"><span class="k">C</span>sa_handler 和 sa_sigaction 都写上同一个函数</button>
+<button data-o="d" type="button"><span class="k">D</span>写进 sa_sigaction，sa_flags 保持 0</button>
+</div>
+<p class="why"><b>A。</b>两个字段只能用一个；扩展形式要靠 SA_SIGINFO 打开（§2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>在信号处理函数里，下面哪个调用是安全的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>printf("ok\n")</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>malloc(64)</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>write(STDOUT_FILENO, "ok\n", 3)</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>pthread_mutex_lock(&amp;m)</code></button>
+</div>
+<p class="why"><b>C。</b>write 是 async-signal-safe 的；printf、malloc、加锁都可能和被打断的主程序争同一份内部状态，甚至死锁（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>SIGUSR1 装了处理函数，并且被阻塞。期间别的进程用 kill 发了 4 次 SIGUSR1，然后程序解除阻塞。处理函数执行几次？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0 次：阻塞期间的信号都丢了</button>
+<button data-o="b" type="button"><span class="k">B</span>1 次</button>
+<button data-o="c" type="button"><span class="k">C</span>4 次</button>
+<button data-o="d" type="button"><span class="k">D</span>不确定，可能 1 到 4 次之间的任何值，取决于调度</button>
+</div>
+<p class="why"><b>B。</b>阻塞不会丢信号，但标准信号不排队，挂起时只有一位（§3、§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>同样的情况，换成用 sigqueue 发 4 次 SIGRTMIN+3，每次带不同的值。解除阻塞后会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>处理一次，si_value 是最后一次的值</button>
+<button data-o="b" type="button"><span class="k">B</span>处理一次，si_value 是第一次的值</button>
+<button data-o="c" type="button"><span class="k">C</span>处理 4 次，按发送顺序，每次拿到各自的值</button>
+<button data-o="d" type="button"><span class="k">D</span>处理 4 次，但顺序不确定</button>
+</div>
+<p class="why"><b>C。</b>实时信号排队，同一个信号按发送顺序投递，每一项带着自己的 si_value（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>"信号 X 被忽略（SIG_IGN）"和"信号 X 被阻塞"的区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>忽略：到了就丢掉；阻塞：先挂起，解除阻塞后再投递</button>
+<button data-o="b" type="button"><span class="k">B</span>两者一样，只是 API 不同</button>
+<button data-o="c" type="button"><span class="k">C</span>忽略：先挂起；阻塞：到了就丢掉</button>
+<button data-o="d" type="button"><span class="k">D</span>阻塞只对实时信号有效</button>
+</div>
+<p class="why"><b>A。</b>"enmascarar"是阻塞，和 SIG_IGN 是两回事（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">08</span>多线程程序想在一个专门的线程里用 sigwait 处理 SIGTERM。正确的做法是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只在那个专门的线程里阻塞 SIGTERM</button>
+<button data-o="b" type="button"><span class="k">B</span>给 SIGTERM 装一个处理函数，再在专门线程里 sigwait</button>
+<button data-o="c" type="button"><span class="k">C</span>不阻塞 SIGTERM，sigwait 会自己抢到它</button>
+<button data-o="d" type="button"><span class="k">D</span>在 main 里、创建线程之前用 pthread_sigmask 阻塞 SIGTERM，让所有线程继承，再由专门线程 sigwait</button>
+</div>
+<p class="why"><b>D。</b>发给进程的信号会交给任一没阻塞它的线程；所以所有线程都要阻塞它，sigwait 才能确定地取到（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>调用 <code>timer_settime(tid, 0, &amp;its, NULL)</code>，其中 <code>its.it_value = {0, 0}</code>、<code>its.it_interval = {0, 200000000}</code>。结果是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>立刻到期一次，然后每 200 ms 一次</button>
+<button data-o="b" type="button"><span class="k">B</span>定时器被停止（或保持停止），不会到期</button>
+<button data-o="c" type="button"><span class="k">C</span>200 ms 后到期一次，之后不再到期</button>
+<button data-o="d" type="button"><span class="k">D</span>返回 EINVAL</button>
+</div>
+<p class="why"><b>B。</b>it_value 为 0 就是 desarmar，不管 it_interval 是多少（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>一个周期定时器的信号被阻塞了一段时间，解除阻塞后处理函数里 <code>timer_getoverrun()</code> 返回 2。这说明？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>定时器总共到期了 2 次</button>
+<button data-o="b" type="button"><span class="k">B</span>有 2 个信号还在排队，会再处理 2 次</button>
+<button data-o="c" type="button"><span class="k">C</span>这次投递的信号代表了 3 次到期：1 次发了信号，另外 2 次只计数</button>
+<button data-o="d" type="button"><span class="k">D</span>定时器出错了 2 次</button>
+</div>
+<p class="why"><b>C。</b>同一个定时器一次只挂一个信号，挂着期间的到期只让 overrun 加 1（§6）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>为什么排周期任务时通常用 CLOCK_MONOTONIC，而不是 CLOCK_REALTIME？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它不受改系统时间、NTP 跳变的影响，只增不减</button>
+<button data-o="b" type="button"><span class="k">B</span>它的分辨率一定更高</button>
+<button data-o="c" type="button"><span class="k">C</span>只有它能和 TIMER_ABSTIME 一起用</button>
+<button data-o="d" type="button"><span class="k">D</span>它从 1970-01-01 开始计时</button>
+</div>
+<p class="why"><b>A。</b>REALTIME 是墙上时钟，会被调；从 Epoch 计时的是 REALTIME。两个时钟都可以配 TIMER_ABSTIME（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>循环里每圈做 3 ms 的工作，再 <code>nanosleep</code> 相对地睡 20 ms（忽略唤醒延迟）。跑 100 圈后，比理想时间 100 × 20 ms 晚了多少？怎样消除？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>3 ms；不用消除</button>
+<button data-o="b" type="button"><span class="k">B</span>300 ms；改成"上一个目标 + 周期"的绝对时刻，用 TIMER_ABSTIME 睡到那个时刻</button>
+<button data-o="c" type="button"><span class="k">C</span>300 ms；把睡眠时间改短 3 ms 就能彻底消除</button>
+<button data-o="d" type="button"><span class="k">D</span>2300 ms；换成 usleep</button>
+</div>
+<p class="why"><b>B。</b>累积漂移 = 100 × 3 ms。固定地少睡 3 ms 只在工作时间恒定、没有任何延迟时才凑巧对得上；绝对时间才真正不累积（§7）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">señal<small>signal</small></span><span class="back"><b>信号</b><br/>内核或其他进程发给进程的异步软件事件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">manejador<small>signal handler</small></span><span class="back"><b>信号处理函数</b><br/>信号投递时被调用的函数，参数是信号编号。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SIG_DFL · SIG_IGN</span><span class="back"><b>默认 · 忽略</b><br/>两种不写处理函数的处置：交给内核的默认动作，或直接丢掉。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigaction<small>SA_SIGINFO · sa_mask · sa_flags</small></span><span class="back"><b>完整的信号安装接口</b><br/>可以拿到 siginfo_t、设处理期间的掩码和行为选项。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">async-signal-safe</span><span class="back"><b>异步信号安全</b><br/>能在处理函数里安全调用的函数（write、_exit、sem_post…）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pendiente<small>pending</small></span><span class="back"><b>挂起</b><br/>已产生、还没投递的信号状态。标准信号挂起时只记一次。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">máscara de señales<small>signal mask · sigprocmask</small></span><span class="back"><b>信号掩码</b><br/>被阻塞的信号集合；阻塞的信号挂起等待，不会丢。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigsuspend</span><span class="back"><b>原子地换掩码并等待</b><br/>避免"先解除阻塞再 pause"之间漏掉信号。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigwait<small>sigwaitinfo · pthread_sigmask</small></span><span class="back"><b>同步地等信号</b><br/>先阻塞，再在专门的线程里取走信号，不用处理函数。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">señales de tiempo real<small>SIGRTMIN … SIGRTMAX</small></span><span class="back"><b>实时信号</b><br/>排队、按顺序、带数据；Linux 上通常是 34–64。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigqueue<small>si_value · union sigval</small></span><span class="back"><b>带值发信号</b><br/>随信号带一个 int 或指针，接收方在 siginfo_t 里拿到。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CLOCK_MONOTONIC<small>vs CLOCK_REALTIME</small></span><span class="back"><b>单调时钟</b><br/>只增不减，不受改时间影响；REALTIME 是会跳的墙上时钟。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct timespec<small>tv_sec · tv_nsec</small></span><span class="back"><b>秒 + 纳秒</b><br/>tv_nsec 必须在 0 到 999 999 999 之间，超出要进位。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct sigevent<small>SIGEV_SIGNAL · SIGEV_THREAD · SIGEV_NONE</small></span><span class="back"><b>到期通知方式</b><br/>定时器（或 AIO）完成时发信号、开线程，还是不通知。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct itimerspec<small>it_value · it_interval</small></span><span class="back"><b>定时器的时间</b><br/>第一次到期 + 之后的周期；it_value = 0 停止，it_interval = 0 单次。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">deriva acumulativa<small>cumulative drift · TIMER_ABSTIME</small></span><span class="back"><b>累积漂移</b><br/>相对睡眠每圈的误差一路叠加；用绝对时刻排周期就不累积。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="T3"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+  if (!$("t3-kill")) return;
+  var SLOTS = 5;
+  var st = { blk: true, pu: 0, q: [], n: 6, log: [] };
+
+  function render() {
+    $("t3-puv").textContent = st.pu;
+    $("t3-pu").setAttribute("class", st.pu ? "bx r" : "bx hollow m");
+    for (var i = 0; i < SLOTS; i++) {
+      var v = st.q[i];
+      $("t3-q" + i).textContent = v == null ? "" : "si_value = " + v;
+      $("t3-qb" + i).setAttribute("class", v == null ? "bx hollow m" : "bx r");
+    }
+    $("t3-mk").textContent = st.blk ? "bloqueadas: USR1, RTMIN+2" : "bloqueadas: —";
+    $("t3-log").textContent = st.log.length ? st.log.slice(-6).join("  ") : "—";
+    $("t3-blk").setAttribute("aria-pressed", st.blk ? "true" : "false");
+  }
+  function say(s) { $("t3-out").innerHTML = s; }
+
+  $("t3-kill").addEventListener("click", function () {
+    if (!st.blk) { st.log.push("USR1"); say("没被阻塞：立刻投递，处理函数执行一次。"); }
+    else if (st.pu) { say("挂起位已经是 1：标准信号只有这一位，<b>这一次合并掉了</b>。"); }
+    else { st.pu = 1; say("被阻塞：挂起位置 1，等解除阻塞。"); }
+    render();
+  });
+  $("t3-queue").addEventListener("click", function () {
+    var v = st.n + 1;
+    if (!st.blk) { st.n = v; st.log.push("RT(" + v + ")"); say("没被阻塞：立刻投递，处理函数从 si_value 拿到 " + v + "。"); }
+    else if (st.q.length >= SLOTS) { say("演示只画了 " + SLOTS + " 格。真实系统能排的数量大得多，排满时 sigqueue 返回 −1，errno = EAGAIN。"); }
+    else { st.n = v; st.q.push(v); say("被阻塞：排进队列，带着 si_value = " + v + "。"); }
+    render();
+  });
+  $("t3-blk").addEventListener("click", function () {
+    st.blk = !st.blk;
+    if (st.blk) { say("阻塞两个信号：之后发来的都先挂起。"); render(); return; }
+    var out = [];
+    if (st.pu) { st.pu = 0; st.log.push("USR1"); out.push("SIGUSR1 ×1"); }
+    while (st.q.length) { var v = st.q.shift(); st.log.push("RT(" + v + ")"); out.push("SIGRTMIN+2（" + v + "）"); }
+    say(out.length ? "解除阻塞，挂起的信号依次投递：" + out.join(" → ") + "。编号小的先：SIGUSR1（10）在 SIGRTMIN+2（36）之前。" : "解除阻塞：没有挂起的信号。");
+    render();
+  });
+  $("t3-reset").addEventListener("click", function () {
+    st = { blk: true, pu: 0, q: [], n: 6, log: [] };
+    say("重来：两个信号都被阻塞。");
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

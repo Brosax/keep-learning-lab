@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<script data-api="../../api/progress/" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1" data-home="../../index.html" src="../../sync.js"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T1 Sistemas empotrados, ARM y Linux · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .glow-y { filter: drop-shadow(0 0 10px rgb(244 211 69 / .9)); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.t1-pins .pin { cursor: pointer; }
+.t1-pins .pin circle { stroke-width: 2; }
+.t1-pins .pin:hover circle, .t1-pins .pin:focus-visible circle { stroke: var(--st-yellow); stroke-width: 3; }
+.t1-pins .pin:focus { outline: none; }
+.t1-pins .pin.sel circle { fill: var(--st-yellow); stroke: var(--st-yellow); }
+.t1-pin-out { font: 500 14px/1.6 var(--f-body); color: var(--st-ink); margin: 0; }
+.t1-pin-out code { color: var(--st-blue); }
+.t1-pin-out b { color: var(--st-yellow); }
+ol.steps-list li { margin: .25rem 0; }
+</style>
+</head>
+<body>
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t1-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t1-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t1-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t1-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t1-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t1-ah-w" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-ink)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="Back to OpenSEEI Portal">OpenSEEI</a><span aria-hidden="true" class="sep">/</span><a class="brand" href="index.html">EMP<span> · </span>Interactive Notes</a></span>
+<nav aria-label="Tema 1 Chapters" class="chain" data-chain="T1"></nav>
+</div>
+</header>
+<main class="wrap"><section class="chapter-head">
+<div class="eyebrow">Tema 1 · Introducción · Linux embebido</div>
+<h1>Sistemas empotrados, ARM y Linux embebido</h1>
+<p class="zh">From "powering on a board" to "writing code on a PC and debugging on the board"</p>
+<div class="meta">
+<span><b>10</b> Key Points</span>
+<span>Approx. 25 min read</span>
+</div>
+<p class="lede">In MICRO, microcontroller programs run directly on bare metal: no operating system, <code>main()</code> is everything. This course enters a different world: an ARM <b class="t">microprocessor (EN) / microprocesador (ES)</b> surrounded by DRAM and an SD card, running full Linux. This chapter addresses three foundational questions: When is it worthwhile to put an operating system into an embedded device? What software components make up such a system and how do they boot step-by-step? How do you write and compile code on a PC for a different target chip?</p>
+</section><section class="sec" id="objetivos">
+<h2>Key Takeaways <span class="tag">Chapter Objectives</span></h2>
+<p>Here are the core concepts to master in this chapter. After reading each section, self-assess your understanding and click the button on the right to track your progress.</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T1.1</span>
+<div class="txt"><span>State the definition and characteristics of embedded systems, and the advantages of embedded Linux</span><span class="es">Definición de sistema empotrado; ventajas de Linux empotrado.</span><a href="#s1">→ §1 What is an Embedded System?</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.1" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.2</span>
+<div class="txt"><span>Determine whether hardware can run Linux: 32-bit CPU, RAM ≥ 8 MB, storage ≥ 4 MB; use uClinux when lacking MMU; use bare metal or FreeRTOS for smaller chips</span><span class="es">Requisitos mínimos hardware; MMU-less, uClinux, FreeRTOS.</span><a href="#s1">→ §1 Microcontroller vs. Microprocessor</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.2" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.3</span>
+<div class="txt"><span>State ARM architecture characteristics: RISC, load/store, 16 32-bit registers, conditional execution, IP licensing model without manufacturing chips</span><span class="es">Arquitectura ARM: características.</span><a href="#s2">→ §2 ARM</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.3" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.4</span>
+<div class="txt"><span>Compare ARM and Thumb instruction sets: 32-bit vs. 16-bit, code density, memory savings; interworking mechanism (bx / blx and bit 0 of address)</span><span class="es">Juego de instrucciones ARM y Thumb; interworking.</span><a href="#s2">→ §2 Two Instruction Sets</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.4" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.5</span>
+<div class="txt"><span>Explain floating-point emulation options and EABI: soft float (libgcc), hard float (VFP), softfp; and GCC compiler flags</span><span class="es">Opciones de coma flotante y EABI.</span><a href="#s2">→ §2 Floating-Point and EABI</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.5" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.6</span>
+<div class="txt"><span>Explain the role and stages of the bootloader: ROM boot → secondary loader (MLO) → U-Boot; basic tasks and U-Boot commands</span><span class="es">Bootloader: tareas básicas y U-Boot.</span><a href="#s3">→ §3 Bootloader</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.6" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.7</span>
+<div class="txt"><span>Explain user space vs. kernel space: system calls, register convention for parameters and call number, transition from user mode to supervisor mode</span><span class="es">Espacio de usuario y kernel; llamadas al sistema.</span><a href="#s3">→ §3 System Calls</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.7" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.8</span>
+<div class="txt"><span>Explain the cross-compilation toolchain: build/host/target, prefix, sysroot, and host-target connection methods</span><span class="es">Cadena de herramientas cruzada y cross-development.</span><a href="#s4">→ §4 Cross-Development</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.8" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.9</span>
+<div class="txt"><span>Explain Buildroot's role and workflow: make menuconfig → make → generate toolchain, kernel, and rootfs image</span><span class="es">Sistemas de construcción: Buildroot.</span><a href="#s5">→ §5 Buildroot</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.9" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.10</span>
+<div class="txt"><span>Set up the Raspberry Pi development environment: physical/BCM/wiringPi pin numbering, peripherals and interfaces (UART, SPI, I2C, PWM)</span><span class="es">Raspberry Pi: pines, periféricos y entorno de prácticas.</span><a href="#s6">→ §6 Raspberry Pi</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.10" type="button"><span class="box"></span><span class="lab">Mark as mastered</span></button>
+</li>
+</ul>
+</section><section class="sec" id="s1">
+<h2><span class="n">§1</span>What is an Embedded System? <span class="tag">T1.1 · T1.2</span></h2>
+<p class="hook"><span class="zh">Routers, automotive controllers, and GPS navigators are all "computers." How do they differ from a desktop PC?</span><span class="es">Un sistema empotrado es un sistema informático de uso específico.</span></p>
+<p>An <b class="t">embedded system (EN) / sistema empotrado (ES)</b> is a <b>dedicated</b> computer system. Compared to a general-purpose PC, it has three key differences:</p>
+<ul>
+<li><b>Dedicated purpose</b>: Designed for a specific application rather than general-purpose computing.</li>
+<li><b>On-board integration</b>: Components that are expansion cards in a PC (graphics, sound, modem...) are mostly integrated directly onto the motherboard.</li>
+<li><b>Programmed on another machine</b>: Software is not developed on the device itself, but written and compiled on a host PC before being transferred to the target. This is the origin of cross-development (§4).</li>
+</ul>
+<p>This definition is broad, covering diverse products: consumer electronics (DVD players, digital cameras, gaming consoles), communications equipment (mobile phones, routers, satellites), industrial systems (process control, avionics, automotive electronics).</p>
+<h3>Why Use Linux?</h3>
+<div class="grid2">
+<div class="panel">
+<h3>Advantages</h3>
+<ul>
+<li><b>Component reuse</b>: Kernel, compilers, and libraries are readily available; teams only develop product-specific code.</li>
+<li><b>High quality</b>: Linux kernel, GCC, and C libraries have been extensively field-tested.</li>
+<li><b>Complete control</b>: Full source code available, enabling modification of any component.</li>
+<li><b>Community support</b>.</li>
+<li><b>Low cost</b>: No royalties (per-unit licensing fees).</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Who Uses It?</h3>
+<ul>
+<li>GPS navigators (TomTom, Garmin)</li>
+<li>Home routers (Linksys, Netgear)</li>
+<li>TVs, cameras, DVD players (Sony, Philips)</li>
+<li>Tablets and smartphones: Android is built on top of the Linux kernel</li>
+</ul>
+</div>
+</div>
+<h3>Microcontroller vs. Microprocessor</h3>
+<p>Embedded hardware differs substantially from PCs: varied CPU architectures (ARM, MIPS, PowerPC, x86), limited Flash storage and RAM, buses rarely seen on PCs (I2C, SPI, SSP, CAN). Linux imposes <b>minimum hardware requirements</b>:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Item</th><th>Minimum Requirements for Linux</th></tr></thead>
+<tbody>
+<tr><td>CPU</td><td>32-bit, supported by GCC and Linux kernel</td></tr>
+<tr><td>MMU</td><td>Required by standard Linux; non-MMU CPUs use <b>uClinux</b></td></tr>
+<tr><td>RAM</td><td>At least 8 MB to perform useful tasks</td></tr>
+<tr><td>Storage</td><td>At least 4 MB</td></tr>
+</tbody>
+</table>
+</div>
+<p>A <b class="t">Memory Management Unit (MMU) / unidad de gestión de memoria</b> translates the <b>virtual addresses</b> seen by programs into physical addresses and enforces access permissions. Linux relies on it to provide an isolated address space for each process: if one process corrupts memory, it cannot overwrite other processes or the kernel. Microcontrollers like the MSP430 lack an MMU; all code shares a single physical address space.</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">Few KB RAM · Microcontroller</span>
+<h3>bare metal</h3>
+<p>No OS: code directly manipulates registers, a single <code>main()</code> plus interrupts. Like MSP430 in MICRO. Linux is not meant for MCUs with only a few KB of RAM.</p>
+</div>
+<div class="cell o">
+<span class="k c-o">Microcontroller · Needs Multitasking</span>
+<h3>FreeRTOS and Microkernels</h3>
+<p>Tiny real-time kernel offering tasks, scheduling, and synchronization, without full process isolation or filesystems.</p>
+</div>
+<div class="cell g">
+<span class="k c-g">32-bit MPU + MMU + MB-scale RAM</span>
+<h3>Linux</h3>
+<p>Full OS: processes, filesystems, network stack, drivers. The Raspberry Pi in this course belongs to this category. 32-bit non-MMU chips can also run it via uClinux.</p>
+</div>
+</div>
+<p class="takeaway">Embedded system = dedicated + developed on a host machine. Putting Linux on a device depends on hardware adequacy: 32-bit CPU, MMU (otherwise uClinux), at least 8 MB RAM, and at least 4 MB storage. Smaller chips use bare metal or FreeRTOS.</p>
+</section><section class="sec" id="s2">
+<h2><span class="n">§2</span>ARM: Architecture, Registers, and Two Instruction Sets <span class="tag">T1.3 · T1.4 · T1.5</span></h2>
+<p class="hook"><span class="zh">Why is ARM inside almost every smartphone?</span><span class="es">ARM (Advanced RISC Machines): arquitectura RISC de 32/64 bits.</span></p>
+<p><b class="t">ARM (Advanced RISC Machines)</b> is a 32/64-bit <b class="t">RISC</b> architecture designed by ARM Holdings. Its streamlined architecture provides high energy efficiency: by 2005, 98% of mobile phones utilized at least one ARM processor. Note its business model: <b>ARM does not manufacture chips itself</b>; it designs processor cores and licenses the IP to semiconductor vendors (such as the Broadcom SoC used on the Raspberry Pi).</p>
+<div class="grid2">
+<div class="panel">
+<h3>Architecture Characteristics</h3>
+<ol>
+<li><b class="t">load/store</b>: Only load and store instructions access memory; all other instructions operate exclusively on internal registers.</li>
+<li>Memory alignment: Data must reside at naturally aligned addresses.</li>
+<li>32-bit mode: 16 uniform 32-bit registers; 64-bit mode: 31 64-bit registers.</li>
+<li>RISC instruction set with fixed 32-bit instruction width.</li>
+<li>32/64-bit address space.</li>
+<li>Most instructions execute in a single clock cycle.</li>
+<li>Instructions support <b>conditional execution</b>.</li>
+<li>32-bit <b class="t">barrel shifter</b>.</li>
+<li>Dedicated return address register (link register).</li>
+</ol>
+</div>
+<div class="panel">
+<h3>16 Registers in 32-bit Mode</h3>
+<ul>
+<li><span class="reg">R0–R12</span>: General-purpose registers.</li>
+<li><span class="reg">R13 = SP</span>: Stack Pointer.</li>
+<li><span class="reg">R14 = LR</span>: <b class="t">link register (LR) / registro de enlace</b>. When calling a subroutine with <code>BL</code>, the return address is stored here without pushing to the stack.</li>
+<li><span class="reg">R15 = PC</span>: Program Counter (32-bit).</li>
+<li><span class="reg">CPSR</span>: Current Program Status Register, holding condition flags, processor mode, and the execution state ("ARM or Thumb").</li>
+</ul>
+<p class="aside">The processor operates in several modes: user applications run in <b>User mode</b>; <b>Supervisor (SVC)</b> mode is reserved for the OS kernel. Upon entering SVC mode, CPSR is backed up to <span class="reg">SPSR</span> to facilitate restoration upon return. The system call mechanism (§3) relies on this transition.</p>
+</div>
+</div>
+<h3>Two Instruction Sets: ARM and Thumb</h3>
+<p>ARM processors feature two instruction sets: standard 32-bit ARM instructions, and 16-bit compressed <b class="t">Thumb</b> instructions. Thumb is not executed by a separate core; the processor hardware decompresses 16-bit Thumb instructions into standard ARM instructions on the fly during decode.</p>
+<div class="grid2">
+<div class="panel">
+<h3>Thumb Limitations</h3>
+<ul>
+<li>Only <span class="reg">r0–r7</span> are fully accessible; <span class="reg">r8–r15</span> have limited instruction support.</li>
+<li>No conditional execution on individual instructions (conditional branches only).</li>
+<li>Reduced immediate value widths.</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Memory Savings</h3>
+<ul>
+<li><b>Higher code density</b>: Thumb code takes roughly 65% of the memory required by ARM code (saving ~35% Flash/ROM).</li>
+<li>On narrow 16-bit or 8-bit memory buses, Thumb achieves up to 160% of ARM performance because fewer bus cycles are needed to fetch instructions. On 32-bit wide memory buses, Thumb executes at ~85% of ARM speed due to needing slightly more instructions for complex operations.</li>
+</ul>
+</div>
+</div>
+<h3>Mixing ARM and Thumb: Interworking</h3>
+<p>In the same system, time-critical routines can be compiled in ARM (32-bit), while memory-sensitive logic uses Thumb (16-bit). Switching between the two is called <b class="t">interworking</b>. The branch instructions <code>BX</code> (branch and exchange) and <code>BLX</code> (branch with link and exchange) perform the switch based on <b>bit 0 of the target address</b>:</p>
+<ul>
+<li><code>bit 0 = 1</code>: Switches to <b>Thumb state</b> (instructions executed as 16-bit).</li>
+<li><code>bit 0 = 0</code>: Switches to <b>ARM state</b> (instructions executed as 32-bit).</li>
+</ul>
+<p>Because ARM instructions are 4-byte aligned (addresses end in 00) and Thumb instructions are 2-byte aligned (addresses end in 0), bit 0 of a valid instruction address is always 0. The hardware strips bit 0 before loading into the PC, using bit 0 purely as the execution state selector.</p>
+<figure class="stage" data-scene="t1-interwork">
+<div class="stage-canvas">
+<svg viewbox="0 0 800 400">
+<defs>
+<marker id="t1-ah-y" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path class="ah" d="M0 0 L6 3 L0 6 z" fill="var(--yellow)"></path></marker>
+<marker id="t1-ah-g" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path class="ah" d="M0 0 L6 3 L0 6 z" fill="var(--green)"></path></marker>
+</defs>
+<text class="tm sm b" x="44" y="40">main() · Thumb · 16-bit</text>
+<rect class="ln thin b" height="86" rx="6" width="440" x="34" y="50"></rect>
+<text class="tm sm w" x="52" y="74">81c4:  b580       push {r7, lr}</text>
+<text class="tm sm w" x="52" y="100">81cc:  f005 fb30  bl   __foo_from_thumb</text>
+<text class="tm sm w" x="52" y="126">81d0:  …</text>
+<text class="tm sm y" x="44" y="170">__foo_from_thumb · GCC Generated</text>
+<rect class="ln thin y" height="96" rx="6" width="440" x="34" y="180"></rect>
+<text class="tm sm w" x="52" y="204">d830:  4778       bx   pc</text>
+<text class="tm sm w" x="52" y="230">d832:  46c0       nop</text>
+<text class="tm sm w" x="52" y="256">d834:  eaffea79   b    foo</text>
+<text class="tm sm b" x="44" y="300">foo() · ARM · 32-bit</text>
+<rect class="ln thin b" height="66" rx="6" width="440" x="34" y="310"></rect>
+<text class="tm sm w" x="52" y="334">8220:  e1a0c00d   mov  ip, sp   …</text>
+<text class="tm sm w" x="52" y="360">8254:  e12fff1e   bx   lr</text>
+<path class="sl y" d="M18 94 L30 100 L18 106 z" data-out="2" data-step="1"></path>
+<path class="sl y" d="M18 198 L30 204 L18 210 z" data-out="3" data-step="2"></path>
+<path class="sl y" d="M18 250 L30 256 L18 262 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M18 354 L30 360 L18 366 z" data-out="5" data-step="4"></path>
+<path class="sl y" d="M18 120 L30 126 L18 132 z" data-step="5"></path>
+<text class="tx sm w" x="520" y="40">Registers</text>
+<rect class="bx b" height="46" rx="6" width="260" x="520" y="54"></rect>
+<text class="tm b" x="534" y="83">PC</text>
+<text class="tm lg b end" data-out="2" data-step="1" x="766" y="85">0xD830</text>
+<text class="tm lg b end" data-out="3" data-step="2" x="766" y="85">0xD834</text>
+<text class="tm lg b end" data-out="4" data-step="3" x="766" y="85">0x8220</text>
+<text class="tm lg b end" data-step="4" x="766" y="85">0x81D0</text>
+<rect class="bx b" data-hl="1 4" height="46" rx="6" width="260" x="520" y="114"></rect>
+<text class="tm b" x="534" y="143">LR</text>
+<text class="tm lg b end" data-step="1" x="766" y="145">0x81D1</text>
+<rect class="bx g" data-hl="2 4" height="64" rx="6" width="260" x="520" y="174"></rect>
+<text class="tm sm m" x="534" y="196">State · CPSR.T</text>
+<text class="tx g end" data-out="2" data-step="1" x="766" y="226">Thumb</text>
+<text class="tx b end" data-out="4" data-step="2" x="766" y="226">ARM</text>
+<text class="tx g end" data-step="4" x="766" y="226">Thumb</text>
+<g data-out="2" data-step="1"><text class="tz sm y" x="520" y="276">bl: return address 0x81D0,</text><text class="tz sm y" x="520" y="298">bit 0 set to 1 → LR = 0x81D1</text></g>
+<g data-out="3" data-step="2"><text class="tz sm y" x="520" y="276">bx pc: PC reads as d830 + 4,</text><text class="tz sm y" x="520" y="298">bit 0 = 0 → switches to ARM</text></g>
+<g data-out="4" data-step="3"><text class="tz sm y" x="520" y="276">Standard branch b, state unchanged</text><text class="tz sm y" x="520" y="298">Enters foo's ARM code</text></g>
+<g data-out="5" data-step="4"><text class="tz sm y" x="520" y="276">bx lr: LR = 0x81D1, bit 0 = 1</text><text class="tz sm y" x="520" y="298">→ returns to Thumb, PC = 0x81D0</text></g>
+<g data-step="5"><text class="tz sm y" x="520" y="276">main continues execution,</text><text class="tz sm y" x="520" y="298">foo's ARM code requires zero changes</text></g>
+<path class="ln y draw" d="M474 100 C 500 130, 500 180, 474 204" data-out="2" data-step="1" marker-end="url(#t1-ah-y)"></path>
+<path class="ln y draw" d="M474 256 C 500 280, 500 310, 474 334" data-out="4" data-step="3" marker-end="url(#t1-ah-y)"></path>
+<path class="ln g draw" d="M474 360 C 512 320, 512 160, 474 126" data-out="5" data-step="4" marker-end="url(#t1-ah-g)"></path>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200"><code>main()</code> is compiled in Thumb (16-bit instructions, PC increments by 2). It calls <code>foo()</code>, which is compiled in ARM. Instead of branching directly, GCC generates a call via <code>bl</code> to a compiler-generated stub <code>__foo_from_thumb</code>. <code>bl</code> stores the return address 0x81D0 into LR with <b>bit 0 set to 1</b>: LR = 0x81D1, recording that the return state is Thumb.</li>
+<li data-dur="4200">The first instruction in the stub is <code>bx pc</code>. In Thumb state, reading PC yields current PC + 4 with bit 0 cleared: 0xD834. Since <span class="c-y">bit 0 = 0</span>, the processor switches to <b>ARM state</b> and resumes execution at 0xD834. (The intervening <code>nop</code> is padding).</li>
+<li data-dur="3600">0xD834 is a 32-bit ARM instruction: standard branch <code>b foo</code>. The execution state remains ARM, entering <code>foo()</code>.</li>
+<li data-dur="4200">Upon finishing, <code>foo()</code> returns via <code>bx lr</code>. Because LR = 0x81D1 and <span class="c-y">bit 0 = 1</span>, the processor switches back to <b>Thumb state</b>, setting PC = 0x81D0 (bit 0 is masked out of PC).</li>
+<li data-dur="4000">Execution continues at the instruction following <code>bl</code> in <code>main()</code>. The transition is governed entirely by <code>bx</code> and bit 0 of the target address; neither caller nor callee needs to adapt its internal code.</li>
+</ol>
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>Using Thumb in Your System</h3>
+<ul>
+<li>Kernel and user space can differ: ARM kernel + Thumb user space works seamlessly; the kernel-user ABI is identical.</li>
+<li>User space can be entirely Thumb (including libc), or user applications can be Thumb while glibc remains ARM.</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Compiler Options</h3>
+<ul>
+<li>Generate Thumb code: <code>-mthumb</code> (in Makefile: <code>CFLAGS += -mthumb</code>).</li>
+<li>Toolchain interworking support: binutils and gcc configured with <code>--enable-interwork</code>.</li>
+<li>Generate interworking-safe code: <code>-mthumb-interwork</code>. In uClibc, enable <code>USE_BX</code> in its configuration.</li>
+</ul>
+</div>
+</div>
+<h3 id="s2c">Floating-Point and EABI</h3>
+<p>Many ARM processors <b>lack a hardware floating-point unit (FPU)</b>. When building the kernel and toolchain, a choice must be made on how to handle real arithmetic:</p>
+<div class="grid2">
+<div class="cell y">
+<span class="k c-y">Kernel Emulation · Common in Linux</span>
+<h3>hard float</h3>
+<p>User programs issue standard floating-point instructions. Since the chip does not recognize them, an "illegal instruction" exception is raised, caught by an in-kernel emulator (NWFPE, or the faster FastFPE). Slow: every FP instruction incurs exception handling and context-switch overhead. The benefit is that binaries run unchanged when moving to hardware FPU.</p>
+</div>
+<div class="cell b">
+<span class="k c-b">User-Space Emulation · Selected at Compile Time</span>
+<h3>soft float</h3>
+<p>Add <code>-msoft-float</code> at compile time. The compiler emits calls to software FP runtime library routines (libgcc) rather than FPU instructions.</p>
+</div>
+</div>
+<p>ARM10, ARM11, and Cortex cores include the <b class="t">VFP</b> vector floating-point coprocessor, providing true hardware floating-point. Under the legacy ABI, hard float and soft float code could <b>not be mixed</b>; an entire executable and all its linked libraries had to choose the same convention.</p>
+<p>An <b class="t">Application Binary Interface (ABI) / interfaz binaria de aplicación</b> is the binary-level contract between a program and the OS (or another library). ARM's newer <b class="t">Embedded ABI (EABI)</b> defines file formats, data types, register usage, stack alignment, and calling conventions. Key advantages: permits mixing hard/soft float code, interoperability with third-party compilers, and full Thumb support. Additional changes:</p>
+<ul>
+<li>Structures no longer have minimum alignment; stack frames are 8-byte aligned (formerly 4); 64-bit integers are 8-byte aligned.</li>
+<li><b>System call number</b> is passed in register <span class="reg">r7</span>. The old ABI embedded the call number inside the SWI instruction itself, requiring the kernel to read back and decode instruction memory, polluting the data cache.</li>
+<li>64-bit function arguments are aligned to even-numbered register pairs.</li>
+</ul>
+<p>Support: GCC 4.1.0+ supports EABI; Linux kernel 2.6.16+ introduced <code>CONFIG_AEABI</code>; <code>CONFIG_OABI_COMPAT</code> allows EABI kernels to execute legacy OABI binaries (non-Thumb only). Conversely, an EABI binary <b>cannot run</b> on a legacy OABI kernel. The toolchain prefix <code>arm-linux-gnueabihf-</code> on Raspberry Pi stands for GNU + EABI + <b>h</b>ard <b>f</b>loat (leveraging hardware VFP).</p>
+<p class="takeaway">ARM is a licensed RISC architecture: load/store, 16 32-bit registers, conditional execution. Thumb is a 16-bit compressed encoding expanded into ARM by hardware; ARM and Thumb switch via bit 0 of the target address in <code>bx</code>. EABI standardizes calling conventions and places the system call number in r7.</p>
+</section><section class="sec" id="s3">
+<h2><span class="n">§3</span>Booting Layer by Layer: Anatomy of Embedded Linux <span class="tag">T1.6 · T1.7</span></h2>
+<p class="hook"><span class="zh">From power-on to running applications, what sequence of software stages hands off execution?</span><span class="es">Bootloader → kernel → root filesystem → aplicaciones.</span></p>
+<p>Deploying Linux on an embedded system requires several core software building blocks:</p>
+<ul>
+<li><b class="t">bootloader (EN) / cargador de arranque (ES)</b>: Performs minimal hardware initialization, loads the kernel into memory, and executes it.</li>
+<li><b class="t">Linux kernel / núcleo</b>: Manages memory and processes, containing device drivers, network stacks, and core services.</li>
+<li><b class="t">C library (EN) / librería C (ES)</b>: The interface between the kernel and user-space applications, providing standard POSIX APIs. Multiple implementations exist: glibc, uClibc, eglibc, dietlibc, newlib, etc.</li>
+<li><b>Other user libraries and applications</b>.</li>
+<li>Additionally, a <b>cross-compilation toolchain</b> (§4) is required—residing on the development PC rather than the target board.</li>
+</ul>
+<div class="orig-pair">
+</div>
+<p>Linux organizes all files into a unified directory tree. A dedicated filesystem, the <b class="t">root filesystem (EN) / sistema de ficheros raíz (ES)</b>, is mounted at <code>/</code>. In embedded systems, it holds system libraries, applications, configuration files, and data. <b>Constructing the root filesystem</b> is one of the fundamental tasks in embedded Linux development; the kernel binary is typically stored separately.</p>
+<h3>What the Bootloader Does</h3>
+<div class="grid2">
+<div class="panel">
+<h3>Basic Tasks</h3>
+<ul>
+<li>Basic hardware initialization.</li>
+<li>Loading a binary program (here, the kernel) into RAM from Flash, network, or non-volatile media.</li>
+<li>Jumping to and executing it.</li>
+</ul>
+<p>Most bootloaders also provide a simple interactive shell for inspecting memory, downloading files, and diagnosing hardware.</p>
+</div>
+<div class="panel">
+<h3>Differences: PC vs. Embedded</h3>
+<p><b>x86 PC</b>: The motherboard features BIOS/UEFI, executing automatically on reset to initialize basic hardware and load a primary loader from the disk's first sector, which subsequently starts GRUB or systemd-boot.</p>
+<p><b>Embedded</b>: Highly tied to the specific SoC and board architecture. Some boards have NOR Flash where the CPU fetches its very first instruction directly upon reset, hosting the bootloader at that fixed address. Other SoCs have an on-chip ROM bootloader that loads a small secondary loader into internal SRAM from NAND Flash or SD card—this is <b>two-stage booting</b>. Because the bootloader runs immediately after reset, it is even responsible for configuring the DRAM controller.</p>
+</div>
+</div>
+<p>The most common open-source bootloader is <b class="t">U-Boot</b> (Universal Bootloader, widely used across ARM, PPC, MIPS, x86), alongside RedBoot and uMon. Taking an OMAP development board booting from an SD card as an example, here is the complete staged boot process:</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-boot">
+<div class="stage-title"><span>Escena 2 · del reset a las aplicaciones</span><b>6 steps</b></div>
+<div aria-label="Animation: Embedded Linux boot chain from reset to application execution" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-boot-t" role="img" viewbox="0 0 800 430">
+<title id="sc-boot-t">Left: the boot sequence (on-chip ROM, X-loader, U-Boot, Linux kernel, init, applications); Right: two partitions of the SD card, where each stage loads files required by the next stage</title>
+<rect class="ln thin m" height="400" rx="12" width="356" x="430" y="16"></rect>
+<text class="tx sm w" x="446" y="46">SD Card</text>
+<rect class="bx b" height="156" rx="6" width="324" x="446" y="60"></rect>
+<text class="tm sm b" x="460" y="82">p1 · FAT32 · Boot Partition</text>
+<text class="tm sm w" data-hl="2" x="476" y="108">MLO (X-loader)</text>
+<text class="tm sm w" data-hl="3" x="476" y="136">u-boot.bin</text>
+<text class="tm sm w" data-hl="4" x="476" y="164">uImage (Kernel)</text>
+<text class="tm sm w" data-hl="4" x="476" y="192">boot.scr (Boot Script)</text>
+<rect class="bx b" data-hl="5" height="168" rx="6" width="324" x="446" y="232"></rect>
+<text class="tm sm b" x="460" y="254">p2 · ext3 · rootfs</text>
+<text class="tm sm w" data-hl="6" x="476" y="282">/sbin/init</text>
+<text class="tm sm w" data-hl="6" x="476" y="310">/etc/inittab</text>
+<text class="tm sm w" x="476" y="338">/lib  /usr  /bin …</text>
+<text class="tm sm w" x="476" y="366">/lib/modules (Kernel modules)</text>
+<g data-step="1">
+<rect class="bx m" height="52" rx="8" width="320" x="20" y="20"></rect>
+<text class="tx sm w" x="36" y="44">On-chip ROM</text>
+<text class="tz sm m" x="36" y="64">Built into SoC · Starts here on reset</text>
+<circle class="sl r" cx="320" cy="34" r="7"></circle>
+<text class="tm xs r end" x="308" y="38">reset</text>
+</g>
+<g data-step="2">
+<path class="ln thin w" d="M180 72 V88" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx w" height="52" rx="8" width="320" x="20" y="90"></rect>
+<text class="tx sm w" x="36" y="114">X-loader</text>
+<text class="tz sm m" x="36" y="134">1st-stage bootloader</text>
+<path class="ln b draw" d="M446 104 C 400 104, 390 116, 344 116" marker-end="url(#t1-ah-b)"></path>
+</g>
+<g data-step="3">
+<path class="ln thin w" d="M180 142 V158" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx w" height="52" rx="8" width="320" x="20" y="160"></rect>
+<text class="tx sm w" x="36" y="184">U-Boot</text>
+<text class="tz sm m" x="36" y="204">2nd-stage · Shell &amp; env vars</text>
+<path class="ln b draw" d="M446 132 C 400 132, 390 186, 344 186" marker-end="url(#t1-ah-b)"></path>
+</g>
+<g data-step="4">
+<path class="ln thin w" d="M180 212 V228" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx p" height="52" rx="8" width="320" x="20" y="230"></rect>
+<text class="tx sm p" x="36" y="254">Linux kernel</text>
+<text class="tz sm m" x="36" y="274">Drivers · Memory · Processes</text>
+<path class="ln b draw" d="M446 160 C 400 160, 390 256, 344 256" marker-end="url(#t1-ah-b)"></path>
+</g>
+<g data-step="5">
+<path class="ln p draw" d="M340 270 C 380 270, 400 250, 444 250" marker-end="url(#t1-ah-p)"></path>
+<text class="tm xs p mid" x="392" y="290">mount /</text>
+</g>
+<g data-step="6">
+<path class="ln thin w" d="M180 282 V298" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx g" height="52" rx="8" width="320" x="20" y="300"></rect>
+<text class="tx sm g" x="36" y="324">/sbin/init</text>
+<text class="tz sm m" x="36" y="344">First user process · Reads inittab</text>
+<path class="ln b draw" d="M446 280 C 400 280, 390 326, 344 326" marker-end="url(#t1-ah-b)"></path>
+<path class="ln thin w" d="M180 352 V368" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx g" height="46" rx="8" width="320" x="20" y="370"></rect>
+<text class="tz g" x="36" y="399">Login getty · User applications</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">After <span class="c-r">reset</span>, the CPU first executes a small piece of immutable code burned into internal on-chip ROM. It cannot be modified, and it is very simple: it only checks a fixed location (here, the first partition of the SD card) to find the next-stage loader.</li>
+<li data-dur="4200">The ROM reads <code>MLO</code>, which is <b>X-loader</b>: a tiny intermediate bootloader. To ensure the ROM finds it, <code>MLO</code> must be the <b>first file</b> copied onto the card.</li>
+<li data-dur="4200">X-loader then locates <b>U-Boot</b> in the boot partition and starts it. Together, these two stages complete hardware initialization (including DRAM), after which sufficient memory is available to load the kernel.</li>
+<li data-dur="5200">U-Boot executes the boot script <code>boot.scr</code>: setting kernel parameters <code>bootargs</code> (serial console, <code>root=/dev/mmcblk0p2</code>), loads the kernel image <code>uImage</code> into DRAM via <code>fatload</code>, and jumps to it via <code>bootm</code>. From this point forward, control is handed over to the <span class="c-p">kernel</span>.</li>
+<li data-dur="4400">The kernel initializes drivers and memory management, then according to <code>root=</code> in <code>bootargs</code>, mounts the second partition (ext3) as <code>/</code>. With the root filesystem in place, user-space programs can finally be accessed.</li>
+<li data-dur="4800">The kernel starts the first user process <code>/sbin/init</code>. init reads <code>/etc/inittab</code> and starts login terminals (getty) and other applications on the serial port according to its configuration. At this step, the system is fully booted.</li>
+</ol>
+<p class="stage-note">Two-stage booting on PCs (BIOS/UEFI → GRUB stage 1 → stage 2 → kernel) mirrors this architecture. Staging is required because initial hardware states are extremely constrained (on-chip SRAM is tens of KB; MBR is 512 bytes), necessitating stepwise loading of increasingly capable environments.</p>
+</figure>
+<div class="note">
+<span class="lbl">U-Boot Command Line</span>
+<p>Once U-Boot starts, its interactive prompt is accessible over the serial console. Common commands: <code>printenv</code> / <code>setenv</code> / <code>saveenv</code> to inspect, modify, and persist environment variables (e.g. <code>ipaddr</code>, <code>serverip</code>, <code>bootargs</code>); <code>tftpboot</code> to download kernel images from a TFTP server on the PC over the network; <code>bootm &lt;address&gt;</code> to boot the kernel from memory. Kernels loaded by U-Boot must first be processed with <code>mkimage</code> to prepend a U-Boot header (Buildroot automates this step). Flashing a new U-Boot requires care: errors can brick the board, requiring JTAG to recover.</p>
+</div>
+<h3 id="s3b">User Space and Kernel Space: System Calls</h3>
+<p>Once booted, the system is strictly divided into two domains. User applications execute in <b class="t">user space (EN) / espacio de usuario (ES)</b>, barred from directly manipulating hardware; the kernel executes in <b class="t">kernel space (EN) / espacio del kernel (ES)</b>, governing processes, memory, filesystems, devices, and networking. The sole official bridge between them is the <b class="t">system call (EN) / llamada al sistema (ES)</b> interface—the operating system's fundamental API:</p>
+<p>The C library and compiled applications interact constantly with the kernel: system calls, constant definitions, and kernel data structures. Consequently, the compiler requires <b>kernel headers</b> (the <code>linux/</code> and <code>asm/</code> directories). When an application calls <code>write()</code>, here is what actually takes place under the hood:</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-syscall">
+<div class="stage-title"><span>Escena 3 · una llamada al sistema</span><b>6 steps</b></div>
+<div aria-label="Animation: Execution flow of a write system call from user space into kernel space and returning" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-syscall-t" role="img" viewbox="0 0 800 440">
+<title id="sc-syscall-t">Top: user-space application and C library; Bottom: kernel exception vectors, system call table, and sys_write; Right: r7, r0-r2 registers and processor mode transitions</title>
+<rect class="ln thin g" height="168" rx="10" width="596" x="12" y="12"></rect>
+<text class="tz sm g" x="26" y="36">User Space · User Mode</text>
+<rect class="bx g" height="74" rx="8" width="240" x="30" y="54"></rect>
+<text class="tx sm g" x="46" y="82">Application</text>
+<text class="tm sm w" x="46" y="112">write(fd, buf, 5);</text>
+<rect class="bx b" data-hl="2" height="74" rx="8" width="260" x="330" y="54"></rect>
+<text class="tx sm b" x="346" y="82">librería C</text>
+<text class="tm sm w" x="346" y="112">write() Wrapper</text>
+<path class="ln thin p dash" d="M12 200 H608"></path>
+<text class="tz sm p" x="26" y="196">System Call Interface</text>
+<rect class="ln thin p" height="148" rx="10" width="596" x="12" y="214"></rect>
+<text class="tz sm p" x="26" y="238">Kernel Space · Supervisor Mode</text>
+<g data-step="3">
+<rect class="bx p" height="80" rx="8" width="170" x="30" y="256"></rect>
+<text class="tm p" x="46" y="286">Vector 0x08</text>
+<text class="tz sm m" x="46" y="316">SWI Exception Entry</text>
+</g>
+<g data-step="4">
+<rect class="bx p" height="80" rx="8" width="180" x="224" y="256"></rect>
+<text class="tm p" x="240" y="286">Call Table</text>
+<text class="tm xs w" x="240" y="316">sys_call_table[r7]</text>
+<path class="ln p draw" d="M200 296 H222" marker-end="url(#t1-ah-p)"></path>
+<rect class="bx p" height="80" rx="8" width="164" x="428" y="256"></rect>
+<text class="tm p" x="444" y="286">sys_write</text>
+<text class="tz sm m" x="444" y="316">→ Filesystem / Driver</text>
+<path class="ln p draw" d="M404 296 H426" marker-end="url(#t1-ah-p)"></path>
+</g>
+<g data-step="5">
+<rect class="bx m" height="44" rx="8" width="164" x="428" y="384"></rect>
+<text class="tz sm w" x="444" y="411">Hardware · Device</text>
+<path class="ln b draw" d="M510 336 V382" marker-end="url(#t1-ah-b)"></path>
+</g>
+<path class="ln g draw" d="M270 80 H328" data-out="6" data-step="1" marker-end="url(#t1-ah-g)"></path>
+<path class="ln p draw" d="M420 128 C 420 210, 115 200, 115 254" data-out="6" data-step="3" id="t1-p-svc" marker-end="url(#t1-ah-p)"></path>
+<circle class="sl p" data-move="#t1-p-svc" data-out="4" data-step="3" r="7"></circle>
+<g data-step="6">
+<path class="ln g draw" d="M540 254 C 540 200, 520 170, 520 130" marker-end="url(#t1-ah-g)"></path>
+<path class="ln g draw" d="M328 104 H272" marker-end="url(#t1-ah-g)"></path>
+<text class="tm xs g mid" x="300" y="148">Returns 5</text>
+</g>
+<text class="tx sm w" x="624" y="36">Registers</text>
+<rect class="bx b" data-hl="2 4" height="40" rx="6" width="164" x="624" y="50"></rect>
+<text class="tm sm b" x="636" y="76">r7</text>
+<text class="tm b end" data-step="2" x="776" y="77">4</text>
+<rect class="bx b" data-hl="5" height="40" rx="6" width="164" x="624" y="98"></rect>
+<text class="tm sm b" x="636" y="124">r0</text>
+<text class="tm b end" data-out="5" data-step="2" x="776" y="125">fd</text>
+<text class="tm y end" data-step="5" x="776" y="125">5</text>
+<rect class="bx b" height="40" rx="6" width="164" x="624" y="146"></rect>
+<text class="tm sm b" x="636" y="172">r1 r2</text>
+<text class="tm b end" data-step="2" x="776" y="173">buf, 5</text>
+<rect class="bx w" data-hl="3 6" height="60" rx="6" width="164" x="624" y="206"></rect>
+<text class="tm xs m" x="636" y="226">CPSR · Mode</text>
+<text class="tx g end" data-out="3" x="776" y="256">USR</text>
+<text class="tx p end" data-out="6" data-step="3" x="776" y="256">SVC</text>
+<text class="tx g end" data-step="6" x="776" y="256">USR</text>
+<g data-out="6" data-step="3">
+<text class="tm xs p" x="624" y="292">SPSR ← CPSR</text>
+<text class="tm xs p" x="624" y="312">LR ← Return Address</text>
+<text class="tm xs p" x="624" y="332">PC ← 0x08</text>
+</g>
+<g data-step="6">
+<text class="tm xs g" x="624" y="292">CPSR ← SPSR</text>
+<text class="tm xs g" x="624" y="312">PC ← LR</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">The application calls <code>write(fd, buf, 5)</code>. This is a conventional function call entering the wrapper function in the <b>C library</b>; the CPU remains in <span class="c-g">User mode</span>.</li>
+<li data-dur="4200">The wrapper sets up registers according to EABI conventions: the system call number is loaded into <span class="reg">r7</span> (4 for <code>write</code>), and arguments are passed in <span class="reg">r0</span>, <span class="reg">r1</span>, <span class="reg">r2</span> in order.</li>
+<li data-dur="5000">It executes the <b>software interrupt</b> instruction <code>SWI</code> (modern syntax: <code>SVC</code>). The CPU handles it like an exception: saves CPSR into SPSR, saves return address into LR, branches to SWI vector 0x08, and switches to <span class="c-p">Supervisor mode</span> in ARM state. Kernel code executes from this moment onward.</li>
+<li data-dur="4200">The kernel's SWI handler reads r7, looks up entry 4 in the <span class="c-p">system call table</span>, and transfers control to <code>sys_write</code>, which forwards the request to the filesystem or device driver.</li>
+<li data-dur="3800">The driver executes the hardware operation. On completion, the return value is placed in <span class="reg">r0</span>: here 5 bytes written, so r0 = 5 (or a negative error code on failure).</li>
+<li data-dur="4600">The kernel restores CPSR from SPSR (returning to <span class="c-g">User mode</span>) and restores PC from LR. The C library yields r0 to the application: <code>write()</code> returns 5; on error, the library returns −1 and sets <code>errno</code>.</li>
+</ol>
+<p class="stage-note">Every system call crosses the user-kernel boundary, incurring mode-switching overhead. This explains why §2 highlighted that in-kernel FP emulation is slow: each FP instruction triggers a full exception transition.</p>
+</figure>
+<div class="note warm">
+<span class="lbl">Kernel Headers and ABI Compatibility</span>
+<p>The ABI between kernel and user space is <b>backward compatible</b>: binaries compiled with older kernel headers run reliably on newer kernels (without accessing newer features); binaries compiled with newer headers can often run on older kernels provided they don't invoke newly introduced features. Headers are exported from kernel source via <code>make headers_install</code>.</p>
+</div>
+<p class="takeaway">Boot sequence: bootloader (possibly two-stage) → kernel → mount rootfs → <code>/sbin/init</code> → applications. User-space applications access kernel services exclusively through system calls: the C library loads the call number into r7 and arguments into r0..., invokes SWI to enter Supervisor mode, and the kernel dispatches via the call table, returning results in r0.</p>
+</section><section class="sec" id="s4">
+<h2><span class="n">§4</span>Cross-Development: Programming for ARM on a PC <span class="tag">T1.8</span></h2>
+<p class="hook"><span class="zh">Why won't a binary compiled by gcc on a PC run when copied to an ARM board?</span><span class="es">Toolchain nativa vs. toolchain cruzada.</span></p>
+<p>Development tools built into a Linux workstation constitute a <b>native</b> <b class="t">toolchain</b>: they emit binaries targeted to the very machine running them. Embedded devices generally cannot—and should not—run native toolchains: target memory and storage are tightly constrained, and execution speed is far slower than a workstation. Running tools on one platform (the <b class="t">host</b>) to generate binaries for another platform (the <b class="t">target</b>) is called <b class="t">cross-development (EN) / desarrollo cruzado (ES)</b>.</p>
+<h3>What Is Inside a Cross-Toolchain?</h3>
+<p>These components originate from GNU (a Unix-compatible free software system initiated in 1984):</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Component</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>binutils</td><td>Generates and processes target-architecture binaries: assembler (<code>as</code>), linker (<code>ld</code>), static archiver (<code>ar</code>/ <code>ranlib</code>), binary inspection (<code>objdump</code> / <code>readelf</code> / <code>size</code> / <code>nm</code> / <code>strings</code>), and <code>strip</code> to remove debug symbols and reduce size.</td></tr>
+<tr><td>Kernel headers</td><td>Also called system headers: definitions for system calls, constants, and kernel structures (§3).</td></tr>
+<tr><td>GCC</td><td>The compiler collection (C, C++, Ada, Fortran, etc.), capable of emitting code for ARM, AVR, MIPS, PowerPC, x86, and many other architectures.</td></tr>
+<tr><td>C/C++ standard library</td><td>glibc, uClibc, etc. Must be configured alongside the toolchain so GCC generates conforming runtime code.</td></tr>
+<tr><td>GDB (optional)</td><td>Debugger (gdb / gdbserver).</td></tr>
+</tbody>
+</table>
+</div>
+<p>Toolchain executables use a <b>target prefix</b> indicating the target architecture: <code>arm-linux-gcc</code>, <code>arm-linux-objdump</code>, or <code>arm-linux-gnueabihf-gcc</code> for 32-bit Raspberry Pi. The host's native <code>gcc</code> remains completely separate; both toolchains coexist harmoniously.</p>
+<h3>Build, Host, Target: Four Combinations</h3>
+<p>Three machines must be distinguished when discussing toolchains: <b>build</b> (where the toolchain is built); <b>host</b> (where the toolchain executes); and <b>target</b> (where the resulting compiled program runs). Their combinations yield four configurations:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Type</th><th>build · host · target</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>nativa (Native)</td><td>A · A · A</td><td>Standard PC and workstation setup: all stages on the same machine.</td></tr>
+<tr><td>cruzada (Cross)</td><td>A · A · B</td><td>Built and executed on one machine to produce code for a different architecture. <b>Standard for embedded microprocessors.</b></td></tr>
+<tr><td>cruzada-nativa (Cross-Native)</td><td>A · B · B</td><td>Built on machine A to run natively on machine B, compiling code for B.</td></tr>
+<tr><td>cruzada-cruzada (Canadian Cross)</td><td>A · B · C</td><td>Built on A to run on B, emitting code targeted for C.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>How Host and Target Connect</h3>
+<div class="grid3">
+<div class="cell o">
+<span class="k c-o">standalone</span>
+<h3>Standalone</h3>
+<p>Target has everything on board: bootloader, kernel, filesystem, and native compiler. No host required.</p>
+</div>
+<div class="cell b">
+<span class="k c-b">linked</span>
+<h3>Wired Connection</h3>
+<p>Host is the development workstation, connected to target via serial cable or Ethernet RJ45. Fast file transfers and interactive debugging.</p>
+</div>
+<div class="cell g">
+<span class="k c-g">almacenamiento removible</span>
+<h3>Removable Storage</h3>
+<p>Target only runs a bootloader; the host writes the secondary bootloader, kernel, and rootfs onto an SD card or USB drive, which is then inserted into the target.</p>
+</div>
+</div>
+<h3>A Development Cycle: "Edit — Build — Transfer — Debug"</h3>
+<p>Connecting these tools establishes the daily development workflow. In this course, the host is a PC equipped with the cross-toolchain and Eclipse CDT, while the target is a Raspberry Pi running Linux, interconnected via Ethernet:</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-cross">
+<div class="stage-title"><span>Escena 4 · host → target</span><b>6 steps</b></div>
+<div aria-label="Animation: Cross-development cycle between host PC and target Raspberry Pi" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-cross-t" role="img" viewbox="0 0 800 420">
+<title id="sc-cross-t">Left: host PC with source files, cross-compiler, sysroot, ARM binaries, and GDB; Right: target Raspberry Pi with copied program and gdbserver; Middle: network cable connection</title>
+<rect class="ln thin b" height="396" rx="12" width="384" x="12" y="12"></rect>
+<text class="tx sm b" x="28" y="42">Host · PC (x86)</text>
+<rect class="ln thin g" height="396" rx="12" width="336" x="452" y="12"></rect>
+<text class="tx sm g" x="468" y="42">Target · Raspberry Pi (ARM)</text>
+<path class="ln thin m" d="M396 210 H452"></path>
+<text class="tm xs m mid" x="424" y="200">RJ45</text>
+<rect class="bx p" height="56" rx="8" width="290" x="476" y="330"></rect>
+<text class="tz sm p" x="492" y="364">Linux · glibc · Actual libraries</text>
+<g data-step="1">
+<text class="tz sm m" x="36" y="74">Eclipse CDT</text>
+<rect class="bx b" data-hl="6" height="44" rx="6" width="150" x="36" y="84"></rect>
+<text class="tm b" x="52" y="112">main.c</text>
+</g>
+<g data-step="2">
+<rect class="bx w" height="52" rx="6" width="210" x="36" y="156"></rect>
+<text class="tm xs w" x="48" y="178">arm-linux-gnueabihf-gcc</text>
+<text class="tz sm m" x="48" y="198">Cross-Compiler</text>
+<rect class="bx b" height="76" rx="6" width="118" x="262" y="144"></rect>
+<text class="tm sm b" x="274" y="170">sysroot</text>
+<text class="tz sm m" x="274" y="192">Target</text>
+<text class="tz sm m" x="274" y="210">/lib /usr</text>
+<path class="ln thin w draw" d="M110 128 V154" marker-end="url(#t1-ah-w)"></path>
+<path class="ln thin b draw" d="M262 182 H248" marker-end="url(#t1-ah-b)"></path>
+<path class="ln thin w draw" d="M110 208 V246" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx b" height="46" rx="6" width="210" x="36" y="248"></rect>
+<text class="tm sm b" x="52" y="276">prog · ELF ARM</text>
+</g>
+<g data-out="4" data-step="3">
+<path class="ln r" d="M30 240 L252 302 M252 240 L30 302"></path>
+<text class="tm xs r" x="36" y="322">cannot execute binary file:</text>
+<text class="tm xs r" x="36" y="338">Exec format error</text>
+</g>
+<g data-step="4">
+<path class="ln b draw" d="M246 271 C 330 271, 370 210, 424 210 S 450 98, 474 98" id="t1-p-copy" marker-end="url(#t1-ah-b)"></path>
+<text class="tm xs b" x="300" y="252">scp · sshfs · NFS</text>
+<rect class="bx b" height="48" rx="6" width="200" x="476" y="74"></rect>
+<text class="tm b" x="492" y="104">prog</text>
+</g>
+<circle class="sl b" data-move="#t1-p-copy" data-out="5" data-step="4" r="7"></circle>
+<g data-step="5">
+<rect class="bx g" data-hl="6" height="56" rx="6" width="230" x="476" y="196"></rect>
+<text class="tm sm g" x="490" y="220">gdbserver :port ./prog</text>
+<text class="tz sm m" x="490" y="242">Runs program on board, waits for connection</text>
+<path class="ln thin w" d="M576 122 V194"></path>
+<rect class="bx y" data-hl="6" height="44" rx="6" width="210" x="36" y="352"></rect>
+<text class="tm sm y" x="52" y="380">gdb(Eclipse)</text>
+<path class="ln y dash draw" d="M246 374 C 360 374, 400 260, 474 236" marker-end="url(#t1-ah-y)"></path>
+<text class="tm xs y" x="300" y="344">TCP</text>
+</g>
+<g data-step="6">
+<circle class="sl r" cx="700" cy="148" r="9"></circle>
+<text class="tm xs r" x="604" y="152">Breakpoints</text>
+<path class="ln y draw" d="M36 374 C 0 374, 0 106, 34 106" marker-end="url(#t1-ah-y)"></path>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3400">Write <code>main.c</code> using Eclipse CDT on the host PC. The editor, compiler, and debugger GUI all run on the PC; the board requires zero development tools.</li>
+<li data-dur="5200">Compile using the <b>cross-compiler</b> (adding <code>-g</code> for debugging). It requires target headers and libraries: copying <code>/lib</code> and <code>/usr</code> from the Raspberry Pi to a host directory creates the <b class="t">sysroot</b>, where the compiler finds headers and links libraries. The output is an ARM ELF binary.</li>
+<li data-dur="3800">Run it directly on the PC? <span class="c-r">Impossible</span>: the x86 CPU cannot execute ARM instructions, causing the shell to report "Exec format error". Cross-compiled binaries can only run on the target.</li>
+<li data-dur="4400">Transfer the program to the board: copy via SSH (<code>scp</code>, SFTP, as automated by Eclipse's remote launch configuration), or share a host directory with the board (NFS, or sshfs-win on Windows), allowing the board to run binaries immediately upon compilation.</li>
+<li data-dur="4800">On the target, start the program with <code>gdbserver</code>. It pauses at the entry point and listens on a TCP port. Host-side GDB (driving Eclipse's debug perspective) connects over the network. The board only needs the lightweight gdbserver, avoiding the full GDB executable.</li>
+<li data-dur="4400">Set breakpoints, single-step, and inspect variables from the PC while the program actually executes on the board. When an issue is found, return to step 1 to modify code and begin another cycle.</li>
+</ol>
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>Configuring CMake for Cross-Compilation</h3>
+<p>During cross-compilation, CMake must be informed of the target toolchain, ensuring it searches for headers and libraries solely inside the sysroot rather than using the PC's host libraries:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">SET</span>(CMAKE_SYSTEM_NAME Linux)</span><span class="ln-row"><span class="kw">SET</span>(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)</span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH $ENV{HOME}/raspberry/rootfs)</span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER) <span class="cm"># Programs: use host tools</span></span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)  <span class="cm"># Libraries: search exclusively in sysroot</span></span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)  <span class="cm"># Headers: search exclusively in sysroot</span></span></code></pre>
+<p class="aside">The sysroot is synchronized from the target via: <code>rsync -rl --delete-after --safe-links pi@&lt;board-IP&gt;:/{lib,usr} /path/to/sysroot</code>. Symbolic links are adjusted to point relatively inside the sysroot.</p>
+</div>
+<div class="panel">
+<h3>Shared Folders: NFS and sshfs</h3>
+<ul>
+<li><b class="t">NFS (Network File System)</b>: On a Linux host, export a directory (e.g. <code>/exportado</code>) in <code>/etc/exports</code>, start the NFS service, and run <code>exportfs -ra</code>; on the board, add an entry to <code>/etc/fstab</code>: <code>host_IP:/exportado /exportado nfs ...</code>, then <code>mount -a</code>.</li>
+<li><b class="t">sshfs</b>: Mounts a remote directory over SSH. On Windows, sshfs-win (leveraging WinFsp) maps the board's directory to a local drive letter.</li>
+<li>On Windows, the cross-toolchain uses SysGCC for Raspberry Pi; Eclipse is unpacked into the same root directory.</li>
+</ul>
+</div>
+</div>
+<p class="takeaway">Cross-toolchain = binutils + kernel headers + GCC + C library (+ GDB), running on host PC to generate code for target ARM. Sysroot provides target headers and libraries on the PC. Remote debugging uses gdbserver over Ethernet.</p>
+</section><section class="sec" id="s5">
+<h2><span class="n">§5</span>Buildroot: Building an Entire System with a Single Command <span class="tag">T1.9</span></h2>
+<p class="hook"><span class="zh">Toolchain, kernel, root filesystem, hundreds of software packages—how long would it take to cross-compile them all by hand?</span><span class="es">Buildroot: un conjunto de makefiles que automatizan la construcción.</span></p>
+<p>Knowing what components are needed, how do you actually build an embedded Linux system? There are three paths:</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">distribución</span>
+<h3>Pre-built Distribution</h3>
+<p>Distributions like Debian offer pre-compiled binary packages for ARM, MIPS, and PowerPC, getting you up and running quickly. However, configuration options (soft/hard float, EABI/OABI...) are fixed by maintainers and may not match your needs; you lack control over system integration (boot, dependencies); and applying patches requires rebuilding packages without automation.</p>
+</div>
+<div class="cell r">
+<span class="k c-r">a mano</span>
+<h3>Entirely by Hand</h3>
+<p>Manually compile, configure, and install every component. Maximum flexibility, but you must resolve dependencies yourself, cross-compilation is tedious, and there is no automated mechanism to rebuild the entire system after making changes or fixes.</p>
+</div>
+<div class="cell g">
+<span class="k c-g">sistema de construcción</span>
+<h3>Build System</h3>
+<p>Automatically downloads, configures, compiles, and installs everything; provides reproducible rebuilds; simplifies applying patches and adding custom packages. It understands open-source software packages and has already resolved cross-compilation pitfalls and dependencies.</p>
+</div>
+</div>
+<p><b class="t">Buildroot</b> is such a build system: a collection of <b>Makefiles</b> that automates "building a cross-toolchain + building an embedded Linux system." Originally created for uClibc, it was revitalized in January 2009 under Peter Korsgaard, releasing new versions every 3 months. Similar tools include PTXdist (Pengutronix) and LTIB (Freescale); alternative approaches include OpenEmbedded/Yocto (more flexible and complex) and Gentoo Embedded.</p>
+<h3>Configuration: make menuconfig</h3>
+<p>Buildroot uses the kernel's <b class="t">Kconfig</b> system, presenting an interactive menuconfig text menu and saving choices in <code>.config</code>:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Menu</th><th>Available Options</th></tr></thead>
+<tbody>
+<tr><td>Target</td><td>Architecture (arm, mips, powerpc, i386, x86_64...); Variant (ARM7TDMI, ARM920T, Xscale, Cortex-A8...); ABI (EABI or OABI on ARM)</td></tr>
+<tr><td>Build options</td><td>Tools, directory paths, documentation, debug symbols, optimization levels</td></tr>
+<tr><td>Toolchain</td><td>Build internally (uClibc) or use an external toolchain; kernel header version, C library version, GCC version and languages (C++, Fortran...), GDB (target gdbserver, target gdb, host cross-gdb), IPv6/largefile/locale</td></tr>
+<tr><td>Packages</td><td>Hundreds of packages with automatic dependency resolution: busybox, bash, openssh, dropbear, lighttpd, tcpdump, iptables, sqlite, i2c-tools, Qt Embedded, python...</td></tr>
+<tr><td>Filesystem · bootloader · kernel</td><td>Rootfs formats (ext2, jffs2, ubifs, squashfs, cramfs, tar, cpio, initramfs...); U-Boot; kernel version, configuration, patches, and image formats (uImage, zImage, bzImage)</td></tr>
+</tbody>
+</table>
+</div>
+<h3>From Scratch to a Bootable SD Card</h3>
+<p>Taking a Cortex-A8 IGEP development board as an example, the complete workflow is:</p>
+<ol class="steps-list">
+<li><b>Configure Buildroot</b>: Extract source, run <code>make menuconfig</code>: select ARM architecture, Cortex-A8 variant, EABI; enable IPv6, wide characters, large files, RPC; build target gdbserver and host GDB; enable g++; select tar rootfs (gzip-compressed); select packages.</li>
+<li><code>make</code>. Produces two primary outputs: <span class="c-b">root filesystem</span> (applications, shared libraries, configuration files) in <code>output/images</code>; and <span class="c-b">cross-toolchain</span> (compiler, libraries, headers) with binaries in <code>output/staging/usr/bin</code>.</li>
+<li><b>Build the kernel with the new toolchain</b>: Add toolchain directory to <code>PATH</code>, verify with <code>arm-linux-gcc -v</code>; set <code>ARCH=arm</code> and <code>CROSS_COMPILE=arm-linux-</code>, load vendor default config <code>make igep0020_defconfig</code> (optionally customize via <code>make menuconfig</code>), then run <code>make uImage</code>, <code>make modules</code>, and <code>make modules_install</code>. Use <code>-j4</code> for multi-core parallel builds.</li>
+<li><b>Build bootloader</b>: X-loader and U-Boot, similarly compiled using <code>CROSS_COMPILE=arm-linux-</code>.</li>
+<li><b>Prepare SD card</b>: Identify device name with <code>dmesg</code> (e.g. <code>/dev/sdb</code>), use <code>fdisk</code> to create two partitions: small first partition formatted as FAT32 and marked bootable for bootloader and kernel; second partition using remaining space formatted as ext3 for root filesystem. Format via <code>mkfs.vfat</code> and <code>mkfs.ext3</code>, then mount.</li>
+<li><b>Copy files</b>: In boot partition, place <code>MLO</code> first (order matters: must reside in initial sectors), then <code>u-boot.bin</code>, <code>uImage</code>, and the boot script generated from <code>boot.cmd</code> via <code>mkimage</code>; in root partition, extract <code>rootfs.tar.gz</code>, copy kernel modules, and edit <code>etc/inittab</code> to ensure a serial login terminal (getty).</li>
+<li><b>Power on</b>: Observe X-loader, U-Boot, kernel, and applications booting in succession (§3 Scene 2). Initial boot may be slower as programs run first-time initialization.</li>
+</ol>
+<p class="aside">If the pre-installed U-Boot in the board's NAND Flash is usable, simplify: omit X-loader and U-Boot on the SD card, placing only the kernel image and boot configuration for the on-board U-Boot to load.</p>
+<p class="takeaway">Buildroot = a collection of Makefiles: <code>make menuconfig</code> selects architecture, ABI, toolchain, packages, filesystem, and kernel, saved to <code>.config</code>; running <code>make</code> outputs the cross-toolchain and root filesystem image.</p>
+</section><section class="sec" id="s6">
+<h2><span class="n">§6</span>Raspberry Pi: The Course Development Environment <span class="tag">T1.10</span></h2>
+<p class="hook"><span class="zh">Board connected via Ethernet: PuTTY connects fine, but Eclipse reports a timeout—what is the issue?</span><span class="es">Configuración de la Raspberry Pi para desarrollo cruzado.</span></p>
+<p>The Raspberry Pi is a small computer built on an ARM microprocessor: featuring programmable digital GPIOs and instrumentation buses for sensors, it reads physical data, processes it, and responds; connects to IP networks; and runs Linux. In C/C++, this course utilizes the <b class="t">wiringPi</b> library, which mimics Arduino syntax for straightforward code migration.</p>
+<h3>Required Components</h3>
+<div class="grid2">
+<div class="panel">
+<h3>Hardware</h3>
+<ul>
+<li>Raspberry Pi 3 or 4</li>
+<li>MicroSD card (at least 8 GB) and SD adapter</li>
+<li>RJ45 Ethernet cable</li>
+<li>PC with an available Ethernet port, or a router with a spare port</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Software (Windows Host)</h3>
+<ul>
+<li>Cross-development system: SysGCC Raspberry Pi toolchain</li>
+<li>Raspberry Pi Imager (OS image flashing)</li>
+<li>PuTTY (SSH terminal), Notepad++</li>
+<li>Eclipse IDE for C/C++ Developers (CDT), unpacked into the SysGCC directory</li>
+</ul>
+</div>
+</div>
+<h3>Setup Steps</h3>
+<ol class="steps-list">
+<li>Use Raspberry Pi Imager to flash Raspberry Pi OS onto the SD card. <b>Enable SSH in advanced options, setting hostname and user credentials</b> (course convention uses hostname <code>raspberrypi.local</code>). Without SSH enabled, remote login is impossible.</li>
+<li>Connect the board directly to the PC with an Ethernet cable; insert the SD card and power on.</li>
+<li>On Windows, configure Internet Connection Sharing (ICS) on the <b>Wi-Fi adapter</b>: Network Settings → Change Adapter Options → Wi-Fi Properties → "Sharing" tab, check "Allow other network users to connect through this computer's Internet connection". Note: share the Wi-Fi interface providing Internet access, <b>not</b> the Ethernet port connected to the board. Once shared, Windows assigns <code>192.168.137.1</code> to the Ethernet port and leases <code>192.168.137.x</code> to the board via DHCP.</li>
+<li>Connect via PuTTY to <code>raspberrypi.local</code> using configured credentials. Follow course instructions to enable the root account and permit SSH root login (editing <code>/etc/ssh/sshd_config</code>).</li>
+<li>Run <code>ifconfig</code> to check the board's IPv4 address; run <code>sudo raspi-config</code> to enable SPI and I2C buses; install wiringPi library headers and binaries.</li>
+<li>Configure the cross-toolchain and remote connection in Eclipse (§4 workflow).</li>
+</ol>
+<div class="orig-pair">
+</div>
+<h3>Connection Troubleshooting: IPv6 Only, No IPv4</h3>
+<div class="note warm">
+<span class="lbl">Why GPIO Toggling is Slower on Linux</span>
+<p>When programs call <code>sleep()</code> or <code>usleep()</code>, the process yields the CPU to the operating system; its resumption depends on the scheduler's time slice. Pin toggling frequency via sleep is therefore constrained by the kernel scheduler. This fundamental difference between Linux and bare metal on microcontrollers drives the topics covered in upcoming chapters (multithreading, POSIX timers, real-time signals).</p>
+</div>
+<div class="grid2">
+<div class="panel">
+<h3>Two Solutions</h3>
+<ol>
+<li>Connect the board to a home router, allowing the router to assign an IPv4 address.</li>
+<li>Configure a <b>fallback static IPv4 address</b> on the board: use <code>192.168.137.2/24</code> with gateway <code>192.168.137.1</code> (the shared Windows Ethernet port) if DHCP fails.<ul><li>Prior to Bookworm: add a static profile with <code>fallback</code> at the end of <code>/etc/dhcpcd.conf</code>, then reboot.</li><li>From Bookworm onward: create two connections using <code>nmcli</code> (DHCP priority 1, static IP priority 0), testing DHCP first and falling back to static IP. Toggle Windows connection sharing off and on once.</li></ul></li>
+</ol>
+<p class="aside">With a static IP, <code>raspberrypi.local</code> mDNS may become unreachable; connect directly to <code>192.168.137.2</code>. If the board cannot access the Internet through Windows, add <code>nameserver 8.8.8.8</code> to <code>/etc/resolv.conf</code>.</p>
+</div>
+<div class="panel">
+<h3>Determining the Board's IP: arp -a</h3>
+<p>In Windows Command Prompt, run <code>arp -a</code> and inspect entries beneath the <code>192.168.137.1</code> interface:</p>
+<pre class="code"><code><span class="ln-row">Interfaz: 192.168.137.1 --- 0x11</span><span class="ln-row">  192.168.137.128   b8-27-eb-2d-bf-a5</span><span class="ln-row">  192.168.137.205   b8-27-eb-2d-bf-a5</span><span class="ln-row">  192.168.137.255   ff-ff-ff-ff-ff-ff  <span class="cm"># Broadcast</span></span></code></pre>
+<p>Two IP addresses mapped to the same MAC indicates the board was power-cycled, receiving two consecutive leases from Windows. Run <code>ping</code> to determine which is currently active.</p>
+</div>
+</div>
+<h3>Three Pin Numbering Schemes</h3>
+<p>The Raspberry Pi 40-pin header features three distinct numbering systems for the same physical pin:</p>
+<ul>
+<li><b>Header pin (Physical Numbering)</b>: Board position, 1–40, odd on one row, even on the other.</li>
+<li><b>BCM GPIO</b>: Broadcom SoC internal GPIO numbering (e.g. GPIO17).</li>
+<li><b>wiringPi Numbering</b>: wiringPi library's custom scheme (0, 1, 2...).</li>
+</ul>
+<p>Click any pin on the header below to view its three numbering designations and corresponding <code>pinMode()</code> syntax across initialization modes:</p>
+<figure class="stage t1-pins" id="sc-pins">
+<div class="stage-title"><span>Simulator · header ↔ BCM ↔ wiringPi</span><b>Interactive</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="sc-pins-t" role="img" viewbox="0 0 800 190">
+<title id="sc-pins-t">Top-down view of 40-pin header: even-numbered pins on top row, odd-numbered pins on bottom row; click any pin to inspect its numbering</title>
+<rect class="ln thin m" height="104" rx="8" width="720" x="40" y="44"></rect>
+<text class="tm xs m" x="46" y="30">2</text>
+<text class="tm xs m end" x="754" y="30">40</text>
+<text class="tm xs m" x="46" y="176">1</text>
+<text class="tm xs m end" x="754" y="176">39</text>
+<g id="t1-pins"></g>
+</svg>
+</div>
+<div class="stage-ctl">
+<p aria-live="polite" class="t1-pin-out" id="t1-pin-out">Click a pin.</p>
+</div>
+<p class="stage-note">Colors: <span class="c-r">Red = 5 V</span> · <span class="c-o">Gold = 3.3 V</span> · Gray = GND · <span class="c-b">Blue = Standard GPIO</span> · <span class="c-t">Cyan = Multiplexed functions (I2C, SPI, UART, PWM, Clock)</span>.</p>
+</figure>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include</span> &lt;wiringPi.h&gt;</span><span class="ln-row"> </span><span class="ln-row"><span class="fn">wiringPiSetup</span>();          <span class="cm">// wiringPi numbering</span></span><span class="ln-row"><span class="fn">pinMode</span>(4, OUTPUT);        <span class="cm">// wiringPi 4 = BCM GPIO23 = header 16</span></span><span class="ln-row"> </span><span class="ln-row"><span class="cm">// Or:</span></span><span class="ln-row"><span class="fn">wiringPiSetupPhys</span>();      <span class="cm">// Physical header pin numbering</span></span><span class="ln-row"><span class="fn">pinMode</span>(16, OUTPUT);       <span class="cm">// Same physical pin</span></span><span class="ln-row"><span class="fn">digitalWrite</span>(16, HIGH);   <span class="cm">// Output high; read input using digitalRead()</span></span></code></pre>
+<p class="aside">The initialization function determines how pin numbers are interpreted across all subsequent library calls. Selecting the wrong numbering mode compiles without warnings but drives the wrong physical pin.</p>
+<h3>Other Peripherals</h3>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">I2C · SPI</span>
+<h3>Two Buses</h3>
+<p><b>I2C</b> requires only two lines: data SDA (header 3) and clock SCL (header 5). On-board 1.8 kΩ pull-up resistors are already present, making these pins unsuitable as general-purpose GPIOs. Enable via <code>raspi-config</code>, then inspect bus and device addresses with <code>i2cdetect</code>. <b>SPI</b> uses three shared lines (MOSI, MISO, SCLK) plus a chip-enable line per device (CE0、CE1).</p>
+</div>
+<div class="cell y">
+<span class="k c-y">entradas analógicas</span>
+<h3>No Analog Inputs</h3>
+<p>The Raspberry Pi lacks an integrated ADC. To sample analog signals, connect an external SPI or I2C converter, such as the 8-channel 10-bit MCP3008 (supported natively by wiringPi) or the 16-bit ADS1115.</p>
+</div>
+<div class="cell o">
+<span class="k c-o">PWM</span>
+<h3>"Analog Output"</h3>
+<p>Outputs a 0–3.3 V square wave; varying the pulse width (duty cycle) modulates the average voltage. <code>pwmWrite(pin, value)</code> maps values 0–1023 to 0–100% duty cycle. Only two pins offer hardware PWM; software PWM on other pins operates at substantially lower frequencies.</p>
+</div>
+</div>
+<div class="formula">f_PWM = 19.2 MHz ÷ divisor · default divisor = 32 → 600 kHz · adjust via pwmSetClock(divisor)</div>
+<div class="note">
+<span class="lbl">Why GPIO Toggling is Slower on Linux</span>
+<p>When programs call <code>sleep()</code> or <code>usleep()</code>, the process yields the CPU to the operating system; its resumption depends on the scheduler's time slice. Pin toggling frequency via sleep is therefore constrained by the kernel scheduler. This fundamental difference between Linux and bare metal on microcontrollers drives the topics covered in upcoming chapters (multithreading, POSIX timers, real-time signals).</p>
+</div>
+<p class="takeaway">Enable SSH in the OS image; Ethernet direct connection shares the Wi-Fi interface, placing the board at 192.168.137.x. If PuTTY connects but Eclipse times out, the board lacks an IPv4 address—resolve via router or static IP fallback. Always verify pin numbering conventions: <code>wiringPiSetup()</code> expects wiringPi numbers, whereas <code>wiringPiSetupPhys()</code> uses physical header pin numbers.</p>
+</section><section class="sec" id="quiz">
+<h2>Self-Test <span class="tag">12 Questions</span></h2>
+<p class="aside">Self-test questions based on this chapter. Only one attempt per question; explanations appear after answering.</p>
+<div class="quiz" data-quiz="T1">
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">01</span> Which of the following hardware configurations is NOT suitable for running standard Linux?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> 32-bit ARM with MMU, 64 MB RAM, 16 MB Flash</button>
+<button data-o="b" type="button"><span class="k">B</span> 32-bit ARM with MMU, 512 MB RAM, SD card</button>
+<button data-o="c" type="button"><span class="k">C</span> 32-bit x86 with MMU, 1 GB RAM, hard drive</button>
+<button data-o="d" type="button"><span class="k">D</span> 16-bit microcontroller, 64 KB RAM, 256 KB Flash</button>
+</div>
+<p class="why">D. Standard Linux requires at least a 32-bit CPU, 8 MB RAM, and 4 MB storage. Microcontrollers with only tens of KB of RAM run bare metal or FreeRTOS (§1).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span> ARM is a load/store architecture, which means?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> Every instruction can directly operate on memory operands</button>
+<button data-o="b" type="button"><span class="k">B</span> Only load/store instructions access memory; all other instructions operate strictly on registers</button>
+<button data-o="c" type="button"><span class="k">C</span> Programs must be copied from Flash into RAM before executing</button>
+<button data-o="d" type="button"><span class="k">D</span> The processor must perform one load and one store every cycle</button>
+</div>
+<p class="why">B. Arithmetic and logic instructions only touch internal registers; memory access is restricted to dedicated load/store instructions (§2).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">03</span> Regarding the Thumb instruction set, which statement is INCORRECT?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> Instructions are 16-bit, yielding a smaller binary footprint</button>
+<button data-o="b" type="button"><span class="k">B</span> Hardware expands Thumb instructions into 32-bit ARM instructions during decode without latency penalty</button>
+<button data-o="c" type="button"><span class="k">C</span> Thumb can perform everything ARM can do, including accessing coprocessors and status registers</button>
+<button data-o="d" type="button"><span class="k">D</span> Most Thumb instructions can only access registers R0–R7</button>
+</div>
+<p class="why">C. Accessing coprocessors and status registers cannot be done directly in Thumb; code must switch back to ARM state when needed (§2).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span> Thumb code executes bx r3, where r3 = 0x00009001. What does the processor do next?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> Branches to 0x9000, continuing in Thumb state</button>
+<button data-o="b" type="button"><span class="k">B</span> Branches to 0x9001, switching to ARM state</button>
+<button data-o="c" type="button"><span class="k">C</span> Branches to 0x9000, switching to ARM state</button>
+<button data-o="d" type="button"><span class="k">D</span> Raises an alignment exception because the address is odd</button>
+</div>
+<p class="why">A. Bit 0 = 1 specifies entering/remaining in Thumb state; bit 0 itself is stripped before loading into PC, resuming execution at 0x9000 (§2 Scene 1).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">05</span> On an ARM board without an FPU where the kernel uses hard float emulation, what happens when a floating-point instruction is executed?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> The compiler has already replaced it with a software library call</button>
+<button data-o="b" type="button"><span class="k">B</span> The CPU automatically delegates execution to the VFP coprocessor</button>
+<button data-o="c" type="button"><span class="k">C</span> The program is immediately terminated by the kernel</button>
+<button data-o="d" type="button"><span class="k">D</span> An illegal instruction exception is raised, caught by the in-kernel emulator to compute the result</button>
+</div>
+<p class="why">D. Option A describes soft float (-msoft-float). Hard float emulation traps into the kernel via an illegal instruction exception, incurring heavy context-switching overhead (§2).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span> Under ARM EABI, where is the system call number passed?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> Encoded directly into the immediate field of the SWI instruction</button>
+<button data-o="b" type="button"><span class="k">B</span> In register r7</button>
+<button data-o="c" type="button"><span class="k">C</span> In register r0</button>
+<button data-o="d" type="button"><span class="k">D</span> Pushed onto the top of the user stack</button>
+</div>
+<p class="why">B. Option A was the legacy OABI convention, which required the kernel to read instruction memory back as data. Register r0 holds the first argument and return value (§2, §3).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span> When the SWI instruction executes, which of the following does NOT happen?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> CPSR is saved into SPSR</button>
+<button data-o="b" type="button"><span class="k">B</span> The processor switches to Supervisor mode</button>
+<button data-o="c" type="button"><span class="k">C</span> The C library stores the return value into errno</button>
+<button data-o="d" type="button"><span class="k">D</span> PC branches to SWI vector 0x08</button>
+</div>
+<p class="why">C. errno is set in user space by the C library wrapper after the system call returns, and only when an error occurs (§3 Scene 3).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span> What is the correct boot sequence for embedded Linux booting from an SD card?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> On-chip ROM → X-loader → U-Boot → Kernel → Mount rootfs → /sbin/init</button>
+<button data-o="b" type="button"><span class="k">B</span> U-Boot → On-chip ROM → Kernel → /sbin/init → Mount rootfs</button>
+<button data-o="c" type="button"><span class="k">C</span> On-chip ROM → Kernel → U-Boot → /sbin/init</button>
+<button data-o="d" type="button"><span class="k">D</span> X-loader → /sbin/init → Kernel → U-Boot</button>
+</div>
+<p class="why">A. Each stage only knows how to locate and load the subsequent stage. init resides on rootfs, so the rootfs must be mounted first (§3 Scene 2).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span> A toolchain is built on an x86 PC and executes on that same PC to generate ARM binaries. Which toolchain configuration is this?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> Native (nativa)</button>
+<button data-o="b" type="button"><span class="k">B</span> Cross-Native (cruzada-nativa)</button>
+<button data-o="c" type="button"><span class="k">C</span> Cross (cruzada)</button>
+<button data-o="d" type="button"><span class="k">D</span> Canadian Cross (canadiense)</button>
+</div>
+<p class="why">C. build = host = x86, target = ARM. This is the standard setup for embedded microprocessor development (§4).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span> Why synchronize /lib and /usr from the Raspberry Pi to a directory on the PC?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> To backup the SD card</button>
+<button data-o="b" type="button"><span class="k">B</span> Cross-compilation requires target headers and libraries, rather than the PC's host libraries</button>
+<button data-o="c" type="button"><span class="k">C</span> gdbserver can only execute those libraries from the PC</button>
+<button data-o="d" type="button"><span class="k">D</span> So the PC can directly execute ARM binaries</button>
+</div>
+<p class="why">B. This directory forms the sysroot; linking against the host's /usr/lib would pull in x86 libraries, which are incompatible with ARM (§4).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span> After executing make in Buildroot, what is the primary deliverable produced?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> Only a .config file</button>
+<button data-o="b" type="button"><span class="k">B</span> A desktop Linux distribution installed on the PC</button>
+<button data-o="c" type="button"><span class="k">C</span> Only the bootloader</button>
+<button data-o="d" type="button"><span class="k">D</span> A cross-toolchain and the target root filesystem image</button>
+</div>
+<p class="why">D. .config is created by make menuconfig. Running make builds the cross-toolchain (output/staging) and the rootfs image (output/images) (§5).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span> Directly connected Raspberry Pi: PuTTY connects via SSH, but Eclipse connection times out. What is the most likely cause and solution?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span> The board acquired an IPv6 address but lacks IPv4; connect via a router, or set fallback static IPv4 192.168.137.2</button>
+<button data-o="b" type="button"><span class="k">B</span> SSH was not enabled in the OS image; re-flash the card</button>
+<button data-o="c" type="button"><span class="k">C</span> The Ethernet interface was shared instead of Wi-Fi; switch sharing to Ethernet</button>
+<button data-o="d" type="button"><span class="k">D</span> Toolchain version mismatch; replace with another SysGCC</button>
+</div>
+<p class="why">A. If SSH were disabled, PuTTY could not connect either. PuTTY connects over IPv6, whereas Eclipse requires an IPv4 address (§6).</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">Retry</button></div>
+</section><section class="sec" id="terminos">
+<h2>Flashcards <span class="tag">18 Cards</span></h2>
+<p class="aside">Front displays original English/Spanish terms; click to flip for a concise explanation.</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">embedded system<small>sistema empotrado</small></span><span class="back"><b>Embedded system</b><br/>Dedicated computer system, developed on a host machine to serve a specific function.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Memory Management Unit<small>MMU</small></span><span class="back"><b>Memory Management Unit (MMU)</b><br/>Translates virtual addresses to physical addresses and provides memory protection; required by standard Linux (uClinux used if absent).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bare metal</span><span class="back"><b>Bare metal</b><br/>Running directly on hardware without an operating system, main() directly controls registers.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">load/store architecture<small>arquitectura load/store</small></span><span class="back"><b>Load/store architecture</b><br/>Only load/store instructions access memory; all arithmetic and logic instructions operate strictly on internal registers.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">link register (LR) · R14<small>registro de enlace</small></span><span class="back"><b>Link register (LR)</b><br/>Subroutine return address register; BL saves return address here; bit 0 records execution state on return.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Thumb<small>juego de instrucciones Thumb</small></span><span class="back"><b>Thumb instruction set</b><br/>16-bit compressed instruction set with higher code density, decompressed by hardware into ARM instructions during execution.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">interworking</span><span class="back"><b>Interworking</b><br/>Mixed ARM/Thumb calling mechanism. Target address bit 0 in BX/BLX selects state: 1 = Thumb, 0 = ARM.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hard float · soft float</span><span class="back"><b>Floating-point emulation</b><br/>Two floating-point emulation approaches: kernel illegal-instruction exception emulation vs. compile-time software library routines (-msoft-float).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Embedded ABI (EABI)</span><span class="back"><b>Embedded ABI (EABI)</b><br/>ARM calling convention: allows mixing FP modes, standardizes structure and stack alignments, and passes system call number in r7.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bootloader<small>cargador de arranque</small></span><span class="back"><b>Bootloader</b><br/>Initializes basic hardware, loads the kernel image into RAM, and jumps to it.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">U-Boot</span><span class="back"><b>U-Boot</b><br/>Universal Bootloader, standard across ARM; provides interactive shell, environment variables, TFTP downloads, and bootm.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">root filesystem (rootfs)<small>sistema de ficheros raíz</small></span><span class="back"><b>Root filesystem</b><br/>Filesystem mounted at /, containing system libraries, applications, configuration files, and data.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">system call<small>llamada al sistema</small></span><span class="back"><b>System call</b><br/>The sole formal gateway for user programs to access kernel services (invoked via SWI/SVC).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">C library (glibc, uClibc...)<small>librería C</small></span><span class="back"><b>C library</b><br/>Interface between the kernel and user space, implementing POSIX APIs.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">cross-toolchain<small>cadena de herramientas cruzada</small></span><span class="back"><b>Cross-toolchain</b><br/>Toolchain running on host to generate binaries for target: binutils, headers, GCC, C library, GDB.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">host · target<small>máquina anfitriona · máquina destino</small></span><span class="back"><b>Host · Target</b><br/>Host machine (where development occurs) · Target machine (where programs ultimately run).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Buildroot</span><span class="back"><b>Buildroot</b><br/>A collection of Makefiles that automates building the cross-toolchain and entire embedded Linux system.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gdbserver</span><span class="back"><b>gdbserver</b><br/>Lightweight remote debug agent running on the target, allowing host-side GDB to debug over the network.</span><span class="flipcue"></span></button>
+</div>
+</section><nav aria-label="Chapter navigation" class="pager" data-pager="T1"></nav><footer class="community-foot"><p>Community edition interactive study notes, compiled independently by students. Not official material of any university or course. Focuses purely on technical concepts; original slides, figures, references, and course schedules have been removed. Animations and exercises are custom-built.</p><p>If you spot any errors, please report them. Content shared under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p></footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  
+  var PINS = {
+    1: "3.3V", 2: "5V", 3: [2, 8, "I2C1 SDA"], 4: "5V", 5: [3, 9, "I2C1 SCL"], 6: "GND",
+    7: [4, 7, "GPCLK0"], 8: [14, 15, "UART TX"], 9: "GND", 10: [15, 16, "UART RX"],
+    11: [17, 0, ""], 12: [18, 1, "PWM0"], 13: [27, 2, ""], 14: "GND", 15: [22, 3, ""],
+    16: [23, 4, ""], 17: "3.3V", 18: [24, 5, ""], 19: [10, 12, "SPI0 MOSI"], 20: "GND",
+    21: [9, 13, "SPI0 MISO"], 22: [25, 6, ""], 23: [11, 14, "SPI0 SCLK"], 24: [8, 10, "SPI CE0"],
+    25: "GND", 26: [7, 11, "SPI CE1"], 27: [0, 30, "I2C0 SDA (ID_SD)"], 28: [1, 31, "I2C0 SCL (ID_SC)"],
+    29: [5, 21, ""], 30: "GND", 31: [6, 22, ""], 32: [12, 26, "PWM0"], 33: [13, 23, "PWM1"],
+    34: "GND", 35: [19, 24, ""], 36: [16, 27, ""], 37: [26, 25, ""], 38: [20, 28, ""],
+    39: "GND", 40: [21, 29, ""]
+  };
+  var root = document.getElementById("t1-pins");
+  var out = document.getElementById("t1-pin-out");
+  if (!root || !out) return;
+  var nodes = {};
+
+  function cls(p) {
+    if (p === "5V") return "r";
+    if (p === "3.3V") return "o";
+    if (p === "GND") return "m";
+    return p[2] ? "t" : "b";
+  }
+
+  function show(h) {
+    Object.keys(nodes).forEach(function (k) { nodes[k].classList.toggle("sel", +k === h); });
+    var p = PINS[h];
+    if (typeof p === "string") {
+      out.innerHTML = "Header <b>" + h + "</b> · " + p + ": Power/GND, not a GPIO, no BCM or wiringPi number.";
+      return;
+    }
+    out.innerHTML = "Header <b>" + h + "</b> · BCM <b>GPIO" + p[0] + "</b> · wiringPi <b>" + p[1] + "</b>" +
+      (p[2] ? " · " + p[2] : "") + "<br>" +
+      "<code>wiringPiSetup()</code> → <code>pinMode(" + p[1] + ", …)</code>　" +
+      "<code>wiringPiSetupPhys()</code> → <code>pinMode(" + h + ", …)</code>　" +
+      "<code>wiringPiSetupGpio()</code> → <code>pinMode(" + p[0] + ", …)</code>";
+  }
+
+  for (var h = 1; h <= 40; h++) {
+    var col = Math.floor((h - 1) / 2), odd = h % 2 === 1;
+    var x = 60 + col * 36, y = odd ? 122 : 70;
+    var g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "pin");
+    g.setAttribute("tabindex", "0");
+    g.setAttribute("role", "button");
+    g.setAttribute("aria-label", "Header " + h);
+    var c = document.createElementNS(NS, "circle");
+    c.setAttribute("class", "bx " + cls(PINS[h]));
+    c.setAttribute("cx", x);
+    c.setAttribute("cy", y);
+    c.setAttribute("r", 12);
+    var t = document.createElementNS(NS, "text");
+    t.setAttribute("class", "tm xs w mid");
+    t.setAttribute("x", x);
+    t.setAttribute("y", y + 4);
+    t.textContent = h;
+    g.appendChild(c);
+    g.appendChild(t);
+    (function (n) {
+      g.addEventListener("click", function () { show(n); });
+      g.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(n); }
+      });
+    })(h);
+    root.appendChild(g);
+    nodes[h] = g;
+  }
+  show(16);
+})();
+</script>
+</body>
+</html>

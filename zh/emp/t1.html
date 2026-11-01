@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T1 Sistemas empotrados, ARM y Linux · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .glow-y { filter: drop-shadow(0 0 10px rgb(244 211 69 / .9)); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.t1-pins .pin { cursor: pointer; }
+.t1-pins .pin circle { stroke-width: 2; }
+.t1-pins .pin:hover circle, .t1-pins .pin:focus-visible circle { stroke: var(--st-yellow); stroke-width: 3; }
+.t1-pins .pin:focus { outline: none; }
+.t1-pins .pin.sel circle { fill: var(--st-yellow); stroke: var(--st-yellow); }
+.t1-pin-out { font: 500 14px/1.6 var(--f-body); color: var(--st-ink); margin: 0; }
+.t1-pin-out code { color: var(--st-blue); }
+.t1-pin-out b { color: var(--st-yellow); }
+ol.steps-list li { margin: .25rem 0; }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t1-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t1-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t1-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t1-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t1-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t1-ah-w" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-ink)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 1 章节" class="chain" data-chain="T1"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 1 · Introducción · Linux embebido</div>
+<h1>Sistemas empotrados, ARM y Linux embebido</h1>
+<p class="zh">从"一块板子上电"到"在电脑上写程序、在板子上调试"</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 25 分钟</span>
+
+
+</div>
+<p class="lede">MICRO 里的单片机程序直接跑在硬件上：没有操作系统，<code>main()</code> 就是全部。这门课换了一个世界：一颗 ARM <b class="t">microprocesador (ES) / microprocessor (EN)</b>——微处理器，外面是 DRAM 和 SD 卡，上面跑着完整的 Linux。这一章先回答三个问题：什么时候值得在嵌入式设备里放一个操作系统？这样的系统由哪几块软件组成、怎样一级一级启动起来？程序在 PC 上写、在 ARM 板上跑，中间的工具链是怎么搭的？最后把这些落到课程用的 Raspberry Pi 上。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T1.1</span>
+<div class="txt"><span>说出嵌入式系统的定义和特点，以及嵌入式 Linux 的优点</span><span class="es">Definición de sistema empotrado; ventajas de Linux empotrado.</span><a href="#s1">→ §1 什么是嵌入式系统</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.2</span>
+<div class="txt"><span>判断一个硬件能不能跑 Linux：32 位 CPU、RAM ≥ 8 MB、存储 ≥ 4 MB；没有 MMU 时用 uClinux；更小的芯片用 bare metal 或 FreeRTOS</span><span class="es">Requisitos mínimos hardware; MMU-less, uClinux, FreeRTOS.</span><a href="#s1">→ §1 微控制器还是微处理器</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.3</span>
+<div class="txt"><span>说出 ARM 架构的特点：RISC、load/store、16 个 32 位寄存器、条件执行、只授权设计不造芯片</span><span class="es">Arquitectura ARM: características.</span><a href="#s2">→ §2 ARM</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.4</span>
+<div class="txt"><span>解释 Thumb：16 位指令、代码密度、硬件展开成 ARM 指令、它的限制；用 <code>bx</code> 地址的 bit 0 切换 ARM/Thumb（interworking）</span><span class="es">Juego de instrucciones Thumb e interworking.</span><a href="#s2b">→ §2 两套指令集</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.5</span>
+<div class="txt"><span>区分 hard float 和 soft float、VFP；说明 EABI 解决了什么问题</span><span class="es">Punto flotante en ARM; ABI y EABI.</span><a href="#s2c">→ §2 浮点与 EABI</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.6</span>
+<div class="txt"><span>说出嵌入式 Linux 的软件组成（bootloader、kernel、librería C、rootfs）和上电后的启动顺序</span><span class="es">Arquitectura global; root filesystem; bootloaders.</span><a href="#s3">→ §3 一层一层启动</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.7</span>
+<div class="txt"><span>区分用户空间和内核空间，复述一次系统调用的过程（librería C → SWI → 内核 → 返回）</span><span class="es">Espacio de usuario, kernel, llamadas al sistema.</span><a href="#s3b">→ §3 系统调用</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.8</span>
+<div class="txt"><span>说出交叉工具链的组成；分清 build / host / target 的四种组合和 host–target 的三种连接方式</span><span class="es">Cross-compilation toolchain; tipos de construcción.</span><a href="#s4">→ §4 交叉开发</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.9</span>
+<div class="txt"><span>说明 Buildroot 做什么、怎样配置、产出什么，以及它和"用发行版""全部手工"相比的好处</span><span class="es">Buildroot: configuración, construcción, resultados.</span><a href="#s5">→ §5 Buildroot</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T1.10</span>
+<div class="txt"><span>搭好 Raspberry Pi 开发环境：烧镜像、网络共享、排查"连不上"；换算 header、BCM、wiringPi 三种引脚编号</span><span class="es">Configuración de la Raspberry Pi; numeración de pines.</span><a href="#s6">→ §6 Raspberry Pi</a></div>
+<button aria-pressed="false" class="chk" data-obj="T1.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T1"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>什么是嵌入式系统 <span class="tag">T1.1 · T1.2</span></h2>
+<p class="hook"><span class="zh">路由器、车里的控制器、导航仪都是"电脑"。它们和桌上的 PC 差在哪里？</span><span class="es">Un sistema empotrado es un sistema informático de uso específico.</span></p>
+<p>一个 <b class="t">sistema empotrado / integrado / embebido (ES) / embedded system (EN)</b>——嵌入式系统，是<b>专门用途</b>的计算机系统。和通用 PC 比，有三点不同：</p>
+<ul>
+<li><b>用途单一</b>：为某个具体任务设计，而不是什么都能干。</li>
+<li><b>板上集成</b>：PC 里插卡的东西（显卡、声卡、调制解调器……）大多直接做在主板上。</li>
+<li><b>在另一台机器上编程</b>：程序不在设备本身上开发，而是在一台 PC 上写好、编译好再放进去。§4 的交叉开发就是从这一点来的。</li>
+</ul>
+<p>这个定义很宽，涵盖了很多完全不同的产品：消费电子（DVD 播放器、数码相机、游戏机）、通信设备（手机、路由器、卫星）、工业产品（过程控制、航空电子、汽车电子）。</p>
+<h3>为什么用 Linux</h3>
+<div class="grid2">
+<div class="panel">
+<h3>优点</h3>
+<ul>
+<li><b>复用现成组件</b>：内核、编译器、库都有，团队只需专注产品自己的部分。</li>
+<li><b>质量高</b>：Linux kernel、GCC、C 库都经过大量使用的检验。</li>
+<li><b>完全掌控</b>：源代码都在手里，每个组件都能改。</li>
+<li><b>社区支持</b>。</li>
+<li><b>成本低</b>：没有 royalties（按件收取的授权费）。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>谁在用</h3>
+<ul>
+<li>GPS 导航仪（TomTom、Garmin）</li>
+<li>家用路由器（Linksys、Netgear）</li>
+<li>电视、相机、DVD 播放器（Sony、Philips）</li>
+<li>平板和手机：Android 的底层就是 Linux kernel</li>
+</ul>
+</div>
+</div>
+<h3>微控制器还是微处理器</h3>
+<p>嵌入式硬件和 PC 很不一样：CPU 架构五花八门（ARM、MIPS、PowerPC、x86），存储用容量有限的 Flash，RAM 也有限，还有 PC 上少见的总线（I2C、SPI、SSP、CAN）。Linux 对硬件有<b>最低要求</b>：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>项目</th><th>Linux 的最低要求</th></tr></thead>
+<tbody>
+<tr><td>CPU</td><td>32 位，并且 GCC 和 Linux kernel 都支持这种架构</td></tr>
+<tr><td>MMU</td><td>标准 Linux 需要；没有 MMU 的 CPU 走 <b>uClinux</b> 项目</td></tr>
+<tr><td>RAM</td><td>至少 8 MB，才能做点实际的事</td></tr>
+<tr><td>存储</td><td>至少 4 MB</td></tr>
+</tbody>
+</table>
+</div>
+<p><b class="t">MMU (Memory Management Unit)</b>——内存管理单元，负责把程序看到的<b>虚拟地址</b>翻译成物理地址，并检查每次访问有没有越权。Linux 靠它给每个进程一个独立的地址空间，一个进程写坏了内存，不会踩到别的进程或内核。MSP430 这类单片机没有 MMU，所有代码共用一个物理地址空间。</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">几 KB RAM · 微控制器</span>
+<h3>bare metal</h3>
+<p>没有操作系统：程序直接操作寄存器，一个 <code>main()</code> 加中断。MICRO 课上的 MSP430 就是这样。Linux 不是为只有几 KB 内存的微控制器设计的。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">微控制器 · 需要多任务</span>
+<h3>FreeRTOS 等 microkernel</h3>
+<p>很小的实时内核，提供任务、调度、同步，但没有进程隔离和文件系统那一整套。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">32 位 MPU + MMU + MB 级内存</span>
+<h3>Linux</h3>
+<p>完整的操作系统：进程、文件系统、网络协议栈、驱动。这门课用的 Raspberry Pi 属于这一类。没有 MMU 的 32 位芯片也能跑，靠 uClinux。</p>
+</div>
+</div>
+<p class="takeaway">嵌入式系统 = 专用 + 在别的机器上开发。要不要放 Linux，看硬件够不够：32 位 CPU、有 MMU（否则 uClinux）、RAM 至少 8 MB、存储至少 4 MB。更小的芯片用 bare metal 或 FreeRTOS。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>ARM：架构、寄存器、两套指令集 <span class="tag">T1.3 · T1.4 · T1.5</span></h2>
+<p class="hook"><span class="zh">为什么几乎每部手机里都有 ARM？</span><span class="es">ARM (Advanced RISC Machines): arquitectura RISC de 32/64 bits.</span></p>
+<p><b class="t">ARM (Advanced RISC Machines)</b> 是 ARM Holdings 设计的 32/64 位 <b class="t">RISC</b>——精简指令集架构。结构简单，所以功耗低：2005 年已有 98% 的手机至少用了一颗 ARM 处理器。要注意它的商业模式：<b>ARM 自己不造芯片</b>，只设计内核并授权给芯片厂商（Raspberry Pi 用的 Broadcom 芯片就是这样来的）。</p>
+<div class="grid2">
+<div class="panel">
+<h3>架构特点</h3>
+<ol>
+<li><b class="t">load/store</b>：只有 load/store 指令能访问内存，其余指令只操作内部寄存器。</li>
+<li>内存对齐：数据要放在对齐的位置。</li>
+<li>32 位模式：16 个同样的 32 位寄存器；64 位模式：31 个 64 位寄存器。</li>
+<li>RISC 指令集，定长 32 位。</li>
+<li>32/64 位地址空间。</li>
+<li>大多数指令一个周期执行完。</li>
+<li>指令可以<b>条件执行</b>。</li>
+<li>32 位 <b class="t">barrel shifter</b>——桶形移位器。</li>
+<li>有返回地址寄存器（link register）。</li>
+</ol>
+</div>
+<div class="panel">
+<h3>32 位模式的 16 个寄存器</h3>
+<ul>
+<li><span class="reg">R0–R12</span>：通用寄存器。</li>
+<li><span class="reg">R13 = SP</span>：栈指针。</li>
+<li><span class="reg">R14 = LR</span>：<b class="t">link register</b>——链接寄存器。<code>BL</code> 调用子程序时，把返回地址存在这里，不压栈。</li>
+<li><span class="reg">R15 = PC</span>：程序计数器，也是 32 位。</li>
+<li><span class="reg">CPSR</span>：当前程序状态寄存器，存条件标志、处理器模式，以及"现在是 ARM 还是 Thumb"。</li>
+</ul>
+<p class="aside">处理器有几种模式：应用程序在<b>用户模式</b>运行；<b>Supervisor（SVC）</b>模式给操作系统内核用。进入 SVC 模式时，CPSR 会被备份到 <span class="reg">SPSR</span>，好在返回时恢复。§3 的系统调用就靠这个切换。</p>
+</div>
+</div>
+<h3 id="s2b">两套指令集：ARM 和 Thumb</h3>
+<p>默认的 ARM 指令是 32 位。从 ARMv4T 指令集开始，加了一套 16 位的 <b class="t">Thumb</b> 指令集。芯片名里的 <b>T</b>（ARM7TDMI、ARM9TDMI……）就表示支持 Thumb。ARMv5TE 又改进了两种模式之间的切换。</p>
+<p>Thumb 指令长度减半，好处是<b>代码密度</b>高、可执行文件小。代价是有些事做不了或要多花指令。下面是同一个 Thumb 指令怎样对应到 ARM 指令：</p>
+
+<p>处理器内部其实<b>只有一套指令集（ARM）</b>。在 Thumb 状态下，专门的硬件把内存里取来的 16 位 Thumb 指令先展开成 32 位 ARM 指令再执行，这一步不花额外时间。</p>
+<div class="grid2">
+<div class="panel">
+<h3>Thumb 的限制</h3>
+<ul>
+<li>寄存器集合缩小：大多数指令只能用 R0–R7（"Lo"寄存器）；R8–R15（"Hi"）只有 <code>MOV</code>、<code>ADD</code>、<code>CMP</code>、<code>BX</code> 能用。</li>
+<li>有些指令要拆成两条，比如带链接的长跳转 <code>BL</code> 由两条 16 位指令组成。</li>
+<li>有些操作做不了：访问协处理器、访问状态寄存器。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>省了多少</h3>
+<p>两个小函数分别编译（<code>arm-linux-gcc -c</code> 和加上 <code>-mthumb</code>），用 <code>size</code> 比较 text 段：</p>
+<pre class="code"><code><span class="ln-row">   text  filename</span><span class="ln-row">    124  test.arm.o</span><span class="ln-row">     96  test.thumb.o</span><span class="ln-row">    -28  <span class="cm">// 少 28 字节，约 22%</span></span></code></pre>
+<p class="aside">这是一个很小、不具代表性的例子；指令长度减半，但做同样的事 Thumb 常常要更多条指令，所以总体省不到一半。</p>
+</div>
+</div>
+<h3>ARM 和 Thumb 混用：interworking</h3>
+<p>为什么要混用？Thumb 代码有时需要做 Thumb 做不了的操作；关键代码需要完整的 ARM 指令；或者调用的库是按 ARM 编译的。GCC 提供一个透明的机制叫 <b class="t">interworking</b>，靠的是 <code>BX</code>（以及 <code>BLX</code>）：<b>跳转目标地址的 bit 0</b> 决定状态——bit 0 = 0 进入（或留在）ARM，bit 0 = 1 进入 Thumb。下面一步一步看 Thumb 写的 <code>main()</code> 调用 ARM 写的 <code>foo()</code>：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-thumb">
+<div class="stage-title"><span>Escena 1 · Thumb ⇄ ARM interworking</span><b>5 步</b></div>
+<div aria-label="动画：Thumb 函数通过 bx 调用 ARM 函数再返回，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-thumb-t" role="img" viewbox="0 0 800 400">
+<title id="sc-thumb-t">左边是三段反汇编：Thumb 的 main、GCC 生成的包装函数、ARM 的 foo；右边是 PC、LR 和处理器状态的变化</title>
+
+<text class="tm sm g" x="44" y="40">main()   · Thumb · 16 位</text>
+<rect class="ln thin g" height="88" rx="6" width="440" x="34" y="50"></rect>
+<text class="tm sm w" x="52" y="74">81c4:  b580       push {r7, lr}</text>
+<text class="tm sm w" x="52" y="100">81cc:  f005 fb30  bl   __foo_from_thumb</text>
+<text class="tm sm w" x="52" y="126">81d0:  …</text>
+<text class="tm sm y" x="44" y="170">__foo_from_thumb · GCC 生成</text>
+<rect class="ln thin y" height="88" rx="6" width="440" x="34" y="180"></rect>
+<text class="tm sm w" x="52" y="204">d830:  4778       bx   pc</text>
+<text class="tm sm w" x="52" y="230">d832:  46c0       nop</text>
+<text class="tm sm w" x="52" y="256">d834:  eaffea79   b    foo</text>
+<text class="tm sm b" x="44" y="300">foo()   · ARM · 32 位</text>
+<rect class="ln thin b" height="66" rx="6" width="440" x="34" y="310"></rect>
+<text class="tm sm w" x="52" y="334">8220:  e1a0c00d   mov  ip, sp   …</text>
+<text class="tm sm w" x="52" y="360">8254:  e12fff1e   bx   lr</text>
+
+<path class="sl y" d="M18 94 L30 100 L18 106 z" data-out="2" data-step="1"></path>
+<path class="sl y" d="M18 198 L30 204 L18 210 z" data-out="3" data-step="2"></path>
+<path class="sl y" d="M18 250 L30 256 L18 262 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M18 354 L30 360 L18 366 z" data-out="5" data-step="4"></path>
+<path class="sl y" d="M18 120 L30 126 L18 132 z" data-step="5"></path>
+
+<text class="tx sm w" x="520" y="40">寄存器</text>
+<rect class="bx b" height="46" rx="6" width="260" x="520" y="54"></rect>
+<text class="tm b" x="534" y="83">PC</text>
+<text class="tm lg b end" data-out="2" data-step="1" x="766" y="85">0xD830</text>
+<text class="tm lg b end" data-out="3" data-step="2" x="766" y="85">0xD834</text>
+<text class="tm lg b end" data-out="4" data-step="3" x="766" y="85">0x8220</text>
+<text class="tm lg b end" data-step="4" x="766" y="85">0x81D0</text>
+<rect class="bx b" data-hl="1 4" height="46" rx="6" width="260" x="520" y="114"></rect>
+<text class="tm b" x="534" y="143">LR</text>
+<text class="tm lg b end" data-step="1" x="766" y="145">0x81D1</text>
+<rect class="bx g" data-hl="2 4" height="64" rx="6" width="260" x="520" y="174"></rect>
+<text class="tm sm m" x="534" y="196">状态 · CPSR.T</text>
+<text class="tx g end" data-out="2" data-step="1" x="766" y="226">Thumb</text>
+<text class="tx b end" data-out="4" data-step="2" x="766" y="226">ARM</text>
+<text class="tx g end" data-step="4" x="766" y="226">Thumb</text>
+<g data-out="2" data-step="1"><text class="tz sm y" x="520" y="276">bl：返回地址 0x81D0，</text><text class="tz sm y" x="520" y="298">bit 0 置 1 → LR = 0x81D1</text></g>
+<g data-out="3" data-step="2"><text class="tz sm y" x="520" y="276">bx pc：PC 读出来是 d830 + 4，</text><text class="tz sm y" x="520" y="298">bit 0 = 0 → 切到 ARM</text></g>
+<g data-out="4" data-step="3"><text class="tz sm y" x="520" y="276">普通跳转 b，状态不变</text><text class="tz sm y" x="520" y="298">进入 foo 的 ARM 代码</text></g>
+<g data-out="5" data-step="4"><text class="tz sm y" x="520" y="276">bx lr：LR = 0x81D1，bit 0 = 1</text><text class="tz sm y" x="520" y="298">→ 回到 Thumb，PC = 0x81D0</text></g>
+<g data-step="5"><text class="tz sm y" x="520" y="276">main 接着往下执行，</text><text class="tz sm y" x="520" y="298">foo 的 ARM 代码不用改一行</text></g>
+<path class="ln y draw" d="M474 100 C 500 130, 500 180, 474 204" data-out="2" data-step="1" marker-end="url(#t1-ah-y)"></path>
+<path class="ln y draw" d="M474 256 C 500 280, 500 310, 474 334" data-out="4" data-step="3" marker-end="url(#t1-ah-y)"></path>
+<path class="ln g draw" d="M474 360 C 512 320, 512 160, 474 126" data-out="5" data-step="4" marker-end="url(#t1-ah-g)"></path>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200"><code>main()</code> 是用 Thumb 编译的（16 位指令，地址每次加 2）。它要调用按 ARM 编译的 <code>foo()</code>。GCC 不直接跳过去，而是 <code>bl</code> 到它生成的小包装函数 <code>__foo_from_thumb</code>。<code>bl</code> 把返回地址 0x81D0 存进 LR，并把 <b>bit 0 置 1</b>：LR = 0x81D1，记下"回来时是 Thumb"。</li>
+<li data-dur="4200">包装函数第一条是 <code>bx pc</code>。Thumb 状态下读 PC，得到的是当前地址 + 4，而且 bit 0 被清掉：0xD834。<span class="c-y">bit 0 = 0</span>，所以处理器切到 <b>ARM 状态</b>，从 0xD834 继续。（中间的 <code>nop</code> 被跳过，只是填充。）</li>
+<li data-dur="3600">0xD834 已经是一条 32 位 ARM 指令：普通跳转 <code>b foo</code>，状态不变，进入 <code>foo()</code>。</li>
+<li data-dur="4200"><code>foo()</code> 做完后用 <code>bx lr</code> 返回。LR = 0x81D1，<span class="c-y">bit 0 = 1</span>：处理器切回 <b>Thumb</b>，PC = 0x81D0（bit 0 不进 PC）。</li>
+<li data-dur="4000">回到 <code>main()</code> 里 <code>bl</code> 的下一条。整个切换由 <code>bx</code> 和地址的 bit 0 完成，两边的代码都不需要知道对方是什么状态。</li>
+</ol>
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>在自己的系统里用 Thumb</h3>
+<ul>
+<li>内核和用户空间可以各用各的：ARM 内核 + Thumb 程序没问题，内核和程序之间的 ABI 不变。</li>
+<li>用户空间可以全部 Thumb，连 libc 一起编（uClibc 对 Thumb 的支持似乎不太正确），也可以只有应用是 Thumb、glibc 保持 ARM。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>编译选项</h3>
+<ul>
+<li>生成 Thumb：<code>-mthumb</code>（Makefile 里写 <code>CFLAGS += -mthumb</code>）。</li>
+<li>工具链要支持 interworking：binutils 和 gcc 配置时加 <code>--enable-interwork</code>。</li>
+<li>生成可混用的代码：<code>-mthumb-interwork</code>。uClibc 还要在配置里打开 <code>USE_BX</code>。</li>
+</ul>
+</div>
+</div>
+<h3 id="s2c">浮点与 EABI</h3>
+<p>很多 ARM 芯片<b>没有浮点单元</b>。编译内核时就要决定：程序里的实数运算怎么办？两种仿真方式：</p>
+<div class="grid2">
+<div class="cell y">
+<span class="k c-y">内核里仿真 · Linux 的常用做法</span>
+<h3>hard float</h3>
+<p>用户程序照样用浮点指令。芯片不认识这些指令，触发 "illegal instruction" 异常，由内核里的仿真器（NWFPE，或更快但不完整、不适合科学计算的 FastFPE）代为计算。慢：每条浮点指令都要异常处理和上下文切换。好处是有硬件时不用重新编译。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">用户空间仿真 · 编译时决定</span>
+<h3>soft float</h3>
+<p>编译时加 <code>-msoft-float</code>，编译器直接生成调用软件浮点库的代码，不用浮点指令。</p>
+</div>
+</div>
+<p>ARM10、ARM11 和 Cortex 系列有 <b class="t">VFP</b> 浮点协处理器，可以真正用硬件算浮点。问题在于：按旧 ABI，hard float 和 soft float 编译的代码<b>不能混在一起</b>，一个程序和它所有的库必须选同一种。</p>
+<p><b class="t">ABI (Application Binary Interface)</b>——应用二进制接口，是程序和操作系统（或另一个程序）之间二进制层面的约定。ARM 的新标准 <b class="t">EABI (Embedded ABI)</b> 规定了文件格式、数据类型、寄存器用法、栈的组织和函数传参方式，好处是：可以混用 hard/soft float 代码，能用别的编译器生成的二进制，支持 Thumb。另外几处变化：</p>
+<ul>
+<li>结构体不再有最小对齐；函数的栈按 8 字节对齐（原来 4）；64 位整数按 8 字节对齐。</li>
+<li><b>系统调用号</b>放在寄存器 <span class="reg">r7</span>。旧 ABI 把调用号编码在 SWI 指令里，内核要把这条指令当数据读回来解码，指令就混进了数据缓存。</li>
+<li>64 位参数对齐到偶数号寄存器。</li>
+</ul>
+<p>支持情况：GCC 4.1.0 起支持 EABI，Linux kernel 2.6.16 起有 <code>CONFIG_AEABI</code>；<code>CONFIG_OABI_COMPAT</code> 让 EABI 内核还能跑旧 ABI 的二进制（只限非 Thumb）。反过来，EABI 的二进制放到不支持 EABI 的内核上<b>不能运行</b>。Raspberry Pi 的 32 位工具链前缀 <code>arm-linux-gnueabihf-</code> 里的 <b>gnueabihf</b>，意思就是 GNU + EABI + <b>h</b>ard <b>f</b>loat（用 VFP 硬件）。</p>
+<p class="takeaway">ARM 是授权出去的 RISC 架构：load/store、16 个 32 位寄存器、条件执行。Thumb 是 16 位的压缩编码，硬件展开成 ARM 执行；ARM 和 Thumb 之间用 <code>bx</code> 地址的 bit 0 切换。EABI 统一了调用约定，系统调用号放在 r7。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>一层一层启动：嵌入式 Linux 的组成 <span class="tag">T1.6 · T1.7</span></h2>
+<p class="hook"><span class="zh">按下电源，到应用程序开始运行，中间有几段软件依次接力？</span><span class="es">Bootloader → kernel → root filesystem → aplicaciones.</span></p>
+<p>要把 Linux 放进一个嵌入式系统，需要这几块软件：</p>
+<ul>
+<li><b class="t">bootloader (EN) / cargador de arranque (ES)</b>——引导加载程序：做最基本的硬件初始化，把内核装进内存并启动它。</li>
+<li><b class="t">Linux kernel</b>——内核：管理内存和进程，包含驱动、网络协议栈……</li>
+<li><b class="t">librería C (ES) / C library (EN)</b>——C 库：内核和用户空间应用之间的接口，提供 POSIX 标准 API。实现有好几种：glibc、uClibc、eglibc、dietlibc、newlib 等。</li>
+<li><b>其他库和应用程序</b>。</li>
+<li>另外还需要一套<b>交叉编译工具链</b>（§4），它不在板子上，在开发用的 PC 上。</li>
+</ul>
+
+<p>Linux 把所有文件组织成一棵目录树。其中有一个特别的文件系统，<b class="t">root filesystem (EN) / sistema de ficheros raíz (ES)</b>——根文件系统，挂载在 <code>/</code> 上。在嵌入式系统里，它装着系统的库、应用和数据。<b>构建根文件系统</b>是做一个嵌入式 Linux 的基本任务之一；内核通常和它分开存放。</p>
+<h3>bootloader 做什么</h3>
+<div class="grid2">
+<div class="panel">
+<h3>基本任务</h3>
+<ul>
+<li>硬件的基本初始化。</li>
+<li>从 Flash、网络或其他非易失存储，把一个二进制程序（这里是内核）装进内存。</li>
+<li>执行它。</li>
+</ul>
+<p>大多数 bootloader 还带一个简单的命令行，可以查看内存、加载文件、诊断硬件。</p>
+</div>
+<div class="panel">
+<h3>PC 和嵌入式不一样</h3>
+<p><b>x86 PC</b>：主板上有 BIOS，复位后自动运行，做基本初始化，然后把磁盘第一个扇区里的小程序装进内存，由它再启动真正的引导程序（grub、lilo）。</p>
+<p><b>嵌入式</b>：和处理器、板子高度相关。有的板子有 NOR flash，CPU 复位后直接从里面取第一条指令，bootloader 就烧在那个位置；有的 CPU 在内部 ROM 里带一个小加载程序，自动从 NAND flash（或 SD 卡）装入一个小程序，这就是<b>两级引导</b>。bootloader 复位后立刻运行，所以连 DRAM 都要由它初始化。</p>
+</div>
+</div>
+<p>最常用的开源 bootloader 是 <b class="t">U-Boot</b>（Universal Bootloader，ARM 上用得最多，也支持 PPC、MIPS、x86 等），另外还有 RedBoot、uMon。下面以一块 OMAP 处理器的开发板（IGEP）从 SD 卡启动为例，看整个接力过程：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-boot">
+<div class="stage-title"><span>Escena 2 · del reset a las aplicaciones</span><b>6 步</b></div>
+<div aria-label="动画：嵌入式 Linux 从复位到应用程序的启动链，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-boot-t" role="img" viewbox="0 0 800 430">
+<title id="sc-boot-t">左边是启动链：片内 ROM、X-loader、U-Boot、Linux 内核、init、应用；右边是 SD 卡的两个分区，每一级从卡上读取下一级需要的文件</title>
+
+<rect class="ln thin m" height="400" rx="12" width="356" x="430" y="16"></rect>
+<text class="tx sm w" x="446" y="46">SD 卡</text>
+<rect class="bx b" height="156" rx="6" width="324" x="446" y="60"></rect>
+<text class="tm sm b" x="460" y="82">p1 · FAT32 · 启动分区</text>
+<text class="tm sm w" data-hl="2" x="476" y="108">MLO（X-loader）</text>
+<text class="tm sm w" data-hl="3" x="476" y="136">u-boot.bin</text>
+<text class="tm sm w" data-hl="4" x="476" y="164">uImage（内核）</text>
+<text class="tm sm w" data-hl="4" x="476" y="192">boot.scr（启动脚本）</text>
+<rect class="bx b" data-hl="5" height="168" rx="6" width="324" x="446" y="232"></rect>
+<text class="tm sm b" x="460" y="254">p2 · ext3 · rootfs</text>
+<text class="tm sm w" data-hl="6" x="476" y="282">/sbin/init</text>
+<text class="tm sm w" data-hl="6" x="476" y="310">/etc/inittab</text>
+<text class="tm sm w" x="476" y="338">/lib  /usr  /bin …</text>
+<text class="tm sm w" x="476" y="366">/lib/modules（驱动模块）</text>
+
+<g data-step="1">
+<rect class="bx m" height="52" rx="8" width="320" x="20" y="20"></rect>
+<text class="tx sm w" x="36" y="44">片内 ROM</text>
+<text class="tz sm m" x="36" y="64">芯片自带 · 复位后从这里开始</text>
+<circle class="sl r" cx="320" cy="34" r="7"></circle>
+<text class="tm xs r end" x="308" y="38">reset</text>
+</g>
+<g data-step="2">
+<path class="ln thin w" d="M180 72 V88" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx w" height="52" rx="8" width="320" x="20" y="90"></rect>
+<text class="tx sm w" x="36" y="114">X-loader</text>
+<text class="tz sm m" x="36" y="134">第一级 bootloader</text>
+<path class="ln b draw" d="M446 104 C 400 104, 390 116, 344 116" marker-end="url(#t1-ah-b)"></path>
+</g>
+<g data-step="3">
+<path class="ln thin w" d="M180 142 V158" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx w" height="52" rx="8" width="320" x="20" y="160"></rect>
+<text class="tx sm w" x="36" y="184">U-Boot</text>
+<text class="tz sm m" x="36" y="204">第二级 · 有命令行和环境变量</text>
+<path class="ln b draw" d="M446 132 C 400 132, 390 186, 344 186" marker-end="url(#t1-ah-b)"></path>
+</g>
+<g data-step="4">
+<path class="ln thin w" d="M180 212 V228" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx p" height="52" rx="8" width="320" x="20" y="230"></rect>
+<text class="tx sm p" x="36" y="254">Linux kernel</text>
+<text class="tz sm m" x="36" y="274">驱动 · 内存 · 进程</text>
+<path class="ln b draw" d="M446 160 C 400 160, 390 256, 344 256" marker-end="url(#t1-ah-b)"></path>
+</g>
+<g data-step="5">
+<path class="ln p draw" d="M340 270 C 380 270, 400 250, 444 250" marker-end="url(#t1-ah-p)"></path>
+<text class="tm xs p mid" x="392" y="290">mount /</text>
+</g>
+<g data-step="6">
+<path class="ln thin w" d="M180 282 V298" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx g" height="52" rx="8" width="320" x="20" y="300"></rect>
+<text class="tx sm g" x="36" y="324">/sbin/init</text>
+<text class="tz sm m" x="36" y="344">第一个用户进程 · 读 inittab</text>
+<path class="ln b draw" d="M446 280 C 400 280, 390 326, 344 326" marker-end="url(#t1-ah-b)"></path>
+<path class="ln thin w" d="M180 352 V368" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx g" height="46" rx="8" width="320" x="20" y="370"></rect>
+<text class="tz g" x="36" y="399">登录终端 getty · 各种应用</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800"><span class="c-r">复位</span>之后，CPU 先执行芯片内部 ROM 里固化的一小段代码。它不能改，也很笨：只会到固定的位置（这里是 SD 卡第一个分区）去找下一级程序。</li>
+<li data-dur="4200">ROM 从 SD 卡读出 <code>MLO</code>，也就是 <b>X-loader</b>：一个很小的中间 bootloader。为了让 ROM 找到它，往卡上复制文件时 <code>MLO</code> 必须<b>第一个</b>放进去。</li>
+<li data-dur="4200">X-loader 再去启动分区里找 <b>U-Boot</b> 并启动它。这两级合起来完成硬件初始化（包括 DRAM），之后才有足够的内存装内核。</li>
+<li data-dur="5200">U-Boot 执行启动脚本 <code>boot.scr</code>：设置内核参数 <code>bootargs</code>（控制台串口、<code>root=/dev/mmcblk0p2</code>），用 <code>fatload</code> 把内核映像 <code>uImage</code> 读进 DRAM，再用 <code>bootm</code> 跳过去执行。从这里开始控制权交给<span class="c-p">内核</span>。</li>
+<li data-dur="4400">内核初始化驱动和内存管理，然后按 <code>bootargs</code> 里的 <code>root=</code>，把第二个分区（ext3）挂载为 <code>/</code>。根文件系统就位，用户空间的程序才有地方可以读。</li>
+<li data-dur="4800">内核启动第一个用户进程 <code>/sbin/init</code>。init 读 <code>/etc/inittab</code>，按里面的配置在串口上启动登录终端（getty）和其他应用。到这一步，系统才算"起来了"。</li>
+</ol>
+<p class="stage-note">这是一种两级引导的板子。别的板子可能从 NOR flash 直接启动 U-Boot，或者整套顺序由厂商的固件决定，但"bootloader → kernel → 挂载 rootfs → init"这个骨架不变。</p>
+</figure>
+<div class="note">
+<span class="lbl">U-Boot 的命令行</span>
+<p>U-Boot 起来后，通过串口控制台可以看到它的提示符。常用命令：<code>printenv</code> / <code>setenv</code> / <code>saveenv</code> 查看、修改、保存环境变量（如 <code>ipaddr</code>、<code>serverip</code>、<code>bootargs</code>）；<code>tftp</code> 通过网络从 PC 上的 TFTP 服务器下载内核；<code>bootm 地址</code> 启动内存里的内核。U-Boot 加载的内核要先用 <code>mkimage</code> 加一个 U-Boot 专用的头（<code>make uImage</code> 会做这一步）。更新 Flash 里的 U-Boot 要小心：出错的话板子可能就"变砖"了，只能靠 JTAG 救回来。</p>
+</div>
+<h3 id="s3b">用户空间和内核空间：系统调用</h3>
+<p>启动完成后，系统分成两个世界。应用程序跑在<b class="t">espacio de usuario (ES) / user space (EN)</b>——用户空间，不能直接碰硬件；内核跑在<b class="t">espacio del kernel (ES) / kernel space (EN)</b>——内核空间，掌管进程、内存、文件系统、设备和网络。两者之间唯一的正式通道是<b class="t">llamada al sistema (ES) / system call (EN)</b>——系统调用接口，也就是操作系统的 API：</p>
+
+<p>C 库和编译出来的程序都要和内核打交道：系统调用、常量定义、内核用的数据结构。所以编译器需要<b>内核头文件</b>（<code>linux/</code> 和 <code>asm/</code> 目录）。程序里调用 <code>write()</code> 时，真正发生的是下面这一串事情：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-syscall">
+<div class="stage-title"><span>Escena 3 · una llamada al sistema</span><b>6 步</b></div>
+<div aria-label="动画：一次 write 系统调用从用户空间进入内核再返回，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-syscall-t" role="img" viewbox="0 0 800 440">
+<title id="sc-syscall-t">上半部分是用户空间的应用和 C 库，下半部分是内核空间的异常向量、系统调用表和 sys_write，右边是 r7、r0–r2 和处理器模式的变化</title>
+<rect class="ln thin g" height="168" rx="10" width="596" x="12" y="12"></rect>
+<text class="tz sm g" x="26" y="36">用户空间 · 用户模式</text>
+<rect class="bx g" height="74" rx="8" width="240" x="30" y="54"></rect>
+<text class="tx sm g" x="46" y="82">应用程序</text>
+<text class="tm sm w" x="46" y="112">write(fd, buf, 5);</text>
+<rect class="bx b" data-hl="2" height="74" rx="8" width="260" x="330" y="54"></rect>
+<text class="tx sm b" x="346" y="82">librería C</text>
+<text class="tm sm w" x="346" y="112">write() 包装函数</text>
+<path class="ln thin p dash" d="M12 200 H608"></path>
+<text class="tz sm p" x="26" y="196">系统调用接口</text>
+<rect class="ln thin p" height="148" rx="10" width="596" x="12" y="214"></rect>
+<text class="tz sm p" x="26" y="238">内核空间 · Supervisor 模式</text>
+<g data-step="3">
+<rect class="bx p" height="80" rx="8" width="170" x="30" y="256"></rect>
+<text class="tm p" x="46" y="286">向量 0x08</text>
+<text class="tz sm m" x="46" y="316">SWI 异常入口</text>
+</g>
+<g data-step="4">
+<rect class="bx p" height="80" rx="8" width="180" x="224" y="256"></rect>
+<text class="tm p" x="240" y="286">调用表</text>
+<text class="tm xs w" x="240" y="316">sys_call_table[r7]</text>
+<path class="ln p draw" d="M200 296 H222" marker-end="url(#t1-ah-p)"></path>
+<rect class="bx p" height="80" rx="8" width="164" x="428" y="256"></rect>
+<text class="tm p" x="444" y="286">sys_write</text>
+<text class="tz sm m" x="444" y="316">→ 文件系统 / 驱动</text>
+<path class="ln p draw" d="M404 296 H426" marker-end="url(#t1-ah-p)"></path>
+</g>
+<g data-step="5">
+<rect class="bx m" height="44" rx="8" width="164" x="428" y="384"></rect>
+<text class="tz sm w" x="444" y="411">硬件 · 设备</text>
+<path class="ln b draw" d="M510 336 V382" marker-end="url(#t1-ah-b)"></path>
+</g>
+
+<path class="ln g draw" d="M270 80 H328" data-out="6" data-step="1" marker-end="url(#t1-ah-g)"></path>
+<path class="ln p draw" d="M420 128 C 420 210, 115 200, 115 254" data-out="6" data-step="3" id="t1-p-svc" marker-end="url(#t1-ah-p)"></path>
+<circle class="sl p" data-move="#t1-p-svc" data-out="4" data-step="3" r="7"></circle>
+<g data-step="6">
+<path class="ln g draw" d="M540 254 C 540 200, 520 170, 520 130" marker-end="url(#t1-ah-g)"></path>
+<path class="ln g draw" d="M328 104 H272" marker-end="url(#t1-ah-g)"></path>
+<text class="tm xs g mid" x="300" y="148">返回 5</text>
+</g>
+
+<text class="tx sm w" x="624" y="36">寄存器</text>
+<rect class="bx b" data-hl="2 4" height="40" rx="6" width="164" x="624" y="50"></rect>
+<text class="tm sm b" x="636" y="76">r7</text>
+<text class="tm b end" data-step="2" x="776" y="77">4</text>
+<rect class="bx b" data-hl="5" height="40" rx="6" width="164" x="624" y="98"></rect>
+<text class="tm sm b" x="636" y="124">r0</text>
+<text class="tm b end" data-out="5" data-step="2" x="776" y="125">fd</text>
+<text class="tm y end" data-step="5" x="776" y="125">5</text>
+<rect class="bx b" height="40" rx="6" width="164" x="624" y="146"></rect>
+<text class="tm sm b" x="636" y="172">r1 r2</text>
+<text class="tm b end" data-step="2" x="776" y="173">buf, 5</text>
+<rect class="bx w" data-hl="3 6" height="60" rx="6" width="164" x="624" y="206"></rect>
+<text class="tm xs m" x="636" y="226">CPSR · 模式</text>
+<text class="tx g end" data-out="3" x="776" y="256">USR</text>
+<text class="tx p end" data-out="6" data-step="3" x="776" y="256">SVC</text>
+<text class="tx g end" data-step="6" x="776" y="256">USR</text>
+<g data-out="6" data-step="3">
+<text class="tm xs p" x="624" y="292">SPSR ← CPSR</text>
+<text class="tm xs p" x="624" y="312">LR ← 返回地址</text>
+<text class="tm xs p" x="624" y="332">PC ← 0x08</text>
+</g>
+<g data-step="6">
+<text class="tm xs g" x="624" y="292">CPSR ← SPSR</text>
+<text class="tm xs g" x="624" y="312">PC ← LR</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">应用程序调用 <code>write(fd, buf, 5)</code>。这只是一次普通的函数调用，进的是 <b>C 库</b>里的同名包装函数，CPU 还在<span class="c-g">用户模式</span>。</li>
+<li data-dur="4200">包装函数按 EABI 的约定准备寄存器：系统调用号放进 <span class="reg">r7</span>（<code>write</code> 是 4），参数依次放进 <span class="reg">r0</span>、<span class="reg">r1</span>、<span class="reg">r2</span>。</li>
+<li data-dur="5000">然后执行<b>软件中断</b>指令 <code>SWI</code>（新的汇编写法叫 <code>SVC</code>）。CPU 像处理异常一样：把 CPSR 存进 SPSR，把下一条指令的地址存进 LR，PC 跳到 SWI 向量 0x08，并切到 <span class="c-p">Supervisor 模式</span>、ARM 状态。从这一刻起执行的是内核代码。</li>
+<li data-dur="4200">内核的 SWI 处理程序读 r7，在<span class="c-p">系统调用表</span>里查到第 4 项，转去执行 <code>sys_write</code>，再交给文件系统或设备驱动。</li>
+<li data-dur="3800">驱动真正去操作硬件。完成后，返回值放进 <span class="reg">r0</span>：这里写出了 5 个字节，r0 = 5（出错时是负的错误码）。</li>
+<li data-dur="4600">内核从 SPSR 恢复 CPSR（回到<span class="c-g">用户模式</span>），PC 回到 LR 指向的地址。C 库把 r0 交给应用：<code>write()</code> 返回 5；出错时 C 库返回 −1，并把错误码放进 <code>errno</code>。</li>
+</ol>
+<p class="stage-note">每一次系统调用都要进出一次内核，有模式切换的开销。这也是 §2 说"内核里仿真浮点很慢"的原因：每条浮点指令都要走一次类似的异常进出。</p>
+</figure>
+<div class="note warm">
+<span class="lbl">内核头文件和 ABI 的兼容</span>
+<p>内核和用户空间之间的 ABI <b>向后兼容</b>：用旧内核头文件编出来的程序，在新内核上能运行（只是用不到新功能）；用新头文件编的程序在旧内核上，只要没用新功能，也可能能跑。所以不必追最新的头文件，除非要用新功能。头文件用 <code>make headers_install</code> 从内核源码里导出。</p>
+</div>
+<p class="takeaway">bootloader（可能分两级）→ 内核 → 挂载 rootfs → <code>/sbin/init</code> → 应用。应用在用户空间，要用内核的服务只能经过系统调用：C 库把调用号放进 r7、参数放进 r0…，执行 SWI 进入 Supervisor 模式，内核查表执行后把结果放在 r0 返回。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>交叉开发：在 PC 上为 ARM 编程 <span class="tag">T1.8</span></h2>
+<p class="hook"><span class="zh">PC 上的 gcc 编出来的程序，为什么拷到 ARM 板子上跑不起来？</span><span class="es">Toolchain nativa vs. toolchain cruzada.</span></p>
+<p>Linux 工作站上自带的开发工具叫<b>本地</b> <b class="t">toolchain</b>——工具链：它生成的代码给它自己所在的机器用。嵌入式系统一般不能、也不值得用本地工具链：板子的内存和存储太紧，速度也比工作站慢得多。于是在一个平台（<b class="t">host</b>——宿主机）上运行工具，生成另一个平台（<b class="t">target</b>——目标机）的代码，这就是<b class="t">desarrollo cruzado (ES) / cross-development (EN)</b>——交叉开发。</p>
+
+<h3>交叉工具链里有什么</h3>
+<p>这些组件都来自 GNU（1984 年开始开发的类 Unix 自由软件系统）：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>组件</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>binutils</td><td>生成和处理某个架构的二进制：<code>as</code> 汇编器、<code>ld</code> 链接器、<code>ar</code>/<code>ranlib</code> 做静态库（.a）、<code>objdump</code>/<code>readelf</code>/<code>size</code>/<code>nm</code>/<code>strings</code> 查看二进制、<code>strip</code> 去掉没用的部分减小体积</td></tr>
+<tr><td>内核头文件</td><td>也叫系统头文件：系统调用、常量、内核数据结构的定义（§3）</td></tr>
+<tr><td>GCC</td><td>编译器：C、C++、Ada、Fortran、Java、Objective-C……，能为 ARM、AVR、MIPS、PowerPC、x86 等很多架构生成代码</td></tr>
+<tr><td>C/C++ 库</td><td>glibc、uClibc 等。必须和工具链<b>一起</b>选定，GCC 才会为这个库生成代码</td></tr>
+<tr><td>GDB（可选）</td><td>调试器</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>工具名前面的<b>前缀</b>说明它为哪个目标生成代码：<code>arm-linux-gcc</code>、<code>arm-linux-objdump</code>，或者 Raspberry Pi 32 位系统用的 <code>arm-linux-gnueabihf-gcc</code>。PC 上原来的 <code>gcc</code> 不受影响，两套并存。</p>
+<h3>build、host、target：四种组合</h3>
+<p>做工具链时要分清三台机器：<b>build</b>——在哪台机器上<b>构建</b>工具链；<b>host</b>——工具链在哪台机器上<b>运行</b>，也就是做开发的机器；<b>target</b>——生成的程序在哪台机器上运行。三者异同组合出四种情况：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>类型</th><th>build · host · target</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>nativa · 本地</td><td>A · A · A</td><td>工作站和 PC 的通常情况，全在一台机器上</td></tr>
+<tr><td>cruzada · 交叉</td><td>A · A · <b>B</b></td><td>在同一台机器上做工具、用工具，但为另一个架构生成代码。<b>嵌入式微处理器的常见情况</b></td></tr>
+<tr><td>cruzada-nativa</td><td>A · <b>B</b> · <b>B</b></td><td>在一个架构上做出工具，工具在目标架构上运行</td></tr>
+<tr><td>canadiense · 加拿大式</td><td>A · <b>B</b> · <b>C</b></td><td>三台都不同（名字来自当时加拿大有三个全国性大党）</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>host 和 target 怎么连</h3>
+<div class="grid3">
+<div class="cell o">
+<span class="k c-o">standalone</span>
+<h3>独立</h3>
+<p>target 上什么都有：bootloader、内核、文件系统，<b>连本地开发工具都装在板子上</b>，不需要 host。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">linked</span>
+<h3>连线</h3>
+<p>host 是交叉开发平台，通过线缆（串口、网线）和 target 连着；target 上有 bootloader、内核、文件系统。这门课用的就是这种。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">almacenamiento removible</span>
+<h3>可移动存储</h3>
+<p>target 上只有 bootloader；host 把第二级 bootloader、内核和文件系统写到存储卡上，再插到 target 上启动（§5 的 SD 卡就是这样）。</p>
+</div>
+</div>
+
+<h3>一轮"写—编—传—调"</h3>
+<p>把上面的东西串起来，就是每天的工作流程。这门课里 host 是装了交叉工具链和 Eclipse CDT 的 PC，target 是用网线连着的 Raspberry Pi：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-cross">
+<div class="stage-title"><span>Escena 4 · host → target</span><b>6 步</b></div>
+<div aria-label="动画：在 host 上交叉编译，复制到 target，用 gdbserver 远程调试，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-cross-t" role="img" viewbox="0 0 800 420">
+<title id="sc-cross-t">左边 host（PC）上有源文件、交叉编译器、sysroot、ARM 可执行文件和 gdb；右边 target（Raspberry Pi）上有复制过来的程序、gdbserver 和 Linux；两边用网线连接</title>
+<rect class="ln thin b" height="396" rx="12" width="384" x="12" y="12"></rect>
+<text class="tx sm b" x="28" y="42">Host · PC（x86）</text>
+<rect class="ln thin g" height="396" rx="12" width="336" x="452" y="12"></rect>
+<text class="tx sm g" x="468" y="42">Target · Raspberry Pi（ARM）</text>
+<path class="ln thin m" d="M396 210 H452"></path>
+<text class="tm xs m mid" x="424" y="200">RJ45</text>
+<rect class="bx p" height="56" rx="8" width="290" x="476" y="330"></rect>
+<text class="tz sm p" x="492" y="364">Linux · glibc · 真正的库</text>
+<g data-step="1">
+<text class="tz sm m" x="36" y="74">Eclipse CDT</text>
+<rect class="bx b" data-hl="6" height="44" rx="6" width="150" x="36" y="84"></rect>
+<text class="tm b" x="52" y="112">main.c</text>
+</g>
+<g data-step="2">
+<rect class="bx w" height="52" rx="6" width="210" x="36" y="156"></rect>
+<text class="tm xs w" x="48" y="178">arm-linux-gnueabihf-gcc</text>
+<text class="tz sm m" x="48" y="198">交叉编译器</text>
+<rect class="bx b" height="76" rx="6" width="118" x="262" y="144"></rect>
+<text class="tm sm b" x="274" y="170">sysroot</text>
+<text class="tz sm m" x="274" y="192">目标的</text>
+<text class="tz sm m" x="274" y="210">/lib /usr</text>
+<path class="ln thin w draw" d="M110 128 V154" marker-end="url(#t1-ah-w)"></path>
+<path class="ln thin b draw" d="M262 182 H248" marker-end="url(#t1-ah-b)"></path>
+<path class="ln thin w draw" d="M110 208 V246" marker-end="url(#t1-ah-w)"></path>
+<rect class="bx b" height="46" rx="6" width="210" x="36" y="248"></rect>
+<text class="tm sm b" x="52" y="276">prog · ELF ARM</text>
+</g>
+<g data-out="4" data-step="3">
+<path class="ln r" d="M30 240 L252 302 M252 240 L30 302"></path>
+<text class="tm xs r" x="36" y="322">cannot execute binary file:</text>
+<text class="tm xs r" x="36" y="338">Exec format error</text>
+</g>
+<g data-step="4">
+<path class="ln b draw" d="M246 271 C 330 271, 370 210, 424 210 S 450 98, 474 98" id="t1-p-copy" marker-end="url(#t1-ah-b)"></path>
+<text class="tm xs b" x="300" y="252">scp · sshfs · NFS</text>
+<rect class="bx b" height="48" rx="6" width="200" x="476" y="74"></rect>
+<text class="tm b" x="492" y="104">prog</text>
+</g>
+<circle class="sl b" data-move="#t1-p-copy" data-out="5" data-step="4" r="7"></circle>
+<g data-step="5">
+<rect class="bx g" data-hl="6" height="56" rx="6" width="230" x="476" y="196"></rect>
+<text class="tm sm g" x="490" y="220">gdbserver :端口 ./prog</text>
+<text class="tz sm m" x="490" y="242">在板上运行程序，等连接</text>
+<path class="ln thin w" d="M576 122 V194"></path>
+<rect class="bx y" data-hl="6" height="44" rx="6" width="210" x="36" y="352"></rect>
+<text class="tm sm y" x="52" y="380">gdb（Eclipse）</text>
+<path class="ln y dash draw" d="M246 374 C 360 374, 400 260, 474 236" marker-end="url(#t1-ah-y)"></path>
+<text class="tm xs y" x="300" y="344">TCP</text>
+</g>
+<g data-step="6">
+<circle class="sl r" cx="700" cy="148" r="9"></circle>
+<text class="tm xs r" x="604" y="152">断点</text>
+<path class="ln y draw" d="M36 374 C 0 374, 0 106, 34 106" marker-end="url(#t1-ah-y)"></path>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3400">在 host 上用 Eclipse CDT 写 <code>main.c</code>。编辑器、编译器、调试器界面都在 PC 上，板子不需要装任何开发工具。</li>
+<li data-dur="5200">用<b>交叉编译器</b>编译（调试时加 <code>-g</code>）。它需要目标系统的头文件和库：从 Raspberry Pi 上把 <code>/lib</code>、<code>/usr</code> 复制到 PC 上的一个目录，这个目录叫 <b>sysroot</b>，编译器在里面找头文件、链接库。产出的是一个 ARM 的 ELF 可执行文件。</li>
+<li data-dur="3800">在 PC 上直接运行它？<span class="c-r">不行</span>：x86 的 CPU 不认识 ARM 指令，shell 报 "Exec format error"。交叉编译出来的程序只能在 target 上跑。</li>
+<li data-dur="4400">把程序送到板子上：用 SSH 复制（<code>scp</code>、SFTP，Eclipse 的远程启动配置就是这样做的），或者把 PC 上的一个目录共享给板子（NFS，Windows 上用 sshfs-win），PC 上编译完板子上立刻看得到。</li>
+<li data-dur="4800">在 target 上用 <b>gdbserver</b> 启动程序，它停在入口处，在一个 TCP 端口上等待。host 上的 gdb（Eclipse 的调试界面背后就是它）通过网络连上去。板子只需要很小的 gdbserver，符号表和源代码都留在 PC 上。</li>
+<li data-dur="4400">在 PC 上设断点、单步、看变量，程序实际在板子上执行。发现问题，回到第 1 步改代码，再来一轮。</li>
+</ol>
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>用 CMake 告诉构建系统"这是交叉编译"</h3>
+<p>交叉编译时要指定编译器，并让构建系统只在 sysroot 里找库和头文件，而不去用 PC 自己的：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">SET</span>(CMAKE_SYSTEM_NAME Linux)</span><span class="ln-row"><span class="kw">SET</span>(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)</span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH $ENV{HOME}/raspberry/rootfs)</span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER) <span class="cm"># 程序：用 host 的</span></span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)  <span class="cm"># 库：只在 sysroot 找</span></span><span class="ln-row"><span class="kw">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)  <span class="cm"># 头文件：只在 sysroot 找</span></span></code></pre>
+<p class="aside">sysroot 用 <code>rsync -rl --delete-after --safe-links pi@板子IP:/{lib,usr} $HOME/raspberry/rootfs</code> 从板子上同步过来。</p>
+</div>
+<div class="panel">
+<h3>共享目录：NFS 和 sshfs</h3>
+<ul>
+<li><b>NFS</b>：在 Linux host 上把一个目录（例如 <code>/exportado</code>）写进 <code>/etc/exports</code>，开 NFS 服务，<code>exportfs -a</code> 生效；板子上在 <code>/etc/fstab</code> 里写一行 <code>host的IP:/exportado /exportado nfs …</code>，再 <code>mount /exportado</code>。</li>
+<li><b>sshfs</b>：通过 SSH 把远端目录挂载成本地目录。Windows 上用 sshfs-win（依赖 WinFsp）把板子的目录映射成一个盘符。</li>
+<li>Windows 上的交叉工具链用 SysGCC 的 Raspberry 版；Eclipse 解压到同一个目录里。</li>
+</ul>
+</div>
+</div>
+<p class="takeaway">交叉工具链 = binutils + 内核头文件 + GCC + C 库（+ GDB），在 host 上运行、为 target 生成代码。sysroot 是目标系统库和头文件的副本。程序编好后传到板上，用 gdbserver + gdb 远程调试。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Buildroot：一条命令做出整个系统 <span class="tag">T1.9</span></h2>
+<p class="hook"><span class="zh">工具链、内核、根文件系统、几百个软件包，一个个手工交叉编译要多久？</span><span class="es">Buildroot: un conjunto de makefiles que automatizan la construcción.</span></p>
+<p>知道了需要哪些组件，实际怎样把一个嵌入式 Linux 做出来？有三条路：</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">distribución</span>
+<h3>用现成的发行版</h3>
+<p>Debian 等发行版有 ARM、MIPS、PowerPC 的二进制包，很快就能跑起来。但配置选项（soft/hard float、EABI/OABI……）是维护者定的，未必合你的需要；对系统集成（启动、依赖）没有控制；想打个补丁就得重新打包，没有自动化手段。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">a mano</span>
+<h3>全部手工</h3>
+<p>每个组件自己编译、配置、安装。最灵活，但要自己弄清组件之间的依赖，交叉编译很繁琐，想加点东西或修个错，没有自动重建整个系统的办法。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">sistema de construcción</span>
+<h3>用构建系统</h3>
+<p>自动完成下载、配置、编译、安装；可以系统地重建；方便加补丁和新功能。它认识大多数开源软件包，依赖关系和交叉编译的坑都已经处理好了。</p>
+</div>
+</div>
+<p><b class="t">Buildroot</b> 就是这样一个构建系统：一组 <b>makefile</b>，自动完成"构建交叉工具链 + 构建嵌入式 Linux 系统"。它最初是为 uClibc 做的，曾经很长时间没人维护，2009 年 1 月起有了正式维护者（Peter Korsgaard），每 3 个月发布一个新版本。同类工具有 PTXdist（Pengutronix）、LTIB（Freescale，对 Freescale 的板子支持好）；思路不同的有 OpenEmbedded（更灵活也更复杂）和 Gentoo Embedded。</p>
+<h3>配置：make menuconfig</h3>
+<p>Buildroot 用内核同款的 <b class="t">Kconfig</b> 配置系统，提供 menuconfig 式的文本菜单，选择结果保存在 <code>.config</code> 文件里：</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>菜单</th><th>能选什么</th></tr></thead>
+<tbody>
+<tr><td>Target</td><td>架构（arm、mips、powerpc、i386、x86_64……）；变体（ARM7TDMI、ARM920T、Xscale、Cortex-A8……）；ABI（ARM 上选 EABI 或 OABI）</td></tr>
+<tr><td>Build options</td><td>用哪些工具、目录、要不要文档和调试符号、优化级别</td></tr>
+<tr><td>Toolchain</td><td>自己构建（限 uClibc）或用外部工具链；内核头文件版本、C 库版本、GCC 版本和语言（C++、Fortran……）、GDB（target 上的 gdbserver、target 上的 gdb、host 上的 cross-gdb）、IPv6/大文件/locale 等</td></tr>
+<tr><td>Packages</td><td>几百个软件包，依赖自动处理：busybox、bash、openssh、dropbear、lighttpd、tcpdump、iptables、sqlite、i2c-tools、Qt Embedded、python……</td></tr>
+<tr><td>Filesystem · bootloader · kernel</td><td>根文件系统格式（ext2、jffs2、ubifs、squashfs、cramfs、tar、cpio、initramfs……）；U-Boot；内核的版本、配置、补丁和映像格式（uImage、zImage、bzImage）</td></tr>
+</tbody>
+</table>
+</div>
+<h3>从零到一张能启动的 SD 卡</h3>
+<p>以一块 Cortex-A8 的 IGEP 板为例，完整流程是：</p>
+<ol class="steps-list">
+<li><b>配置 Buildroot</b>：解压，<code>make menuconfig</code>：架构 ARM、变体 Cortex-A8、ABI 选 EABI；打开 IPv6、宽字符、大文件、RPC；构建 target 上的 gdbserver 和 host 上的 gdb；打开 g++；根文件系统选 tar（gzip 压缩）；再选几个软件包。</li>
+<li><b><code>make</code></b>。得到两样东西：<span class="c-b">根文件系统</span>（应用、动态库、基本配置文件），在 <code>output/images</code>；<span class="c-b">交叉工具链</span>（编译器、库、头文件），可执行文件在 <code>output/staging/usr/bin</code>。</li>
+<li><b>用新工具链编内核</b>：把工具链目录加进 <code>PATH</code>，<code>arm-linux-gcc -v</code> 确认能用；设 <code>ARCH=arm</code>、<code>CROSS_COMPILE=arm-linux-</code>，载入厂商的默认配置 <code>make igep0020_defconfig</code>（可以再 <code>make menuconfig</code> 修改），然后 <code>make uImage</code>、<code>make modules</code>、<code>make modules_install</code>。<code>-j4</code> 让多核并行编译。</li>
+<li><b>编 bootloader</b>：X-loader 和 U-Boot，同样用 <code>CROSS_COMPILE=arm-linux-</code>。</li>
+<li><b>准备 SD 卡</b>：用 <code>dmesg</code> 查出卡对应的设备（如 <code>/dev/sdb</code>），<code>fdisk</code> 分两个区：第一个小分区 FAT32、标记为可启动，放 bootloader 和内核；第二个用剩下的全部空间，ext3，放根文件系统。<code>mkfs.vfat</code>、<code>mkfs.ext3</code> 格式化后挂载。</li>
+<li><b>复制</b>：启动分区里先放 <code>MLO</code>（顺序重要，它要占第一个扇区），再放 <code>u-boot.bin</code>、<code>uImage</code>，以及用 <code>mkimage</code> 从 <code>boot.cmd</code> 生成的启动脚本；根分区里解压 <code>rootfs.tar.gz</code>、复制内核模块，改 <code>etc/inittab</code> 让登录终端开在串口上。</li>
+<li><b>上电</b>：依次看到 X-loader、U-Boot、内核、应用启动（§3 的 Escena 2）。第一次启动会慢一些，有些程序要做首次配置。</li>
+</ol>
+<p class="aside">如果板子 NAND flash 里预装的 U-Boot 能用，可以简化：SD 卡上不放 X-loader 和 U-Boot，只放内核映像和启动配置，由板上的 U-Boot 读取。</p>
+<p class="takeaway">Buildroot = 一组 makefile：<code>make menuconfig</code> 选架构、ABI、工具链、软件包、文件系统、内核，结果存在 <code>.config</code>；<code>make</code> 之后得到交叉工具链和根文件系统映像。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Raspberry Pi：课程的开发环境 <span class="tag">T1.10</span></h2>
+<p class="hook"><span class="zh">板子插上网线，PuTTY 能连上，Eclipse 却说超时，问题在哪？</span><span class="es">Configuración de la Raspberry Pi para desarrollo cruzado.</span></p>
+<p>Raspberry Pi 是一台基于 ARM 微处理器的小电脑：有可编程的数字引脚和接传感器用的仪器总线，能读物理世界的信息、处理、再据此动作；能连 IP 网络；运行 Linux。用 C/C++ 编程时，课上用 <b class="t">wiringPi</b> 库，它的写法和 Arduino 很像，Arduino 的程序容易移植过来。</p>
+<h3>要准备的东西</h3>
+<div class="grid2">
+<div class="panel">
+<h3>硬件</h3>
+<ul>
+<li>Raspberry Pi 3 或 4</li>
+<li>micro SD 卡，至少 8 GB，以及 SD 转接卡</li>
+<li>RJ45 网线</li>
+<li>有空闲网口的电脑，或者一台有空闲网口的路由器</li>
+</ul>
+</div>
+<div class="panel">
+<h3>软件（Windows host）</h3>
+<ul>
+<li>交叉开发系统：SysGCC 的 Raspberry 工具链</li>
+<li>Raspberry Pi Imager（烧录系统镜像）</li>
+<li>PuTTY（SSH 终端）、Notepad++</li>
+<li>Eclipse IDE for C/C++ Developers（CDT），解压到 SysGCC 所在目录</li>
+</ul>
+</div>
+</div>
+<h3>步骤</h3>
+<ol class="steps-list">
+<li>用 Imager 把 Raspberry Pi OS 镜像写进 SD 卡。<b>在高级选项里打开 SSH，并设好主机名和用户</b>（课上用主机名 <code>raspberrypi.local</code>）。不开 SSH，后面就没法远程登录。</li>
+<li>网线把板子直接接到电脑，插卡上电。</li>
+<li>在 Windows 上把<b>无线网卡</b>的连接共享出去（Internet Connection Sharing）：网络设置 → 更改适配器选项 → Wi-Fi 的属性 → "共享"页，勾选允许其他网络用户通过此连接上网。注意：要共享的是电脑上外网用的 Wi-Fi 接口，<b>不是</b>接板子的那个网口。共享后，Windows 在网口上用 <code>192.168.137.1</code>，并给板子分一个 <code>192.168.137.x</code> 的地址。</li>
+<li>用 PuTTY 连 <code>raspberrypi.local</code>，用配置时设的账号登录。按课程配置页的步骤开启 root 账户，并允许它通过 SSH 登录（改 <code>/etc/ssh/sshd_config</code>）。</li>
+<li><code>ifconfig</code> 查板子的 IPv4 地址；<code>sudo raspi-config</code> 打开 SPI 和 I2C 总线；把 wiringPi 的库文件装好。</li>
+<li>在 Eclipse 里配置交叉工具链和远程连接（§4 的流程）。</li>
+</ol>
+
+<h3>连接出错：只有 IPv6，没有 IPv4</h3>
+<div class="note warm">
+<span class="lbl">症状</span>
+<p>PuTTY 能登录，<code>ping raspberrypi.local</code> 也有回应，但 Eclipse 打开连接或启动程序时报 <code>Session.connect: java.net.ConnectException: Connection timed out</code>。原因：Windows 的 DHCP 不一定可靠，有时只给板子分到了 <b>IPv6</b> 地址，没有 IPv4；PuTTY 和 ping 走 IPv6 能通，Eclipse 需要 IPv4。</p>
+</div>
+<div class="grid2">
+<div class="panel">
+<h3>两种解决办法</h3>
+<ol>
+<li>把板子接到家里的路由器上，由路由器分配 IPv4。</li>
+<li>给板子配一个<b>备用的固定 IPv4</b>：DHCP 失败时用 <code>192.168.137.2/24</code>，网关 <code>192.168.137.1</code>（就是共享连接的 Windows 网口）。
+            <ul>
+<li>Bookworm 之前的系统：在 <code>/etc/dhcpcd.conf</code> 末尾加一个 static 配置，并写上 <code>fallback</code>，重启。</li>
+<li>Bookworm 起：用 <code>nmcli</code> 建两个连接，DHCP 的优先级 1、固定 IP 的优先级 0：先试 DHCP，失败了用固定 IP。之后把 Windows 的共享关掉再打开一次。</li>
+</ul>
+</li>
+</ol>
+<p class="aside">用固定 IP 之后，可能就不能再用 <code>raspberrypi.local</code> 这个名字访问了，要直接用 <code>192.168.137.2</code>。如果板子通过 Windows 上不了外网，在 <code>/etc/resolv.conf</code> 里加 <code>nameserver 8.8.8.8</code>。</p>
+</div>
+<div class="panel">
+<h3>板子的 IP 是多少：arp -a</h3>
+<p>在 Windows 的命令行里运行 <code>arp -a</code>，看 <code>192.168.137.1</code> 那个接口下面的条目：</p>
+<pre class="code"><code><span class="ln-row">Interfaz: 192.168.137.1 --- 0x11</span><span class="ln-row">  192.168.137.128   b8-27-eb-2d-bf-a5</span><span class="ln-row">  192.168.137.205   b8-27-eb-2d-bf-a5</span><span class="ln-row">  192.168.137.255   ff-ff-ff-ff-ff-ff  <span class="cm"># 广播</span></span></code></pre>
+<p>两条地址对应同一个 MAC：板子拔插过一次，Windows 先后给了两个地址。<code>ping</code> 一下，看哪个是现在有效的。</p>
+</div>
+</div>
+<h3>三种引脚编号</h3>
+<p>Raspberry Pi 的 40 针排针上，同一个引脚有三个号码，最容易出错：</p>
+<ul>
+<li><b>Header pin（物理编号）</b>：排针上的位置，1–40，奇数一排、偶数一排。</li>
+<li><b>BCM GPIO</b>：芯片（Broadcom）自己的 GPIO 编号，如 GPIO17。</li>
+<li><b>wiringPi 编号</b>：wiringPi 库自己的一套，0、1、2……</li>
+</ul>
+
+<p>点下面排针上的任一引脚，看它的三种编号，以及在三种初始化方式下 <code>pinMode()</code> 该写哪个数：</p>
+<figure class="stage t1-pins" id="sc-pins">
+<div class="stage-title"><span>Simulador · header ↔ BCM ↔ wiringPi</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="sc-pins-t" role="img" viewbox="0 0 800 190">
+<title id="sc-pins-t">40 针排针的俯视图，上面一排是偶数号引脚，下面一排是奇数号引脚，点选一个引脚查看它的编号</title>
+<rect class="ln thin m" height="104" rx="8" width="720" x="40" y="44"></rect>
+<text class="tm xs m" x="46" y="30">2</text>
+<text class="tm xs m end" x="754" y="30">40</text>
+<text class="tm xs m" x="46" y="176">1</text>
+<text class="tm xs m end" x="754" y="176">39</text>
+<g id="t1-pins"></g>
+</svg>
+</div>
+<div class="stage-ctl">
+<p aria-live="polite" class="t1-pin-out" id="t1-pin-out">点一个引脚。</p>
+</div>
+<p class="stage-note">颜色：<span class="c-r">红 = 5 V</span> · <span class="c-o">金 = 3.3 V</span> · 灰 = GND · <span class="c-b">蓝 = 普通 GPIO</span> · <span class="c-t">青 = 带复用功能（I2C、SPI、串口、PWM、时钟）</span>。</p>
+</figure>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include</span> &lt;wiringPi.h&gt;</span><span class="ln-row"> </span><span class="ln-row"><span class="fn">wiringPiSetup</span>();          <span class="cm">// 用 wiringPi 编号</span></span><span class="ln-row"><span class="fn">pinMode</span>(4, OUTPUT);        <span class="cm">// wiringPi 4 = BCM GPIO23 = header 16</span></span><span class="ln-row"> </span><span class="ln-row"><span class="cm">// 或者：</span></span><span class="ln-row"><span class="fn">wiringPiSetupPhys</span>();      <span class="cm">// 用排针上的物理编号</span></span><span class="ln-row"><span class="fn">pinMode</span>(16, OUTPUT);       <span class="cm">// 同一个引脚</span></span><span class="ln-row"><span class="fn">digitalWrite</span>(16, HIGH);   <span class="cm">// 输出高电平；读输入用 digitalRead()</span></span></code></pre>
+<p class="aside">初始化函数决定了后面所有函数里的引脚号按哪套编号解释。写错一套，程序照样编译通过，只是动的是另一个引脚。</p>
+<h3>其余的外设</h3>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">I2C · SPI</span>
+<h3>两条总线</h3>
+<p><b>I2C</b> 只用两根线：数据 SDA（header 3）和时钟 SCL（header 5），板上已有 1.8 kΩ 上拉电阻，不用再接，因此这两脚也不适合当普通 GPIO。先用 <code>raspi-config</code> 打开，<code>i2cdetect</code> 检查总线和设备地址。<b>SPI</b> 用三根公共线（MOSI、MISO、SCLK）加每个设备一根片选线（CE0、CE1）。</p>
+</div>
+<div class="cell y">
+<span class="k c-y">entradas analógicas</span>
+<h3>没有模拟输入</h3>
+<p>Raspberry Pi 本身没有 ADC。要读模拟量，就外接一个 SPI 或 I2C 的转换器，比如 8 通道 10 位的 MCP3008（wiringPi 直接支持），或 16 位的 ADS1115。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">PWM</span>
+<h3>"模拟输出"</h3>
+<p>输出是 0–3.3 V 的方波，改变脉宽（占空比）就改变了平均值。<code>pwmWrite(引脚, 值)</code> 的值 0–1023 对应占空比 0–100%。硬件 PWM 只有两路，其余引脚上的软件 PWM 频率低得多。</p>
+</div>
+</div>
+<div class="formula">f<sub>PWM</sub> = 19.2 MHz ÷ divisor　·　默认 divisor = 32 → 600 kHz　·　用 pwmSetClock(divisor) 修改</div>
+<div class="note">
+<span class="lbl">为什么 Linux 上翻转引脚没那么快</span>
+<p>程序里用 <code>sleep()</code> / <code>usleep()</code> 等待时，进程把 CPU 让给系统，什么时候再轮到它，取决于调度器的时间片。所以用这种方式翻转引脚，最高速度受调度器限制。这正是 Linux 和 MICRO 课上的 bare metal 的区别，也是后面几章（线程、定时器、实时信号）要解决的问题。</p>
+</div>
+<p class="takeaway">镜像里要打开 SSH；直连电脑时共享的是 Wi-Fi 接口，板子在 192.168.137.x。Eclipse 连不上而 PuTTY 能连，多半是没有 IPv4，用路由器或备用固定 IP 解决。引脚号先认清是哪套编号：<code>wiringPiSetup()</code> 用 wiringPi 号，<code>wiringPiSetupPhys()</code> 用排针号。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="T1">
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">01</span>下面哪个硬件<b>不适合</b>跑标准 Linux？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>32 位 ARM，有 MMU，64 MB RAM，16 MB Flash</button>
+<button data-o="b" type="button"><span class="k">B</span>32 位 ARM，有 MMU，512 MB RAM，SD 卡</button>
+<button data-o="c" type="button"><span class="k">C</span>32 位 x86，有 MMU，1 GB RAM，硬盘</button>
+<button data-o="d" type="button"><span class="k">D</span>16 位微控制器，64 KB RAM，256 KB Flash</button>
+</div>
+<p class="why"><b>D。</b>Linux 至少要 32 位 CPU、8 MB RAM、4 MB 存储；只有几十 KB 内存的微控制器用 bare metal 或 FreeRTOS（§1）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>ARM 是 <b>load/store</b> 架构，意思是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>每条指令都可以直接把内存当操作数</button>
+<button data-o="b" type="button"><span class="k">B</span>只有 load/store 指令访问内存，其余指令只操作寄存器</button>
+<button data-o="c" type="button"><span class="k">C</span>程序必须从 Flash 装进 RAM 才能执行</button>
+<button data-o="d" type="button"><span class="k">D</span>处理器每个周期都要执行一次 load 和一次 store</button>
+</div>
+<p class="why"><b>B。</b>运算类指令只碰内部寄存器，数据进出内存靠专门的 load/store（§2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">03</span>关于 Thumb 指令集，哪一句是<b>错</b>的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>指令是 16 位，可执行文件更小</button>
+<button data-o="b" type="button"><span class="k">B</span>处理器用专门的硬件把 Thumb 指令展开成 ARM 指令，不损失时间</button>
+<button data-o="c" type="button"><span class="k">C</span>Thumb 能做 ARM 能做的一切，包括访问协处理器和状态寄存器</button>
+<button data-o="d" type="button"><span class="k">D</span>大多数 Thumb 指令只能使用 R0–R7</button>
+</div>
+<p class="why"><b>C。</b>访问协处理器和状态寄存器正是 Thumb 做不了的事，需要时要切回 ARM（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>Thumb 代码执行 <code>bx r3</code>，r3 = 0x00009001。之后处理器？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>跳到 0x9000，处于 Thumb 状态</button>
+<button data-o="b" type="button"><span class="k">B</span>跳到 0x9001，处于 ARM 状态</button>
+<button data-o="c" type="button"><span class="k">C</span>跳到 0x9000，处于 ARM 状态</button>
+<button data-o="d" type="button"><span class="k">D</span>地址是奇数，触发异常</button>
+</div>
+<p class="why"><b>A。</b>bit 0 = 1 表示进入 Thumb，bit 0 本身不进 PC，所以从 0x9000 开始执行（§2 Escena 1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">05</span>一块没有浮点单元的 ARM 板，内核用 hard float 仿真。程序里每执行一条浮点指令会发生什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>编译器早已把它换成了库函数调用</button>
+<button data-o="b" type="button"><span class="k">B</span>处理器自动交给 VFP 协处理器</button>
+<button data-o="c" type="button"><span class="k">C</span>程序被内核终止</button>
+<button data-o="d" type="button"><span class="k">D</span>触发 illegal instruction 异常，内核里的仿真器代为计算</button>
+</div>
+<p class="why"><b>D。</b>A 是 soft float（<code>-msoft-float</code>）。hard float 靠异常进内核仿真，所以慢（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>在 ARM EABI 下，系统调用号放在哪里？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>编码在 SWI 指令的立即数里</button>
+<button data-o="b" type="button"><span class="k">B</span>寄存器 r7</button>
+<button data-o="c" type="button"><span class="k">C</span>寄存器 r0</button>
+<button data-o="d" type="button"><span class="k">D</span>压在用户栈的栈顶</button>
+</div>
+<p class="why"><b>B。</b>A 是旧 ABI 的做法，内核要把指令当数据读回来解码。r0 放第一个参数和返回值（§2、§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span>执行 SWI 指令那一刻，<b>不</b>会发生的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CPSR 被存进 SPSR</button>
+<button data-o="b" type="button"><span class="k">B</span>处理器进入 Supervisor 模式</button>
+<button data-o="c" type="button"><span class="k">C</span>C 库把返回值存进 errno</button>
+<button data-o="d" type="button"><span class="k">D</span>PC 跳到 SWI 向量 0x08</button>
+</div>
+<p class="why"><b>C。</b>errno 是系统调用<b>返回后</b>、出错时由 C 库在用户空间设置的（§3 Escena 3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>嵌入式 Linux 从 SD 卡启动的正确顺序是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>片内 ROM → X-loader → U-Boot → 内核 → 挂载 rootfs → /sbin/init</button>
+<button data-o="b" type="button"><span class="k">B</span>U-Boot → 片内 ROM → 内核 → /sbin/init → 挂载 rootfs</button>
+<button data-o="c" type="button"><span class="k">C</span>片内 ROM → 内核 → U-Boot → /sbin/init</button>
+<button data-o="d" type="button"><span class="k">D</span>X-loader → /sbin/init → 内核 → U-Boot</button>
+</div>
+<p class="why"><b>A。</b>每一级只负责找到并启动下一级；init 是 rootfs 上的程序，所以必须先挂载 rootfs（§3 Escena 2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>在 x86 PC 上构建了一套工具链，它也在这台 PC 上运行，生成 ARM 代码。这是哪种构建？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>本地（nativa）</button>
+<button data-o="b" type="button"><span class="k">B</span>交叉-本地（cruzada-nativa）</button>
+<button data-o="c" type="button"><span class="k">C</span>交叉（cruzada）</button>
+<button data-o="d" type="button"><span class="k">D</span>加拿大式（canadiense）</button>
+</div>
+<p class="why"><b>C。</b>build = host = x86，target = ARM。这是嵌入式微处理器最常见的情况（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>为什么要把 Raspberry Pi 上的 <code>/lib</code> 和 <code>/usr</code> 同步到 PC 上的一个目录？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>为了备份 SD 卡</button>
+<button data-o="b" type="button"><span class="k">B</span>交叉编译时要用目标系统的头文件和库，不能用 PC 自己的</button>
+<button data-o="c" type="button"><span class="k">C</span>gdbserver 只能从 PC 上运行这些库</button>
+<button data-o="d" type="button"><span class="k">D</span>这样 PC 就能直接运行 ARM 程序</button>
+</div>
+<p class="why"><b>B。</b>这个目录就是 sysroot；PC 的 /usr/lib 是 x86 的库，链接进 ARM 程序没用（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>Buildroot 执行 <code>make</code> 之后，主要得到什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只有一个 <code>.config</code> 文件</button>
+<button data-o="b" type="button"><span class="k">B</span>一个装在 PC 上的 Linux 发行版</button>
+<button data-o="c" type="button"><span class="k">C</span>只有 bootloader</button>
+<button data-o="d" type="button"><span class="k">D</span>交叉工具链和目标板的根文件系统映像</button>
+</div>
+<p class="why"><b>D。</b><code>.config</code> 是 <code>make menuconfig</code> 的产物；<code>make</code> 生成工具链（staging）和 rootfs（images）。教程里内核和 bootloader 是之后用这套工具链另外编的（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>直连电脑的 Raspberry Pi：PuTTY 能登录，Eclipse 连接却超时。最可能的原因和办法是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>板子只拿到 IPv6 没有 IPv4；接路由器，或配备用固定 IPv4 192.168.137.2</button>
+<button data-o="b" type="button"><span class="k">B</span>镜像里没开 SSH；重新烧录</button>
+<button data-o="c" type="button"><span class="k">C</span>共享的是接板子的网口；改为共享这个网口</button>
+<button data-o="d" type="button"><span class="k">D</span>交叉编译器版本不对；换一个 SysGCC</button>
+</div>
+<p class="why"><b>A。</b>没开 SSH 的话 PuTTY 也连不上；Eclipse 需要 IPv4（§6）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">sistema empotrado<small>embedded system</small></span><span class="back"><b>嵌入式系统</b><br/>专门用途的计算机系统，在另一台机器上开发。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MMU<small>Memory Management Unit</small></span><span class="back"><b>内存管理单元</b><br/>虚拟地址 → 物理地址并做保护；标准 Linux 需要，没有时用 uClinux。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bare metal</span><span class="back"><b>裸机</b><br/>不用操作系统，程序直接操作硬件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">load/store</span><span class="back"><b>载入/存储架构</b><br/>只有 load/store 指令访问内存，其他指令只用寄存器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">LR<small>link register · R14</small></span><span class="back"><b>链接寄存器</b><br/>BL 把返回地址存在这里；bit 0 记录返回时的状态。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Thumb</span><span class="back"><b>16 位指令集</b><br/>代码更紧凑，由硬件展开成 ARM 指令执行。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">interworking</span><span class="back"><b>ARM/Thumb 混合调用</b><br/>BX/BLX 目标地址 bit 0：1 = Thumb，0 = ARM。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hard float · soft float</span><span class="back"><b>浮点仿真的两种方式</b><br/>内核里靠异常仿真 / 编译时用软件库（-msoft-float）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">EABI<small>Embedded ABI</small></span><span class="back"><b>嵌入式应用二进制接口</b><br/>ARM 的新调用约定：可混用浮点方式，系统调用号在 r7。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bootloader<small>cargador de arranque</small></span><span class="back"><b>引导加载程序</b><br/>初始化硬件，把内核装进内存并启动它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">U-Boot</span><span class="back"><b>通用 bootloader</b><br/>ARM 上最常用；有命令行、环境变量、TFTP、bootm。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">root filesystem<small>sistema de ficheros raíz</small></span><span class="back"><b>根文件系统</b><br/>挂载在 / 上，装着库、应用和数据。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">llamada al sistema<small>system call</small></span><span class="back"><b>系统调用</b><br/>用户程序进入内核的唯一正式通道（SWI）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">librería C<small>glibc, uClibc…</small></span><span class="back"><b>C 库</b><br/>内核和应用之间的接口，提供 POSIX API。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">toolchain cruzada<small>cross toolchain</small></span><span class="back"><b>交叉工具链</b><br/>在 host 上运行、为 target 生成代码：binutils、头文件、GCC、C 库、GDB。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">host · target</span><span class="back"><b>宿主机 · 目标机</b><br/>做开发的机器 · 程序最终运行的机器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Buildroot</span><span class="back"><b>构建系统</b><br/>一组 makefile，自动构建交叉工具链和整个嵌入式 Linux。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gdbserver</span><span class="back"><b>远程调试代理</b><br/>在 target 上运行程序，让 host 上的 gdb 通过网络调试。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="T1"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  
+  var PINS = {
+    1: "3.3V", 2: "5V", 3: [2, 8, "I2C1 SDA"], 4: "5V", 5: [3, 9, "I2C1 SCL"], 6: "GND",
+    7: [4, 7, "GPCLK0"], 8: [14, 15, "UART TX"], 9: "GND", 10: [15, 16, "UART RX"],
+    11: [17, 0, ""], 12: [18, 1, "PWM0"], 13: [27, 2, ""], 14: "GND", 15: [22, 3, ""],
+    16: [23, 4, ""], 17: "3.3V", 18: [24, 5, ""], 19: [10, 12, "SPI0 MOSI"], 20: "GND",
+    21: [9, 13, "SPI0 MISO"], 22: [25, 6, ""], 23: [11, 14, "SPI0 SCLK"], 24: [8, 10, "SPI CE0"],
+    25: "GND", 26: [7, 11, "SPI CE1"], 27: [0, 30, "I2C0 SDA (ID_SD)"], 28: [1, 31, "I2C0 SCL (ID_SC)"],
+    29: [5, 21, ""], 30: "GND", 31: [6, 22, ""], 32: [12, 26, "PWM0"], 33: [13, 23, "PWM1"],
+    34: "GND", 35: [19, 24, ""], 36: [16, 27, ""], 37: [26, 25, ""], 38: [20, 28, ""],
+    39: "GND", 40: [21, 29, ""]
+  };
+  var root = document.getElementById("t1-pins");
+  var out = document.getElementById("t1-pin-out");
+  if (!root || !out) return;
+  var nodes = {};
+
+  function cls(p) {
+    if (p === "5V") return "r";
+    if (p === "3.3V") return "o";
+    if (p === "GND") return "m";
+    return p[2] ? "t" : "b";
+  }
+
+  function show(h) {
+    Object.keys(nodes).forEach(function (k) { nodes[k].classList.toggle("sel", +k === h); });
+    var p = PINS[h];
+    if (typeof p === "string") {
+      out.innerHTML = "Header <b>" + h + "</b> · " + p + "：电源/地，不是 GPIO，没有 BCM 和 wiringPi 编号。";
+      return;
+    }
+    out.innerHTML = "Header <b>" + h + "</b> · BCM <b>GPIO" + p[0] + "</b> · wiringPi <b>" + p[1] + "</b>" +
+      (p[2] ? " · " + p[2] : "") + "<br>" +
+      "<code>wiringPiSetup()</code> → <code>pinMode(" + p[1] + ", …)</code>　" +
+      "<code>wiringPiSetupPhys()</code> → <code>pinMode(" + h + ", …)</code>　" +
+      "<code>wiringPiSetupGpio()</code> → <code>pinMode(" + p[0] + ", …)</code>";
+  }
+
+  for (var h = 1; h <= 40; h++) {
+    var col = Math.floor((h - 1) / 2), odd = h % 2 === 1;
+    var x = 60 + col * 36, y = odd ? 122 : 70;
+    var g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "pin");
+    g.setAttribute("tabindex", "0");
+    g.setAttribute("role", "button");
+    g.setAttribute("aria-label", "Header " + h);
+    var c = document.createElementNS(NS, "circle");
+    c.setAttribute("class", "bx " + cls(PINS[h]));
+    c.setAttribute("cx", x);
+    c.setAttribute("cy", y);
+    c.setAttribute("r", 12);
+    var t = document.createElementNS(NS, "text");
+    t.setAttribute("class", "tm xs w mid");
+    t.setAttribute("x", x);
+    t.setAttribute("y", y + 4);
+    t.textContent = h;
+    g.appendChild(c);
+    g.appendChild(t);
+    (function (n) {
+      g.addEventListener("click", function () { show(n); });
+      g.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(n); }
+      });
+    })(h);
+    root.appendChild(g);
+    nodes[h] = g;
+  }
+  show(16);
+})();
+</script>
+</body>
+</html>

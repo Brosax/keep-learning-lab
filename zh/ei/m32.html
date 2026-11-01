@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M32 Interacción · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.m32-pre { margin: 0; background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r); padding: .8rem 1rem; overflow-x: auto; white-space: pre; font: 400 12.5px/1.6 var(--f-mono); color: var(--ink); max-width: 100%; tab-size: 2; }
+.m32-pre code { font-size: inherit; }
+.m32-code { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
+.m32-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.m32-status { font: 600 12px/1.4 var(--f-mono); color: var(--muted); }
+.dlg, .m32-p { transition: opacity .25s; }
+.dlg.on .s-box { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 2; }
+.dlg.on .s-line { stroke: var(--signal); stroke-width: 2.2; }
+.dlg.dim { opacity: .28; }
+.m32-p.on .s-line { stroke: var(--signal); stroke-width: 2.4; }
+.m32-p.on .s-box { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 2; }
+.m32-p.dim { opacity: .22; }
+.m32-iris { fill: var(--sunk); stroke: var(--muted); stroke-width: 1.2; }
+.m32-pupil { fill: var(--accent); }
+.m32-glint { fill: var(--signal); }
+.m32-vec { stroke: var(--signal); stroke-width: 2; fill: none; }
+.m32-ct { fill: currentColor; font: 600 12px var(--f-mono); }
+.m32-fill-bad { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 1.6; }
+.m32-fill-signal { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 1.6; }
+.m32-fill-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.6; }
+.m32-fill-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+.m32-shape:focus-visible > * { stroke-width: 3; }
+.m32-emo .chip.ok { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.m32-emo .chip.miss { background: var(--surface); border-style: dashed; border-color: var(--good); color: var(--good); }
+.m32-emo .chip.bad { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.m32-sort { display: flex; flex-direction: column; gap: 8px; }
+.m32-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .75rem .9rem; display: flex; flex-direction: column; gap: .5rem; }
+.m32-item .fb { font-size: 13.5px; color: var(--muted); }
+.m32-item .btn.picked { border-color: var(--signal); background: var(--signal-soft); color: var(--ink); }
+.m32-item .btn.picked:disabled { opacity: 1; }
+.m32-in { flex: 1 1 14rem; min-width: 0; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: var(--r); padding: 7px 10px; font: 15px/1.4 var(--f-body); }
+.m32-ctl { display: flex; flex-direction: column; gap: .55rem; }
+.m32-ctl label { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
+.m32-ctl input[type="range"] { accent-color: var(--accent); width: 12rem; max-width: 100%; }
+.m32-ctl input[type="checkbox"] { accent-color: var(--accent); }
+.m32-out { min-height: 3.2em; }
+.m32-w.on circle, .m32-w.on rect { stroke: var(--signal); stroke-width: 2.6; }
+.m32-w:focus-visible circle, .m32-w:focus-visible rect { stroke: var(--signal); stroke-width: 2.6; }
+.m32-orig { margin: .25rem 0 0; }
+.m32-orig > summary { cursor: pointer; font: 600 13px/1.5 var(--f-body); color: var(--accent); padding: .3rem 0; }
+.m32-orig[open] > summary { margin-bottom: .5rem; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 3 章节" class="chain" data-chain="M32"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Otros aspectos · M32</div>
+<h1>Interacción</h1>
+<p class="zh">交互：触觉、语音、手势、情绪、目光、脑机接口，以及智能助理和 Web 3D</p>
+<div class="meta">
+
+<span><b>11</b> 个学习目标</span>
+<span>阅读约 35 分钟</span>
+
+
+</div>
+<p class="lede">当计算机“消失”在环境里，键盘和屏幕就不够用了。我们要用说话、触摸、目光、表情，甚至念头去和环境打交道；而一个有情境感知、会主动行动的环境，还得猜出我们的意图和情绪。这一章按 学习目标 的 11 个目标，把这些 <b class="t">nuevas formas de interacción (ES)</b>——新的交互方式逐一过一遍。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">3.2.1</span>
+<div class="txt"><span>区分两类 háptica 设备：触觉反馈和力反馈</span><span class="es">Distinguir entre dispositivos hápticos de retroalimentación táctil y de fuerza.</span><a href="#s2">→ §2 触觉</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.2</span>
+<div class="txt"><span>说出口语对话系统的各个组件</span><span class="es">Identificar los componentes de un sistema de diálogo hablado.</span><a href="#s3">→ §3 语音与对话</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.3</span>
+<div class="txt"><span>给交互用的身体手势分类（5 类）</span><span class="es">Clasificar los gestos corporales interactivos.</span><a href="#s4">→ §4 身体手势</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.4</span>
+<div class="txt"><span>列出 6 种普遍情绪</span><span class="es">Enumerar las 6 emociones universales.</span><a href="#s5">→ §5 情绪</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.5</span>
+<div class="txt"><span>定义 interacción multimodal（多模态交互）</span><span class="es">Definir el concepto de interacción multimodal.</span><a href="#s6">→ §6 多模态</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.6</span>
+<div class="txt"><span>描述 eye tracking 和 BCI 这类高级接口</span><span class="es">Describir interfaces avanzados como eye tracking y Brain Computer Interface (BCI).</span><a href="#s7">→ §7 眼动追踪与脑机接口</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.7</span>
+<div class="txt"><span>区分眼动交互的两类技术</span><span class="es">Distinguir entre técnicas de interacción ocular.</span><a href="#s8">→ §8 眼动交互技术</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.8</span>
+<div class="txt"><span>定义 computación afectiva（情感计算）</span><span class="es">Definir el concepto de computación afectiva.</span><a href="#s9">→ §9 情感计算</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.9</span>
+<div class="txt"><span>定义 agente conversacional antropomórfico（拟人化对话智能体，ECA）</span><span class="es">Definir el concepto de agente conversacional antropomórfico.</span><a href="#s10">→ §10 ECA</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.10</span>
+<div class="txt"><span>定义 IPA（智能个人助理）</span><span class="es">Definir el concepto de IPA (Intelligent Personal Assistant).</span><a href="#s11">→ §11 IPA</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.2.11</span>
+<div class="txt"><span>动手做一个基本的交互式 Web 3D 场景</span><span class="es">Crear un escenario Web 3D interactivo básico.</span><a href="#s12">→ §12 Web 3D</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.2.11" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M32"><span class="val">0 / 11 已掌握</span><span class="bar"><i></i></span></div>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>看不见的计算机，需要新的交互</h2>
+<p>Weiser 设想的 <b class="t">computación invisible (ES) / invisible computing (EN)</b>——隐形计算，是智能环境的出发点。推论很直接：如果我们不再“看见”机器，交互就必须是<b>自然的</b>，而且是<b>和环境</b>交互；如果机器有情境感知、会主动行动，它就得设法弄清我们的<b>意图和情绪</b>。</p>
+<p>传统界面和智能环境里的界面差在哪？下面这张图把两种情况并排画了出来：</p>
+
+<p>切换看看两边的区别：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换环境类型" class="seg" role="group">
+<button aria-pressed="true" data-view="conv" type="button">Entorno convencional</button>
+<button aria-pressed="false" data-view="intel" type="button">Entorno inteligente</button>
+</div>
+<div class="panel" data-pane="conv">
+<h3>La máquina se distingue del entorno · 机器和环境分得开</h3>
+<p>图的左半边：人面对一个独立的 <b>Sistema</b> 方框。方框里是 algoritmos，用 <b>sensores</b> 感知人、用 <b>actuadores</b> 作用于人；<b>Entorno</b>（环境）是框外单独的一朵云，和机器没有关系。</p>
+<p class="aside">打个比方：就像坐到电脑前用键盘鼠标下指令，机器只回应被要求的事。</p>
+</div>
+<div class="panel" data-pane="intel" hidden="">
+<h3>La máquina se integra en el entorno · 机器融进环境</h3>
+<p>图的右半边：Sistema 方框不见了。人和 <b class="t">AmI (Ambient Intelligence)</b>——环境智能一起待在 Entorno 这朵云<b>里面</b>，sensores 和 actuadores 也在云里，AmI 处在两者之间。</p>
+<p class="aside">换句话说：看不见机器，交互就是自然的、和环境的交互；环境有情境感知、会主动行动，还要推测人的意图和情绪。</p>
+</div>
+</div>
+<p>新交互方式和 voz（语音）、tacto（触觉）、mirada（目光）、emociones（情绪），甚至 pensamiento（思维）有关。下面的拼图是其中几种：</p>
+
+<p>还有几个新兴范式：multimodalidad、computación afectiva、asistentes inteligentes、metaversos。点下面跳到对应小节：</p>
+<div aria-label="本章内容导航" class="chips">
+<a class="chip" href="#s2">Tacto <small>§2</small></a>
+<a class="chip" href="#s3">Voz <small>§3</small></a>
+<a class="chip" href="#s4">Gestos <small>§4</small></a>
+<a class="chip" href="#s5">Emociones <small>§5</small></a>
+<a class="chip" href="#s6">Multimodalidad <small>§6</small></a>
+<a class="chip" href="#s7">Mirada · Pensamiento <small>§7–8</small></a>
+<a class="chip" href="#s9">Computación afectiva <small>§9</small></a>
+<a class="chip" href="#s10">Avatares · ECA <small>§10</small></a>
+<a class="chip" href="#s11">IPA <small>§11</small></a>
+<a class="chip" href="#s12">Fusión de mundos · Web 3D <small>§12</small></a>
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>读本模块资源里的 apuntes <b>Nuevas formas de interacción</b>。</p>
+</div>
+<p class="aside">硕士里还有几门课会深入这些话题：Interfaces de Usuario（界面怎么设计和评估）、Interacción Persona Máquina（人怎样感知机器、与机器交互）、Visión Artificial（基于视觉的交互与识别系统）、Tecnologías Accesibles（面向功能多样性人群的交互系统）。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>触觉：触觉反馈与力反馈 <span class="tag">3.2.1</span></h2>
+<p>触觉一直不太受界面设计重视，尽管它本来就是一条自然的交互通道。<b class="t">tecnología háptica (ES) / haptic technology (EN)</b>——触觉技术（词源是希腊语 <i>haptesthai</i>，意思是“触摸”）用来实现 tacto activo（主动触觉）的接口。它分成两类，区别在于<b>让人感觉到什么</b>：</p>
+<div class="note">
+<span class="lbl">区分 · 3.2.1</span>
+<ul>
+<li><b class="t">retroalimentación táctil (ES) / tactile feedback (EN)</b>——触觉反馈：皮肤层面的感知，即<b>纹理、温度、压力</b>。</li>
+<li><b class="t">retroalimentación de fuerza (ES) / force feedback (EN)</b>——力反馈：<b>力、重量、轮廓</b>的感知。</li>
+</ul>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>Retroalimentación táctil</th><th>Retroalimentación de fuerza</th></tr></thead>
+<tbody>
+<tr><td>感知什么</td><td>texturas、temperatura、presión（皮肤）</td><td>fuerza、pesos、contornos</td></tr>
+<tr><td>怎么实现</td><td>执行器会振动、发热、喷压缩空气、在电场或磁场下变形，或在皮肤上产生微小电流</td><td>按作用的身体部位、所用技术、接触点数量和自由度（grados de libertad）区分</td></tr>
+<tr><td>作用在哪</td><td>多数在指尖（触觉敏锐度最高），也试过嘴、舌、背、躯干、大腿</td><td>手、手臂乃至全身（外骨骼）</td></tr>
+<tr><td>常见设备</td><td>matrices de puntos táctiles（触点阵列）、actuadores vibrotáctiles（振动触觉执行器）</td><td>游戏摇杆、方向盘、踏板；retroalimentador de fuerza puntual（单点力反馈器，如 PHANToM）；exoesqueleto</td></tr>
+<tr><td>传统用途</td><td>替代或补充的通信渠道，优势是全身都有感受器</td><td>机器人和科学可视化：限制用户的部分动作</td></tr>
+</tbody>
+</table>
+</div>
+<p>先看这几种设备长什么样。触觉反馈这一类：</p>
+
+<p>力反馈这一类，从单点到全身：</p>
+
+<p><b>分一分：</b>点开每个设备，看它属于哪一类。</p>
+<div class="stack" data-explain="vibro">
+<div aria-label="háptica 设备" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="vibro" type="button">Actuador vibrotáctil</button>
+<button aria-pressed="false" class="chip" data-key="matriz" type="button">Matriz de puntos táctil</button>
+<button aria-pressed="false" class="chip" data-key="phantom" type="button">PHANToM</button>
+<button aria-pressed="false" class="chip" data-key="joystick" type="button">Joystick háptico</button>
+<button aria-pressed="false" class="chip" data-key="exo" type="button">Exoesqueleto</button>
+<button aria-pressed="false" class="chip" data-key="pantalla" type="button">Pantalla táctil que vibra</button>
+</div>
+<div class="panel" data-panel="vibro" hidden="">
+<span class="verdict ok">Táctil</span>
+<p>振动的小执行器。和触点阵列一起，是今天最常见的触觉反馈设备。</p>
+</div>
+<div class="panel" data-panel="matriz" hidden="">
+<span class="verdict ok">Táctil</span>
+<p>一排排可升降的小触点，手指摸上去感到图案。常见的盲文点显器就是这一类。</p>
+</div>
+<div class="panel" data-panel="phantom" hidden="">
+<span class="verdict star">Fuerza · 市场上最成功的一类</span>
+<p>Sensable 公司的 PHANToM 是 <b class="t">retroalimentador de fuerza puntual</b>——单点力反馈器。可以把它想成一只特殊的鼠标：光标在 3D 空间里移动，并根据位置和所“摸”到的虚拟物体的属性（刚性、黏性、弹性……）返回力和扭矩。</p>
+</div>
+<div class="panel" data-panel="joystick" hidden="">
+<span class="verdict star">Fuerza</span>
+<p>游戏里的摇杆、方向盘、踏板早就带力反馈了。</p>
+</div>
+<div class="panel" data-panel="exo" hidden="">
+<span class="verdict star">Fuerza</span>
+<p>带力反馈的外骨骼：力作用在手和手臂上，可以“挡住”你的动作，让你感到虚拟物体的重量和轮廓。</p>
+</div>
+<div class="panel" data-panel="pantalla" hidden="">
+<span class="verdict ok">Retroalimentación virtual + táctil</span>
+<p>它属于 <b class="t">retroalimentación virtual</b>——虚拟反馈：没有“真正的”触觉时，用触屏加上视觉（按钮“陷下去”）或听觉（咔哒声）来模拟“摸到”；multitacto（多点触控）又把简单的点击扩展成手势。屏幕里再装上振动触觉执行器，就有了真正的触觉反馈（见下图）。</p>
+<p class="aside">有个有趣的现象：手机上按虚拟键盘时整部手机都在振，但用户会觉得振动只来自那个键。</p>
+</div>
+</div>
+<p>触屏上的触觉反馈是怎样接起来的：</p>
+
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>语音与口语对话系统 <span class="tag">3.2.2</span></h2>
+<p>语音是人传递信息最自然的方式。它现在很热门，靠的是语音技术、语言处理和对话建模的进步，设备算力的提升，以及 cloud computing 和 deep learning。涉及三项技术：</p>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">entrada</span>
+<h3>ASR · 语音识别</h3>
+<p><b class="t">reconocimiento automático de voz (ES) / Automatic Speech Recognition, ASR (EN)</b>——自动语音识别：把人的语音转成<b>一串文本</b>。</p>
+<p>按说话人数量、说话方式（命令 / 连续语音）和词汇量分类。朗读和自发语音差别很大，自发语音（犹豫、重复、停顿、咳嗽……）最难。技术从 DTW (Dynamic Time Warping)、隐马尔可夫模型发展到今天的 deep learning。</p>
+</div>
+<div class="cell">
+<span class="eyebrow">salida</span>
+<h3>Generación de voz · 语音生成</h3>
+<p>把文本消息变成语音。消息少时用<b>预录音</b>；文本多变、不可预测、量又大时用合成语音 <b class="t">TTS (Text To Speech)</b>——文本转语音。</p>
+<p>合成方法：articulatorio（模拟声道和发音器官）、de formantes（模拟声学信号）、concatenada（从数据库里挑预录语音单元拼接），以及今天的 deep learning。要自然，关键是 <b class="t">prosodia</b>——韵律（语调、音量、节奏）。</p>
+</div>
+<div class="cell">
+<span class="eyebrow">diálogo</span>
+<h3>Sistemas de diálogo hablado</h3>
+<p><b class="t">sistema de diálogo hablado (ES) / spoken dialogue system (EN)</b>——口语对话系统：用自然语言和人交互，也叫 agente conversacional。</p>
+<p>按用途分为 orientados a tareas（面向任务）和 de dominio abierto（开放领域，也叫 chatbots）。现在多基于 IA generativa（生成式 AI）。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">组件 · 3.2.2</span>
+<p>经典口语对话系统的 6 个组件：</p>
+<ol>
+<li><b>Reconocimiento de voz</b>：把由声学-语音参数序列构成的语音输入，转换成一串词。</li>
+<li><b>Entendimiento del lenguaje</b>：分析词串，产生识别结果的“有意义的表示”，供对话管理使用。</li>
+<li><b>Gestión de diálogo</b>：控制系统和用户之间的交互，并<b>协调其他组件</b>。</li>
+<li><b>Comunicación con sistema externo</b>：连接数据库、专家系统等。</li>
+<li><b>Generación de respuesta</b>：确定系统要表达的消息。</li>
+<li><b>Generación de voz</b>：用预录或合成语音把消息说出来。</li>
+</ol>
+</div>
+<p><b>走一遍：</b>跟着一句例句，看信息怎样流过这 6 个组件。</p>
+<div class="stepper" id="m32-dlg">
+<figure>
+<div class="fig">
+<svg aria-label="口语对话系统：用户语音依次经过语音识别、语言分析、对话管理、回答生成、语音合成，输出系统语音；记忆模块和数据库管理器为中间组件提供支持" role="img" viewbox="0 0 720 330">
+<defs>
+<marker id="m32a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g class="dlg" data-step="3">
+<rect class="s-box" height="40" rx="6" width="332" x="196" y="12"></rect>
+<text class="s-t" text-anchor="middle" x="362" y="30">Memoria</text>
+<text class="s-t2" text-anchor="middle" x="362" y="46">historia · info adquirida · tipo de usuario</text>
+<line class="s-line" marker-end="url(#m32a)" x1="246" x2="246" y1="52" y2="108"></line>
+<line class="s-line" marker-end="url(#m32a)" x1="362" x2="362" y1="52" y2="108"></line>
+<line class="s-line" marker-end="url(#m32a)" x1="478" x2="478" y1="52" y2="108"></line>
+</g>
+<g class="dlg" data-step="1">
+<line class="s-line" marker-end="url(#m32a)" x1="6" x2="78" y1="150" y2="150"></line>
+<text class="s-tm" text-anchor="middle" x="42" y="140">voz usuario</text>
+<rect class="s-box" height="80" rx="6" width="100" x="80" y="110"></rect>
+<text class="s-ta" x="88" y="126">1</text>
+<text class="s-t" text-anchor="middle" x="130" y="152">Reconocedor</text>
+<text class="s-t2" text-anchor="middle" x="130" y="170">de habla</text>
+</g>
+<g class="dlg" data-step="2">
+<line class="s-line" marker-end="url(#m32a)" x1="180" x2="194" y1="150" y2="150"></line>
+<rect class="s-box" height="80" rx="6" width="100" x="196" y="110"></rect>
+<text class="s-ta" x="204" y="126">2</text>
+<text class="s-t" text-anchor="middle" x="246" y="152">Analizador</text>
+<text class="s-t2" text-anchor="middle" x="246" y="170">lingüístico</text>
+</g>
+<g class="dlg" data-step="3">
+<line class="s-line" marker-end="url(#m32a)" x1="296" x2="310" y1="150" y2="150"></line>
+<rect class="s-box" height="80" rx="6" width="100" x="312" y="110"></rect>
+<text class="s-ta" x="320" y="126">3</text>
+<text class="s-t" text-anchor="middle" x="362" y="152">Gestión</text>
+<text class="s-t2" text-anchor="middle" x="362" y="170">de diálogo</text>
+</g>
+<g class="dlg" data-step="4">
+<line class="s-line" marker-end="url(#m32a)" marker-start="url(#m32a)" x1="362" x2="362" y1="192" y2="224"></line>
+<rect class="s-box" height="36" rx="6" width="200" x="262" y="226"></rect>
+<text class="s-ta" x="270" y="249">4</text>
+<text class="s-t" text-anchor="middle" x="370" y="249">Gestor de bases de datos</text>
+<line class="s-line" marker-end="url(#m32a)" marker-start="url(#m32a)" x1="362" x2="362" y1="264" y2="282"></line>
+<rect class="s-box" height="34" rx="14" width="120" x="302" y="284"></rect>
+<text class="s-t" text-anchor="middle" x="362" y="306">Bases de datos</text>
+<text class="s-t2" x="432" y="306">sistemas expertos…</text>
+</g>
+<g class="dlg" data-step="5">
+<line class="s-line" marker-end="url(#m32a)" x1="412" x2="426" y1="150" y2="150"></line>
+<rect class="s-box" height="80" rx="6" width="100" x="428" y="110"></rect>
+<text class="s-ta" x="436" y="126">5</text>
+<text class="s-t" text-anchor="middle" x="478" y="152">Generador</text>
+<text class="s-t2" text-anchor="middle" x="478" y="170">de respuestas</text>
+</g>
+<g class="dlg" data-step="6">
+<line class="s-line" marker-end="url(#m32a)" x1="528" x2="542" y1="150" y2="150"></line>
+<rect class="s-box" height="80" rx="6" width="100" x="544" y="110"></rect>
+<text class="s-ta" x="552" y="126">6</text>
+<text class="s-t" text-anchor="middle" x="594" y="152">Sintetizador</text>
+<text class="s-t2" text-anchor="middle" x="594" y="170">de voz</text>
+<line class="s-line" marker-end="url(#m32a)" x1="644" x2="714" y1="150" y2="150"></line>
+<text class="s-tm" text-anchor="middle" x="680" y="140">voz sistema</text>
+</g>
+</svg>
+</div>
+<figcaption>编号对应上面 6 个组件；第 4 个组件“与外部系统通信”画成数据库管理器。Memoria 和各组件之间的连线做了简化。</figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+
+<div class="panel">
+<h3>细看：ASR 内部的流水线</h3>
+<p>voz → acondicionamiento（信号调理）→ conversión digital（数字化）→ detección de actividad（检测是否有人说话）→ extracción de parámetros（提取参数）→ reconocedor de patrones（模式识别，查询 reglas gramaticales y vocabulario 语法规则和词汇）→ texto。</p>
+<p class="aside">ASR 近年的进展：在噪声环境里更鲁棒；用语言理解和对话管理弥补识别的不足；引入多模态融合和认知计算。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>身体手势的 5 种风格 <span class="tag">3.2.3</span></h2>
+<p><b class="t">gestos corporales (ES) / body gestures (EN)</b>——身体手势，包括头、身体、手、面部肌肉、目光等。它们分两种：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">voluntarios</span><h3>有意的手势</h3><p>完成基本交互任务：导航、选择、操作、输入数据……</p></div>
+<div class="cell"><span class="eyebrow">involuntarios</span><h3>无意的手势</h3><p>提供补充信息（让系统更鲁棒），并透露人的<b>情绪状态</b>。</p></div>
+</div>
+<div class="note">
+<span class="lbl">分类 · 3.2.3</span>
+<p>estilos gestuales（手势风格）可以分成 5 类：</p>
+<ol>
+<li><b class="t">Deíctico</b>——指示：用指点来识别语境中的某个对象。</li>
+<li><b class="t">Manipulación de objetos</b>——操作物体：可以是 2D 或 3D。</li>
+<li><b class="t">Gestos semafóricos</b>——符号手势：一套静态或动态信号组成的“词汇”。</li>
+<li><b class="t">Gesticulación</b>——伴随手势：通常是对语音的补充。</li>
+<li><b class="t">Lenguajes de signos</b>——手语：一种基于手势序列的语法。</li>
+</ol>
+</div>
+<p><b>配对：</b>先点左边的类别，再点右边对应的描述。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="deic" type="button">Deíctico</button>
+<button data-l="manip" type="button">Manipulación de objetos</button>
+<button data-l="sem" type="button">Gestos semafóricos</button>
+<button data-l="gest" type="button">Gesticulación</button>
+<button data-l="sig" type="button">Lenguajes de signos</button>
+</div>
+<div class="col">
+<button data-r="gest" type="button">complementa a la voz <span class="es">补充语音</span></button>
+<button data-r="deic" type="button">señalar para identificar un objeto en el contexto <span class="es">指认语境中的对象</span></button>
+<button data-r="sig" type="button">gramática basada en secuencias de gestos <span class="es">基于手势序列的语法</span></button>
+<button data-r="manip" type="button">puede ser 2D y 3D <span class="es">2D 或 3D 的操作</span></button>
+<button data-r="sem" type="button">vocabulario de señales estáticas y dinámicas <span class="es">静态和动态信号的词汇</span></button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p><b>认一认：</b>下面几个场景，先自己判断属于哪类，再<b>点击右列</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>场景</th><th>类别（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>对智能音箱说“把那个关掉”，同时用手指着电视</td><td class="ans">Deíctico</td></tr>
+<tr class="reveal"><td>在 VR 里用手“抓住”一个虚拟立方体并转动它</td><td class="ans">Manipulación de objetos (3D)</td></tr>
+<tr class="reveal"><td>竖起手掌示意“停”，或向左一挥表示“下一首”</td><td class="ans">Gestos semafóricos（静态 / 动态）</td></tr>
+<tr class="reveal"><td>讲解时双手随着话语比划东西的大小</td><td class="ans">Gesticulación</td></tr>
+<tr class="reveal"><td>用西班牙手语（LSE）打出一整句话</td><td class="ans">Lenguaje de signos</td></tr>
+</tbody>
+</table>
+</div>
+<p>怎么检测手势？靠三样东西：姿态和动作传感器（<b class="t">trackers</b>——追踪器）、模式识别器和解释器。现在用得最多的 tracker 是 MEMS 惯性传感器和图像传感器（RGB 和 <b class="t">TOF (Time Of Flight)</b>——飞行时间）。微软的 Kinect 就是一个典型的身体手势传感器。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>情绪：Ekman 的 6 种普遍情绪 <span class="tag">3.2.4</span></h2>
+<p>情绪帮人评估情况、做决定，进而影响学习、好奇心和创造力。情绪有很多来源：身体和面部手势、语音、触觉、心理生理信号……所以提取特征向量的技术也五花八门：视频、音频、trackers、电极等。</p>
+<p>识别手势中的情绪，常用两类方法：</p>
+<div class="stack" data-seg="">
+<div aria-label="情绪识别方法" class="seg" role="group">
+<button aria-pressed="true" data-view="cat" type="button">Clasificación en categorías</button>
+<button aria-pressed="false" data-view="dim" type="button">Dimensionado de parámetros</button>
+</div>
+<div class="panel" data-pane="cat">
+<h3>分类：贴标签</h3>
+<p>预先设好类别（alegría、miedo、sorpresa、tristeza……），用不同模态作为输入，把情绪归到某一类。</p>
+<p><b>缺点：</b>一个刺激里可能混着几种情绪；类别的选择可能太死板，或者带有文化依赖。</p>
+</div>
+<div class="panel" data-pane="dim" hidden="">
+<h3>维度：量两个数</h3>
+<p>测量对刺激的吸引 / 排斥程度 <b class="t">valencia (ES) / valence (EN)</b>——效价，以及激活水平 <b class="t">arousal</b>——唤醒度，由此推断情绪状态。</p>
+<p class="aside">举个例子：平静地满足，效价高、唤醒度低；暴怒，效价低、唤醒度高。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">列举 · 3.2.4</span>
+<p>针对面部手势，<b>Ekman</b> 找出了 6 种被认为是普遍的基本情绪：</p>
+<p><b>alegría</b>（喜）· <b>ira</b>（怒）· <b>miedo</b>（惧）· <b>repugnancia</b>（厌）· <b>sorpresa</b>（惊）· <b>tristeza</b>（悲）</p>
+<p class="aside">记法：“喜怒惧厌惊悲”六个字。注意：到底是 6 种还是更多，现在仍有争议。</p>
+</div>
+<p><b>挑一挑：</b>下面 12 个词里只有 6 个是 Ekman 的普遍情绪。选出它们，再点“检查”。</p>
+<div class="stack m32-emo" id="m32-emo">
+<div aria-label="情绪词" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-e="1" type="button">sorpresa</button>
+<button aria-pressed="false" class="chip" data-e="0" type="button">aburrimiento</button>
+<button aria-pressed="false" class="chip" data-e="1" type="button">ira</button>
+<button aria-pressed="false" class="chip" data-e="0" type="button">calma</button>
+<button aria-pressed="false" class="chip" data-e="1" type="button">tristeza</button>
+<button aria-pressed="false" class="chip" data-e="0" type="button">desprecio</button>
+<button aria-pressed="false" class="chip" data-e="1" type="button">alegría</button>
+<button aria-pressed="false" class="chip" data-e="0" type="button">frustración</button>
+<button aria-pressed="false" class="chip" data-e="1" type="button">repugnancia</button>
+<button aria-pressed="false" class="chip" data-e="0" type="button">vergüenza</button>
+<button aria-pressed="false" class="chip" data-e="0" type="button">interés</button>
+<button aria-pressed="false" class="chip" data-e="1" type="button">miedo</button>
+</div>
+<div class="m32-row">
+<button class="btn primary" data-do="check" type="button">检查</button>
+<button class="btn" data-do="reset" type="button">重来</button>
+<span aria-live="polite" class="m32-status">已选 0 / 6</span>
+</div>
+<div class="panel m32-exp" hidden="">
+<h3>干扰项为什么不算</h3>
+<ul>
+<li><b>aburrimiento、interés、frustración</b>：§9 情感计算里，智能体要识别的是学习者的这类<b>状态</b>（aburrido、interesado、frustrado……），不是 Ekman 的基本情绪。</li>
+<li><b>desprecio</b>（轻蔑）：常被当作第 7 种候选，这正是上面说的“6 种还是更多”的争议。</li>
+<li><b>calma、vergüenza</b>：一般被看作中性状态或社会性情绪，不在 6 种之内。</li>
+</ul>
+</div>
+</div>
+<p>语音里的情绪怎么识别？利用语音模式识别，并分析它的韵律特征（语调、节奏、重音等），这些特征可以用音高、时长和发音强度来测量。另外，手和手臂向外（侧面或前方）的动作，在愤怒、游戏中的狂喜、极度恐惧这类“激烈”情绪中更常见。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>多模态交互 <span class="tag">3.2.5</span></h2>
+<p>举个例子：接球时，我们用眼睛追踪球的轨迹，感知自己四肢的位置，手上感觉到、耳朵也听到球打在手上。几个感官通道同时报告<b>同一个事件</b>，由中枢神经系统把它们整合成统一、连贯的感知。这些信息是冗余的，但冗余带来了 <b>robustez</b>（鲁棒性）、<b>adaptabilidad</b>（适应性）和 <b>tolerancia a fallos</b>（容错）。</p>
+<div class="note">
+<span class="lbl">定义 · 3.2.5</span>
+<p><b class="t">interacción multimodal (ES) / multimodal interaction (EN)</b>——多模态交互：同时使用多个通道或感官模态（语音、手势、目光、触觉……）来交互，并把它们整合成一个统一、连贯的感知。模态之间的冗余让交互更鲁棒、更有适应性、更能容错。</p>
+</div>
+<p><b>试试冗余：</b>接球时打开或关闭各个通道，看看感知还稳不稳。</p>
+<div class="stack" id="m32-mm">
+<div aria-label="感官通道" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-ch="vista" data-name="视觉" type="button">vista <small>看轨迹</small></button>
+<button aria-pressed="true" class="chip" data-ch="prop" data-name="本体感觉" type="button">propiocepción <small>四肢位置</small></button>
+<button aria-pressed="true" class="chip" data-ch="tacto" data-name="触觉" type="button">tacto <small>手上的冲击</small></button>
+<button aria-pressed="true" class="chip" data-ch="oido" data-name="听觉" type="button">oído <small>拍击声</small></button>
+</div>
+<div class="panel"><p aria-live="polite" class="m32-out"></p></div>
+</div>
+<p>研究多模态交互有两个方向：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">vertiente 1</span><h3>Interfaces adaptativos</h3><p>组合各种模态，满足<b>各类用户</b>的需要。</p></div>
+<div class="cell"><span class="eyebrow">vertiente 2</span><h3>Interfaces naturales</h3><p>模态的整合让<b>体验的感知</b>更强。</p></div>
+</div>
+<p>设计多模态界面和传统设计不同，要考虑新问题：适应性、一致性、错误处理、新的输入输出、用户的个性和情绪状态，以及交互的情境。典型的多模态架构基于 <b class="t">multiagentes</b>——多智能体：它们提供分布式管理大量异构模块所需的基础设施，资源也便于在以后的设计中复用。</p>
+<p class="aside">为什么要分布式：每种模态可能用不同的编程语言，运行在不同的机器和操作系统上，所以才需要分布式的多智能体架构。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>眼动追踪与脑机接口 <span class="tag">3.2.6</span></h2>
+<h3>Mirada · 目光</h3>
+<p>目光传统上被看作信息<b>进入</b>人的通道。但瞳孔也<b>输出</b>丰富的信息：瞳孔的位置和视觉注意点有关，大小和情绪有关。</p>
+<div class="note">
+<span class="lbl">描述 · 3.2.6 · eye tracking</span>
+<p><b class="t">seguimiento de la mirada (ES) / eye tracking (EN)</b>——眼动追踪：记录眼球运动、推算人在看哪里。最突出的技术是 <b class="t">video-oculografía</b>——视频眼动描记：实时拍摄眼球表面（红外或可见光图像）及其反光特性。眼动追踪过去主要用于诊断和残障辅助，近年开始出现面向自然交互的应用。</p>
+</div>
+<p>基于红外视频眼动描记的界面，工作过程分四步：</p>
+<ol>
+<li>红外光照亮观察者的脸；</li>
+<li>摄像头拍下图像；</li>
+<li>图像经过滤波，每只眼睛得到两个亮斑：<b>glint</b>（小而强）和 <b>brillo ocular</b>（较大、较弱）；</li>
+<li>根据两者的<b>相对位置</b>确定视线方向。</li>
+</ol>
+
+<p><b>模拟一下：</b>点屏幕上的任一目标，看瞳孔反光相对于 glint 怎么移动。</p>
+<div class="stack" id="m32-gaze">
+<figure>
+<div class="fig">
+<svg aria-label="眼动追踪示意：左边是屏幕上的九个目标，右边是眼睛的红外图像，瞳孔反光相对于角膜反射点的位置给出视线方向" role="img" viewbox="0 0 640 250">
+<defs>
+<marker id="m32b" markerheight="6" markerwidth="6" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+<clippath id="m32clip"><path d="M330,110 Q470,20 610,110 Q470,200 330,110 Z"></path></clippath>
+</defs>
+<rect class="s-box" height="170" rx="6" width="250" x="20" y="16"></rect>
+<text class="s-tm" x="30" y="32">pantalla</text>
+<g aria-label="注视左上目标" class="hot" data-t="0" role="button" tabindex="0"><circle class="s-box" cx="65" cy="52" r="12"></circle><circle class="s-mk" cx="65" cy="52" r="3"></circle></g>
+<g aria-label="注视正上目标" class="hot" data-t="1" role="button" tabindex="0"><circle class="s-box" cx="145" cy="52" r="12"></circle><circle class="s-mk" cx="145" cy="52" r="3"></circle></g>
+<g aria-label="注视右上目标" class="hot" data-t="2" role="button" tabindex="0"><circle class="s-box" cx="225" cy="52" r="12"></circle><circle class="s-mk" cx="225" cy="52" r="3"></circle></g>
+<g aria-label="注视左侧目标" class="hot" data-t="3" role="button" tabindex="0"><circle class="s-box" cx="65" cy="101" r="12"></circle><circle class="s-mk" cx="65" cy="101" r="3"></circle></g>
+<g aria-label="注视中心目标" class="hot" data-t="4" role="button" tabindex="0"><circle class="s-box" cx="145" cy="101" r="12"></circle><circle class="s-mk" cx="145" cy="101" r="3"></circle></g>
+<g aria-label="注视右侧目标" class="hot" data-t="5" role="button" tabindex="0"><circle class="s-box" cx="225" cy="101" r="12"></circle><circle class="s-mk" cx="225" cy="101" r="3"></circle></g>
+<g aria-label="注视左下目标" class="hot" data-t="6" role="button" tabindex="0"><circle class="s-box" cx="65" cy="150" r="12"></circle><circle class="s-mk" cx="65" cy="150" r="3"></circle></g>
+<g aria-label="注视正下目标" class="hot" data-t="7" role="button" tabindex="0"><circle class="s-box" cx="145" cy="150" r="12"></circle><circle class="s-mk" cx="145" cy="150" r="3"></circle></g>
+<g aria-label="注视右下目标" class="hot" data-t="8" role="button" tabindex="0"><circle class="s-box" cx="225" cy="150" r="12"></circle><circle class="s-mk" cx="225" cy="150" r="3"></circle></g>
+<rect class="s-soft" height="20" rx="4" width="120" x="85" y="194"></rect>
+<text class="s-tm" text-anchor="middle" x="145" y="208">cámara + LED IR</text>
+<path class="s-box" d="M330,110 Q470,20 610,110 Q470,200 330,110 Z"></path>
+<g clip-path="url(#m32clip)">
+<circle class="m32-iris" cx="470" cy="110" r="36"></circle>
+<circle class="m32-pupil" cx="470" cy="110" r="15"></circle>
+</g>
+<circle class="m32-glint" cx="470" cy="110" r="5"></circle>
+<line class="m32-vec" marker-end="url(#m32b)" x1="470" x2="470" y1="110" y2="110"></line>
+<circle class="m32-glint" cx="352" cy="214" r="5"></circle>
+<text class="s-t2" x="364" y="218">glint：小而亮的角膜反射点</text>
+<circle class="m32-pupil" cx="352" cy="236" r="6"></circle>
+<text class="s-t2" x="364" y="240">brillo ocular：瞳孔区域的反光，较大、较弱</text>
+</svg>
+</div>
+<figcaption>简化的示意，不考虑相机镜像。<span class="hint">点击屏幕上的目标</span></figcaption>
+</figure>
+<div class="panel"><p aria-live="polite" class="m32-out"></p></div>
+</div>
+<p class="aside">为什么看“相对位置”：头稍微移动时，两个亮斑一起移动，差值基本不变；眼球转动时，瞳孔移动而 glint 几乎不动。</p>
+<h3>Pensamiento · 思维</h3>
+<p>五十多年来，研究者一直在探索怎样“绕过”运动通道，直接读取人的自主思维来和机器交互。结果一直很有前景但不太实用；直到近年，靠微电子革命和信号处理的进步，才出现了一些商业产品。</p>
+<div class="note">
+<span class="lbl">描述 · 3.2.6 · BCI</span>
+<p><b class="t">BCI (Brain Computer Interface)</b>——脑机接口：典型的 BCI 是一种<b>非侵入式</b>方法，采集并处理人<b>主动产生</b>的大脑活动，用来控制一个外部组件。</p>
+<p>用途：作为二值开关控制简单设备；配合扫描菜单的拼写器（deletreador）；网页浏览器；以及让大脑重新连接瘫痪肢体的 prótesis cerebral（脑假体）。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="BCI 控制导航：电极采集脑电，BCI 产生控制命令驱动虚拟环境，视觉反馈回到用户" role="img" viewbox="0 0 600 230">
+<defs>
+<marker id="m32c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="64" rx="6" width="160" x="40" y="24"></rect>
+<text class="s-t" text-anchor="middle" x="120" y="50">BCI</text>
+<text class="s-t2" text-anchor="middle" x="120" y="70">采集并处理脑电信号</text>
+<rect class="s-box" height="104" rx="6" width="200" x="380" y="16"></rect>
+<text class="s-t" text-anchor="middle" x="480" y="40">Entorno virtual</text>
+<text class="s-tm" text-anchor="middle" x="480" y="66">avanzar · parar</text>
+<text class="s-tm" text-anchor="middle" x="480" y="86">derecha · izquierda</text>
+<text class="s-t2" text-anchor="middle" x="480" y="106">导航命令</text>
+<line class="s-line" marker-end="url(#m32c)" x1="200" x2="378" y1="56" y2="56"></line>
+<text class="s-tm" text-anchor="middle" x="289" y="48">comandos de control</text>
+<rect class="s-box" height="60" rx="6" width="160" x="40" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="120" y="176">Persona</text>
+<text class="s-t2" text-anchor="middle" x="120" y="194">戴着 EEG 电极帽</text>
+<line class="s-line" marker-end="url(#m32c)" x1="120" x2="120" y1="150" y2="90"></line>
+<text class="s-tm" x="128" y="124">electrodos · EEG</text>
+<path class="s-line" d="M480,120 V180 H202" marker-end="url(#m32c)"></path>
+<text class="s-tm" text-anchor="middle" x="340" y="172">feedback</text>
+</svg>
+</div>
+<figcaption>用 BCI 控制虚拟环境中的导航，结果作为反馈回到用户，形成闭环。</figcaption>
+</figure>
+
+<p>BCI 靠什么信号？切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="BCI 类型" class="seg" role="group">
+<button aria-pressed="true" data-view="endo" type="button">BCI endógeno</button>
+<button aria-pressed="false" data-view="exo" type="button">BCI exógeno</button>
+</div>
+<div class="panel" data-pane="endo">
+<h3>内源性：自己调节脑电</h3>
+<p>分析 <b class="t">EEG (potenciales electroencefalográficos)</b>——脑电位。人经过<b>事先训练</b>后，可以有意识地改变这些电位。</p>
+</div>
+<div class="panel" data-pane="exo" hidden="">
+<h3>外源性：对外部刺激的反应</h3>
+<p>利用 <b class="t">potenciales evocados P300</b>——P300 诱发电位：大脑对外部<b>视觉或声音刺激</b>的反应。好处是<b>不需要训练</b>。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>眼动交互的两类技术 <span class="tag">3.2.7</span></h2>
+<p>眼动追踪做成交互应用，可以分成两类：</p>
+<div class="note">
+<span class="lbl">区分 · 3.2.7</span>
+<ul>
+<li><b class="t">Selectivas</b>——选择型：视线方向充当<b>指针</b>，用来指向、选择。用在某些虚拟现实系统和残障人士的界面里。</li>
+<li><b class="t">Dependientes de la mirada (ES) / gaze-contingent (EN)</b>——注视依随型：系统根据你在看哪里来<b>调整自己</b>。用来做高层次的 interfaces atentas（注意感知界面），以及在信息传输和显示时<b>降低计算负担</b>。</li>
+</ul>
+</div>
+<p class="aside">一句话区分：selectiva 是“我用眼睛点它”；gaze-contingent 是“系统看我在看哪儿，然后自己变”。</p>
+<p><b>分一分：</b>每个场景选一个类别。</p>
+<div class="stack">
+<div class="m32-sort" id="m32-sort">
+<div class="m32-item" data-a="sel">
+<p>行动不便的用户盯着屏幕键盘上的字母，停留一会儿就输入这个字母。</p>
+<div class="m32-row"><button class="btn" data-pick="sel" type="button">Selectiva</button><button class="btn" data-pick="gc" type="button">Gaze-contingent</button></div>
+<p class="fb" hidden=""><span class="verdict"></span> 视线当指针来选字母，属于选择型；残障人士的界面正是典型用途。</p>
+</div>
+<div class="m32-item" data-a="gc">
+<p>VR 头显只把你正在注视的那一小块区域渲染成最高分辨率，其余区域降低分辨率。</p>
+<div class="m32-row"><button class="btn" data-pick="sel" type="button">Selectiva</button><button class="btn" data-pick="gc" type="button">Gaze-contingent</button></div>
+<p class="fb" hidden=""><span class="verdict"></span> 这就是 <b>renderizado foveal</b>（注视点渲染）：系统按注视点调整显示，降低计算负担，需要 eye tracking。</p>
+</div>
+<div class="m32-item" data-a="sel">
+<p>在虚拟现实里，看向一扇门并停留，就把这扇门选中。</p>
+<div class="m32-row"><button class="btn" data-pick="sel" type="button">Selectiva</button><button class="btn" data-pick="gc" type="button">Gaze-contingent</button></div>
+<p class="fb" hidden=""><span class="verdict"></span> 视线充当指针，选择型正用在某些虚拟现实系统里。</p>
+</div>
+<div class="m32-item" data-a="gc">
+<p>视频通话时，只把对方正在注视的那部分画面用高清传过去。</p>
+<div class="m32-row"><button class="btn" data-pick="sel" type="button">Selectiva</button><button class="btn" data-pick="gc" type="button">Gaze-contingent</button></div>
+<p class="fb" hidden=""><span class="verdict"></span> 按注视点降低<b>传输</b>的负担，对应“reducción de la carga computacional en la transmisión”。</p>
+</div>
+<div class="m32-item" data-a="gc">
+<p>阅读软件发现你的视线离开屏幕很久，就自动暂停朗读。</p>
+<div class="m32-row"><button class="btn" data-pick="sel" type="button">Selectiva</button><button class="btn" data-pick="gc" type="button">Gaze-contingent</button></div>
+<p class="fb" hidden=""><span class="verdict"></span> 你没有用眼睛“点”任何东西，是系统根据你的注视状态自己调整，属于 interfaz atenta。</p>
+</div>
+<div class="m32-item" data-a="sel">
+<p>智能家居面板上，注视某盏灯的图标一秒，那盏灯就打开。</p>
+<div class="m32-row"><button class="btn" data-pick="sel" type="button">Selectiva</button><button class="btn" data-pick="gc" type="button">Gaze-contingent</button></div>
+<p class="fb" hidden=""><span class="verdict"></span> 用视线指向并选择一个控件，属于选择型。</p>
+</div>
+</div>
+<div class="m32-row"><span aria-live="polite" class="m32-status"></span><button class="btn" data-do="sort-reset" type="button">重做</button></div>
+</div>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>情感计算 <span class="tag">3.2.8</span></h2>
+<p>人们常常把交互系统当成人来对待。这个现象引起了很多研究者的注意，也推动了情感计算的研究。</p>
+<div class="note">
+<span class="lbl">定义 · 3.2.8</span>
+<p><b class="t">computación afectiva (ES) / affective computing (EN)</b>——情感计算（也叫 computación emocional）：人工智能中的一个<b>多学科领域</b>（计算机、心理学、认知科学），研究如何设计能够<b>识别、解释和处理情绪</b>的系统和设备。</p>
+</div>
+<p>这个领域在 1990 年代兴起，后来成了一个独立的知识领域。它通常基于<b>视频和音频</b>技术，识别几种基本模态：身体手势、面部表情、语音中的情绪（识别方法见 §5）。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">aplicación 1</span><h3>学习</h3><p>智能体检测学习者的状态，并作出反应：提供额外信息，或给出更详细的解释。例：AutoTutor。</p></div>
+<div class="cell"><span class="eyebrow">aplicación 2</span><h3>情绪监测</h3><p>开车时检测驾驶员是否在生气，或者已经不适合驾驶。</p></div>
+</div>
+<p><b>点一点：</b>智能体要检测的 5 种学习者状态，一个情感化的导学智能体可能怎么反应？</p>
+<div class="stack" data-explain="frustrado">
+<div aria-label="学习者状态" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="aburrido" type="button">aburrido</button>
+<button aria-pressed="false" class="chip" data-key="interesado" type="button">interesado</button>
+<button aria-pressed="false" class="chip" data-key="frustrado" type="button">frustrado</button>
+<button aria-pressed="false" class="chip" data-key="complacido" type="button">complacido</button>
+<button aria-pressed="false" class="chip" data-key="dificultad" type="button">con dificultades</button>
+</div>
+<div class="panel" data-panel="aburrido" hidden=""><h3>Aburrido · 无聊</h3><p>换一种呈现方式，或者提高难度、加一道互动题，把注意力拉回来。</p></div>
+<div class="panel" data-panel="interesado" hidden=""><h3>Interesado · 感兴趣</h3><p>不打断，顺势推荐更深入的补充材料。</p></div>
+<div class="panel" data-panel="frustrado" hidden=""><h3>Frustrado · 受挫</h3><p>先安抚，再把问题拆成小步骤，给出更详细的解释。</p></div>
+<div class="panel" data-panel="complacido" hidden=""><h3>Complacido · 满意</h3><p>肯定进步，进入下一个主题。</p></div>
+<div class="panel" data-panel="dificultad" hidden=""><h3>Con dificultades · 有困难</h3><p>补充例子和额外信息，放慢节奏。</p></div>
+<p class="aside">每种状态下的具体反应只是举例；要记住的是：智能体会作出反应，“ofreciendo información adicional o dando explicaciones extendidas”。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s10">
+<h2><span class="n">§10</span>Avatar 与拟人化对话智能体 <span class="tag">3.2.9</span></h2>
+<p><b class="t">avatar</b> 这个词有三层意思：在宗教里是神在人间的化身；在虚拟现实里指用户在虚拟世界中的“虚拟化身”；在游戏里指代表用户身份的图形，通常是人形。这里讲的是一种更特殊的 avatar：</p>
+<div class="note">
+<span class="lbl">定义 · 3.2.9</span>
+<p><b class="t">agente conversacional antropomórfico (ES) / Embodied Conversational Agent, ECA (EN)</b>——拟人化对话智能体：一个<b>有人形的虚拟实体</b>，试图和用户进行<b>智能且带情感</b>的对话，目的是陪伴用户，或者为用户提供建议、引导用户完成某项任务。</p>
+</div>
+<p>ECA 比游戏里的 avatar、教育软件里的导师或“wizards”（向导）复杂得多。它到底要处理哪些事？先想，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>ECA 必须……</th><th>具体是（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>听懂用户</td><td class="ans">识别用户的 entradas multimodales（多模态输入）</td></tr>
+<tr class="reveal"><td>回应用户</td><td class="ans">同样生成 salidas multimodales（多模态输出）</td></tr>
+<tr class="reveal"><td>决定说什么、怎么说</td><td class="ans">一个 modelo de discurso（话语模型），取决于模态以及个人和环境因素</td></tr>
+<tr class="reveal"><td>遵守对话的“规矩”</td><td class="ans">funciones conversacionales：轮流说话（turnos de palabra）、反馈机制等</td></tr>
+<tr class="reveal"><td>让用户知道对话进行到哪了</td><td class="ans">发出表示对话状态的信号，并为话语贡献新的内容（proposiciones）</td></tr>
+</tbody>
+</table>
+</div>
+<p>三个容易混的概念放在一起比：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>Avatar</th><th>ECA</th><th>IPA（§11）</th></tr></thead>
+<tbody>
+<tr><td>是什么</td><td>用户在虚拟世界里的化身，或游戏中代表用户的图形</td><td>有人形的虚拟实体，进行智能、带情感的对话</td><td>用语音、图像、视频、情境信息回答问题、推荐、执行动作的应用</td></tr>
+<tr><td>代表谁</td><td>用户自己</td><td>系统（对话的另一方）</td><td>系统（为用户服务）</td></tr>
+<tr><td>有没有人形</td><td>通常有</td><td>必须有（antropomórfico）</td><td>定义里没有要求；Siri、Alexa 通常只有声音</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s11">
+<h2><span class="n">§11</span>智能个人助理 IPA <span class="tag">3.2.10</span></h2>
+<p>IPA 是一类新兴的 servicios web（Web 服务）应用。</p>
+<div class="note">
+<span class="lbl">定义 · 3.2.10</span>
+<p><b class="t">Asistente Personal Inteligente (ES) / Intelligent Personal Assistant, IPA (EN)</b>——智能个人助理：以<b>语音、图像、视频和 / 或情境信息</b>作为输入，通过<b>用自然语言回答问题、给出推荐、执行动作</b>来帮助用户的应用。</p>
+<p>例子：Apple 的 Siri、Google Assistant、Microsoft 的 Cortana、Amazon 的 Alexa。IPA 是一种专门设计来<b>直接和人交互</b>的 agente inteligente（智能体）。</p>
+</div>
+<p>IPA 的计算量非常大，大约是普通网页搜索引擎的 <b>100 倍</b>，所以不在终端上算，而是放到远程的大型数据中心里，用 GPU、多核协处理器甚至 FPGA 加速，以获得高性能和高能效。</p>
+<p><b>看路径：</b>Sirius 是密歇根大学做的开源端到端 IPA。它把查询分成三类，每类走的路径不同。点按钮看高亮：</p>
+<div class="stack" id="m32-sirius">
+<div aria-label="查询类型" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-q="all" type="button">全部</button>
+<button aria-pressed="false" class="chip" data-q="vc" type="button">VC <small>Voice Command</small></button>
+<button aria-pressed="false" class="chip" data-q="vq" type="button">VQ <small>Voice Query</small></button>
+<button aria-pressed="false" class="chip" data-q="viq" type="button">VIQ <small>Voice-Image Query</small></button>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="Sirius 的端到端流程：语音进入 ASR，经 Query Classifier 分成动作或问题；动作回到手机执行，问题交给 Question-Answering，图像交给 Image Matching，答案返回手机显示" role="img" viewbox="0 0 700 300">
+<defs>
+<marker id="m32d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-dash" x1="146" x2="146" y1="4" y2="282"></line>
+<text class="s-tm" text-anchor="end" x="140" y="296">Mobile</text>
+<text class="s-tm" x="152" y="296">Server</text>
+<g class="m32-p" data-p="vq viq">
+<rect class="s-box" height="36" rx="6" width="116" x="8" y="12"></rect>
+<text class="s-t" text-anchor="middle" x="66" y="35">Display Answer</text>
+<path class="s-line" d="M607,96 V30 H126" marker-end="url(#m32d)"></path>
+<text class="s-tm" text-anchor="middle" x="380" y="22">respuesta</text>
+</g>
+<g class="m32-p" data-p="vc vq viq">
+<rect class="s-box" height="76" rx="8" width="116" x="8" y="112"></rect>
+<text class="s-t" text-anchor="middle" x="66" y="142">Users</text>
+<text class="s-t2" text-anchor="middle" x="66" y="160">手机 · 笔记本 · 手表</text>
+<line class="s-line" marker-end="url(#m32d)" x1="124" x2="180" y1="178" y2="178"></line>
+<text class="s-tm" x="152" y="170">voz</text>
+</g>
+<g class="m32-p" data-p="vc">
+<rect class="s-box" height="36" rx="6" width="116" x="8" y="250"></rect>
+<text class="s-t" text-anchor="middle" x="66" y="273">Execute Action</text>
+<path class="s-line" d="M408,206 V268 H126" marker-end="url(#m32d)"></path>
+<text class="s-tm" text-anchor="middle" x="270" y="260">acción</text>
+</g>
+<g class="m32-p" data-p="viq">
+<path class="s-line" d="M66,112 V86 H180" marker-end="url(#m32d)"></path>
+<text class="s-tm" x="72" y="104">imagen</text>
+<rect class="s-box" height="56" rx="6" width="196" x="182" y="58"></rect>
+<text class="s-t" text-anchor="middle" x="280" y="82">Image Matching</text>
+<text class="s-t2" text-anchor="middle" x="280" y="100">+ Image Database</text>
+<path class="s-line" d="M378,86 H504 V116 H520" marker-end="url(#m32d)"></path>
+<text class="s-tm" text-anchor="middle" x="441" y="78">datos de imagen</text>
+</g>
+<g class="m32-p" data-p="vc vq viq">
+<rect class="s-box" height="56" rx="6" width="146" x="182" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="255" y="174">ASR</text>
+<text class="s-t2" text-anchor="middle" x="255" y="192">voz → texto</text>
+<line class="s-line" marker-end="url(#m32d)" x1="328" x2="344" y1="178" y2="178"></line>
+<rect class="s-box" height="56" rx="6" width="124" x="346" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="408" y="174">Query Classifier</text>
+<text class="s-t2" text-anchor="middle" x="408" y="192">¿pregunta o acción?</text>
+</g>
+<g class="m32-p" data-p="vq viq">
+<path class="s-line" d="M470,166 H494 V136 H520" marker-end="url(#m32d)"></path>
+<text class="s-tm" text-anchor="middle" x="494" y="130">pregunta</text>
+<rect class="s-box" height="60" rx="6" width="170" x="522" y="96"></rect>
+<text class="s-t" text-anchor="middle" x="607" y="121">Question-Answering</text>
+<text class="s-t2" text-anchor="middle" x="607" y="140">+ Search Database</text>
+</g>
+<g>
+<rect class="s-soft" height="26" rx="3" width="72" x="530" y="196"></rect>
+<rect class="s-box" height="26" rx="3" width="72" x="560" y="210"></rect>
+<rect class="s-box" height="26" rx="3" width="72" x="596" y="224"></rect>
+<text class="s-tm" x="536" y="213">GPU</text>
+<text class="s-tm" x="564" y="227">FPGA</text>
+<text class="s-tm" x="614" y="242">RNA</text>
+<text class="s-t2" text-anchor="end" x="692" y="270">aceleradores</text>
+</g>
+</svg>
+</div>
+<figcaption>虚线左边是用户的设备（Mobile），右边是服务器（Server）；右下角那一叠是加速器。<span class="hint">点上面的按钮看路径</span></figcaption>
+</figure>
+
+<div class="panel" data-qp="all">
+<p>一次查询的生命周期：用户在手机上说话或拍照，压缩后的录音和图像发到服务器。<b>ASR</b> 把语音转成文本；<b>Query Classifier</b> 判断这是“动作”还是“问题”。动作发回手机执行；问题交给 <b>Question-Answering</b>，用自然语言处理技术提取信息、搜索数据库、选出最佳答案。如果附带图像，<b>Image Matching</b> 用计算机视觉把它和图像库匹配，结果一起用来选答案。</p>
+</div>
+<div class="panel" data-qp="vc" hidden="">
+<h3>Voice Command · 语音命令</h3>
+<p>例：“Set my alarm for 8am.” 只用 <b>ASR</b>，结果是在用户设备上执行动作。（Sirius 的测试集里有 16 条这类查询）</p>
+</div>
+<div class="panel" data-qp="vq" hidden="">
+<h3>Voice Query · 语音提问</h3>
+<p>例：“Who was elected 44th president?” 用 <b>ASR + QA</b>，结果是 QA 给出的最佳答案。（测试集里有 16 条这类查询）</p>
+</div>
+<div class="panel" data-qp="viq" hidden="">
+<h3>Voice-Image Query · 语音加图像提问</h3>
+<p>例：“When does this restaurant close?”，同时用智能眼镜拍下餐厅。用 <b>ASR + QA + IMM</b>，结果综合 IMM 和 QA 选出。（测试集里有 10 条这类查询）</p>
+</div>
+</div>
+<p class="aside">有些资料正文说加速用 GPU、多核协处理器和 FPGA；图上标的是 GPU、FPGA、RNA。RNA 在西语里通常指 red neuronal artificial（人工神经网络），这里应是指神经网络加速器。</p>
+<p class="aside">了解即可：单个查询的计算量超过网页搜索的 100 倍。单核上，网页搜索查询平均 91 ms，Sirius 查询平均约 15 s；如果 IPA 查询量追上网页搜索，数据中心的算力要扩大到现在的 165 倍，这叫作 scalability gap。</p>
+<h3>拆开 Alexa：utterance、intent、slot</h3>
+<p>以 Alexa 为例，语音交互可以拆成三个阶段：</p>
+<div class="flow">
+<div class="cell"><span class="eyebrow">STT</span><h3>Speech To Text</h3><p>语音识别：把口语转成文本。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">NLU</span><h3>Natural Language Understanding</h3><p>把非结构化的句子理解成<b>结构化表示</b>，理解整个情境而不只是单个词。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">NLG</span><h3>Natural Language Generation</h3><p>从结构化文本自动生成自然语言，是识别的逆过程，所以也叫 TTS。</p></div>
+</div>
+<p>开发者用 Alexa 时，STT 在云端完成，对开发者透明。开发者只需要把<b>句式</b>和<b>动作</b>关联起来：</p>
+<ul>
+<li><b class="t">utterance</b>——话语模板：语音转写结果要匹配的句式；</li>
+<li><b class="t">intent</b>——意图：和句式关联的动作；</li>
+<li><b class="t">slot</b>——槽位：嵌在 utterance 里的<b>有类型的变量</b>，用来从句子里提取数据（这就是 Alexa 提供的 NLU）。</li>
+</ul>
+<p>只有转写结果和某个 utterance <b>完全匹配</b>时，Alexa 才触发 intent，并通过 slots 把数据交给系统其他部分；匹配不上就什么也不做。整个模型用 JSON 描述：</p>
+<div class="m32-code">
+<pre class="m32-pre"><code>{
+  "invocationName": "mi casa",
+  "intents": [{
+    "name": "controlarPersiana",
+    "slots": [
+      { "name": "accion",   "type": "tipoAccion" },
+      { "name": "estancia", "type": "tipoEstancia" }
+    ],
+    "samples": [ "{accion} la persiana del {estancia}" ]
+  }],
+  "types": [
+    { "name": "tipoAccion",   "values": ["sube", "baja"] },
+    { "name": "tipoEstancia", "values": ["salón", "dormitorio"] }
+  ]
+}</code></pre>
+<p class="aside">一个示例模型，格式有简化。</p>
+</div>
+<p><b>当一回 Alexa：</b>输入一句话（或点下面的例句），看能不能触发 intent。</p>
+<div class="stack" id="m32-alexa">
+<div aria-label="例句" class="chips" role="group">
+<button class="chip" data-say="sube la persiana del salón" type="button">sube la persiana del salón</button>
+<button class="chip" data-say="Baja la persiana del dormitorio" type="button">Baja la persiana del dormitorio</button>
+<button class="chip" data-say="abre la persiana del salón" type="button">abre la persiana del salón</button>
+<button class="chip" data-say="sube la persiana de la cocina" type="button">sube la persiana de la cocina</button>
+</div>
+<div class="m32-row">
+<input aria-label="对 Alexa 说的话" class="m32-in" placeholder="例如：sube la persiana del salón" type="text"/>
+<button class="btn primary" data-do="send" type="button">发送</button>
+</div>
+<div class="panel">
+<p aria-live="polite" class="m32-out">还没有输入。</p>
+<pre class="m32-pre"><code class="m32-json">// 等待语音转写结果…</code></pre>
+</div>
+<p class="aside">这个模拟按“完全匹配”做了简化；真实的 Alexa 对自定义 slot 的匹配更宽松，列表外的值也可能被接受。</p>
+</div>
+<p class="aside">了解即可：在一个把 Alexa 用作机器人语音接口的系统里，用户对 Echo Dot 说话，经互联网连到运行在 AWS 上的 Alexa Voice Service；远程服务器用 Node-RED 和 RedBot 做聊天机器人逻辑，用 Mosquitto（MQTT 协议，发布 / 订阅）把命令发给运行 ROS 的机器人。</p>
+<div class="note">
+<span class="lbl">范围</span>
+<p>本模块的扩展资料（STM32 的 Alexa 语音方案、TI 的 <i>Voice as the user interface</i> 白皮书）和 MWC 2022 的演讲都注明属于拓展。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s12">
+<h2><span class="n">§12</span>融合的世界与 Web 3D <span class="tag">3.2.11</span></h2>
+<p>现实世界和虚拟世界正在从几个方向融合：我们把日常活动的“气泡”搬到互联网上，互联网又创造出我们开始当真的“原生”活动。下面这张图把这几股力量画在一起，点图上的各部分：</p>
+<div class="stack" data-explain="ra">
+<figure>
+<div class="fig">
+<svg aria-label="融合的世界：左边是方形的 Mundo real，里面有一个人和几个橙色气泡（virtualidad encarnada）；右边是圆形的 Mundo virtual，里面有一个人（realidad virtual）和两个 Internet 方框；灰色气泡从虚拟世界穿过边界进入现实世界（realidad aumentada）" role="img" viewbox="0 0 680 340">
+<defs>
+<marker id="m32e" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g aria-label="Mundo real" class="hot m32-w" data-key="real" role="button" tabindex="0">
+<rect class="s-box" height="230" rx="2" width="290" x="24" y="60"></rect>
+<text class="s-t" x="38" y="84">Mundo real</text>
+<circle class="s-line" cx="176" cy="150" r="12"></circle>
+<path class="s-line" d="M176,162 V220 M146,182 H206 M176,220 L156,256 M176,220 L196,256"></path>
+</g>
+<g aria-label="Mundo virtual 与 realidad virtual" class="hot m32-w" data-key="virtual" role="button" tabindex="0">
+<circle class="m32-fill-accent" cx="478" cy="186" r="126"></circle>
+<text class="s-t" x="462" y="94">Mundo virtual</text>
+<circle class="s-line" cx="520" cy="196" r="12"></circle>
+<path class="s-line" d="M520,208 V258 M490,226 H550 M520,258 L502,290 M520,258 L538,290"></path>
+</g>
+<g aria-label="Internet" class="hot m32-w" data-key="internet" role="button" tabindex="0">
+<rect class="s-box" height="42" width="42" x="404" y="182"></rect>
+<rect class="s-box" height="42" width="42" x="380" y="208"></rect>
+<text class="s-tm" x="458" y="168">Internet</text>
+</g>
+<g aria-label="Realidad aumentada" class="hot m32-w" data-key="ra" role="button" tabindex="0">
+<circle class="s-box" cx="212" cy="66" r="22"></circle>
+<circle class="s-box" cx="330" cy="110" r="18"></circle>
+<circle class="s-box" cx="368" cy="146" r="20"></circle>
+<path class="s-line" d="M380,24 H330 V90" marker-end="url(#m32e)"></path>
+<text class="s-tm" x="386" y="28">Realidad aumentada</text>
+</g>
+<g aria-label="Virtualidad encarnada" class="hot m32-w" data-key="encarnada" role="button" tabindex="0">
+<circle class="m32-fill-signal" cx="172" cy="104" r="22"></circle>
+<circle class="m32-fill-signal" cx="82" cy="170" r="22"></circle>
+<circle class="m32-fill-signal" cx="142" cy="290" r="22"></circle>
+<path class="s-line" d="M142,314 V326 H200" marker-start="url(#m32e)"></path>
+<text class="s-tm" x="206" y="330">Virtualidad encarnada</text>
+</g>
+<g><path class="s-line" d="M566,322 H546 V280" marker-end="url(#m32e)"></path><text class="s-tm" x="572" y="326">Realidad virtual</text></g>
+</svg>
+</div>
+<figcaption>Fusión de mundos——融合的世界（略有简化）。<span class="hint">点击图中的各部分</span></figcaption>
+</figure>
+<div class="panel" data-panel="ra" hidden="">
+<h3>Realidad aumentada · 灰色气泡</h3>
+<p>三个灰色气泡从虚拟世界的边界出发，穿过空隙，叠到现实世界里：AR 把虚拟的“气泡”带进现实世界，增强我们的能力。</p>
+</div>
+<div class="panel" data-panel="encarnada" hidden="">
+<h3>Virtualidad encarnada · 橙色气泡</h3>
+<p>现实世界里带光晕的橙色气泡，有一个就落在现实世界的边框上。也就是说：虚拟气泡可以化身为实物（<b class="t">interfaces tangibles</b>——可触界面），也可以散布到环境中，直到和环境融为一体（computación ubicua）。</p>
+<p class="aside">图上这组橙色气泡的标签是 “Virtualidad encarnada”（具身化的虚拟）。</p>
+</div>
+<div class="panel" data-panel="virtual" hidden="">
+<h3>Mundo virtual · Realidad virtual</h3>
+<p>右边的大圆是虚拟世界，标着 “Realidad virtual” 的是圆里的小人：VR 让人整个沉浸到虚拟世界里，和现实世界隔离。</p>
+</div>
+<div class="panel" data-panel="internet" hidden="">
+<h3>Internet · 两个方框</h3>
+<p>方框在虚拟世界里，其中一个跨在边界上：我们把现实生活的“气泡”（大部分日常活动）搬到 Internet 上；Internet 又创造出“原生”的活动，我们开始把它们当真。</p>
+</div>
+<div class="panel" data-panel="real" hidden="">
+<h3>Mundo real · 现实世界</h3>
+<p>人所在的物理环境。左边的小人站在现实世界里，周围是进来的 AR 气泡和化身为实物的橙色气泡。</p>
+</div>
+
+</div>
+<p>再切换看看几种说法：</p>
+<div class="stack" data-seg="">
+<div aria-label="现实与虚拟的融合" class="seg" role="group">
+<button aria-pressed="true" data-view="vr" type="button">Realidad virtual</button>
+<button aria-pressed="false" data-view="ra" type="button">Realidad aumentada</button>
+<button aria-pressed="false" data-view="xr" type="button">Realidad extendida</button>
+<button aria-pressed="false" data-view="meta" type="button">Mundos espejo · metaversos</button>
+</div>
+<div class="panel" data-pane="vr">
+<h3>VR · 沉浸进去</h3>
+<p><b class="t">realidad virtual (ES) / virtual reality (EN)</b>——虚拟现实：仍然坚持让人<b>沉浸</b>到虚拟世界里，同时和现实世界<b>隔离</b>。典型设备是 VR 眼镜（如 Quest 2、Vive Pro）。</p>
+</div>
+<div class="panel" data-pane="ra" hidden="">
+<h3>AR · 把虚拟带进来</h3>
+<p><b class="t">realidad aumentada (ES) / augmented reality (EN)</b>——增强现实：反过来，把虚拟的“气泡”放进现实世界，增强我们的能力。这些气泡可以化身为实物（<b class="t">interfaces tangibles</b>——可触界面），也可以分散在环境中，直到和环境融为一体（computación ubicua，普适计算）。</p>
+</div>
+<div class="panel" data-pane="xr" hidden="">
+<h3>XR · 融成一体</h3>
+<p><b class="t">realidad extendida (ES) / extended reality (EN)</b>——扩展现实：指虚拟和现实“熔合”在一起的世界。</p>
+</div>
+<div class="panel" data-pane="meta" hidden="">
+<h3>复制一个世界</h3>
+<p>还有很宏大的计划：在网络空间里复制一个现实世界（mundos espejo 镜像世界、metaversos 元宇宙……），并赋予它 IoT 模块讲过的 gemelos digitales（数字孪生）的特性。一个例子是 NVIDIA 的 Omniverse。</p>
+</div>
+</div>
+<p>看一个现实和虚拟叠在一起的例子：</p>
+
+<p>低成本的 VR / AR 技术正把用户带进网页上的沉浸式世界，包括 3D 和 360° 视频。典型的设备和工具：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">dispositivos</span><h3>设备</h3><p>VR 眼镜（Quest 2、Vive Pro）、自然交互传感器（Kinect、Leap Motion）、触觉执行器（Ultraleap）。</p></div>
+<div class="cell"><span class="eyebrow">desarrollo</span><h3>开发工具</h3><p>Unity、X3DOM、A-Frame。</p></div>
+<div class="cell"><span class="eyebrow">API</span><h3>浏览器接口</h3><p>WebGL、WebXR。</p></div>
+</div>
+<p>举个例子：一个三子棋（tres en raya）游戏做成了 <b class="t">X3D</b>（Web3D 联盟的 3D 场景格式）世界，借助 <b class="t">WebGL</b> 用 <b class="t">X3DOM</b> 直接嵌进网页，可以用鼠标移动棋子。</p>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>浏览 X3DOM 文档里的 <i>Background: What is X3DOM, and what can it do for me?</i>。</p>
+</div>
+<h3>动手：五步做出一个可以点的 3D 场景</h3>
+<p class="aside">下面的代码没有在本机实际运行验证过。</p>
+<ol>
+<li><b>建一个普通的 HTML 页面</b>，在 <code>&lt;head&gt;</code> 里引入 <code>x3dom.js</code> 和 <code>x3dom.css</code>。</li>
+<li><b>放一块 3D 画布</b>：<code>&lt;x3d width="600px" height="400px"&gt;</code>，里面放一个 <code>&lt;scene&gt;</code>。</li>
+<li><b>加物体</b>：<code>&lt;shape&gt;</code> = 外观 <code>&lt;appearance&gt;&lt;material&gt;</code> + 一个几何体 <code>&lt;box&gt;</code>、<code>&lt;sphere&gt;</code>、<code>&lt;cone&gt;</code> 或 <code>&lt;cylinder&gt;</code>。颜色用 RGB 三元组，每个分量 0–1，例如 <code>diffuseColor="1 0 0"</code> 是红色。</li>
+<li><b>摆位置</b>：用 <code>&lt;transform translation="x y z"&gt;</code> 把 shape 包起来；需要时加 <code>&lt;viewpoint&gt;</code> 设相机位置。</li>
+<li><b>加交互</b>：X3D 节点就是网页 DOM 的一部分，所以可以直接在 <code>&lt;shape&gt;</code> 上写 <code>onclick</code>，在 JavaScript 里用 <code>setAttribute</code> 改材质的颜色。用浏览器打开页面，鼠标拖动可以旋转视角。</li>
+</ol>
+<figure>
+<div class="fig">
+<svg aria-label="X3DOM 场景的节点树：x3d 包含 scene；scene 包含 viewpoint 和 transform；transform 包含 shape；shape 包含 appearance 和几何体；appearance 包含 material" role="img" viewbox="0 0 600 312">
+<line class="s-line" x1="300" x2="300" y1="40" y2="62"></line>
+<line class="s-line" x1="300" x2="145" y1="92" y2="114"></line>
+<line class="s-line" x1="300" x2="405" y1="92" y2="114"></line>
+<line class="s-line" x1="405" x2="405" y1="144" y2="166"></line>
+<line class="s-line" x1="405" x2="305" y1="196" y2="218"></line>
+<line class="s-line" x1="405" x2="505" y1="196" y2="218"></line>
+<line class="s-line" x1="305" x2="305" y1="248" y2="270"></line>
+<rect class="s-box" height="30" rx="5" width="140" x="230" y="10"></rect>
+<text class="m32-ct" text-anchor="middle" x="300" y="30">&lt;x3d&gt;</text>
+<text class="s-t2" x="380" y="30">画布：width · height</text>
+<rect class="s-box" height="30" rx="5" width="140" x="230" y="62"></rect>
+<text class="m32-ct" text-anchor="middle" x="300" y="82">&lt;scene&gt;</text>
+<rect class="s-box" height="30" rx="5" width="150" x="70" y="114"></rect>
+<text class="m32-ct" text-anchor="middle" x="145" y="134">&lt;viewpoint&gt;</text>
+<text class="s-t2" text-anchor="middle" x="145" y="162">相机位置（可省略）</text>
+<rect class="s-box" height="30" rx="5" width="150" x="330" y="114"></rect>
+<text class="m32-ct" text-anchor="middle" x="405" y="134">&lt;transform&gt;</text>
+<text class="s-t2" x="490" y="134">位置 · 旋转 · 缩放</text>
+<rect class="s-box" height="30" rx="5" width="150" x="330" y="166"></rect>
+<text class="m32-ct" text-anchor="middle" x="405" y="186">&lt;shape&gt;</text>
+<text class="s-t2" x="490" y="186">onclick 写在这里</text>
+<rect class="s-box" height="30" rx="5" width="150" x="230" y="218"></rect>
+<text class="m32-ct" text-anchor="middle" x="305" y="238">&lt;appearance&gt;</text>
+<rect class="s-box" height="30" rx="5" width="150" x="430" y="218"></rect>
+<text class="m32-ct" text-anchor="middle" x="505" y="238">&lt;box&gt; / &lt;sphere&gt;…</text>
+<rect class="s-box" height="30" rx="5" width="150" x="230" y="270"></rect>
+<text class="m32-ct" text-anchor="middle" x="305" y="290">&lt;material&gt;</text>
+<text class="s-tm" x="390" y="290">diffuseColor="1 0 0"</text>
+</svg>
+</div>
+<figcaption>一个最小 X3DOM 场景的节点树。外观和几何体是 shape 的两个“零件”。</figcaption>
+</figure>
+<p><b>场景生成器：</b>选几何体、颜色和位置，下面的代码会跟着变。勾选“点击时变色”后，点预览里的物体可以模拟 onclick 的效果。</p>
+<div class="stack" id="m32-build">
+<div class="m32-ctl">
+<span class="aside">几何体 · geometría</span>
+<div aria-label="几何体" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-geo="box" type="button">box</button>
+<button aria-pressed="false" class="chip" data-geo="sphere" type="button">sphere</button>
+<button aria-pressed="false" class="chip" data-geo="cone" type="button">cone</button>
+<button aria-pressed="false" class="chip" data-geo="cylinder" type="button">cylinder</button>
+</div>
+<span class="aside">颜色 · diffuseColor</span>
+<div aria-label="颜色" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-col="rojo" type="button">rojo <small>1 0 0</small></button>
+<button aria-pressed="false" class="chip" data-col="naranja" type="button">naranja <small>1 0.55 0</small></button>
+<button aria-pressed="false" class="chip" data-col="verde" type="button">verde <small>0.1 0.6 0.3</small></button>
+<button aria-pressed="false" class="chip" data-col="turquesa" type="button">turquesa <small>0 0.55 0.6</small></button>
+</div>
+<label>translation x <input aria-label="translation x" max="3" min="-3" step="1" type="range" value="0"/> <span class="mono m32-xv">0</span></label>
+<label><input checked="" type="checkbox"/> 点击时变色（onclick）</label>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="场景预览示意：物体沿 x 轴的位置和颜色" class="narrow-ok" role="img" viewbox="0 0 320 140">
+<line class="s-line" x1="20" x2="300" y1="114" y2="114"></line>
+<line class="s-line" x1="52" x2="52" y1="110" y2="118"></line>
+<line class="s-line" x1="88" x2="88" y1="110" y2="118"></line>
+<line class="s-line" x1="124" x2="124" y1="110" y2="118"></line>
+<line class="s-line" x1="160" x2="160" y1="110" y2="118"></line>
+<line class="s-line" x1="196" x2="196" y1="110" y2="118"></line>
+<line class="s-line" x1="232" x2="232" y1="110" y2="118"></line>
+<line class="s-line" x1="268" x2="268" y1="110" y2="118"></line>
+<text class="s-tm" text-anchor="middle" x="52" y="132">-3</text>
+<text class="s-tm" text-anchor="middle" x="88" y="132">-2</text>
+<text class="s-tm" text-anchor="middle" x="124" y="132">-1</text>
+<text class="s-tm" text-anchor="middle" x="160" y="132">0</text>
+<text class="s-tm" text-anchor="middle" x="196" y="132">1</text>
+<text class="s-tm" text-anchor="middle" x="232" y="132">2</text>
+<text class="s-tm" text-anchor="middle" x="268" y="132">3</text>
+<text class="s-tm m32-xlab" text-anchor="end" x="308" y="20">x = 0</text>
+<g aria-label="点击物体，模拟 onclick" class="hot m32-shape" role="button" tabindex="0"></g>
+</svg>
+</div>
+<figcaption>2D 示意，不是真正的 3D 渲染。<span class="hint m32-hint">点击物体</span></figcaption>
+</figure>
+<div class="m32-code">
+<pre class="m32-pre"><code id="m32-code-x3d"></code></pre>
+<div class="m32-row"><button class="btn" data-copy="m32-code-x3d" type="button">复制代码</button><span aria-live="polite" class="m32-status"></span></div>
+</div>
+</div>
+<div class="panel">
+<h3>换一种工具：A-Frame</h3>
+<p>常用的开发工具里还有 A-Frame。它同样用 HTML 标签描述场景（<code>&lt;a-scene&gt;</code>、<code>&lt;a-box&gt;</code>……），位置单位是米，颜色可以直接写颜色名。下面是同样“点一下就变色”的例子（版本号 1.5.0 未验证）：</p>
+<div class="m32-code">
+<pre class="m32-pre"><code id="m32-code-af">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;Mi escena A-Frame&lt;/title&gt;
+  &lt;script src="https://aframe.io/releases/1.5.0/aframe.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;a-scene&gt;
+    &lt;a-entity cursor="rayOrigin: mouse"&gt;&lt;/a-entity&gt;
+    &lt;a-box id="caja" position="0 1 -3" rotation="0 45 0" color="tomato"&gt;&lt;/a-box&gt;
+    &lt;a-plane position="0 0 -3" rotation="-90 0 0" width="4" height="4" color="lightgray"&gt;&lt;/a-plane&gt;
+    &lt;a-sky color="lightblue"&gt;&lt;/a-sky&gt;
+  &lt;/a-scene&gt;
+  &lt;script&gt;
+    var caja = document.getElementById("caja");
+    var rojo = true;
+    caja.addEventListener("click", function () {
+      rojo = !rojo;
+      caja.setAttribute("color", rojo ? "tomato" : "royalblue");
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<div class="m32-row"><button class="btn" data-copy="m32-code-af" type="button">复制代码</button><span aria-live="polite" class="m32-status"></span></div>
+</div>
+</div>
+<p class="aside">想让物体自己动，X3D 的做法是 <code>timeSensor</code>（计时器）+ 插值器（如 <code>orientationInterpolator</code>）+ <code>ROUTE</code>（把一个节点的输出接到另一个节点的输入）。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M32">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>Sensable 的 PHANToM 属于哪一类 háptica 设备？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>retroalimentación táctil</button>
+<button data-o="b" type="button"><span class="k">B</span>retroalimentación de fuerza（单点力反馈器）</button>
+<button data-o="c" type="button"><span class="k">C</span>retroalimentación virtual</button>
+<button data-o="d" type="button"><span class="k">D</span>matriz de puntos táctil</button>
+</div>
+<p class="why"><b>B。</b>PHANToM 是 retroalimentador de fuerza puntual，返回依赖位置和虚拟物体属性的力和扭矩。触觉反馈感知的是纹理、温度、压力（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>口语对话系统中，负责控制系统与用户的交互、并协调其他组件的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Reconocimiento de voz</button>
+<button data-o="b" type="button"><span class="k">B</span>Entendimiento del lenguaje</button>
+<button data-o="c" type="button"><span class="k">C</span>Generación de respuesta</button>
+<button data-o="d" type="button"><span class="k">D</span>Gestión de diálogo</button>
+</div>
+<p class="why"><b>D。</b>Gestión de diálogo 控制交互并协调其他组件，还可以利用对话历史、用户类型等知识来源（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>把识别出的词串分析成“有意义的表示”、交给对话管理使用的组件是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Entendimiento del lenguaje</button>
+<button data-o="b" type="button"><span class="k">B</span>Generación de voz</button>
+<button data-o="c" type="button"><span class="k">C</span>Comunicación con sistema externo</button>
+<button data-o="d" type="button"><span class="k">D</span>Reconocimiento de voz</button>
+</div>
+<p class="why"><b>A。</b>Reconocimiento de voz 只负责“语音 → 词串”；理解词串的含义是 Entendimiento del lenguaje（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>“用指点来识别语境中的某个对象”描述的是哪类手势？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Gestos semafóricos</button>
+<button data-o="b" type="button"><span class="k">B</span>Gesticulación</button>
+<button data-o="c" type="button"><span class="k">C</span>Deíctico</button>
+<button data-o="d" type="button"><span class="k">D</span>Lenguaje de signos</button>
+</div>
+<p class="why"><b>C。</b>Deíctico 是 señalamiento para identificar un objeto dentro del contexto。semafóricos 是信号词汇，gesticulación 补充语音，手语是基于手势序列的语法（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>下列哪一项<b>不</b>属于 Ekman 的 6 种普遍情绪？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>repugnancia</button>
+<button data-o="b" type="button"><span class="k">B</span>aburrimiento</button>
+<button data-o="c" type="button"><span class="k">C</span>sorpresa</button>
+<button data-o="d" type="button"><span class="k">D</span>miedo</button>
+</div>
+<p class="why"><b>B。</b>6 种是 alegría、ira、miedo、repugnancia、sorpresa、tristeza（喜怒惧厌惊悲）。aburrido 是情感计算里学习者的一种状态（§5、§9）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>多个感官通道同时报告同一事件，这种冗余给多模态交互带来什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>更少的计算量</button>
+<button data-o="b" type="button"><span class="k">B</span>不再需要整合各通道的信息</button>
+<button data-o="c" type="button"><span class="k">C</span>只适合单一类型的用户</button>
+<button data-o="d" type="button"><span class="k">D</span>robustez、adaptabilidad y tolerancia a fallos</button>
+</div>
+<p class="why"><b>D。</b>冗余带来鲁棒性、适应性和容错；整合仍然需要（人身上由中枢神经系统完成）。多模态反而能服务各类用户（§6）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>不需要训练、利用大脑对外部视觉或声音刺激的反应（P300）的 BCI 叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>BCI exógeno</button>
+<button data-o="b" type="button"><span class="k">B</span>BCI endógeno</button>
+<button data-o="c" type="button"><span class="k">C</span>BCI invasivo</button>
+<button data-o="d" type="button"><span class="k">D</span>video-oculografía</button>
+</div>
+<p class="why"><b>A。</b>P300 诱发电位是对外部刺激的反应，属于 exógeno；endógeno 靠训练后有意调节的 EEG（§7）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>VR 中的 renderizado foveal（只以最高分辨率渲染注视区域）属于哪类眼动交互？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Selectiva</button>
+<button data-o="b" type="button"><span class="k">B</span>Deíctica</button>
+<button data-o="c" type="button"><span class="k">C</span>Dependiente de la mirada (gaze-contingent)</button>
+<button data-o="d" type="button"><span class="k">D</span>Video-oculografía</button>
+</div>
+<p class="why"><b>C。</b>系统根据注视点调整显示、降低计算负担，是 gaze-contingent。video-oculografía 是记录眼动的技术，不是交互类别（§8）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>关于 computación afectiva，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它只是心理学的一个分支</button>
+<button data-o="b" type="button"><span class="k">B</span>它是 IA 的多学科领域，研究设计能识别、解释和处理情绪的系统</button>
+<button data-o="c" type="button"><span class="k">C</span>它只用 EEG 来检测情绪</button>
+<button data-o="d" type="button"><span class="k">D</span>它指降低计算机能耗的技术</button>
+</div>
+<p class="why"><b>B。</b>多学科（计算机、心理学、认知科学），属于 IA，通常基于视频和音频识别手势、表情和语音情绪（§9）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">10</span>ECA (Embodied Conversational Agent) 最贴切的定义是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>有人形的虚拟实体，试图和用户进行智能、带情感的对话，陪伴、建议或引导用户</button>
+<button data-o="b" type="button"><span class="k">B</span>游戏中代表玩家身份的图形</button>
+<button data-o="c" type="button"><span class="k">C</span>只执行语音命令、没有形象的云端服务</button>
+<button data-o="d" type="button"><span class="k">D</span>一种非侵入式脑机接口</button>
+</div>
+<p class="why"><b>A。</b>这是 agente conversacional antropomórfico 的定义。B 是游戏里的 avatar（§10）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>为什么 IPA 的计算不在手机上完成？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>手机没有麦克风</button>
+<button data-o="b" type="button"><span class="k">B</span>IPA 只处理文本，不需要本地计算</button>
+<button data-o="c" type="button"><span class="k">C</span>法律禁止在终端上处理语音</button>
+<button data-o="d" type="button"><span class="k">D</span>计算量很大（约为网页搜索的 100 倍），放在用 GPU、FPGA 等加速的远程数据中心</button>
+</div>
+<p class="why"><b>D。</b>IPA 的计算负担约为典型网页搜索引擎的 100 倍，所以在远程数据中心用 GPU、多核协处理器、FPGA 加速（§11）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>§12 的三子棋例子里，X3D 世界是怎么嵌进网页的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>必须安装 Unity 插件</button>
+<button data-o="b" type="button"><span class="k">B</span>只能在 VR 头显里运行</button>
+<button data-o="c" type="button"><span class="k">C</span>用 X3DOM，借助 WebGL</button>
+<button data-o="d" type="button"><span class="k">D</span>先转换成 360° 视频</button>
+</div>
+<p class="why"><b>C。</b>X3D 世界通过 X3DOM 嵌进网页，靠的是 WebGL；E32 就是一个简单的 X3DOM 练习（§12）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">20 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">tecnología háptica<small>haptic technology</small></span><span class="back"><b>触觉技术</b><br/>实现主动触觉接口；词源是希腊语 haptesthai（触摸）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">retroalimentación táctil</span><span class="back"><b>触觉反馈</b><br/>皮肤感知纹理、温度、压力；常见设备是触点阵列和振动执行器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">retroalimentación de fuerza</span><span class="back"><b>力反馈</b><br/>感知力、重量、轮廓；如 PHANToM、力反馈摇杆、外骨骼。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ASR<small>Automatic Speech Recognition</small></span><span class="back"><b>自动语音识别</b><br/>把人的语音转换成一串文本。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TTS<small>Text To Speech</small></span><span class="back"><b>文本转语音</b><br/>文本多变、量大时用的合成语音。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">prosodia<small>prosody</small></span><span class="back"><b>韵律</b><br/>语调、音量、节奏；让合成语音自然，也用来识别语音情绪。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sistema de diálogo hablado</span><span class="back"><b>口语对话系统</b><br/>识别、理解、管理、外部通信、生成回答、生成语音 6 个组件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gesto deíctico</span><span class="back"><b>指示手势</b><br/>用指点来识别语境中的对象。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gestos semafóricos</span><span class="back"><b>符号手势</b><br/>由静态和动态信号组成的一套“词汇”。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">valencia / arousal</span><span class="back"><b>效价 / 唤醒度</b><br/>情绪的两个维度：吸引还是排斥，激活程度多高。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">interacción multimodal</span><span class="back"><b>多模态交互</b><br/>多个通道协同交互；冗余带来鲁棒、适应、容错。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">video-oculografía</span><span class="back"><b>视频眼动描记</b><br/>实时拍摄眼球表面的红外或可见光图像来记录眼动。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gaze-contingent<small>dependiente de la mirada</small></span><span class="back"><b>注视依随</b><br/>系统根据注视点调整自己，如注视点渲染。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BCI<small>Brain Computer Interface</small></span><span class="back"><b>脑机接口</b><br/>非侵入式采集、处理人主动产生的脑活动，控制外部组件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">P300<small>potencial evocado</small></span><span class="back"><b>P300 诱发电位</b><br/>对外部视觉或声音刺激的脑反应；外源性 BCI，无需训练。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">computación afectiva<small>affective computing</small></span><span class="back"><b>情感计算</b><br/>设计能识别、解释、处理情绪的系统的多学科 IA 领域。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ECA<small>Embodied Conversational Agent</small></span><span class="back"><b>拟人化对话智能体</b><br/>有人形的虚拟实体，进行智能、带情感的对话。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IPA<small>Intelligent Personal Assistant</small></span><span class="back"><b>智能个人助理</b><br/>用语音、图像、情境回答问题、推荐、执行动作，如 Siri、Alexa。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">utterance · intent · slot</span><span class="back"><b>话语模板 · 意图 · 槽位</b><br/>Alexa 里：句式匹配上，就触发动作，并用槽位取出数据。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">X3DOM</span><span class="back"><b>X3D 嵌入网页</b><br/>借助 WebGL，把 X3D 场景作为 HTML 的一部分显示和操作。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M32"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var box = document.getElementById("m32-dlg");
+  if (!box) return;
+  var gs = Array.prototype.slice.call(box.querySelectorAll(".dlg"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var N = 6;
+  var T = [
+    "6 个组件一览。点「下一步」，跟着一句例句 <i>¿Qué temperatura hay en el salón?</i> 走一遍。",
+    "<b>1 · Reconocimiento de voz</b>：把声学-语音参数序列构成的语音输入，转换成一串词：<code>qué temperatura hay en el salón</code>。",
+    "<b>2 · Entendimiento del lenguaje</b>：分析词串，产生一个有意义的表示，供对话管理使用，例如 <code>{consulta: temperatura, lugar: salón}</code>（表示的写法只是示意）。",
+    "<b>3 · Gestión de diálogo</b>：控制交互并协调其他组件。它可以利用多种知识来源（modelo de diálogo）：对话历史、已获取的信息、世界知识、用户类型等，所以 Memoria 一起高亮。这里它决定：去查客厅的温度。",
+    "<b>4 · Comunicación con sistema externo</b>：连接数据库、专家系统等。这里向智能家居系统查询，得到 22 °C（示例数值）。",
+    "<b>5 · Generación de respuesta</b>：确定系统要说的消息：<i>En el salón hay 22 grados.</i>",
+    "<b>6 · Generación de voz</b>：用预录语音或合成语音（TTS）把消息说出来。合成时加上 prosodia（语调、音量、节奏），听起来才自然。流程结束。"
+  ];
+  var i = 0;
+  function render() {
+    gs.forEach(function (g) {
+      var s = +g.getAttribute("data-step");
+      g.classList.toggle("on", i > 0 && s === i);
+      g.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 步";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-emo");
+  if (!root) return;
+  var chips = Array.prototype.slice.call(root.querySelectorAll(".chip[data-e]"));
+  var st = root.querySelector(".m32-status"), exp = root.querySelector(".m32-exp");
+  var checked = false;
+  function pressed(c) { return c.getAttribute("aria-pressed") === "true"; }
+  function count() { return chips.filter(pressed).length; }
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      if (checked) return;
+      c.setAttribute("aria-pressed", pressed(c) ? "false" : "true");
+      st.textContent = "已选 " + count() + " / 6";
+    });
+  });
+  root.querySelector('[data-do="check"]').addEventListener("click", function () {
+    var hit = 0, wrong = 0;
+    chips.forEach(function (c) {
+      var on = pressed(c), ok = c.getAttribute("data-e") === "1";
+      c.classList.remove("ok", "miss", "bad");
+      if (on && ok) { c.classList.add("ok"); hit++; }
+      else if (!on && ok) { c.classList.add("miss"); }
+      else if (on && !ok) { c.classList.add("bad"); wrong++; }
+    });
+    checked = true;
+    st.textContent = hit === 6 && wrong === 0
+      ? "全对：喜、怒、惧、厌、惊、悲 ✓"
+      : "选对 " + hit + " 个，选错 " + wrong + " 个；虚线框是漏选的。点“重来”再试。";
+    exp.hidden = false;
+  });
+  root.querySelector('[data-do="reset"]').addEventListener("click", function () {
+    checked = false;
+    chips.forEach(function (c) { c.classList.remove("ok", "miss", "bad"); c.setAttribute("aria-pressed", "false"); });
+    st.textContent = "已选 0 / 6";
+    exp.hidden = true;
+  });
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-mm");
+  if (!root) return;
+  var bs = Array.prototype.slice.call(root.querySelectorAll(".chip[data-ch]"));
+  var out = root.querySelector(".m32-out");
+  function render() {
+    var on = bs.filter(function (b) { return b.getAttribute("aria-pressed") === "true"; });
+    var names = on.map(function (b) { return b.getAttribute("data-name"); });
+    if (!on.length) {
+      out.innerHTML = '<span class="verdict no">没有感知</span> 所有通道都关了，对“接球”这个事件一无所知。';
+    } else if (on.length === 1) {
+      out.innerHTML = '<span class="verdict star">脆弱</span> 只剩' + names[0] + '一个通道：没有冗余，它再出问题（被挡住、有噪声），感知就断了。';
+    } else {
+      out.innerHTML = '<span class="verdict ok">稳健</span> ' + on.length + ' 个通道（' + names.join('、') + '）在报告同一事件。关掉其中任何一个，其余通道仍能给出统一、连贯的感知，这就是 tolerancia a fallos。';
+    }
+  }
+  bs.forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      render();
+    });
+  });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-gaze");
+  if (!root) return;
+  var ts = Array.prototype.slice.call(root.querySelectorAll("[data-t]"));
+  var iris = root.querySelector(".m32-iris"), pupil = root.querySelector("g .m32-pupil"), vec = root.querySelector(".m32-vec");
+  var out = root.querySelector(".m32-out");
+  var CX = 470, CY = 110, DX = 40, DY = 18;
+  var H = ["左", "", "右"], V = ["上", "", "下"];
+  function sg(n) { return n > 0 ? "+" + n : n < 0 ? "−" + (-n) : "0"; }
+  function pick(k) {
+    var col = k % 3, row = Math.floor(k / 3);
+    var dx = (col - 1) * DX, dy = (row - 1) * DY;
+    iris.setAttribute("cx", CX + dx); iris.setAttribute("cy", CY + dy);
+    pupil.setAttribute("cx", CX + dx); pupil.setAttribute("cy", CY + dy);
+    vec.setAttribute("x2", CX + dx); vec.setAttribute("y2", CY + dy);
+    vec.style.visibility = dx || dy ? "visible" : "hidden";
+    ts.forEach(function (t) { t.classList.toggle("on", +t.getAttribute("data-t") === k); });
+    var dir = (H[col] + V[row]) || "正中";
+    out.innerHTML = "brillo ocular − glint = (" + sg(dx) + ", " + sg(dy) + ")（y 向下为正）→ 视线方向：<b>" + dir + "</b> → 选中第 " + (k + 1) + " 个目标。glint 没动，动的是瞳孔。";
+  }
+  ts.forEach(function (t) {
+    var k = +t.getAttribute("data-t");
+    t.addEventListener("click", function () { pick(k); });
+    t.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(k); }
+    });
+  });
+  pick(4);
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-sort");
+  if (!root) return;
+  var items = Array.prototype.slice.call(root.querySelectorAll(".m32-item"));
+  var wrap = root.parentNode;
+  var st = wrap.querySelector(".m32-status");
+  var done = 0, right = 0;
+  function upd() {
+    st.textContent = done === items.length
+      ? "完成：答对 " + right + " / " + items.length + (right === items.length ? " ✓" : "")
+      : "已答 " + done + " / " + items.length + " · 答对 " + right;
+  }
+  items.forEach(function (it) {
+    var ans = it.getAttribute("data-a");
+    var bs = Array.prototype.slice.call(it.querySelectorAll("button[data-pick]"));
+    var fb = it.querySelector(".fb"), v = fb.querySelector(".verdict");
+    bs.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var ok = b.getAttribute("data-pick") === ans;
+        bs.forEach(function (x) { x.disabled = true; });
+        b.classList.add("picked");
+        v.className = "verdict " + (ok ? "ok" : "no");
+        v.textContent = ok ? "对" : "不对，是 " + (ans === "sel" ? "Selectiva" : "Gaze-contingent");
+        fb.hidden = false;
+        done++; if (ok) right++;
+        upd();
+      });
+    });
+  });
+  wrap.querySelector('[data-do="sort-reset"]').addEventListener("click", function () {
+    done = 0; right = 0;
+    items.forEach(function (it) {
+      Array.prototype.slice.call(it.querySelectorAll("button[data-pick]")).forEach(function (x) { x.disabled = false; x.classList.remove("picked"); });
+      it.querySelector(".fb").hidden = true;
+    });
+    upd();
+  });
+  upd();
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-sirius");
+  if (!root) return;
+  var parts = Array.prototype.slice.call(root.querySelectorAll("[data-p]"));
+  var bs = Array.prototype.slice.call(root.querySelectorAll(".chip[data-q]"));
+  var panes = Array.prototype.slice.call(root.querySelectorAll("[data-qp]"));
+  function show(q) {
+    bs.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-q") === q ? "true" : "false"); });
+    parts.forEach(function (p) {
+      var on = q !== "all" && p.getAttribute("data-p").split(" ").indexOf(q) >= 0;
+      p.classList.toggle("on", on);
+      p.classList.toggle("dim", q !== "all" && !on);
+    });
+    panes.forEach(function (p) { p.hidden = p.getAttribute("data-qp") !== q; });
+  }
+  bs.forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-q")); }); });
+  show("all");
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-alexa");
+  if (!root) return;
+  var inp = root.querySelector("input"), out = root.querySelector(".m32-out"), json = root.querySelector(".m32-json");
+  var RE = /^(sube|baja) la persiana del (salon|dormitorio)$/;
+  function norm(s) {
+    var t = s.toLowerCase();
+    if (t.normalize) t = t.normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return t.replace(/[¡!¿?.,;:]/g, " ").replace(/\s+/g, " ").trim();
+  }
+  function run() {
+    var t = norm(inp.value);
+    if (!t) { out.textContent = "先输入一句话。"; json.textContent = "// 等待语音转写结果…"; return; }
+    var m = RE.exec(t);
+    if (m) {
+      var est = m[2] === "salon" ? "salón" : "dormitorio";
+      json.textContent = JSON.stringify({ intent: "controlarPersiana", slots: { accion: m[1], estancia: est } }, null, 2);
+      out.innerHTML = '<span class="verdict ok">intent 已触发</span> 句子匹配 <code>{accion} la persiana del {estancia}</code>，两个 slot 的值都在列表里。数据交给系统其他部分；如果加了反馈，NLG 阶段会说：<i>Vale, ' + (m[1] === "sube" ? "subo" : "bajo") + " la persiana del " + est + ".</i>";
+    } else {
+      json.textContent = "// sin coincidencia: no se dispara ningún intent";
+      out.innerHTML = '<span class="verdict no">没有匹配</span> 这句话对不上任何 utterance，或者 slot 的值不在列表里。这时助手什么也不做。';
+    }
+  }
+  root.querySelector('[data-do="send"]').addEventListener("click", run);
+  inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); run(); } });
+  Array.prototype.slice.call(root.querySelectorAll("[data-say]")).forEach(function (b) {
+    b.addEventListener("click", function () { inp.value = b.getAttribute("data-say"); run(); });
+  });
+})();
+
+
+(function () {
+  var root = document.getElementById("m32-build");
+  if (!root) return;
+  var GEO = {
+    box: "<box></box>",
+    sphere: '<sphere radius="1"></sphere>',
+    cone: "<cone></cone>",
+    cylinder: "<cylinder></cylinder>"
+  };
+  var COL = { rojo: "1 0 0", naranja: "1 0.55 0", verde: "0.1 0.6 0.3", turquesa: "0 0.55 0.6" };
+  var CLS = { rojo: "m32-fill-bad", naranja: "m32-fill-signal", verde: "m32-fill-good", turquesa: "m32-fill-accent" };
+  var ORDER = ["rojo", "naranja", "verde", "turquesa"];
+  var st = { geo: "box", col: "rojo", x: 0, click: true, alt: false };
+  var code = document.getElementById("m32-code-x3d");
+  var shp = root.querySelector(".m32-shape"), xlab = root.querySelector(".m32-xlab"), xv = root.querySelector(".m32-xv");
+  var range = root.querySelector('input[type="range"]'), chk = root.querySelector('input[type="checkbox"]');
+  var hint = root.querySelector(".m32-hint");
+  function other(c) { return ORDER[(ORDER.indexOf(c) + 1) % ORDER.length]; }
+  function gen() {
+    var L = [
+      "<!DOCTYPE html>",
+      "<html>",
+      "<head>",
+      '  <meta charset="utf-8">',
+      "  <title>Mi escena X3DOM</title>",
+      '  <script src="https://www.x3dom.org/download/x3dom.js"><\/script>',
+      '  <link rel="stylesheet" href="https://www.x3dom.org/download/x3dom.css">',
+      "</head>",
+      "<body>",
+      '  <x3d width="600px" height="400px">',
+      "    <scene>",
+      '      <viewpoint position="0 0 10"></viewpoint>',
+      '      <transform translation="' + st.x + ' 0 0">',
+      "        <shape" + (st.click ? ' onclick="cambiarColor()"' : "") + ">",
+      "          <appearance>",
+      '            <material id="mat" diffuseColor="' + COL[st.col] + '"></material>',
+      "          </appearance>",
+      "          " + GEO[st.geo],
+      "        </shape>",
+      "      </transform>",
+      "    </scene>",
+      "  </x3d>"
+    ];
+    if (st.click) {
+      L.push("  <script>");
+      L.push('    var colores = ["' + COL[st.col] + '", "' + COL[other(st.col)] + '"];');
+      L.push("    var i = 0;");
+      L.push("    function cambiarColor() {");
+      L.push("      i = 1 - i;");
+      L.push('      document.getElementById("mat").setAttribute("diffuseColor", colores[i]);');
+      L.push("    }");
+      L.push("  <\/script>");
+    }
+    L.push("</body>");
+    L.push("</html>");
+    code.textContent = L.join("\n");
+  }
+  function draw() {
+    var cx = 160 + st.x * 36;
+    var c = CLS[st.alt ? other(st.col) : st.col];
+    var s;
+    if (st.geo === "box") s = '<rect class="' + c + '" x="' + (cx - 24) + '" y="66" width="48" height="48"></rect>';
+    else if (st.geo === "sphere") s = '<circle class="' + c + '" cx="' + cx + '" cy="88" r="26"></circle>';
+    else if (st.geo === "cone") s = '<polygon class="' + c + '" points="' + cx + ",60 " + (cx - 28) + ",114 " + (cx + 28) + ',114"></polygon>';
+    else s = '<rect class="' + c + '" x="' + (cx - 22) + '" y="66" width="44" height="48"></rect><ellipse class="' + c + '" cx="' + cx + '" cy="66" rx="22" ry="7"></ellipse>';
+    shp.innerHTML = s;
+    xlab.textContent = "x = " + st.x;
+    xv.textContent = String(st.x);
+    hint.textContent = st.click ? "点击物体" : "没有 onclick，点击没有反应";
+  }
+  function update() { gen(); draw(); }
+  function group(attr, key) {
+    var bs = Array.prototype.slice.call(root.querySelectorAll(".chip[" + attr + "]"));
+    bs.forEach(function (b) {
+      b.addEventListener("click", function () {
+        bs.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        st[key] = b.getAttribute(attr);
+        st.alt = false;
+        update();
+      });
+    });
+  }
+  group("data-geo", "geo");
+  group("data-col", "col");
+  range.addEventListener("input", function () { st.x = parseInt(range.value, 10) || 0; update(); });
+  chk.addEventListener("change", function () { st.click = chk.checked; st.alt = false; update(); });
+  function toggle() { if (!st.click) return; st.alt = !st.alt; draw(); }
+  shp.addEventListener("click", toggle);
+  shp.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+  });
+  update();
+})();
+
+
+(function () {
+  var bs = Array.prototype.slice.call(document.querySelectorAll("button[data-copy]"));
+  if (!bs.length) return;
+  bs.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var src = document.getElementById(b.getAttribute("data-copy"));
+      var st = b.parentNode.querySelector(".m32-status");
+      function say(t) { if (st) st.textContent = t; }
+      var text = src ? src.textContent : "";
+      if (!navigator.clipboard || !navigator.clipboard.writeText) { say("浏览器不支持自动复制，请手动选中代码复制"); return; }
+      try {
+        navigator.clipboard.writeText(text).then(function () { say("已复制 ✓"); }, function () { say("复制失败，请手动选中代码复制"); });
+      } catch (e) {
+        say("复制失败，请手动选中代码复制");
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

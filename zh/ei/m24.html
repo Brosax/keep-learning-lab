@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M24 Localización · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+table.tec td:first-child { font-weight: 700; white-space: nowrap; }
+table.tec td:first-child small { display: block; font: 400 11px/1.4 var(--f-mono); color: var(--muted); white-space: normal; }
+table.tec td { min-width: 7.5rem; }
+table.tec tr { transition: opacity .2s; }
+table.tec tr.hit td { background: var(--signal-soft); }
+table.tec tr.part td { background: var(--accent-soft); }
+table.tec tr.dim { opacity: .45; }
+table.tec tr.extra td:first-child { color: var(--muted); }
+.na { color: var(--muted); }
+.m24-lead { pointer-events: none; }
+.m24-c { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+.m24-est { fill: none; stroke: var(--signal); stroke-width: 2.6; }
+.m24-err { fill: none; stroke: var(--signal); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.m24-dash { stroke-dasharray: 5 4; }
+.m24-zone { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
+.m24-node { fill: var(--surface); stroke: var(--accent); stroke-width: 1.8; }
+.m24-big { fill: currentColor; font: 700 18px var(--f-mono); }
+.tri-svg { cursor: crosshair; }
+.calc { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 10px; }
+.calc label { display: flex; flex-direction: column; gap: 3px; font: 600 12px/1.3 var(--f-mono); color: var(--muted); }
+.calc input { font: 400 14px/1.4 var(--f-mono); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 5px 8px; width: 100%; min-width: 0; }
+.out { font: 400 13px/1.8 var(--f-mono); background: var(--sunk); border-radius: var(--r); padding: .6rem .8rem; overflow-wrap: anywhere; }
+.out b { color: var(--accent); }
+.out .warn { color: var(--bad); }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 2 章节" class="chain" data-chain="M24"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Arquitecturas y Tecnologías · M24</div>
+<h1>Localización</h1>
+<p class="zh">定位</p>
+<div class="meta">
+
+<span><b>4</b> 个学习目标</span>
+<span>阅读约 25 分钟</span>
+
+
+</div>
+<p class="lede">在室外，GPS、Galileo 或运营商网络基本够用；可我们大部分时间待在室内，那里卫星信号进不来，也没有一种像 GPS 那样包打天下的方案。这一章依次回答室内定位的三个选择——<b>选哪类方案、选哪种技术、选哪种架构</b>，最后再看下一代的厘米级定位。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">2.4.1</span>
+<div class="txt"><span>列举室外和室内的定位技术</span><span class="es">Enumerar tecnologías de localización de exteriores e interiores.</span><a href="#s1">→ §1 室外与室内</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.4.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.4.2</span>
+<div class="txt"><span>区分 RTLS（实时定位系统）和 soluciones de proximidad（邻近方案）</span><span class="es">Diferenciar entre RTLS (Real Time Location System) y soluciones de proximidad.</span><a href="#s2">→ §2 三类方案</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.4.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.4.3</span>
+<div class="txt"><span>比较室内定位技术：BTLE、WiFi、MEMS、UWB、IR、RFID</span><span class="es">Comparar tecnologías de localización en interiores (BTLE, WiFi, MEMS, UWB, IR, RFID).</span><a href="#s3">→ §3 技术对比（测量原理见 §4、§5）</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.4.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.4.4</span>
+<div class="txt"><span>区分两种定位架构：基于服务器、基于客户端</span><span class="es">Distinguir entre arquitecturas de localización (servidor y cliente).</span><a href="#s6">→ §6 两种架构</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.4.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M24"><span class="val">0 / 4 已掌握</span><span class="bar"><i></i></span></div>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>室外与室内：有哪些定位技术 <span class="tag">2.4.1</span></h2>
+<p><b class="t">localización (ES) / localization, positioning (EN)</b>——定位：指能<b>无线地</b>确定物体或人位置的定位系统。按场景分两类，这就是目标 2.4.1 的答案：</p>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">a) Exteriores · outdoors</span>
+<h3>卫星，或移动网络</h3>
+<ul>
+<li>vía satélite：<b>GPS</b>、<b>Galileo</b></li>
+<li>a través de <b>redes móviles</b>（运营商的蜂窝网络）</li>
+</ul>
+</div>
+<div class="cell">
+<span class="eyebrow">b) Interiores · indoors</span>
+<h3>技术很多，没有统一方案</h3>
+<p>主要有 10 类：<b>BTLE</b> · <b>Wi-Fi</b> · <b>MEMS</b> · Zigbee · <b>Infrarrojos (IR)</b> y ultrasonidos · GPS Pseudolites · Femtocells · <b>RFID</b> · <b>UWB</b> · LED</p>
+<p class="aside">加粗的 6 种是目标 2.4.3 要比较的。</p>
+</div>
+</div>
+
+<p class="aside">补充（了解即可）：墙上多出来的 HAIP，通常指 <b class="t">HAIP (High Accuracy Indoor Positioning)</b>——高精度室内定位，Nokia 提出的一种基于 Bluetooth Low Energy、用天线阵列测到达角 (AoA) 的方案，思路和 §5 的 Bluetooth 5.1 direction finding 相近。</p>
+<div class="note">
+<span class="lbl">为什么室内要另找办法</span>
+<p>我们大部分时间都在室内（据分析师估计，约 90%），但室内没有一个像 GPS 或运营商网络那样、能覆盖所有区域和所有用例的 solución global。选哪种室内方案并不容易。</p>
+</div>
+<p>同样叫“定位”，精度差别很大。可以用三个同心圆概括这件事：</p>
+<div class="stack" data-explain="gnss">
+<figure>
+<div class="fig">
+<svg aria-label="定位精度的三个层级：外圈卫星定位 5 到 20 米，中圈 Wi-Fi 和 Bluetooth 基于 RSSI 的 proximity 1 到 10 米，内圈 UWB 和 Bluetooth 5.1 的亚米级定位" role="img" viewbox="0 0 640 320">
+<g aria-label="Low accuracy，5 到 20 米" class="hot" data-key="gnss" role="button" tabindex="0">
+<circle class="s-box" cx="170" cy="160" r="145"></circle>
+<text class="s-tm" text-anchor="middle" x="170" y="38">5–20 m</text>
+<text class="s-t2" text-anchor="middle" x="170" y="55">Low accuracy</text>
+</g>
+<g aria-label="Proximity，1 到 10 米" class="hot" data-key="prox" role="button" tabindex="0">
+<circle class="s-box" cx="170" cy="160" r="95"></circle>
+<text class="s-tm" text-anchor="middle" x="170" y="88">1–10 m</text>
+<text class="s-t2" text-anchor="middle" x="170" y="105">Proximity</text>
+</g>
+<g aria-label="Positioning，小于 1 米" class="hot" data-key="micro" role="button" tabindex="0">
+<circle class="s-box" cx="170" cy="160" r="42"></circle>
+<text class="s-t" text-anchor="middle" x="170" y="158">&lt; 1 m</text>
+<text class="s-t2" text-anchor="middle" x="170" y="175">Positioning</text>
+</g>
+<line class="s-dash m24-lead" x1="263" x2="363" y1="49" y2="59"></line>
+<line class="s-dash m24-lead" x1="265" x2="363" y1="160" y2="160"></line>
+<line class="s-dash m24-lead" x1="202" x2="363" y1="187" y2="259"></line>
+<g aria-label="卫星定位 GPS" class="hot" data-key="gnss" role="button" tabindex="0">
+<rect class="s-box" height="62" rx="6" width="260" x="365" y="28"></rect>
+<text class="s-t" text-anchor="middle" x="495" y="54">Satélite (GPS)</text>
+<text class="s-t2" text-anchor="middle" x="495" y="74">exteriores · 5–20 m</text>
+</g>
+<g aria-label="Wi-Fi 和 Bluetooth，基于 RSSI" class="hot" data-key="prox" role="button" tabindex="0">
+<rect class="s-box" height="62" rx="6" width="260" x="365" y="129"></rect>
+<text class="s-t" text-anchor="middle" x="495" y="155">Wi-Fi · Bluetooth (RSSI)</text>
+<text class="s-t2" text-anchor="middle" x="495" y="175">proximidad · 1–10 m</text>
+</g>
+<g aria-label="UWB 和 Bluetooth 5.1" class="hot" data-key="micro" role="button" tabindex="0">
+<rect class="s-box" height="62" rx="6" width="260" x="365" y="228"></rect>
+<text class="s-t" text-anchor="middle" x="495" y="254">UWB · Bluetooth 5.1</text>
+<text class="s-t2" text-anchor="middle" x="495" y="274">micro-localización · &lt; 1 m</text>
+</g>
+</svg>
+</div>
+<figcaption>越往里精度越高。<span class="hint">点击圆环或右侧方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="gnss" hidden="">
+<h3>Low accuracy · 5–20 m · 卫星定位</h3>
+<p>GPS 大约能做到 5–20 米的精度，取决于信号条件。开车找一栋楼够用；要找到商店里的某个货架、博物馆里的某幅画，就不够了。</p>
+<p class="aside">到了室内更糟：卫星信号被建筑挡住，GPS 无法保证正常工作（了解即可）。</p>
+</div>
+<div class="panel" data-panel="prox" hidden="">
+<h3>Proximity · 1–10 m · Wi-Fi / Bluetooth</h3>
+<p>今天基于 <b class="t">RSSI (Received Signal Strength Indication)</b>——接收信号强度的 Bluetooth 和 Wi-Fi 系统，精度足以判断一个物体或人是否在<b>几米之内</b>，也就是 proximidad 级别。</p>
+<p>局限：接收端只知道发射端在某个<b>圆形区域</b>里，不知道信号从哪个方向来。</p>
+</div>
+<div class="panel" data-panel="micro" hidden="">
+<h3>Positioning · &lt; 1 m · micro-localización</h3>
+<p>下一代技术的目标是亚米级、直到几厘米，叫 <b class="t">micro-localización (ES) / micro-location (EN)</b>——微定位。用例：免接触门禁（hands-free access control）、资产追踪等。</p>
+<p>本章讨论三种：Bluetooth 5.1、UWB（IEEE 802.15.4z）、Wi-Fi 802.11az。§5 详细讲。</p>
+</div>
+
+</div>
+<p class="aside">记忆法：室外 = 天上的卫星 + 地面的基站；室内 = 无线电类（BTLE、Wi-Fi、Zigbee、RFID、UWB、Femtocells、Pseudolites）+ 非无线电类（MEMS 惯性传感器、红外、超声波、LED 光）。其中 GPS Pseudolites（室内的“虚拟卫星”）和 Femtocells（运营商的小基站）可以看作把室外思路搬进室内。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>三类方案：RTLS、proximidad、analítica <span class="tag">2.4.2</span></h2>
+<p>部署室内定位，第一个决定是<b>方案类型</b>，由用例决定：有的应用要实时、连续的定位（比如室内导航）；有的只要在几个关键点检测到“有人在”（安防、配送）；还有的只分析用户位置的历史记录（比如营销）。据此分成三类：</p>
+<div class="note">
+<span class="lbl">定义 · 2.4.2 · RTLS</span>
+<p><b class="t">RTLS (Real Time Location System)</b>——实时定位系统，也叫 <b class="t">IPS (Indoor Positioning System)</b>——室内定位系统：能在室内空间的<b>任意一点</b>、<b>实时</b>定位。一般需要部署传感器网络（WSN）；精度要求不高时，也有方案能免去这一步。</p>
+</div>
+<div class="note">
+<span class="lbl">定义 · 2.4.2 · Proximidad</span>
+<p><b class="t">soluciones de proximidad (ES) / proximity solutions (EN)</b>——邻近（近场）方案：传感器网络只覆盖<b>某些感兴趣的区域</b>，所以只有在某个传感器的覆盖范围内才知道位置。它实现 <b class="t">geo-fencing</b>——地理围栏逻辑：划定一个 micro-área，在其中向外部系统或用户产生事件或内容。与 IPS 不同，它<b>不需要检测 outdoor ↔ indoor 的过渡</b>。</p>
+</div>
+<p>第三类是 <b class="t">soluciones analíticas</b>——分析型方案：<b>匿名</b>采集传感器周围检测到的用户信息，和 Business Intelligence 工具结合，把位置和核心业务数据放在一起用。例如商场营销、按“曝光次数”拍卖广告位。</p>
+<p><b>切换看看：</b>同一栋楼，三类方案各知道些什么。</p>
+<div class="stack" data-seg="">
+<div aria-label="切换方案类型" class="seg" role="group">
+<button aria-pressed="true" data-view="rtls" type="button">RTLS / IPS</button>
+<button aria-pressed="false" data-view="prox" type="button">Proximidad</button>
+<button aria-pressed="false" data-view="ana" type="button">Analítica</button>
+</div>
+<div data-pane="rtls">
+<figure>
+<div class="fig">
+<svg aria-label="RTLS 示意：传感器覆盖整栋楼，终端从入口进入，轨迹被连续跟踪" role="img" viewbox="0 0 600 240">
+<path class="s-line" d="M80,210 H420 V20 H20 V210 H40"></path>
+<line class="s-line" x1="150" x2="150" y1="20" y2="110"></line>
+<line class="s-line" x1="290" x2="290" y1="20" y2="110"></line>
+<path class="s-line" d="M20,110 H60 M110,110 H190 M240,110 H330 M380,110 H420"></path>
+<text class="s-tm" x="32" y="38">A</text>
+<text class="s-tm" x="162" y="38">B</text>
+<text class="s-tm" x="302" y="38">C</text>
+<circle class="m24-node" cx="50" cy="45" r="5"></circle>
+<circle class="m24-node" cx="120" cy="85" r="5"></circle>
+<circle class="m24-node" cx="185" cy="45" r="5"></circle>
+<circle class="m24-node" cx="255" cy="85" r="5"></circle>
+<circle class="m24-node" cx="325" cy="45" r="5"></circle>
+<circle class="m24-node" cx="395" cy="85" r="5"></circle>
+<circle class="m24-node" cx="95" cy="180" r="5"></circle>
+<circle class="m24-node" cx="175" cy="185" r="5"></circle>
+<circle class="m24-node" cx="300" cy="160" r="5"></circle>
+<circle class="m24-node" cx="395" cy="185" r="5"></circle>
+<path class="s-dash" d="M60,232 V190 Q60,150 100,150 H195 Q215,150 215,130 V86"></path>
+<circle class="s-mk" cx="215" cy="80" r="6"></circle>
+<text class="s-tm" x="88" y="230">entrada · 检测 outdoor → indoor</text>
+<text class="s-t" x="440" y="44">RTLS / IPS</text>
+<text class="s-t2" x="440" y="66">WSN 覆盖整个室内</text>
+<text class="s-t2" x="440" y="86">任意位置 · 实时 · 连续</text>
+<text class="s-t2" x="440" y="106">要识别 outdoor → indoor</text>
+<circle class="m24-node" cx="446" cy="140" r="5"></circle>
+<text class="s-t2" x="458" y="144">sensor (WSN)</text>
+<circle class="s-mk" cx="446" cy="164" r="5"></circle>
+<text class="s-t2" x="458" y="168">终端当前位置</text>
+<line class="s-dash" x1="440" x2="452" y1="188" y2="188"></line>
+<text class="s-t2" x="458" y="192">连续轨迹</text>
+</svg>
+</div>
+<figcaption>RTLS / IPS：传感器铺满整栋楼，终端走到哪里都知道坐标。</figcaption>
+</figure>
+</div>
+<div data-pane="prox" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="Proximidad 示意：只有三个区域有传感器覆盖，圈内的终端被检测到，圈外的终端位置未知" role="img" viewbox="0 0 600 240">
+<path class="s-line" d="M80,210 H420 V20 H20 V210 H40"></path>
+<line class="s-line" x1="150" x2="150" y1="20" y2="110"></line>
+<line class="s-line" x1="290" x2="290" y1="20" y2="110"></line>
+<path class="s-line" d="M20,110 H60 M110,110 H190 M240,110 H330 M380,110 H420"></path>
+<text class="s-tm" x="32" y="38">A</text>
+<text class="s-tm" x="162" y="38">B</text>
+<text class="s-tm" x="302" y="38">C</text>
+<circle class="m24-zone" cx="85" cy="65" r="34"></circle>
+<circle class="m24-zone" cx="355" cy="65" r="34"></circle>
+<circle class="m24-zone" cx="230" cy="165" r="34"></circle>
+<circle class="m24-node" cx="85" cy="65" r="5"></circle>
+<circle class="m24-node" cx="355" cy="65" r="5"></circle>
+<circle class="m24-node" cx="230" cy="165" r="5"></circle>
+<circle class="s-mk" cx="246" cy="177" r="6"></circle>
+<circle class="s-box" cx="110" cy="165" r="6"></circle>
+<text class="s-ta" x="122" y="158">?</text>
+<text class="s-tm" x="88" y="230">entrada · 不必检测 outdoor → indoor</text>
+<text class="s-t" x="440" y="44">Proximidad</text>
+<text class="s-t2" x="440" y="66">只覆盖感兴趣的区域</text>
+<text class="s-t2" x="440" y="86">圈内：知道“就在附近”</text>
+<text class="s-t2" x="440" y="106">圈外：位置未知</text>
+<text class="s-t2" x="440" y="126">进圈 → 触发事件 / 内容</text>
+<circle class="m24-zone" cx="448" cy="152" r="8"></circle>
+<text class="s-t2" x="462" y="156">geo-fencing 区域</text>
+<circle class="s-mk" cx="448" cy="178" r="5"></circle>
+<text class="s-t2" x="462" y="182">终端（已检测到）</text>
+<circle class="s-box" cx="448" cy="202" r="5"></circle>
+<text class="s-t2" x="462" y="206">终端（未检测到）</text>
+</svg>
+</div>
+<figcaption>Proximidad：只在几个热点放传感器。终端进入某个 micro-área 时触发事件，离开覆盖范围就“看不见”了。</figcaption>
+</figure>
+</div>
+<div data-pane="ana" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="Analítica 示意：门口的传感器匿名统计各区域每天的人次" role="img" viewbox="0 0 600 240">
+<path class="s-line" d="M80,210 H420 V20 H20 V210 H40"></path>
+<line class="s-line" x1="150" x2="150" y1="20" y2="110"></line>
+<line class="s-line" x1="290" x2="290" y1="20" y2="110"></line>
+<path class="s-line" d="M20,110 H60 M110,110 H190 M240,110 H330 M380,110 H420"></path>
+<text class="s-tm" x="32" y="38">A</text>
+<text class="s-tm" x="162" y="38">B</text>
+<text class="s-tm" x="302" y="38">C</text>
+<text class="m24-big" text-anchor="middle" x="85" y="74">128</text>
+<text class="s-t2" text-anchor="middle" x="85" y="94">人次 / 天</text>
+<text class="m24-big" text-anchor="middle" x="220" y="74">57</text>
+<text class="s-t2" text-anchor="middle" x="220" y="94">人次 / 天</text>
+<text class="m24-big" text-anchor="middle" x="355" y="74">203</text>
+<text class="s-t2" text-anchor="middle" x="355" y="94">人次 / 天</text>
+<circle class="m24-node" cx="85" cy="110" r="5"></circle>
+<circle class="m24-node" cx="215" cy="110" r="5"></circle>
+<circle class="m24-node" cx="355" cy="110" r="5"></circle>
+<circle class="m24-node" cx="60" cy="210" r="5"></circle>
+<text class="s-tm" text-anchor="middle" x="230" y="168">匿名：只计数，不识别是谁</text>
+<text class="s-t" x="440" y="44">Analítica</text>
+<text class="s-t2" x="440" y="66">匿名采集周围的用户</text>
+<text class="s-t2" x="440" y="86">+ 核心业务数据</text>
+<text class="s-t2" x="440" y="106">→ Business Intelligence</text>
+<text class="s-t2" x="440" y="126">例：按曝光次数卖广告位</text>
+</svg>
+</div>
+<figcaption>Analítica：不关心某个人在哪里，只关心各区域有多少人经过（人次数字只作演示）。</figcaption>
+</figure>
+</div>
+</div>
+<p>最需要分清的是前两类的区别：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>对比</th><th>RTLS / IPS</th><th>Proximidad</th></tr></thead>
+<tbody>
+<tr><td>传感器覆盖</td><td>整个室内空间</td><td>只覆盖感兴趣的区域</td></tr>
+<tr><td>什么时候知道位置</td><td>任意一点，实时</td><td>只在某个传感器的覆盖范围内</td></tr>
+<tr><td>核心逻辑</td><td>持续定位</td><td>geo-fencing：在 micro-área 里产生事件 / 内容</td></tr>
+<tr><td>outdoor ↔ indoor 过渡</td><td>需要检测</td><td><b>不需要</b>检测</td></tr>
+<tr><td>例子</td><td>室内导航</td><td>安防、配送：只在关键点检测“在不在”</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>判断一下：</b>下面的用例该用哪类方案？先自己想，再<b>点击右列</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>用例</th><th>方案（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>在商场里一步步导航到某家店</td><td class="ans">RTLS / IPS：要连续、实时</td></tr>
+<tr class="reveal"><td>只在几个关键门口检测有人经过（安防）</td><td class="ans">Proximidad：只看关键点</td></tr>
+<tr class="reveal"><td>确认快递员到了某个交货点（配送）</td><td class="ans">Proximidad：只看关键点</td></tr>
+<tr class="reveal"><td>统计各区域每天的人流，给广告位定价</td><td class="ans">Analítica：匿名、看历史</td></tr>
+<tr class="reveal"><td>医院里实时追踪走失病人的位置（这个例子了解即可）</td><td class="ans">RTLS / IPS：任意位置、实时</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note warm">
+<span class="lbl">选型第一问</span>
+<p>选 RTLS 时（§7）要记住：精度要按用例来定，常见档位是 <b>&lt; 2 m</b>、<b>3–5 m</b>、<b>房间 / 区域级</b>。还要先问一句：真的需要 IPS 吗？也许 <b>proximidad 方案就够了</b>。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>室内定位技术对比 <span class="tag">2.4.3</span></h2>
+<p>方案类型定了，再选技术。结论先说：目前<b>没有</b>一种技术被证明在所有用例里都可行，每种在性能、部署成本，尤其是<b>支持它的终端</b>上各有利弊。终端这一点很关键：面向大众的应用，就该选智能手机支持的技术。</p>
+<p><b>点一个问题</b>，表格会重新排序：高亮的行是明确符合的，浅色的行是部分符合或有条件。默认只看主要的 6 种。</p>
+<div class="stack" id="tec">
+<div aria-label="按问题排序" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-q="precision" type="button">谁最准？</button>
+<button aria-pressed="false" class="chip" data-q="coste" type="button">谁最贵？</button>
+<button aria-pressed="false" class="chip" data-q="bateria" type="button">谁最费电？</button>
+<button aria-pressed="false" class="chip" data-q="ahorro" type="button">谁省电又便宜？</button>
+<button aria-pressed="false" class="chip" data-q="vista" type="button">谁要视线？</button>
+<button aria-pressed="false" class="chip" data-q="wsn" type="button">谁可以不建 WSN？</button>
+<button aria-pressed="false" class="chip" data-q="movil" type="button">手机能直接用？</button>
+<button aria-pressed="false" class="chip" data-q="proximidad" type="button">更适合 proximidad？</button>
+</div>
+<div aria-live="polite" class="panel"><p class="q-txt">点上面的一个问题，符合的技术会排到最上面。再点一次同一个问题，恢复原顺序。表中是 2014 年时的情况，另标年份的除外。</p></div>
+<div class="tbl-wrap">
+<table class="tec">
+<thead><tr><th>Tecnología</th><th>是什么</th><th>优点</th><th>缺点</th><th>适合</th></tr></thead>
+<tbody>
+<tr data-t="btle"><td>BTLE<small>Bluetooth Low Energy · Smart BT</small></td><td>基于 BT 4.0；Apple 的 iBeacons 让它火起来</td><td>低功耗、低延迟、高安全、低成本</td><td>（2014）支持它的手机型号还有限，但预计快速增长</td><td>IPS 和 proximidad；在 iOS 上单独用，或与 Wi-Fi 结合以支持 Android</td></tr>
+<tr data-t="wifi"><td>Wi-Fi</td><td>利用环境里已装的 AP (Access Points)</td><td>AP 和手机里最普及的技术</td><td>电池消耗高；一般要加装 AP 才够精度</td><td>IPS，尤其是 Analytics</td></tr>
+<tr data-t="mems"><td>MEMS<small>MicroElectroMechanical Systems</small></td><td>加速度计、磁罗盘（brújula）、陀螺仪、气压计</td><td>单独使用时，原则上不需要专门的 WSN</td><td><span class="na">—</span>（补充：误差会随时间累积，即 drift）</td><td>单独定位（IndoorAtlas、Navisens、Movea），或与 BTLE / Wi-Fi 融合，提高并稳定精度（Pole Star）</td></tr>
+<tr data-t="uwb"><td>UWB<small>Ultra Wide Band</small></td><td>超宽带，信号频率高</td><td>非常准：30 cm</td><td>（2014）成本很高；高频信号衰减严重，所以功耗高</td><td><span class="na">—</span>；到 2021 年，它被列为 micro-localización 技术，约 10 cm（§5）</td></tr>
+<tr data-t="ir"><td>IR<small>Infrarrojos</small></td><td>红外</td><td>精度不错</td><td>需要视线（línea de vista）；范围只有几米</td><td>存在和运动检测；一般看作辅助技术</td></tr>
+<tr data-t="rfid"><td>RFID<small>Radio Frequency Identification</small></td><td>射频识别</td><td>非常普及、久经验证</td><td>被认为不太适合 RTLS</td><td>库存、配送、运输；主要用于 proximidad 或 presencia</td></tr>
+<tr class="extra" data-t="zigbee" hidden=""><td>Zigbee</td><td>原本为自动化和 domótica 设计</td><td>低功耗、低延迟；mesh 拓扑让部署很灵活</td><td>数据率很低（250 kbps）；厂商之间不兼容；手机里没有，要用 tags、手环</td><td>RTLS（被认为有“独特的特点”）</td></tr>
+<tr class="extra" data-t="ultrasonidos" hidden=""><td>Ultrasonidos</td><td>超声波</td><td>厘米级精度</td><td>要部署大量传感器，成本很高；数据传输还得靠另一种技术</td><td>一般看作辅助技术</td></tr>
+<tr class="extra" data-t="pseudolites" hidden=""><td>GPS Pseudolites</td><td>在室内布一个“虚拟卫星星座”</td><td>厘米级精度</td><td>成本高；需要专用设备（这些“卫星”不是标准的）</td><td>主要是工业应用</td></tr>
+<tr class="extra" data-t="femtocells" hidden=""><td>Femtocells</td><td>运营商（MNO）的小基站</td><td>可以在室内定位手机</td><td>可能干扰运营商自己的蜂窝网，部署前要详细分析</td><td>运营商视角的方案</td></tr>
+<tr class="extra" data-t="led" hidden=""><td>LED<small>Light Emitting Diode</small></td><td>用手机摄像头读取 LED 调制的光脉冲</td><td>新兴技术，Bytelight、Philips 在推</td><td><span class="na">—</span></td><td>室内定位的传感器网络</td></tr>
+</tbody>
+</table>
+</div>
+<div class="stepper-ctl">
+<button aria-pressed="false" class="btn" data-act="extra" type="button">显示其他 5 种室内技术</button>
+<button class="btn" data-act="reset" type="button">恢复原顺序</button>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">注意年代</span>
+<ul>
+<li><b>UWB</b>：2014 年时精度 30 cm，但成本很高、功耗高；到 2021 年，精度约 10 cm，已有多家手机厂商采用。</li>
+<li><b>Bluetooth</b>：2014 年时 BTLE 的短板是支持它的手机还不多；到 2021 年，所有主要芯片厂商都已支持 Bluetooth 5.1。</li>
+</ul>
+<p>有些资料指定的两篇文章，一篇写于 2014 年，一篇写于 2021 年，UWB 和 Bluetooth 的说法因此不同；遇到这类题，先看题目说的是哪个年代的情况。</p>
+<p>也有一篇属于拓展的资料说 UWB 信号功耗低、芯片已降到约 20 美元；UWB 成本很高、功耗高。</p>
+</div>
+<p><b>配对：</b>先点左边的技术，再点右边对应的特点。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="btle" type="button">BTLE</button>
+<button data-l="wifi" type="button">Wi-Fi</button>
+<button data-l="mems" type="button">MEMS</button>
+<button data-l="uwb" type="button">UWB</button>
+<button data-l="ir" type="button">IR</button>
+<button data-l="rfid" type="button">RFID</button>
+</div>
+<div class="col">
+<button data-r="uwb" type="button">30 cm，但很贵</button>
+<button data-r="rfid" type="button">库存物流，偏 proximidad</button>
+<button data-r="btle" type="button">BT 4.0 · 省电 · iBeacons</button>
+<button data-r="ir" type="button">要视线，只有几米</button>
+<button data-r="wifi" type="button">复用已装 AP，但费电池</button>
+<button data-r="mems" type="button">惯性传感器，可不建 WSN</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>位置是怎么算出来的 <span class="tag">2.4.3</span></h2>
+<p>定位分两层：先<b>测量</b>（Algoritmos de localización），再用测量值<b>算位置</b>（Técnicas de localización）。三种基本测量：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">测时间</span><h3>TOA / TDOA</h3><p><b class="t">Time (Difference) of Arrival</b>——到达时间（差）：用发射和接收的时间差，算出传感器与终端之间的距离。</p></div>
+<div class="cell"><span class="eyebrow">测角度</span><h3>AOA</h3><p><b class="t">Angle of Arrival</b>——到达角：信号到达的角度，可以从传感器看，也可以从终端看。<b>需要视线</b>。</p></div>
+<div class="cell"><span class="eyebrow">测功率</span><h3>RSSI</h3><p>用接收到的信号功率估计距离。<b>最简单、最经济</b>的选项。</p></div>
+</div>
+<p>有了测量，用哪种技术算位置？先看中间一列自己猜，再<b>点击右列</b>揭晓它依赖什么：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Técnica</th><th>怎么做</th><th>依赖什么（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>SignPost</td><td>把离终端最近的传感器的位置当作终端的位置</td><td class="ans">简单的 RSSI</td></tr>
+<tr class="reveal"><td>Triangulación</td><td>用信号的方向（角度）求位置</td><td class="ans">AOA；要用一个以上的传感器，或天线阵列</td></tr>
+<tr class="reveal"><td>Trilateración</td><td>用到各传感器的距离求位置</td><td class="ans">距离估计，不需要天线阵列；通常用 RSSI（用 ToA 的话，网络要同步）</td></tr>
+<tr class="reveal"><td>Multilateración</td><td>用到达时间差求位置；比三边测量准，但计算更复杂</td><td class="ans">TDOA；网络要同步</td></tr>
+<tr class="reveal"><td>Fingerprint</td><td>事先把环境的“信号指纹”存进数据库，定位时拿实时测量去比</td><td class="ans">先在部署了 WSN 的环境里校准，生成 fingerprint 数据库</td></tr>
+<tr class="reveal"><td>Probabilidad</td><td>自适应方案：启发式算法，参考位置的历史记录</td><td class="ans">不需要校准</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">Fingerprint 的两个阶段（了解即可）：离线阶段做 site survey，生成 radio map；在线阶段把测得的值和 radio map 匹配。缺点是建库费时费力，环境一变还要更新。§6 的 client based 架构用的就是这种数据库。</p>
+<p><b>动手试试 trilateración：</b>三个位置已知的传感器（anchors）各测出一个到终端的距离，每个距离画一个圆，三个圆的交点就是位置。测距有误差时，三个圆不会交于一点，就用最小二乘求一个最接近的点（最小二乘这部分了解即可；按上面的表，trilateración 通常基于 RSSI 测距）。</p>
+<div class="stack" id="tri">
+<figure>
+<div class="fig">
+<svg aria-label="三边测量模拟：16 米乘 11.2 米的房间，三个锚点，点击放置终端" class="tri-svg" role="img" viewbox="0 0 440 320">
+<rect class="s-soft" height="280" rx="4" width="400" x="20" y="20"></rect>
+<circle class="m24-c" cx="40" cy="40" data-c="0" r="10"></circle>
+<circle class="m24-c" cx="400" cy="40" data-c="1" r="10"></circle>
+<circle class="m24-c" cx="220" cy="280" data-c="2" r="10"></circle>
+<line class="m24-err" data-p="err" x1="0" x2="0" y1="0" y2="0"></line>
+<rect class="s-box" height="10" width="10" x="35" y="35"></rect>
+<text class="s-tm" x="52" y="36">A1</text>
+<rect class="s-box" height="10" width="10" x="395" y="35"></rect>
+<text class="s-tm" text-anchor="end" x="388" y="36">A2</text>
+<rect class="s-box" height="10" width="10" x="215" y="275"></rect>
+<text class="s-tm" x="232" y="294">A3</text>
+<circle class="s-mk" cx="170" cy="145" data-p="true" r="5"></circle>
+<g data-p="est" transform="translate(170 145)">
+<line class="m24-est" x1="-7" x2="7" y1="-7" y2="7"></line>
+<line class="m24-est" x1="-7" x2="7" y1="7" y2="-7"></line>
+</g>
+</svg>
+</div>
+<figcaption>房间 16 m × 11.2 m，anchors：A1 (0.8, 0.8)、A2 (15.2, 0.8)、A3 (8.0, 10.4)。黑点是终端的真实位置，叉是算出来的位置，圆是测得的距离。<span class="hint">点击平面图移动终端</span></figcaption>
+</figure>
+<div aria-label="测距误差" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-sigma="2" type="button">RSSI（Bluetooth / Wi-Fi） <small>±2 m</small></button>
+<button aria-pressed="false" class="chip" data-sigma="0.1" type="button">ToF（UWB） <small>±0.1 m</small></button>
+<button aria-pressed="false" class="chip" data-sigma="0" type="button">理想测距 <small>±0</small></button>
+</div>
+<div class="stepper-ctl">
+<button class="btn primary" data-act="measure" type="button">重新测量</button>
+<button class="btn" data-act="random" type="button">随机放置终端</button>
+</div>
+<div aria-live="polite" class="out"></div>
+<p class="aside">误差档位是示意值：RSSI 受 multipath 影响大，取 ±2 m；UWB 取 ±0.1 m，对应 §5 的约 10 cm。解法是线性化最小二乘（LLS）：三个圆方程两两相减，消去 x² 和 y²，得到两条直线再联立。</p>
+</div>
+<div class="note">
+<span class="lbl">根本问题：multipath</span>
+<p>所有这些技术都在用手头的数据尽量提高精度，也都要对付同一个根本问题：<b class="t">efecto multipath (ES) / multipath effect (EN)</b>——多径效应，即信号在物体上发生反射、折射、衍射和散射。§5 的新技术都在这一点上下了功夫。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>下一代：micro-localización <span class="tag">2.4.3</span></h2>
+<p>下面比较三种把精度推到亚米级的技术。共同点：不再只靠 RSSI，而是测<b>角度</b>或<b>时间</b>。</p>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">Bluetooth 5.1 · 2019</span>
+<h3>测角度：AoA / AoD</h3>
+<p>以前的 Bluetooth 靠 RSSI，只知道“在某个圆里”。5.1 加入 direction finding，用 AoA（到达角）或 AoD（离开角）：数据包后附一段 <b class="t">CTE (constant tone extension)</b>——恒定音调扩展；接收端用至少 2 根天线的阵列，根据相位差、波长和天线间距算出入射角。再配合 RSSI，并部署多个 locator 做 trilateración。</p>
+<p><b>亚米级，直到几十厘米。</b></p>
+</div>
+<div class="cell">
+<span class="eyebrow">UWB · IEEE 802.15.4z</span>
+<h3>测时间：ToF</h3>
+<p>不用信号强度，而用 <b class="t">ToF (Time of Flight)</b>——飞行时间：射频信号以光速传播，与环境无关，所以比 RSSI 稳健。它发的是纳秒量级的脉冲串，不是调制的正弦波，更不怕 multipath。还可以加天线阵列测角度。</p>
+<p><b>约 10 cm，三者中最准（厘米级）。</b></p>
+</div>
+<div class="cell">
+<span class="eyebrow">Wi-Fi 802.11az · NGP</span>
+<h3>测往返时间：FTM / RTT</h3>
+<p>Next Generation Positioning 建立在 FTM (Fine Timing Measurement)——精细时间测量上：用 ToD（离开时间）和 ToA（到达时间）时间戳算 RTT（往返时间）。借 Wi-Fi 6 / 7 更宽的信道（160 / 320 MHz）提高分辨率，用 MIMO 抗 multipath。</p>
+<p><b>测试数据：视距和非视距下都能到分米级。</b></p>
+</div>
+</div>
+
+<p class="aside">除了精度，还要看安全、功耗、成本、已有基础设施、覆盖距离和互操作性；环境、系统设计、天线路径延迟等都会让实际精度低于标称值。UWB 有一个产业联盟 FiRa Consortium（了解即可）。</p>
+<p><b>计算器：</b>UWB 的 ToF 怎么测？tag 和 anchor 各记两个时间戳，见下图。改动时间戳，看距离怎么变。</p>
+<div class="stack" id="tof">
+<figure>
+<div class="fig">
+<svg aria-label="UWB 双向测距时序图：tag 在 T0 发出，anchor 在 T1 收到、T2 回复，tag 在 T3 收到" role="img" viewbox="0 0 580 220">
+<defs>
+<marker id="m24b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="36" rx="6" width="120" x="90" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="150" y="33">TAG</text>
+<rect class="s-box" height="36" rx="6" width="120" x="270" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="330" y="33">Anchor</text>
+<line class="s-life" x1="150" x2="150" y1="46" y2="212"></line>
+<line class="s-life" x1="330" x2="330" y1="46" y2="212"></line>
+<line class="s-line" marker-end="url(#m24b)" x1="152" x2="326" y1="76" y2="106"></line>
+<line class="s-line" marker-end="url(#m24b)" x1="328" x2="154" y1="150" y2="180"></line>
+<text class="s-tm" text-anchor="end" x="140" y="80">T0</text>
+<text class="s-tm" x="340" y="110">T1</text>
+<text class="s-tm" x="340" y="154">T2</text>
+<text class="s-tm" text-anchor="end" x="140" y="184">T3</text>
+<text class="s-t2" x="340" y="132">Reply</text>
+<text class="s-t2" text-anchor="end" x="140" y="132">RTT</text>
+<text class="s-ta" x="410" y="78">Reply = T2 − T1</text>
+<text class="s-ta" x="410" y="102">RTT = T3 − T0</text>
+<text class="s-ta" x="410" y="134">ToF = (RTT − Reply) / 2</text>
+<text class="s-ta" x="410" y="158">d = ToF × c</text>
+</svg>
+</div>
+<figcaption>UWB 的双向测距。往返时间减去 anchor 的处理时间，剩下的一半就是单程飞行时间。</figcaption>
+</figure>
+
+<div class="calc">
+<label>T0 · tag 发出 (ns)<input data-v="t0" step="any" type="number" value="0"/></label>
+<label>T1 · anchor 收到 (ns)<input data-v="t1" step="any" type="number" value="5000"/></label>
+<label>T2 · anchor 回复 (ns)<input data-v="t2" step="any" type="number" value="5500"/></label>
+<label>T3 · tag 收到 (ns)<input data-v="t3" step="any" type="number" value="540"/></label>
+</div>
+<div aria-live="polite" class="out"></div>
+<p class="aside">默认数值只作演示：ToF = 20 ns，约 6 m。T1、T2 由 anchor 用自己的时钟记，T0、T3 由 tag 用自己的时钟记，公式只用各自时钟内部的差值，所以两边时钟不必同步。</p>
+</div>
+<p>Wi-Fi 802.11az 的 FTM 结构相同：手机发出 M1，AP 回 M2，四个时间戳 t1 = ToD(M1)、t2 = ToA(M1)、t3 = ToD(M2)、t4 = ToA(M2)，于是 ToF = [(t4 − t1) − (t3 − t2)] / 2，距离 = 光速 × ToF。</p>
+
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>两种架构：server based 与 client based <span class="tag">2.4.4</span></h2>
+<p>不管用已有基础设施，还是加装传感器（自有的或第三方的），常见架构都可以归为两类。区别在于：<b>谁发信号、谁接收、谁算位置</b>。</p>
+<div class="note">
+<span class="lbl">定义 · 2.4.4</span>
+<ul>
+<li><b class="t">Server based / Network based</b>——基于服务器（网络端）的架构：<b>终端</b>周期性地发信号，<b>传感器</b>接收并转给<b>服务器</b>，由服务器算位置。终端上不用装任何东西。</li>
+<li><b class="t">Client based / Mobile based</b>——基于客户端（终端）的架构：<b>传感器</b>发信号，<b>终端</b>接收，借助辅助数据库<b>自己</b>算位置。位置只有终端知道。</li>
+</ul>
+</div>
+<p><b>逐步看数据怎么流：</b>注意两条泳道的箭头方向相反。</p>
+<div class="stepper" id="arq">
+<figure>
+<div class="fig">
+<svg aria-label="两种定位架构的数据流对比：上面 server based，终端发信号经传感器到服务器计算；下面 client based，传感器发信号到终端，终端自己计算" role="img" viewbox="0 0 640 375">
+<defs>
+<marker id="m24a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" x="20" y="26">a) SERVER / NETWORK BASED</text>
+<rect class="s-box" height="56" rx="6" width="120" x="30" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="90" y="84">Móvil</text>
+<text class="s-t2" text-anchor="middle" x="90" y="102">no instala nada</text>
+<rect class="s-box" height="56" rx="6" width="120" x="250" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="310" y="84">Sensores</text>
+<text class="s-t2" text-anchor="middle" x="310" y="102">reciben</text>
+<rect class="s-box" height="72" rx="6" width="140" x="470" y="52"></rect>
+<text class="s-t" text-anchor="middle" x="540" y="74">Servidor</text>
+<text class="s-t2" text-anchor="middle" x="540" y="92">BD de sensores</text>
+<rect class="s-box" height="30" rx="6" width="140" x="470" y="146"></rect>
+<text class="s-t2" text-anchor="middle" x="540" y="165">Apps · LBS</text>
+<g class="msg" data-lane="srv" data-step="1"><line class="s-line" marker-end="url(#m24a)" x1="150" x2="248" y1="88" y2="88"></line><text class="s-ta" text-anchor="middle" x="199" y="79">① señal + MAC</text></g>
+<g class="msg" data-lane="srv" data-step="2"><line class="s-line" marker-end="url(#m24a)" x1="370" x2="468" y1="88" y2="88"></line><text class="s-ta" text-anchor="middle" x="419" y="79">② MAC + RSSI</text></g>
+<g class="msg" data-lane="srv" data-step="3"><text class="s-ta" text-anchor="middle" x="540" y="112">③ calcula posición</text></g>
+<g class="msg" data-lane="srv" data-step="4"><line class="s-line" marker-end="url(#m24a)" x1="540" x2="540" y1="124" y2="144"></line><text class="s-ta" x="550" y="139">④ API</text></g>
+<line class="s-life" x1="20" x2="620" y1="195" y2="195"></line>
+<text class="s-tm" x="20" y="214">b) CLIENT / MOBILE BASED</text>
+<rect class="s-box" height="56" rx="6" width="120" x="30" y="245"></rect>
+<text class="s-t" text-anchor="middle" x="90" y="267">Móvil</text>
+<rect class="s-box" height="56" rx="6" width="120" x="250" y="245"></rect>
+<text class="s-t" text-anchor="middle" x="310" y="267">Sensores</text>
+<text class="s-t2" text-anchor="middle" x="310" y="287">emiten</text>
+<rect class="s-box" height="56" rx="6" width="140" x="470" y="245"></rect>
+<text class="s-t" text-anchor="middle" x="540" y="267">Servidor</text>
+<text class="s-t2" text-anchor="middle" x="540" y="287">opcional</text>
+<rect class="s-box" height="32" rx="6" width="120" x="30" y="330"></rect>
+<text class="s-t2" text-anchor="middle" x="90" y="350">BD fingerprint</text>
+<g class="msg" data-lane="cli" data-step="5"><line class="s-line" marker-end="url(#m24a)" x1="248" x2="152" y1="273" y2="273"></line><text class="s-ta" text-anchor="middle" x="200" y="264">① señal radio</text></g>
+<g class="msg" data-lane="cli" data-step="6"><line class="s-line" marker-end="url(#m24a)" x1="90" x2="90" y1="330" y2="303"></line><text class="s-ta" x="100" y="321">② BD de asistencia</text></g>
+<g class="msg" data-lane="cli" data-step="7"><text class="s-ta" text-anchor="middle" x="90" y="288">③ calcula aquí</text></g>
+<g class="msg" data-lane="cli" data-step="8"><path class="s-line m24-dash" d="M90,245 V236 H540 V243" marker-end="url(#m24a)"></path><text class="s-ta" text-anchor="middle" x="315" y="228">④ envía su posición (solo si hace falta)</text></g>
+</svg>
+</div>
+<figcaption>两种架构的对比：上面信号流向服务器，下面信号流向终端。</figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="cli" type="button">跳到 Client based</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+<p class="aside">记忆法：<b>谁算位置，就叫什么 based</b>。服务器算 → server based；终端（客户端）算 → client based。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>对比</th><th>Server / Network based</th><th>Client / Mobile based</th></tr></thead>
+<tbody>
+<tr><td>谁发无线信号</td><td>终端，周期性发送，带唯一标识（MAC address）</td><td>传感器</td></tr>
+<tr><td>谁接收</td><td>一个或多个传感器</td><td>终端</td></tr>
+<tr><td>谁算位置</td><td>服务器：收到的数据 + 传感器数据库（含各传感器的位置）</td><td>终端：收到的信号 + 辅助数据库（一般是 fingerprint 数据库）</td></tr>
+<tr><td>终端上要装什么</td><td>什么都不用装</td><td>定位模块</td></tr>
+<tr><td>给开发者的接口</td><td>服务器提供 API，查询指定终端的位置</td><td>供应商提供 SDK，把 LBS 服务和终端上的定位模块集成起来</td></tr>
+<tr><td>通信</td><td>传感器到服务器走 Wi-Fi 或运营商蜂窝网</td><td>终端直接接收传感器发出的信号</td></tr>
+<tr><td>隐私</td><td><span class="na">—</span></td><td>位置只有终端知道，被认为满足隐私要求；某些用例仍要把位置发给服务器</td></tr>
+<tr><td>典型做法</td><td>Wi-Fi、BTLE、Zigbee；主要用于分析型方案，也用于 IPS 和 presencia</td><td>用终端自带的 MEMS 传感器，加上多种无线信号（Wi-Fi、BTLE……），组成混合技术</td></tr>
+</tbody>
+</table>
+</div>
+<p>概括起来：公共场所的系统，倾向于把智能手机发出的标准信号当作 beacon，由 WSN 接收、在中央服务器处理；出于隐私，基于终端的定位结果只留给机主，特定情况下再请他同意共享。私人或工业系统则常给员工和访客配 tags 或手环。</p>
+<p><b>归类：</b>下面每句话说的是哪种架构？先想，再点开看答案。</p>
+<div class="stack" data-explain="">
+<div aria-label="判断属于哪种架构" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="k1" type="button">终端上什么都不用装</button>
+<button aria-pressed="false" class="chip" data-key="k2" type="button">供应商提供 SDK</button>
+<button aria-pressed="false" class="chip" data-key="k3" type="button">服务器提供 API</button>
+<button aria-pressed="false" class="chip" data-key="k4" type="button">用到终端的 MEMS</button>
+<button aria-pressed="false" class="chip" data-key="k5" type="button">位置只有终端知道</button>
+<button aria-pressed="false" class="chip" data-key="k6" type="button">传感器上报 MAC 和 RSSI</button>
+</div>
+<div class="panel" data-panel="k1" hidden="">
+<span class="verdict star">Server / Network based</span>
+<p>终端只是照常发出无线信号，计算全在服务器上，所以不需要在终端上安装任何东西。</p>
+</div>
+<div class="panel" data-panel="k2" hidden="">
+<span class="verdict ok">Client / Mobile based</span>
+<p>定位模块驻留在终端上，供应商提供 SDK，把 LBS 服务和这个模块集成起来。</p>
+</div>
+<div class="panel" data-panel="k3" hidden="">
+<span class="verdict star">Server / Network based</span>
+<p>位置在服务器上，app 通过服务器提供的 API 查询指定终端的位置。</p>
+</div>
+<div class="panel" data-panel="k4" hidden="">
+<span class="verdict ok">Client / Mobile based</span>
+<p>供应商利用终端自带的 MEMS 传感器，和 Wi-Fi、BTLE 等多种无线信号组成混合技术。</p>
+</div>
+<div class="panel" data-panel="k5" hidden="">
+<span class="verdict ok">Client / Mobile based</span>
+<p>位置只由用户自己的终端算出、只有它知道，所以被认为满足隐私要求。不过某些用例仍需把位置发给服务器。</p>
+</div>
+<div class="panel" data-panel="k6" hidden="">
+<span class="verdict star">Server / Network based</span>
+<p>传感器收到终端的信号（MAC address），再把它连同 Id_sensor、RSSI 等参数发给服务器。</p>
+</div>
+</div>
+<p class="aside">别混淆：还有另一种分法（了解即可）：device-based（目标带着无线设备，例如手机）和 device-free（目标什么都不带，靠环境里的无线设施分析它对信号的影响）。那是“目标带不带设备”的区别，不是本节“谁算位置”的区别。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>选 RTLS 时要考虑什么 <span class="tag plain">了解即可</span></h2>
+<p>选 RTLS 时要考虑下面这些因素。它们往往反过来决定了前面三个选择（方案、技术、架构）。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Precisión</span><h3>精度</h3><p>最基本的因素，按用例定：&lt; 2 m、3–5 m、房间 / 区域级。先问：proximidad 够不够？</p></div>
+<div class="cell"><span class="eyebrow">Dispositivos</span><h3>终端</h3><p>尽量选多数终端都支持的技术，即智能手机支持的。某些用例可以用 tags 或手环：不需要屏幕和键盘，通常带可编程按钮。</p></div>
+<div class="cell"><span class="eyebrow">Integración</span><h3>集成</h3><p>与外部系统、移动应用的集成：评估现有的 API / SDK、架构，以及 pull / push 管理机制。</p></div>
+<div class="cell"><span class="eyebrow">Instalación</span><h3>安装</h3><p>部署 WSN 时：传感器选址，物理安装（供电、布线、与服务器通信），需要的话还要校准，并事先测试。</p></div>
+<div class="cell"><span class="eyebrow">Costes</span><h3>成本</h3><p>硬件（传感器、布线……）加软件。软件包括许可（按月、按年或永久；按站点、传感器数量或覆盖面积计）、维护和培训。</p></div>
+<div class="cell"><span class="eyebrow">Indoor maps</span><h3>室内地图</h3><p>初始阶段（校准、fingerprint、传感器在平面图上的位置）和运行阶段（在平面图上显示用户）都要用。所以先收集质量足够的室内平面图。</p></div>
+</div>
+<p class="aside">结论：部署之前要针对用例做详细研究，依次定下方案类型、最合适的技术和架构，这样方案才不会受限，商业模式才能落地。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M24">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>下面哪一项属于<b>室外</b>定位技术？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>BTLE beacons</button>
+<button data-o="b" type="button"><span class="k">B</span>RFID</button>
+<button data-o="c" type="button"><span class="k">C</span>Galileo</button>
+<button data-o="d" type="button"><span class="k">D</span>UWB</button>
+</div>
+<p class="why"><b>C。</b>室外靠卫星（GPS、Galileo）或移动网络。其余三种都在室内技术的列表里（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">02</span>“传感器网络只覆盖若干感兴趣的区域，只有在传感器覆盖范围内才知道位置。”这说的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>soluciones de proximidad</button>
+<button data-o="b" type="button"><span class="k">B</span>RTLS / IPS</button>
+<button data-o="c" type="button"><span class="k">C</span>soluciones analíticas</button>
+<button data-o="d" type="button"><span class="k">D</span>GPS Pseudolites</button>
+</div>
+<p class="why"><b>A。</b>这是 proximidad 方案的定义。RTLS / IPS 能在室内任意一点实时定位（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>关于 RTLS / IPS 和 proximidad，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>proximidad 方案必须检测 outdoor 与 indoor 之间的过渡</button>
+<button data-o="b" type="button"><span class="k">B</span>RTLS 只在 geo-fencing 区域内知道位置</button>
+<button data-o="c" type="button"><span class="k">C</span>两者都完全不需要传感器网络</button>
+<button data-o="d" type="button"><span class="k">D</span>RTLS 能在室内任意一点实时定位，一般需要部署 WSN</button>
+</div>
+<p class="why"><b>D。</b>与 IPS 不同，proximidad 不需要检测 outdoor / indoor 过渡；geo-fencing 是 proximidad 的逻辑（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>哪种技术精度不错，但需要视线、范围只有几米，更适合检测存在和运动？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RFID</button>
+<button data-o="b" type="button"><span class="k">B</span>IR</button>
+<button data-o="c" type="button"><span class="k">C</span>UWB</button>
+<button data-o="d" type="button"><span class="k">D</span>Wi-Fi</button>
+</div>
+<p class="why"><b>B。</b>Infrarrojos 需要 línea de vista，范围只有几米；它和超声波一般被看作辅助技术（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>按 §3 表中 2014 年时的情况，哪种技术非常准（约 30 cm），但成本很高，信号衰减严重、功耗高？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UWB</button>
+<button data-o="b" type="button"><span class="k">B</span>BTLE</button>
+<button data-o="c" type="button"><span class="k">C</span>MEMS</button>
+<button data-o="d" type="button"><span class="k">D</span>Zigbee</button>
+</div>
+<p class="why"><b>A。</b>UWB。注意到 2021 年，它的精度是约 10 cm（§3、§5）。BTLE 和 Zigbee 的卖点恰恰是低功耗。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>哪种技术单独使用时，原则上不需要专门部署 WSN 基础设施？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RFID</button>
+<button data-o="b" type="button"><span class="k">B</span>UWB</button>
+<button data-o="c" type="button"><span class="k">C</span>MEMS</button>
+<button data-o="d" type="button"><span class="k">D</span>IR</button>
+</div>
+<p class="why"><b>C。</b>用加速度计、磁罗盘、陀螺仪、气压计定位，IndoorAtlas、Navisens、Movea 就这样做（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>Wi-Fi 室内定位的主要弱点之一是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>智能手机都不支持</button>
+<button data-o="b" type="button"><span class="k">B</span>需要视线</button>
+<button data-o="c" type="button"><span class="k">C</span>只能用于库存管理</button>
+<button data-o="d" type="button"><span class="k">D</span>电池消耗高</button>
+</div>
+<p class="why"><b>D。</b>Wi-Fi 在 AP 和手机里最普及，但 alto consumo de la batería 是弱点；而且一般要加装 AP 才够精度（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>UWB 用什么估计距离，因而比 Bluetooth 的 RSSI 法更不受环境影响？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>接收信号强度 RSSI</button>
+<button data-o="b" type="button"><span class="k">B</span>飞行时间 ToF</button>
+<button data-o="c" type="button"><span class="k">C</span>手机摄像头读取的光脉冲</button>
+<button data-o="d" type="button"><span class="k">D</span>fingerprint 数据库</button>
+</div>
+<p class="why"><b>B。</b>射频信号以光速传播、与环境无关，所以基于 ToF 的距离估计比 RSSI 更稳健（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>“终端周期性发出带 MAC 地址的信号，传感器收到后连同 Id_sensor、RSSI 发给服务器。”这是哪种架构？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Server / Network based</button>
+<button data-o="b" type="button"><span class="k">B</span>Client / Mobile based</button>
+<button data-o="c" type="button"><span class="k">C</span>Proximidad</button>
+<button data-o="d" type="button"><span class="k">D</span>Fingerprint</button>
+</div>
+<p class="why"><b>A。</b>位置在服务器上算，终端上不用装任何东西。Proximidad 是方案类型，fingerprint 是定位技术，都不是架构（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>关于 Client / Mobile based 架构，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>终端上不用安装任何东西</button>
+<button data-o="b" type="button"><span class="k">B</span>服务器计算位置，再通过 API 提供</button>
+<button data-o="c" type="button"><span class="k">C</span>终端借助辅助数据库（一般是 fingerprint）自己算位置，被认为满足隐私要求</button>
+<button data-o="d" type="button"><span class="k">D</span>只能用 Zigbee 实现</button>
+</div>
+<p class="why"><b>C。</b>供应商提供 SDK，位置只有终端知道。A、B 是 server based 的特点（§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>RFID 主要用在哪里？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>高精度的室内导航 RTLS</button>
+<button data-o="b" type="button"><span class="k">B</span>库存、配送和运输，主要是 proximidad 或 presencia</button>
+<button data-o="c" type="button"><span class="k">C</span>运营商定位室内的手机</button>
+<button data-o="d" type="button"><span class="k">D</span>用 LED 光脉冲定位</button>
+</div>
+<p class="why"><b>B。</b>RFID 非常普及、成熟，但被认为不太适合 RTLS。C 是 femtocells，D 是 LED（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">12</span>按 §4 的表，trilateración 的特点是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>基于 AOA，需要天线阵列</button>
+<button data-o="b" type="button"><span class="k">B</span>要先校准环境，生成 fingerprint 数据库</button>
+<button data-o="c" type="button"><span class="k">C</span>直接取最近的传感器的位置</button>
+<button data-o="d" type="button"><span class="k">D</span>估计到各传感器的距离，不需要天线阵列，通常用 RSSI</button>
+</div>
+<p class="why"><b>D。</b>A 是 triangulación，B 是 fingerprint，C 是 SignPost（§4）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">20 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">localización<small>posicionamiento · positioning</small></span><span class="back"><b>定位</b><br/>无线地确定物体或人的位置，分室外和室内。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RTLS<small>Real Time Location System</small></span><span class="back"><b>实时定位系统</b><br/>室内任意一点、实时定位，一般要部署 WSN。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IPS<small>Indoor Positioning System</small></span><span class="back"><b>室内定位系统</b><br/>和 RTLS 是同一类方案（另一个名字）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">solución de proximidad</span><span class="back"><b>邻近（近场）方案</b><br/>只覆盖热点区域，圈内才知道位置。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">geo-fencing</span><span class="back"><b>地理围栏</b><br/>划定 micro-área，在其中产生事件或内容。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">solución analítica</span><span class="back"><b>分析型方案</b><br/>匿名采集，结合 BI，例如商场营销。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BTLE<small>Bluetooth Low Energy · Smart BT</small></span><span class="back"><b>低功耗蓝牙</b><br/>基于 BT 4.0，省电便宜，iBeacons 带火。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MEMS<small>MicroElectroMechanical Systems</small></span><span class="back"><b>微机电系统</b><br/>加速度计、陀螺仪、磁罗盘、气压计；可不建 WSN。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UWB<small>Ultra Wide Band</small></span><span class="back"><b>超宽带</b><br/>最准（30 cm / 约 10 cm）；2014 年时贵且耗电。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RFID<small>Radio Frequency Identification</small></span><span class="back"><b>射频识别</b><br/>库存物流为主，适合 proximidad，不太适合 RTLS。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RSSI<small>Received Signal Strength Indication</small></span><span class="back"><b>接收信号强度</b><br/>用接收功率估距离，最简单、最经济。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ToF / ToA<small>Time of Flight / Time of Arrival</small></span><span class="back"><b>飞行时间 / 到达时间</b><br/>用传播时间算距离；UWB 用 ToF。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TDOA<small>Time Difference of Arrival</small></span><span class="back"><b>到达时间差</b><br/>multilateración 用它，网络要同步。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AOA<small>Angle of Arrival</small></span><span class="back"><b>到达角</b><br/>测信号来向，需要视线；BT 5.1 用天线阵列测。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">trilateración</span><span class="back"><b>三边测量</b><br/>用到 3 个已知点的距离求位置，不需天线阵列。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fingerprint</span><span class="back"><b>指纹定位</b><br/>先校准环境建库，再把实时测量与库比对。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">efecto multipath<small>multipath effect</small></span><span class="back"><b>多径效应</b><br/>反射、折射、衍射、散射，室内定位的根本问题。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">server / network based</span><span class="back"><b>基于服务器的架构</b><br/>终端发、传感器收、服务器算。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">client / mobile based</span><span class="back"><b>基于客户端的架构</b><br/>传感器发、终端收、终端自己算。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">micro-localización<small>micro-location</small></span><span class="back"><b>微定位</b><br/>亚米级到厘米级：BT 5.1、UWB、Wi-Fi 802.11az。</span><span class="flipcue"></span></button>
+</div>
+
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M24"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var root = document.getElementById("tec");
+  if (!root) return;
+  var tbody = root.querySelector("tbody");
+  var rows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+  var chips = Array.prototype.slice.call(root.querySelectorAll("[data-q]"));
+  var txt = root.querySelector(".q-txt");
+  var bx = root.querySelector('[data-act="extra"]'), br = root.querySelector('[data-act="reset"]');
+  var DEF = txt.innerHTML;
+  var Q = {
+    precision: { hit: ["uwb", "ultrasonidos", "pseudolites"], part: ["ir"],
+      t: "<b>谁最准？</b>6 种里只有 UWB 给了数字：非常准，30 cm。IR 也有“不错的精度”，但要视线、只有几米。其他 5 种里，超声波和 GPS Pseudolites 能到厘米级，代价是成本很高。到 2021 年：UWB 约 10 cm，是三种新技术里最准的。" },
+    coste: { hit: ["uwb", "ultrasonidos", "pseudolites"], part: [],
+      t: "<b>谁最贵？</b>UWB：成本很高（2014 年时）。其他 5 种里：超声波要布大量传感器，成本很高；GPS Pseudolites 成本高，还要专用设备。反过来，BTLE 的卖点之一就是低成本。" },
+    bateria: { hit: ["wifi", "uwb"], part: [],
+      t: "<b>谁最费电？</b>Wi-Fi：电池消耗高是它的弱点之一。UWB：高频信号衰减严重，所以需要高功耗（2014 年时）。也有一篇属于拓展的资料说 UWB 信号功耗低、芯片已降到约 20 美元；UWB 成本很高、功耗高。" },
+    ahorro: { hit: ["btle", "zigbee"], part: [],
+      t: "<b>谁省电又便宜？</b>BTLE：低功耗、低延迟、高安全、低成本。其他 5 种里的 Zigbee 也是低功耗、低延迟，但数据率很低（250 kbps），手机里也没有。" },
+    vista: { hit: ["ir"], part: [],
+      t: "<b>谁需要视线（línea de vista）？</b>IR，而且范围只有几米，所以更适合检测存在和运动。另外，测量方法里的 AOA 也需要视线（§4）。" },
+    wsn: { hit: ["mems"], part: ["wifi"],
+      t: "<b>谁可以不建专门的 WSN？</b>MEMS：只用加速度计、磁罗盘、陀螺仪、气压计时，原则上不需要专门的 WSN（IndoorAtlas、Navisens、Movea）。Wi-Fi 可以复用已经装好的 AP，但一般要加装 AP 才达到所需精度，所以只算部分符合。" },
+    movil: { hit: ["wifi", "mems", "led", "femtocells"], part: ["btle", "uwb"],
+      t: "<b>手机能直接用吗？</b>Wi-Fi 在终端里最普及；MEMS 就是手机自带的传感器（client based 架构会用到）。BTLE 在 2014 年的短板正是支持它的手机型号有限，但预计会快速增长。UWB：2014 年的表里没提手机支持，到 2021 年已有多家手机厂商采用。IR、RFID：没有提到手机支持。其他 5 种里：LED 方案用手机摄像头，femtocells 定位的就是手机；Zigbee 手机上没有，只能用 tags、手环。" },
+    proximidad: { hit: ["rfid", "ir"], part: ["btle"],
+      t: "<b>谁更适合 proximidad / presencia，而不是 RTLS？</b>RFID：主要用于 proximidad 或 presencia，被认为不太适合 RTLS。IR：更适合检测存在和运动。BTLE 两边都用：在 IPS 和 proximidad 上都有很大推动，所以算部分符合。" }
+  };
+  var cur = "", extra = false;
+  function rank(t, q) { return q.hit.indexOf(t) >= 0 ? 0 : (q.part.indexOf(t) >= 0 ? 1 : 2); }
+  function render() {
+    var q = Q[cur] || null;
+    var order = rows.slice();
+    if (q) {
+      order.sort(function (a, b) {
+        return rank(a.getAttribute("data-t"), q) - rank(b.getAttribute("data-t"), q) || rows.indexOf(a) - rows.indexOf(b);
+      });
+    }
+    order.forEach(function (r) {
+      var k = q ? rank(r.getAttribute("data-t"), q) : -1;
+      if (r.classList.contains("extra")) r.hidden = !extra;
+      r.classList.toggle("hit", k === 0);
+      r.classList.toggle("part", k === 1);
+      r.classList.toggle("dim", k === 2);
+      tbody.appendChild(r);
+    });
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", c.getAttribute("data-q") === cur ? "true" : "false"); });
+    txt.innerHTML = q ? q.t : DEF;
+    bx.textContent = extra ? "只看主要的 6 种" : "显示其他 5 种室内技术";
+    bx.setAttribute("aria-pressed", extra ? "true" : "false");
+  }
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      var k = c.getAttribute("data-q");
+      cur = cur === k ? "" : k;
+      render();
+    });
+  });
+  bx.addEventListener("click", function () { extra = !extra; render(); });
+  br.addEventListener("click", function () { cur = ""; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("tri");
+  if (!root) return;
+  var svg = root.querySelector("svg");
+  var out = root.querySelector(".out");
+  var S = 25, OX = 20, OY = 20, W = 16, H = 11.2;
+  var A = [{ x: 0.8, y: 0.8 }, { x: 15.2, y: 0.8 }, { x: 8, y: 10.4 }];
+  var circles = Array.prototype.slice.call(svg.querySelectorAll("[data-c]"));
+  var dot = svg.querySelector('[data-p="true"]');
+  var est = svg.querySelector('[data-p="est"]');
+  var errLine = svg.querySelector('[data-p="err"]');
+  var chips = Array.prototype.slice.call(root.querySelectorAll("[data-sigma]"));
+  var sigma = 2, P = { x: 6, y: 5 }, U = [0, 0, 0];
+  function px(m) { return OX + m * S; }
+  function py(m) { return OY + m * S; }
+  function f(n, k) { return n.toFixed(k == null ? 2 : k); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function resample() { U = [0, 1, 2].map(function () { return Math.random() * 2 - 1; }); }
+  function draw() {
+    var d = [], dt = [];
+    A.forEach(function (a, i) {
+      var t = Math.sqrt((P.x - a.x) * (P.x - a.x) + (P.y - a.y) * (P.y - a.y));
+      dt.push(t);
+      d.push(Math.max(0.1, t + U[i] * sigma));
+      circles[i].setAttribute("cx", px(a.x));
+      circles[i].setAttribute("cy", py(a.y));
+      circles[i].setAttribute("r", (d[i] * S).toFixed(1));
+    });
+    var x1 = A[0].x, y1 = A[0].y;
+    var a11 = 2 * (A[1].x - x1), a12 = 2 * (A[1].y - y1);
+    var a21 = 2 * (A[2].x - x1), a22 = 2 * (A[2].y - y1);
+    var b1 = d[0] * d[0] - d[1] * d[1] - x1 * x1 + A[1].x * A[1].x - y1 * y1 + A[1].y * A[1].y;
+    var b2 = d[0] * d[0] - d[2] * d[2] - x1 * x1 + A[2].x * A[2].x - y1 * y1 + A[2].y * A[2].y;
+    var det = a11 * a22 - a12 * a21;
+    var ex = (b1 * a22 - a12 * b2) / det, ey = (a11 * b2 - a21 * b1) / det;
+    var err = Math.sqrt((ex - P.x) * (ex - P.x) + (ey - P.y) * (ey - P.y));
+    dot.setAttribute("cx", px(P.x).toFixed(1));
+    dot.setAttribute("cy", py(P.y).toFixed(1));
+    est.setAttribute("transform", "translate(" + px(ex).toFixed(1) + " " + py(ey).toFixed(1) + ")");
+    errLine.setAttribute("x1", px(P.x).toFixed(1));
+    errLine.setAttribute("y1", py(P.y).toFixed(1));
+    errLine.setAttribute("x2", px(ex).toFixed(1));
+    errLine.setAttribute("y2", py(ey).toFixed(1));
+    out.innerHTML =
+      "终端真实位置 (" + f(P.x, 1) + ", " + f(P.y, 1) + ") m<br>" +
+      "测得距离：d<sub>1</sub> = " + f(d[0]) + " m · d<sub>2</sub> = " + f(d[1]) + " m · d<sub>3</sub> = " + f(d[2]) + " m<br>" +
+      "（真实距离：" + f(dt[0]) + " · " + f(dt[1]) + " · " + f(dt[2]) + " m）<br>" +
+      "估计位置 (" + f(ex, 1) + ", " + f(ey, 1) + ") m → 误差 <b>" + f(err) + " m</b><br>" +
+      "方程：(x − x<sub>i</sub>)² + (y − y<sub>i</sub>)² = d<sub>i</sub>²，i = 1, 2, 3";
+  }
+  svg.addEventListener("click", function (e) {
+    var m = svg.getScreenCTM();
+    if (!m) return;
+    var pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    var p = pt.matrixTransform(m.inverse());
+    P.x = clamp((p.x - OX) / S, 0.2, W - 0.2);
+    P.y = clamp((p.y - OY) / S, 0.2, H - 0.2);
+    resample();
+    draw();
+  });
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      sigma = parseFloat(c.getAttribute("data-sigma"));
+      chips.forEach(function (x) { x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+      draw();
+    });
+  });
+  root.querySelector('[data-act="measure"]').addEventListener("click", function () { resample(); draw(); });
+  root.querySelector('[data-act="random"]').addEventListener("click", function () {
+    P.x = 1 + Math.random() * (W - 2);
+    P.y = 1 + Math.random() * (H - 2);
+    resample();
+    draw();
+  });
+  resample();
+  draw();
+})();
+
+
+(function () {
+  var root = document.getElementById("tof");
+  if (!root) return;
+  var out = root.querySelector(".out");
+  var ins = {};
+  var C = 0.299792458; 
+  function g(n) { return String(Math.round(n * 1000) / 1000); }
+  function v(k) { var n = parseFloat(ins[k].value); return isNaN(n) ? null : n; }
+  function calc() {
+    var t0 = v("t0"), t1 = v("t1"), t2 = v("t2"), t3 = v("t3");
+    if (t0 === null || t1 === null || t2 === null || t3 === null) {
+      out.innerHTML = '<span class="warn">请在四个框里都填入数字。</span>';
+      return;
+    }
+    var reply = t2 - t1, rtt = t3 - t0, tof = (rtt - reply) / 2, d = tof * C;
+    var s =
+      "Reply = T2 − T1 = " + g(t2) + " − " + g(t1) + " = " + g(reply) + " ns<br>" +
+      "RTT = T3 − T0 = " + g(t3) + " − " + g(t0) + " = " + g(rtt) + " ns<br>" +
+      "ToF = (RTT − Reply) / 2 = (" + g(rtt) + " − " + g(reply) + ") / 2 = " + g(tof) + " ns<br>" +
+      "d = ToF × c = " + g(tof) + " ns × 0.2998 m/ns = <b>" + g(d) + " m</b><br>" +
+      "灵敏度：c × 1 ns ≈ 0.30 m，计时差 1 ns，距离就差约 30 cm";
+    if (reply < 0 || tof < 0) s += '<br><span class="warn">出现负值：T2 应晚于 T1，RTT 应大于 Reply。</span>';
+    out.innerHTML = s;
+  }
+  Array.prototype.slice.call(root.querySelectorAll("input[data-v]")).forEach(function (i) {
+    ins[i.getAttribute("data-v")] = i;
+    i.addEventListener("input", calc);
+  });
+  calc();
+})();
+
+
+(function () {
+  var box = document.getElementById("arq");
+  if (!box) return;
+  var msgs = Array.prototype.slice.call(box.querySelectorAll(".msg"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]');
+  var all = box.querySelector('[data-act="all"]'), cli = box.querySelector('[data-act="cli"]');
+  var T = [
+    "上面是 server based，下面是 client based。注意箭头方向：上面的数据流向服务器，下面的信号流向终端。点「下一步」逐步播放。",
+    "<b>Server based ①</b>：终端周期性地发出无线信号，里面带着设备的唯一标识（MAC address），由一个或多个传感器接收。",
+    "<b>Server based ②</b>：每个传感器把这条信息连同其他参数（Id_sensor、RSSI……）发给服务器。传感器和服务器之间可以走 Wi-Fi，也可以走运营商的蜂窝网络。",
+    "<b>Server based ③</b>：<b>服务器计算位置</b>，依据收到的数据和传感器数据库（其中有每个传感器的位置等信息）。终端上不用安装任何东西。",
+    "<b>Server based ④</b>：开发 app 时，服务器提供 <b>API</b>，用来查询指定终端的位置。例子有 Wi-Fi、BTLE、Zigbee，主要用于分析型方案，也可用于 IPS 和 presencia。",
+    "<b>Client based ①</b>：方向反过来，<b>传感器</b>发出无线信号，由终端检测。",
+    "<b>Client based ②</b>：终端使用一个 BD de asistencia（辅助数据库），一般就是 fingerprint 数据库（§4）。",
+    "<b>Client based ③</b>：<b>终端自己计算位置</b>。供应商提供 SDK，把 LBS 服务和终端上的定位模块集成起来；还会用到终端的 MEMS 传感器，与多种无线信号（Wi-Fi、BTLE……）组成混合技术。",
+    "<b>Client based ④</b>：位置只有用户的终端知道，所以被认为满足隐私要求。但某些用例需要时，终端还是要把位置发给服务器（虚线）。"
+  ];
+  var i = 0, N = 8;
+  function render() {
+    var lane = i === 0 ? "" : (i <= 4 ? "srv" : "cli");
+    msgs.forEach(function (m) {
+      var s = +m.getAttribute("data-step"), l = m.getAttribute("data-lane");
+      m.classList.toggle("on", i > 0 && s === i);
+      m.classList.toggle("dim", i > 0 && (l !== lane || s > i));
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : (i <= 4 ? "Server based · 第 " + i + " / 4 步" : "Client based · 第 " + (i - 4) + " / 4 步");
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  cli.addEventListener("click", function () { i = 5; render(); });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+</script>
+</body>
+</html>

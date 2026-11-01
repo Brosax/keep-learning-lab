@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T4 Sockets · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.code .st { color: var(--st-yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.msg { font: 13px/1.7 var(--f-mono); }
+.msg .rl { color: var(--yellow); }
+.msg .hd { color: var(--blue); }
+.msg .crlf { color: var(--red); font-weight: 700; }
+.msg .bd { color: var(--green); }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t4-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t4-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t4-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t4-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t4-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t4-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="Back to OpenSEEI Portal">OpenSEEI</a><span aria-hidden="true" class="sep">/</span><a class="brand" href="index.html">EMP<span> · </span>Interactive Notes</a></span>
+<nav aria-label="Tema 4 Chapters" class="chain" data-chain="T4"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 4 · Comunicaciones en red · Sockets</div>
+<h1>Comunicaciones: sockets</h1>
+<p class="zh">Sockets: Enabling communication between embedded boards and remote network endpoints</p>
+<div class="meta">
+
+
+<span><b>10</b> Key Points</span>
+<span>Approx. 25 min read</span>
+
+
+</div>
+<p class="lede">Once a Linux-powered Raspberry Pi connects to Ethernet or Wi-Fi, how do user-space programs exchange data over the network? Almost all modern operating systems provide the same answer: <b class="t">socket (EN) / conector (ES)</b>. A socket behaves like a file descriptor: you can <code>read</code>, <code>write</code>, and <code>close</code> it; behind the scenes, the kernel handles packetization, addressing, retransmission, and packet ordering. This chapter explores how data is encapsulated through network layers, dissects TCP server, TCP client, and UDP system calls step by step, and finishes with the structure of an HTTP message.</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>Key Takeaways <span class="tag">Chapter Objectives</span></h2>
+<p>Here are the core concepts to master in this chapter. After reading each section, self-assess your understanding and click the button on the right to track your progress.</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T4.1</span>
+<div class="txt"><span>State the layers of the TCP/IP stack and where the socket API resides; describe how headers are added during transmission (encapsulation)</span><span class="es">Modelo de capas, nivel de transporte y encapsulado.</span><a href="#s1">→ §1 Layering &amp; Addressing</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.1" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.2</span>
+<div class="txt"><span>Name the 5-tuple required for communication (protocol + local/remote IP and ports); distinguish fixed ports from dynamically assigned ports and client vs. server roles</span><span class="es">Direccionamiento, puertos, cliente-servidor.</span><a href="#s1">→ §1 Layering &amp; Addressing</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.2" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.3</span>
+<div class="txt"><span>Explain the meaning and return value of <code>socket(domain, type, protocol)</code>; contrast AF_INET, AF_INET6, AF_UNIX with SOCK_STREAM, SOCK_DGRAM</span><span class="es">socket(): dominio, tipo, protocolo; descriptor.</span><a href="#s2">→ §2 What is a Socket</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.3" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.4</span>
+<div class="txt"><span>Correctly initialize <code>sockaddr_in</code>; use htons/htonl/ntohs/ntohl for byte order conversion and inet_pton/inet_ntop for address conversion</span><span class="es">sockaddr_in, formato red / formato máquina.</span><a href="#s3">→ §3 Addresses &amp; Byte Order</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.4" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.5</span>
+<div class="txt"><span>Write the TCP server call sequence in order: socket → bind → listen → accept → read/write → close; explain the purpose of each step (including backlog and INADDR_ANY)</span><span class="es">Servidor orientado a conexión.</span><a href="#s4">→ §4 TCP Server</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.5" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.6</span>
+<div class="txt"><span>Explain where the three-way handshake occurs relative to system calls, why accept returns a new socket descriptor, and what the original listening socket continues to do</span><span class="es">accept() crea un nuevo conector.</span><a href="#s4">→ §4 TCP Server</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.6" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.7</span>
+<div class="txt"><span>Implement a TCP client (connect does not require bind); explain the three return value categories of read/recv, why byte streams lack message boundaries, and why I/O must loop</span><span class="es">Cliente TCP, read/recv, flujo de bytes.</span><a href="#s5">→ §5 TCP Client</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.7" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.8</span>
+<div class="txt"><span>Send and receive UDP datagrams using sendto/recvfrom; explain message boundaries, buffer truncation on undersized reads, potential loss/reordering, and compare TCP vs. UDP use cases</span><span class="es">Orientado a datagrama; ¿TCP o UDP?</span><a href="#s6">→ §6 UDP</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.8" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.9</span>
+<div class="txt"><span>Identify blocking calls; compare "one thread per client" with select; resolve common networking pitfalls using SO_REUSEADDR, close/shutdown, and MSG_NOSIGNAL</span><span class="es">Bloqueo, multitarea vs select, cierre del canal, SIGPIPE.</span><a href="#s7">→ §7 Blocking &amp; Multiplexing</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.9" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.10</span>
+<div class="txt"><span>Identify HTTP request and response structures: request line / status line, headers, blank line, body, and how receivers detect message termination</span><span class="es">Formato de mensajes HTTP.</span><a href="#s8">→ §8 HTTP Messages</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.10" type="button"><span class="box"></span><span class="lab">Mark Mastered</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T4"><span class="val">0 / 10 Mastered</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Layering &amp; Addressing <span class="tag">T4.1 · T4.2</span></h2>
+<p class="hook"><span class="zh">The program writes four bytes "hola", yet a packet of dozens of bytes travels across the wire. What is all the extra data?</span><span class="es">Cada capa añade su propia cabecera.</span></p>
+<p>Network software is organized into layers. The theoretical OSI reference model defines 7 layers (Físico, Enlace, Red, Transporte, Sesión, Presentación, Aplicación); practical TCP/IP stacks collapse these into 4 layers, merging OSI layers 5–7 into the "Application Layer" and layers 1–2 into the "Link Layer". Each layer communicates strictly with its adjacent layers, prepending its own <b class="t">header (EN) / cabecera (ES)</b> to outbound data—a process known as <b class="t">encapsulation (EN) / encapsulado (ES)</b>.</p>
+<figure class="stage" data-scene="" id="sc-capas">
+<div class="stage-title"><span>Escena 1 · encapsulado</span><b>5 Steps</b></div>
+<div aria-label="Interactive animation: Data travels down the stack acquiring headers layer by layer" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-capas-t" role="img" viewbox="0 0 800 400">
+<title id="sc-capas-t">TCP/IP 4 layers: Application data passes down through Transport, Network, and Link layers, each adding a header; the socket API sits between Application and Transport</title>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="48"></rect>
+<text class="tx sm w" x="32" y="74">Aplicación</text>
+<text class="tz sm m" x="32" y="96">Application · OSI 5–7 · HTTP…</text>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="128"></rect>
+<text class="tx sm w" x="32" y="154">Transporte</text>
+<text class="tz sm m" x="32" y="176">Transport · OSI 4 · TCP / UDP</text>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="208"></rect>
+<text class="tx sm w" x="32" y="234">Red · Internet</text>
+<text class="tz sm m" x="32" y="256">Network · OSI 3 · IP</text>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="288"></rect>
+<text class="tx sm w" x="32" y="314">Enlace + Físico</text>
+<text class="tz sm m" x="32" y="336">Link · OSI 1–2 · Ethernet / Wi-Fi</text>
+<g data-step="1">
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="56"></rect>
+<text class="tm sm b mid" x="665" y="76">datos</text>
+<text class="tm xs w mid" x="665" y="92">"hola"</text>
+</g>
+<g data-step="2">
+<path class="ln thin m" d="M665 104 V124" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx p" data-hl="2" height="44" rx="4" width="76" x="520" y="136"></rect>
+<text class="tm sm p mid" x="558" y="156">TCP</text>
+<text class="tm xs w mid" x="558" y="172">puertos</text>
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="136"></rect>
+<text class="tm sm b mid" x="665" y="163">datos</text>
+<text class="tz sm p" x="340" y="164">segmento</text>
+</g>
+<g data-step="3">
+<path class="ln thin m" d="M665 184 V204" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx p" data-hl="3" height="44" rx="4" width="76" x="440" y="216"></rect>
+<text class="tm sm p mid" x="478" y="236">IP</text>
+<text class="tm xs w mid" x="478" y="252">IPs</text>
+<rect class="bx p" height="44" rx="4" width="76" x="520" y="216"></rect>
+<text class="tm sm p mid" x="558" y="243">TCP</text>
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="216"></rect>
+<text class="tm sm b mid" x="665" y="243">datos</text>
+<text class="tz sm p" x="340" y="244">paquete</text>
+</g>
+<g data-step="4">
+<path class="ln thin m" d="M665 264 V284" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx t" data-hl="4" height="44" rx="4" width="76" x="360" y="296"></rect>
+<text class="tm sm t mid" x="398" y="316">Eth</text>
+<text class="tm xs w mid" x="398" y="332">MAC</text>
+<rect class="bx p" height="44" rx="4" width="76" x="440" y="296"></rect>
+<text class="tm sm p mid" x="478" y="323">IP</text>
+<rect class="bx p" height="44" rx="4" width="76" x="520" y="296"></rect>
+<text class="tm sm p mid" x="558" y="323">TCP</text>
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="296"></rect>
+<text class="tm sm b mid" x="665" y="323">datos</text>
+<rect class="bx t" height="44" rx="4" width="50" x="734" y="296"></rect>
+<text class="tm xs t mid" x="759" y="323">FCS</text>
+<text class="tz sm t" x="340" y="372">trama · Frame, transmitted onto wire / wireless medium</text>
+</g>
+<g data-step="5">
+<path class="ln y dash draw" d="M16 118 H784"></path>
+<text class="tm sm y" x="336" y="113">socket API</text>
+<text class="tz sm y" data-hl="5" x="336" y="138">↑ User Application　↓ Kernel Space</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>The application provides only its payload data (<span class="c-b">datos</span>)—here, the 4 bytes <code>"hola"</code>.</li>
+<li data-dur="3800">The transport layer prepends a <span class="c-p">TCP header</span>: its most critical fields are the source port and destination port, identifying <b>which application</b> on the remote host should receive the data. With the transport header attached, the data unit is called a segmento (segment; or datagrama in UDP).</li>
+<li data-dur="3800">The network layer adds an <span class="c-p">IP header</span>: source IP and destination IP, used by routers across the network to deliver the packet to the correct <b>physical host</b>. The unit is now called a paquete (packet).</li>
+<li data-dur="3800">The link layer prepends an <span class="c-t">Ethernet header</span> (source/destination MAC addresses for next-hop forwarding) and appends a Frame Check Sequence (FCS) trailer, producing a trama (frame) ready for transmission onto the wire. The receiving host strips these headers in reverse order.</li>
+<li data-dur="4800">The socket interface sits directly <span class="c-y">between the application layer and the transport layer</span>: the user program hands off raw data, while the kernel and network interface card (NIC) handle the bottom three layers. However, the address family (IPv4 vs. IPv6) and transport semantics (datagram vs. virtual circuit) must still be specified when creating the socket—the underlying layers are not completely invisible.</li>
+</ol>
+<p class="stage-note">Header widths are not drawn to scale; TCP and IP headers are typically 20 bytes each, while the Ethernet header is 14 bytes.</p>
+</figure>
+<h3>The 5 Elements of Communication</h3>
+<p>Any communication channel between two network programs is uniquely identified by a 5-tuple:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Protocol</th><th>Source IP</th><th>Source Port</th><th>Dest IP</th><th>Dest Port</th></tr></thead>
+<tbody><tr><td>tcp</td><td>192.168.0.1</td><td>1200</td><td>192.168.0.2</td><td>1500</td></tr></tbody>
+</table>
+</div>
+<p><b class="t">IP address (EN) / dirección IP (ES)</b>: Identifies a network device (specifically, a network interface on a host): IPv4 is 32 bits, formatted in dot-decimal notation such as <code>10.12.110.57</code>; IPv6 is 128 bits, written like <code>2001:db8:63b3:1::3490</code>. <b class="t">port (EN) / puerto (ES)</b>: A 16-bit number (0–65535) identifying a specific process or service on that host. For example, HTTP servers conventionally listen on port 80.</p>
+<div class="grid2">
+<div class="panel">
+<h3>Two Ways to Acquire a Port</h3>
+<ul>
+<li><b>Fixed Port</b>: The application selects an explicit port number and binds to it via <code>bind</code>. Servers must do this; otherwise, clients have no known address to target. Take care not to collide with already bound ports.</li>
+<li><b>System-Assigned Port</b>: Setting the port to 0 during <code>bind</code>, or omitting <code>bind</code> entirely, prompts the kernel to dynamically allocate a free port from the <b class="t">ephemeral ports (EN) / puertos dinámicos (ES)</b> pool. Clients typically follow this pattern.</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Port Number Ranges</h3>
+<ul>
+<li>Ports below 1024 are reserved for well-known services (ftp, ssh, http…); binding them on Linux requires root privileges (superuser).</li>
+<li>The range for ephemeral ports is determined by the OS; on Linux, inspect <code>/proc/sys/net/ipv4/ip_local_port_range</code>.</li>
+<li>For custom services, select an unused port above 1024. Examples in this chapter use 5005 (TCP), 6006 (UDP), and 7070 (HTTP).</li>
+</ul>
+</div>
+</div>
+<div class="note">
+<span class="lbl">Client vs. Server</span>
+<p><b class="t">server (EN) / servidor (ES)</b>: Starts first and <b>listens/waits</b> on a well-known port; <b class="t">client (EN) / cliente (ES)</b>: <b>Actively initiates</b> communication. In TCP, the call sequence differs substantially between the two roles (§4, §5); in UDP, system calls on both sides are nearly identical, with "client" referring simply to the party that sends the initial message (§6).</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>What is a Socket <span class="tag">T4.3</span></h2>
+<p class="hook"><span class="zh">Why can a simple integer represent an active network connection?</span><span class="es">socket() devuelve un descriptor, como un fichero.</span></p>
+<p>In Linux, sockets—like regular files—are referenced via a <b class="t">file descriptor (EN) / descriptor (ES)</b>: a small non-negative integer representing an index in the process open file table. Consequently, standard file calls like <code>read</code>, <code>write</code>, and <code>close</code> work directly on sockets. A socket is instantiated using a single system call:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;sys/types.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;sys/socket.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">socket</span>(<span class="kw">int</span> domain, <span class="kw">int</span> type, <span class="kw">int</span> protocol);   <span class="cm">// Success: descriptor ≥ 0; Failure: -1 and sets errno</span></span></code></pre>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Parameter</th><th>Common Values</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>domain</td><td><code>AF_INET</code> · <code>AF_INET6</code> · <code>AF_UNIX</code> (= <code>AF_LOCAL</code>)</td><td>Address family: IPv4, IPv6, or local IPC on the same host. Determines which address struct is used.</td></tr>
+<tr><td>type</td><td><code>SOCK_STREAM</code> · <code>SOCK_DGRAM</code></td><td>Communication semantics: connection-oriented byte stream (circuito virtual), or connectionless datagram (datagrama).</td></tr>
+<tr><td>protocol</td><td><code>0</code></td><td>Passing 0 selects the default protocol: STREAM → TCP, DGRAM → UDP. Can also be explicit, e.g. <code>IPPROTO_SCTP</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid2">
+<div class="panel">
+<h3><span class="c-b">SOCK_STREAM</span> · TCP</h3>
+<p><b class="t">connection-oriented (EN) / orientado a conexión (ES)</b>: Requires establishing a connection prior to data transfer. Retransmission, sequencing, and deduplication are handled transparently by the OS; the application interacts with a reliable, in-order byte stream. The trade-off is protocol-level control overhead.</p>
+</div>
+<div class="panel">
+<h3><span class="c-o">SOCK_DGRAM</span> · UDP</h3>
+<p><b class="t">connectionless (EN) / no orientado a conexión (ES)</b>: Data is dispatched immediately without prior handshake. No retransmission, no sequencing; reliability, if required, must be implemented by the application. Each transmission is an independent datagrama.</p>
+</div>
+</div>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> s = <span class="fn">socket</span>(AF_INET, SOCK_STREAM, <span class="nm">0</span>);   <span class="cm">// IPv4 + TCP</span></span><span class="ln-row"><span class="kw">if</span> (s == <span class="nm">-1</span>) {</span><span class="ln-row">    <span class="fn">perror</span>(<span class="st">"socket"</span>);                     <span class="cm">// Print error cause</span></span><span class="ln-row">    <span class="fn">exit</span>(EXIT_FAILURE);</span><span class="ln-row">}</span></code></pre>
+<p class="aside"><code>PF_INET</code> (Protocol Family) and <code>AF_INET</code> (Address Family) share identical numeric values on Linux; many codebases pass PF_ to <code>socket()</code> and AF_ to address structs. Either form works reliably.</p>
+<div class="note">
+<span class="lbl">Do Not Overlook AF_UNIX</span>
+<p><code>AF_UNIX</code> sockets communicate exclusively between processes on the same host, using a filesystem path as the address (<code>sun_path</code> in <code>struct sockaddr_un</code>). Frequently overlooked, modern system services increasingly adopt AF_UNIX over legacy IPC mechanisms: the API is identical to network sockets, differing only in the address family.</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Addresses &amp; Byte Order <span class="tag">T4.4</span></h2>
+<p class="hook"><span class="zh">You assigned port 5005 in code, but the remote client waits on port 36115. Why?</span><span class="es">¡¡¡Atención!!! formato red y formato máquina.</span></p>
+<p>All address-handling system calls (<code>bind</code>, <code>connect</code>, <code>accept</code>, <code>sendto</code>, <code>recvfrom</code>) accept a generic address pointer <code>struct sockaddr *</code>, inspecting its first field (the address family) to interpret remaining bytes. The concrete structure for IPv4 is <code>sockaddr_in</code>, cast to <code>sockaddr *</code> when passed as an argument:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sockaddr {                 <span class="cm">// Generic: used purely for pointer casting</span></span><span class="ln-row">    sa_family_t sa_family;         <span class="cm">// AF_xxx</span></span><span class="ln-row">    <span class="kw">char</span>        sa_data[<span class="nm">14</span>];</span><span class="ln-row">};</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> sockaddr_in {              <span class="cm">// IPv4, defined in &lt;netinet/in.h&gt;</span></span><span class="ln-row">    sa_family_t    <span class="rg">sin_family</span>;     <span class="cm">// AF_INET</span></span><span class="ln-row">    <span class="kw">in_port_t</span>      <span class="rg">sin_port</span>;       <span class="cm">// Port, network byte order</span></span><span class="ln-row">    <span class="kw">struct</span> in_addr <span class="rg">sin_addr</span>;       <span class="cm">// { uint32_t s_addr; } IP, network byte order</span></span><span class="ln-row">    <span class="kw">unsigned char</span>  sin_zero[<span class="nm">8</span>];    <span class="cm">// Zero padding to match sizeof(struct sockaddr)</span></span><span class="ln-row">};</span></code></pre>
+<p class="aside">IPv6 uses <code>sockaddr_in6</code> (<code>sin6_family = AF_INET6</code>, 16-byte address in <code>in6_addr</code>, plus flowinfo and scope_id). When generic storage for both address families is needed, use <code>struct sockaddr_storage</code>.</p>
+<h3>formato red · formato máquina</h3>
+<p>Multi-byte integers can be stored in memory in two ways: <b class="t">big endian</b> (most significant byte at the lowest address) and <b class="t">little endian</b> (least significant byte at the lowest address). Network standards mandate that port numbers and IP addresses in packet headers must always use big-endian format, designated as <b>network byte order</b> (formato red). Conversely, Intel x86 and Raspberry Pi ARM CPUs operate natively in little-endian format (formato máquina). Examine how port 5005 is organized in memory:</p>
+<figure class="stage" data-scene="" id="sc-endian">
+<div class="stage-title"><span>Escena 2 · htons(5005)</span><b>5 Steps</b></div>
+<div aria-label="Interactive animation: Port 5005 byte layout in little-endian memory vs. network byte order" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-endian-t" role="img" viewbox="0 0 800 340">
+<title id="sc-endian-t">Port 5005 equals 0x138D; little-endian memory stores 8D then 13; the network requires 13 first; htons swaps the bytes so in-memory layout matches transmission order</title>
+<text class="tm w" x="24" y="40">5005 = 0x</text>
+<text class="tm y" data-hl="1" x="118" y="40">13</text>
+<text class="tm b" data-hl="1" x="140" y="40">8D</text>
+<g data-step="1">
+<text class="tz sm y" x="200" y="40">High byte 0x13</text>
+<text class="tz sm b" x="312" y="40">Low byte 0x8D</text>
+</g>
+<text class="tz sm m" x="24" y="96">Memory Address</text>
+<text class="tm xs m mid" x="270" y="96">a</text>
+<text class="tm xs m mid" x="350" y="96">a+1</text>
+<g data-out="4" data-step="2">
+<text class="tz sm w" x="24" y="136">sin_port = 5005</text>
+<text class="tz sm r" x="24" y="156">Little-endian · Unconverted</text>
+<rect class="bx b" height="44" rx="4" width="76" x="232" y="110"></rect>
+<text class="tm b mid" x="270" y="138">8D</text>
+<rect class="bx y" height="44" rx="4" width="76" x="312" y="110"></rect>
+<text class="tm y mid" x="350" y="138">13</text>
+</g>
+<g data-step="4">
+<text class="tz sm w" x="24" y="136">sin_port = htons(5005)</text>
+<text class="tz sm g" x="24" y="156">After conversion</text>
+<rect class="bx y" data-hl="4" height="44" rx="4" width="76" x="232" y="110"></rect>
+<text class="tm y mid" x="270" y="138">13</text>
+<rect class="bx b" data-hl="4" height="44" rx="4" width="76" x="312" y="110"></rect>
+<text class="tm b mid" x="350" y="138">8D</text>
+<text class="tm sm g" x="410" y="138">Read in host order: 0x8D13 = 36115</text>
+</g>
+<g data-step="3">
+<text class="tz sm w" x="24" y="236">On the Wire</text>
+<text class="tz sm m" x="24" y="256">Network byte order · Big-endian</text>
+<path class="ln thin m" d="M150 240 H760" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx y" height="44" rx="4" width="76" x="160" y="216"></rect>
+<text class="tm y mid" x="198" y="244">13</text>
+<rect class="bx b" height="44" rx="4" width="76" x="240" y="216"></rect>
+<text class="tm b mid" x="278" y="244">8D</text>
+<text class="tz sm m mid" x="198" y="284">First</text>
+<text class="tz sm m mid" x="278" y="284">Second</text>
+<text class="tz sm r" data-out="4" x="360" y="232">Sending raw memory bytes 8D 13 causes</text>
+<text class="tz sm r" data-out="4" x="360" y="254">the peer to read port 0x8D13 = 36115</text>
+</g>
+<g data-step="4">
+<text class="tz sm g" x="360" y="244">Memory order = Wire order ✓</text>
+</g>
+<g data-step="5">
+<rect class="bx hollow m" height="34" rx="6" width="752" x="24" y="296"></rect>
+<text class="tz sm w mid" x="400" y="318">On big-endian architectures, htons is a no-op—invoking it ensures portable code across all platforms</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>In hexadecimal, 5005 is 0x138D: <span class="c-y">high byte 0x13</span>, <span class="c-b">low byte 0x8D</span>.</li>
+<li data-dur="3600">If assigned directly as <code>sin_port = 5005</code>, a little-endian ARM CPU stores the <b>least significant byte first</b>: 8D followed by 13 in memory.</li>
+<li data-dur="4200">However, network byte order is big-endian, demanding that <span class="c-y">high byte 13 be transmitted first</span>. The kernel places <code>sin_port</code> directly into packet headers—causing the remote host to see port 0x8D13 = 36115, resulting in failed connection attempts.</li>
+<li data-dur="4200"><code>htons</code> (host to network short) swaps the two bytes on little-endian machines, yielding 13 followed by 8D in memory to match transmission order. Reading this variable in host byte order produces 0x8D13 = 36115—so when printing or evaluating, convert it back via <code>ntohs</code>.</li>
+<li data-dur="3800">On big-endian CPUs, these functions perform no operation. By consistently applying them, your codebase remains completely architecture-independent.</li>
+</ol>
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Function (&lt;arpa/inet.h&gt;)</th><th>Direction</th><th>Common Usage</th></tr></thead>
+<tbody>
+<tr><td>uint16_t htons(uint16_t)</td><td>Host → Network, 16-bit</td><td>Port: <code>sin_port = htons(5005)</code></td></tr>
+<tr><td>uint32_t htonl(uint32_t)</td><td>Host → Network, 32-bit</td><td>IPv4 address constant: <code>sin_addr.s_addr = htonl(INADDR_ANY)</code></td></tr>
+<tr><td>uint16_t ntohs(uint16_t)</td><td>Network → Host, 16-bit</td><td>Printing received port: <code>ntohs(cli.sin_port)</code></td></tr>
+<tr><td>uint32_t ntohl(uint32_t)</td><td>Network → Host, 32-bit</td><td>Comparing or calculating received IP addresses as integers</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Text Addresses ↔ Binary Addresses</h3>
+<p>Humans write addresses like <code>"192.168.1.20"</code>, whereas <code>sin_addr</code> expects 4 bytes in network byte order. Conversions are performed with <code>inet_pton</code> (presentation to network) and its reverse <code>inet_ntop</code>. Both support IPv4 and IPv6, returning values via <b>pointers</b>:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sockaddr_in dst;</span><span class="ln-row"><span class="fn">memset</span>(&amp;dst, <span class=\"nm\">0</span>, <span class=\"kw\">sizeof</span> dst);                  <span class=\"cm\">// Clears sin_zero padding</span></span><span class=\"ln-row\"><span class=\"rg\">dst.sin_family</span> = AF_INET;</span><span class=\"ln-row\"><span class=\"rg\">dst.sin_port</span>   = <span class=\"fn\">htons</span>(<span class=\"nm\">5005</span>);</span><span class=\"ln-row\"><span class=\"kw\">if</span> (<span class=\"fn\">inet_pton</span>(AF_INET, <span class=\"st\">\"192.168.1.20\"</span>, &amp;<span class=\"rg\">dst.sin_addr</span>) != <span class=\"nm\">1</span>)</span><span class=\"ln-row\">    <span class=\"cm\">/* 1 = Success; 0 = Invalid IP string; -1 = Unsupported address family */</span>;</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"kw\">char</span> txt[INET_ADDRSTRLEN];                     <span class=\"cm\">// 16 bytes, enough for \"255.255.255.255\"</span></span><span class=\"ln-row\"><span class=\"fn\">inet_ntop</span>(AF_INET, &amp;<span class=\"rg\">dst.sin_addr</span>, txt, <span class=\"kw\">sizeof</span> txt);</span><span class=\"ln-row\"><span class=\"fn\">printf</span>(<span class=\"st\">\"%s:%u\\n\"</span>, txt, <span class=\"fn\">ntohs</span>(<span class=\"rg\">dst.sin_port</span>));   <span class=\"cm\">// 192.168.1.20:5005</span></span></code></pre>
+<ul>
+<li>Legacy <code>inet_addr("192.168.1.20")</code> returns a 32-bit network-ordered integer, while <code>inet_ntoa()</code> performs the reverse. They only support IPv4, and <code>inet_addr</code>'s failure return code collides with <code>"255.255.255.255"</code>; modern code uses pton/ntop.</li>
+<li><code>INADDR_ANY</code> (value 0) represents "any local interface": a server bound to INADDR_ANY accepts incoming traffic on any network interface matching the target port.</li>
+<li><code>getaddrinfo("www.example.com", "http", &amp;hints, &amp;res)</code> resolves hostnames and service names into a linked list of socket-ready addresses (IPv4 and IPv6), freed via <code>freeaddrinfo</code>; its inverse is <code>getnameinfo</code>.</li>
+</ul>
+<div class="note warm">
+<span class="lbl">Clarification · Common Documentation Confusion</span>
+<p>Some literature states that "after <code>inet_addr(\"192.168.0.1\")</code>, <code>s_addr</code> contains 0xC0A80001": this reflects reading the value in network byte order (left-to-right). On a little-endian Raspberry Pi, printing directly via <code>printf(\"%x\", s_addr)</code> displays 0x0100A8C0; only <code>ntohl(s_addr)</code> yields 0xC0A80001.</p>
+</div>
+<div class="drills">
+<div class="drill" data-drill="htons"></div>
+<div class="drill" data-drill="ipv4"></div>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>TCP Server <span class="tag">T4.5 · T4.6</span></h2>
+<p class="hook"><span class="zh">A server is servicing a client on port 5005. When a second client connects, will it succeed?</span><span class="es">socket → bind → listen → accept → read / write → close.</span></p>
+<p>A connection-oriented server proceeds through four preparatory stages, each serving a distinct purpose: <code>socket</code> creates the communications endpoint (abrir canal), <code>bind</code> assigns the local address (publicar dirección), <code>listen</code> expresses willingness to accept connections, and <code>accept</code> dequeues an established connection. Below, server and client timelines illustrate when each call unblocks and what the kernel accomplishes behind the scenes:</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-tcp">
+<div class="stage-title"><span>Escena 3 · servidor TCP y cliente en el tiempo</span><b>Core Flow · 8 Steps</b></div>
+<div aria-label="Interactive animation: TCP server and client system call timeline, three-way handshake, and accept returning new socket" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-tcp-t" role="img" viewbox="0 0 800 640">
+<title id="sc-tcp-t">Server calls on left, client calls on right, time flows downward; center tracks three-way handshake, data exchange, and FIN</title>
+<text class="tx w" x="24" y="30">Servidor</text>
+<text class="tm xs m" x="128" y="30">192.168.1.20</text>
+<text class="tx w" x="546" y="30">Cliente</text>
+<text class="tz sm p mid" x="400" y="30">Kernel ⇄ Kernel</text>
+<path class="ln thin p dash" d="M290 40 V630 M510 40 V630"></path>
+<g data-step="1">
+<rect class="bx p" height="30" rx="5" width="230" x="24" y="48"></rect>
+<text class="tm sm w" x="36" y="68">socket() → 3</text>
+<rect class="bx p" height="30" rx="5" width="230" x="24" y="86"></rect>
+<text class="tm sm w" x="36" y="106">bind(3, *:5005)</text>
+<rect class="bx p" height="30" rx="5" width="230" x="24" y="124"></rect>
+<text class="tm sm w" x="36" y="144">listen(3, 5)</text>
+<rect class="bx hollow p" height="30" rx="5" width="190" x="304" y="124"></rect>
+<path class="ln thin p" d="M352 124 V154 M400 124 V154 M448 124 V154"></path>
+<text class="tz sm p mid" x="400" y="112">cola de listen · backlog</text>
+</g>
+<g data-step="2">
+<rect class="bx y" data-hl="2" height="30" rx="5" width="230" x="24" y="172"></rect>
+<text class="tm sm y" x="36" y="192">accept(3, …)</text>
+<path class="ln y dash" d="M264 204 V366" data-out="5"></path>
+<text class="tz sm y" data-out="5" x="170" y="290">Blocked</text>
+</g>
+<g data-step="3">
+<rect class="bx p" height="30" rx="5" width="230" x="546" y="210"></rect>
+<text class="tm sm w" x="558" y="230">socket() → 3</text>
+<rect class="bx y" height="30" rx="5" width="230" x="546" y="248"></rect>
+<text class="tm sm y" x="558" y="268">connect(3, srv:5005)</text>
+<path class="ln y dash" d="M536 280 V366" data-out="5"></path>
+<path class="ln p draw" d="M510 270 L292 294" marker-end="url(#t4-ah-p)"></path>
+<text class="tm sm p mid" x="400" y="270">SYN</text>
+</g>
+<g data-step="4">
+<path class="ln p draw" d="M290 302 L508 326" marker-end="url(#t4-ah-p)"></path>
+<text class="tm sm p mid" x="400" y="302">SYN + ACK</text>
+<path class="ln p draw" d="M510 334 L292 358" marker-end="url(#t4-ah-p)"></path>
+<text class="tm sm p mid" x="400" y="336">ACK</text>
+<g data-out="5">
+<rect class="bx g" height="22" rx="3" width="40" x="308" y="128"></rect>
+<text class="tm xs g mid" x="328" y="143">conn</text>
+</g>
+</g>
+<g data-step="5">
+<rect class="bx g" data-hl="5" height="30" rx="5" width="230" x="24" y="372"></rect>
+<text class="tm sm g" x="36" y="392">accept → 4</text>
+<text class="tz sm p" x="300" y="182">fd 3 continues listening</text>
+<rect class="bx g" data-hl="5" height="30" rx="5" width="230" x="546" y="372"></rect>
+<text class="tm sm g" x="558" y="392">connect → 0</text>
+</g>
+<g data-step="6">
+<rect class="bx b" height="30" rx="5" width="230" x="546" y="416"></rect>
+<text class="tm sm b" x="558" y="436">write(3, "hola", 4)</text>
+<path class="ln b draw" d="M510 431 L292 455" marker-end="url(#t4-ah-b)"></path>
+<text class="tm sm b mid" x="400" y="432">hola</text>
+<rect class="bx b" height="30" rx="5" width="230" x="24" y="450"></rect>
+<text class="tm sm b" x="36" y="470">read(4, buf, 64) → 4</text>
+</g>
+<g data-step="7">
+<rect class="bx b" height="30" rx="5" width="230" x="24" y="494"></rect>
+<text class="tm sm b" x="36" y="514">write(4, "HOLA", 4)</text>
+<path class="ln b draw" d="M290 509 L508 533" marker-end="url(#t4-ah-b)"></path>
+<text class="tm sm b mid" x="400" y="510">HOLA</text>
+<rect class="bx b" height="30" rx="5" width="230" x="546" y="528"></rect>
+<text class="tm sm b" x="558" y="548">read(3, buf, 64) → 4</text>
+</g>
+<g data-step="8">
+<rect class="bx r" height="30" rx="5" width="230" x="546" y="572"></rect>
+<text class="tm sm r" x="558" y="592">close(3)</text>
+<path class="ln r draw" d="M510 587 L292 607" marker-end="url(#t4-ah-r)"></path>
+<text class="tm sm r mid" x="400" y="590">FIN</text>
+<rect class="bx r" data-hl="8" height="30" rx="5" width="230" x="24" y="596"></rect>
+<text class="tm sm r" x="36" y="616">read(4) → 0 · close(4)</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4600">The server completes three initial steps: <code>socket</code> obtains descriptor 3; <code>bind</code> binds it to local wildcard address (<code>INADDR_ANY</code>, depicted as *) on port 5005; <code>listen</code> converts it to a <b>listening socket</b>, instructing the kernel to maintain a queue for pending connections sized by <b class="t">backlog</b> (here set to 5).</li>
+<li data-dur="3600">The server then invokes <code>accept</code>. With no clients connected yet, <span class="c-y">accept blocks</span>: the server thread halts execution until a connection is available.</li>
+<li data-dur="4200">The client obtains its own socket descriptor (local to its process table, coincidentally also 3) and executes <code>connect</code> targeting 192.168.1.20:5005. Without an explicit bind, the kernel automatically assigns an ephemeral port. <code>connect</code> blocks while the client kernel transmits the initial <span class="c-p">SYN</span> packet.</li>
+<li data-dur="5200">The server <span class="c-p">kernel</span> replies with <span class="c-p">SYN + ACK</span>, and the client kernel responds with <span class="c-p">ACK</span>—completing the <b class="t">three-way handshake (EN)</b>. Handshake handling is performed entirely in kernel space without executing user application code; established connections are placed into the listening socket's backlog queue.</li>
+<li data-dur="5200"><code>connect</code> returns 0 on the client; <code>accept</code> dequeues the connection on the server, returning a <span class="c-g">new descriptor 4</span>. Subsequent communication with this client proceeds over descriptor 4; <b>descriptor 3 remains unaffected and continues listening</b> for new client connections.</li>
+<li>The client writes 4 bytes (<code>write</code>); the server reads them over the <b>new</b> descriptor 4, returning byte count 4.</li>
+<li>After processing (here converting text to uppercase), the server replies with <code>write(4, …)</code>, received by the client via <code>read</code>.</li>
+<li data-dur="5200">The client terminates the connection with <code>close</code>, prompting its kernel to send <span class="c-r">FIN</span>. The server's <code>read</code> returns <b>0</b> (indicating end-of-file/stream termination)—the server calls <code>close(4)</code> and returns to <code>accept(3)</code> to await the next client.</li>
+</ol>
+<p class="stage-note">Descriptor values, IP addresses, and buffer sizes are illustrative. For brevity, the diagram depicts only the initial FIN transmission; a full teardown includes ACK and the server-side FIN.</p>
+</figure>
+<h3>System Call Parameters</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Call</th><th>Purpose &amp; Key Details</th></tr></thead>
+<tbody>
+<tr><td>bind(fd, addr, len)</td><td>Binds the socket to a local IP address and port. Sockets are initially created with an address family but no bound endpoint. <b>Servers must bind</b> to maintain a known port; connection-oriented clients do not require it.</td></tr>
+<tr><td>listen(fd, backlog)</td><td>Used exclusively with TCP. Enables the incoming connection queue; backlog defines the upper limit of established connections awaiting accept, typically 5–10 (or 1 for single-client daemons).</td></tr>
+<tr><td>accept(fd, addr, &amp;len)</td><td>Dequeues the first connection from the backlog, returning a <b>new</b> file descriptor; blocks if the queue is empty. <code>addr</code> retrieves the client's address; <code>len</code> is a value-result parameter: initialized to sizeof(struct), returning the actual address length. Pass NULL if client address inspection is unneeded. Returns -1 on failure.</td></tr>
+<tr><td>read / write</td><td>Performs I/O on the newly returned descriptor from accept; see §5.</td></tr>
+<tr><td>close(fd)</td><td>Terminates the connection and releases kernel resources; see §7.</td></tr>
+</tbody>
+</table>
+</div>
+<p>These calls assemble into an <b>iterative server</b>: handling one client sequentially before calling accept for the next. This implementation capitalizes text and returns it:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">int</span> lfd = <span class="fn">socket</span>(AF_INET, SOCK_STREAM, <span class="nm">0</span>);</span><span class="ln-row">    <span class="kw">if</span> (lfd &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"socket"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">int</span> on = <span class="nm">1</span>;</span><span class="ln-row">    <span class="fn">setsockopt</span>(lfd, SOL_SOCKET, SO_REUSEADDR, &amp;on, <span class="kw">sizeof</span> on);   <span class="cm">// See §7</span></span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">struct</span> sockaddr_in me;</span><span class="ln-row">    <span class="fn">memset</span>(&amp;me, <span class="nm">0</span>, <span class="kw">sizeof</span> me);</span><span class="ln-row">    <span class="rg">me.sin_family</span>      = AF_INET;</span><span class="ln-row">    <span class="rg">me.sin_addr.s_addr</span> = <span class="fn">htonl</span>(INADDR_ANY);   <span class="cm">// Any local interface</span></span><span class="ln-row">    <span class="rg">me.sin_port</span>        = <span class="fn">htons</span>(<span class="nm">5005</span>);</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">bind</span>(lfd, (<span class="kw">struct</span> sockaddr *)&amp;me, <span class="kw">sizeof</span> me) &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"bind"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">listen</span>(lfd, <span class="nm">5</span>) &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"listen"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="kw">struct</span> sockaddr_in peer;</span><span class="ln-row">        socklen_t plen = <span class="kw">sizeof</span> peer;            <span class="cm">// In: buffer capacity</span></span><span class="ln-row">        <span class="kw">int</span> cfd = <span class="fn">accept</span>(lfd, (<span class="kw">struct</span> sockaddr *)&amp;peer, &amp;plen);   <span class="cm">// Blocks</span></span><span class="ln-row">        <span class="kw">if</span> (cfd &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"accept"</span>); <span class="kw">continue</span>; }</span><span class="ln-row"> </span><span class="ln-row">        <span class="kw">char</span> buf[<span class="nm">128</span>];</span><span class="ln-row">        ssize_t n;</span><span class="ln-row">        <span class="kw">while</span> ((n = <span class="fn">read</span>(cfd, buf, <span class="kw">sizeof</span> buf)) &gt; <span class="nm">0</span>) {   <span class="cm">// 0 = Client closed, -1 = Error</span></span><span class="ln-row">            <span class="kw">for</span> (ssize_t i = <span class="nm">0</span>; i &lt; n; i++) buf[i] = <span class="fn">toupper</span>((<span class="kw">unsigned char</span>)buf[i]);</span><span class="ln-row">            <span class="fn">write_all</span>(cfd, buf, n);                <span class="cm">// Helper from §5</span></span><span class="ln-row">        }</span><span class="ln-row">        <span class="fn">close</span>(cfd);                                <span class="cm">// Closes client; lfd remains listening</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<p class="aside">Header dependencies: <code>&lt;sys/socket.h&gt;</code>, <code>&lt;netinet/in.h&gt;</code>, <code>&lt;arpa/inet.h&gt;</code>, <code>&lt;unistd.h&gt;</code>, <code>&lt;string.h&gt;</code>, <code>&lt;ctype.h&gt;</code>, <code>&lt;stdio.h&gt;</code>. While servicing a client, subsequent connection handshakes succeed and wait in the backlog queue; concurrent client handling is covered in §7.</p>
+<div class="note warm">
+<span class="lbl">Clarification · Port Assignment of the New Socket</span>
+<p>Some texts state that accept allocates a new ephemeral port for the returned socket to free the listening port. In reality, the local port of the accepted socket remains 5005: the kernel disambiguates connections using the full <b>4-tuple</b> (local IP, local port, remote IP, remote port). Thus, a listening socket and multiple connected sockets can coexist on port 5005 simultaneously. The key architectural reality remains: <b>accept returns a distinct new socket, leaving the listening socket available</b>.</p>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>TCP Client &amp; Byte Stream <span class="tag">T4.7</span></h2>
+<p class="hook"><span class="zh">If the client writes twice, will the server definitely read twice?</span><span class="es">TCP es un flujo de bytes: no conserva los límites de los mensajes.</span></p>
+<p>A TCP client requires only two calls: <code>socket</code>, followed by <code>connect</code> targeting the server's address. <code>connect</code> blocks until connection establishment succeeds (returning 0) or fails (returning -1, e.g. Connection refused when no process is listening). No <code>bind</code> is necessary: the kernel assigns an ephemeral port during connect and maintains it for the connection's lifetime.</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> fd = <span class="fn">socket</span>(AF_INET, SOCK_STREAM, <span class="nm">0</span>);</span><span class="ln-row"><span class="kw">struct</span> sockaddr_in srv;</span><span class="ln-row"><span class="fn">memset</span>(&amp;srv, <span class="nm">0</span>, <span class="kw">sizeof</span> srv);</span><span class="ln-row"><span class="rg">srv.sin_family</span> = AF_INET;</span><span class="ln-row"><span class="rg">srv.sin_port</span>   = <span class="fn">htons</span>(<span class="nm">5005</span>);</span><span class="ln-row"><span class="fn">inet_pton</span>(AF_INET, <span class="st">"192.168.1.20"</span>, &amp;<span class="rg">srv.sin_addr</span>);</span><span class="ln-row"><span class="kw">if</span> (<span class="fn">connect</span>(fd, (<span class="kw">struct</span> sockaddr *)&amp;srv, <span class="kw">sizeof</span> srv) &lt; <span class="nm">0</span>) {   <span class="cm">// Blocks until handshake completes</span></span><span class="ln-row">    <span class="fn">perror</span>(<span class="st">"connect"</span>);                       <span class="cm">// e.g. Connection refused</span></span><span class="ln-row">    <span class="kw">return</span> <span class="nm">1</span>;</span><span class="ln-row">}</span><span class="ln-row"><span class="fn">write_all</span>(fd, <span class="st">"hola\n"</span>, <span class="nm">5</span>);</span><span class="ln-row"><span class="kw">char</span> buf[<span class="nm">64</span>];</span><span class="ln-row">ssize_t n = <span class="fn">read</span>(fd, buf, <span class="kw">sizeof</span> buf);</span><span class="ln-row"><span class="fn">close</span>(fd);</span></code></pre>
+<h3>Three Return Values of read and recv</h3>
+<div class="grid3">
+<div class="cell g"><span class="k c-g">&gt; 0</span><h3>Read n Bytes</h3><p>n may be <b>smaller</b> than requested: represents only bytes currently buffered in the kernel.</p></div>
+<div class="cell o"><span class="k c-o">= 0</span><h3>Peer Closed Connection</h3><p>End of stream (EOF). No further data will arrive; close your local descriptor.</p></div>
+<div class="cell r"><span class="k c-r">= -1</span><h3>Error Occurred</h3><p>Inspect <code>errno</code>; output diagnostics via <code>perror()</code>.</p></div>
+</div>
+<p><code>recv(fd, buf, len, flags)</code> and <code>send(fd, buf, len, flags)</code> are socket-specific variants. When flags is 0, their behavior matches <code>read</code>/<code>write</code>. Useful flags include: <code>MSG_PEEK</code> (peeks at data without dequeuing), <code>MSG_OOB</code> (out-of-band data), and <code>MSG_NOSIGNAL</code> (see §7). <code>send</code>/<code>write</code> returns the count of bytes accepted by the kernel, which may also be less than requested.</p>
+<p>TCP delivers a continuous <b class="t">byte stream (EN) / flujo de bytes (ES)</b>: it guarantees reliable, sequenced, deduplicated arrival, but <b>does not preserve</b> individual write boundaries:</p>
+<figure class="stage" data-scene="" id="sc-flujo">
+<div class="stage-title"><span>Escena 4 · el flujo no tiene fronteras</span><b>5 Steps</b></div>
+<div aria-label="Interactive animation: Client performs two writes; server reads different byte boundaries across calls" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-flujo-t" role="img" viewbox="0 0 800 300">
+<title id="sc-flujo-t">Client writes ABC then DEFG; bytes merge continuously in the TCP stream; server read of 5 bytes yields ABCDE, next read yields FG</title>
+<rect class="bx hollow m" height="72" rx="8" width="150" x="16" y="104"></rect>
+<text class="tx sm w mid" x="91" y="146">cliente</text>
+<rect class="bx hollow m" height="72" rx="8" width="150" x="634" y="104"></rect>
+<text class="tx sm w mid" x="709" y="146">servidor</text>
+<rect class="bx hollow b" height="56" rx="6" width="436" x="182" y="112"></rect>
+<text class="tz sm m mid" x="400" y="96">Byte Stream Inside TCP Connection →</text>
+<g data-step="1">
+<text class="tm sm b" x="16" y="60">write(fd, "ABC", 3)</text>
+<g data-out="3">
+<rect class="bx b" height="40" rx="3" width="38" x="192" y="120"></rect><text class="tm b mid" x="211" y="146">A</text>
+<rect class="bx b" height="40" rx="3" width="38" x="234" y="120"></rect><text class="tm b mid" x="253" y="146">B</text>
+<rect class="bx b" height="40" rx="3" width="38" x="276" y="120"></rect><text class="tm b mid" x="295" y="146">C</text>
+</g>
+</g>
+<g data-step="2">
+<text class="tm sm b" x="16" y="84">write(fd, "DEFG", 4)</text>
+<g data-out="3">
+<rect class="bx b" height="40" rx="3" width="38" x="318" y="120"></rect><text class="tm b mid" x="337" y="146">D</text>
+<rect class="bx b" height="40" rx="3" width="38" x="360" y="120"></rect><text class="tm b mid" x="379" y="146">E</text>
+</g>
+<g data-out="4">
+<rect class="bx b" height="40" rx="3" width="38" x="402" y="120"></rect><text class="tm b mid" x="421" y="146">F</text>
+<rect class="bx b" height="40" rx="3" width="38" x="444" y="120"></rect><text class="tm b mid" x="463" y="146">G</text>
+</g>
+<text class="tz sm r mid" data-out="3" x="316" y="198">No boundary exists between C and D</text>
+</g>
+<g data-step="3">
+<text class="tm sm y" x="440" y="222">read(fd, buf, 5) → 5</text>
+<text class="tm y" x="440" y="248">buf = "ABCDE"</text>
+</g>
+<g data-step="4">
+<text class="tm sm y" x="440" y="274">read(fd, buf, 5) → 2 · "FG"</text>
+</g>
+<g data-step="5">
+<rect class="bx hollow g" height="76" rx="6" width="400" x="16" y="210"></rect>
+<text class="tz sm g" x="30" y="236">Application layers must frame message boundaries:</text>
+<text class="tm sm w" x="30" y="260">· Delimiters: "ABC\n" "DEFG\n"</text>
+<text class="tm sm w" x="30" y="280">· Length Prefixes: [3]ABC [4]DEFG</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>The client writes 3 bytes: <code>write(fd, "ABC", 3)</code>.</li>
+<li data-dur="3800">Immediately following, it writes 4 bytes: <code>write(fd, "DEFG", 4)</code>. In the TCP stream, these bytes append directly after 'C'—<span class="c-r">with no delimiter indicating where the first message ended</span>.</li>
+<li data-dur="3800">The server executes <code>read(fd, buf, 5)</code>: requesting up to 5 bytes, it receives "ABCDE"—spanning across the client's two separate write operations.</li>
+<li data-dur="3600">The next read retrieves the remaining 2 bytes, returning "FG". Under different network conditions (higher latency or smaller packet windows), the exact same two writes could be read as "AB" + "CDEFG", or all 7 bytes "ABCDEFG" in a single read.</li>
+<li data-dur="4600">Consequently, application protocols atop TCP must establish their own framing: using delimiters (such as terminating lines with <code>\n</code>, like HTTP headers), or length-prefixing each message. The receiver must <b>loop reading</b> until an entire message is assembled.</li>
+</ol>
+<p class="stage-note">Read chunking depends on packet arrival timing; the flow shown illustrates one plausible scenario.</p>
+</figure>
+<p>Writing requires identical diligence: <code>write</code> may perform a partial write (especially under heavy loads or slow receivers), requiring an explicit loop:</p>
+<pre class="code"><code><span class="ln-row"><span class="cm">/* Writes all len bytes to fd; returns 0 on success, -1 on error */</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">write_all</span>(<span class="kw">int</span> fd, <span class="kw">const void</span> *p, size_t len) {</span><span class="ln-row">    <span class="kw">const char</span> *c = p;</span><span class="ln-row">    <span class="kw">while</span> (len &gt; <span class="nm">0</span>) {</span><span class="ln-row">        ssize_t n = <span class="fn">write</span>(fd, c, len);</span><span class="ln-row">        <span class="kw">if</span> (n &lt; <span class="nm">0</span>) {</span><span class="ln-row">            <span class="kw">if</span> (errno == EINTR) <span class="kw">continue</span>;   <span class="cm">// Interrupted by signal: retry</span></span><span class="ln-row">            <span class="kw">return</span> <span class=\"nm\">-1</span>;</span><span class=\"ln-row\">        }</span><span class=\"ln-row\">        c += n; len -= n;                   <span class=\"cm\">// Partial write: advance pointer and continue</span></span><span class=\"ln-row\">    }</span><span class=\"ln-row\">    <span class=\"kw\">return</span> <span class=\"nm\">0</span>;</span><span class=\"ln-row\">}</span></code></pre>
+<p class="takeaway">TCP guarantees reliable, ordered <i>bytes</i>, not <i>messages</i>. Both reads and writes may complete partially; delineating message start and end boundaries is strictly an application-layer responsibility.</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>UDP: One Datagram at a Time <span class="tag">T4.8</span></h2>
+<p class="hook"><span class="zh">Without a connection, how does the receiver know who sent the packet and where to reply?</span><span class="es">sendto() y recvfrom() llevan la dirección en cada llamada.</span></p>
+<p>UDP discards listen, accept, and connect: both peers create endpoints via <code>socket(AF_INET, SOCK_DGRAM, 0)</code>. The <b>receiving</b> peer binds to a known port with <code>bind</code> and immediately exchanges data. Lacking a persistent connection, every outbound call must specify the target address, and every inbound call returns the sender's address:</p>
+<pre class="code"><code><span class="ln-row"><span class=\"kw\">ssize_t</span> <span class=\"fn\">sendto</span>(<span class=\"kw\">int</span> fd, <span class=\"kw\">const void</span> *buf, size_t len, <span class=\"kw\">int</span> flags,</span><span class=\"ln-row\">               <span class=\"kw\">const struct</span> sockaddr *to, socklen_t tolen);      <span class=\"cm\">// Send to destination 'to'</span></span><span class=\"ln-row\"><span class=\"kw\">ssize_t</span> <span class=\"fn\">recvfrom</span>(<span class=\"kw\">int</span> fd, <span class=\"kw\">void</span> *buf, size_t len, <span class=\"kw\">int</span> flags,</span><span class=\"ln-row\">                 <span class=\"kw\">struct</span> sockaddr *from, socklen_t *fromlen);      <span class=\"cm\">// 'from' captures sender address</span></span></code></pre>
+<p><code>fromlen</code> is a value-result parameter, identical to accept's length argument. Passing <code>from</code> directly back into <code>sendto</code> allows immediate replies. Both functions return bytes transferred, or -1 on error. Because UDP is connectionless, a return value of 0 does not denote disconnection—it merely indicates reception of a 0-byte datagram.</p>
+<figure class="stage" data-scene="" id="sc-udp">
+<div class="stage-title"><span>Escena 5 · datagramas</span><b>5 Steps</b></div>
+<div aria-label="Interactive animation: Three UDP datagrams transmitted; one dropped; receiver gets distinct datagrams; undersized buffer causes truncation" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-udp-t" role="img" viewbox="0 0 800 330">
+<title id="sc-udp-t">Sender calls sendto three times; second packet dropped in network; receiver gets discrete datagrams with sender addresses; undersized buffer discards excess payload</title>
+<rect class="bx hollow m" height="70" rx="8" width="150" x="16" y="56"></rect>
+<text class="tx sm w mid" x="91" y="88">emisor</text>
+<text class="tm xs m mid" x="91" y="110">192.168.1.30:40112</text>
+<rect class="bx hollow m" height="70" rx="8" width="150" x="634" y="56"></rect>
+<text class="tx sm w mid" x="709" y="88">receptor</text>
+<text class="tm xs m mid" x="709" y="110">bind :6006</text>
+<g data-step="1">
+<text class="tm sm b" x="16" y="34">sendto() × 3</text>
+<rect class="bx b" height="46" rx="4" width="96" x="190" y="68"></rect>
+<text class="tm xs m mid" x="238" y="84">#1</text><text class="tm b mid" x="238" y="104">ABC</text>
+<rect class="bx b" height="46" rx="4" width="116" x="306" y="68"></rect>
+<text class="tm xs m mid" x="364" y="84">#2</text><text class="tm b mid" x="364" y="104">DEFG</text>
+<rect class="bx b" height="46" rx="4" width="80" x="442" y="68"></rect>
+<text class="tm xs m mid" x="482" y="84">#3</text><text class="tm b mid" x="482" y="104">HI</text>
+</g>
+<g data-step="2">
+<path class="ln r draw" d="M300 62 L428 120 M428 62 L300 120"></path>
+<text class="tz sm r mid" x="364" y="146">Lost · No retransmission</text>
+</g>
+<g data-step="3">
+<text class="tm sm y" x="380" y="190">recvfrom(fd, buf, 64, 0, &amp;from, &amp;flen) → 3</text>
+<text class="tm sm w" x="380" y="212">"ABC" · from 192.168.1.30:40112</text>
+</g>
+<g data-step="4">
+<text class="tm sm y" x="380" y="242">recvfrom(…) → 2 · "HI"</text>
+<text class="tz sm r" x="380" y="264">#2 will never arrive; app must detect loss</text>
+</g>
+<g data-step="5">
+<rect class="bx b" height="46" rx="4" width="100" x="16" y="196"></rect>
+<text class="tm b mid" x="66" y="225">WXYZ</text>
+<text class="tm sm y" x="16" y="270">recvfrom(fd, buf, 2, …) → 2</text>
+<text class="tm sm w" x="16" y="294">buf = "WX"</text>
+<text class="tz sm r" x="130" y="294">"YZ" discarded</text>
+<path class="ln r" d="M70 200 L112 238"></path>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">The sender executes three successive <code>sendto</code> calls. Each represents a discrete <b class="t">datagram (EN) / datagrama (ES)</b> where <b>message boundaries are preserved</b>: unlike TCP, they never coalesce into an undivided stream.</li>
+<li data-dur="3800">The network drops datagram #2. UDP provides neither acknowledgments nor retransmissions, nor ordering guarantees—datagrams are delivered in whatever order and condition they arrive.</li>
+<li data-dur="4200">The receiver's <code>recvfrom</code> retrieves exactly <b>one whole datagram</b> per call, populating <code>from</code> with the sender's IP and port for immediate reply.</li>
+<li data-dur="4200">The subsequent call retrieves "HI". Datagram #2 loss can only be detected by the application layer (for instance, via sequence numbering embedded inside payloads).</li>
+<li data-dur="5000">The receive buffer must be sufficiently sized: if a datagram contains 4 bytes but <code>recvfrom</code> provides a buffer length of only 2, only "WX" is returned—<span class="c-r">the trailing "YZ" is permanently discarded</span>, and the next call proceeds to the subsequent datagram. Ensure buffer capacity exceeds the maximum anticipated datagram size.</li>
+</ol>
+<p class="stage-note">Addresses, ports, and payload data are illustrative.</p>
+</figure>
+<p>A typical UDP receiver: listening on port 6006, printing message content and sender address:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> fd = <span class="fn">socket</span>(AF_INET, SOCK_DGRAM, <span class="nm">0</span>);</span><span class="ln-row"><span class="kw">struct</span> sockaddr_in me;</span><span class="ln-row"><span class="fn">memset</span>(&amp;me, <span class="nm">0</span>, <span class="kw">sizeof</span> me);</span><span class="ln-row"><span class="rg">me.sin_family</span> = AF_INET;</span><span class="ln-row"><span class="rg">me.sin_addr.s_addr</span> = <span class="fn">htonl</span>(INADDR_ANY);</span><span class="ln-row"><span class="rg">me.sin_port</span> = <span class="fn">htons</span>(<span class="nm">6006</span>);</span><span class="ln-row"><span class="fn">bind</span>(fd, (<span class="kw">struct</span> sockaddr *)&amp;me, <span class="kw">sizeof</span> me);         <span class="cm">// Receiving requires a known port</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="kw">char</span> buf[<span class="nm">1500</span>];                                   <span class="cm">// Buffer ≥ maximum datagram size</span></span><span class="ln-row">    <span class="kw">struct</span> sockaddr_in from;</span><span class="ln-row">    socklen_t flen = <span class="kw">sizeof</span> from;</span><span class="ln-row">    ssize_t n = <span class="fn">recvfrom</span>(fd, buf, <span class="kw">sizeof</span> buf, <span class="nm">0</span>, (<span class="kw">struct</span> sockaddr *)&amp;from, &amp;flen);</span><span class="ln-row">    <span class="kw">if</span> (n &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"recvfrom"</span>); <span class="kw">continue</span>; }</span><span class="ln-row">    <span class="kw">char</span> ip[INET_ADDRSTRLEN];</span><span class="ln-row">    <span class="fn">inet_ntop</span>(AF_INET, &amp;<span class="rg">from.sin_addr</span>, ip, <span class="kw">sizeof</span> ip);</span><span class="ln-row">    <span class="fn">printf</span>(<span class="st">"%zd bytes de %s:%u: %.*s\n"</span>, n, ip, <span class="fn">ntohs</span>(<span class="rg">from.sin_port</span>), (<span class="kw">int</span>)n, buf);</span><span class="ln-row">}</span></code></pre>
+<p class="aside">Send-only UDP clients do not require bind: when calling <code>sendto(fd, msg, len, 0, (struct sockaddr *)&amp;dst, sizeof dst)</code>, the kernel assigns an ephemeral port on the first transmit, visible in the receiver's <code>from</code> struct. UDP sockets can optionally invoke <code>connect</code>: this performs no network handshake, simply recording a default destination address so subsequent calls can use standard <code>send</code>/<code>recv</code>.</p>
+<h3>TCP vs. UDP: Architectural Comparison</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Feature</th><th>TCP · SOCK_STREAM</th><th>UDP · SOCK_DGRAM</th></tr></thead>
+<tbody>
+<tr><td>Connection Setup</td><td>Three-way handshake required</td><td>Connectionless; transmits immediately</td></tr>
+<tr><td>Reliability</td><td>Retransmits lost data; in-order, deduplicated</td><td>Packets may be dropped, duplicated, or reordered</td></tr>
+<tr><td>Framing</td><td>Continuous byte stream; no message boundaries</td><td>Discrete datagrams; overflow discarded</td></tr>
+<tr><td>I/O Calls</td><td>read/write, recv/send (peer known via connection)</td><td>sendto/recvfrom (or connect to record peer)</td></tr>
+<tr><td>Control Level</td><td>Managed by kernel protocol engine</td><td>Application retains control over delivery &amp; drops</td></tr>
+<tr><td>Suitability</td><td>Loss-intolerant: files, web pages, commands</td><td>Real-time control &amp; streaming: late data is useless</td></tr>
+</tbody>
+</table>
+</div>
+<p>TCP is standard for general networking, but <b>unsuitable for strict real-time telemetry</b>: when a packet drops, subsequent packets stall until retransmission completes (head-of-line blocking), causing unpredictable latency spikes outside application control. UDP returns control to the developer: the application observes exactly when packets arrive, identifying drops immediately and deciding whether to wait, retransmit, or discard stale data. When lower-level raw frame manipulation is required, Linux provides <b class="t">raw sockets</b> to construct IP packets directly.</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Blocking, Multiplexing &amp; Closing <span class="tag">T4.9</span></h2>
+<p class="hook"><span class="zh">The server is blocked in accept waiting for clients, but must simultaneously handle other tasks. What can you do?</span><span class="es">¿Necesitamos multitarea? select como alternativa.</span></p>
+<p>Socket calls are <b class="t">blocking (EN) / bloqueante (ES)</b> by default: when prerequisites are unmet, execution suspends, halting the calling thread until an event occurs.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>System Call</th><th>Blocking Condition</th></tr></thead>
+<tbody>
+<tr><td>accept</td><td>Waits until an established connection enters the backlog queue</td></tr>
+<tr><td>connect (TCP)</td><td>Waits until the three-way handshake completes or fails</td></tr>
+<tr><td>read / recv / recvfrom</td><td>Waits until at least 1 byte (or 1 datagram) arrives, or peer terminates connection</td></tr>
+<tr><td>write / send (TCP)</td><td>Waits for space in the kernel send buffer (blocks when peer reads too slowly)</td></tr>
+</tbody>
+</table>
+</div>
+<p>When an application must service multiple concurrent clients or balance communication with peripheral sensing and user input, single-threaded blocking is unacceptable. Three design patterns resolve this:</p>
+<div class="grid3">
+<div class="cell g">
+<span class="k c-g">multitarea</span>
+<h3>One Thread per Client</h3>
+<p>The main thread exclusively executes <code>accept</code>; upon accepting a connection, it spawns a worker thread (or forks a child process) dedicated to that descriptor. Worker code uses straightforward blocking I/O. Maximizes responsiveness; requires thread synchronization for shared state (Tema 2).</p>
+</div>
+<div class="cell o">
+<span class="k c-o">multiplexación</span>
+<h3>select / poll</h3>
+<p>A single thread monitors <b>multiple</b> descriptors simultaneously: requests the kernel notify it when any descriptor becomes ready for I/O, then calls accept or read exclusively on ready descriptors without blocking.</p>
+</div>
+<div class="cell r">
+<span class="k c-r">no bloqueante</span>
+<h3>Non-Blocking Mode</h3>
+<p>Configuring descriptors via <code>fcntl(fd, F_SETFL, O_NONBLOCK)</code> causes unmet calls to return -1 immediately with <code>errno = EAGAIN</code> or <code>EWOULDBLOCK</code>. Typically paired with select/poll event loops.</p>
+</div>
+</div>
+<p class="aside">Older documentation sometimes refers to non-blocking flags as O_NODELAY; Linux POSIX headers standardize on <code>O_NONBLOCK</code>.</p>
+<h3>Multi-Threaded Server Example</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">static void</span> *<span class="fn">atiende</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    <span class="kw">int</span> cfd = (<span class="kw">int</span>)(intptr_t)arg;</span><span class="ln-row">    <span class="cm">/* ...servicing client using blocking read/write on cfd... */</span></span><span class="ln-row">    <span class="fn">close</span>(cfd);</span><span class="ln-row">    <span class="kw">return</span> NULL;</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">for</span> (;;) {                                       <span class="cm">// Main thread: accepts clients</span></span><span class="ln-row">    <span class="kw">int</span> cfd = <span class="fn">accept</span>(lfd, NULL, NULL);</span><span class="ln-row">    <span class="kw">if</span> (cfd &lt; <span class="nm">0</span>) <span class="kw">continue</span>;</span><span class="ln-row">    pthread_t th;</span><span class="ln-row">    <span class="fn">pthread_create</span>(&amp;th, NULL, atiende, (<span class="kw">void</span> *)(intptr_t)cfd);</span><span class="ln-row">    <span class="fn">pthread_detach</span>(th);                          <span class="cm">// Automatically reclaim on termination</span></span><span class="ln-row">}</span></code></pre>
+<h3>I/O Multiplexing: select</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">select</span>(<span class="kw">int</span> nfds, fd_set *readfds, fd_set *writefds,</span><span class="ln-row">           fd_set *exceptfds, <span class="kw">struct</span> timeval *timeout);</span></code></pre>
+<ul>
+<li><code>readfds</code>, <code>writefds</code>, and <code>exceptfds</code> represent descriptor sets monitored for readability, writability, and exceptional conditions (pass NULL to ignore). Manipulated via <code>FD_ZERO</code> (clear), <code>FD_SET</code> (add), <code>FD_CLR</code> (remove), and <code>FD_ISSET</code> (test membership).</li>
+<li><code>nfds</code> must equal the <b>highest descriptor value in any set plus 1</b>.</li>
+<li><code>timeout</code> specifies maximum wait time (seconds + microseconds); passing NULL waits indefinitely; expiring with no events returns 0.</li>
+<li>Upon return, the kernel <b>modifies the sets in place</b>, retaining only ready descriptors. Hence, loops must refresh the sets from a master copy on each cycle. A listening socket ready for read indicates an incoming connection for accept; a connected socket ready for read indicates available data or EOF (read returning 0).</li>
+</ul>
+<pre class="code"><code><span class="ln-row">fd_set all, rd;</span><span class="ln-row"><span class="fn">FD_ZERO</span>(&amp;all);</span><span class="ln-row"><span class="fn">FD_SET</span>(lfd, &amp;all);</span><span class="ln-row"><span class="kw">int</span> maxfd = lfd;</span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    rd = all;                                     <span class="cm">// Refresh copy: select modifies sets</span></span><span class="ln-row">    <span class="kw">struct</span> timeval tv = { <span class="nm">1</span>, <span class="nm">500000</span> };         <span class="cm">// 1.5 s</span></span><span class="ln-row">    <span class="kw">int</span> r = <span class="fn">select</span>(maxfd + <span class="nm">1</span>, &amp;rd, NULL, NULL, &amp;tv);</span><span class="ln-row">    <span class="kw">if</span> (r &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"select"</span>); <span class="kw">break</span>; }</span><span class="ln-row">    <span class="kw">if</span> (r == <span class="nm">0</span>) { <span class="fn">puts</span>(<span class="st">"sin actividad"</span>); <span class="kw">continue</span>; }   <span class="cm">// Timeout</span></span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> fd = <span class="nm">0</span>; fd &lt;= maxfd; fd++) {</span><span class="ln-row">        <span class="kw">if</span> (!<span class="fn">FD_ISSET</span>(fd, &amp;rd)) <span class="kw">continue</span>;</span><span class="ln-row">        <span class="kw">if</span> (fd == lfd) {                          <span class="cm">// New connection: accept will not block</span></span><span class="ln-row">            <span class="kw">int</span> c = <span class="fn">accept</span>(lfd, NULL, NULL);</span><span class="ln-row">            <span class="kw">if</span> (c &gt;= <span class="nm">0</span>) { <span class="fn">FD_SET</span>(c, &amp;all); <span class="kw">if</span> (c &gt; maxfd) maxfd = c; }</span><span class="ln-row">        } <span class="kw">else</span> {                                  <span class="cm">// Client data available or disconnected</span></span><span class="ln-row">            <span class="kw">char</span> buf[<span class="nm">256</span>];</span><span class="ln-row">            ssize_t n = <span class="fn">read</span>(fd, buf, <span class="kw">sizeof</span> buf);</span><span class="ln-row">            <span class="kw">if</span> (n &lt;= <span class="nm">0</span>) { <span class="fn">close</span>(fd); <span class="fn">FD_CLR</span>(fd, &amp;all); }</span><span class="ln-row">            <span class="kw">else</span> <span class="fn">write_all</span>(fd, buf, n);            <span class="cm">// Echo payload</span></span><span class="ln-row">        }</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<div class="note">
+<span class="lbl">Architectural Guidance</span>
+<p>While select allows single-threaded concurrency, dedicated worker threads paired with timers provide substantially greater modularity and responsiveness. Rule of thumb: when handling periodic tasks or complex client workflows, use multithreading; when forwarding modest traffic between a handful of sockets, select suffices. <code>poll</code> operates similarly, substituting an array of <code>struct pollfd</code> for bitsets and eliminating the descriptor count ceiling (where select is bounded by <code>FD_SETSIZE</code>, commonly 1024).</p>
+</div>
+<h3>Connection Teardown: close vs. shutdown</h3>
+<div class="grid2">
+<div class="panel">
+<h3>close(fd)</h3>
+<p>Terminates both communication directions simultaneously and <b>releases</b> the file descriptor and underlying kernel resources. Sockets must always be closed upon completion.</p>
+</div>
+<div class="panel">
+<h3>shutdown(fd, how)</h3>
+<p>Selectively shuts down communication directions: <code>SHUT_RD</code> (0, ceases receiving), <code>SHUT_WR</code> (1, ceases transmitting; informs peer via EOF/read returning 0), <code>SHUT_RDWR</code> (2, both directions). It <b>does not release</b> descriptor resources; <code>close</code> must still be invoked.</p>
+</div>
+</div>
+<p class="aside">To ensure clean termination without protocol ambiguity: invoke <code>shutdown(fd, SHUT_RDWR)</code> to explicitly signal communication termination, followed by <code>close(fd)</code> to free descriptor table entries.</p>
+<div class="grid2">
+<div class="panel">
+<h3>bind: Address already in use</h3>
+<p>Following process termination, the kernel retains recently closed TCP endpoints in TIME_WAIT state for approximately 1–2 minutes. Rebinding to the same port during this interval fails. To bypass this delay, set <code>SO_REUSEADDR</code> on the socket <b>prior</b> to calling <code>bind</code>:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> on = <span class=\"nm\">1</span>;</span><span class=\"ln-row\"><span class=\"fn\">setsockopt</span>(lfd, SOL_SOCKET, SO_REUSEADDR, &amp;on, <span class=\"kw\">sizeof</span> on);</span></code></pre>
+<p class="aside">Failing to close sockets during process execution holds ports open continuously, preventing other applications from binding.</p>
+</div>
+<div class="panel">
+<h3>SIGPIPE Handling</h3>
+<p>Writing to a TCP socket after the <b>remote peer has closed the connection</b> triggers the kernel to deliver a <span class="c-r">SIGPIPE</span> signal to your process. Its default action terminates the process abruptly. Prevent termination by passing <code>MSG_NOSIGNAL</code> during write, which returns -1 with <code>errno = EPIPE</code> for graceful handling:</p>
+<pre class="code"><code><span class=\"ln-row\"><span class=\"fn\">send</span>(fd, buf, len, MSG_NOSIGNAL);</span><span class=\"ln-row\"><span class=\"fn\">sendto</span>(fd, buf, len, MSG_NOSIGNAL, (<span class=\"kw\">struct</span> sockaddr *)&amp;to, <span class=\"kw\">sizeof</span> to);</span></code></pre>
+<p class="aside">Alternatively, ignore the signal globally during program startup: <code>signal(SIGPIPE, SIG_IGN)</code>; standard writes will then fail with EPIPE rather than killing the process (Tema 3).</p>
+</div>
+</div>
+<p>Useful network diagnostic utilities include: <code>getpeername(fd, …)</code> to retrieve the connected remote endpoint address (TCP only); <code>gethostname(buf, size)</code> to query local host name; and <code>getifaddrs</code>/<code>freeifaddrs</code> to enumerate local network interfaces (e.g. <code>eth0</code>, <code>wlan0</code>) along with their assigned IP addresses.</p>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>HTTP Messages <span class="tag">T4.10</span></h2>
+<p class="hook"><span class="zh">A web browser is simply a TCP client. What does it actually write onto the connection?</span><span class="es">HTTP: texto sobre TCP, líneas terminadas en CRLF.</span></p>
+<p><b class="t">HTTP</b> (HyperText Transfer Protocol) is an application-level text protocol layered directly over TCP. A web client initiates a TCP connection (default port 80; port 7070 in <code>http://192.168.1.20:7070/</code>), transmits an HTTP <b>request</b>, and the server returns an HTTP <b>response</b>. Both message types share a standardized structure:</p>
+<ol>
+<li>First line: Request line or Status line;</li>
+<li>Arbitrary number of headers formatted as <code>Header-Name: value</code>;</li>
+<li>An <b>empty line</b>;</li>
+<li>Optional message body.</li>
+</ol>
+<p>Every header line terminates with <span class="c-r"><b>CRLF</b></span> (<code>\r\n</code>, Carriage Return + Line Feed). This exemplifies the delimiter framing described in §5: servers must loop reading from the socket until detecting the sequence <code>\r\n\r\n</code> (the empty line) signaling header completion.</p>
+<div class="grid2">
+<div class="panel">
+<h3>Request · Petición</h3>
+<pre class="code msg"><code><span class="ln-row"><span class="rl">GET /saludo HTTP/1.1</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Host: 192.168.1.20:7070</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">User-Agent: Mozilla/5.0 …</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Accept: text/html</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="crlf">\r\n</span></span></code></pre>
+<p class="aside"><span class="c-y">Request Line</span> = Method + URI Path + HTTP Version. Dominant methods include GET (resource retrieval) and POST (data submission, included in body). GET requests rarely contain a body.</p>
+</div>
+<div class="panel">
+<h3>Response · Respuesta</h3>
+<pre class="code msg"><code><span class="ln-row"><span class="rl">HTTP/1.1 200 OK</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Content-Type: text/plain; charset=utf-8</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Content-Length: 4</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Connection: close</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="crlf">\r\n</span></span><span class="ln-row"><span class="bd">Hola</span></span></code></pre>
+<p class="aside"><span class="c-y">Status Line</span> = HTTP Version + Status Code + Reason Phrase. Standard codes: 200 OK, 301 Moved Permanently, 400 Bad Request, 404 Not Found, 500 Internal Server Error.</p>
+</div>
+</div>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Header</th><th>Significance</th></tr></thead>
+<tbody>
+<tr><td>Host</td><td>Specifies target host domain and port (mandatory in HTTP/1.1)</td></tr>
+<tr><td>Content-Type</td><td>MIME type of payload: <code>text/plain</code>, <code>text/html</code>, <code>application/json</code>…</td></tr>
+<tr><td>Content-Length</td><td>Exact payload size measured in <b>bytes</b></td></tr>
+<tr><td>Connection: close</td><td>Instructs peer that server will close connection following response</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Detecting Message Body Boundaries</h3>
+<p>Headers terminate cleanly via the blank line delimiter, but payload bodies can contain arbitrary binary bytes. HTTP resolves body length through three mechanisms:</p>
+<ul>
+<li><b>Content-Length</b>: Header declares exact byte count; receiver reads until reaching this count.</li>
+<li><b>Connection Closure</b>: Server transmits payload and immediately closes socket; receiver detects termination when read returns 0 (communicated via <code>Connection: close</code>).</li>
+<li><b>Chunked Transfer</b> (<code>Transfer-Encoding: chunked</code>): Data arrives in sequential chunks with preceding hexadecimal lengths; a 0-length chunk signals end of payload.</li>
+</ul>
+<p>From the server's perspective, responding involves writing formatted bytes to the client socket descriptor <code>cfd</code> after reading the request headers:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">static const char</span> resp[] =</span><span class="ln-row">    <span class="st">"HTTP/1.1 200 OK\r\n"</span></span><span class="ln-row">    <span class="st">"Content-Type: text/plain; charset=utf-8\r\n"</span></span><span class="ln-row">    <span class="st">"Content-Length: 4\r\n"</span>                  <span class="cm">// "Hola" = 4 bytes</span></span><span class="ln-row">    <span class="st">"Connection: close\r\n"</span></span><span class="ln-row">    <span class="st">"\r\n"</span>                                    <span class="cm">// Blank line: terminates headers</span></span><span class="ln-row">    <span class="st">"Hola"</span>;</span><span class="ln-row"><span class="fn">write_all</span>(cfd, resp, <span class="kw">sizeof</span> resp - <span class="nm">1</span>);     <span class="cm">// Exclude trailing string null terminator '\0'</span></span><span class="ln-row"><span class="fn">close</span>(cfd);</span></code></pre>
+<p class="aside">Content-Length measures bytes, not characters: UTF-8 characters such as "ñ" or "á" each consume 2 bytes in memory.</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>Interactive Numerical Drills <span class="tag plain">2 Drill Types</span></h2>
+<p class="aside">Procedurally generated numbers following the chapter's rules. Each attempt presents fresh values. Step-by-step solutions appear upon completion.</p>
+<div class="drills">
+<div class="drill" data-drill="htons"></div>
+<div class="drill" data-drill="ipv4"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>Self-Test <span class="tag plain">12 Questions</span></h2>
+<p class="aside">Self-test questions based on this chapter. Only one attempt per question; explanations appear after answering.</p>
+<div class="quiz" data-quiz="T4">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>Which layer of the network stack does the socket API expose to user applications?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Link layer: Applications directly transmit and receive raw Ethernet frames</button>
+<button data-o="b" type="button"><span class="k">B</span>Transport layer: Applications hand off payload data; TCP/UDP, IP, and Link processing are managed by the kernel and NIC</button>
+<button data-o="c" type="button"><span class="k">C</span>Application layer: Sockets automatically implement application protocols like HTTP</button>
+<button data-o="d" type="button"><span class="k">D</span>Physical layer</button>
+</div>
+<p class="why"><b>B.</b> Sockets interface between the application layer and transport layer; address family and connection semantics must still be declared by the application (§1).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>On a little-endian Raspberry Pi, what is the value of <code>htons(5005)</code> (where 5005 = 0x138D) when read in host byte order?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x138D</button>
+<button data-o="b" type="button"><span class="k">B</span>0x0000138D</button>
+<button data-o="c" type="button"><span class="k">C</span>0x8D13</button>
+<button data-o="d" type="button"><span class="k">D</span>0xD831</button>
+</div>
+<p class="why"><b>C.</b> htons swaps the two <b>bytes</b> (not individual hex nibbles) so that 0x13 sits first in memory matching network byte order (§3).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>Which of the following correctly initializes <code>sockaddr_in</code> for a server listening on port 5005 across all local interfaces?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>sin_family = AF_INET; sin_port = htons(5005); sin_addr.s_addr = htonl(INADDR_ANY);</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>sin_family = SOCK_STREAM; sin_port = htons(5005); sin_addr.s_addr = INADDR_ANY;</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>sin_family = AF_INET; sin_port = 5005; sin_addr.s_addr = htonl(INADDR_ANY);</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>sin_family = AF_INET; sin_port = ntohl(5005); sin_addr.s_addr = 0;</code></button>
+</div>
+<p class="why"><b>A.</b> sin_family takes the address family, not socket type; the port must be converted to network byte order using 16-bit htons (§3).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>Which system call is specific to TCP servers and directs the kernel to begin queueing incoming connection requests for a socket?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>bind</button>
+<button data-o="b" type="button"><span class="k">B</span>connect</button>
+<button data-o="c" type="button"><span class="k">C</span>accept</button>
+<button data-o="d" type="button"><span class="k">D</span>listen</button>
+</div>
+<p class="why"><b>D.</b> listen configures the socket to passive listening mode, setting the backlog queue limit; accept dequeues established connections (§4).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>Regarding the TCP three-way handshake and <code>accept</code>, which statement is accurate?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The handshake only begins once the server invokes accept, which handles sending SYN + ACK</button>
+<button data-o="b" type="button"><span class="k">B</span>The handshake is performed entirely in kernel space while the client runs connect; accept simply dequeues an established connection and returns a new descriptor</button>
+<button data-o="c" type="button"><span class="k">C</span>Upon accept returning, the listening socket becomes dedicated to this client and cannot accept further connections until closed</button>
+<button data-o="d" type="button"><span class="k">D</span>accept returns the exact same descriptor passed as its first parameter</button>
+</div>
+<p class="why"><b>B.</b> The listening socket remains open and listening; subsequent data exchange with the client proceeds via the newly created descriptor from accept (§4).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>On an established TCP socket, what does <code>read(fd, buf, 100)</code> returning 0 signify?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>An error occurred; inspect errno</button>
+<button data-o="b" type="button"><span class="k">B</span>No data is currently available; retry later</button>
+<button data-o="c" type="button"><span class="k">C</span>The peer closed the connection (end-of-stream / EOF)</button>
+<button data-o="d" type="button"><span class="k">D</span>The buffer capacity is too small</button>
+</div>
+<p class="why"><b>C.</b> &gt; 0 indicates bytes read, 0 indicates peer closure (EOF), and -1 indicates an error. Under blocking mode, lack of data causes read to wait rather than return (§5, §7).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>A client executes <code>write(fd, "ABC", 3)</code> followed immediately by <code>write(fd, "DEFG", 4)</code>. When the server invokes <code>read(fd, buf, 100)</code> once, what may it receive?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Strictly "ABC", because TCP preserves message boundaries between separate write calls</button>
+<button data-o="b" type="button"><span class="k">B</span>Strictly "ABCDEFG"</button>
+<button data-o="c" type="button"><span class="k">C</span>Potentially "DEFG" first, because delivery ordering is not guaranteed</button>
+<button data-o="d" type="button"><span class="k">D</span>Any combination such as "ABC", "ABCDEFG", "AB", etc., depending on network timing; but 'A' will always arrive before 'D'</button>
+</div>
+<p class="why"><b>D.</b> TCP provides an ordered byte stream without message boundaries; receivers must loop and parse messages using delimiters or length prefixes (§5).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>A UDP sender transmits a 1000-byte datagram. The receiver calls <code>recvfrom(fd, buf, 500, 0, …)</code> with a 500-byte buffer. What happens?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The receiver gets the first 500 bytes; the remaining 500 bytes are discarded by the kernel</button>
+<button data-o="b" type="button"><span class="k">B</span>The receiver gets the first 500 bytes, and the next recvfrom returns the subsequent 500 bytes</button>
+<button data-o="c" type="button"><span class="k">C</span>recvfrom returns -1 and leaves the entire datagram queued</button>
+<button data-o="d" type="button"><span class="k">D</span>The kernel automatically splits the datagram into two distinct datagrams</button>
+</div>
+<p class="why"><b>A.</b> Datagrams are discrete units and must be read in a single call; buffer length must accommodate the maximum anticipated datagram size (§6).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>Which of the following entities <b>typically does not</b> invoke <code>bind</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>A TCP server</button>
+<button data-o="b" type="button"><span class="k">B</span>A UDP program designed to receive datagrams on a known port</button>
+<button data-o="c" type="button"><span class="k">C</span>A TCP client</button>
+<button data-o="d" type="button"><span class="k">D</span>All three must call bind</button>
+</div>
+<p class="why"><b>C.</b> During connect, the kernel automatically binds an ephemeral port; servers and listening UDP endpoints require predetermined fixed ports (§4, §5, §6).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>When using <code>select</code> to monitor multiple sockets, why must descriptor sets be reinitialized on every iteration of the event loop?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Because select automatically closes all monitored descriptors upon returning</button>
+<button data-o="b" type="button"><span class="k">B</span>Because select modifies the descriptor sets in place, preserving only descriptors that are currently ready</button>
+<button data-o="c" type="button"><span class="k">C</span>Because FD_SET memberships expire after 1 second</button>
+<button data-o="d" type="button"><span class="k">D</span>Reinitialization is unnecessary; sets persist across calls</button>
+</div>
+<p class="why"><b>B.</b> A master descriptor set is typically maintained, copied into a working set before each select call (§7).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>A server writes data to a TCP client that unexpectedly disconnected, causing the server process to terminate abruptly. What is the cause and resolution?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The kernel raised SIGPIPE, whose default action kills the process; pass MSG_NOSIGNAL (or ignore SIGPIPE) and check for return value -1</button>
+<button data-o="b" type="button"><span class="k">B</span>The bound port was occupied; apply SO_REUSEADDR</button>
+<button data-o="c" type="button"><span class="k">C</span>The backlog limit was exceeded; increase listen backlog</button>
+<button data-o="d" type="button"><span class="k">D</span>Byte ordering was mismatched; apply htonl</button>
+</div>
+<p class="why"><b>A.</b> SO_REUSEADDR resolves "Address already in use" on bind; SIGPIPE handles writing to severed connections (§7).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">12</span>In an HTTP response message, what separates the headers from the body payload?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The Content-Type header line</button>
+<button data-o="b" type="button"><span class="k">B</span>A trailing null character '\0'</button>
+<button data-o="c" type="button"><span class="k">C</span>A separate TCP write call</button>
+<button data-o="d" type="button"><span class="k">D</span>An empty line: a CRLF sequence immediately following the final header's CRLF</button>
+</div>
+<p class="why"><b>D.</b> Body boundaries are then parsed via Content-Length, connection termination, or chunked transfer encoding (§8).</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">Restart</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>Glossary Cards <span class="tag plain">16 Cards</span></h2>
+<p class="aside">Spanish or English terms on the front; click to reveal English definitions and key takeaways.</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">socket<small>conector</small></span><span class="back"><b>Socket</b><br/>An endpoint for network communication; represented by a file descriptor.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">encapsulado<small>encapsulation</small></span><span class="back"><b>Encapsulation</b><br/>Each layer prepends its own header to data; the receiver strips headers layer by layer.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">puerto<small>port</small></span><span class="back"><b>Port</b><br/>A 16-bit integer identifying a specific application or service on a host.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">puerto dinámico<small>ephemeral port</small></span><span class="back"><b>Ephemeral Port</b><br/>A port dynamically allocated by the kernel; typically used by clients.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AF_INET · AF_INET6 · AF_UNIX<small>address family</small></span><span class="back"><b>Address Family</b><br/>IPv4, IPv6, or local inter-process communication on the same host.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOCK_STREAM<small>orientado a conexión</small></span><span class="back"><b>Stream Socket</b><br/>Connection-oriented, reliable, sequenced byte stream; defaults to TCP.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOCK_DGRAM<small>datagrama</small></span><span class="back"><b>Datagram Socket</b><br/>Connectionless; transmits independent messages; defaults to UDP.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">formato red<small>network byte order</small></span><span class="back"><b>Network Byte Order</b><br/>Big-endian format; used for transmitting ports and IP addresses in packet headers.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">htons · ntohs<small>host to network short</small></span><span class="back"><b>16-Bit Byte Order Conversion</b><br/>Swaps the two bytes on little-endian architectures; no-op on big-endian.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">INADDR_ANY<small>dirección comodín</small></span><span class="back"><b>Any Local Address</b><br/>Binding to INADDR_ANY accepts incoming traffic on any local network interface.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">backlog<small>listen()</small></span><span class="back"><b>Backlog</b><br/>Maximum length of the queue of pending established connections awaiting accept().</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">three-way handshake<small>SYN · SYN+ACK · ACK</small></span><span class="back"><b>Three-Way Handshake</b><br/>Sequence performed by host kernels during connect() to establish a TCP connection.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">flujo de bytes<small>byte stream</small></span><span class="back"><b>Byte Stream</b><br/>TCP guarantees ordered and reliable byte delivery, but preserves no message boundaries.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">select<small>multiplexación de E/S</small></span><span class="back"><b>I/O Multiplexing</b><br/>Allows a single thread to monitor multiple file descriptors until at least one is ready.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SIGPIPE<small>MSG_NOSIGNAL</small></span><span class="back"><b>Broken Pipe Signal</b><br/>Generated when writing to a connection closed by the remote peer; terminates process by default.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CRLF<small>\r\n</small></span><span class="back"><b>CRLF</b><br/>Terminates each HTTP header line; an extra CRLF indicates the blank line before the body.</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="Chapter Navigation" class="pager" data-pager="T4"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · Open Systems &amp; Electronics Education Initiative</strong> · Community interactive study notes authored and maintained by independent learners; not an official publication of any university or institution. Interactive scenes and exercises are original works.</p>
+<p><a href="../../index.html">← Back to OpenSEEI Portal</a> · <a href="../../index.html#sync">Google Account Progress Sync</a> · Shared under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

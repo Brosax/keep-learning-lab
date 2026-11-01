@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T3 Señales y temporización POSIX · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t3-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t3-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t3-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t3-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t3-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t3-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="Volver al portal OpenSEEI">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>Apuntes interactivos</a></span>
+<nav aria-label="Tema 3 Capítulos" class="chain" data-chain="T3"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Temporización y señales · API POSIX</div>
+<h1>Señales y temporización POSIX</h1>
+<p class="zh">Eventos asíncronos y control temporal preciso: de SIGINT a temporizadores periódicos sin deriva</p>
+<div class="meta">
+<span><b>10</b> Objetivos clave</span>
+<span>Lectura aprox. 30 min</span>
+</div>
+<p class="lede">En microcontroladores simples, el desbordamiento de un temporizador provoca directamente una interrupción hardware que detiene a la CPU. En una placa con Linux, las interrupciones hardware las gestiona exclusivamente el kernel. El sistema operativo transforma sucesos asíncronos como "ha expirado un temporizador", "el usuario pulsó Ctrl+C" o "se intentó acceder a memoria protegida" en <b class="t">señales (signals)</b> enviadas a los procesos. Este tema aborda cómo se generan, bloquean y atienden las señales, cómo gestionar relojes y temporizadores POSIX, y cómo garantizar que una tarea periódica de control no acumule retraso en el tiempo.</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>Objetivos clave <span class="tag">Objetivos del tema</span></h2>
+<p>A continuación se detallan los conceptos esenciales de este tema. Tras estudiar cada sección, comprueba tu comprensión y pulsa el botón lateral para registrar tu avance.</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T3.1</span>
+<div class="txt"><span>Definir el concepto de señal como interrupción software asíncrona y contrastarla con interrupciones hardware; enumerar las fuentes de señal (kernel, procesos con kill, terminal, temporizadores)</span><span class="es">Señal: evento software asíncrono; fuentes de señal.</span><a href="#s1">→ §1 ¿Qué es una señal?</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.1" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.2</span>
+<div class="txt"><span>Identificar las tres disposiciones ante una señal (por defecto, ignorar, capturar); señalar las dos señales que no admiten captura, bloqueo ni omisión (SIGKILL y SIGSTOP)</span><span class="es">Acción por defecto, ignorar, capturar; SIGKILL y SIGSTOP.</span><a href="#s1">→ §1 ¿Qué es una señal?</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.2" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.3</span>
+<div class="txt"><span>Configurar manejadores básicos mediante <code>signal()</code>, restaurar con SIG_DFL e ignorar con SIG_IGN; enviar señales con <code>kill</code> y <code>raise</code>, y suspender con <code>pause</code></span><span class="es">signal, kill, raise, pause.</span><a href="#s2">→ §2 Captura de señales</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.3" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.4</span>
+<div class="txt"><span>Configurar manejadores robustos con <code>sigaction</code>: sa_handler frente a sa_sigaction, SA_SIGINFO, sa_mask y sa_flags; justificar la restricción a funciones seguras (async-signal-safe)</span><span class="es">sigaction, siginfo_t, sa_flags; funciones async-signal-safe.</span><a href="#s2">→ §2 Captura de señales</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.4" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.5</span>
+<div class="txt"><span>Diferenciar bloqueo de ignorado; proteger secciones críticas con <code>sigprocmask</code> y conjuntos <code>sigset_t</code> (SIG_BLOCK / SIG_UNBLOCK / SIG_SETMASK); consultar pendientes y usar <code>sigsuspend</code></span><span class="es">Máscara de señales: sigprocmask, señales pendientes.</span><a href="#s3">→ §3 Máscara y bloqueo</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.5" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.6</span>
+<div class="txt"><span>Gestionar señales en entornos multihilo mediante <code>pthread_sigmask</code>; diseñar un hilo dedicado para recepción síncrona con <code>sigwait</code> o <code>sigwaitinfo</code></span><span class="es">pthread_sigmask, sigwait, sigwaitinfo.</span><a href="#s3b">→ §3 Señales en multihilo</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.6" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.7</span>
+<div class="txt"><span>Contrastar señales de tiempo real frente a estándar (encolamiento garantizado, orden determinista y paso de datos); calcular rangos SIGRTMIN + n y enviar datos con <code>sigqueue</code></span><span class="es">Señales de tiempo real: SIGRTMIN…SIGRTMAX, sigqueue, si_value.</span><a href="#s4">→ §4 Señales de tiempo real</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.7" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.8</span>
+<div class="txt"><span>Diferenciar CLOCK_REALTIME de CLOCK_MONOTONIC; operar con <code>struct timespec</code> y normalizar acarreos; comparar sleep, usleep, nanosleep y clock_nanosleep</span><span class="es">Relojes POSIX, struct timespec, retardos.</span><a href="#s5">→ §5 Relojes y retardos</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.8" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.9</span>
+<div class="txt"><span>Crear y armar temporizadores periódicos con <code>timer_create</code> (sigevent) y <code>timer_settime</code> (itimerspec); gestionar expiraciones perdidas con <code>timer_getoverrun</code></span><span class="es">Temporizadores POSIX: timer_create, timer_settime, timer_getoverrun.</span><a href="#s6">→ §6 Temporizadores POSIX</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.9" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.10</span>
+<div class="txt"><span>Distinguir fluctuación (jitter / deriva local) de deriva acumulativa; explicar la acumulación de retraso en retardos relativos y su eliminación mediante TIMER_ABSTIME</span><span class="es">Deriva local y deriva acumulativa; temporización absoluta.</span><a href="#s7">→ §7 Deriva temporal</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.10" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T3"><span class="val">0 / 10 dominados</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>¿Qué es una señal? <span class="tag">T3.1 · T3.2</span></h2>
+<p class="hook"><span class="zh">Las interrupciones hardware pertenecen al kernel. ¿Cómo se entera un proceso de que ha ocurrido un evento?</span><span class="es">Una señal es una interrupción software que el kernel envía a un proceso.</span></p>
+<p>Una <b class="t">señal (signal)</b> es una notificación asíncrona enviada a un proceso para informarle de un evento ocurrido. Cuando la señal es recibida, el flujo normal de ejecución de la aplicación se suspende de inmediato y la CPU pasa a ejecutar una función especial denominada <b>manejador de señal (signal handler)</b>. Una vez concluida la función, el programa reanuda su ejecución en la instrucción exacta donde fue interrumpido.</p>
+<div class="grid2">
+<div class="panel">
+<h3>Fuentes generadoras de señales</h3>
+<ul>
+<li><b>Excepciones hardware detectadas por el kernel</b>: División por cero (SIGFPE), acceso a memoria no asignada (SIGSEGV), instrucción inválida (SIGILL).</li>
+<li><b>Comandos del usuario desde la terminal</b>: Pulsación de Ctrl+C (SIGINT), Ctrl+\ (SIGQUIT), Ctrl+Z (SIGTSTP).</li>
+<li><b>Temporizadores de software</b>: Expiración de un temporizador periódico POSIX o función alarm (SIGALRM).</li>
+<li><b>Otros procesos o el propio sistema</b>: Mediante la llamada al sistema <code>kill(pid, sig)</code> o cierre imprevisto de tuberías y sockets (SIGPIPE).</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Tres posibles disposiciones (Dispositions)</h3>
+<ul>
+<li><b>Acción por defecto (SIG_DFL)</b>: La acción predefinida por el sistema (terminar el proceso, volcar memoria en core dump, suspender o ignorar).</li>
+<li><b>Ignorar la señal (SIG_IGN)</b>: La señal entrante se descarta sin efecto alguno para el proceso.</li>
+<li><b>Capturar la señal</b>: El proceso registra una función de usuario (manejador) que se ejecuta al recibirla.</li>
+</ul>
+</div>
+</div>
+<div class="note">
+<span class="lbl">Las dos excepciones inalterables: SIGKILL y SIGSTOP</span>
+<p>Las señales <b>SIGKILL</b> (terminación forzosa inmediata) y <b>SIGSTOP</b> (suspensión del proceso) <b>no pueden ser capturadas, ignoradas ni bloqueadas</b> bajo ninguna circunstancia. El kernel procesa su efecto directamente para garantizar que el administrador del sistema siempre conserve el control sobre cualquier proceso.</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Captura de señales: signal frente a sigaction <span class="tag">T3.3 · T3.4</span></h2>
+<p class="hook"><span class="zh">¿Por qué nunca se debe usar signal() en código profesional y qué ofrece sigaction()?</span><span class="es">sigaction() es portable, predecible y no reinicia la disposición a SIG_DFL.</span></p>
+<p>La función histórica <code>signal(sig, handler)</code> presenta problemas de portabilidad: en algunos sistemas UNIX tradicionales, tras capturar una señal la disposición se restauraba automáticamente a SIG_DFL, provocando condiciones de carrera si llegaba una segunda señal antes de reinstalar el manejador. POSIX estandarizó <b class="t">sigaction()</b> para garantizar un comportamiento determinista:</p>
+<pre class="code"><code><span class=\"ln-row\"><span class=\"pp\">#include</span> &lt;signal.h&gt;</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"kw\">void</span> <span class=\"fn\">mi_manejador</span>(<span class=\"kw\">int</span> sig) {</span><span class=\"ln-row\">    <span class=\"cm\">/* Manejador simple */</span></span><span class=\"ln-row\">}</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"kw\">struct</span> sigaction sa;</span><span class=\"ln-row\"><span class=\"fn\">sigemptyset</span>(&amp;<span class=\"rg\">sa.sa_mask</span>);                  <span class=\"cm\">// No bloquea señales adicionales</span></span><span class=\"ln-row\"><span class=\"rg\">sa.sa_flags</span> = SA_RESTART;                  <span class=\"cm\">// Reinicia llamadas al sistema interrumpidas</span></span><span class=\"ln-row\"><span class=\"rg\">sa.sa_handler</span> = mi_manejador;</span><span class=\"ln-row\"><span class=\"fn\">sigaction</span>(SIGINT, &amp;sa, NULL);</span></code></pre>
+<p>Cuando se activa el flag <code>SA_SIGINFO</code> en <code>sa_flags</code>, el manejador se define con tres argumentos (<code>void handler(int sig, siginfo_t *info, void *ucontext)</code>). La estructura <b class="t">siginfo_t</b> proporciona metadatos enriquecidos: PID del proceso emisor (<code>si_pid</code>), código de causa (<code>si_code</code>) y datos adjuntos (<code>si_value</code>).</p>
+<div class="note warm">
+<span class="lbl">Requisito crítico: funciones seguras (Async-Signal-Safe)</span>
+<p>Un manejador de señal puede interrumpir al hilo principal en cualquier instante, incluso a mitad de una llamada a <code>malloc()</code> o <code>printf()</code> mientras se retiene un cerrojo interno. Si el manejador intenta invocar de nuevo <code>printf()</code>, el cerrojo interno provocará un bloqueo mutuo inmediato. Por ello, dentro de un manejador de señal <b>solo deben invocarse funciones asíncronamente seguras (async-signal-safe)</b> como <code>write()</code>, <code>_exit()</code> o <code>sem_post()</code>. La práctica recomendada consiste en activar una variable bandera de tipo <code>volatile sig_atomic_t bandera = 1;</code> y procesar el trabajo pesado en el bucle principal.</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Máscara de señales y bloqueo <span class="tag">T3.5</span></h2>
+<p class="hook"><span class="zh">¿En qué se diferencia bloquear una señal de ignorarla?</span><span class="es">Ignorar destruye la señal; bloquear la pospone hasta que se desbloquee.</span></p>
+<p>Una señal <b>ignorada</b> se descarta en el instante en que llega y nunca se ejecutará. Por el contrario, una señal <b>bloqueada</b> (o enmascarada) permanece en estado <b class="t">pendiente (pending)</b>: el kernel retiene la notificación y la despachará tan pronto como el proceso retire la señal de su máscara de bloqueo. Esto permite blindar secciones críticas de código donde una interrupción generaría inconsistencias.</p>
+<pre class="code"><code><span class=\"ln-row\">sigset_t conj, viejo;</span><span class=\"ln-row\"><span class=\"fn\">sigemptyset</span>(&amp;conj);</span><span class=\"ln-row\"><span class=\"fn\">sigaddset</span>(&amp;conj, SIGINT);</span><span class=\"ln-row\"><span class=\"fn\">sigprocmask</span>(SIG_BLOCK, &amp;conj, &amp;viejo);     <span class=\"cm\">// Bloquea SIGINT</span></span><span class=\"ln-row\"><span class=\"cm\">/* Sección crítica protegida frente a Ctrl+C */</span></span><span class=\"ln-row\"><span class=\"fn\">sigprocmask</span>(SIG_SETMASK, &amp;viejo, NULL);    <span class=\"cm\">// Restaura máscara original; despacha SIGINT si llegó</span></span></code></pre>
+<p>Para pausar la ejecución esperando una señal de forma atómica y libre de condiciones de carrera, se utiliza <code>sigsuspend(&amp;mascara)</code>, que sustituye temporalmente la máscara y suspende el hilo hasta recibir una señal no bloqueada.</p>
+
+<h3 id="s3b">Gestión de señales en programas multihilo</h3>
+<p>En aplicaciones con múltiples hilos POSIX, una señal dirigida al proceso puede ser despachada a <b>cualquier hilo</b> que no la tenga bloqueada en su máscara local. Para evitar que las señales interrumpan arbitrariamente los hilos de cálculo o control, el patrón arquitectónico estándar de POSIX es:</p>
+<ol>
+<li>En el hilo principal, antes de crear ningún hilo secundario, se bloquean todas las señales de interés mediante <code>pthread_sigmask(SIG_BLOCK, &amp;mascara, NULL)</code>. Los hilos derivados heredarán esta máscara de bloqueo.</li>
+<li>Se crea un hilo dedicado a la gestión de eventos que invoca de forma síncrona y bloqueante <b class="t">sigwait(&amp;mascara, &amp;sig)</b> o <code>sigwaitinfo()</code>.</li>
+<li>Este hilo permanece suspendido sin consumir CPU hasta que llega una señal, procesándola de forma lineal y predecible fuera de cualquier contexto asíncrono.</li>
+</ol>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Señales de tiempo real <span class="tag">T3.7</span></h2>
+<p class="hook"><span class="zh">Si llegan tres señales estándar SIGINT idénticas muy seguidas, ¿se ejecutan tres veces?</span><span class="es">Las señales estándar no se encolan; las de tiempo real sí.</span></p>
+<p>Las señales estándar (señales 1 a 31) se registran mediante un único bit de presencia en la estructura del proceso: si una señal llega varias veces consecutivas mientras está bloqueada o en ejecución, los eventos redundantes se pierden y el manejador se ejecuta <b>una sola vez</b>.</p>
+<p>Las <b class="t">señales de tiempo real (Real-Time Signals)</b>, comprendidas en el rango <code>SIGRTMIN</code> hasta <code>SIGRTMAX</code> (en Linux glibc habitualmente 34 a 64), resuelven esta limitación con tres propiedades deterministas:</p>
+<ul>
+<li><b>Garantía de encolamiento</b>: Si se envían múltiples señales de tiempo real idénticas, no se sobreescriben; se encolan en el kernel y se despachan todas sucesivamente.</li>
+<li><b>Orden determinista</b>: Si hay varias señales de tiempo real pendientes, se despachan estrictamente en orden ascendente según su número de señal (la de menor identificador numérico tiene mayor prioridad).</li>
+<li><b>Capacidad de transportar datos</b>: Mediante la función <code>sigqueue(pid, sig, valor)</code> se puede transmitir un número entero o un puntero de datos encapsulado en la unión <code>union sigval</code>, recibido en el campo <code>info-&gt;si_value</code> de <code>sigaction</code>.</li>
+</ul>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Relojes POSIX y retardos <span class="tag">T3.8</span></h2>
+<p class="hook"><span class="zh">¿Por qué medir periodos con la hora del sistema (wall clock) puede arruinar un bucle de control?</span><span class="es">CLOCK_REALTIME puede sufrir saltos; CLOCK_MONOTONIC avanza siempre de forma continua.</span></p>
+<p>POSIX define varios tipos de reloj en <code>&lt;time.h&gt;</code> para diferentes necesidades:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Reloj</th><th>Referencia</th><th>Propiedad clave</th></tr></thead>
+<tbody>
+<tr><td>CLOCK_REALTIME</td><td>Tiempo del calendario (desde el 1 de enero de 1970)</td><td>Puede sufrir saltos bruscos si el usuario cambia la fecha o actúa el protocolo NTP. No apto para medir intervalos de control.</td></tr>
+<tr><td>CLOCK_MONOTONIC</td><td>Tiempo continuo desde un origen arbitrario (arranque del sistema)</td><td>Estrictamente monótono: nunca retrocede ni sufre saltos artificiales. Imprescindible para medir periodos y lapsos de tiempo.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Ambos se leen con resolución de nanosegundos mediante <code>clock_gettime(reloj, &amp;ts)</code> rellenando una estructura <b class="t">struct timespec</b>:</p>
+<pre class="code"><code><span class=\"ln-row\"><span class=\"kw\">struct</span> timespec {</span><span class=\"ln-row\">    time_t <span class=\"rg\">tv_sec</span>;        <span class=\"cm\">// Segundos enteros</span></span><span class=\"ln-row\">    <span class=\"kw\">long</span>   <span class=\"rg\">tv_nsec</span>;       <span class=\"cm\">// Nanosegundos (0 a 999 999 999)</span></span><span class=\"ln-row\">};</span></code></pre>
+<p>Al sumar periodos a una estructura timespec, el campo nanosegundos debe normalizarse: si <code>tv_nsec &gt;= 1000000000L</code>, se añade el acarreo correspondiente a <code>tv_sec</code> y se resta a <code>tv_nsec</code>. Superar este límite en una llamada al sistema provoca el error <code>EINVAL</code>.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Función de retardo</th><th>Resolución</th><th>Características</th></tr></thead>
+<tbody>
+<tr><td>sleep(seg)</td><td>Segundos</td><td>Resolución muy basta; puede verse afectada por SIGALRM antiguo.</td></tr>
+<tr><td>usleep(usec)</td><td>Microsegundos</td><td>Obsoleta en estándares POSIX recientes.</td></tr>
+<tr><td>nanosleep(&amp;req, &amp;rem)</td><td>Nanosegundos</td><td>Retardo relativo estándar; reporta en rem el tiempo no dormido si lo interrumpe una señal.</td></tr>
+<tr><td>clock_nanosleep(clk, flags, &amp;req, &amp;rem)</td><td>Nanosegundos</td><td>Permite elegir el reloj (CLOCK_MONOTONIC) y seleccionar retardo relativo o <b>absoluto</b> (TIMER_ABSTIME).</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Temporizadores periódicos POSIX <span class="tag">T3.9</span></h2>
+<p class="hook"><span class="zh">¿Cómo programa un proceso una alarma que suene cada 50 milisegundos de forma indefinida?</span><span class="es">timer_create() y timer_settime() desacoplan la generación del evento del código de control.</span></p>
+<p>Los temporizadores POSIX proporcionan una infraestructura precisa para tareas periódicas. Su ciclo consta de dos pasos:</p>
+<ol>
+<li><b>Creación (<code>timer_create</code>)</b>: Configura el reloj base y el mecanismo de notificación mediante <code>struct sigevent</code>:
+  <ul>
+  <li><code>SIGEV_SIGNAL</code>: Genera y envía la señal especificada al proceso al expirar.</li>
+  <li><code>SIGEV_THREAD</code>: Lanza un nuevo hilo invocando una función dada con cada expiración.</li>
+  <li><code>SIGEV_NONE</code>: No notifica; el tiempo transcurrido se consulta manualmente.</li>
+  </ul>
+</li>
+<li><b>Armado (<code>timer_settime</code>)</b>: Configura el temporizador mediante <code>struct itimerspec</code>:
+  <ul>
+  <li><code>it_value</code>: Instante del <b>primer disparo</b>. Si vale 0, el temporizador queda desarmado.</li>
+  <li><code>it_interval</code>: <b>Periodo de repetición</b> tras el primer disparo. Si vale 0, actúa como temporizador de un solo disparo (one-shot).</li>
+  </ul>
+</li>
+</ol>
+<pre class="code"><code><span class=\"ln-row\">timer_t tid;</span><span class=\"ln-row\"><span class=\"kw\">struct</span> sigevent sev;</span><span class=\"ln-row\"><span class=\"fn\">memset</span>(&amp;sev, <span class=\"nm\">0</span>, <span class=\"kw\">sizeof</span> sev);</span><span class=\"ln-row\"><span class=\"rg\">sev.sigev_notify</span> = SIGEV_SIGNAL;</span><span class=\"ln-row\"><span class=\"rg\">sev.sigev_signo</span>  = SIGRTMIN;</span><span class=\"ln-row\"><span class=\"fn\">timer_create</span>(CLOCK_MONOTONIC, &amp;sev, &amp;tid);</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"kw\">struct</span> itimerspec its;</span><span class=\"ln-row\"><span class=\"rg\">its.it_value.tv_sec</span>     = <span class=\"nm\">1</span>;    <span class=\"rg\">its.it_value.tv_nsec</span>     = <span class=\"nm\">0</span>;         <span class=\"cm\">// Primer disparo en 1 s</span></span><span class=\"ln-row\"><span class=\"rg\">its.it_interval.tv_sec</span>  = <span class=\"nm\">0</span>;    <span class=\"rg\">its.it_interval.tv_nsec</span>  = <span class=\"nm\">50000000L</span>;  <span class=\"cm\">// Periodo de 50 ms</span></span><span class=\"ln-row\"><span class=\"fn\">timer_settime</span>(tid, <span class=\"nm\">0</span>, &amp;its, NULL);</span></code></pre>
+<p class="aside">Si el sistema está sobrecargado y expiran varios periodos antes de que el proceso pueda atender la señal, el kernel descarta las señales redundantes pero contabiliza cuántas expiraciones se han acumulado. La función <code>timer_getoverrun(tid)</code> devuelve este recuento de desbordamientos (overruns).</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Deriva temporal: relativa frente a absoluta <span class="tag">T3.10</span></h2>
+<p class="hook"><span class="zh">Un bucle ejecuta 2 ms de trabajo y duerme 20 ms con nanosleep. ¿Por qué al cabo de 100 iteraciones lleva cientos de milisegundos de retraso?</span><span class="es">El retardo relativo reinicia la cuenta desde el instante del despertar: el tiempo de ejecución se acumula.</span></p>
+<p>Al implementar tareas periódicas de control existen dos tipos de perturbaciones temporales:</p>
+<ul>
+<li><b>Fluctuación local (Jitter / Deriva local)</b>: Pequeña variación variable en el instante de despertar producida por la latencia del planificador y la carga del sistema. No se acumula: unas veces despierta 0.1 ms antes y otras 0.1 ms después.</li>
+<li><b>Deriva acumulativa (Drift)</b>: Error sistemático que se acumula iteración tras iteración si se utiliza una temporización relativa.</li>
+</ul>
+<figure class="stage" data-scene="" id="sc-drift">
+<div class="stage-title"><span>Escena 5 · Temporización relativa vs. absoluta</span><b>4 Pasos</b></div>
+<div aria-label="Animación interactiva: Comparación temporal entre espera relativa y temporización absoluta con TIMER_ABSTIME" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-drift-t" role="img" viewbox="0 0 800 250">
+<title id="sc-drift-t">Comparación entre nanosleep relativo que acumula retraso y clock_nanosleep con TIMER_ABSTIME anclado al instante objetivo</title>
+<text class="tx sm w" x="24" y="40">Retardo relativo (nanosleep):</text>
+<g data-step="1">
+<rect class="bx b" height="24" rx="3" width="40" x="200" y="24"></rect>
+<text class="tm xs w mid" x="220" y="40">Trabajo</text>
+<rect class="bx hollow m" height="24" rx="3" width="160" x="240" y="24"></rect>
+<text class="tm xs m mid" x="320" y="40">Dormir 20 ms</text>
+</g>
+<g data-step="2">
+<rect class="bx b" height="24" rx="3" width="40" x="400" y="24"></rect>
+<rect class="bx hollow m" height="24" rx="3" width="160" x="440" y="24"></rect>
+<path class="ln r" d="M600 15 V55"></path>
+<text class="tz sm r" x="610" y="40">Retraso acumulado = N × t_trabajo</text>
+</g>
+<text class="tx sm w" x="24" y="140">Temporización absoluta (TIMER_ABSTIME):</text>
+<g data-step="3">
+<line class="ln thin p dash" x1="200" x2="200" y1="120" y2="200"></line>
+<line class="ln thin p dash" x1="380" x2="380" y1="120" y2="200"></line>
+<line class="ln thin p dash" x1="560" x2="560" y1="120" y2="200"></line>
+<text class="tm xs p mid" x="200" y="115">t0</text>
+<text class="tm xs p mid" x="380" y="115">t0 + T</text>
+<text class="tm xs p mid" x="560" y="115">t0 + 2T</text>
+</g>
+<g data-step="4">
+<rect class="bx b" height="24" rx="3" width="40" x="200" y="140"></rect>
+<rect class="bx hollow g" height="24" rx="3" width="140" x="240" y="140"></rect>
+<text class="tm xs g mid" x="310" y="156">Dormir hasta objetivo</text>
+<rect class="bx b" height="24" rx="3" width="50" x="380" y="140"></rect>
+<rect class="bx hollow g" height="24" rx="3" width="130" x="430" y="140"></rect>
+<text class="tz sm g" x="580" y="156">Deriva acumulada = 0 ✓</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>En un esquema relativo con <code>nanosleep(&amp;20ms)</code>, el contador de 20 ms no empieza a contar hasta que el hilo termina su trabajo computacional.</li>
+<li data-dur="3800">Cada vuelta del bucle dura en realidad <code>T_periodo + t_trabajo</code>. Tras 100 iteraciones con 2 ms de trabajo, el bucle se habrá retrasado <b>200 ms respecto al tiempo ideal</b>, perdiendo ciclos enteros.</li>
+<li data-dur="3800">Con <b class="t">temporización absoluta</b>, el programa calcula el instante diana exacto en el futuro: <code>objetivo = objetivo + T</code>.</li>
+<li data-dur="4000">Invocando <code>clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &amp;objetivo, NULL)</code>, el hilo duerme únicamente el intervalo restante necesario hasta la diana fijada. El tiempo de cálculo queda absorbido dentro del periodo y la deriva acumulativa es estrictamente cero.</li>
+</ol>
+</figure>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>Práctica numérica aleatoria <span class="tag plain">4 tipos de ejercicios</span></h2>
+<p class="aside">Ejercicios numéricos generados proceduralmente según las reglas de este tema. Nuevos valores en cada intento con solución paso a paso.</p>
+<div class="drills">
+<div class="drill" data-drill="ts"></div>
+<div class="drill" data-drill="itspec"></div>
+<div class="drill" data-drill="drift"></div>
+<div class="drill" data-drill="rtsig"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>Preguntas de repaso <span class="tag plain">12 preguntas</span></h2>
+<p class="aside">Cuestiones de repaso sobre los contenidos de este tema. Un único intento por pregunta; la justificación aparece al responder.</p>
+<div class="quiz" data-quiz="T3">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>¿Cuáles son las dos únicas señales que no pueden ser capturadas, ignoradas ni bloqueadas bajo ninguna circunstancia?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>SIGINT y SIGTERM</button>
+<button data-o="b" type="button"><span class="k">B</span>SIGSEGV y SIGFPE</button>
+<button data-o="c" type="button"><span class="k">C</span>SIGKILL y SIGSTOP</button>
+<button data-o="d" type="button"><span class="k">D</span>SIGALRM y SIGHUP</button>
+</div>
+<p class="why"><b>C.</b> SIGKILL y SIGSTOP son procesadas exclusivamente por el kernel para garantizar que el sistema siempre pueda detener o suspender cualquier proceso (§1).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>¿Por qué está estrictamente desaconsejado invocar funciones como <code>printf()</code> o <code>malloc()</code> dentro de un manejador de señal?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Porque no están definidas en la biblioteca estándar de C</button>
+<button data-o="b" type="button"><span class="k">B</span>Porque no son funciones seguras ante señales asíncronas (async-signal-safe) y pueden causar bloqueos mutuos</button>
+<button data-o="c" type="button"><span class="k">C</span>Porque el procesador conmuta a modo usuario y pierde privilegios</button>
+<button data-o="d" type="button"><span class="k">D</span>Porque las señales solo admiten llamadas al sistema en lenguaje ensamblador</button>
+</div>
+<p class="why"><b>B.</b> printf y malloc utilizan cerrojos internos. Si la señal interrumpe al hilo mientras este retiene uno de esos cerrojos e intenta adquirirlo de nuevo dentro del manejador, se produce un bloqueo mutuo permanente (§2).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>¿Qué diferencia a una señal bloqueada de una señal configurada como ignorada (SIG_IGN)?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>La señal bloqueada permanece pendiente y se despachará al desbloquearla; la ignorada se descarta definitivamente</button>
+<button data-o="b" type="button"><span class="k">B</span>La señal bloqueada termina el proceso de inmediato</button>
+<button data-o="c" type="button"><span class="k">C</span>La señal ignorada se encola en el kernel hasta recibir SIGKILL</button>
+<button data-o="d" type="button"><span class="k">D</span>No existe diferencia alguna entre ambos conceptos</button>
+</div>
+<p class="why"><b>A.</b> El bloqueo es temporal (pospone la recepción), mientras que la disposición ignorar descarta el suceso en el acto (§3).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>En un programa multihilo, ¿cuál es la técnica recomendada por POSIX para gestionar señales asíncronas de forma limpia y segura?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Instalar un manejador con signal() en cada hilo secundario</button>
+<button data-o="b" type="button"><span class="k">B</span>Ignorar todas las señales en todos los hilos con SIG_IGN</button>
+<button data-o="c" type="button"><span class="k">C</span>Permitir que cualquier hilo reciba las señales usando SA_NODEFER</button>
+<button data-o="d" type="button"><span class="k">D</span>Bloquear las señales en todos los hilos y atenderlas síncronamente en un hilo dedicado con sigwait()</button>
+</div>
+<p class="why"><b>D.</b> El uso de sigwait en un hilo dedicado transforma eventos asíncronos en un flujo secuencial síncrono, permitiendo invocar cualquier función sin restricciones de seguridad asíncrona (§3).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>¿Cuál de las siguientes afirmaciones sobre las señales de tiempo real (Real-Time Signals) es correcta?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Tienen menor prioridad de despacho que las señales estándar 1 a 31</button>
+<button data-o="b" type="button"><span class="k">B</span>Si llegan varias señales idénticas consecutivas, solo se despacha la primera y el resto se descarta</button>
+<button data-o="c" type="button"><span class="k">C</span>Se encolan en el kernel, se despachan en orden determinista de menor a mayor número y pueden transportar datos</button>
+<button data-o="d" type="button"><span class="k">D</span>No requieren inicialización mediante sigaction</button>
+</div>
+<p class="why"><b>C.</b> Las señales de tiempo real garantizan el encolamiento de eventos múltiples, prioridad numérica estricta y transmisión de un valor entero o puntero adjunto vía sigqueue (§4).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>¿Por qué debe utilizarse <code>CLOCK_MONOTONIC</code> y no <code>CLOCK_REALTIME</code> para medir periodos en bucles de control temporal?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Porque CLOCK_MONOTONIC mide el tiempo en microsegundos y CLOCK_REALTIME en segundos</button>
+<button data-o="b" type="button"><span class="k">B</span>Porque CLOCK_MONOTONIC nunca sufre saltos artificiales ni retrocesos ante ajustes de fecha o sincronizaciones NTP</button>
+<button data-o="c" type="button"><span class="k">C</span>Porque CLOCK_REALTIME solo funciona en sistemas x86</button>
+<button data-o="d" type="button"><span class="k">D</span>Porque CLOCK_MONOTONIC requiere permisos de superusuario</button>
+</div>
+<p class="why"><b>B.</b> CLOCK_REALTIME representa la hora del reloj de pared y puede experimentar saltos bruscos si se modifica la hora del sistema; CLOCK_MONOTONIC garantiza un avance continuo e imperturbable (§5).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>Al sumar un periodo en nanosegundos a una estructura <code>timespec</code>, si el resultado en <code>tv_nsec</code> supera 1 000 000 000, ¿qué operación debe realizarse obligatoriamente?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Incrementar tv_sec con el cociente de la división entera por 10⁹ y almacenar el resto en tv_nsec</button>
+<button data-o="b" type="button"><span class="k">B</span>Truncar tv_nsec a 999 999 999 sin alterar tv_sec</button>
+<button data-o="c" type="button"><span class="k">C</span>Invocar timer_getoverrun() para compensar el exceso</button>
+<button data-o="d" type="button"><span class="k">D</span>No es necesario hacer nada; las llamadas al sistema normalizan automáticamente los valores</button>
+</div>
+<p class="why"><b>A.</b> El estándar POSIX exige que tv_nsec esté estrictamente en el intervalo [0, 999999999]; cualquier llamada al sistema con valores fuera de rango falla con error EINVAL (§5).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">08</span>En un temporizador POSIX configurado con <code>timer_settime</code>, ¿qué significado tiene asignar un valor no nulo al campo <code>it_interval</code> de la estructura <code>itimerspec</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Indica el retardo máximo antes de abortar el proceso</button>
+<button data-o="b" type="button"><span class="k">B</span>Especifica el tiempo de espera hasta el primer disparo del temporizador</button>
+<button data-o="c" type="button"><span class="k">C</span>Define la prioridad de la señal de tiempo real asociada</button>
+<button data-o="d" type="button"><span class="k">D</span>Define el periodo con el que el temporizador se recargará automáticamente para realizar disparos periódicos</button>
+</div>
+<p class="why"><b>D.</b> it_value indica el instante del primer disparo; tras consumirse, it_interval determina el periodo de recarga automática cíclica (§6).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>Si un proceso con un temporizador periódico se bloquea temporalmente y se pierden varias expiraciones de señal, ¿cómo puede cuantificar cuántas expiraciones se han acumulado?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Consultando el valor del registro R7</button>
+<button data-o="b" type="button"><span class="k">B</span>Invocando la función timer_getoverrun() sobre el identificador del temporizador</button>
+<button data-o="c" type="button"><span class="k">C</span>Leyendo el fichero /proc/sys/kernel/overruns</button>
+<button data-o="d" type="button"><span class="k">D</span>Las expiraciones perdidas no pueden detectarse bajo ninguna API</button>
+</div>
+<p class="why"><b>B.</b> timer_getoverrun devuelve el número de disparos adicionales producidos entre la generación de la señal y su consumo efectivo por el proceso (§6).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>Un bucle de control ejecuta un cálculo que tarda 3 ms y a continuación realiza una espera relativa de 20 ms con <code>nanosleep()</code>. Tras 100 iteraciones, ¿cuál es el retraso acumulado y cómo se elimina?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>3 ms; se elimina restando 3 ms al argumento de nanosleep</button>
+<button data-o="b" type="button"><span class="k">B</span>0 ms; la llamada nanosleep descuenta automáticamente el tiempo de computación previo</button>
+<button data-o="c" type="button"><span class="k">C</span>300 ms de retraso acumulado; se elimina empleando temporización absoluta con clock_nanosleep y flag TIMER_ABSTIME</button>
+<button data-o="d" type="button"><span class="k">D</span>2000 ms; se elimina aumentando la prioridad del proceso</button>
+</div>
+<p class="why"><b>C.</b> En cada iteración el reloj relativo arranca tras finalizar el trabajo, sumando 3 ms por ciclo (100 × 3 = 300 ms). La temporización absoluta ancla cada despertar al instante objetivo diana fijado, absorbiendo el cómputo (§7).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>¿Qué función cumple el flag <code>SA_RESTART</code> en la estructura <code>sigaction</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Indica al kernel que reinicie automáticamente las llamadas al sistema lentas que hayan sido interrumpidas por la señal en lugar de fallar con EINTR</button>
+<button data-o="b" type="button"><span class="k">B</span>Provoca que el manejador se ejecute en un bucle continuo</button>
+<button data-o="c" type="button"><span class="k">C</span>Reinicia el proceso completo desde su función main</button>
+<button data-o="d" type="button"><span class="k">D</span>Restablece la disposición de la señal a SIG_DFL tras el primer disparo</button>
+</div>
+<p class="why"><b>A.</b> Si una llamada bloqueante (read, wait) es interrumpida por una señal, con SA_RESTART el kernel la reanuda automáticamente tras salir del manejador, evitando tener que programar bucles explícitos ante EINTR (§2).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">12</span>Al registrar un manejador de señal con <code>sigaction</code>, ¿qué efecto tiene rellenar el conjunto <code>sa_mask</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Define qué procesos tienen autorización para enviar la señal</button>
+<button data-o="b" type="button"><span class="k">B</span>Informa al compilador de qué variables globales pueden ser leídas</button>
+<button data-o="c" type="button"><span class="k">C</span>Determina qué señales se ignorarán de forma permanente en el programa</button>
+<button data-o="d" type="button"><span class="k">D</span>Especifica qué señales adicionales quedarán bloqueadas de forma automática mientras se esté ejecutando el manejador</button>
+</div>
+<p class="why"><b>D.</b> sa_mask define un conjunto de señales que el kernel añade temporalmente a la máscara de bloqueo durante la ejecución del manejador, además de la propia señal que se está atendiendo (§2).</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">Reiniciar</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>Tarjetas de conceptos <span class="tag plain">18 tarjetas</span></h2>
+<p class="aside">Concepto técnico en el anverso; haz clic para descubrir su significado y características principales.</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">señal<small>signal</small></span><span class="back"><b>Señal</b><br/>Notificación asíncrona de software enviada a un proceso para avisarle de un evento.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">manejador de señal<small>signal handler</small></span><span class="back"><b>Manejador de señal</b><br/>Función de usuario invocada automáticamente por el kernel cuando se recibe una señal capturada.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SIG_DFL · SIG_IGN</span><span class="back"><b>Disposiciones estándar</b><br/>Restaurar el comportamiento predeterminado del sistema o ignorar la señal de forma definitiva.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigaction<small>struct sigaction</small></span><span class="back"><b>Configuración sigaction</b><br/>Interfaz robusta de POSIX para definir manejadores, máscaras de bloqueo y banderas operativas.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">async-signal-safe</span><span class="back"><b>Seguridad asíncrona</b><br/>Conjunto estricto de funciones reentrantes que pueden invocarse con seguridad dentro de un manejador.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">máscara de señales<small>sigset_t</small></span><span class="back"><b>Máscara de señales</b><br/>Conjunto de señales cuyo despacho está temporalmente bloqueado en el proceso o hilo.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">señal pendiente<small>pending signal</small></span><span class="back"><b>Señal pendiente</b><br/>Señal generada pero retenida por el kernel debido a que figura en la máscara de bloqueo.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigsuspend</span><span class="back"><b>Suspensión atómica</b><br/>Reemplaza la máscara de señales y suspende el hilo hasta recibir una señal en una sola operación atómica.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_sigmask</span><span class="back"><b>Máscara de hilo</b><br/>Equivalente multihilo de sigprocmask; modifica la máscara de bloqueo exclusiva del hilo invocador.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigwait</span><span class="back"><b>Espera síncrona de señales</b><br/>Suspende un hilo dedicado hasta que llega una de las señales indicadas, extrayéndola limpiamente.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">señales tiempo real<small>SIGRTMIN…SIGRTMAX</small></span><span class="back"><b>Señales de tiempo real</b><br/>Señales deterministas que se encolan sin pérdidas, priorizadas numéricamente y con capacidad de transmitir datos.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigqueue</span><span class="back"><b>Envío con datos adjuntos</b><br/>Emite una señal de tiempo real enviando un valor entero o puntero a través de la unión sigval.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CLOCK_MONOTONIC</span><span class="back"><b>Reloj monótono</b><br/>Reloj estrictamente creciente desde el arranque; inmune a ajustes horarios y cambios por NTP.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct timespec</span><span class="back"><b>Estructura timespec</b><br/>Estructura temporal estándar de POSIX con campos tv_sec (segundos) y tv_nsec (nanosegundos).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">timer_create</span><span class="back"><b>Creación de temporizador</b><br/>Instancia un temporizador POSIX asociado a un reloj y a un mecanismo de notificación sigevent.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">timer_settime</span><span class="back"><b>Armado de temporizador</b><br/>Fija el instante de primer disparo (it_value) y la periodicidad de recarga cíclica (it_interval).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fluctuación<small>jitter</small></span><span class="back"><b>Fluctuación local (Jitter)</b><br/>Dispersión aleatoria no acumulativa en el periodo provocada por latencias del planificador de tareas.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TIMER_ABSTIME</span><span class="back"><b>Temporización absoluta</b><br/>Flag de clock_nanosleep que ancla el despertar a un instante diana fijo, anulando la deriva acumulativa.</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="Navegación entre temas" class="pager" data-pager="T3"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · Educación Abierta en Sistemas Electrónicos e Inteligentes</strong> · Apuntes interactivos de la comunidad elaborados por estudiantes; no es material oficial de ninguna universidad o institución. Animaciones y ejercicios interactivos son obras originales.</p>
+<p><a href="../../index.html">← Volver al portal OpenSEEI</a> · <a href="../../index.html#sync">Sincronización de progreso con Google</a> · Contenido compartido bajo licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">CC BY-NC-SA 4.0</a>.</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

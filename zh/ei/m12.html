@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M12 Edificios inteligentes · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.sorter { display: flex; flex-direction: column; gap: 8px; }
+.srow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .55rem .8rem; }
+.srow .what { font-size: 14.5px; min-width: 0; }
+.srow .pick { display: flex; gap: 6px; flex-wrap: wrap; }
+.srow .pick button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 3px 12px; font-size: 13px; cursor: pointer; }
+.srow .pick button:hover:not(:disabled) { border-color: var(--accent); }
+.srow .pick button:disabled { cursor: default; }
+.srow .pick button.right { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+.srow .pick button.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.srow .fb { flex-basis: 100%; font-size: 13px; color: var(--muted); }
+.sort-ctl { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font: 600 13px/1.4 var(--f-mono); color: var(--muted); }
+
+.calc { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 12px; }
+.calc-in, .calc-out { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .9rem 1rem; display: flex; flex-direction: column; gap: .75rem; min-width: 0; }
+.calc label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.calc input[type="number"] { width: 100%; font: 400 14px/1.3 var(--f-mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; }
+.calc input[type="range"] { width: 100%; accent-color: var(--accent); }
+.calc output { font: 600 13px/1.3 var(--f-mono); color: var(--ink); }
+.calc-out .row { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.calc-out .k { font: 600 12px/1.3 var(--f-mono); color: var(--muted); }
+.calc-out b { font: 700 1.45rem/1.2 var(--f-mono); color: var(--signal); }
+.calc-out code { color: var(--muted); overflow-wrap: anywhere; }
+
+.x10 { border: 1.5px dashed var(--muted); border-radius: var(--r); padding: .9rem; display: flex; flex-direction: column; gap: 12px; }
+.x10-ctl { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .8rem .9rem; display: flex; flex-direction: column; gap: .6rem; }
+.x10-ctl .lbl { font: 600 12px/1.3 var(--f-mono); letter-spacing: .04em; color: var(--accent); }
+.x10-ctl .row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13px; color: var(--muted); }
+.x10-ctl label, .x10 .dials label { display: inline-flex; align-items: center; gap: 5px; }
+.x10 select { font: 400 13px/1.3 var(--f-mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; }
+.x10-line { position: relative; height: 28px; border-radius: 14px; background: var(--sunk); overflow: hidden; }
+.x10-line::before { content: ""; position: absolute; left: 12px; right: 12px; top: 13px; height: 2px; background: var(--muted); }
+.x10-line .x10-pulse { position: absolute; top: 6px; left: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--signal); opacity: 0; }
+.x10-line.go .x10-pulse { animation: x10go .9s ease-in-out; }
+.x10-line .x10-tag { position: absolute; right: 14px; top: 4px; font: 600 11px/20px var(--f-mono); color: var(--muted); background: var(--sunk); padding: 0 6px; }
+@keyframes x10go { 0% { left: 0; opacity: 1; } 85% { opacity: 1; } 100% { left: calc(100% - 16px); opacity: 0; } }
+.x10 .bundle .st.dim { background: var(--signal-soft); color: var(--signal); }
+.x10 .bundle .kind { font: 400 11.5px/1.3 var(--f-mono); color: var(--muted); }
+.x10 .dials { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="章节" class="chain" data-chain="M12"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 1 · Introducción · M12</div>
+<h1>Edificios inteligentes</h1>
+<p class="zh">智能建筑</p>
+<div class="meta">
+
+<span><b>10</b> 个学习目标</span>
+<span>阅读约 30 分钟</span>
+
+
+</div>
+<p class="lede">先讲一个“El mago Manu”的故事：闹钟把人叫醒，一按遥控车门就开，大楼的门自己打开、灯自己亮。在古人眼里这全是魔法，正如 Arthur C. Clarke 说的：“Any sufficiently advanced technology is indistinguishable from magic.”这一章讲这些“魔法”怎样进入建筑：从 19 世纪末的恒温器，到 <b class="t">domótica</b> 和 <b class="t">inmótica</b>、hogar digital，再到让设备互相通话的协议（X10、KNX、BACnet、LonWorks……），以及把家连到外面的 pasarela residencial。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">1.2.1</span>
+<div class="txt"><span>了解建筑控制的历史演变</span><span class="es">Conocer la evolución histórica del control de edificios.</span><a href="#s1">→ §1 从恒温器到智能建筑</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.2</span>
+<div class="txt"><span>区分 inmótica 和 domótica</span><span class="es">Distinguir entre inmótica y domótica.</span><a href="#s2">→ §2 Domótica 与 inmótica</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.3</span>
+<div class="txt"><span>定义 hogar digital（数字家庭）</span><span class="es">Definir el concepto de hogar digital.</span><a href="#s3">→ §3 Hogar digital</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.4</span>
+<div class="txt"><span>定义 ICT，并说明它和 hogar digital 的关系</span><span class="es">Definir el concepto de ICT y su relación con el hogar digital.</span><a href="#s4">→ §4 ICT</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.5</span>
+<div class="txt"><span>列举楼宇自动化控制协议（X10、KNX、BACnet、LonWorks、Modbus……）</span><span class="es">Enumerar protocolos de control de automatización de edificios (X10, KNX, BACnet, LonWorks, modbus, ...).</span><a href="#s6">→ §6 控制协议一览</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.6</span>
+<div class="txt"><span>定义 KNX</span><span class="es">Definir KNX.</span><a href="#s7">→ §7 KNX</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.7</span>
+<div class="txt"><span>定义 pasarela residencial（家庭网关）</span><span class="es">Definir el concepto de pasarela residencial.</span><a href="#s8">→ §8 Pasarela residencial</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.8</span>
+<div class="txt"><span>指出能效在 domótica 中带来的好处</span><span class="es">Señalar ventajas de la eficiencia energética aplicada a la domótica.</span><a href="#s9">→ §9 能效的好处</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.9</span>
+<div class="txt"><span>识别 domótica 安装的认证规范</span><span class="es">Identificar la normativa de certificación de instalaciones domóticas.</span><a href="#s10">→ §10 认证规范</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.2.10</span>
+<div class="txt"><span>识别 X10 协议的特点</span><span class="es">Identificar características del protocolo X10.</span><a href="#s11">→ §11 X-10</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.2.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<p class="aside">1.2.8 和 1.2.9 在课程正文里没有展开，1.2.6 和 1.2.10 也只有一两句；本页这些部分用课程的补充材料补齐。但这些目标写在 学习目标 里，所以照样整理。</p>
+<div class="meter" data-meter="M12"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>从恒温器到智能建筑 <span class="tag">1.2.1</span></h2>
+<p>建筑控制走过了一百多年：从一个恒温器，到会自己开门、开灯、省电的智能建筑。<b>点击时间线上的每个节点：</b></p>
+<div class="stack" data-explain="t1880">
+<figure>
+<div class="fig">
+<svg aria-label="建筑控制的时间线：19 世纪末的恒温器，二战后的气动控制，60 年代电子化，70 年代石油危机与 X-10，80 年代智能建筑，90 年代 domótica，2000 年代 hogar digital，2011 年后写进法规" role="img" viewbox="0 0 680 172">
+<defs>
+<marker id="m12a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<path class="s-dash" d="M21,46 L21,36 L409,36 L409,46"></path>
+<text class="s-tm" text-anchor="middle" x="215" y="26">grandes edificios · no vivienda</text>
+<path class="s-dash" d="M421,46 L421,36 L649,36 L649,46"></path>
+<text class="s-tm" text-anchor="middle" x="535" y="26">también viviendas</text>
+<line class="s-line" marker-end="url(#m12a)" x1="8" x2="672" y1="100" y2="100"></line>
+<g aria-label="Finales del siglo XIX: termostato" class="hot" data-key="t1880" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="21" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="55" y="105">s. XIX</text>
+<text class="s-t2" text-anchor="middle" x="55" y="142">恒温器</text>
+<text class="s-t2" text-anchor="middle" x="55" y="158">termostato</text>
+</g>
+<g aria-label="Después de la Segunda Guerra Mundial: control neumático" class="hot" data-key="t1945" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="101" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="135" y="105">1945–</text>
+<text class="s-t2" text-anchor="middle" x="135" y="142">中央空调</text>
+<text class="s-t2" text-anchor="middle" x="135" y="158">neumático</text>
+</g>
+<g aria-label="Años 60: primeros sistemas electrónicos" class="hot" data-key="t1960" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="181" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="215" y="105">1960s</text>
+<text class="s-t2" text-anchor="middle" x="215" y="142">电子化</text>
+<text class="s-t2" text-anchor="middle" x="215" y="158">sinópticos</text>
+</g>
+<g aria-label="Años 70: crisis del petróleo y X-10" class="hot" data-key="t1970" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="261" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="295" y="105">1970s</text>
+<text class="s-t2" text-anchor="middle" x="295" y="142">石油危机</text>
+<text class="s-t2" text-anchor="middle" x="295" y="158">X-10</text>
+</g>
+<g aria-label="Años 80: edificio inteligente" class="hot" data-key="t1980" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="341" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="375" y="105">1980s</text>
+<text class="s-t2" text-anchor="middle" x="375" y="142">edificio</text>
+<text class="s-t2" text-anchor="middle" x="375" y="158">inteligente</text>
+</g>
+<g aria-label="Años 90: domótica" class="hot" data-key="t1990" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="421" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="455" y="105">1990s</text>
+<text class="s-t2" text-anchor="middle" x="455" y="142">domótica</text>
+<text class="s-t2" text-anchor="middle" x="455" y="158">ICT 1998</text>
+</g>
+<g aria-label="Años 2000: hogar digital" class="hot" data-key="t2000" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="501" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="535" y="105">2000s</text>
+<text class="s-t2" text-anchor="middle" x="535" y="142">hogar</text>
+<text class="s-t2" text-anchor="middle" x="535" y="158">digital</text>
+</g>
+<g aria-label="2011 en adelante: ICT con hogar digital" class="hot" data-key="t2011" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="68" x="581" y="80"></rect>
+<text class="s-t" text-anchor="middle" x="615" y="105">2011–</text>
+<text class="s-t2" text-anchor="middle" x="615" y="142">ICT + HD</text>
+<text class="s-t2" text-anchor="middle" x="615" y="158">IoT</text>
+</g>
+</svg>
+</div>
+<figcaption>建筑控制的时间线。上方的虚线括号：90 年代以前，这些技术主要用在大型建筑（不是住宅）；90 年代起进入住宅。<span class="hint">点击节点看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="t1880" hidden="">
+<h3>finales del siglo XIX · 恒温器</h3>
+<p>用于暖气的第一批 <b class="t">termostato (ES) / thermostat (EN)</b>——恒温器式自动温控，可以追溯到 19 世纪末（时间线下面就是一台 1893 年的恒温器）。</p>
+<p>更具体地说是 1880 年代；这种相当简单的控制稳定地用了大约 50 年。同一时期，大型建筑（不是住宅）越来越多地装上集中供暖和通风，后来还有空调。</p>
+</div>
+<div class="panel" data-panel="t1945" hidden="">
+<h3>二战之后 · 空调成了刚需</h3>
+<p>二战后的建筑多用固定窗（ventanas fijas），climatización（暖通空调）变成绝对必需。<b class="t">métodos neumáticos (ES)</b>——气动方法成为测量、信号传输和控制响应的标准：维护、操作都简单，能把建筑的环境保持在可接受范围内。</p>
+</div>
+<div class="panel" data-panel="t1960" hidden="">
+<h3>años 60 · 第一批电子控制系统</h3>
+<p>60 年代开始出现用于建筑控制的电子系统。</p>
+<p>设施越来越复杂，建筑越来越大，必须把故障、异常和报警<b>集中</b>显示。于是出现了画着 esquemas y sinópticos（系统图、模拟屏）的大型控制台，上面有指示灯、仪表和开关，可以远程监视、甚至远程操作设备。</p>
+</div>
+<div class="panel" data-panel="t1970" hidden="">
+<h3>años 70 · 石油危机、X-10、微处理器</h3>
+<p>70 年代，美国出现第一批基于 X-10 的楼宇自动化设备，以及追求节能的新型供暖和空调系统，用来缓解当时的石油危机；低成本电子帮助它们推广。</p>
+<p>1973 年的石油危机让<b>节能</b>成了建筑运营的关键目标，连改造已有建筑的投资也变得划算。1973–1977 年间，一栋建筑的能源成本每年上涨 40%，人员成本每年上涨 15%。几乎同时发展起来的 microprocesadores（微处理器）让复杂的控制系统变得便宜。</p>
+</div>
+<div class="panel" data-panel="t1980" hidden="">
+<h3>años 80 · “edificio inteligente”登场</h3>
+<p>80 年代出现 <b class="t">edificio inteligente (ES) / intelligent building (EN)</b>——智能建筑的概念：用综合通信网络（redes integrales de comunicación）和先进技术，把建筑的许多功能和活动自动化，并能应对扩建或改造，这需要一定程度的智能。</p>
+<p>80 年代初的主要目标还是节能；油价回落后，重点转向建筑的 operatividad（温控更稳、通风空调更有效）。技术上从气动（模拟）<b>直接</b>跳到 <b class="t">DDC · control digital directo (ES)</b>——直接数字控制，几乎跳过了模拟电子这一步。</p>
+</div>
+<div class="panel" data-panel="t1990" hidden="">
+<h3>años 90 · 走进住宅：domótica</h3>
+<p>90 年代开始尝试把这些技术用在住宅里，做控制、能源管理、安全和舒适，这就是 domótica（§2）。它当时并不成功：成本高，缺少经验，也缺少标准和法规。</p>
+<p>90 年代末开始协议融合（KNX、SCP，§6–§7），出现了 UPnP、Jini 这类集成平台，以及 OSGi（1999，§8）。西班牙在 1998 年率先为建筑制定了 ICT 法规（§4）。西班牙的 Asociación Española de Domótica（CEDOM）成立于 1992 年。</p>
+</div>
+<div class="panel" data-panel="t2000" hidden="">
+<h3>2000 年代 · hogar digital</h3>
+<p>2000 年开始谈 hogar digital：在 domótica 之外再整合数据网络和多媒体，提供宽带上网和本地、远程管理（§3）。</p>
+<p>西班牙的时间线：2002 年 9 月发布 REBT（Reglamento Electrotécnico para Baja Tensión——低压电气规程，§10）的 ITC-BT-51；2004 年定义 Hogar Digital 概念，domótica 通过 pasarela residencial 与 Hogar Digital 的服务整合；2006 年 11 月发布 AENOR 的 EA0026（§10）。</p>
+</div>
+<div class="panel" data-panel="t2011" hidden="">
+<h3>2011 至今 · 写进法规，迈向 IoT</h3>
+<p>2011 年 ICT 法规更新，把 hogar digital 纳入并加以规范（§4）。2013 年 10 月，马德里举办 I Congreso de Edificios Inteligentes，200 多名建筑业专业人士参加。还有一种与智能建筑关系密切的新兴工作方法：<b class="t">BIM (Building Information Modeling)</b>——建筑信息模型。</p>
+<p>今天：开放系统（KNX、BACnet、LonWorks、DALI、Modbus）通过 pasarelas 互通，并朝 IP 连接、KNX Secure 这类安全增强、接入 IoT 设备的方向发展。</p>
+</div>
+</div>
+
+<p><b>控制架构的三步。</b>电子化以后，建筑控制系统的结构一步步“去中心化”：</p>
+<div class="flow">
+<div class="cell">
+<span class="eyebrow">1 · Centralizado</span>
+<p>先用多芯电缆把所有信号拉到中控室，很快换成 multiplexores（一个区域的信号只用两根线传）。所有程序、控制、报警都由中央计算机负责：它一坏全停，所以用两台互为备份的计算机（backup caliente）。</p>
+</div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell">
+<span class="eyebrow">2 · DDC</span>
+<p>远程面板有了微处理器和“智能”，用程序代替传统调节器。控制责任从中央计算机下放到远程面板，调节和信息共用同一套探头和传感器。</p>
+</div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell">
+<span class="eyebrow">3 · Distribuido</span>
+<p>现场分布智能、自主的设备，各管一片，通过“BUS”或“red local”互联、共享信息。中央只负责显示、历史数据和人机界面。通信中断时，现场设备照常自主运行。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">为什么要建筑控制系统（Justificación）</span>
+<p>一个人在一处监视全部设施；集中大量报警，响应快；更舒适；节能（对浪费或偏离参数的地方立即动作）；维护更好；故障更少（持续监视、立即报出故障）；整个系统得到优化。这些也是 §9 能效好处的历史源头。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Domótica 与 inmótica <span class="tag">1.2.2</span></h2>
+<p>两个词都来自拉丁语，区别在于<b>建筑的用途</b>：</p>
+<div class="note">
+<span class="lbl">定义 · 1.2.2</span>
+<ul>
+<li><b class="t">domótica (ES) / home automation (EN)</b>——家居自动化：把建筑自动化技术用在<b>住宅</b>（vivienda）里，做控制、能源管理、安全和舒适。词源：domus（住宅）+ 后缀 -tica（如 automática、robótica、informática）。</li>
+<li><b class="t">inmótica (ES) / building automation (EN)</b>——楼宇自动化：<b>第三产业或服务类建筑</b>（edificios terciarios o de servicios）的自动化，如酒店、办公楼、医院、工厂。词源：immobilis（固定不动的东西），inmueble（不动产）一词即由此而来。</li>
+</ul>
+</div>
+<p>换一种说法：domótica 是用于住宅控制和智能自动化的技术集合，能高效管理能源，并带来安全、舒适以及用户与系统之间的通信；用在 terciario（办公楼、酒店、商场、培训中心、医院）就叫 inmótica。一句话总结：inmótica 就是 inmuebles 的 domótica。</p>
+<p><b>分一分：</b>下面这些建筑的自动化，按上面的定义该叫什么？</p>
+<div class="sorter" id="sorter">
+<div class="srow" data-ans="dom"><span class="what">Un piso en un bloque de viviendas</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">住宅，哪怕是整栋公寓楼里的一套 → domótica。</span></div>
+<div class="srow" data-ans="inm"><span class="what">Un hotel</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">酒店属于 terciario → inmótica。</span></div>
+<div class="srow" data-ans="dom"><span class="what">Un chalet unifamiliar</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">独栋住宅 → domótica。</span></div>
+<div class="srow" data-ans="inm"><span class="what">Un hospital</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">服务类建筑 → inmótica。</span></div>
+<div class="srow" data-ans="inm"><span class="what">Un edificio de oficinas</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">办公楼 → inmótica。把办公楼也叫 domótica 是错的。</span></div>
+<div class="srow" data-ans="inm"><span class="what">Un colegio</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">学校属于 terciario → inmótica。</span></div>
+<div class="srow" data-ans="dom"><span class="what">Una vivienda adosada</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">联排住宅也是住宅 → domótica。</span></div>
+<div class="srow" data-ans="inm"><span class="what">Una planta industrial</span><span class="pick"><button data-pick="dom" type="button">domótica</button><button data-pick="inm" type="button">inmótica</button></span><span class="fb" hidden="">有些资料把 plantas industriales 算进 inmótica；也有资料反问：工业建筑既不是住宅也不是 terciario，该归哪边？</span></div>
+<div class="sort-ctl"><span class="sort-score"></span><button class="btn" data-sort-reset="" type="button">重来</button></div>
+</div>
+<p class="aside">这条边界其实很模糊：一大片住宅区可能比一栋 terciario 建筑更复杂，有的资料干脆称这种划分“únicamente académica”。住宅 → domótica，terciario/服务类 → inmótica。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Hogar digital <span class="tag">1.2.3</span></h2>
+<p>2000 年开始出现 hogar digital 的说法，它是 domótica 的下一步。</p>
+<div class="note">
+<span class="lbl">定义 · 1.2.3</span>
+<p><b class="t">hogar digital (ES) / digital home (EN)</b>——数字家庭，有两种说法：</p>
+<ul>
+<li><b>功能上的描述</b>：把 domótica 与<b>数据网络</b>（PC、打印机……）和<b>多媒体</b>（电视、音频和 DVD 播放器……）整合在一起，提供<b>宽带</b>上网，并能<b>本地和远程</b>管理。</li>
+<li><b>法规的说法</b>（2011 年更新的 ICT 法规采用）：一个住所，住户在 seguridad y control（安全与控制）、comunicaciones（通信）、ocio y confort（娱乐与舒适）、integración medioambiental（环境融合）和 accesibilidad（无障碍）方面的需求，通过“convergencia de servicios, infraestructuras y equipamientos”（服务、基础设施和设备的融合）得到满足。</li>
+</ul>
+</div>
+<div class="flow">
+<div class="cell">
+<span class="eyebrow">起点</span>
+<h3>Domótica</h3>
+<p>控制网络：照明、暖气、安防探测……</p>
+</div>
+<span aria-hidden="true" class="arrow">+</span>
+<div class="cell">
+<span class="eyebrow">再加上</span>
+<ul>
+<li>red de datos（数据网）</li>
+<li>red multimedia（多媒体网）</li>
+<li>Internet de banda ancha</li>
+<li>gestión local y remota</li>
+</ul>
+</div>
+<span aria-hidden="true" class="arrow">=</span>
+<div class="cell">
+<span class="eyebrow">结果</span>
+<h3>Hogar digital</h3>
+<p>各种网络和服务融合（convergencia），通常经由 pasarela residencial（§8）连到外面。在西班牙，2004 年起 domótica 通过 pasarela residencial 与 Hogar Digital 的服务整合。</p>
+</div>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="同心椭圆：hogar digital 在 edificio inteligente 里，edificio inteligente 在 comunidad y barrio en red 里，最外层是 ciudad sostenible" role="img" viewbox="0 0 600 170">
+<ellipse class="s-box" cx="300" cy="85" rx="290" ry="78"></ellipse>
+<ellipse class="s-soft" cx="245" cy="85" rx="225" ry="64"></ellipse>
+<ellipse class="s-box" cx="185" cy="85" rx="160" ry="50"></ellipse>
+<ellipse class="s-soft" cx="95" cy="85" rx="65" ry="32"></ellipse>
+<text class="s-t" text-anchor="middle" x="95" y="90">Hogar digital</text>
+<text class="s-t" text-anchor="middle" x="253" y="90">Edificio inteligente</text>
+<text class="s-t" text-anchor="middle" x="408" y="81">Comunidad y</text>
+<text class="s-t" text-anchor="middle" x="408" y="99">barrio en red</text>
+<text class="s-t" text-anchor="middle" x="530" y="81">Ciudad</text>
+<text class="s-t" text-anchor="middle" x="530" y="99">sostenible</text>
+</svg>
+</div>
+<figcaption>hogar digital 是最里面的一层，往外依次是智能建筑、联网社区和可持续城市。从这个视角看，hogar digital 提供的服务：seguridad、confort、ahorro energético、comunicaciones、ocio y audiovisual、gestión y control en red、accesibilidad y teleasistencia。</figcaption>
+</figure>
+<p class="aside">另外两种相近的列法：domótica 的 5 个支柱是 seguridad、confort、ahorro、comunicaciones、ocio；IHD（Infraestructuras de Hogar Digital——数字家庭基础设施，§4）的定义把住户需求列成：confort、seguridad、ahorro energético e integración medioambiental、comunicación y acceso a contenidos multimedia、teletrabajo、teleasistencia、formación y ocio。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>ICT：把通信送进楼 <span class="tag">1.2.4</span></h2>
+<div class="note">
+<span class="lbl">定义 · 1.2.4</span>
+<p><b class="t">ICT · Infraestructuras Comunes de Telecomunicación (ES)</b>——建筑公共电信基础设施：法规规定建筑必须具备的<b>最低限度</b>电信基础设施，保证所有住户都能接入信息社会（Sociedad de la Información），并让运营商之间公平竞争。从组成看，它是让楼内住户接入运营商各种电信服务的物理网络、元件和设备的总和；新建建筑里，容纳这些网络的管道、房间和土建部分也算 ICT。</p>
+<p><b>和 hogar digital 的关系：</b>西班牙 1998 年率先立了 ICT 法规；2011 年更新时（RD 346/2011，Anexo V Hogar Digital）把 hogar digital 写进法规，给出它的服务和等级表。ICT 负责把电视、电话、宽带送进楼、送到户；hogar digital 的基础设施 <b class="t">IHD · Infraestructuras de Hogar Digital (ES)</b>——数字家庭基础设施，在这之上加入安防、报警、环境控制和远程管理。</p>
+</div>
+<p>从 ICT 和 domótica 走向 hogar digital，住宅里的网络经历了三个阶段，切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="住宅网络的三个阶段" class="seg" role="group">
+<button aria-pressed="true" data-view="antes" type="button">ICT 之前</button>
+<button aria-pressed="false" data-view="ict" type="button">ICT</button>
+<button aria-pressed="false" data-view="ihd" type="button">IHD</button>
+</div>
+<div class="panel" data-pane="antes">
+<h3>Antenas colectivas · 共用天线时代</h3>
+<p>家里只有两张有线网：<b>电话网</b>（接普通电话）和<b>电视分配网</b>。</p>
+</div>
+<div class="panel" data-pane="ict" hidden="">
+<h3>ICT · 规定怎么布网</h3>
+<p>规定新住宅里网络的部署方式，保证电话、电视、有线电信和宽带这些现有服务都能接入。</p>
+</div>
+<div class="panel" data-pane="ihd" hidden="">
+<h3>IHD · 数字家庭的网络</h3>
+<ul>
+<li><b>宽带线路</b>（ADSL、cable modem……）：远程看护、视频监控、视频点播、音乐点播，房子一直在线（always on）。</li>
+<li><b>数据网</b>：连接 PC、打印机、扫描仪，共享文件和打印机，各个房间都能上网。</li>
+<li><b>多媒体网</b>：连接电视、录像机、DVD 播放器等。</li>
+</ul>
+</div>
+</div>
+<p>一套 ICT 分成三个<b>责任区（dominios）</b>：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Dominio público</span><p>运营商的网络，走公共道路下的管道、架空线，或者无线。</p></div>
+<div class="cell"><span class="eyebrow">Dominio de la comunidad</span><p>楼内的公共网络，让每户都能接入各家运营商。ICT 属于业主共同体（comunidad de vecinos），所以换运营商又方便又便宜。</p></div>
+<div class="cell"><span class="eyebrow">Dominio del usuario</span><p>住户家里，各类服务的户内网络。ICT 项目可以在这里扩展，加入 IHD 的基础设施。</p></div>
+</div>
+<p>ICT 和 IHD 两类项目分别包括什么？先想一想属于哪个，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>设施</th><th>属于（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>接收模拟或数字电视（地面、卫星、有线）</td><td class="ans">ICT</td></tr>
+<tr class="reveal"><td>基本电话，或 RDSI（综合业务数字网）</td><td class="ans">ICT</td></tr>
+<tr class="reveal"><td>有线电信：视频、语音和数据（如 Internet），在家中各房间可用</td><td class="ans">ICT</td></tr>
+<tr class="reveal"><td>漏水、燃气泄漏和火灾探测</td><td class="ans">IHD</td></tr>
+<tr class="reveal"><td>防入侵（anti-intrusión）</td><td class="ans">IHD</td></tr>
+<tr class="reveal"><td>空调、照明和设备的控制，信号监测</td><td class="ans">IHD</td></tr>
+<tr class="reveal"><td>集中或远程的通信管理</td><td class="ans">IHD</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">法规沿革：1999 年 RD 279/1999 生效；2003 年 4 月通过新的 ICT 条例；2011 年 RD 346/2011 和 Orden ITC/1644/2011 加入 Anexo V Hogar Digital。如果 IHD 项目并进 ICT 项目，要由 entidad de verificación（核验机构）核验。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>接线架构与传输介质 <span class="tag plain">背景</span></h2>
+<p>楼宇自动化网络非常多样。按 <b class="t">arquitectura de conexionado (ES)</b>——接线架构，可以分成三种。切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换接线架构" class="seg" role="group">
+<button aria-pressed="true" data-view="cen" type="button">Centralizada</button>
+<button aria-pressed="false" data-view="dis" type="button">Distribuida</button>
+<button aria-pressed="false" data-view="per" type="button">Periferia descentralizada</button>
+</div>
+<div class="stack" data-pane="cen">
+<figure>
+<div class="fig">
+<svg aria-label="集中式：一个 Control 节点，六个传感器和执行器各自用一条线直接连到它，呈星形" role="img" viewbox="0 0 520 220">
+<line class="s-line" x1="260" x2="170" y1="105" y2="40"></line>
+<line class="s-line" x1="260" x2="330" y1="105" y2="30"></line>
+<line class="s-line" x1="260" x2="140" y1="105" y2="115"></line>
+<line class="s-line" x1="260" x2="380" y1="105" y2="140"></line>
+<line class="s-line" x1="260" x2="180" y1="105" y2="185"></line>
+<line class="s-line" x1="260" x2="290" y1="105" y2="190"></line>
+<circle class="s-soft" cx="170" cy="40" r="11"></circle>
+<circle class="s-soft" cx="330" cy="30" r="11"></circle>
+<circle class="s-soft" cx="140" cy="115" r="11"></circle>
+<circle class="s-soft" cx="380" cy="140" r="11"></circle>
+<circle class="s-soft" cx="180" cy="185" r="11"></circle>
+<circle class="s-soft" cx="290" cy="190" r="11"></circle>
+<rect class="s-box" height="40" rx="6" width="90" x="215" y="85"></rect>
+<text class="s-t" text-anchor="middle" x="260" y="110">Control</text>
+<circle class="s-soft" cx="412" cy="22" r="7"></circle>
+<text class="s-tm" x="424" y="26">Sensores y</text>
+<text class="s-tm" x="424" y="42">actuadores</text>
+</svg>
+</div>
+<figcaption>Centralizada：一个 Control，所有传感器和执行器都直接接到它上面。</figcaption>
+</figure>
+<p><b>Centralizada</b>：所有元件都接到一个中心节点，由它负责控制和指令；网络里的设备依赖这个中央系统来调度通信、消息和控制命令。中心一坏，全部停摆。</p>
+</div>
+<div class="stack" data-pane="dis" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="分布式：两个 Control 节点，各自连着自己的一组传感器和执行器，两个 Control 之间再用一条粗线互连" role="img" viewbox="0 0 520 220">
+<line class="s-line" style="stroke-width:3" x1="185" x2="335" y1="105" y2="105"></line>
+<line class="s-line" x1="140" x2="60" y1="105" y2="45"></line>
+<line class="s-line" x1="140" x2="165" y1="105" y2="30"></line>
+<line class="s-line" x1="140" x2="35" y1="105" y2="125"></line>
+<line class="s-line" x1="140" x2="70" y1="105" y2="190"></line>
+<line class="s-line" x1="140" x2="160" y1="105" y2="185"></line>
+<line class="s-line" x1="380" x2="335" y1="105" y2="35"></line>
+<line class="s-line" x1="380" x2="445" y1="105" y2="30"></line>
+<line class="s-line" x1="380" x2="490" y1="105" y2="135"></line>
+<line class="s-line" x1="380" x2="330" y1="105" y2="185"></line>
+<line class="s-line" x1="380" x2="420" y1="105" y2="185"></line>
+<circle class="s-soft" cx="60" cy="45" r="11"></circle>
+<circle class="s-soft" cx="165" cy="30" r="11"></circle>
+<circle class="s-soft" cx="35" cy="125" r="11"></circle>
+<circle class="s-soft" cx="70" cy="190" r="11"></circle>
+<circle class="s-soft" cx="160" cy="185" r="11"></circle>
+<circle class="s-soft" cx="335" cy="35" r="11"></circle>
+<circle class="s-soft" cx="445" cy="30" r="11"></circle>
+<circle class="s-soft" cx="490" cy="135" r="11"></circle>
+<circle class="s-soft" cx="330" cy="185" r="11"></circle>
+<circle class="s-soft" cx="420" cy="185" r="11"></circle>
+<rect class="s-box" height="40" rx="6" width="90" x="95" y="85"></rect>
+<text class="s-t" text-anchor="middle" x="140" y="110">Control</text>
+<rect class="s-box" height="40" rx="6" width="90" x="335" y="85"></rect>
+<text class="s-t" text-anchor="middle" x="380" y="110">Control</text>
+<text class="s-tm" text-anchor="middle" x="260" y="96">enlace entre controles</text>
+</svg>
+</div>
+<figcaption>Distribuida：有<b>多个</b> Control，每个管自己的一组传感器和执行器，Control 之间再互相连接（粗线）。</figcaption>
+</figure>
+<p><b>Distribuida</b>：控制能力分散在多个节点上，各管一片，节点之间互联、交换信息。具体说：网络里的元件各有自己的处理和控制能力，可以直接和其他元件通信；所有元件共用同一条通信线路，每个都有控制和指令功能。有些资料把这种结构叫 distribuida；也有资料（低压电气规程 REBT）把它叫 sistema descentralizado，别和下面的 periferia descentralizada 混淆。还有两者混合的 arquitecturas mixtas。这也对应 §1 里的 control distribuido：一个节点或连接出问题，其余部分照常运行。</p>
+</div>
+<div class="stack" data-pane="per" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="分散外围：只有一个 Control，它的一部分传感器直接接在它上面；另一部分接在一组远端模块（Módulo 1 到 Módulo n）上，模块用一条粗线连回 Control" role="img" viewbox="0 0 520 220">
+<line class="s-line" style="stroke-width:3" x1="155" x2="290" y1="105" y2="68"></line>
+<line class="s-line" x1="110" x2="45" y1="105" y2="45"></line>
+<line class="s-line" x1="110" x2="150" y1="105" y2="30"></line>
+<line class="s-line" x1="110" x2="30" y1="105" y2="130"></line>
+<line class="s-line" x1="110" x2="60" y1="105" y2="190"></line>
+<line class="s-line" x1="336" x2="305" y1="65" y2="22"></line>
+<line class="s-line" x1="336" x2="395" y1="65" y2="20"></line>
+<line class="s-line" x1="358" x2="470" y1="91" y2="55"></line>
+<line class="s-line" x1="380" x2="495" y1="117" y2="105"></line>
+<line class="s-line" x1="402" x2="490" y1="143" y2="165"></line>
+<line class="s-line" x1="402" x2="430" y1="143" y2="200"></line>
+<line class="s-line" x1="380" x2="345" y1="117" y2="200"></line>
+<line class="s-line" x1="358" x2="270" y1="91" y2="165"></line>
+<circle class="s-soft" cx="45" cy="45" r="11"></circle>
+<circle class="s-soft" cx="150" cy="30" r="11"></circle>
+<circle class="s-soft" cx="30" cy="130" r="11"></circle>
+<circle class="s-soft" cx="60" cy="190" r="11"></circle>
+<circle class="s-soft" cx="305" cy="22" r="11"></circle>
+<circle class="s-soft" cx="395" cy="20" r="11"></circle>
+<circle class="s-soft" cx="470" cy="55" r="11"></circle>
+<circle class="s-soft" cx="495" cy="105" r="11"></circle>
+<circle class="s-soft" cx="490" cy="165" r="11"></circle>
+<circle class="s-soft" cx="430" cy="200" r="11"></circle>
+<circle class="s-soft" cx="345" cy="200" r="11"></circle>
+<circle class="s-soft" cx="270" cy="165" r="11"></circle>
+<rect class="s-box" height="40" rx="6" width="90" x="65" y="85"></rect>
+<text class="s-t" text-anchor="middle" x="110" y="110">Control</text>
+<rect class="s-box" height="30" rx="5" width="92" x="290" y="50"></rect>
+<text class="s-t2" x="298" y="69">Módulo 1</text>
+<rect class="s-box" height="30" rx="5" width="92" x="312" y="76"></rect>
+<text class="s-t2" x="320" y="95">Módulo 2</text>
+<rect class="s-box" height="30" rx="5" width="92" x="334" y="102"></rect>
+<text class="s-t2" x="342" y="121">Módulo 3</text>
+<rect class="s-box" height="30" rx="5" width="92" x="356" y="128"></rect>
+<text class="s-t2" x="364" y="147">Módulo n</text>
+</svg>
+</div>
+<figcaption>Periferia descentralizada：只有<b>一个</b> Control；一部分传感器和执行器直接接在它上面，另一部分接在一组远端的 Módulo 1…n 上，这些模块再用一条线连回 Control。</figcaption>
+</figure>
+<p><b>Periferia descentralizada</b>：看结构，控制器只有一个（和 distribuida 不同），但外围的输入输出被“搬”到了远端的模块上，现场设备就近接模块，模块再通过一条连接回到控制器（和 centralizada 的每个设备一根线不同）。通常的理解是：这些模块只负责采集和输出信号，控制逻辑仍在中央 Control，好处是大幅减少布线。</p>
+</div>
+</div>
+
+<p class="aside">怎么一眼分辨：数 Control 有几个，再看设备接在哪里。一个 Control、设备全直连 → centralizada；多个 Control 互连 → distribuida；一个 Control、设备接在远端 Módulo 上 → periferia descentralizada。</p>
+<p>按 <b class="t">medio de transmisión (ES)</b>——传输介质，可以分成有线（专用线、光纤、同轴、双绞线、电力线……）和无线（射频、红外……）。把电力线单列出来，就是下面三类：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Cableado</span><h3>双绞线等</h3><p>通常是一两对 par trenzado。稳、可靠，但要单独布线，成本高。西班牙 REBT 不允许 domótica、安防、电视等线缆和电力线共用管道。</p></div>
+<div class="cell"><span class="eyebrow">Ondas portadoras</span><h3>电力线载波</h3><p>利用现有的电线，在远高于 50 Hz 电源频率的频段收发数据（通常是 132 kHz）。X-10 就是这种（§11）。</p></div>
+<div class="cell"><span class="eyebrow">Radio</span><h3>无线</h3><p>用 ICM（工业、科学、医疗）免许可频段，欧洲多数国家是 433 MHz、868 MHz 和 2,4 GHz。</p></div>
+</div>
+<p class="aside">后两种不用新布线，适合已建成的住宅，英语里统称“no-new-wires”。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>控制协议一览 <span class="tag">1.2.5</span></h2>
+<p><b class="t">protocolo de control (ES) / control protocol (EN)</b>——控制协议有很多，既有 propietarios（专有：使用权归原厂商，通常不是国际标准），也有 estándares（标准）。可以分成下面五组，<b></b>；最后一格是今天的情况：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Domótica clásica</span><p><b>X-10</b>（1978，走电力线，便宜、成熟）；<b>CEBus</b>、<b>BatiBus</b>、<b>EHS</b>（European Home System），面向中等性能；<b>LonWorks</b>、<b>EIB</b>（European Installation Bus），面向专业、高性能安装。</p></div>
+<div class="cell"><span class="eyebrow">Convergencia · 90 年代末</span><p>欧洲：<b>Konnex (KNX)</b>，汇合 EIB、BatiBus、EHS；美洲：<b>SCP</b>（Simple Control Protocol），汇合 X-10、LonWorks、CEbus（见 §7 的图）。</p></div>
+<div class="cell"><span class="eyebrow">Buses de campo industriales</span><p><b>Modbus</b>；<b>CAN</b>（Controller Area Network，便宜，来自汽车）；<b>PROFIBUS</b>（贵得多，但在工业界普及度高）。</p></div>
+<div class="cell"><span class="eyebrow">Redes interiores del edificio</span><p>基于 TCP/IP 的 LAN；<b>BACnet</b>（ASHRAE 开发，最初面向暖通空调）；<b>Home RF</b>（无线）。</p></div>
+<div class="cell"><span class="eyebrow">Plataformas de integración · 90 年代末</span><p>为了屏蔽硬件和编程语言的差异：<b>UPnP</b>（Universal Plug&amp;Play，Microsoft 推动）和 <b>Jini</b>（Sun Microsystems 推动）。</p></div>
+<div class="cell"><span class="eyebrow">今天</span><p>开放系统：KNX（源自欧洲）；BACnet（部分空调机组）；LonWorks（美国的事实标准）；<b>DALI</b>（照明）；Modbus（电表、光伏逆变器）。它们之间通过 pasarelas 互通。</p></div>
+</div>
+<p><b>配对：</b>先点左边的协议，再点右边对应的线索。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="x10" type="button">X-10</button>
+<button data-l="knx" type="button">KNX</button>
+<button data-l="bacnet" type="button">BACnet</button>
+<button data-l="lon" type="button">LonWorks</button>
+<button data-l="modbus" type="button">Modbus</button>
+<button data-l="can" type="button">CAN</button>
+<button data-l="jini" type="button">Jini</button>
+</div>
+<div class="col">
+<button data-r="can" type="button">bajo coste <span class="es">procede del automóvil</span></button>
+<button data-r="x10" type="button">red eléctrica <span class="es">1978 · bajo coste y madurez</span></button>
+<button data-r="jini" type="button">plataforma de integración <span class="es">Sun Microsystems</span></button>
+<button data-r="bacnet" type="button">climatización <span class="es">orientación inicial · ASHRAE</span></button>
+<button data-r="knx" type="button">convergencia europea <span class="es">EIB + BatiBus + EHS</span></button>
+<button data-r="modbus" type="button">bus de campo industrial <span class="es">contadores, inversores FV</span></button>
+<button data-r="lon" type="button">Echelon <span class="es">Neuron Chip</span></button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p>两张对比表，切换查看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换对比表" class="seg" role="group">
+<button aria-pressed="true" data-view="t2005" type="button">Redes domésticas</button>
+<button aria-pressed="false" data-view="t2010" type="button">BACnet · LonWorks · KNX</button>
+</div>
+<div class="stack" data-pane="t2005">
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Tecnología</th><th>Medios de transmisión</th><th>Velocidad（依介质）</th><th>Distancia máx.（依介质）</th></tr></thead>
+<tbody>
+<tr><td>Konnex</td><td>par trenzado · ondas portadoras · Ethernet · radio</td><td class="mono">9.600 bps · 1.200/2.400 bps · 2,4 Kbps</td><td class="mono">1.000 m · 600 m</td></tr>
+<tr><td>Lonworks</td><td>par trenzado · ondas portadoras · radio · coaxial · fibra óptica</td><td class="mono">78 Kbps – 1,28 Mbps *</td><td class="mono">500 – 2.700 m</td></tr>
+<tr><td>X10</td><td>ondas portadoras</td><td class="mono">60 bps EE. UU. · 50 bps Europa</td><td class="mono">185 m² **</td></tr>
+<tr><td>BacNet</td><td>par trenzado · cable coaxial · fibra óptica</td><td class="mono">1 – 100 Mbps</td><td class="mono">100 m</td></tr>
+<tr><td>EIB</td><td>par trenzado · ondas portadoras · radio · infrarrojos</td><td class="mono">9.600 bps · 1.200/2.400 bps</td><td class="mono">1.000 m · 600 m · 300 m</td></tr>
+<tr><td>EHS</td><td>par trenzado · ondas portadoras</td><td class="mono">2,4 Kbps · 48 Kbps</td><td class="mono">—</td></tr>
+<tr><td>Batibus</td><td>par trenzado</td><td class="mono">4.800 bps</td><td class="mono">200 – 1.500 m（依电缆截面）</td></tr>
+<tr><td>CEBus</td><td>par trenzado · ondas portadoras · radio · coaxial · infrarrojos</td><td class="mono">10.000 bit/s</td><td>依介质而定</td></tr>
+<tr><td>ZigBee</td><td>radio</td><td class="mono">20 – 250 Kbps</td><td class="mono">10 – 75 m</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">Características básicas de las tecnologías de Redes Domésticas——家庭网络技术的基本特性。* Lonworks 还有一项更低的速率，此处略去。** 这一格的单位是 m²。</p>
+
+</div>
+<div class="stack" data-pane="t2010" hidden="">
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>LonWorks</th><th>BACnet</th><th>KNX</th></tr></thead>
+<tbody>
+<tr><td>Arquitectura de red</td><td>bottom up · protocolo común · peer-to-peer</td><td>top down · varios protocolos · topología en niveles</td><td>bottom up · baja velocidad, topología libre</td></tr>
+<tr><td>Dispositivo</td><td>Neuron Chip · lenguaje Neuron C</td><td>independiente del procesador y del lenguaje</td><td>al principio, procesador 68HC05</td></tr>
+<tr><td>Comunicación</td><td>un solo protocolo, LonTalk · TP, PL, inalámbrico, fibra</td><td>Ethernet, ARCNET, MS/TP, LonTalk, PTP</td><td>TP, PL, inalámbrico</td></tr>
+<tr><td>Internet</td><td>LonWorks/IP · i.LON</td><td>BACnet/IP · BACnet/WS</td><td>KNX/IP</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">TP = par trenzado，PL = power line。结论：住宅最适合 KNX；办公楼则 BACnet 最灵活，它是 ANSI、CEN 和 ISO 标准。</p>
+</div>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="楼宇自动化的三个层级：管理层、自动化层、现场层。KNX 和 LonWorks 是自下而上的三角形，BACnet 是自上而下的倒三角形，Modbus 在自动化层" role="img" viewbox="0 0 560 240">
+<rect class="s-soft" height="60" rx="4" width="540" x="10" y="10"></rect>
+<rect class="s-soft" height="60" rx="4" width="540" x="10" y="80"></rect>
+<rect class="s-soft" height="60" rx="4" width="540" x="10" y="150"></rect>
+<text class="s-t" x="20" y="36">Management level</text>
+<text class="s-t2" x="20" y="54">管理层：显示、全局配置</text>
+<text class="s-t" x="20" y="106">Automation</text>
+<text class="s-t2" x="20" y="124">自动化层：控制回路</text>
+<text class="s-t" x="20" y="176">Field level</text>
+<text class="s-t2" x="20" y="194">现场层：测量、开关</text>
+<polygon class="s-box" points="200,86 150,206 250,206"></polygon>
+<text class="s-t" text-anchor="middle" x="200" y="192">KNX</text>
+<polygon class="s-box" points="320,86 270,206 370,206"></polygon>
+<text class="s-t" text-anchor="middle" x="320" y="192">LonWorks</text>
+<polygon class="s-box" points="380,14 500,14 440,136"></polygon>
+<text class="s-t" text-anchor="middle" x="440" y="38">BACnet</text>
+<rect class="s-box" height="28" rx="4" width="66" x="478" y="96"></rect>
+<text class="s-t" text-anchor="middle" x="511" y="115">Modbus</text>
+<rect class="s-box" height="30" rx="4" width="154" x="390" y="166"></rect>
+<text class="s-t2" text-anchor="middle" x="467" y="186">ZigBee · M-Bus · DALI…</text>
+<text class="s-tm" text-anchor="middle" x="260" y="230">KNX · LonWorks: bottom up</text>
+<text class="s-tm" text-anchor="middle" x="467" y="230">BACnet: top down</text>
+</svg>
+</div>
+<figcaption>楼宇自动化的三个层级（简化）：KNX 和 LonWorks 主要用在现场层和自动化层（自下而上），BACnet 主要在管理层和自动化层（自上而下）；Modbus 和右下角那些标准只用在某一层。</figcaption>
+</figure>
+
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>KNX：欧洲的融合标准 <span class="tag">1.2.6</span></h2>
+<p>Konnex (KNX) 是欧洲的协议融合方案。它的定义和特点：</p>
+<div class="note">
+<span class="lbl">定义 · 1.2.6</span>
+<p><b class="t">KNX · Konnex</b>——住宅和楼宇控制的开放标准：</p>
+<ul>
+<li>由三个欧洲协会（EIBA、Batibus Club International、EHSA）发起，把 <b>EIB、BatiBus、EHS</b> 融合成<b>一个统一标准</b>，同时覆盖 domótica 和 inmótica；兼容已安装的 EIB 产品。</li>
+<li>标准化：CENELEC 的 <b>EN 50090</b>（作为 Norma para el Control de Viviendas y Edificios）；国际标准 <b>ISO/IEC 14543</b>。</li>
+<li>对协会会员免版税（libre de royalties），不依赖任何特定的软硬件平台。标准的管理和产品认证由 Konnex Association 负责。</li>
+</ul>
+<p>一句话版本：<i>estándar abierto mundial para el control de casas y edificios</i>。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="Plataformas de convergencia：欧洲市场，EIB、BatiBus、EHS 三个箭头汇入 KNX；美洲市场，X-10、LonWorks、CEbus 三个箭头汇入 SCP" role="img" viewbox="0 0 660 236">
+<defs>
+<marker id="m12c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-dash" x1="330" x2="330" y1="14" y2="222"></line>
+<line class="s-line" marker-end="url(#m12c)" x1="70" x2="148" y1="67" y2="136"></line>
+<line class="s-line" marker-end="url(#m12c)" x1="175" x2="175" y1="67" y2="136"></line>
+<line class="s-line" marker-end="url(#m12c)" x1="280" x2="202" y1="67" y2="136"></line>
+<line class="s-line" marker-end="url(#m12c)" x1="380" x2="458" y1="67" y2="136"></line>
+<line class="s-line" marker-end="url(#m12c)" x1="485" x2="485" y1="67" y2="136"></line>
+<line class="s-line" marker-end="url(#m12c)" x1="590" x2="512" y1="67" y2="136"></line>
+<ellipse class="s-soft" cx="70" cy="45" rx="50" ry="22"></ellipse>
+<text class="s-t" text-anchor="middle" x="70" y="50">EIB</text>
+<ellipse class="s-soft" cx="175" cy="45" rx="50" ry="22"></ellipse>
+<text class="s-t" text-anchor="middle" x="175" y="50">BatiBus</text>
+<ellipse class="s-soft" cx="280" cy="45" rx="50" ry="22"></ellipse>
+<text class="s-t" text-anchor="middle" x="280" y="50">EHS</text>
+<ellipse class="s-soft" cx="380" cy="45" rx="50" ry="22"></ellipse>
+<text class="s-t" text-anchor="middle" x="380" y="50">X-10</text>
+<ellipse class="s-soft" cx="485" cy="45" rx="50" ry="22"></ellipse>
+<text class="s-t" text-anchor="middle" x="485" y="50">LonWorks</text>
+<ellipse class="s-soft" cx="590" cy="45" rx="50" ry="22"></ellipse>
+<text class="s-t" text-anchor="middle" x="590" y="50">CEbus</text>
+<rect class="s-box" height="46" rx="6" width="100" x="125" y="138"></rect>
+<text class="s-t" text-anchor="middle" x="175" y="166">KNX</text>
+<rect class="s-box" height="46" rx="6" width="100" x="435" y="138"></rect>
+<text class="s-t" text-anchor="middle" x="485" y="166">SCP</text>
+<text class="s-t2" text-anchor="middle" x="175" y="210">Mercado europeo · Konnex</text>
+<text class="s-t2" text-anchor="middle" x="485" y="210">Mercado americano · Simple Control Protocol</text>
+</svg>
+</div>
+<figcaption>Plataformas de convergencia——融合平台：90 年代末的两条融合路线。欧洲：EIB、BatiBus、EHS → KNX；美洲：X-10、LonWorks、CEbus → SCP。</figcaption>
+</figure>
+
+<p class="aside">融合的时间说法不一：有些资料说 90 年代末；也有资料说 1996 年 9 月在布鲁塞尔宣布 Proceso de convergencia（进展比预期慢），或说三者在 2002 年合并。另外，虽然名义上融合了三种技术，实际上 KNX 的分量主要落在 EIB 及其产品上。</p>
+<p>KNX 1.0 规定了三种<b>配置模式</b>，从专业到傻瓜式。点开看：</p>
+<div class="stack" data-explain="s">
+<div aria-label="KNX 配置模式" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="s" type="button">S.mode <small>System</small></button>
+<button aria-pressed="false" class="chip" data-key="e" type="button">E.mode <small>Easy</small></button>
+<button aria-pressed="false" class="chip" data-key="a" type="button">A.mode <small>Automatic</small></button>
+</div>
+<div class="panel" data-panel="s" hidden="">
+<h3>S.mode · System mode</h3>
+<p>沿用 EIB 的做法：设备由专业人员用专门的软件安装和配置。完全可编程，功能最多，需要专业技术人员。任何 EIB 产品都可以说兼容 KNX 的 S.mode。</p>
+</div>
+<div class="panel" data-panel="e" hidden="">
+<h3>E.mode · Easy mode</h3>
+<p>设备出厂时已编程好某项功能，安装时只需配置少量细节：用一个中央控制器（例如 pasarela residencial），或者用设备上的微型开关（类似很多 X-10 设备）。工具简单，功能有限，技术人员不需要太多经验。</p>
+</div>
+<div class="panel" data-panel="a" hidden="">
+<h3>A.mode · Automatic mode</h3>
+<p>Plug&amp;Play：安装者和用户都不用配置。适合家电、娱乐设备（游戏机、机顶盒、音响）和服务提供商。例：BSH（Siemens 家电部门）2004 年推出一系列兼容 KNX A.mode、走电力线通信的家电。</p>
+</div>
+</div>
+
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Medios</span><p>两种双绞线（TP1、TP2），两个频率的电力线载波（PL100、PL132），Ethernet，射频（KNX RF）；还有简单的 IP 隧道。</p></div>
+<div class="cell"><span class="eyebrow">Dos niveles</span><p>现场网络连接传感器、执行器和控制器；多个现场网络再接到一条主干上，管理节点（操作站、日志服务器）放在主干。趋势是用 IP 网络做主干。</p></div>
+<div class="cell"><span class="eyebrow">ETS</span><p>用 data-points 收发命令，它们之间的逻辑连接叫 binding；整个网络用 ETS（Engineering-Tool-Software）来设计。今天还有 KNX Secure。</p></div>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>Pasarela residencial：家里的总闸门 <span class="tag">1.2.7</span></h2>
+<p>pasarelas residenciales 在这类系统里是关键。</p>
+<div class="note">
+<span class="lbl">定义 · 1.2.7</span>
+<p><b class="t">pasarela residencial (ES) / residential gateway, home gateway (EN)</b>——家庭网关：</p>
+<ul>
+<li><b>做什么</b>：基本功能是把建筑内部的电信基础设施（数据、控制、自动化等）连接到<b>公共数据网络</b>。它像典型的 router 一样工作，也可以充当娱乐（视频/音频点播）、VoIP（网络电话）或远程控制的应用服务器。例子：<b>OSGi</b>（Open Services Gateway，1999）。</li>
+<li><b>一句话</b>：外部网络与住宅内部网络之间“单一、灵活、智能”的接口（interfaz única, flexible e inteligente）。</li>
+<li><b>由什么组成</b>：一个或一组<b>永久连接宽带 Internet</b> 的设备，管理住宅里的各个网络，充当各项服务的管理者，并负责内外访问的控制和安全。</li>
+</ul>
+</div>
+<div class="stack" data-explain="pasarela">
+<figure>
+<div class="fig">
+<svg aria-label="家庭网关连接外部宽带网络和住宅内部的数据网、多媒体网、控制网、安防报警网" role="img" viewbox="0 0 600 290">
+<defs>
+<marker id="m12d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" text-anchor="middle" x="80" y="24">EXTERIOR</text>
+<text class="s-tm" text-anchor="middle" x="510" y="24">INTERIOR · vivienda</text>
+<line class="s-line" marker-end="url(#m12d)" marker-start="url(#m12d)" x1="152" x2="208" y1="155" y2="155"></line>
+<line class="s-line" marker-end="url(#m12d)" x1="352" x2="428" y1="150" y2="67"></line>
+<line class="s-line" marker-end="url(#m12d)" x1="352" x2="428" y1="155" y2="127"></line>
+<line class="s-line" marker-end="url(#m12d)" x1="352" x2="428" y1="160" y2="189"></line>
+<line class="s-line" marker-end="url(#m12d)" x1="352" x2="428" y1="165" y2="249"></line>
+<g aria-label="Redes externas" class="hot" data-key="externas" role="button" tabindex="0">
+<rect class="s-box" height="100" rx="8" width="140" x="10" y="105"></rect>
+<text class="s-t" text-anchor="middle" x="80" y="133">Redes externas</text>
+<text class="s-t2" text-anchor="middle" x="80" y="153">Internet</text>
+<text class="s-t2" text-anchor="middle" x="80" y="171">ADSL · cable</text>
+<text class="s-t2" text-anchor="middle" x="80" y="189">UMTS · LMDS</text>
+</g>
+<text class="s-tm" text-anchor="middle" x="80" y="226">banda ancha · always on</text>
+<g aria-label="Pasarela residencial" class="hot" data-key="pasarela" role="button" tabindex="0">
+<rect class="s-box" height="76" rx="8" width="140" x="210" y="118"></rect>
+<text class="s-t" text-anchor="middle" x="280" y="146">Pasarela</text>
+<text class="s-t" text-anchor="middle" x="280" y="164">residencial</text>
+<text class="s-t2" text-anchor="middle" x="280" y="182">home gateway</text>
+</g>
+<text class="s-tm" text-anchor="middle" x="280" y="216">router · concentrador</text>
+<text class="s-tm" text-anchor="middle" x="280" y="231">servidor de aplicaciones</text>
+<g aria-label="Red de datos" class="hot" data-key="datos" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="160" x="430" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="61">Red de datos</text>
+<text class="s-t2" text-anchor="middle" x="510" y="79">PC · impresora · Internet</text>
+</g>
+<g aria-label="Red multimedia" class="hot" data-key="multimedia" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="160" x="430" y="102"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="123">Red multimedia</text>
+<text class="s-t2" text-anchor="middle" x="510" y="141">TV · audio · vídeo</text>
+</g>
+<g aria-label="Red de control o domótica" class="hot" data-key="control" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="160" x="430" y="164"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="185">Red de control</text>
+<text class="s-t2" text-anchor="middle" x="510" y="203">domótica · luz · clima</text>
+</g>
+<g aria-label="Red de seguridad y alarmas" class="hot" data-key="seguridad" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="160" x="430" y="226"></rect>
+<text class="s-t" text-anchor="middle" x="510" y="247">Seguridad y alarmas</text>
+<text class="s-t2" text-anchor="middle" x="510" y="265">intrusión · humo · agua</text>
+</g>
+</svg>
+</div>
+<figcaption>网关是外部网络和家里各张网之间的唯一接口（简化示意）。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="externas" hidden="">
+<h3>Redes externas · 外部网络</h3>
+<p>运营商提供的接入网。宽带接入有 ADSL、cable módem，以及无线的 UMTS、LMDS；趋势是永久在线（Always-On）。要把家庭网关接到外面，只考虑能提供<b>永久宽带连接的双向</b>方案。</p>
+</div>
+<div class="panel" data-panel="pasarela" hidden="">
+<h3>Pasarela residencial · 它把这些角色合在一起</h3>
+<ul>
+<li>不同网络之间的数据路由（router）</li>
+<li>内外各种网络的集中点（concentrador）</li>
+<li>从家里任何地方统一上网</li>
+<li>应用服务器：娱乐（视频点播）、通信（VoIP）、远程控制（domótica）</li>
+</ul>
+<p>家里设备之间的通信不出门；家里和 Internet 之间是双向的。</p>
+</div>
+<div class="panel" data-panel="datos" hidden="">
+<h3>Red de datos · 数据网</h3>
+<p>连接电脑、打印机等设备，共享资源，在各个房间上网。数据网和多媒体网合称 <b class="t">RAD · Red de Área Doméstica (ES)</b>——家庭局域网，用结构化布线部署。</p>
+</div>
+<div class="panel" data-panel="multimedia" hidden="">
+<h3>Red multimedia · 多媒体网</h3>
+<p>在家里采集、存储、分发和播放音频、图像、视频和电视信号。</p>
+</div>
+<div class="panel" data-panel="control" hidden="">
+<h3>Red de control · 控制网（red domótica）</h3>
+<p>连接控制系统的传感器和执行器：照明、空调、舒适（百叶、遮阳篷、灌溉……）、家电、供给、在场检测等。它和安防网合称 <b class="t">RGCS · Red de gestión, control y seguridad (ES)</b>——管理、控制与安防网。</p>
+</div>
+<div class="panel" data-panel="seguridad" hidden="">
+<h3>Seguridad y alarmas técnicas · 安防与技术报警</h3>
+<p>火灾、烟雾、漏水、燃气、断电、电话线故障等技术报警，入侵报警，视频监控摄像头，个人报警。</p>
+</div>
+</div>
+
+<p>一台家庭网关要成功，应具备这些<b>特点</b>：</p>
+<ul>
+<li><b>Instalación sencilla</b>：安装简单、配置快，最好 Plug&amp;Play。</li>
+<li><b>Telecarga de software</b>：服务商（或在其监督下的用户）能远程更新、下载新服务并远程配置。</li>
+<li><b>Soporte para redes</b>：接宽带数据网（&gt;10 Mbps：Ethernet、Bluetooth、HomePlug、HomeRF、802.11b/g），最好也接窄带控制网（red domótica），用于远程控制和节能。</li>
+<li><b>Seguridad</b>：它是进入家庭的网络入口，要有防火墙（firewall）、服务的认证和授权，用 IPSEC 建 VPN 或用 HTTPS 加密传输。</li>
+<li><b>Capacidad para soportar múltiples servicios</b>：足够的内存、处理能力和稳定的多任务操作系统，同时运行多个 e-service，共享宽带。</li>
+<li><b>Monitorización usando páginas Web</b>：内置小型服务器（HTTP、WAP），本地或远程查看和修改配置。</li>
+</ul>
+<p class="aside">定义里举的例子 OSGi 是“网关软件标准化”的方案：开放、与硬件无关、免版税，定义一组 API 来承载各种 e-services。M21 会再讲 OSGi 的 bundle：<a href="m21.html#s5">M21 §5 ↗</a></p>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>能效：domótica 最实在的好处 <span class="tag">1.2.8</span></h2>
+<p><b class="t">eficiencia energética (ES) / energy efficiency (EN)</b>——能效，带来的好处可以归成六条：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">1 · 账单</span><h3>省钱，回本快</h3><p>高效用能最多能让一栋建筑每年的能源账单少 <b>25%</b>，投资 <b>1–2 年</b>收回。</p></div>
+<div class="cell"><span class="eyebrow">2 · 大头</span><h3>管住空调和照明</h3><p>climatización（尤其是它）和照明是最大的耗能和污染来源。分区、分房间的定时恒温器很重要：空调温度差 3 °C，能耗就多 <b>50%</b>。</p></div>
+<div class="cell"><span class="eyebrow">3 · 按需</span><h3>该开才开</h3><p>节能功能包括：按区域、时段、有没有人、自然光来控制空调和照明；控制遮阳和百叶；一键全关；管理待机；断开非优先回路；在电价低的时段开家电；监测能耗；控制灌溉；还可以按住宅的使用程度调节能耗。</p></div>
+<div class="cell"><span class="eyebrow">4 · 需求</span><h3>削峰</h3><p>gestión activa de la demanda（主动需求管理），发现用电高峰，推迟非关键负载，把可用功率在时间上分摊开。</p></div>
+<div class="cell"><span class="eyebrow">5 · 数据</span><h3>看得见才管得住</h3><p>对比和统计能揭示用能模式和异常，可以检验换设备、改照明、上可再生能源、加保温的效果；运行小时数和动作次数还方便维护。</p></div>
+<div class="cell"><span class="eyebrow">6 · 合规与环境</span><h3>达标、减排</h3><p>domótica 帮助满足 CTE（Código Técnico de la Edificación）的 DB HE 节能要求；欧盟指令 2010/31/UE 鼓励装主动控制系统。集成的楼宇自动化还能减少 CO₂。</p></div>
+</div>
+<p><b>算一算：</b>按上面的“最多 25%”，看看投资多久能收回。默认值只是示例，改成你自己的假设试试。</p>
+<div class="calc" id="calc-ahorro">
+<div class="calc-in">
+<label><span>Factura energética anual（€ / año）</span><input data-c="f" min="0" step="500" type="number" value="12000"/></label>
+<label><span>Ahorro（%，最多 25）</span><input data-c="p" max="25" min="0" step="1" type="range" value="25"/><output data-c="pv">25 %</output></label>
+<label><span>Inversión en domótica / inmótica（€）</span><input data-c="i" min="0" step="500" type="number" value="4000"/></label>
+</div>
+<div aria-live="polite" class="calc-out">
+<div class="row"><span class="k">Ahorro anual · 每年省下</span><b data-c="a">—</b><code data-c="fa"></code></div>
+<div class="row"><span class="k">Recuperación · 回收期</span><b data-c="r">—</b><code data-c="fr"></code></div>
+<p class="aside" data-c="v"></p>
+</div>
+</div>
+<p>用户也越来越在意节能。2010 年用户需求的统计（按功能领域）：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Área de actuación</th><th>占需求</th><th>包括什么（节选）</th></tr></thead>
+<tbody>
+<tr><td>Confort</td><td class="mono">23 %</td><td>自动化、多种界面集中控制、场景编程</td></tr>
+<tr><td>Ahorro energético</td><td class="mono">20 %</td><td>见上面第 3 条</td></tr>
+<tr><td>Comunicaciones</td><td class="mono">16 %</td><td>—</td></tr>
+<tr><td>Seguridad técnica</td><td class="mono">15 %</td><td>燃气、火灾、水浸、断电的探测、动作和报警</td></tr>
+<tr><td>Seguridad intrusión</td><td class="mono">14 %</td><td>模拟有人在家、监视、入侵报警、接报警中心</td></tr>
+<tr><td>Ocio</td><td class="mono">10 %</td><td>家庭影院、视频点播、多媒体</td></tr>
+<tr><td>Accesibilidad</td><td class="mono">3 %</td><td>紧急报警、开门和百叶</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">结论：2004 年用户装 domótica 的首要理由是舒适和娱乐，到 2010 年节能已几乎和舒适并列；厂商的研发投入也主要转向节能和舒适。</p>
+
+</section>
+
+<section class="sec" id="s10">
+<h2><span class="n">§10</span>domótica 安装的认证规范 <span class="tag">1.2.9</span></h2>
+<p>下面讲的都是西班牙的规范。</p>
+<div class="note">
+<span class="lbl">要点 · 1.2.9</span>
+<ul>
+<li><b class="t">Especificación AENOR EA0026:2006</b>，标题是 Instalaciones de sistemas domóticos en viviendas. Prescripciones generales de instalación y evaluación。2006 年 11 月发布，在欧洲是首创。它规定一个系统要算 domótico 必须满足的<b>最低要求</b>，并附一张 domotización <b>等级表</b>。实际判定时，系统至少要达到 CEDOM（Asociación Española de Domótica，§1）等级表（基于 EA0026）的第 1 级，而且所有设备要集成在一起、能互相通信，才算 domótico。</li>
+<li><b class="t">ITC-BT-51 del REBT</b>：Reglamento Electrotécnico para Baja Tensión（低压电气规程）的第 51 号补充技术说明（Instrucción Técnica Complementaria），2002 年 9 月发布。它规定 sistemas de automatización, gestión técnica de la energía y seguridad（即 sistemas domóticos）的具体安装要求。2007 年 2 月工业部发布的应用指南与 EA0026 对齐，是等级表的基础。</li>
+</ul>
+</div>
+<p>为什么需要它们？房地产热潮时，很多开发商只装一个恒温器或一个报警器就宣传“有 domótica”，所以必须界定什么是、什么不是 domótica，以免欺诈。</p>
+<p>先想一想，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>问题</th><th>规范（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>一个系统最少要满足什么才算 domótico？带等级表的是哪份文件？</td><td class="ans">AENOR EA0026:2006</td></tr>
+<tr class="reveal"><td>domótica 的电气安装要符合哪条法规？</td><td class="ans">ITC-BT-51 del REBT</td></tr>
+<tr class="reveal"><td>REBT 要求 domótica 安装事先准备什么？</td><td class="ans">proyecto o memoria técnica（依 ITC-BT-04）</td></tr>
+<tr class="reveal"><td>hogar digital 的服务和等级表写在哪里？</td><td class="ans">Anexo V del Reglamento de ICT（RD 346/2011）</td></tr>
+<tr class="reveal"><td>KNX 的欧洲标准号？</td><td class="ans">EN 50090（CENELEC）</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note warm">
+<span class="lbl">别混淆</span>
+<p><b>Certificación Energética de Edificios</b>（建筑能效认证，程序见 RD 235/2013）认证的是建筑的<b>能效等级</b>，不是 domótica 安装。CEDOM 提出过一个程序，想让它的计算方法把 domótica 和 inmótica 考虑进去。</p>
+<p>另外两种“认证”也别搞混：曾有提议设立 Sello de Certificación de la Calidad Domótica（住宅 domótica 质量标志），只是建议；产品层面，KNX 由 Konnex Association 认证，LonWorks 由 LonMark 认证，BACnet 由 BTL 测试。</p>
+</div>
+<p class="aside">REBT 里还定义了 domótica 的基本元件：nodos（接收、处理并转发信息的单元）、actuadores（执行器）、dispositivos de entrada（传感器、遥控器、键盘等输入设备），以及 centralizado / descentralizado 两种系统（见 §5）。</p>
+
+</section>
+
+<section class="sec" id="s11">
+<h2><span class="n">§11</span>X-10：最老、最便宜的电力线协议 <span class="tag">1.2.10</span></h2>
+<p>X-10 出现于 1978 年，用电网作为传输介质，因为便宜、成熟而在 domótica 中用得很广。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Antigüedad</span><h3>最老的之一</h3><p>X-10 (1978)：1976–1978 年在苏格兰设计；70 年代在美国出现第一批基于它的设备。</p></div>
+<div class="cell"><span class="eyebrow">Medio</span><h3>电力线</h3><p><b class="t">corrientes portadoras (ES) / power line communications (EN)</b>——电力线载波：用住宅现有的低压电线传数据，不用另布线。</p></div>
+<div class="cell"><span class="eyebrow">Velocidad</span><h3>非常慢</h3><p>60 bps（美国）、50 bps（欧洲）。性能比其他协议有限得多，是专为家庭市场设计的。</p></div>
+<div class="cell"><span class="eyebrow">Coste</span><h3>便宜、成熟</h3><p>到 2005 年已上市 20 多年；北美住宅和小企业市场的领导者，多由用户或不懂自动化的电工自己装（DIY）。全球 800 多万个家庭在用，15 年卖出 1.5 亿多台设备。适合不太复杂的安装，也很容易扩展。</p></div>
+<div class="cell"><span class="eyebrow">Abierto</span><h3>不是专有协议</h3><p>任何厂商都可以生产 X-10 设备，有多种实现其调制的芯片。说“X-10”，一般指协议和技术，不是指 X-10 Ltd. 公司。</p></div>
+<div class="cell"><span class="eyebrow">Direcciones</span><h3>16 × 16 = 256</h3><p>接收器上有两个旋钮：一个 16 个字母，一个 16 个数字。几台接收器可以设成同一地址，收到命令就一起执行；一台接收器也可以听多个发射器的。</p></div>
+</div>
+<p>设备分三种：只发送的、只接收的、能收能发的。发送器也叫 controladores X-10，按时间表或电话发出开、关、调光、控制百叶等命令。双向设备能回复确认命令已执行，方便电脑程序显示整个安装的状态。</p>
+<p><b>动手试试：</b>下面是一个简化的 X-10 住宅。选好地址和命令，点击发送，看哪些接收器会动；也可以拧接收器上的“旋钮”改地址。</p>
+<div class="x10" id="x10">
+<div class="x10-ctl">
+<span class="lbl">TRANSMISOR · controlador X-10</span>
+<div class="row">
+<label>发射器 <select data-x="tx-w"></select></label>
+<label>letra <select data-x="tx-l"></select></label>
+<label>nº <select data-x="tx-n"></select></label>
+</div>
+<div class="row">
+<button class="btn primary" data-cmd="ON" type="button">encender</button>
+<button class="btn" data-cmd="OFF" type="button">apagar</button>
+<button class="btn" data-cmd="DIM" type="button">regular</button>
+<button class="btn" data-cmd="UP" type="button">subir persiana</button>
+<button class="btn" data-cmd="DOWN" type="button">bajar persiana</button>
+</div>
+<div class="row">
+<div aria-label="线路速率" class="seg" role="group">
+<button aria-pressed="true" data-rate="50" type="button">Europa · 50 bps</button>
+<button aria-pressed="false" data-rate="60" type="button">EE. UU. · 60 bps</button>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="x10-line"><span class="x10-pulse"></span><span class="x10-tag">red eléctrica</span></div>
+<div class="bundles x10-rx"></div>
+<div class="stepper-ctl"><button class="btn" data-x10="reset" type="button">重置</button></div>
+<div aria-live="polite" class="log"></div>
+</div>
+<p class="aside">简化模拟：只演示上面讲到的特点（电力线、256 个地址、同址的接收器一起动作、多个发射器、双向设备回复确认）；真实 X-10 的信号波形和帧格式这里不模拟。</p>
+<p><b>有多慢？</b>用 §6 第一张对比表里的速率，算同一条消息在不同技术上要传多久：t = n ÷ v。</p>
+<div class="calc" id="calc-vel">
+<div class="calc-in">
+<label><span>消息长度 n（位，示例值）</span><input data-v="n" min="1" step="1" type="number" value="100"/></label>
+<p class="aside">n 是随便设的数，不是 X-10 规范里的帧长。</p>
+</div>
+<div aria-live="polite" class="calc-out">
+<div class="row"><span class="k">X-10 · 50 bps（Europa）</span><b data-v="x50">—</b><code data-v="fx50"></code></div>
+<div class="row"><span class="k">X-10 · 60 bps（EE. UU.）</span><b data-v="x60">—</b><code data-v="fx60"></code></div>
+<div class="row"><span class="k">Konnex · par trenzado 9.600 bps</span><b data-v="knx">—</b><code data-v="fknx"></code></div>
+<div class="row"><span class="k">ZigBee · 250 Kbps（máx.）</span><b data-v="zb">—</b><code data-v="fzb"></code></div>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M12">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>第一批用于暖气的自动温控（termostato）可以追溯到什么时候？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>二战之后</button>
+<button data-o="b" type="button"><span class="k">B</span>19 世纪末</button>
+<button data-o="c" type="button"><span class="k">C</span>1960 年代</button>
+<button data-o="d" type="button"><span class="k">D</span>1973 年石油危机之后</button>
+</div>
+<p class="why"><b>B。</b>termostato 式控制可以追溯到 19 世纪末（更具体地说是 1880 年代）。60 年代才出现电子控制系统（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>70 年代，节能型暖通系统和第一批 X-10 设备出现的外部背景是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>微处理器涨价</button>
+<button data-o="b" type="button"><span class="k">B</span>第二次世界大战</button>
+<button data-o="c" type="button"><span class="k">C</span>当时的石油危机</button>
+<button data-o="d" type="button"><span class="k">D</span>宽带互联网普及</button>
+</div>
+<p class="why"><b>C。</b>这些系统是为了缓解当时的 crisis del petróleo；1973 年以后节能成了关键目标，微处理器反而让控制系统变便宜了（§1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>在 §1 的 control distribuido 里，现场设备和中央设备之间的通信断了，会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>整个系统停机，只能靠 backup caliente</button>
+<button data-o="b" type="button"><span class="k">B</span>中央计算机接管全部调节</button>
+<button data-o="c" type="button"><span class="k">C</span>现场设备退回气动控制</button>
+<button data-o="d" type="button"><span class="k">D</span>现场设备靠自主运行继续工作</button>
+</div>
+<p class="why"><b>D。</b>分布式系统里现场设备是自主的，中央只负责显示、历史数据和人机界面。backup caliente（两台互备的计算机）是集中式系统应对中央故障的办法（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>一家医院的楼宇自动化，按 §2 的定义叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>inmótica</button>
+<button data-o="b" type="button"><span class="k">B</span>domótica</button>
+<button data-o="c" type="button"><span class="k">C</span>hogar digital</button>
+<button data-o="d" type="button"><span class="k">D</span>ICT</button>
+</div>
+<p class="why"><b>A。</b>terciario 或服务类建筑（酒店、办公楼、医院、工厂……）叫 inmótica；domótica 指住宅（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>和 domótica 相比，hogar digital 多了什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>没什么区别，只是更贵的 domótica</button>
+<button data-o="b" type="button"><span class="k">B</span>整合了数据网络和多媒体，并提供宽带上网和本地、远程管理</button>
+<button data-o="c" type="button"><span class="k">C</span>它只用于办公楼</button>
+<button data-o="d" type="button"><span class="k">D</span>它是建筑必须具备的最低电信设施</button>
+</div>
+<p class="why"><b>B。</b>这是 §3 的定义。D 描述的是 ICT（§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>关于 ICT，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一种走电力线的家庭自动化协议</button>
+<button data-o="b" type="button"><span class="k">B</span>由 Konnex 协会制定的标准</button>
+<button data-o="c" type="button"><span class="k">C</span>规定建筑必须具备的最低电信基础设施，2011 年的更新把 hogar digital 纳入其中</button>
+<button data-o="d" type="button"><span class="k">D</span>只管住宅内部的照明和空调控制</button>
+</div>
+<p class="why"><b>C。</b>西班牙 1998 年率先立了 ICT 法规；2011 年（RD 346/2011，Anexo V）把 hogar digital 写进去（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>哪个协议最初面向 climatización（暖通空调）？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Modbus</button>
+<button data-o="b" type="button"><span class="k">B</span>CAN</button>
+<button data-o="c" type="button"><span class="k">C</span>X-10</button>
+<button data-o="d" type="button"><span class="k">D</span>BACnet</button>
+</div>
+<p class="why"><b>D。</b>BACnet inicialmente orientada a la climatización，由 ASHRAE 开发。CAN 来自汽车，Modbus 是工业现场总线，X-10 走电力线（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>KNX 是由哪几种技术融合而成的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>X-10、CEBus、LonWorks</button>
+<button data-o="b" type="button"><span class="k">B</span>BACnet、Modbus、CAN</button>
+<button data-o="c" type="button"><span class="k">C</span>EIB、BatiBus、EHS</button>
+<button data-o="d" type="button"><span class="k">D</span>UPnP、Jini、OSGi</button>
+</div>
+<p class="why"><b>C。</b>欧洲的 convergencia：EIB、BatiBus、EHS → Konnex (KNX)，实际以 EIB 为主（§7）。A 是汇入美洲 SCP 的三种（§7 的融合图）；D 是集成平台和网关软件。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>pasarela residencial 的基本功能是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>把建筑内部的电信基础设施（数据、控制、自动化）连接到公共数据网络</button>
+<button data-o="b" type="button"><span class="k">B</span>放大电力线上的 X-10 信号</button>
+<button data-o="c" type="button"><span class="k">C</span>测定建筑的能效等级</button>
+<button data-o="d" type="button"><span class="k">D</span>规定新建建筑的最低电信设施</button>
+</div>
+<p class="why"><b>A。</b>它还能当 router 和应用服务器（视频点播、VoIP、远程控制）。例子：OSGi（§8）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>按 §9，高效用能最多能让一栋建筑每年的能源账单减少多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>5%</button>
+<button data-o="b" type="button"><span class="k">B</span>25%</button>
+<button data-o="c" type="button"><span class="k">C</span>50%</button>
+<button data-o="d" type="button"><span class="k">D</span>75%</button>
+</div>
+<p class="why"><b>B。</b>最多 25%，投资 1–2 年收回。50% 是“空调温度差 3 °C、能耗多 50%”的数字（§9）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>在西班牙，规定一个系统要满足哪些最低要求才算 domótico、并附等级表的 AENOR 规范是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RD 235/2013</button>
+<button data-o="b" type="button"><span class="k">B</span>EN 50090</button>
+<button data-o="c" type="button"><span class="k">C</span>ISO/IEC 14543</button>
+<button data-o="d" type="button"><span class="k">D</span>EA0026:2006</button>
+</div>
+<p class="why"><b>D。</b>EA0026:2006 和 REBT 的 ITC-BT-51 是 domótica 安装的规范（§10）。RD 235/2013 是建筑能效认证；EN 50090、ISO/IEC 14543 是 KNX 的标准号。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>关于 X-10 的寻址，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>接收器上有两个旋钮（16 个字母、16 个数字），共 256 个地址，几台接收器可以设成同一地址</button>
+<button data-o="b" type="button"><span class="k">B</span>地址由软件自动分配，最多 65 536 个</button>
+<button data-o="c" type="button"><span class="k">C</span>每台接收器的地址必须唯一，重复就会冲突</button>
+<button data-o="d" type="button"><span class="k">D</span>没有地址，每条命令所有接收器都执行</button>
+</div>
+<p class="why"><b>A。</b>同一地址的接收器会一起执行命令；一台接收器也可以听多个发射器的（§11）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">domótica<small>home automation</small></span><span class="back"><b>家居自动化</b><br/>住宅的自动化：控制、能源管理、安全、舒适。domus + -tica。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">inmótica<small>building automation</small></span><span class="back"><b>楼宇自动化</b><br/>第三产业、服务类建筑的自动化：酒店、办公、医院……</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">edificio inteligente</span><span class="back"><b>智能建筑</b><br/>80 年代出现：用综合通信网络把功能自动化，能应对扩建改造。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hogar digital<small>digital home</small></span><span class="back"><b>数字家庭</b><br/>domótica + 数据网 + 多媒体 + 宽带 + 本地/远程管理。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ICT<small>Infraestructuras Comunes de Telecomunicación</small></span><span class="back"><b>建筑公共电信基础设施</b><br/>建筑必须具备的最低电信设施；西班牙 1998 年首创，2011 年纳入 hogar digital。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IHD<small>Infraestructuras de Hogar Digital</small></span><span class="back"><b>数字家庭基础设施</b><br/>ICT 之上的安防、报警、环境控制和远程管理设施。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pasarela residencial<small>residential / home gateway</small></span><span class="back"><b>家庭网关</b><br/>把家里的数据、控制、自动化网络连到公共数据网。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">X-10</span><span class="back"><b>电力线控制协议</b><br/>1976–78 年，走电力线，50/60 bps，256 个地址，便宜、开放。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">KNX<small>Konnex</small></span><span class="back"><b>住宅和楼宇控制的开放标准</b><br/>EIB + BatiBus + EHS 融合；EN 50090、ISO/IEC 14543。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">EIB<small>European Installation Bus</small></span><span class="back"><b>欧洲安装总线</b><br/>面向专业、高性能安装；KNX 实际上以它为主。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">LonWorks</span><span class="back"><b>Echelon 的控制网络技术</b><br/>分布式控制，Neuron Chip，单一协议 LonTalk。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BACnet<small>Building Automation and Control Networking Protocol</small></span><span class="back"><b>楼宇自动化与控制网络协议</b><br/>ASHRAE 开发，最初面向暖通空调，偏管理层。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Modbus</span><span class="back"><b>工业现场总线</b><br/>楼宇里常用于电表和光伏逆变器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">corrientes portadoras<small>power line communications</small></span><span class="back"><b>电力线载波</b><br/>用现有电线传数据，频率远高于 50 Hz（通常 132 kHz）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DDC<small>control digital directo</small></span><span class="back"><b>直接数字控制</b><br/>远程面板用程序代替传统调节器，控制从中央下放。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">EA0026<small>Especificación AENOR, 2006</small></span><span class="back"><b>domótica 安装规范</b><br/>规定系统算 domótico 的最低要求，附等级表。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ITC-BT-51<small>REBT</small></span><span class="back"><b>低压电气规程第 51 号补充技术说明</b><br/>规定自动化、能源管理和安防系统（domótica）的安装要求。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BMS<small>building management system</small></span><span class="back"><b>楼宇管理系统</b><br/>集成的管理界面，把设施的复杂性藏在后面。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M12"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+function m12fmt(n, d) {
+  var s = (Math.round(n * Math.pow(10, d || 0)) / Math.pow(10, d || 0)).toFixed(d || 0);
+  var p = s.split(".");
+  p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return p.length > 1 ? p[0] + "," + p[1] : p[0];
+}
+
+
+(function () {
+  var root = document.getElementById("sorter");
+  if (!root) return;
+  var rows = Array.prototype.slice.call(root.querySelectorAll(".srow"));
+  var out = root.querySelector(".sort-score");
+  var reset = root.querySelector("[data-sort-reset]");
+  function upd() {
+    var done = rows.filter(function (r) { return r.hasAttribute("data-done"); });
+    var ok = done.filter(function (r) { return r.getAttribute("data-done") === "ok"; }).length;
+    out.textContent = done.length === rows.length
+      ? "全部判断完：答对 " + ok + " / " + rows.length
+      : "已判断 " + done.length + " / " + rows.length + " · 答对 " + ok;
+  }
+  rows.forEach(function (r) {
+    var ans = r.getAttribute("data-ans");
+    var btns = Array.prototype.slice.call(r.querySelectorAll("button[data-pick]"));
+    var fb = r.querySelector(".fb");
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (r.hasAttribute("data-done")) return;
+        var ok = b.getAttribute("data-pick") === ans;
+        btns.forEach(function (x) {
+          x.disabled = true;
+          if (x.getAttribute("data-pick") === ans) x.classList.add("right");
+        });
+        if (!ok) b.classList.add("wrong");
+        r.setAttribute("data-done", ok ? "ok" : "no");
+        fb.hidden = false;
+        upd();
+      });
+    });
+  });
+  reset.addEventListener("click", function () {
+    rows.forEach(function (r) {
+      r.removeAttribute("data-done");
+      r.querySelector(".fb").hidden = true;
+      Array.prototype.slice.call(r.querySelectorAll("button[data-pick]")).forEach(function (x) {
+        x.disabled = false;
+        x.classList.remove("right", "wrong");
+      });
+    });
+    upd();
+  });
+  upd();
+})();
+
+
+(function () {
+  var root = document.getElementById("calc-ahorro");
+  if (!root) return;
+  function q(k) { return root.querySelector('[data-c="' + k + '"]'); }
+  var f = q("f"), p = q("p"), i = q("i");
+  function num(el) { var v = parseFloat(el.value); return isFinite(v) && v > 0 ? v : 0; }
+  function upd() {
+    var F = num(f), P = num(p), I = num(i);
+    q("pv").textContent = P + " %";
+    var A = F * P / 100;
+    q("a").textContent = m12fmt(A, 0) + " € / año";
+    q("fa").textContent = "= " + m12fmt(F, 0) + " × " + P + " %";
+    var v = q("v");
+    if (A <= 0) {
+      q("r").textContent = "—";
+      q("fr").textContent = "每年没有节省，就收不回投资";
+      v.textContent = "";
+      return;
+    }
+    var R = I / A;
+    q("r").textContent = m12fmt(R, 1) + " años";
+    q("fr").textContent = "= " + m12fmt(I, 0) + " ÷ " + m12fmt(A, 0);
+    if (R < 1) v.textContent = "比上面说的 1–2 年还快。检查一下：投资是不是估得太低，或者节省比例太乐观？";
+    else if (R <= 2) v.textContent = "落在 1–2 年的回收期内。";
+    else v.textContent = "比 1–2 年长：投资相对账单偏大，或节省比例偏低。25% 是“最多”能省下的比例。";
+  }
+  [f, p, i].forEach(function (el) { el.addEventListener("input", upd); });
+  upd();
+})();
+
+
+(function () {
+  var root = document.getElementById("x10");
+  if (!root) return;
+  var LET = "ABCDEFGHIJKLMNOP".split("");
+  var NUM = [];
+  for (var k = 1; k <= 16; k++) NUM.push(k);
+  var WHO = ["Mando de pared", "Programador horario", "Teléfono"];
+  var grid = root.querySelector(".x10-rx"), log = root.querySelector(".log"), line = root.querySelector(".x10-line");
+  var txW = root.querySelector('[data-x="tx-w"]'), txL = root.querySelector('[data-x="tx-l"]'), txN = root.querySelector('[data-x="tx-n"]');
+  var rateBtns = Array.prototype.slice.call(root.querySelectorAll("button[data-rate]"));
+  var rate = 50;
+  var INIT = [
+    { n: "Lámpara salón", t: "luz", l: "A", u: 1, s: "OFF" },
+    { n: "Lámpara comedor", t: "luz", l: "A", u: 1, s: "OFF" },
+    { n: "Lámpara cocina", t: "luz", l: "A", u: 2, s: "OFF" },
+    { n: "Persiana dormitorio", t: "persiana", l: "B", u: 1, s: "BAJADA" },
+    { n: "Calefacción", t: "rele", l: "C", u: 3, s: "OFF", bi: true }
+  ];
+  var R = [];
+  function opts(arr, sel) {
+    return arr.map(function (v) {
+      return '<option value="' + v + '"' + (String(v) === String(sel) ? " selected" : "") + ">" + v + "</option>";
+    }).join("");
+  }
+  txW.innerHTML = opts(WHO, WHO[0]);
+  txL.innerHTML = opts(LET, "A");
+  txN.innerHTML = opts(NUM, 1);
+  function say(s) {
+    var d = document.createElement("div");
+    d.textContent = s;
+    log.insertBefore(d, log.firstChild);
+  }
+  function cls(s) { return s === "ON" || s === "SUBIDA" ? "active" : (s === "REGULADA" ? "dim" : "resolved"); }
+  function next(r, cmd) {
+    if (r.t === "luz") return { ON: "ON", OFF: "OFF", DIM: "REGULADA" }[cmd] || null;
+    if (r.t === "persiana") return { UP: "SUBIDA", DOWN: "BAJADA" }[cmd] || null;
+    return { ON: "ON", OFF: "OFF" }[cmd] || null;
+  }
+  function draw(flash) {
+    grid.innerHTML = "";
+    R.forEach(function (r, i) {
+      var c = document.createElement("div");
+      c.className = "bundle" + (flash && flash.indexOf(i) > -1 ? " flash" : "");
+      c.innerHTML =
+        '<div class="hd"><span class="name">' + r.n + '</span><span class="ver">' + r.l + r.u + "</span></div>" +
+        '<span class="st ' + cls(r.s) + '">' + r.s + "</span>" +
+        '<div class="dials"><label>letra <select data-i="' + i + '" data-k="l">' + opts(LET, r.l) + "</select></label>" +
+        '<label>nº <select data-i="' + i + '" data-k="u">' + opts(NUM, r.u) + "</select></label></div>" +
+        '<span class="kind">' + (r.bi ? "envía y recibe · bidireccional" : "solo recibe") + "</span>";
+      grid.appendChild(c);
+    });
+    if (flash && flash.length) setTimeout(function () {
+      Array.prototype.slice.call(grid.querySelectorAll(".bundle.flash")).forEach(function (b) { b.classList.remove("flash"); });
+    }, 900);
+  }
+  grid.addEventListener("change", function (e) {
+    var s = e.target.closest("select[data-i]");
+    if (!s) return;
+    var r = R[+s.getAttribute("data-i")];
+    if (s.getAttribute("data-k") === "l") r.l = s.value; else r.u = +s.value;
+    var ver = s.closest(".bundle").querySelector(".ver");
+    if (ver) ver.textContent = r.l + r.u;
+    say("Conmutador girado：" + r.n + " 现在响应地址 " + r.l + r.u + "。");
+  });
+  function send(cmd) {
+    var a = txL.value, u = +txN.value, addr = a + u;
+    line.classList.remove("go");
+    void line.offsetWidth;
+    line.classList.add("go");
+    var hit = [], acted = [], ignored = [];
+    R.forEach(function (r, i) { if (r.l === a && r.u === u) hit.push(i); });
+    hit.forEach(function (i) {
+      var r = R[i], ns = next(r, cmd);
+      if (ns === null) ignored.push(r.n);
+      else { r.s = ns; acted.push(r.n); }
+    });
+    var msg = txW.value + " → trama " + addr + " · " + cmd + "（" + rate + " bps）：";
+    if (!hit.length) msg += "没有接收器设成 " + addr + "，没有设备动作。";
+    else {
+      if (acted.length) msg += acted.length + " 个接收器执行：" + acted.join("、") + "。";
+      if (ignored.length) msg += ignored.join("、") + " 不理解这条命令，忽略。";
+    }
+    say(msg);
+    hit.forEach(function (i) {
+      var r = R[i];
+      if (r.bi && acted.indexOf(r.n) > -1) say("↩ " + r.n + " 回复确认：" + r.s + "（只有双向设备会确认）。");
+    });
+    draw(hit);
+  }
+  Array.prototype.slice.call(root.querySelectorAll("button[data-cmd]")).forEach(function (b) {
+    b.addEventListener("click", function () { send(b.getAttribute("data-cmd")); });
+  });
+  rateBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      rate = +b.getAttribute("data-rate");
+      rateBtns.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      say("线路速率改为 " + rate + " bps（" + (rate === 50 ? "Europa" : "EE. UU.") + "）。");
+    });
+  });
+  function reset() {
+    R = INIT.map(function (r) { return { n: r.n, t: r.t, l: r.l, u: r.u, s: r.s, bi: !!r.bi }; });
+    log.innerHTML = "";
+    say("住宅已就绪：5 个接收器。Lámpara salón 和 Lámpara comedor 都设成 A1。");
+    draw();
+  }
+  root.querySelector('[data-x10="reset"]').addEventListener("click", reset);
+  reset();
+})();
+
+
+(function () {
+  var root = document.getElementById("calc-vel");
+  if (!root) return;
+  function q(k) { return root.querySelector('[data-v="' + k + '"]'); }
+  var nIn = q("n");
+  var RATES = [["x50", 50, "50"], ["x60", 60, "60"], ["knx", 9600, "9.600"], ["zb", 250000, "250.000"]];
+  function t(s) {
+    if (s >= 1) return m12fmt(s, 2) + " s";
+    if (s >= 0.001) return m12fmt(s * 1000, 1) + " ms";
+    return m12fmt(s * 1000, 2) + " ms";
+  }
+  function upd() {
+    var n = parseFloat(nIn.value);
+    if (!isFinite(n) || n <= 0) n = 0;
+    RATES.forEach(function (r) {
+      q(r[0]).textContent = n ? t(n / r[1]) : "—";
+      q("f" + r[0]).textContent = "= " + m12fmt(n, 0) + " ÷ " + r[2] + " bps";
+    });
+  }
+  nIn.addEventListener("input", upd);
+  upd();
+})();
+</script>
+</body>
+</html>

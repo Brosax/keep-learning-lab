@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M14 Puertos de E/S y sondeo · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .led-on { fill: var(--st-green); stroke: var(--st-green); stroke-width: 2; filter: drop-shadow(0 0 8px var(--st-green)); }
+.stage .glow-y { filter: drop-shadow(0 0 8px var(--st-yellow)); }
+.mini {
+  border: 1px solid var(--st-line); background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini[aria-pressed="true"] { border-color: var(--st-blue); color: var(--st-blue); background: color-mix(in srgb, var(--st-blue) 16%, transparent); }
+.mini:disabled, .press:disabled { opacity: .35; cursor: default; }
+.press[aria-pressed="true"] { background: color-mix(in srgb, var(--st-red) 32%, transparent); }
+.ctl-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-basis: 100%; }
+.ctl-row .lbl { font: 600 12px/1.4 var(--f-mono); color: var(--st-muted); margin-right: 4px; min-width: 4.5em; }
+.code .ln-row.add { box-shadow: inset 3px 0 0 var(--st-green); background: color-mix(in srgb, var(--st-green) 10%, transparent); }
+.rt td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; color: var(--blue); }
+.rt td.mono { color: var(--muted); }
+.rt tr.irq td:first-child { color: var(--red); }
+.rt tr.irq td { color: var(--muted); }
+.tt th, .tt td { text-align: center; white-space: nowrap; }
+.tt td.mono { color: var(--ink); }
+.tt .si { color: var(--green); font-weight: 700; }
+.tt .no { color: var(--muted); }
+.tt .bad { color: var(--red); font-weight: 700; }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m14-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m14-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m14-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m14-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m14-ah-t" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-teal)"></path></marker>
+<marker id="m14-ah-w" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 1 章节" class="chain" data-chain="M14"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 1 · Aspectos básicos del MSP430F5529 y E/S por sondeo · M14–M16</div>
+<h1>Puertos de E/S y sondeo</h1>
+<p class="zh">端口 E/S 与轮询：引脚、寄存器和一直在问的 CPU</p>
+<div class="meta">
+
+
+<span><b>9</b> 个要点</span>
+<span>阅读约 20 分钟</span>
+
+
+
+</div>
+<p class="lede">按钮和 LED 是单片机最简单的"外界"。这一章看它们怎样接进 MSP430F5529：<b class="t">puerto de E/S (ES) / I/O port (EN)</b>——输入输出端口的寄存器、一个引脚内部的结构、上拉电阻和 LED 的限流电阻；然后在 CCS 里用位运算改寄存器；最后用最朴素的办法——<b class="t">sondeo (ES) / polling (EN)</b>——轮询——去等一个事件。</p>
+</section>
+
+<section class="sec" id="m14-obj">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M14.1</span>
+<div class="txt"><span>说出 F5529 的端口结构：P1–P8（P8 只有 3 位）、两两组成 PA–PD、按字节或按字访问</span><span class="es">Puertos P1–P8, agrupación PA–PD.</span><a href="#m14-s1">→ §1 八个端口</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.2</span>
+<div class="txt"><span>说出每个端口寄存器的作用和复位后的值（PxOUT、P1IES、P2IES 不确定，其余为 0）</span><span class="es">Registros PxIN, PxOUT, PxDIR, PxREN, PxDS, PxSEL y su estado tras PUC.</span><a href="#m14-s1">→ §1 寄存器表</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.3</span>
+<div class="txt"><span>解释一个引脚的内部结构：PxDIR 控制输出 driver、PxIN 只读、PxSEL 把引脚交给外设</span><span class="es">Esquema de un pin de E/S digital; funcionalidad adicional.</span><a href="#m14-s2">→ §2 一个引脚</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.4</span>
+<div class="txt"><span>用 PxREN + PxOUT 配置上拉或下拉，说明浮空输入的问题和按钮为什么要上拉</span><span class="es">Resistencias de pull-up / pull-down.</span><a href="#m14-s3">→ §3 上拉还是下拉</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.5</span>
+<div class="txt"><span>用 V<sub>OH</sub> = I<sub>D</sub>·R + V<sub>D</sub> 算 LED 限流电阻；说出 PxDS 的两种驱动强度</span><span class="es">Características eléctricas y corriente de ataque.</span><a href="#m14-s4">→ §4 LED 电阻</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.6</span>
+<div class="txt"><span>用 =、|=、&amp;= ~ 修改寄存器，知道哪一种会破坏其他位</span><span class="es">Configuración de registros con máscaras.</span><a href="#m14-s5">→ §5 写寄存器</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.7</span>
+<div class="txt"><span>用 &amp; 测试一个位；避开 BIT1||BIT0 和 BIT1&amp;BIT0 两个陷阱</span><span class="es">Evaluación de bits de un registro.</span><a href="#m14-s6">→ §6 测试一个位</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.8</span>
+<div class="txt"><span>说明标签、msp430f5529.h、BITx 的作用，以及 CCS 的基本调试操作</span><span class="es">Etiquetas, fichero de cabecera y depuración básica.</span><a href="#m14-s5">→ §5</a> <a href="#m14-s6">§6</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M14.9</span>
+<div class="txt"><span>描述轮询的步骤和三种方案（事件、读数据、写数据），说出 espera activa 的缺点</span><span class="es">Gestión por sondeo y espera activa.</span><a href="#m14-s7">→ §7 轮询</a></div>
+<button aria-pressed="false" class="chk" data-obj="M14.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M14"><span class="val">0 / 9 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="m14-s0">
+<h2><span class="n">§0</span>引脚就是一个地址</h2>
+<p class="hook"><span class="zh">CPU 只会读写内存。它怎么"看见"按钮、怎么"点亮"LED？</span><span class="es">¿Cómo intercambia el micro información con el exterior?</span></p>
+<p>端口的用途分成两类：<b class="t">entrada digital (ES) / digital input (EN)</b>——数字输入，用来读外部器件产生的数字信号（按钮、键盘……）；<b class="t">salida digital (ES) / digital output (EN)</b>——数字输出，用来产生控制外部器件的信号（LED、继电器……）。两者在 CPU 看来是一回事：</p>
+<figure class="stage" data-ms="3000" data-scene="" id="m14-sc-io">
+<div class="stage-title"><span>Escena 0 · el pin como dirección</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：CPU 通过端口寄存器读按钮、写 LED，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-io-t" role="img" viewbox="0 0 800 340">
+<title id="m14-sc-io-t">CPU 通过总线读写端口寄存器：读 P1IN 得到按钮 S2 的状态，写 P1OUT 点亮 LED1</title>
+<rect class="bx b" height="80" rx="10" width="130" x="24" y="140"></rect>
+<text class="tx b mid" x="89" y="186">CPU</text>
+<text class="tm xs b mid" data-out="5" data-step="4" x="89" y="208">读到 0</text>
+<text class="tm xs y mid" data-step="5" x="89" y="208">写 1</text>
+<path class="ln thin w" d="M154 184 H286"></path>
+<text class="tm xs m mid" x="220" y="236">bus</text>
+<text class="tz sm m mid" x="396" y="28">Mapa de memoria</text>
+<rect class="bx hollow m" height="270" rx="8" width="220" x="286" y="40"></rect>
+<text class="tm xs m" x="300" y="70">0x0000–0x0FFF  periféricos</text>
+<rect class="bx b" data-hl="2 3" height="36" rx="5" width="200" x="296" y="96"></rect>
+<text class="tm sm b" x="306" y="119">0x0200  P1IN</text>
+<text class="tm xs b end" data-out="3" x="488" y="119">bit1 = 1</text>
+<text class="tm xs y end" data-step="3" x="488" y="119">bit1 = 0</text>
+<rect class="bx b" data-hl="2 5" height="36" rx="5" width="200" x="296" y="140"></rect>
+<text class="tm sm b" x="306" y="163">0x0202  P1OUT</text>
+<text class="tm xs b end" data-out="5" x="488" y="163">bit0 = 0</text>
+<text class="tm xs y end" data-step="5" x="488" y="163">bit0 = 1</text>
+<rect class="bx b" data-hl="2" height="36" rx="5" width="200" x="296" y="184"></rect>
+<text class="tm sm b" x="306" y="207">0x0204  P1DIR</text>
+<text class="tm xs b end" x="488" y="207">bit0 = 1</text>
+<text class="tm xs m" x="300" y="256">…  RAM    0x2400</text>
+<text class="tm xs m" x="300" y="284">…  Flash  0x4400</text>
+<path class="ln thin m dash" d="M560 40 V310"></path>
+<text class="tm xs m mid" x="560" y="30">borde del chip</text>
+<g data-step="2">
+<path class="ln thin w draw" d="M676 114 H498" id="m14-p-in"></path>
+<rect class="sl w" height="12" width="12" x="554" y="108"></rect>
+<text class="tm xs m" x="574" y="100">P1.1</text>
+<circle class="bx r" cx="700" cy="114" r="24"></circle>
+<text class="tm sm r mid" x="700" y="119">S2</text>
+<path class="ln thin w" d="M700 138 V160 M688 160 H712 M693 166 H707 M698 172 H702"></path>
+<path class="ln thin w draw" d="M498 158 H530 V238 H682" id="m14-p-out"></path>
+<rect class="sl w" height="12" width="12" x="554" y="232"></rect>
+<text class="tm xs m" x="574" y="226">P1.0</text>
+<path class="bx m" d="M684 224 L716 238 L684 252 Z"></path>
+<path class="ln thin w" d="M716 224 V252 M716 238 H740 V266 M728 266 H752 M733 272 H747 M738 278 H742"></path>
+<text class="tm xs m mid" x="700" y="212">LED1</text>
+</g>
+<g data-step="3">
+<circle class="sl r" cx="700" cy="114" r="9"></circle>
+<text class="tz sm r mid" x="700" y="80">按下</text>
+</g>
+<circle class="sl r" data-move="#m14-p-in" data-out="4" data-step="3" r="6"></circle>
+<path class="ln b draw" d="M294 114 H262 V170 H160" data-step="4" id="m14-p-rd" marker-end="url(#m14-ah-b)"></path>
+<circle class="sl b" data-move="#m14-p-rd" data-out="5" data-step="4" r="6"></circle>
+<path class="ln y draw" d="M160 200 H262 V158 H292" data-step="5" id="m14-p-wr" marker-end="url(#m14-ah-y)"></path>
+<circle class="sl y" data-move="#m14-p-wr" data-out="6" data-step="5" r="6"></circle>
+<circle class="sl y" data-move="#m14-p-out" data-out="7" data-step="6" r="6"></circle>
+<path class="led-on" d="M684 224 L716 238 L684 252 Z" data-step="6"></path>
+<text class="tz sm y mid" data-step="7" x="400" y="332">读 PxIN = 看外面 · 写 PxOUT = 改外面</text>
+</svg>
+</div>
+<ol class="captions">
+<li>CPU 和外界打交道只有一种方式：通过总线读写<b>地址</b>。中间这一列是内存映射（mapa de memoria）。</li>
+<li data-dur="4200">0x0200 起的几个地址不是 RAM，而是端口 P1 的<span class="c-b">寄存器</span>。寄存器的每一位都连着芯片边上的一根引脚：在 LaunchPad 上，P1.1 接按钮 S2，P1.0 接 LED1。P1DIR 的 bit0 = 1，所以 P1.0 是输出。</li>
+<li>按下 S2：引脚 P1.1 被接到 GND，<code>P1IN</code> 的 bit1 由硬件变成 0。（没按时为什么是 1，见 §3。）</li>
+<li>CPU 读地址 0x0200，就得到了按钮的状态。<code>if (P1IN &amp; BIT1)</code> 做的就是这件事。</li>
+<li>CPU 往地址 0x0202 写，把 <code>P1OUT</code> 的 bit0 置 1……</li>
+<li>……引脚 P1.0 变成高电平，LED1 亮。</li>
+<li>对 CPU 来说，引脚就是某个地址里的某一位：读 PxIN 看外面，写 PxOUT 改外面。</li>
+</ol>
+<p class="stage-note">这正是 §5 的 Codigo1 在做的事：按住 S2，LED1 亮；松开，LED1 灭。</p>
+
+</figure>
+<div class="note">
+<span class="lbl">一个陷阱</span>
+<p>下面这张图来自另一种单片机 PIC，画了四种典型外设。注意它的方向寄存器约定是 <b>0 = Output、1 = Input</b>（PIC 的 TRIS），和 MSP430 的 PxDIR（<b>0 = 输入、1 = 输出</b>）正好相反，别记混。</p>
+
+</div>
+<p class="takeaway">端口寄存器把引脚映射成内存里的位：读 PxIN 得到引脚上的电平，写 PxOUT 决定输出引脚的电平。</p>
+
+</section>
+
+<section class="sec" id="m14-s1">
+<h2><span class="n">§1</span>八个端口，一张地址表 <span class="tag">M14.1 · M14.2</span></h2>
+<p class="hook"><span class="zh">F5529 有多少根引脚可以当 E/S 用？它们的寄存器放在哪里？</span><span class="es">Puertos P1–P8 y registros asociados.</span></p>
+<p>F5529 的端口有这些特点：</p>
+<ul>
+<li>最多 8 个端口 <b>P1–P8</b>，每个 8 个引脚，只有 P8 是 3 个。</li>
+<li>每个引脚可以<b>单独</b>设成输入或输出，单独接上拉/下拉电阻，互不影响。</li>
+<li>只有 P1、P2 的引脚能在电平变化时产生中断。</li>
+<li>每个引脚还被别的外设共用，要选择它到底做什么（§2 的 PxSEL）。</li>
+<li>可以限制每个引脚的驱动电流，降低功耗（§4 的 PxDS）。</li>
+</ul>
+<figure class="stage" data-scene="" id="m14-sc-ports">
+<div class="stage-title"><span>Escena 1 · P1–P8 y PA–PD</span><b>5 步</b></div>
+<div aria-label="动画：F5529 的 8 个端口、配对成字端口和基地址" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-ports-t" role="img" viewbox="0 0 800 410">
+<title id="m14-sc-ports-t">8 行方块代表 P1 到 P8 的引脚，P8 只有 3 个；右边把端口两两配成 PA 到 PD，并标出基地址 0x0200、0x0220、0x0240、0x0260</title>
+<text class="tm xs m mid" x="123" y="48">7</text><text class="tm xs m mid" x="155" y="48">6</text><text class="tm xs m mid" x="187" y="48">5</text><text class="tm xs m mid" x="219" y="48">4</text>
+<text class="tm xs m mid" x="251" y="48">3</text><text class="tm xs m mid" x="283" y="48">2</text><text class="tm xs m mid" x="315" y="48">1</text><text class="tm xs m mid" x="347" y="48">0</text>
+<text class="tm sm b mid" x="74" y="78">P1</text>
+<text class="tm sm b mid" x="74" y="114">P2</text>
+<text class="tm sm b mid" x="74" y="150">P3</text>
+<text class="tm sm b mid" x="74" y="186">P4</text>
+<text class="tm sm b mid" x="74" y="222">P5</text>
+<text class="tm sm b mid" x="74" y="258">P6</text>
+<text class="tm sm b mid" x="74" y="294">P7</text>
+<text class="tm sm b mid" x="74" y="330">P8</text>
+<path class="bx b" d="M110 60h26v26h-26z M142 60h26v26h-26z M174 60h26v26h-26z M206 60h26v26h-26z M238 60h26v26h-26z M270 60h26v26h-26z M302 60h26v26h-26z M334 60h26v26h-26z"></path>
+<path class="bx b" d="M110 96h26v26h-26z M142 96h26v26h-26z M174 96h26v26h-26z M206 96h26v26h-26z M238 96h26v26h-26z M270 96h26v26h-26z M302 96h26v26h-26z M334 96h26v26h-26z"></path>
+<path class="bx b" d="M110 132h26v26h-26z M142 132h26v26h-26z M174 132h26v26h-26z M206 132h26v26h-26z M238 132h26v26h-26z M270 132h26v26h-26z M302 132h26v26h-26z M334 132h26v26h-26z"></path>
+<path class="bx b" d="M110 168h26v26h-26z M142 168h26v26h-26z M174 168h26v26h-26z M206 168h26v26h-26z M238 168h26v26h-26z M270 168h26v26h-26z M302 168h26v26h-26z M334 168h26v26h-26z"></path>
+<path class="bx b" d="M110 204h26v26h-26z M142 204h26v26h-26z M174 204h26v26h-26z M206 204h26v26h-26z M238 204h26v26h-26z M270 204h26v26h-26z M302 204h26v26h-26z M334 204h26v26h-26z"></path>
+<path class="bx b" d="M110 240h26v26h-26z M142 240h26v26h-26z M174 240h26v26h-26z M206 240h26v26h-26z M238 240h26v26h-26z M270 240h26v26h-26z M302 240h26v26h-26z M334 240h26v26h-26z"></path>
+<path class="bx b" d="M110 276h26v26h-26z M142 276h26v26h-26z M174 276h26v26h-26z M206 276h26v26h-26z M238 276h26v26h-26z M270 276h26v26h-26z M302 276h26v26h-26z M334 276h26v26h-26z"></path>
+<path class="ln thin m dash" d="M110 312h26v26h-26z M142 312h26v26h-26z M174 312h26v26h-26z M206 312h26v26h-26z M238 312h26v26h-26z"></path>
+<path class="bx b" d="M270 312h26v26h-26z M302 312h26v26h-26z M334 312h26v26h-26z"></path>
+<g data-step="2">
+<rect class="bx g" data-hl="2" height="26" rx="2" width="26" x="334" y="60"></rect>
+<text class="tm xs g mid" x="347" y="77">O</text>
+<rect class="bx y" data-hl="2" height="26" rx="2" width="26" x="302" y="60"></rect>
+<text class="tm xs y mid" x="315" y="77">I</text>
+<rect class="bx y" data-hl="2" height="26" rx="2" width="26" x="302" y="96"></rect>
+<text class="tm xs y mid" x="315" y="113">I</text>
+<rect class="bx g" data-hl="2" height="26" rx="2" width="26" x="110" y="168"></rect>
+<text class="tm xs g mid" x="123" y="185">O</text>
+<text class="tz sm w mid" x="400" y="392">LaunchPad：LED1 = P1.0 · S2 = P1.1 · S1 = P2.1 · LED2 = P4.7</text>
+<text class="tm xs g" x="110" y="364">O = salida</text>
+<text class="tm xs y" x="210" y="364">I = entrada</text>
+</g>
+<g data-step="3">
+<path class="ln p draw" d="M372 60 h8 v62 h-8"></path>
+<path class="ln p draw" d="M372 132 h8 v62 h-8"></path>
+<path class="ln p draw" d="M372 204 h8 v62 h-8"></path>
+<path class="ln p draw" d="M372 276 h8 v62 h-8"></path>
+<text class="tm p" x="390" y="97">PA</text>
+<text class="tm p" x="390" y="169">PB</text>
+<text class="tm p" x="390" y="241">PC</text>
+<text class="tm p" x="390" y="313">PD</text>
+</g>
+<g data-step="4">
+<text class="tm sm p" data-hl="4" x="440" y="96">base 0x0200</text>
+<text class="tm xs b" x="440" y="116">P1DIR = 0x0204 (PADIR_L)</text>
+<text class="tm xs b" x="440" y="134">P2DIR = 0x0205 (PADIR_H)</text>
+<text class="tm sm p" x="440" y="168">base 0x0220</text>
+<text class="tm sm p" x="440" y="240">base 0x0240</text>
+<text class="tm sm p" x="440" y="312">base 0x0260</text>
+</g>
+<g data-step="5">
+<rect class="ln r dash" data-hl="5" height="74" rx="6" width="266" x="102" y="54"></rect>
+<text class="tm xs r mid" x="30" y="96">IRQ</text>
+<text class="tz sm r" x="600" y="96">中断 → M21</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>F5529 有 P1–P8 八个端口。每个端口 8 个引脚（bit 7…0），只有 P8 是 3 个（P8.0–P8.2）。</li>
+<li data-dur="4200">每个引脚都能<b>单独</b>设成输入或输出。LaunchPad 上：LED1 = P1.0、S2 = P1.1、S1 = P2.1、LED2 = P4.7。同一个端口里输入、输出可以混用。</li>
+<li data-dur="4200">端口两两配对，组成 16 位的字端口：PA = P1 + P2，PB = P3 + P4，PC = P5 + P6，PD = P7 + P8。可以按字访问，也可以按字节只访问其中一个。PD 一共 8 + 3 = 11 个引脚；PA（P1、P2）还负责中断和唤醒。</li>
+<li data-dur="4600">每一对的寄存器从一个基地址开始，PA 在 0x0200。奇数号端口是低字节，偶数号是高字节：P1DIR = 0x0204 = PADIR_L，P2DIR = 0x0205 = PADIR_H；按字访问的 PADIR 就在 0x0204。</li>
+<li>只有 P1、P2 能产生中断（PxIES、PxIE、PxIFG、PxIV）。这部分属于 M21。</li>
+</ol>
+
+</figure>
+<div class="formula" data-tex="\mathtt{P1DIR} = \underbrace{\mathtt{0x0200}}_{\text{base PA}} + \underbrace{\mathtt{04h}}_{\text{offset}} = \class{c-y}{\mathtt{0x0204}}">P1DIR = 0x0200（PA 基地址）+ 04h（偏移）= 0x0204</div>
+<p class="aside">P2 的寄存器偏移比 P1 多 1（P2DIR = 05h）。</p>
+<p>下面是一个端口的全部寄存器。前六个每个端口都有，后四个只有 P1、P2 有。第一次见到的名字：<b class="t">registro de dirección (ES) / direction register (EN)</b>——方向寄存器 PxDIR，<b class="t">registro de entrada / salida (ES) / input / output register (EN)</b>——输入、输出寄存器 PxIN、PxOUT。</p>
+<div class="tbl-wrap">
+<table class="rt">
+<thead><tr><th>寄存器</th><th>偏移 P1 / P2</th><th>作用（bit = 0 / 1）</th><th>PUC 之后</th></tr></thead>
+<tbody>
+<tr><td>PxIN</td><td class="mono">00h / 01h</td><td>引脚上的电平，<b>只读</b></td><td>—（反映引脚）</td></tr>
+<tr><td>PxOUT</td><td class="mono">02h / 03h</td><td>输出低 / 高；输入且 REN = 1 时：下拉 / 上拉</td><td><b class="c-r">不确定</b></td></tr>
+<tr><td>PxDIR</td><td class="mono">04h / 05h</td><td>输入 / 输出</td><td>0</td></tr>
+<tr><td>PxREN</td><td class="mono">06h / 07h</td><td>内部电阻关 / 开</td><td>0</td></tr>
+<tr><td>PxDS</td><td class="mono">08h / 09h</td><td>降低驱动 / 最大驱动</td><td>0</td></tr>
+<tr><td>PxSEL</td><td class="mono">0Ah / 0Bh</td><td>普通 E/S / 外设功能</td><td>0</td></tr>
+<tr class="irq"><td>PxIES</td><td class="mono">18h / 19h</td><td>中断边沿：上升 / 下降（只有 P1、P2）</td><td><b class="c-r">不确定</b></td></tr>
+<tr class="irq"><td>PxIE</td><td class="mono">1Ah / 1Bh</td><td>中断关 / 开（只有 P1、P2）</td><td>0</td></tr>
+<tr class="irq"><td>PxIFG</td><td class="mono">1Ch / 1Dh</td><td>没有 / 有待处理的中断（只有 P1、P2）</td><td>0</td></tr>
+<tr class="irq"><td>PxIV</td><td class="mono">0Eh / 1Eh</td><td>最高优先级中断源的编号 (By+1)·2，例：P1.2 → 6；字寄存器，只读</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<p>PUC 复位后，端口寄存器全部清 0，<b>只有</b> PxOUT 和 P1IES、P2IES 处于不确定状态。所以要用到的寄存器都要自己配置好，不能指望默认值碰巧合适。</p>
+<div class="note">
+<span class="lbl">对照</span>
+<p>注意：有些资料说 PxIN 复位后为 0；按 TI 手册，PxIN 没有复位值，它只反映引脚上的电平。另外，F5529 还有一个只有 4 位的 <b>PJ</b>（PJ.0–PJ.3，和 JTAG 共用，基地址 0x0320），这里不展开。PxIV 没有字端口版本：不存在 PAIV。P4 引脚的外设功能还可以重新映射（Port Map Control），这里不展开。</p>
+</div>
+<div class="panel">
+<h3>中断相关的四个寄存器在 M21 讲</h3>
+<p>PxIE、PxIES、PxIFG、PxIV 和中断条件，都放在中断那一章：事件链见 <a href="m21.html#s1">M21 §1</a>，用 PxIFG 或 PxIV 判断中断源见 <a href="m21.html#s7">M21 §7</a>。这一章只用"轮询"，不开中断。</p>
+</div>
+<p class="takeaway">P1–P8（P8 只有 3 位）两两组成 PA–PD；寄存器地址 = 基地址 + 偏移；PUC 后只有 PxOUT 和 P1IES/P2IES 不确定。</p>
+
+</section>
+
+<section class="sec" id="m14-s2">
+<h2><span class="n">§2</span>一个引脚是一台小机器 <span class="tag">M14.3</span></h2>
+<p class="hook"><span class="zh">同一根引脚，怎么既能当输入、又能当输出，还能交给定时器？</span><span class="es">Esquema de bloques / registros de un puerto E/S digital.</span></p>
+<p>先看整个端口（8 位）。中间是 <b>Buffer de E/S</b>；PxDIR 决定每一位的方向；PxSEL 决定每一位接 PxIN / PxOUT，还是接外设模块（MODULO/S，输入、输出各一组）；PxREN 的内部电阻在 buffer 和引脚 Px.0–Px.7 之间；PxIE、PxIFG 只有 P1、P2 有，由它们发出中断请求 IRQ：</p>
+
+<p>下面只取其中一位，一块一块搭起来：</p>
+<figure class="stage" data-ms="3200" data-scene="" id="m14-sc-pin">
+<div class="stage-title"><span>Escena 2 · dentro de un pin</span><b>8 步 · 核心场景</b></div>
+<div aria-label="动画：一个 E/S 引脚的内部结构，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-pin-t" role="img" viewbox="0 0 800 440">
+<title id="m14-sc-pin-t">引脚方框图：PxOUT 和外设输出经 PxSEL 选择，进入受 PxDIR 控制的输出 driver，到达引脚；引脚经施密特触发器进入 PxIN，也送到外设模块；PxREN 接上拉或下拉电阻；PxDS 选驱动强度</title>
+<rect class="bx w" data-hl="1" height="28" rx="3" width="28" x="716" y="186"></rect>
+<text class="tm sm w mid" x="730" y="240">Px.y</text>
+<text class="tz sm m mid" x="730" y="172">pin</text>
+<path class="ln thin w" d="M590 200 H716"></path>
+<circle class="sl w" cx="620" cy="200" r="4"></circle>
+<circle class="sl w" cx="690" cy="200" r="4"></circle>
+<g data-step="2">
+<path class="bx b" d="M520 176 L590 200 L520 224 Z" data-hl="2"></path>
+<text class="tm xs m mid" x="548" y="168">driver</text>
+<rect class="bx b" data-hl="2" height="40" rx="6" width="130" x="490" y="60"></rect>
+<text class="tm sm b mid" x="555" y="85">PxDIR.y</text>
+<path class="ln b draw" d="M555 100 V184" marker-end="url(#m14-ah-b)"></path>
+<text class="tm xs b" x="562" y="140">1 = 输出</text>
+</g>
+<g data-step="3">
+<rect class="bx b" data-hl="3" height="40" rx="6" width="150" x="200" y="158"></rect>
+<text class="tm sm b mid" x="275" y="183">PxOUT.y</text>
+<path class="bx t" d="M400 150 L450 168 L450 232 L400 250 Z"></path>
+<text class="tm xs t" x="408" y="183">0</text>
+<text class="tm xs t" x="408" y="237">1</text>
+<path class="ln b draw" d="M350 178 H400"></path>
+<path class="ln b draw" d="M450 200 H520"></path>
+</g>
+<g data-step="4">
+<path class="ln thin w draw" d="M620 200 V360 H602"></path>
+<path class="bx b" d="M600 340 L545 360 L600 380 Z" data-hl="4"></path>
+<text class="tz sm m mid" x="578" y="404">Schmitt</text>
+<path class="ln b draw" d="M545 360 H350" marker-end="url(#m14-ah-b)"></path>
+<rect class="bx b" data-hl="4" height="40" rx="6" width="150" x="200" y="340"></rect>
+<text class="tm sm b mid" x="275" y="365">PxIN.y</text>
+<text class="tm xs m mid" x="275" y="396">solo lectura</text>
+</g>
+<g data-step="5">
+<path class="ln b draw" d="M690 200 V228 l9 5 l-18 10 l18 10 l-18 10 l18 10 l-18 10 l9 5 V300"></path>
+<rect class="bx b" data-hl="5" height="52" rx="6" width="150" x="640" y="300"></rect>
+<text class="tm sm b mid" x="715" y="322">PxREN.y = 1</text>
+<text class="tm xs b mid" x="715" y="342">PxOUT.y: 1↑VCC 0↓GND</text>
+</g>
+<g data-step="6">
+<rect class="bx t" height="40" rx="6" width="150" x="200" y="212"></rect>
+<text class="tz sm t mid" x="275" y="237">módulo (timer…)</text>
+<path class="ln t draw" d="M350 232 H400"></path>
+<rect class="bx t" data-hl="6" height="40" rx="6" width="110" x="350" y="280"></rect>
+<text class="tm sm t mid" x="405" y="305">PxSEL.y</text>
+<path class="ln t draw" d="M405 280 V251" marker-end="url(#m14-ah-t)"></path>
+<path class="ln t draw" d="M505 360 V340" marker-end="url(#m14-ah-t)"></path>
+<text class="tm xs t mid" x="505" y="332">a módulo</text>
+</g>
+<g data-step="7">
+<rect class="bx b" data-hl="7" height="36" rx="6" width="110" x="480" y="262"></rect>
+<text class="tm sm b mid" x="535" y="286">PxDS.y</text>
+<path class="ln b draw" d="M535 262 V221" marker-end="url(#m14-ah-b)"></path>
+</g>
+<g data-step="8">
+<path class="ln thin r dash draw" d="M470 360 V420"></path>
+<text class="tm xs r" x="478" y="432">→ PxIES · PxIFG（P1, P2 · M21）</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>引脚（pad）就是芯片边上的一根金属脚。里面有一条<b>输出路径</b>通向它，一条<b>输入路径</b>从它出来。</li>
+<li data-dur="3800">输出路径的末端是一个 <b>driver</b>（输出缓冲器）。它接不接通由 <code>PxDIR.y</code> 决定：1 = 输出，driver 驱动引脚；0 = 输入，driver 断开（高阻），引脚交给外面。</li>
+<li>driver 输出的值来自 <code>PxOUT.y</code>（经过一个二选一的开关，选 "0" 这一路）。</li>
+<li data-dur="4200">输入路径：引脚 → <b>施密特触发器</b> → <code>PxIN.y</code>。这条路一直接着：只要引脚是 E/S 功能，PxIN 就反映引脚上的电平，哪怕它是输出。PxIN 只读。</li>
+<li data-dur="3800">PxREN.y = 1 时，引脚上接一个内部电阻；它接 VCC（上拉）还是 GND（下拉），由 PxOUT.y 决定——所以 PxOUT 在输入模式下另有用途（§3）。</li>
+<li data-dur="4200">二选一开关由 <code>PxSEL.y</code> 控制：0 = 普通 E/S，信号来自 PxOUT；1 = 外设功能，信号来自某个外设模块（例如定时器的输出）。反过来，施密特触发器后面的输入信号也送到外设（例如定时器的捕获输入，见下面 P2.4 的例子）。这就是引脚的<b>复用</b>。</li>
+<li><code>PxDS.y</code> 选择 driver 的驱动强度：降低（默认）或最大（§4）。</li>
+<li>P1、P2 的输入还接到边沿检测和中断标志，这部分在 M21。</li>
+</ol>
+<p class="stage-note">内部电阻实际上经一个开关接到 DVCC 或 DVSS。</p>
+
+</figure>
+<p>逐个寄存器看：</p>
+<ul>
+<li><span class="reg">PxDIR</span>：bit = 0 → 输入，1 → 输出。</li>
+<li><span class="reg">PxOUT</span>：输出引脚上产生低 / 高电平。<b>没有设成输出的引脚，不受 PxOUT 写入的影响。</b></li>
+<li><span class="reg">PxIN</span>：读引脚上的电平。它是只读的，写它会被忽略，只会增加电流消耗。识别 0 / 1 的电压和芯片、电源电压有关：大致低于 1 V 读成 0，高于 2 V 读成 1。</li>
+<li><span class="reg">PxSEL</span>：bit = 0 → 普通 E/S，1 → <b class="t">funcionalidad adicional (ES) / peripheral function (EN)</b>——外设功能。外设越来越多，不可能每个都有专用引脚，于是采用<b class="t">multiplexación (ES) / multiplexing (EN)</b>——引脚复用。PUC 后 PxSEL 全为 0，所有引脚一开始都是普通 E/S。</li>
+</ul>
+
+<div class="grid2">
+<div class="panel">
+<h3>例：P2.4 交给 Timer_A2</h3>
+
+<p>P2SEL.4 = 1 时由方向决定接哪一路：DIR = 0 → TA2.CCI1A（输入），DIR = 1 → <b>TA2.1</b>（输出）。</p>
+<pre class="code"><code><span class="ln-row"><span class="rg">P2SEL</span> |= BIT4;    <span class="cm">// P2.4 交给外设</span></span><span class="ln-row"><span class="rg">P2DIR</span> &amp;= ~BIT4;   <span class="cm">// 输入 → TA2.CCI1A</span></span><span class="ln-row"><span class="cm">// P2DIR |= BIT4;  // 输出 → TA2.1</span></span></code></pre>
+</div>
+<div class="panel">
+<h3>P1 每个引脚的另一个身份</h3>
+<p class="aside">P1SEL.x = 1 时：</p>
+<p class="mono">P1.0 TA0CLK / ACLK · P1.1 TA0.0 · P1.2 TA0.1 · P1.3 TA0.2 · P1.4 TA0.3 · P1.5 TA0.4 · P1.6 TA1CLK / CBOUT · P1.7 TA1.0</p>
+<p class="aside">同一个引脚可能有两种外设功能，由 PxDIR 区分（例如 P1.0：DIR = 0 是 TA0CLK 输入，DIR = 1 是 ACLK 输出）。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">细节</span>
+<p>PxSEL = 1 <b>不会自动设置方向</b>，外设需要什么方向，要自己设 PxDIR。另外，P1、P2 的某一位 PxSEL = 1 时，这个引脚的中断功能被关掉。施密特输入的阈值（VCC = 3 V）：上升阈值 V<sub>IT+</sub> 1.50–2.10 V，下降阈值 V<sub>IT−</sub> 0.75–1.65 V，迟滞 0.4–1.0 V（完整的电气特性表在 <a href="#m14-s4">§4</a>）。有些资料说的“低于 1 V 读 0、高于 2 V 读 1”是简化说法；上面这组是数据手册给的准确阈值。</p>
+</div>
+<p>下面这个模拟器只看一个引脚 <b>Px.y</b>。改 PxDIR.y、PxOUT.y、PxREN.y，换外接器件，按下按钮，看引脚电平和 PxIN.y 怎么变。规则就是 §3 那张表。</p>
+<figure class="stage" id="m14-sim">
+<div class="stage-title"><span>Simulador · un pin Px.y</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m14-sim-t" role="img" viewbox="0 0 800 280">
+<title id="m14-sim-t">一个引脚的简化模型：寄存器、输出 driver、内部电阻、施密特输入、外接按钮或 LED</title>
+<text class="tz sm m" x="28" y="30">registros</text>
+<rect class="bx hollow b" height="120" rx="8" width="170" x="16" y="40"></rect>
+<text class="tm sm b" id="m14-sim-dir" x="30" y="76">PxDIR.y = 0</text>
+<text class="tm sm b" id="m14-sim-out" x="30" y="108">PxOUT.y = 0</text>
+<text class="tm sm b" id="m14-sim-ren" x="30" y="140">PxREN.y = 0</text>
+<path class="ln thin m" d="M186 102 H220 V140 H250"></path>
+<path class="bx m" d="M250 116 L310 140 L250 164 Z" id="m14-sim-drv"></path>
+<text class="tm xs m mid" id="m14-sim-drvt" x="280" y="186">Hi-Z</text>
+<path class="ln thin w" d="M310 140 H470"></path>
+<circle class="sl w" cx="380" cy="140" r="4"></circle>
+<circle class="sl w" cx="430" cy="140" r="4"></circle>
+<path class="ln thin w" d="M380 140 V230 H332"></path>
+<path class="bx b" d="M332 214 L294 230 L332 246 Z"></path>
+<path class="ln thin w" d="M294 230 H200"></path>
+<rect class="bx b" height="40" rx="6" width="160" x="40" y="210"></rect>
+<text class="tm sm b mid" id="m14-sim-in" x="120" y="236">PxIN.y = ?</text>
+<g id="m14-sim-res" style="display:none">
+<path class="ln b" d="M430 140 V124 l7 -4 l-14 -8 l14 -8 l-14 -8 l14 -8 l-7 -4 V64"></path>
+<text class="tm xs b mid" id="m14-sim-rest" x="430" y="52">→ VCC</text>
+</g>
+<rect class="bx w" height="28" id="m14-sim-pad" rx="3" width="28" x="470" y="126"></rect>
+<text class="tm sm w mid" x="484" y="176">Px.y</text>
+<text class="tm sm m mid" id="m14-sim-lvl" x="484" y="112">?</text>
+<g id="m14-sim-btn">
+<path class="ln thin w" d="M498 140 H596"></path>
+<circle class="sl w" cx="600" cy="140" r="4"></circle>
+<circle class="sl w" cx="660" cy="140" r="4"></circle>
+<line class="ln w" id="m14-sim-lev" x1="660" x2="606" y1="140" y2="112"></line>
+<path class="ln thin w" d="M664 140 H700 V200"></path>
+<text class="tz sm r mid" x="630" y="96">按钮</text>
+</g>
+<g id="m14-sim-ledg" style="display:none">
+<path class="ln thin w" d="M498 140 H560"></path>
+<path class="bx m" d="M560 124 L592 140 L560 156 Z" id="m14-sim-led"></path>
+<path class="ln thin w" d="M592 124 V156 M592 140 H640"></path>
+<path class="ln b" d="M640 140 l4 -7 l8 14 l8 -14 l8 14 l8 -14 l8 14 l4 -7 H700 V200"></path>
+<text class="tz sm g mid" x="620" y="96">LED + R</text>
+</g>
+<path class="ln thin w" d="M684 200 H716 M690 207 H710 M696 214 H704"></path>
+<text class="tm xs m" x="724" y="210">GND</text>
+<text class="tz sm r mid" id="m14-sim-warn" x="580" y="262"></text>
+</svg>
+</div>
+<div class="stage-ctl">
+<button aria-pressed="false" class="sw" id="m14-sim-bdir" type="button"><span class="knob"></span><span class="lab">PxDIR.y</span></button>
+<button aria-pressed="false" class="sw" id="m14-sim-bout" type="button"><span class="knob"></span><span class="lab">PxOUT.y</span></button>
+<button aria-pressed="false" class="sw" id="m14-sim-bren" type="button"><span class="knob"></span><span class="lab">PxREN.y</span></button>
+<button class="mini" id="m14-sim-bext" type="button">外接：按钮 → GND</button>
+<button aria-pressed="false" class="press" id="m14-sim-bpress" type="button">按下按钮</button>
+<p aria-live="polite" class="out" id="m14-sim-msg">现在三个位都是 0：输入，没有内部电阻。先按下、松开按钮试试。</p>
+</div>
+</figure>
+<p class="aside">模拟器只是逻辑示意：电平用 0 / 1 / ?（浮空）/ Z（高阻）表示，不计算具体电压。外接 LED 时串着限流电阻接 GND（§4）。</p>
+<p class="takeaway">PxDIR 决定 driver 接不接通，PxOUT 提供输出值，PxIN 永远只读地反映引脚，PxSEL 把引脚交给外设。</p>
+
+</section>
+
+<section class="sec" id="m14-s3">
+<h2><span class="n">§3</span>上拉还是下拉 <span class="tag">M14.4</span></h2>
+<p class="hook"><span class="zh">按钮没按的时候，引脚上到底是什么电平？</span><span class="es">Resistencias de pull-up / pull-down.</span></p>
+<p>每个引脚都有一个内部电阻，用 <span class="reg">PxREN</span> 打开；打开之后，用 <span class="reg">PxOUT</span> 的同一位选择方向：1 → <b class="t">pull-up (ES/EN)</b>——上拉，0 → <b class="t">pull-down (ES/EN)</b>——下拉。为什么需要它？</p>
+<figure class="stage" data-scene="" id="m14-sc-pull">
+<div class="stage-title"><span>Escena 3 · flotante → pull-up → pulsado</span><b>5 步</b></div>
+<div aria-label="动画：浮空输入、上拉电阻和按下按钮时的电流" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-pull-t" role="img" viewbox="0 0 800 340">
+<title id="m14-sc-pull-t">左边：按钮接 GND，没有电阻时引脚浮空；接上上拉电阻后没按读 1，按下读 0。右边：下拉电阻接 GND，没有驱动时读 0</title>
+<rect class="ln thin m" height="316" rx="12" width="380" x="12" y="12"></rect>
+<text class="tz sm w" x="30" y="40">entrada + pull-up</text>
+<text class="tm sm w mid" x="230" y="44">VCC</text>
+<path class="ln w" d="M210 54 H250"></path>
+<g data-step="2">
+<path class="ln b draw" d="M230 54 V76 l9 5 l-18 10 l18 10 l-18 10 l18 10 l-18 10 l9 5 V160"></path>
+<text class="tm xs b" x="248" y="110">R ≈ 35 kΩ</text>
+<text class="tm xs b" x="30" y="72">PxREN.y=1 · PxOUT.y=1</text>
+</g>
+<circle class="sl w" cx="230" cy="160" r="5"></circle>
+<path class="ln thin w" d="M225 160 H150"></path>
+<rect class="bx b" data-hl="2 3" height="40" rx="6" width="110" x="40" y="140"></rect>
+<text class="tm sm m mid" data-out="2" x="95" y="165">PxIN = ?</text>
+<text class="tm sm b mid" data-out="3" data-step="2" x="95" y="165">PxIN = 1</text>
+<text class="tm sm y mid" data-step="3" x="95" y="165">PxIN = 0</text>
+<path class="ln w" d="M230 165 V212"></path>
+<circle class="sl w" cx="230" cy="216" r="4"></circle>
+<circle class="sl w" cx="230" cy="264" r="4"></circle>
+<line class="ln w" data-out="3" x1="230" x2="258" y1="264" y2="222"></line>
+<line class="ln y" data-step="3" x1="230" x2="230" y1="264" y2="216"></line>
+<text class="tz sm w" x="266" y="246">按钮</text>
+<path class="ln w" d="M230 268 V292 M214 292 H246 M220 299 H240 M226 306 H234"></path>
+<text class="tm xs m" x="254" y="300">GND</text>
+<g data-out="2">
+<path class="ln thin m" d="M262 160 l8 -14 l7 22 l9 -18 l8 24 l9 -16 l8 12 l9 -20 l8 18 l9 -10 l8 6"></path>
+<text class="tz sm m mid" x="304" y="132">浮空 ?</text>
+</g>
+<path class="ln thin y dash" d="M212 60 V290" data-step="3" id="m14-p-cur"></path>
+<text class="tm sm y end" data-step="3" x="204" y="110">I</text>
+<circle class="sl y" data-move="#m14-p-cur" data-move-dur="1400" data-step="3" r="6"></circle>
+<text class="tz sm y mid" data-step="5" x="200" y="320">S1、S2 接 GND → 用上拉</text>
+<g data-step="4">
+<rect class="ln thin m" height="316" rx="12" width="380" x="408" y="12"></rect>
+<text class="tz sm w" x="426" y="40">entrada + pull-down</text>
+<text class="tm xs b" x="426" y="72">PxREN.y=1 · PxOUT.y=0</text>
+<rect class="bx hollow m" height="40" rx="6" width="120" x="560" y="80"></rect>
+<text class="tz sm m mid" x="620" y="105">外部器件</text>
+<path class="ln thin m dash" d="M620 120 V155"></path>
+<circle class="sl w" cx="620" cy="160" r="5"></circle>
+<path class="ln thin w" d="M615 160 H540"></path>
+<rect class="bx b" height="40" rx="6" width="110" x="430" y="140"></rect>
+<text class="tm sm b mid" x="485" y="165">PxIN = 0</text>
+<path class="ln b draw" d="M620 165 V186 l9 5 l-18 10 l18 10 l-18 10 l18 10 l-18 10 l9 5 V270"></path>
+<text class="tm xs b" x="638" y="222">R ≈ 35 kΩ</text>
+<path class="ln w" d="M604 270 H636 M610 277 H630 M616 284 H624"></path>
+<text class="tz sm m mid" x="598" y="314">没有驱动时 → 读 0</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">只把一个按钮接到 GND：按下时引脚是 0；没按时引脚什么都没接，叫<b>浮空</b>（entrada flotante）。PxIN 可能读到 0，也可能读到 1，还会随干扰跳动。</li>
+<li data-dur="3800">打开内部电阻并选上拉（PxREN.y = 1、PxOUT.y = 1）：没按时没有电流，电阻上没有压降，引脚 = VCC → PxIN = 1。</li>
+<li data-dur="4000">按下：按钮把引脚直接接到 GND。电流从 VCC 经电阻流进 GND，电阻上压降 = VCC，引脚 = 0 → PxIN = 0。电阻限制了这股电流。</li>
+<li>下拉（PxOUT.y = 0）正好相反：电阻接 GND，没有外部器件驱动时，引脚读 0。</li>
+<li>LaunchPad 的 S1、S2 一端接 GND，所以使用它们要打开上拉。没按读 1，按下读 0。</li>
+</ol>
+<p class="stage-note">35 kΩ 是 R<sub>Pull</sub> 的典型值（最小 20 kΩ，最大 50 kΩ；上拉、下拉相同；电气特性表见 §4）。</p>
+</figure>
+<p>PxDIR、PxREN、PxOUT 的组合可以总结成一张表：</p>
+<div class="tbl-wrap">
+<table class="tt">
+<thead><tr><th>PxDIR</th><th>PxREN</th><th>PxOUT</th><th>配置</th></tr></thead>
+<tbody>
+<tr><td class="mono">0</td><td class="mono">0</td><td class="mono">x</td><td>输入（没有电阻）</td></tr>
+<tr><td class="mono">0</td><td class="mono">1</td><td class="mono">0</td><td>输入 + pull-down</td></tr>
+<tr><td class="mono">0</td><td class="mono">1</td><td class="mono">1</td><td>输入 + pull-up</td></tr>
+<tr><td class="mono">1</td><td class="mono">x</td><td class="mono">x</td><td>输出（PxREN 不起作用）</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">同一个 PxOUT 位，输出时是输出值，输入且 REN = 1 时是上拉 / 下拉的选择。例（假设电阻已经打开）：</p>
+
+<div class="panel">
+<h3>例 A：按钮接在 P1.0</h3>
+
+<p>没按时 V<sub>P1.0</sub> = VCC = 3.5 V，按下时 = GND = 0 V，想在按下（下降沿）时产生中断。配置如下（X = 不关心）：</p>
+<pre class="code"><code><span class="ln-row"><span class="rg">P1SEL</span> = XXXXXXX0   <span class="cm">// 普通 E/S</span></span><span class="ln-row"><span class="rg">P1DIR</span> = XXXXXXX0   <span class="cm">// 输入</span></span><span class="ln-row"><span class="rg">P1REN</span> = XXXXXXX1   <span class="cm">// 打开电阻</span></span><span class="ln-row"><span class="rg">P1OUT</span> = XXXXXXX1   <span class="cm">// 上拉</span></span><span class="ln-row"><span class="fl">P1IFG</span> = XXXXXXX0   <span class="cm">// 下面三行是中断部分，见 M21</span></span><span class="ln-row"><span class="fl">P1IES</span> = XXXXXXX1</span><span class="ln-row"><span class="fl">P1IE</span>  = XXXXXXX1</span></code></pre>
+</div>
+<div class="note warm">
+<span class="lbl">别忘了</span>
+<p>修改 P1DIR、P2DIR、P1OUT、P2OUT、P1IES、P2IES（还有 PxREN）可能把对应的 PxIFG 置 1，所以改完这些寄存器后建议把 flag 清 0。只用轮询时 flag 没有影响，用中断时就很重要了（M21 §5）。</p>
+</div>
+<p class="takeaway">输入引脚不能浮空：PxREN.y = 1 接上内部电阻，PxOUT.y 选上拉（1）或下拉（0）；接 GND 的按钮配上拉，没按读 1、按下读 0。</p>
+
+</section>
+
+<section class="sec" id="m14-s4">
+<h2><span class="n">§4</span>LED 要串多大的电阻 <span class="tag">M14.5</span></h2>
+<p class="hook"><span class="zh">引脚输出 3.5 V，LED 只需要 2 V。多出来的 1.5 V 去哪？</span><span class="es">Características eléctricas y corriente de ataque.</span></p>
+<p>接什么器件、怎么接，取决于引脚的<b class="t">características eléctricas (ES) / electrical characteristics (EN)</b>——电气特性：输出高电平时的电压 V<sub>OH</sub>、能提供的最大电流 I<sub>OH</sub>、内部电阻值等。E/S 引脚的电气特性有三张表：施密特输入（阈值、R<sub>Pull</sub>，见 §2、§3）和两种驱动强度下的输出（见下文 PxDS）。例 B 用它们算 LED 的限流电阻：</p>
+<figure class="stage" data-scene="" id="m14-sc-led">
+<div class="stage-title"><span>Escena 4 · V_OH = I_D·R + V_D</span><b>5 步</b></div>
+<div aria-label="动画：LED 电路中电压的分配和电阻的计算" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-led-t" role="img" viewbox="0 0 800 300">
+<title id="m14-sc-led-t">P1.0 输出 3.5 V，经过电阻和 LED 接地；LED 上 2 V，电阻上 1.5 V；5 mA 时电阻为 300 Ω，取 270 Ω</title>
+<rect class="bx b" height="60" rx="8" width="140" x="30" y="110"></rect>
+<text class="tm sm b mid" x="100" y="136">P1.0</text>
+<text class="tm xs m mid" x="100" y="156">P1DIR.0 = 1</text>
+<path class="ln w" d="M170 140 H250"></path>
+<path class="ln b" d="M250 140 l5 -9 l10 18 l10 -18 l10 18 l10 -18 l10 18 l10 -18 l10 18 l10 -18 l10 18 l5 -9"></path>
+<text class="tm sm b mid" x="300" y="118">R</text>
+<path class="ln w" d="M350 140 H420"></path>
+<path class="bx m" d="M420 122 L456 140 L420 158 Z" data-out="4"></path>
+<path class="led-on" d="M420 122 L456 140 L420 158 Z" data-step="4"></path>
+<path class="ln w" d="M456 122 V158 M456 140 H520 V200 M504 200 H536 M510 207 H530 M516 214 H524"></path>
+<text class="tm sm g mid" x="438" y="106">LED</text>
+<text class="tm xs m" x="540" y="204">GND</text>
+<path d="M172 140 H520 V198" fill="none" id="m14-p-led" stroke="none"></path>
+<g data-step="2">
+<text class="tm sm y mid" x="100" y="94">VOH = 3.5 V</text>
+<path class="ln thin m" d="M612 60 V270"></path>
+<text class="tm xs m end" x="604" y="64">3.5 V</text>
+<text class="tm xs m end" x="604" y="274">0 V</text>
+<rect class="bx hollow w" data-hl="2" height="210" rx="3" width="60" x="620" y="60"></rect>
+</g>
+<g data-step="3">
+<rect class="bx g" data-hl="3" height="120" rx="3" width="60" x="620" y="150"></rect>
+<text class="tm sm g" x="690" y="215">VD ≈ 2 V</text>
+<text class="tm sm g mid" x="438" y="186">2 V</text>
+</g>
+<g data-step="4">
+<rect class="bx y" data-hl="4" height="90" rx="3" width="60" x="620" y="60"></rect>
+<text class="tm sm y" x="690" y="110">1.5 V</text>
+<text class="tm sm y mid" x="300" y="174">1.5 V</text>
+<text class="tm sm y" x="40" y="236">R = 1.5 V / 5 mA = 300 Ω</text>
+</g>
+<circle class="sl y" data-move="#m14-p-led" data-move-dur="1400" data-out="5" data-step="4" r="6"></circle>
+<g data-step="5">
+<text class="tm sm g" data-hl="5" x="40" y="264">270 Ω → ID ≈ 5.6 mA &lt; 6 mA</text>
+<text class="tm xs m" x="40" y="288">VOH 典型 3.2 V → ID = 1.2 V / 270 Ω ≈ 4.44 mA</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>例 B：LED 接在输出引脚 P1.0 上，串一个电阻接 GND。P1DIR.0 = 1；P1OUT.0 = 1 时 LED 亮，= 0 时灭。</li>
+<li>引脚输出高电平时的电压叫 V<sub>OH</sub>。按最坏情况取 V<sub>OH</sub> 最大 = VCC = 3.5 V。</li>
+<li>LED 导通时两端有大约 V<sub>D</sub> ≈ 2 V 的压降，而且基本不随电流变化。</li>
+<li data-dur="3800">剩下的 1.5 V 全落在电阻上。想让 LED 电流 I<sub>D</sub> ≈ 5 mA：R = 1.5 V / 5 mA = <span class="c-y">300 Ω</span>。</li>
+<li data-dur="4600">选标准值 270 Ω。按 3.5 V 算，I<sub>D</sub> ≈ 5.6 mA，仍小于引脚的上限 I<sub>OH</sub> = 6 mA；按典型的 V<sub>OH</sub> ≈ 3.2 V 算，I<sub>D</sub> ≈ 4.44 mA。</li>
+</ol>
+
+</figure>
+<div class="formula" data-tex="V_{OH} = I_D \cdot R + V_D \;\Longrightarrow\; R = \frac{V_{OH} - V_D}{I_D} = \frac{3.5\ \mathrm{V} - 2\ \mathrm{V}}{5\ \mathrm{mA}} = \class{c-y}{300\ \Omega}">V_OH = I_D·R + V_D → R = (V_OH − V_D) / I_D = (3.5 − 2) V / 5 mA = 300 Ω</div>
+<p class="aside">电阻越小电流越大，LED 越亮，但 I<sub>D</sub> 不能超过 I<sub>OH</sub> 的上限。</p>
+<div class="drill" data-drill="led"></div>
+<h3>驱动强度：PxDS</h3>
+<p>每个引脚能提供 / 吸收的最大电流可以单独选，这叫 <b class="t">corriente de ataque (ES) / drive strength (EN)</b>——驱动强度，用 <span class="reg">PxDS</span> 设置：bit = 0 → 降低（reducida），1 → 最大（máxima）。要驱动耗电大的器件时用最大；降低驱动则能减少功耗和电磁干扰（EMI）。</p>
+
+<p>两种驱动强度下保证的输出电流，VCC = 3 V 的部分如下：</p>
+<div class="tbl-wrap">
+<table class="tt">
+<thead><tr><th>保证的输出电压</th><th>降低驱动<br/>PxDS.y = 0</th><th>最大驱动<br/>PxDS.y = 1</th><th>所有输出合计</th></tr></thead>
+<tbody>
+<tr><td>V<sub>OH</sub> ≥ VCC − 0.25 V</td><td class="mono">I<sub>OH</sub> = −2 mA</td><td class="mono">−5 mA</td><td class="mono">≤ ±48 mA</td></tr>
+<tr><td>V<sub>OH</sub> ≥ VCC − 0.60 V</td><td class="mono">I<sub>OH</sub> = −6 mA</td><td class="mono">−15 mA</td><td class="mono">≤ ±100 mA</td></tr>
+<tr><td>V<sub>OL</sub> ≤ VSS + 0.25 V</td><td class="mono">I<sub>OL</sub> = 2 mA</td><td class="mono">5 mA</td><td class="mono">≤ ±48 mA</td></tr>
+<tr><td>V<sub>OL</sub> ≤ VSS + 0.60 V</td><td class="mono">I<sub>OL</sub> = 6 mA</td><td class="mono">15 mA</td><td class="mono">≤ ±100 mA</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">VCC = 3 V。负号表示电流从引脚流出。电流越大，输出电压离 VCC / VSS 越远；最后一列是所有引脚电流加起来的上限，超过它就不再保证这一行的电压。VCC = 1.8 V 时同样的两行只允许更小的电流（降低驱动 −1 / −3 mA，最大驱动 −3 / −10 mA）。</p>
+
+<div class="note">
+<span class="lbl">6 mA 从哪来</span>
+<p>例 B 的 I<sub>OHmax</sub> = 6 mA 就是上表"降低驱动、V<sub>OH</sub> ≥ VCC − 0.60 V"那一格；换成最大驱动，同样的压降允许 15 mA。PxDS 复位后为 0，默认就是降低驱动（降低驱动可以减小 EMI）。</p>
+</div>
+<h3>例子 C、D：LED 矩阵和矩阵键盘</h3>
+<p>最后两个例子：LED 矩阵和矩阵键盘。两者的共同点：把器件排成行和列，用"行数 + 列数"根引脚代替"行数 × 列数"根。</p>
+<figure class="stage" data-scene="" id="m14-sc-matrix">
+<div class="stage-title"><span>Escena 4b · matriz de LEDs y teclado</span><b>4 步</b></div>
+<div aria-label="动画：4×4 LED 矩阵和 4×3 矩阵键盘的接法与扫描" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-matrix-t" role="img" viewbox="0 0 800 380">
+<title id="m14-sc-matrix-t">左：4×4 LED 矩阵，行 PX.Y0–Y3 经 180 Ω 接阳极，列 PX.Y4–Y7 接阴极，Y1 = 1、Y6 = 0 时只亮一个 LED。右：4×3 键盘，行 P1.0–P1.3 经 1 kΩ 下拉到 GND，列 P1.4–P1.6 输出；P1.5 = 1 时按下 5，P1IN.1 = 1</title>
+<rect class="ln thin m" height="356" rx="12" width="380" x="12" y="12"></rect>
+<text class="tz sm w" x="28" y="40">matriz de LEDs 4×4</text>
+<text class="tm xs m mid" x="84" y="80">180 Ω</text>
+<path class="ln thin w" d="M58 92 H64 M104 92 H322 M58 148 H64 M104 148 H322 M58 204 H64 M104 204 H322 M58 260 H64 M104 260 H322 M158 80 V300 M218 80 V300 M278 80 V300 M338 80 V300 M140 92 V100 M140 112 V120 H158 M200 92 V100 M200 112 V120 H218 M260 92 V100 M260 112 V120 H278 M320 92 V100 M320 112 V120 H338 M140 148 V156 M140 168 V176 H158 M200 148 V156 M200 168 V176 H218 M260 148 V156 M260 168 V176 H278 M320 148 V156 M320 168 V176 H338 M140 204 V212 M140 224 V232 H158 M200 204 V212 M200 224 V232 H218 M260 204 V212 M260 224 V232 H278 M320 204 V212 M320 224 V232 H338 M140 260 V268 M140 280 V288 H158 M200 260 V268 M200 280 V288 H218 M260 260 V268 M260 280 V288 H278 M320 260 V268 M320 280 V288 H338"></path>
+<path class="ln b" d="M64 92 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6 M64 148 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6 M64 204 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6 M64 260 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6"></path>
+<path class="bx m" d="M133 100 H147 L140 112 Z M133 112 H147 M193 100 H207 L200 112 Z M193 112 H207 M253 100 H267 L260 112 Z M253 112 H267 M313 100 H327 L320 112 Z M313 112 H327 M133 156 H147 L140 168 Z M133 168 H147 M193 156 H207 L200 168 Z M193 168 H207 M253 156 H267 L260 168 Z M253 168 H267 M313 156 H327 L320 168 Z M313 168 H327 M133 212 H147 L140 224 Z M133 224 H147 M193 212 H207 L200 224 Z M193 224 H207 M253 212 H267 L260 224 Z M253 224 H267 M313 212 H327 L320 224 Z M313 224 H327 M133 268 H147 L140 280 Z M133 280 H147 M193 268 H207 L200 280 Z M193 280 H207 M253 268 H267 L260 280 Z M253 280 H267 M313 268 H327 L320 280 Z M313 280 H327"></path>
+<text class="tm xs b" x="22" y="96">PX.Y0</text>
+<text class="tm xs b" x="22" y="152">PX.Y1</text>
+<text class="tm xs b" x="22" y="208">PX.Y2</text>
+<text class="tm xs b" x="22" y="264">PX.Y3</text>
+<text class="tm xs b mid" x="158" y="316">PX.Y4</text>
+<text class="tm xs b mid" x="218" y="316">PX.Y5</text>
+<text class="tm xs b mid" x="278" y="316">PX.Y6</text>
+<text class="tm xs b mid" x="338" y="316">PX.Y7</text>
+<g data-step="2">
+<path class="ln y" d="M104 148 H260 V156" data-hl="2"></path>
+<path class="ln y" d="M260 168 V176 H278 V300" data-hl="2"></path>
+<path class="led-on" d="M253 156 H267 L260 168 Z"></path>
+<text class="tm xs y" x="110" y="140">1</text>
+<text class="tm xs y mid" x="278" y="334">0</text>
+<text class="tm xs y mid" x="202" y="358">Y1 = 1 · Y6 = 0 → 只亮这一个</text>
+</g>
+<g data-step="3">
+<rect class="ln thin m" height="356" rx="12" width="380" x="408" y="12"></rect>
+<text class="tz sm w" x="424" y="40">teclado 4×3</text>
+<text class="tm xs m mid" x="710" y="80">1 kΩ</text>
+<path class="ln thin w" d="M456 92 H690 M730 92 H748 M456 148 H690 M730 148 H748 M456 204 H690 M730 204 H748 M456 260 H690 M730 260 H748 M748 92 V292 M732 292 H764 M738 299 H758 M744 306 H752 M500 72 V300 M570 72 V300 M640 72 V300 M500 78 H506 M514 86 V92 M570 78 H576 M584 86 V92 M640 78 H646 M654 86 V92 M500 134 H506 M514 142 V148 M570 134 H576 M584 142 V148 M640 134 H646 M654 142 V148 M500 190 H506 M514 198 V204 M570 190 H576 M584 198 V204 M640 190 H646 M654 198 V204 M500 246 H506 M514 254 V260 M570 246 H576 M584 254 V260 M640 246 H646 M654 254 V260"></path>
+<path class="ln b" d="M690 92 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6 M690 148 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6 M690 204 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6 M690 260 l4 -6 l8 12 l8 -12 l8 12 l8 -12 l4 6"></path>
+<text class="tm xs b" x="420" y="96">P1.0</text>
+<text class="tm xs b" x="420" y="152">P1.1</text>
+<text class="tm xs b" x="420" y="208">P1.2</text>
+<text class="tm xs b" x="420" y="264">P1.3</text>
+<text class="tm xs b mid" x="500" y="316">P1.4</text>
+<text class="tm xs b mid" x="570" y="316">P1.5</text>
+<text class="tm xs b mid" x="640" y="316">P1.6</text>
+<circle class="bx hollow m" cx="514" cy="78" r="8"></circle>
+<text class="tm xs w mid" x="514" y="82">1</text>
+<circle class="bx hollow m" cx="584" cy="78" r="8"></circle>
+<text class="tm xs w mid" x="584" y="82">2</text>
+<circle class="bx hollow m" cx="654" cy="78" r="8"></circle>
+<text class="tm xs w mid" x="654" y="82">3</text>
+<circle class="bx hollow m" cx="514" cy="134" r="8"></circle>
+<text class="tm xs w mid" x="514" y="138">4</text>
+<circle class="bx hollow m" cx="584" cy="134" r="8"></circle>
+<text class="tm xs w mid" x="584" y="138">5</text>
+<circle class="bx hollow m" cx="654" cy="134" r="8"></circle>
+<text class="tm xs w mid" x="654" y="138">6</text>
+<circle class="bx hollow m" cx="514" cy="190" r="8"></circle>
+<text class="tm xs w mid" x="514" y="194">7</text>
+<circle class="bx hollow m" cx="584" cy="190" r="8"></circle>
+<text class="tm xs w mid" x="584" y="194">8</text>
+<circle class="bx hollow m" cx="654" cy="190" r="8"></circle>
+<text class="tm xs w mid" x="654" y="194">9</text>
+<circle class="bx hollow m" cx="514" cy="246" r="8"></circle>
+<text class="tm xs w mid" x="514" y="250">#</text>
+<circle class="bx hollow m" cx="584" cy="246" r="8"></circle>
+<text class="tm xs w mid" x="584" y="250">0</text>
+<circle class="bx hollow m" cx="654" cy="246" r="8"></circle>
+<text class="tm xs w mid" x="654" y="250">.</text>
+<text class="tm xs m mid" x="748" y="326">GND</text>
+<text class="tm xs b mid" data-out="4" x="500" y="334">1</text>
+<text class="tm xs b mid" data-out="4" x="570" y="334">1</text>
+<text class="tm xs b mid" data-out="4" x="640" y="334">1</text>
+</g>
+<g data-step="4">
+<path class="ln y" d="M570 300 V134 H576" data-hl="4"></path>
+<path class="ln y" d="M584 142 V148 H456" data-hl="4"></path>
+<circle class="bx y" cx="584" cy="134" r="8"></circle>
+<text class="tm xs y mid" x="584" y="138">5</text>
+<text class="tm xs m mid" x="500" y="334">0</text>
+<text class="tm xs y mid" x="570" y="334">1</text>
+<text class="tm xs m mid" x="640" y="334">0</text>
+<text class="tm xs y mid" x="598" y="358">P1.5 = 1 → P1IN.1 = 1 → tecla 5</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">16 个 LED 排成 4×4，只占一个端口的 8 根引脚。PX.Y0–Y3 是<b>行</b>，各串一个 180 Ω 电阻接到这一行 LED 的阳极；PX.Y4–Y7 是<b>列</b>，接这一列 LED 的阴极。8 根都是输出。</li>
+<li data-dur="4600">要点亮第 2 行、第 3 列的 LED：行 Y1 输出 1，列 Y6 输出 0；其余行输出 0、其余列输出 1，别的 LED 两端没有正向电压，都不亮。一般做法：一次点一行，快速轮流扫描，人眼看起来就像同时亮。</li>
+<li data-dur="4600">12 个键排成 4 行 × 3 列。行 P1.0–P1.3 设为<b>输入</b>，每行经 1 kΩ 接 GND（外部下拉），没按键时读 0；列 P1.4–P1.6 设为<b>输出</b>，三列先都输出 "1"。按下一个键，就把它的列和行接通。</li>
+<li data-dur="5200">三列都是 1 时，按下任一键，它那一行就读到 1，但分不出是哪一列。一般做法：一次只让一列输出 1，读 P1IN 的 bit0–3。例如 P1.5 = 1 时读到 P1IN.1 = 1，按下的就是 "5"。三列轮流扫——这本身就是一种轮询（§7）。</li>
+</ol>
+<p class="stage-note">键号和列的对应、逐列扫描是示意。</p>
+
+</figure>
+<p class="takeaway">V<sub>OH</sub> = I<sub>D</sub>·R + V<sub>D</sub>：电阻承担 V<sub>OH</sub> 和 V<sub>D</sub> 的差，电流不能超过 I<sub>OH</sub>；PxDS 默认降低驱动。</p>
+
+</section>
+
+<section class="sec" id="m14-s5">
+<h2><span class="n">§5</span>在 CCS 里写寄存器 <span class="tag">M14.6 · M14.8</span></h2>
+<p class="hook"><span class="zh">P1DIR 只是一个名字。编译器怎么知道它在哪？又怎样只改其中一位？</span><span class="es">Etiquetas, fichero de cabecera y configuración de registros.</span></p>
+<p>从这段代码开始（Codigo1）：按住 S2（P1.1，右边的按钮），红色 LED1（P1.0）亮；松开就灭。</p>
+<pre aria-label="Codigo1" class="code"><code><span class="ln-row"><span class="pp">#include &lt;msp430f5529.h&gt;</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>)</span><span class="ln-row">{</span><span class="ln-row">    <span class="rg">WDTCTL</span> = WDTPW + WDTHOLD;   <span class="cm">// Detiene el watchdog</span></span><span class="ln-row">    <span class="rg">P1DIR</span> |= BIT0;              <span class="cm">// P1.0 (LED) como salida digital</span></span><span class="ln-row">    <span class="rg">P1REN</span> |= BIT1;              <span class="cm">// Resistencia de pull-up</span></span><span class="ln-row">    <span class="rg">P1OUT</span> |= BIT1;              <span class="cm">// en P1.1 (pulsador derecho)</span></span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">while</span> (1)</span><span class="ln-row">    {</span><span class="ln-row">        <span class="kw">if</span> (<span class="rg">P1IN</span> &amp; BIT1)         <span class="cm">// Testea P1.1: si está a 1 (liberado)</span></span><span class="ln-row">            <span class="rg">P1OUT</span> &amp;= ~BIT0;      <span class="cm">// pon bit P1.0 a 0 (apaga LED)</span></span><span class="ln-row">        <span class="kw">else</span>                     <span class="cm">// y si no (pulsado),</span></span><span class="ln-row">            <span class="rg">P1OUT</span> |= BIT0;       <span class="cm">// pon bit P1.0 a 1 (enciende LED)</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<p class="aside">流程：Project → New CCS Project，Target 选 MSP430x5xx Family / MSP430F5529，Connection 选 TI MSP430 USB1，模板选 Empty Project (with main.c)（截图里的编译器是 GNU v4.9.1，版本可以不同）。</p>
+
+<p class="aside">在 Project Explorer 里双击工程名，让它显示 [Active - Debug]；把 main.c 换成上面的代码，Save All。</p>
+
+<p class="aside">然后 Project → Build All 编译，Run → Debug 下载并进入调试视图，Run → Resume（F8）运行，Run → Terminate（Ctrl+F2）停止、回到编辑视图。</p>
+
+<p>除了第一行停 watchdog（原因见 <a href="m21.html#s2">M21 §2</a>），其余每一行都在操作端口。等号左边的 P1DIR、P1REN、P1OUT、P1IN 叫 <b class="t">etiqueta (ES) / label (EN)</b>——标签：它们代表寄存器在内存映射里的位置。在 CCS 里对标签点右键 → <i>Open Declaration</i>（F3），会打开 <b class="t">fichero de cabecera (ES) / header file (EN)</b>——头文件 <code>msp430f5529.h</code>。</p>
+
+<p>头文件里的几行（摘录）：</p>
+<pre aria-label="msp430f5529.h 摘录" class="code"><code><span class="ln-row"><span class="pp">#define</span> PADIR_       0x0204      <span class="cm">/* Port A Direction */</span></span><span class="ln-row">sfrb(PADIR_L, PADIR_);              <span class="cm">// 字节：0x0204</span></span><span class="ln-row">sfrb(PADIR_H, PADIR_+1);            <span class="cm">// 字节：0x0205</span></span><span class="ln-row">sfrw(PADIR,   PADIR_);              <span class="cm">// 字：0x0204–0x0205</span></span><span class="ln-row"> </span><span class="ln-row"><span class="pp">#define</span> <span class="rg">P1DIR</span>        (PADIR_L)   <span class="cm">/* Port 1 Direction */</span></span><span class="ln-row"><span class="pp">#define</span> <span class="rg">P1OUT</span>        (PAOUT_L)   <span class="cm">/* Port 1 Output */</span></span><span class="ln-row"><span class="pp">#define</span> P1IV_        0x020E      <span class="cm">/* Port 1 Interrupt Vector Word */</span></span><span class="ln-row"><span class="pp">#define</span> P1IV_P1IFG2  (0x0006)    <span class="cm">/* P1IV P1IFG.2 */</span></span><span class="ln-row"> </span><span class="ln-row"><span class="pp">#define</span> BIT0         (0x0001)</span><span class="ln-row"><span class="pp">#define</span> BIT7         (0x0080)</span><span class="ln-row"><span class="pp">#define</span> BITF         (0x8000)</span></code></pre>
+<p class="aside">sfrb / sfrw 把一个名字声明成某个地址上的字节 / 字。</p>
+
+<ul>
+<li>标签分两层：P1DIR 定义成 PADIR_L，PADIR_L 是地址 PADIR_ = 0x0204 上的字节（§1）。P2DIR 是 PADIR_H，在 0x0205；PADIR 是同一地址的字。P1IV 例外，它自己就是一个字寄存器（0x020E），它的取值也有标签：P1IV_P1IFG2 = 6，正是 (2+1)·2。</li>
+<li><b class="t">BITx</b>——位掩码也在头文件开头：BIT0 = 0x0001（0000 0001），BIT1 = 0x0002……BIT7 = 0x0080；一直定义到 BITF = 0x8000，给 16 位寄存器用。端口是 8 位，只用 BIT0–BIT7。</li>
+<li>所以 <code>P1DIR |= BIT0;</code> 完全可以写成 <code>*(int *)0x204 |= 0x01;</code>，只是可读性差得多。标签让人不用记地址和位的位置，而且同一家族的型号用同样的名字，代码更容易移植。标签真正省事的地方在后面：在 TA0CTL 这类寄存器里，一个标签可以代表几位的组合，例如 MC_1 = 0x0010（MC1 MC0 = 01，"Up to CCR0" 模式）。定时器见 <a href="m31.html">M31</a>。
+        </li>
+<li>每个型号有自己的头文件。熟练以后可以改写 <code>#include &lt;msp430.h&gt;</code>，编译器按工程设置选对应文件；但这样 CCS 的索引就找不到定义了。如果出现 "Could not find symbol … in Index"，在工程上右键 → <i>Index → Rebuild</i>，再 Build All。
+        </li>
+</ul>
+<div class="note">
+<span class="lbl">*(int *)0x204 的细节</span>
+<p>MSP430 上 <code>int</code> 是 16 位，所以这句其实是对字寄存器 PADIR（0x0204 = P1DIR，0x0205 = P2DIR）做一次字访问。OR 上 0x0001 只改 bit0，P2DIR 那个字节保持不变，所以结果和 <code>P1DIR |= BIT0</code> 一样。头文件里的 P1DIR 是按字节声明的（上面的 sfrb），严格对应的写法是 <code>*(volatile unsigned char *)0x0204 |= 0x01;</code>。</p>
+</div>
+<p>改寄存器有三种写法。看它们怎样作用在 P1DIR 的 8 个位上：</p>
+<figure class="stage" data-scene="" id="m14-sc-bits">
+<div class="stage-title"><span>Escena 5 · =  |=  &amp;= ~</span><b>5 步</b></div>
+<div aria-label="动画：三种赋值运算对 P1DIR 各位的作用" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-bits-t" role="img" viewbox="0 0 800 320">
+<title id="m14-sc-bits-t">P1DIR 从 0x00 开始：赋值 BIT1|BIT0 得 0x03，|= BIT6 得 0x43，&amp;= ~(BIT5|BIT0) 得 0x42</title>
+<text class="tm lg y mid" data-out="2" x="400" y="52">PUC → P1DIR = 0x00</text>
+<text class="tm lg y mid" data-out="3" data-step="2" x="400" y="52">P1DIR = BIT1 | BIT0;</text>
+<text class="tm lg y mid" data-out="4" data-step="3" x="400" y="52">P1DIR |= BIT6;</text>
+<text class="tm lg y mid" data-step="4" x="400" y="52">P1DIR &amp;= ~(BIT5 | BIT0);</text>
+<text class="tm xs m mid" x="197" y="104">7</text><text class="tm xs m mid" x="259" y="104">6</text><text class="tm xs m mid" x="321" y="104">5</text><text class="tm xs m mid" x="383" y="104">4</text>
+<text class="tm xs m mid" x="445" y="104">3</text><text class="tm xs m mid" x="507" y="104">2</text><text class="tm xs m mid" x="569" y="104">1</text><text class="tm xs m mid" x="631" y="104">0</text>
+<text class="tm b mid" x="80" y="150">P1DIR</text>
+<rect class="bx b" height="56" rx="5" width="54" x="170" y="116"></rect>
+<rect class="bx b" data-hl="3" height="56" rx="5" width="54" x="232" y="116"></rect>
+<rect class="bx b" data-hl="4" height="56" rx="5" width="54" x="294" y="116"></rect>
+<rect class="bx b" height="56" rx="5" width="54" x="356" y="116"></rect>
+<rect class="bx b" height="56" rx="5" width="54" x="418" y="116"></rect>
+<rect class="bx b" height="56" rx="5" width="54" x="480" y="116"></rect>
+<rect class="bx b" data-hl="2" height="56" rx="5" width="54" x="542" y="116"></rect>
+<rect class="bx b" data-hl="2 4" height="56" rx="5" width="54" x="604" y="116"></rect>
+<text class="tm lg m mid" x="197" y="152">0</text>
+<text class="tm lg m mid" data-out="3" x="259" y="152">0</text>
+<text class="tm lg b mid" data-step="3" x="259" y="152">1</text>
+<text class="tm lg m mid" x="321" y="152">0</text>
+<text class="tm lg m mid" x="383" y="152">0</text>
+<text class="tm lg m mid" x="445" y="152">0</text>
+<text class="tm lg m mid" x="507" y="152">0</text>
+<text class="tm lg m mid" data-out="2" x="569" y="152">0</text>
+<text class="tm lg b mid" data-step="2" x="569" y="152">1</text>
+<text class="tm lg m mid" data-out="2" x="631" y="152">0</text>
+<text class="tm lg b mid" data-out="4" data-step="2" x="631" y="152">1</text>
+<text class="tm lg m mid" data-step="4" x="631" y="152">0</text>
+<text class="tm lg b" data-out="2" x="690" y="152">0x00</text>
+<text class="tm lg b" data-out="3" data-step="2" x="690" y="152">0x03</text>
+<text class="tm lg b" data-out="4" data-step="3" x="690" y="152">0x43</text>
+<text class="tm lg y" data-step="4" x="690" y="152">0x42</text>
+<path class="ln thin m" d="M170 210h54v40h-54z M232 210h54v40h-54z M294 210h54v40h-54z M356 210h54v40h-54z M418 210h54v40h-54z M480 210h54v40h-54z M542 210h54v40h-54z M604 210h54v40h-54z"></path>
+<text class="tz sm m mid" x="80" y="236">máscara</text>
+<g data-out="3" data-step="2">
+<text class="tm lg y end" x="160" y="238">=</text>
+<text class="tm m mid" x="197" y="236">0</text><text class="tm m mid" x="259" y="236">0</text><text class="tm m mid" x="321" y="236">0</text><text class="tm m mid" x="383" y="236">0</text>
+<text class="tm m mid" x="445" y="236">0</text><text class="tm m mid" x="507" y="236">0</text><text class="tm y mid" x="569" y="236">1</text><text class="tm y mid" x="631" y="236">1</text>
+<text class="tm sm y" x="672" y="236">BIT1|BIT0</text>
+</g>
+<g data-out="4" data-step="3">
+<text class="tm lg y end" x="160" y="238">|</text>
+<text class="tm m mid" x="197" y="236">0</text><text class="tm y mid" x="259" y="236">1</text><text class="tm m mid" x="321" y="236">0</text><text class="tm m mid" x="383" y="236">0</text>
+<text class="tm m mid" x="445" y="236">0</text><text class="tm m mid" x="507" y="236">0</text><text class="tm m mid" x="569" y="236">0</text><text class="tm m mid" x="631" y="236">0</text>
+<text class="tm sm y" x="672" y="236">BIT6</text>
+</g>
+<g data-step="4">
+<text class="tm lg y end" x="160" y="238">&amp;</text>
+<text class="tm y mid" x="197" y="236">1</text><text class="tm y mid" x="259" y="236">1</text><text class="tm m mid" x="321" y="236">0</text><text class="tm y mid" x="383" y="236">1</text>
+<text class="tm y mid" x="445" y="236">1</text><text class="tm y mid" x="507" y="236">1</text><text class="tm y mid" x="569" y="236">1</text><text class="tm m mid" x="631" y="236">0</text>
+<text class="tm sm y" x="672" y="236">~(BIT5|BIT0)</text>
+</g>
+<text class="tz sm w mid" data-step="5" x="400" y="298">=  覆盖整个寄存器　·　|=  只置 1　·　&amp;= ~  只清 0</text>
+</svg>
+</div>
+<ol class="captions">
+<li>复位（PUC）后 P1DIR = 0x00：8 个引脚都是输入。下面对它依次做三次操作。</li>
+<li data-dur="4400"><b>直接赋值</b> <code>P1DIR = BIT1 | BIT0;</code>：BIT1 | BIT0 = 0000 0011，整个寄存器被覆盖成 0x03。原来的设置全部丢掉，所以只在"一次配好整个寄存器"时用。</li>
+<li data-dur="4200"><b>置 1</b> <code>P1DIR |= BIT6;</code>，等于 <code>P1DIR = P1DIR | BIT6</code>。OR 上 0100 0000：bit6 变 1，其他位不变 → 0100 0011 = 0x43。</li>
+<li data-dur="4800"><b>清 0</b> <code>P1DIR &amp;= ~(BIT5 | BIT0);</code>：先取反，~(0010 0001) = 1101 1110，再 AND：bit5、bit0 变 0（bit5 本来就是 0），其他位不变 → 0100 0010 = 0x42。</li>
+<li>总结：<code>=</code> 改整个寄存器；<code>|=</code> 只把掩码里的位置 1；<code>&amp;= ~</code> 只把掩码里的位清 0。一次可以改好几位：<code>P1DIR |= BIT7 | BIT6;</code></li>
+</ol>
+</figure>
+<div class="formula" data-tex="x \mathbin{|}{=}\, m:\ x_i \lor m_i \qquad x \mathbin{\&amp;}{=}\, {\sim}m:\ x_i \land \lnot m_i \qquad x \mathbin{\hat{}}{=}\, m:\ x_i \oplus m_i">|= → x_i OR m_i　·　&amp;= ~ → x_i AND NOT m_i　·　^= → x_i XOR m_i</div>
+<p class="aside">逐位看：掩码 m 里为 1 的位被置 1、清 0 或取反；为 0 的位原样保留。<code>^=</code>（异或，把位取反）在 M21 的 RTI 里会用到。</p>
+<p>自己试：选掩码的位和运算，看结果；按"执行"把结果写回寄存器，再接着改。</p>
+<figure class="stage" id="m14-pg">
+<div class="stage-title"><span>Laboratorio de bits · P1OUT</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m14-pg-t" role="img" viewbox="0 0 800 250">
+<title id="m14-pg-t">位运算实验台：寄存器、掩码、结果三行，每行 8 位，右边是十六进制</title>
+<g id="m14-pg-idx"></g>
+<text class="tm b mid" x="70" y="84">P1OUT</text>
+<text class="tz sm m mid" x="70" y="154">máscara</text>
+<text class="tz sm y mid" x="70" y="224">结果</text>
+<text class="tm lg y end" id="m14-pg-op" x="162" y="156">|=</text>
+<g id="m14-pg-grid"></g>
+<text class="tm b" id="m14-pg-rh" x="676" y="84">0x03</text>
+<text class="tm m" id="m14-pg-mh" x="676" y="154">0x40</text>
+<text class="tm y" id="m14-pg-oh" x="676" y="224">0x43</text>
+</svg>
+</div>
+<div class="stage-ctl">
+<div class="ctl-row" id="m14-pg-bits"><span class="lbl">máscara</span>
+<button aria-pressed="false" class="mini" data-bit="7" type="button">BIT7</button>
+<button aria-pressed="true" class="mini" data-bit="6" type="button">BIT6</button>
+<button aria-pressed="false" class="mini" data-bit="5" type="button">BIT5</button>
+<button aria-pressed="false" class="mini" data-bit="4" type="button">BIT4</button>
+<button aria-pressed="false" class="mini" data-bit="3" type="button">BIT3</button>
+<button aria-pressed="false" class="mini" data-bit="2" type="button">BIT2</button>
+<button aria-pressed="false" class="mini" data-bit="1" type="button">BIT1</button>
+<button aria-pressed="false" class="mini" data-bit="0" type="button">BIT0</button>
+</div>
+<div class="ctl-row" id="m14-pg-ops"><span class="lbl">运算</span>
+<button aria-pressed="false" class="mini" data-op="set" type="button">=</button>
+<button aria-pressed="true" class="mini" data-op="or" type="button">|=</button>
+<button aria-pressed="false" class="mini" data-op="and" type="button">&amp;= ~</button>
+<button aria-pressed="false" class="mini" data-op="xor" type="button">^=</button>
+<button class="press" id="m14-pg-run" type="button">执行</button>
+<button class="mini" id="m14-pg-rnd" type="button">随机寄存器</button>
+</div>
+<p aria-live="polite" class="out" id="m14-pg-msg"><code>P1OUT |= BIT6;</code></p>
+</div>
+</figure>
+<div class="drill" data-drill="bitop"></div>
+<p class="takeaway">标签和 BITx 来自 msp430f5529.h；改一个位用 <code>|=</code>（置 1）或 <code>&amp;= ~</code>（清 0），只有在配置整个寄存器时才用 <code>=</code>。</p>
+
+</section>
+
+<section class="sec" id="m14-s6">
+<h2><span class="n">§6</span>测试一个位，再看着它变 <span class="tag">M14.7 · M14.8</span></h2>
+<p class="hook"><span class="zh"><code>if (P1IN &amp; BIT1)</code> 到底在问什么？</span><span class="es">Evaluación de bits de un registro.</span></p>
+<p>读寄存器也可以只看其中一位。<code>P1IN &amp; BIT1</code> 是 P1IN（XXXX XXXX）和 0000 0010 的按位 AND：除了 bit1 全部变成 0。结果是 0 → 假；不是 0 → 真。所以它问的是"P1.1 是不是 1"。</p>
+<ul>
+<li>整个寄存器是不是 0：<code>if (P1IV)</code>。两个寄存器都不是 0：<code>if (P1IV &amp;&amp; P2IV)</code>。</li>
+<li>两个位<b>同时</b>为 1：<code>if ((P1IN &amp; BIT1) &amp;&amp; (P1IN &amp; BIT0))</code>——每个位单独测，再用逻辑与 <code>&amp;&amp;</code> 连起来。</li>
+<li>要特别小心两个错误写法：<code>P1IN &amp; (BIT1 || BIT0)</code> 和 <code>P1IN &amp; (BIT1 &amp; BIT0)</code>。后者里的 <code>BIT1 &amp; BIT0</code> 按定义永远是 0，条件永远为假。</li>
+</ul>
+<p>把四种写法放进同一张表，P1IN 的其他位假设为 0：</p>
+<div class="tbl-wrap">
+<table class="tt">
+<thead><tr><th>P1IN.1</th><th>P1IN.0</th><th>(P1IN &amp; BIT1) &amp;&amp; (P1IN &amp; BIT0)</th><th>P1IN &amp; (BIT1 | BIT0)</th><th>P1IN &amp; (BIT1 || BIT0)</th><th>P1IN &amp; (BIT1 &amp; BIT0)</th></tr></thead>
+<tbody>
+<tr><td class="mono">0</td><td class="mono">0</td><td class="no">假</td><td class="no">假</td><td class="no">假</td><td class="no">假</td></tr>
+<tr><td class="mono">0</td><td class="mono">1</td><td class="no">假</td><td class="si">真</td><td class="bad">真</td><td class="no">假</td></tr>
+<tr><td class="mono">1</td><td class="mono">0</td><td class="no">假</td><td class="si">真</td><td class="no">假</td><td class="no">假</td></tr>
+<tr><td class="mono">1</td><td class="mono">1</td><td class="si">真</td><td class="si">真</td><td class="si">真</td><td class="bad">假</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">只有第一列是"两个位都为 1"。<code>|</code> 版本是"任一位为 1"；<code>||</code> 版本实际上只看 bit0；<code>&amp;</code> 版本永远为假。</p>
+<div class="note">
+<span class="lbl">关于 BIT1 || BIT0</span>
+<p>有些资料说这种写法"只要任意一位为 1 条件就成立"——这描述的其实是按位或 <code>|</code>。按 C 语言的规则，<code>||</code> 是逻辑或，<code>BIT1 || BIT0</code> 的值是 1，也就是 BIT0，所以 <code>P1IN &amp; (BIT1 || BIT0)</code> 只测 bit0（上表第五列）。两种理解下它都不是"两个位都为 1"，结论不变：<b>不要把 <code>||</code> 放进掩码里</b>。</p>
+</div>
+<h3>volatile 和调试</h3>
+<p>把 Codigo1 改成 Codigo2：数 S2 被松开的次数 <code>cnt</code>，超过 10 次就 <code>break</code> 跳出循环，停在最后的 <code>while(1);</code>。两个变量这样声明：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">volatile static</span> uint16_t cnt = 0;</span><span class="ln-row"><span class="kw">volatile static</span> uint8_t  on  = 0;</span></code></pre>
+<p class="aside"><b class="t">volatile</b>——易变，告诉编译器这个变量可能在程序看不到的地方被改（硬件、中断、调试器），每次都必须真的去内存里读写，不能优化掉。端口寄存器（例如 PxIN 由硬件改变）在头文件里也是这样声明的。</p>
+<div class="panel">
+<h3>控制执行</h3>
+<ul>
+<li><b>Step Over</b>（F6）：执行一行 C 代码，同时在 Registers 窗口里看 P1 的寄存器变化。配置刚执行完时（下面第一张截图），P1IN.1 = 1：S2 没按；P1IN.0 = 0：LED 灭。</li>
+<li><b>Run to Line</b>（Ctrl+R）：连续运行到光标所在行。有些行只在特定条件下才执行。</li>
+<li><b>Resume</b>（F8）：继续运行。</li>
+<li><b>Move to Line</b>：直接把执行点挪到某行，不管程序逻辑——有用，但有风险。</li>
+</ul>
+</div>
+
+<div class="panel">
+<h3>观察和修改</h3>
+<ul>
+<li><b>Registers</b>：在窗口里直接改 P1OUT，把 P1OUT0 改成 1，LED1 立刻亮。展开 P1OUT 可以逐位改；只改 P1OUT0，P1OUT1 要保持 1——它管着 P1.1 的上拉（§3）。下面 Registers 的截图里 P1OUT = 0x01、P1OUT1 = 0，和这一点不符。</li>
+<li><b>Variables</b>：局部变量 cnt（unsigned int）、on（unsigned char），可以改值；右键 Number Format 换显示格式（on 换成 Decimal）。</li>
+<li><b>Expressions</b>：可以加全局变量和由变量组成的表达式。</li>
+<li><b>Memory Browser</b>（显示格式可选，例如 16-Bit Hex - TI Style，也能在这里直接改值）：输入变量的地址（Variables 的 Location 列，截图里是 0x0043FC），默认十六进制显示。</li>
+</ul>
+</div>
+
+
+<p class="takeaway">测一个位用 <code>&amp;</code>，几个条件之间用 <code>&amp;&amp;</code>；掩码里只用 <code>|</code> 组合位，不用 <code>||</code> 和 <code>&amp;</code>。</p>
+
+</section>
+
+<section class="sec" id="m14-s7">
+<h2><span class="n">§7</span>轮询：一直问，直到它说"好了" <span class="tag">M14.9</span></h2>
+<p class="hook"><span class="zh">CPU 想知道按钮什么时候被按下，最直接的办法是什么？</span><span class="es">Gestión por sondeo (polling) · espera activa.</span></p>
+<p><b class="t">gestión por sondeo (ES) / polling (EN)</b>——轮询，就是用读端口状态的指令（比如 <code>if (P1IN &amp; BIT1)</code>）同步地、反复地去采样外部器件的状态。需要和外界通信时，CPU 一直执行一个查询循环，直到器件表示"准备好了"或"事件发生了"，再交换数据或执行动作。最"纯粹"的实现里，CPU 除了查询什么也不做，所以也叫 <b class="t">espera activa (ES) / busy waiting (EN)</b>——忙等。一般步骤：</p>
+<ol>
+<li>CPU 不断查询"事件 / 通信指示"引脚的状态，直到它被激活。</li>
+<li>A. 如果是事件通知：执行对应的动作，等引脚恢复，再开始新一轮查询。</li>
+<li>B. 如果是通信通知：输入时从输入寄存器读数据，输出时把数据写到输出寄存器；引脚恢复后，输出要把数据撤掉。</li>
+<li>重新开始等待下一次激活。</li>
+</ol>
+<p>第一个例子 Codigo3 把这个结构写得最直白：两个"空"的 <code>while</code>，一个等按下，一个等松开。</p>
+<figure class="stage" data-ms="3200" data-scene="" id="m14-sc-poll">
+<div class="stage-title"><span>Escena 7 · espera activa</span><b>5 步</b></div>
+<div aria-label="动画：轮询循环的流程图和时序" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-poll-t" role="img" viewbox="0 0 800 370">
+<title id="m14-sc-poll-t">流程图：等待按下的循环、点亮 LED、等待松开的循环、熄灭 LED；右边是 P1IN.1、LED1 和 CPU 活动的时序</title>
+<text class="tm sm m mid" x="220" y="30">while (1) {</text>
+<path class="bx b" d="M220 56 L330 88 L220 120 L110 88 Z" data-hl="1"></path>
+<text class="tm xs b mid" x="220" y="93">P1IN &amp; BIT1 ?</text>
+<path class="ln y" d="M330 88 H372 V44 H232 V58" id="m14-p-w1" marker-end="url(#m14-ah-y)"></path>
+<text class="tz sm y" x="380" y="40">≠0：没按，再问</text>
+<circle class="sl y" data-move="#m14-p-w1" data-move-dur="1600" data-out="2" data-step="1" r="6"></circle>
+<g data-step="2">
+<path class="ln g draw" d="M220 120 V148" id="m14-p-a1" marker-end="url(#m14-ah-g)"></path>
+<text class="tz sm g" x="230" y="140">0：按下</text>
+<rect class="bx g" data-hl="2" height="40" rx="6" width="220" x="110" y="150"></rect>
+<text class="tm xs w mid" x="220" y="175">P1OUT |= BIT0;   // LED 亮</text>
+</g>
+<circle class="sl g" data-move="#m14-p-a1" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<path class="ln thin w" d="M220 190 V216" marker-end="url(#m14-ah-w)"></path>
+<path class="bx b" d="M220 218 L330 250 L220 282 L110 250 Z" data-hl="3"></path>
+<text class="tm xs b mid" x="220" y="255">!(P1IN &amp; BIT1) ?</text>
+<path class="ln y draw" d="M330 250 H372 V204 H232 V220" id="m14-p-w2" marker-end="url(#m14-ah-y)"></path>
+<text class="tz sm y" x="380" y="200">≠0：还按着</text>
+</g>
+<circle class="sl y" data-move="#m14-p-w2" data-move-dur="1600" data-out="4" data-step="3" r="6"></circle>
+<g data-step="4">
+<path class="ln thin w" d="M220 282 V308" marker-end="url(#m14-ah-w)"></path>
+<text class="tz sm m" x="230" y="300">0：松开</text>
+<rect class="bx b" data-hl="4" height="40" rx="6" width="220" x="110" y="310"></rect>
+<text class="tm xs w mid" x="220" y="335">P1OUT &amp;= ~BIT0;  // LED 灭</text>
+<path class="ln thin m dash draw" d="M110 330 H60 V24 H160" id="m14-p-ret" marker-end="url(#m14-ah-w)"></path>
+</g>
+<circle class="sl w" data-move="#m14-p-ret" data-move-dur="1800" data-out="5" data-step="4" r="6"></circle>
+<text class="tm xs b" x="480" y="96">P1IN.1</text>
+<text class="tm xs g" x="480" y="176">LED1</text>
+<path class="ln b" d="M550 78 H630"></path>
+<path class="ln b draw" d="M630 78 V108 H700" data-step="2"></path>
+<path class="ln g draw" d="M550 188 H630 V158 H700" data-step="2"></path>
+<text class="tz sm y mid" data-step="3" x="665" y="134">等松开</text>
+<path class="ln b draw" d="M700 108 V78 H780" data-step="4"></path>
+<path class="ln g draw" d="M700 158 V188 H780" data-step="4"></path>
+<g data-step="5">
+<text class="tm xs y" x="480" y="256">CPU</text>
+<rect class="bx y" data-hl="5" height="26" rx="3" width="230" x="550" y="238"></rect>
+<path class="ln thin y" d="M566 238v26M582 238v26M598 238v26M614 238v26M630 238v26M646 238v26M662 238v26M678 238v26M694 238v26M710 238v26M726 238v26M742 238v26M758 238v26M774 238v26"></path>
+<text class="tz sm y mid" x="665" y="292">每一刻都在执行查询指令</text>
+<text class="tm sm y mid" x="665" y="318">espera activa</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">第一个 <code>while (P1IN &amp; BIT1);</code>：没按时 P1IN.1 = 1，条件为真，CPU 原地再问一次……一直问。</li>
+<li>按下：P1IN.1 = 0，跳出循环，执行和事件对应的动作：LED 亮。</li>
+<li data-dur="3600">第二个 <code>while (!(P1IN &amp; BIT1));</code>：等事件结束（松开）。按着的时候，CPU 一直在这里转。</li>
+<li data-dur="3600">松开：LED 灭，回到 <code>while (1)</code> 开头，开始新一轮等待。</li>
+<li data-dur="4200">整个过程 CPU 都在执行查询指令：这就是 espera activa。它不能进入低功耗，也做不了别的事——处理器"被锁住"了。</li>
+</ol>
+</figure>
+<p>轮询有三种方案：<b>polling de un evento</b>（查"事件引脚"→ 激活了就执行动作）、<b>polling para lectura de dato</b>（查"数据到达引脚"→ 读输入端口）、<b>polling para entrega de dato</b>（查"数据请求引脚"→ 写输出端口 → 再查，直到引脚撤销 → 撤下数据）。三种方案画成流程图如下：每张图里"没激活"都回到查询框。</p>
+
+<p>下面换成时序图，按 Codigo3、4、5 画；三个例子都用 P1.1 当"通知"引脚（aviso），P3 当数据端口：</p>
+<figure class="stage" data-scene="" id="m14-sc-scheme">
+<div class="stage-title"><span>Escena 7b · tres esquemas de sondeo</span><b>4 步</b></div>
+<div aria-label="动画：轮询的三种方案的时序" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m14-sc-scheme-t" role="img" viewbox="0 0 800 300">
+<title id="m14-sc-scheme-t">三列时序图：事件轮询只控制 LED；读数据轮询在通知到来时读 P3IN；写数据轮询在通知到来时写 P3OUT，通知结束后写 0x00</title>
+<rect class="ln thin m" height="276" rx="10" width="254" x="10" y="12"></rect>
+<text class="tm xs w mid" x="137" y="38">POLLING DE UN EVENTO</text>
+<text class="tz sm m mid" x="137" y="60">事件 → 动作</text>
+<text class="tm xs r" x="18" y="104">aviso</text>
+<text class="tm xs g" x="18" y="164">LED1</text>
+<text class="tm xs b" x="18" y="224">P3</text>
+<path class="ln r" d="M70 86 H120 V114 H190 V86 H250"></path>
+<path class="ln g" d="M70 172 H120 V146 H190 V172 H250"></path>
+<text class="tm xs m mid" x="160" y="224">—</text>
+<g data-step="2">
+<rect class="ln thin m" height="276" rx="10" width="254" x="273" y="12"></rect>
+<text class="tm xs w mid" x="400" y="38">POLLING · LECTURA</text>
+<text class="tz sm m mid" x="400" y="60">事件 → 读数据</text>
+<text class="tm xs r" x="281" y="104">aviso</text>
+<text class="tm xs g" x="281" y="164">LED1</text>
+<text class="tm xs b" x="281" y="224">P3</text>
+<path class="ln r draw" d="M333 86 H383 V114 H453 V86 H513"></path>
+<path class="ln g draw" d="M333 172 H383 V146 H453 V172 H513"></path>
+<rect class="bx hollow b" height="28" rx="4" width="140" x="353" y="206"></rect>
+<text class="tm xs b mid" x="423" y="224">dato externo</text>
+<path class="ln y draw" d="M383 206 V188" marker-end="url(#m14-ah-y)"></path>
+<text class="tm xs y mid" x="400" y="258">dato = P3IN;</text>
+</g>
+<g data-step="3">
+<rect class="ln thin m" height="276" rx="10" width="254" x="536" y="12"></rect>
+<text class="tm xs w mid" x="663" y="38">POLLING · ESCRITURA</text>
+<text class="tz sm m mid" x="663" y="60">事件 → 写数据</text>
+<text class="tm xs r" x="544" y="104">aviso</text>
+<text class="tm xs g" x="544" y="164">LED1</text>
+<text class="tm xs b" x="544" y="224">P3</text>
+<path class="ln r draw" d="M596 86 H646 V114 H716 V86 H776"></path>
+<path class="ln g draw" d="M596 172 H646 V146 H716 V172 H776"></path>
+<path class="ln b" d="M596 220 H646 M716 220 H776"></path>
+<rect class="bx b" height="28" rx="4" width="70" x="646" y="206"></rect>
+<text class="tm xs b mid" x="681" y="224">0x3C</text>
+<text class="tm xs m mid" x="621" y="210">0x00</text>
+<text class="tm xs m mid" x="746" y="210">0x00</text>
+<text class="tm xs y mid" x="663" y="258">P3OUT = dato;</text>
+</g>
+<g data-step="4">
+<path class="ln thin y dash" d="M120 76 V242 M383 76 V242 M646 76 V242"></path>
+<text class="tz sm y mid" x="137" y="280">aviso ↓ → 亮灯</text>
+<text class="tz sm y mid" x="400" y="280">aviso ↓ → 读 P3IN</text>
+<text class="tz sm y mid" x="663" y="280">aviso ↓ → 写 P3OUT</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><b>Polling de un evento</b>（Codigo3）：等 aviso（P1.1）变 0 → 执行动作（亮灯）→ 等 aviso 回到 1 → 收尾（灭灯）。</li>
+<li data-dur="3800"><b>Polling para lectura</b>（Codigo4）：外部器件把数据放到 P3 上，再用 aviso 通知。CPU 看到通知后读一次 <code>P3IN</code>。</li>
+<li data-dur="4200"><b>Polling para entrega</b>（Codigo5）：外部器件用 aviso 来"要"数据。CPU 看到通知后写 <code>P3OUT</code>，通知结束后把数据撤掉（写 0x00）。</li>
+<li data-dur="3800">三种方案是同一个骨架（上面的 4 步）：一直查询 aviso → 做事 / 读 / 写 → 等 aviso 结束 → 重新开始。LED1 只是让人看见"正在处理"。</li>
+</ol>
+<p class="stage-note">时序只是示意；0x3C 是 Codigo5 里固定的数据。</p>
+</figure>
+<p>三段代码几乎一样，差别只在绿色标出的几行：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="c3" type="button">Codigo3 · evento</button>
+<button aria-pressed="false" data-view="c4" type="button">Codigo4 · lectura</button>
+<button aria-pressed="false" data-view="c5" type="button">Codigo5 · escritura</button>
+</div>
+<pre class="code" data-pane="c3"><code><span class="ln-row"><span class="cm">// CODIGO3.TXT Gestión por sondeo de ocurrencia de eventos</span></span><span class="ln-row"><span class="rg">WDTCTL</span> = WDTPW | WDTHOLD;  <span class="cm">// Detiene el watchdog</span></span><span class="ln-row"><span class="rg">P1DIR</span> |= BIT0;             <span class="cm">// P1.0 (LED) como salida digital</span></span><span class="ln-row"><span class="rg">P1OUT</span> &amp;= ~BIT0;            <span class="cm">// P1.0 (LED) apagado</span></span><span class="ln-row"><span class="rg">P1REN</span> |= BIT1;             <span class="cm">// Resistencia de pull-up</span></span><span class="ln-row"><span class="rg">P1OUT</span> |= BIT1;             <span class="cm">// en P1.1 (pulsador derecho)</span></span><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row add">    <span class="kw">while</span> (<span class="rg">P1IN</span> &amp; BIT1);     <span class="cm">// Espera activa al evento (pulsación botón)</span></span><span class="ln-row add">    <span class="rg">P1OUT</span> |= BIT0;          <span class="cm">// Acción asociada al evento (encendido LED)</span></span><span class="ln-row add">    <span class="kw">while</span> (!(<span class="rg">P1IN</span> &amp; BIT1));  <span class="cm">// Espera a fin de indicación de evento</span></span><span class="ln-row add">    <span class="rg">P1OUT</span> &amp;= ~BIT0;         <span class="cm">// P1.0 (LED) apagado</span></span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="c4" hidden=""><code><span class="ln-row"><span class="cm">// CODIGO4.TXT Gestión por sondeo de lectura de un dato</span></span><span class="ln-row add"><span class="kw">volatile</span> uint8_t dato;</span><span class="ln-row"><span class="rg">WDTCTL</span> = WDTPW | WDTHOLD;</span><span class="ln-row"><span class="rg">P1DIR</span> |= BIT0;  <span class="rg">P1OUT</span> &amp;= ~BIT0;   <span class="cm">// LED</span></span><span class="ln-row"><span class="rg">P1REN</span> |= BIT1;  <span class="rg">P1OUT</span> |= BIT1;    <span class="cm">// P1.1: aviso de evento, pull-up</span></span><span class="ln-row add"><span class="rg">P3DIR</span> = 0x00;                     <span class="cm">// P3 como entrada</span></span><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="kw">while</span> (<span class="rg">P1IN</span> &amp; BIT1);     <span class="cm">// Espera activa al evento</span></span><span class="ln-row">    <span class="rg">P1OUT</span> |= BIT0;</span><span class="ln-row add">    dato = <span class="rg">P3IN</span>;             <span class="cm">// lee el dato</span></span><span class="ln-row">    <span class="kw">while</span> (!(<span class="rg">P1IN</span> &amp; BIT1));  <span class="cm">// Espera a fin de indicación de evento</span></span><span class="ln-row">    <span class="rg">P1OUT</span> &amp;= ~BIT0;</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="c5" hidden=""><code><span class="ln-row"><span class="cm">// CODIGO5.TXT Gestión por sondeo de escritura de un dato</span></span><span class="ln-row"><span class="kw">volatile</span> uint8_t dato;</span><span class="ln-row"><span class="rg">WDTCTL</span> = WDTPW | WDTHOLD;</span><span class="ln-row"><span class="rg">P1DIR</span> |= BIT0;  <span class="rg">P1OUT</span> &amp;= ~BIT0;   <span class="cm">// LED</span></span><span class="ln-row"><span class="rg">P1REN</span> |= BIT1;  <span class="rg">P1OUT</span> |= BIT1;    <span class="cm">// P1.1: aviso de evento, pull-up</span></span><span class="ln-row add"><span class="rg">P3DIR</span> = 0xFF;                     <span class="cm">// P3 como salida</span></span><span class="ln-row add">dato = 0x3C;                       <span class="cm">// En este ejemplo el dato es siempre el mismo</span></span><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="kw">while</span> (<span class="rg">P1IN</span> &amp; BIT1);</span><span class="ln-row">    <span class="rg">P1OUT</span> |= BIT0;</span><span class="ln-row add">    <span class="rg">P3OUT</span> = dato;            <span class="cm">// Escribe el dato</span></span><span class="ln-row">    <span class="kw">while</span> (!(<span class="rg">P1IN</span> &amp; BIT1));</span><span class="ln-row">    <span class="rg">P1OUT</span> &amp;= ~BIT0;</span><span class="ln-row add">    <span class="rg">P3OUT</span> = 0x00;            <span class="cm">// "Retira" el dato</span></span><span class="ln-row">}</span></code></pre>
+</div>
+<p class="aside">Codigo4、Codigo5 的配置行这里合并成两行显示，内容不变；省略了 <code>#include</code> 和 <code>main</code>。</p>
+<div class="grid2">
+<div class="cell g">
+<span class="k c-g">ventaja</span>
+<h3>为什么还在用</h3>
+<p>实现简单，非常基础、便宜的 micro 也能做。对只做一件事的<b>单任务</b>应用（系统除了和外界交互不干别的），轮询常常就够了。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">desventaja</span>
+<h3>代价</h3>
+<p>能耗高：光是执行查询指令，CPU 就必须一直处于活动状态。CPU 被锁在等待循环里，没法同时做别的事。</p>
+</div>
+</div>
+
+<p>下一个模块是一种更有效的<b>硬件</b>办法——中断。CPU 不必再一直问，事件发生时由硬件通知它：见 <a href="m21.html">M21 Interrupciones</a>。</p>
+<p class="takeaway">轮询 = CPU 在循环里反复读通知引脚，等到事件再做事、读数据或写数据；简单便宜，但 CPU 一直忙等，耗能、也做不了别的。</p>
+
+</section>
+
+<section class="sec" id="m14-practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="bitop"></div>
+<div class="drill" data-drill="led"></div>
+</div>
+</section>
+
+<section class="sec" id="m14-quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M14">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>关于 MSP430F5529 的 E/S 端口，哪一句对？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>P1–P8 每个端口都有 8 个引脚</button>
+<button data-o="b" type="button"><span class="k">B</span>P1–P8，P8 只有 3 个引脚；端口两两组成 16 位的 PA–PD</button>
+<button data-o="c" type="button"><span class="k">C</span>只有 P1、P2 能当数字 E/S，其余只给外设用</button>
+<button data-o="d" type="button"><span class="k">D</span>同一个端口的 8 个引脚必须同时是输入或同时是输出</button>
+</div>
+<p class="why"><b>B。</b>8 个端口，P8 只有 3 位；每个引脚可以单独设方向；P1/P2、P3/P4… 组成 PA、PB…（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>PUC 复位之后哪一个寄存器的内容是不确定的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>PxDIR</button>
+<button data-o="b" type="button"><span class="k">B</span>PxREN</button>
+<button data-o="c" type="button"><span class="k">C</span>PxOUT</button>
+<button data-o="d" type="button"><span class="k">D</span>PxSEL</button>
+</div>
+<p class="why"><b>C。</b>端口寄存器复位后都清 0，只有 PxOUT 和 P1IES、P2IES 不确定（§1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>执行 <code>P2DIR = 0x0F;</code> 之后，哪些引脚是输出？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>P2.4–P2.7</button>
+<button data-o="b" type="button"><span class="k">B</span>P2 的全部 8 个引脚</button>
+<button data-o="c" type="button"><span class="k">C</span>一个也没有</button>
+<button data-o="d" type="button"><span class="k">D</span>P2.0–P2.3</button>
+</div>
+<p class="why"><b>D。</b>0x0F = 0000 1111，PxDIR 里为 1 的位是输出：bit0–bit3（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>关于 PxIN，哪一句对？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>写 PxIN 可以改变引脚电平</button>
+<button data-o="b" type="button"><span class="k">B</span>它是只读的：写入被忽略，只会增加电流消耗</button>
+<button data-o="c" type="button"><span class="k">C</span>PxIN 的某一位为 1，表示这个引脚是输出</button>
+<button data-o="d" type="button"><span class="k">D</span>它决定内部电阻是上拉还是下拉</button>
+</div>
+<p class="why"><b>B。</b>PxIN 只读（§2）。方向看 PxDIR，上拉 / 下拉看 PxOUT（§2、§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>要把一个引脚配置成"带上拉电阻的输入"，PxDIR.y、PxREN.y、PxOUT.y 应该是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0、1、1</button>
+<button data-o="b" type="button"><span class="k">B</span>0、1、0</button>
+<button data-o="c" type="button"><span class="k">C</span>1、1、1</button>
+<button data-o="d" type="button"><span class="k">D</span>0、0、1</button>
+</div>
+<p class="why"><b>A。</b>按 §3 的组合表：0 1 1 = 输入 + pull-up；0 1 0 是 pull-down；DIR = 1 是输出；REN = 0 没有电阻（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span><code>P2SEL |= BIT4;</code> 意味着什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>P2.4 自动变成输出</button>
+<button data-o="b" type="button"><span class="k">B</span>打开 P2.4 的上拉电阻</button>
+<button data-o="c" type="button"><span class="k">C</span>P2.4 改用外设功能；接 TA2 的哪一路（CCI1A 输入或 TA2.1 输出）还要看 P2DIR.4</button>
+<button data-o="d" type="button"><span class="k">D</span>使能 P2.4 的中断</button>
+</div>
+<p class="why"><b>C。</b>PxSEL = 1 选外设功能，但不会自动设置方向；§2 的例子用 P2DIR.4 = 0 把 P2.4 当作 TA2 的捕获输入 CCI1A（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>V<sub>OH</sub> = 3.3 V，LED 压降 V<sub>D</sub> = 2.1 V，想要 I<sub>D</sub> = 4 mA。限流电阻 R = ?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>525 Ω</button>
+<button data-o="b" type="button"><span class="k">B</span>300 Ω</button>
+<button data-o="c" type="button"><span class="k">C</span>825 Ω</button>
+<button data-o="d" type="button"><span class="k">D</span>0.3 Ω</button>
+</div>
+<p class="why"><b>B。</b>R = (V<sub>OH</sub> − V<sub>D</sub>) / I<sub>D</sub> = 1.2 V / 4 mA = 300 Ω。825 Ω 忘了减 V<sub>D</sub>；0.3 Ω 把 mA 当成了 A（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>P1DIR 原来是 0x03，执行 <code>P1DIR |= BIT6;</code> 之后是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x40</button>
+<button data-o="b" type="button"><span class="k">B</span>0x43</button>
+<button data-o="c" type="button"><span class="k">C</span>0x46</button>
+<button data-o="d" type="button"><span class="k">D</span>0x03</button>
+</div>
+<p class="why"><b>B。</b>0000 0011 | 0100 0000 = 0100 0011。0x40 是用了 <code>=</code> 的结果（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>要把 P1DIR 的 bit5 和 bit0 清 0，其他位不变，应该写？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>P1DIR = ~(BIT5 | BIT0);</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>P1DIR &amp;= ~(BIT5 | BIT0);</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>P1DIR |= ~(BIT5 | BIT0);</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>P1DIR &amp;= (BIT5 | BIT0);</code></button>
+</div>
+<p class="why"><b>B。</b>A 会把其他位全部置 1；C 也一样；D 反过来，只保留 bit5、bit0（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">10</span>条件"P1IN 的 bit1 和 bit0 都是 1"应该写成？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>(P1IN &amp; BIT1) &amp;&amp; (P1IN &amp; BIT0)</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>P1IN &amp; (BIT1 &amp; BIT0)</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>P1IN &amp; (BIT1 | BIT0)</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>P1IN | BIT1 | BIT0</code></button>
+</div>
+<p class="why"><b>A。</b>B 里 BIT1 &amp; BIT0 = 0，永远为假；C 只要任一位为 1 就成立；D 永远不为 0（§6）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>为什么在程序里写 <code>P1DIR</code>，编译器就知道要改哪个地址？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CCS 在运行时自动搜索寄存器</button>
+<button data-o="b" type="button"><span class="k">B</span>P1DIR 是 C 语言的关键字</button>
+<button data-o="c" type="button"><span class="k">C</span>调试器下载程序时把它替换掉</button>
+<button data-o="d" type="button"><span class="k">D</span>msp430f5529.h 用 #define 把这个标签对应到寄存器地址</button>
+</div>
+<p class="why"><b>D。</b>标签定义在头文件里，P1DIR 最终对应 0x0204（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>轮询也叫 espera activa（busy waiting）。它的主要缺点是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>必须配置中断向量</button>
+<button data-o="b" type="button"><span class="k">B</span>只能读端口，不能写端口</button>
+<button data-o="c" type="button"><span class="k">C</span>CPU 一直在执行查询指令：耗能，也不能同时做别的事</button>
+<button data-o="d" type="button"><span class="k">D</span>只能用在 P1、P2 上</button>
+</div>
+<p class="why"><b>C。</b>轮询不需要中断，任何端口都能用，也能写数据（Codigo5）；代价是 CPU 被占住（§7）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="m14-terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">puerto de E/S<small>I/O port · P1–P8</small></span><span class="back"><b>输入输出端口</b><br/>8 个引脚一组的数字接口；F5529 有 P1–P8，P8 只有 3 位。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxDIR<small>registro de dirección</small></span><span class="back"><b>方向寄存器</b><br/>bit = 0 输入，1 输出；复位后为 0。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxIN<small>registro de entrada</small></span><span class="back"><b>输入寄存器</b><br/>只读，反映引脚电平；写它只会增加电流。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxOUT<small>registro de salida</small></span><span class="back"><b>输出寄存器</b><br/>输出时是输出值；输入且 REN = 1 时选上拉 / 下拉。复位值不确定。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxREN<small>resistor enable</small></span><span class="back"><b>电阻使能</b><br/>1 = 接上内部电阻（典型 35 kΩ）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pull-up / pull-down</span><span class="back"><b>上拉 / 下拉</b><br/>没有外部驱动时，把引脚拉到 VCC / GND。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">entrada flotante<small>floating input</small></span><span class="back"><b>浮空输入</b><br/>引脚没接到任何电平，读数不确定，还会随干扰跳动。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxDS<small>corriente de ataque · drive strength</small></span><span class="back"><b>驱动强度</b><br/>0 降低（默认，EMI 小、省电），1 最大。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxSEL<small>funcionalidad adicional</small></span><span class="back"><b>功能选择</b><br/>0 普通 E/S，1 外设功能；不会自动设置方向。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">multiplexación<small>pin multiplexing</small></span><span class="back"><b>引脚复用</b><br/>一根引脚由几个外设共用，用 PxSEL 选择。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PA · PB · PC · PD<small>word ports</small></span><span class="back"><b>16 位端口</b><br/>P1+P2 = PA，P3+P4 = PB……可以按字或按字节访问。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Schmitt trigger</span><span class="back"><b>施密特触发器</b><br/>有迟滞的输入电路，把缓慢或带噪声的电压整成干净的 0 / 1。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">V<sub>OH</sub> · I<sub>OH</sub></span><span class="back"><b>输出高电平电压 / 电流</b><br/>算 LED 电阻要用；I<sub>OH</sub> 有上限（降低驱动约 6 mA）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">etiqueta<small>label · msp430f5529.h</small></span><span class="back"><b>标签</b><br/>头文件里给寄存器地址起的名字，如 P1DIR → 0x0204。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BITx<small>máscara · bit mask</small></span><span class="back"><b>位掩码</b><br/>BIT0 = 0x0001 … BIT7 = 0x0080（头文件定义到 BITF = 0x8000），用 | 组合。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">volatile</span><span class="back"><b>易变</b><br/>告诉编译器值可能在程序之外改变，每次都要真的去读写。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sondeo<small>polling</small></span><span class="back"><b>轮询</b><br/>CPU 反复读状态，直到事件发生或器件准备好。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">espera activa<small>busy waiting</small></span><span class="back"><b>忙等</b><br/>CPU 在查询循环里空转：耗能，也做不了别的事。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M14"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  if (window.__m14Page) return;
+  window.__m14Page = true;
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  
+  (function () {
+    if (!$("m14-sim") || !$("m14-sim-msg")) return;
+    var st = { dir: 0, out: 0, ren: 0, ext: "btn", pressed: false };
+    var E = {
+      drv: $("m14-sim-drv"), drvt: $("m14-sim-drvt"), res: $("m14-sim-res"), rest: $("m14-sim-rest"),
+      lvl: $("m14-sim-lvl"), inn: $("m14-sim-in"), btn: $("m14-sim-btn"), ledg: $("m14-sim-ledg"),
+      led: $("m14-sim-led"), lev: $("m14-sim-lev"), warn: $("m14-sim-warn"), pad: $("m14-sim-pad"),
+      rdir: $("m14-sim-dir"), rout: $("m14-sim-out"), rren: $("m14-sim-ren"), msg: $("m14-sim-msg"),
+      bdir: $("m14-sim-bdir"), bout: $("m14-sim-bout"), bren: $("m14-sim-bren"), bext: $("m14-sim-bext"), bpress: $("m14-sim-bpress")
+    };
+    function show(node, on) { node.style.display = on ? "" : "none"; }
+    function setSw(b, on, label) {
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.querySelector(".lab").textContent = label + " = " + (on ? 1 : 0);
+    }
+    function render() {
+      var lvl, inv, led = false, warn = "", msg;
+      var row = st.dir ? "1 x x → 输出" : (st.ren ? (st.out ? "0 1 1 → 输入 + pull-up" : "0 1 0 → 输入 + pull-down") : "0 0 x → 输入，没有电阻");
+      if (st.dir) {
+        if (st.ext === "btn" && st.pressed && st.out) {
+          lvl = "冲突"; inv = "?";
+          warn = "driver 输出高电平，按钮把引脚接到 GND";
+          msg = "输出模式，PxOUT.y = 1：driver 想把引脚拉高，按钮却把它接地。两边抢同一根线，会有很大的电流——实际电路里要避免这种接法。";
+        } else if (st.ext === "btn" && st.pressed) {
+          lvl = "0"; inv = "0";
+          msg = "输出模式，PxOUT.y = 0：driver 输出低电平，按钮也接 GND，引脚 = 0。";
+        } else {
+          lvl = st.out ? "1" : "0"; inv = lvl;
+          led = st.ext === "led" && st.out === 1;
+          msg = "输出模式：driver 接通，引脚 = PxOUT.y = " + st.out + "。PxIN.y 读回同样的值。" + (st.ren ? " PxREN.y = 1 在输出时不起作用。" : "") +
+            (st.ext === "led" ? (led ? " 电流从引脚经 LED 和电阻流向 GND：LED 亮。" : " 引脚为低电平：LED 不亮。") : "");
+        }
+      } else if (st.ext === "btn" && st.ren && !st.out) {
+        
+        lvl = "?"; inv = "?";
+        msg = "按钮接 GND，再配下拉电阻，会怎样？这里不演示结果——请用 §3 那张组合表自己推理，或在板子上试。";
+      } else if (st.ext === "btn") {
+        if (st.pressed) { lvl = "0"; msg = "输入模式，按钮按下：引脚被直接接到 GND，PxIN.y = 0。" + (st.ren && st.out ? " 电流从 VCC 经上拉电阻流进 GND。" : ""); }
+        else if (st.ren) { lvl = st.out ? "1" : "0"; msg = "输入模式，按钮没按：内部电阻把引脚拉到 " + (st.out ? "VCC → PxIN.y = 1。" : "GND → PxIN.y = 0。"); }
+        else { lvl = "?"; msg = "输入模式，没有电阻，按钮没按：引脚没有接到任何电平——浮空，PxIN.y 不确定。"; }
+        inv = lvl;
+      } else {
+        
+        lvl = "?"; inv = "?";
+        msg = "PxDIR.y = 0 时，LED 会怎样？这里不演示结果——请根据 §2 的寄存器规则和 §3 的组合表自己推理，或在板子上试。";
+      }
+      E.rdir.textContent = "PxDIR.y = " + st.dir;
+      E.rout.textContent = "PxOUT.y = " + st.out;
+      E.rren.textContent = "PxREN.y = " + st.ren;
+      E.drv.setAttribute("class", st.dir ? "bx g" : "bx m");
+      E.drvt.textContent = st.dir ? "driver → " + st.out : "Hi-Z";
+      E.drvt.setAttribute("class", "tm xs mid " + (st.dir ? "g" : "m"));
+      show(E.res, !st.dir && st.ren);
+      E.rest.textContent = st.out ? "→ VCC (pull-up)" : "→ GND (pull-down)";
+      show(E.btn, st.ext === "btn");
+      show(E.ledg, st.ext === "led");
+      E.led.setAttribute("class", led ? "led-on" : "bx m");
+      if (st.pressed && st.ext === "btn") { E.lev.setAttribute("x2", "604"); E.lev.setAttribute("y2", "140"); E.lev.setAttribute("class", "ln y"); }
+      else { E.lev.setAttribute("x2", "606"); E.lev.setAttribute("y2", "112"); E.lev.setAttribute("class", "ln w"); }
+      var col = lvl === "1" ? "b" : lvl === "0" ? "b" : lvl === "冲突" ? "r" : "m";
+      E.lvl.textContent = lvl;
+      E.lvl.setAttribute("class", "tm sm mid " + col);
+      E.inn.textContent = "PxIN.y = " + inv;
+      E.warn.textContent = warn;
+      E.pad.setAttribute("class", warn ? "bx r" : "bx w");
+      setSw(E.bdir, st.dir, "PxDIR.y"); setSw(E.bout, st.out, "PxOUT.y"); setSw(E.bren, st.ren, "PxREN.y");
+      E.bext.textContent = st.ext === "btn" ? "外接：按钮 → GND" : "外接：LED + R → GND";
+      E.bpress.disabled = st.ext !== "btn";
+      E.bpress.setAttribute("aria-pressed", st.pressed ? "true" : "false");
+      E.bpress.textContent = st.pressed ? "松开按钮" : "按下按钮";
+      E.msg.innerHTML = "<b>" + esc(row) + "</b>　" + esc(msg);
+    }
+    E.bdir.addEventListener("click", function () { st.dir = st.dir ? 0 : 1; render(); });
+    E.bout.addEventListener("click", function () { st.out = st.out ? 0 : 1; render(); });
+    E.bren.addEventListener("click", function () { st.ren = st.ren ? 0 : 1; render(); });
+    E.bext.addEventListener("click", function () { st.ext = st.ext === "btn" ? "led" : "btn"; st.pressed = false; render(); });
+    E.bpress.addEventListener("click", function () { if (st.ext !== "btn") return; st.pressed = !st.pressed; render(); });
+    render();
+    E.msg.innerHTML = "<b>0 0 x → 输入，没有电阻</b>　现在三个位都是 0。先按下、松开按钮，再打开 PxREN.y 试试。";
+  })();
+
+  
+  (function () {
+    var grid = $("m14-pg-grid"), idx = $("m14-pg-idx"), msg = $("m14-pg-msg");
+    if (!grid || !idx || !msg) return;
+    var NS = "http://www.w3.org/2000/svg";
+    var P = { reg: 0x03, mask: 0x40, op: "or", busy: false };
+    var OPS = { set: "=", or: "|=", and: "&= ~", xor: "^=" };
+    var ROWS = [["r", 56], ["m", 126], ["o", 196]];
+    var T = { r: [], m: [], o: [] }, C = { r: [], m: [], o: [] };
+    function svg(tag, a) {
+      var e = document.createElementNS(NS, tag);
+      for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) e.setAttribute(k, a[k]);
+      return e;
+    }
+    for (var b = 7; b >= 0; b--) {
+      var x = 170 + (7 - b) * 62;
+      var lab = svg("text", { "class": "tm xs m mid", x: x + 27, y: 42 });
+      lab.textContent = String(b);
+      idx.appendChild(lab);
+      for (var i = 0; i < ROWS.length; i++) {
+        var k = ROWS[i][0], y = ROWS[i][1];
+        var rc = svg("rect", { "class": "bx b", x: x, y: y, width: 54, height: 44, rx: 5 });
+        var tx = svg("text", { "class": "tm mid", x: x + 27, y: y + 29 });
+        grid.appendChild(rc); grid.appendChild(tx);
+        C[k][b] = rc; T[k][b] = tx;
+      }
+    }
+    function calc() {
+      if (P.op === "set") return P.mask;
+      if (P.op === "or") return P.reg | P.mask;
+      if (P.op === "and") return P.reg & ~P.mask & 0xFF;
+      return P.reg ^ P.mask;
+    }
+    function hx(v) { var s = v.toString(16).toUpperCase(); return "0x" + (s.length < 2 ? "0" + s : s); }
+    function bin(v) { var s = v.toString(2); while (s.length < 8) s = "0" + s; return s.slice(0, 4) + " " + s.slice(4); }
+    function names(m) { var a = []; for (var j = 7; j >= 0; j--) if (m & (1 << j)) a.push("BIT" + j); return a; }
+    function codeLine() {
+      var n = names(P.mask), expr = n.length ? n.join(" | ") : "0";
+      if (P.op === "and") return "P1OUT &= ~" + (n.length > 1 ? "(" + expr + ")" : expr) + ";";
+      return "P1OUT " + OPS[P.op] + " " + expr + ";";
+    }
+    function explain() {
+      if (P.op === "set") return "= 覆盖整个寄存器：掩码以外的位全部变成 0。";
+      if (P.op === "or") return "|= 只把掩码里的位置 1，其他位不变。";
+      if (P.op === "and") return "&= ~ 先取反：~" + hx(P.mask) + " = " + hx(~P.mask & 0xFF) + "，再 AND：掩码里的位清 0，其他位不变。";
+      return "^= 把掩码里的位取反，其他位不变。";
+    }
+    function render() {
+      var res = calc();
+      for (var j = 0; j < 8; j++) {
+        var rb = (P.reg >> j) & 1, mb = (P.mask >> j) & 1, ob = (res >> j) & 1, ch = rb !== ob;
+        T.r[j].textContent = rb; T.r[j].setAttribute("class", "tm mid " + (rb ? "b" : "m"));
+        C.r[j].setAttribute("class", rb ? "bx b" : "bx hollow m");
+        T.m[j].textContent = mb; T.m[j].setAttribute("class", "tm mid " + (mb ? "y" : "m"));
+        C.m[j].setAttribute("class", mb ? "bx y" : "bx hollow m");
+        T.o[j].textContent = ob; T.o[j].setAttribute("class", "tm mid " + (ch ? "y" : ob ? "b" : "m"));
+        C.o[j].setAttribute("class", ch ? "bx y" : (ob ? "bx b" : "bx hollow m"));
+      }
+      $("m14-pg-op").textContent = OPS[P.op];
+      $("m14-pg-rh").textContent = hx(P.reg);
+      $("m14-pg-mh").textContent = hx(P.mask);
+      $("m14-pg-oh").textContent = hx(res);
+      var bits = document.querySelectorAll("#m14-pg-bits [data-bit]");
+      for (var q = 0; q < bits.length; q++) {
+        var bb = +bits[q].getAttribute("data-bit");
+        bits[q].setAttribute("aria-pressed", (P.mask >> bb) & 1 ? "true" : "false");
+      }
+      var ops = document.querySelectorAll("#m14-pg-ops [data-op]");
+      for (var o = 0; o < ops.length; o++) ops[o].setAttribute("aria-pressed", ops[o].getAttribute("data-op") === P.op ? "true" : "false");
+      var nch = 0; for (var c = 0; c < 8; c++) if (((P.reg ^ res) >> c) & 1) nch++;
+      msg.innerHTML = "<code>" + esc(codeLine()) + "</code>　" + bin(P.reg) + " → <b>" + bin(res) + "</b>（" + hx(res) + "，变了 " + nch + " 位）。" + esc(explain());
+    }
+    var bitsBox = $("m14-pg-bits"), opsBox = $("m14-pg-ops");
+    if (bitsBox) bitsBox.addEventListener("click", function (e) {
+      var t = e.target.closest ? e.target.closest("[data-bit]") : null;
+      if (!t || P.busy) return;
+      P.mask ^= 1 << +t.getAttribute("data-bit");
+      render();
+    });
+    if (opsBox) opsBox.addEventListener("click", function (e) {
+      var t = e.target.closest ? e.target.closest("[data-op]") : null;
+      if (!t || P.busy) return;
+      P.op = t.getAttribute("data-op");
+      render();
+    });
+    var run = $("m14-pg-run"), rnd = $("m14-pg-rnd");
+    if (run) run.addEventListener("click", function () {
+      if (P.busy) return;
+      P.reg = calc();
+      if (reduce) { render(); return; }
+      P.busy = true;
+      grid.setAttribute("class", "glow-y");
+      setTimeout(function () { grid.removeAttribute("class"); P.busy = false; render(); }, 450);
+      render();
+    });
+    if (rnd) rnd.addEventListener("click", function () {
+      if (P.busy) return;
+      P.reg = Math.floor(Math.random() * 256);
+      render();
+    });
+    render();
+  })();
+})();
+</script>
+</body>
+</html>

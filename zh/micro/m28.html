@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M28 Arquitecturas de programación · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .faint { opacity: .35; }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini[aria-pressed="true"] { border-color: var(--st-yellow); color: var(--st-yellow); background: rgb(244 211 69 / .12); }
+.mini:disabled, .press:disabled { opacity: .35; cursor: default; }
+.m28-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex-basis: 100%; }
+.m28-rng { display: inline-flex; align-items: center; gap: 8px; font: 600 13px/1.4 var(--f-mono); color: var(--st-muted); }
+.m28-rng input { accent-color: var(--st-yellow); width: 9rem; max-width: 40vw; }
+.m28-rng b { color: var(--st-yellow); font-weight: 600; min-width: 4.2em; }
+.m28-legend i { border: 1.5px solid transparent; }
+.m28-bar { display: flex; height: 10px; border-radius: 3px; overflow: hidden; background: var(--sunk); min-width: 7rem; margin-top: 4px; }
+.m28-bar i { display: block; height: 100%; }
+.m28-bar .w { background: var(--blue); }
+.m28-bar .a { background: var(--muted); }
+.m28-bar .s { background: var(--st-teal); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp td.num { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp td .sub { font-size: 12px; color: var(--muted); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m28-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m28-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m28-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m28-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m28-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m28-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+<marker id="m28-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 2 章节" class="chain" data-chain="M28"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 2 · Interrupciones, reloj y bajo consumo · M28</div>
+<h1>Arquitecturas de programación</h1>
+<p class="zh">程序架构：从无限循环到 RTOS</p>
+<div class="meta">
+
+
+<span><b>6</b> 个要点</span>
+<span>阅读约 15 分钟</span>
+
+
+</div>
+<p class="lede">M21 教会了我们写一个 RTI。可真实的程序里有好几个外设、好几件事要做：整个程序的"骨架"怎么搭？这一章给出 5 种 <b class="t">arquitectura de programa (ES) / program architecture (EN)</b>——程序架构，按复杂度从低到高排成一条阶梯。每往上一级，就多用一项微控制器的能力，也多解决上一级留下的一个问题。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M28.1</span>
+<div class="txt"><span>说出实现全部 5 种架构的前提（中断、低功耗、足够的内存和处理速度），按复杂度排出顺序，并说明选择依据</span><span class="es">Arquitecturas de programa: orden y criterios de elección.</span><a href="#s0">→ §0 一条阶梯</a></div>
+<button aria-pressed="false" class="chk" data-obj="M28.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M28.2</span>
+<div class="txt"><span>描述 bucle infinito：CPU 轮询外设；优点是简单；说明它为什么不适合需要紧急处理的外设</span><span class="es">Arquitectura de bucle infinito.</span><a href="#s1">→ §1 Bucle infinito</a></div>
+<button aria-pressed="false" class="chk" data-obj="M28.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M28.3</span>
+<div class="txt"><span>解释"RTI 改 flag、主循环执行 tarea"的模型；区分 interrupción、tarea、interacción，判断哪些中断需要 tarea</span><span class="es">Arquitectura de bucle infinito con interrupciones.</span><a href="#s2">→ §2 加上中断</a></div>
+<button aria-pressed="false" class="chk" data-obj="M28.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M28.4</span>
+<div class="txt"><span>用火灾探测器的例子说明为什么要加入低功耗，这种架构和上一种的主要区别，以及 RTI 怎样通过栈上保存的 SR 让 CPU 醒着返回</span><span class="es">Arquitectura de bucle infinito con bajo consumo e interrupciones.</span><a href="#s3">→ §3 加上低功耗</a></div>
+<button aria-pressed="false" class="chk" data-obj="M28.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M28.5</span>
+<div class="txt"><span>说明前面几种架构的优先级问题、为什么不把任务直接搬进 RTI，以及 planificador 的函数队列怎样解决</span><span class="es">Arquitectura de planificador.</span><a href="#s4">→ §4 Planificador</a></div>
+<button aria-pressed="false" class="chk" data-obj="M28.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M28.6</span>
+<div class="txt"><span>说明 RTOS 架构：中断向 RTOS 发信号，RTOS 按优先级立即执行或等待；每个任务是一个无限循环；它的资源代价，以及 F5529 能不能用</span><span class="es">Arquitectura de sistema operativo en tiempo real.</span><a href="#s5">→ §5 RTOS</a></div>
+<button aria-pressed="false" class="chk" data-obj="M28.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M28"><span class="val">0 / 6 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>五种架构，一条阶梯 <span class="tag">M28.1</span></h2>
+<p class="hook"><span class="zh">同一块 MSP430F5529，程序的"骨架"可以完全不同。由什么决定？</span><span class="es">¿Qué arquitectura de programa elegir?</span></p>
+<p>先把视野拉远一点：编程只是开发周期中的一步，其余任务同样必不可少，也会消耗大量开发资源。设计一个微控制器系统分成四个阶段，程序架构属于第二个（图里加粗的那一框）：</p>
+<ol>
+<li><b>ANÁLISIS</b>（Especificación）——分析：写规格</li>
+<li><b>DISEÑO</b>（Arquitectura）——设计：<b>选程序架构</b>，就是本章</li>
+<li><b>IMPLEMENTACIÓN</b>（Programación, Validación e Integración）——实现：编程、验证、集成</li>
+<li><b>PRUEBAS</b>（Depuración）——测试：调试</li>
+</ol>
+
+<p>图里的说明框点出了本章的出发点：微控制器系统比较简单，所以只要定义<b>一小组</b>程序架构，就能开发大多数应用。至于能选哪几种，首先受微控制器本身的能力限制。</p>
+<figure class="stage" data-scene="" id="m28-sc-ladder">
+<div class="stage-title"><span>Escena 0 · cinco arquitecturas</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：五种程序架构按复杂度排成阶梯，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-ladder-t" role="img" viewbox="0 0 800 390">
+<title id="m28-sc-ladder-t">五级阶梯：bucle infinito、加中断、加低功耗、planificador、RTOS，复杂度逐级升高</title>
+<path class="ln thin m dash" d="M190 380 L 790 202" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m mid" x="620" y="300">complejidad creciente</text>
+<g data-step="1">
+<text class="tm y" x="20" y="264">1</text>
+<rect class="bx w" data-hl="1" height="88" rx="8" width="148" x="16" y="272"></rect>
+<text class="tz sm w mid" x="90" y="300">Bucle</text>
+<text class="tz sm w mid" x="90" y="322">infinito</text>
+<text class="tm xs m mid" x="90" y="346">sondeo</text>
+</g>
+<g data-step="2">
+<text class="tm y" x="176" y="210">2</text>
+<rect class="bx r" data-hl="2" height="88" rx="8" width="148" x="172" y="218"></rect>
+<text class="tz sm w mid" x="246" y="246">Bucle infinito</text>
+<text class="tz sm w mid" x="246" y="268">+ interrupciones</text>
+<text class="tm xs r mid" x="246" y="292">RTI + flags</text>
+</g>
+<g data-step="3">
+<text class="tm y" x="332" y="156">3</text>
+<rect class="bx t" data-hl="3" height="88" rx="8" width="148" x="328" y="164"></rect>
+<text class="tz sm w mid" x="402" y="192">+ bajo consumo</text>
+<text class="tz sm w mid" x="402" y="214">+ interrupciones</text>
+<text class="tm xs t mid" x="402" y="238">LPM + RTI</text>
+</g>
+<g data-step="4">
+<text class="tm y" x="488" y="102">4</text>
+<rect class="bx b" data-hl="4" height="88" rx="8" width="148" x="484" y="110"></rect>
+<text class="tz sm w mid" x="558" y="138">Planificador</text>
+<text class="tz sm m mid" x="558" y="160">scheduler</text>
+<text class="tm xs b mid" x="558" y="184">cola + prioridad</text>
+</g>
+<g data-step="5">
+<text class="tm y" x="644" y="48">5</text>
+<rect class="bx p" data-hl="5" height="88" rx="8" width="148" x="640" y="56"></rect>
+<text class="tz sm w mid" x="714" y="84">RTOS</text>
+<text class="tz sm m mid" x="714" y="106">tiempo real</text>
+<text class="tm xs p mid" x="714" y="130">tareas + señales</text>
+</g>
+<g data-step="6">
+<text class="tx sm y" x="24" y="44">选择依据</text>
+<text class="tz sm w" x="24" y="74">① 要实现的功能（funcionalidad）</text>
+<text class="tz sm w" x="24" y="98">② 物理资源约束：</text>
+<text class="tz sm w" x="24" y="122">    memoria · consumo · coste …</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>最简单的一级：<b>bucle infinito</b>。CPU 在一个永不结束的循环里，挨个去 <b>sondear</b>（轮询）每个外设。</li>
+<li>加上<span class="c-r">中断</span>：外设通过中断向 CPU 提出请求，RTI 只改 flag，主循环再去做完整的任务。</li>
+<li>再加<b>低功耗</b>：没事做时 CPU 睡觉，由中断叫醒。主循环被一个低功耗状态代替。</li>
+<li><b>planificador</b>：中断把"处理函数"放进一个队列，而且可以按优先级或紧急程度插队。</li>
+<li data-dur="3600"><b>RTOS</b>：正在执行的任务也能让位给必须立即执行的任务。代价是消耗 CPU 和内存。</li>
+<li data-dur="4600">微控制器有中断能力、低功耗能力，内存和处理速度也够，这 5 种就都能实现。设计者选哪一种，看两点：要实现的功能，以及物理资源的约束（内存、功耗、成本……）。</li>
+</ol>
+</figure>
+<p class="takeaway">5 种架构按复杂度递增：bucle infinito → + interrupciones → + bajo consumo → planificador → RTOS。不是越复杂越好：够用、并且资源（内存、功耗、成本）负担得起的那一种，才是对的。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Bucle infinito · 无限循环 <span class="tag">M28.2</span></h2>
+<p class="hook"><span class="zh">没有中断，CPU 怎么知道哪个外设需要它？</span><span class="es">La CPU sondea cada periférico.</span></p>
+<figure class="stage" data-scene="" id="m28-sc-loop">
+<div class="stage-title"><span>Escena 1 · arquitectura de bucle infinito</span><b>6 步</b></div>
+<div aria-label="动画：无限循环架构的流程图，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-loop-t" role="img" viewbox="0 0 800 400">
+<title id="m28-sc-loop-t">流程图：初始化外设之后，依次询问 P1、P2、P3 是否需要处理，需要就处理，最后回到 P1</title>
+<path d="M140 150 H 710" fill="none" id="m28-p-tour" stroke="none"></path>
+<g data-step="6">
+<text class="tz sm y mid" x="400" y="28">不是外设去打断 CPU，而是 CPU 一个一个去问</text>
+</g>
+<rect class="bx hollow w" height="56" rx="8" width="120" x="20" y="122"></rect>
+<text class="tz sm w mid" x="80" y="146">Inicializar</text>
+<text class="tz sm w mid" x="80" y="168">periféricos</text>
+<path class="ln m" d="M140 150 H166" marker-end="url(#m28-ah-m)"></path>
+<g data-step="2">
+<text class="tz sm m mid" x="440" y="72">¿necesita atención?</text>
+<polygon class="bx hollow w" points="170,150 240,108 310,150 240,192"></polygon>
+<text class="tm sm w mid" x="240" y="155">¿P1?</text>
+<path class="ln m" d="M310 150 H366" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m mid" x="338" y="140">no</text>
+<polygon class="bx hollow w" points="370,150 440,108 510,150 440,192"></polygon>
+<text class="tm sm w mid" x="440" y="155">¿P2?</text>
+<path class="ln m" d="M510 150 H566" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m mid" x="538" y="140">no</text>
+<polygon class="bx hollow w" points="570,150 640,108 710,150 640,192"></polygon>
+<text class="tm sm w mid" x="640" y="155">¿P3?</text>
+</g>
+<g data-step="3">
+<path class="ln g" d="M240 192 V236" marker-end="url(#m28-ah-g)"></path>
+<text class="tz sm g" x="248" y="220">sí</text>
+<rect class="bx b" height="48" rx="6" width="124" x="178" y="240"></rect>
+<text class="tz sm b mid" x="240" y="270">Atender P1</text>
+<path class="ln thin m" d="M302 264 H340 V158" marker-end="url(#m28-ah-m)"></path>
+<path class="ln g" d="M440 192 V236" marker-end="url(#m28-ah-g)"></path>
+<text class="tz sm g" x="448" y="220">sí</text>
+<rect class="bx b" data-hl="5" height="48" rx="6" width="124" x="378" y="240"></rect>
+<text class="tz sm b mid" x="440" y="270">Atender P2</text>
+<path class="ln thin m" d="M502 264 H540 V158" marker-end="url(#m28-ah-m)"></path>
+<path class="ln g" d="M640 192 V236" marker-end="url(#m28-ah-g)"></path>
+<text class="tz sm g" x="648" y="220">sí</text>
+<rect class="bx b" height="48" rx="6" width="124" x="578" y="240"></rect>
+<text class="tz sm b mid" x="640" y="270">Atender P3</text>
+<path class="ln thin m" d="M702 264 H740 V158" marker-end="url(#m28-ah-m)"></path>
+</g>
+<g data-step="4">
+<path class="ln m draw" d="M710 150 H772 V352 H155 V150 H166" id="m28-p-loopback" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m mid" x="460" y="342">bucle infinito ↺</text>
+</g>
+<circle class="sl y" data-move="#m28-p-tour" data-out="4" data-step="2" r="7"></circle>
+<circle class="sl y" data-move="#m28-p-loopback" data-move-dur="1600" data-step="4" r="7"></circle>
+<g data-step="5">
+<circle class="sl r" cx="240" cy="92" r="7"></circle>
+<text class="tz sm r" x="254" y="97">P1 urgente</text>
+<path class="ln y dash draw" d="M502 276 H548 V150 H710 H772 V362 H148 V150 H166"></path>
+<text class="tz sm y mid" x="460" y="388">P1 要等：做完 P2 → 查 P3 → 绕回来</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>程序开始后先初始化外设（inicializar periféricos），然后进入一个永远不退出的循环。</li>
+<li data-dur="3600">循环里依次问每个外设：<b>¿necesita atención?</b> 这就是 <b class="t">sondeo (ES) / polling (EN)</b>——轮询。</li>
+<li data-dur="3800">需要的话，就在这里把它处理完（atender），然后接着问下一个。处理某个外设的期间，micro 没法处理其他外设。</li>
+<li>问完最后一个，回到第一个，周而复始。</li>
+<li data-dur="4600">问题：CPU 正在处理 P2，这时 P1 有紧急情况。P1 要等 P2 处理完、P3 也查过（甚至处理完），循环绕回来才轮到它。也就是说：其他外设都处理完之前，没法再处理某一个外设。</li>
+<li>优点也很明确：<b>simplicidad</b>，简单。外设从不打断 CPU，都是 CPU 主动去查。</li>
+</ol>
+
+</figure>
+<p>写成代码就是 Bloque 1 里的轮询，只是把多个外设串在同一个循环里（示意）：</p>
+<pre aria-label="bucle infinito 的代码骨架（示意）" class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fn">inicializar_perifericos</span>();</span><span class="ln-row">    <span class="kw">while</span> (1) {                                      <span class="cm">// 永远不退出</span></span><span class="ln-row">        <span class="kw">if</span> (<span class="fn">p1_necesita_atencion</span>()) <span class="fn">atender_p1</span>();   <span class="cm">// CPU 主动去问</span></span><span class="ln-row">        <span class="kw">if</span> (<span class="fn">p2_necesita_atencion</span>()) <span class="fn">atender_p2</span>();</span><span class="ln-row">        <span class="kw">if</span> (<span class="fn">p3_necesita_atencion</span>()) <span class="fn">atender_p3</span>();</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<p class="takeaway">Bucle infinito：CPU 周期性地 sondea 每个外设，外设从不打断 CPU。优点是简单；缺点是一个外设要等其他外设都处理完，才能再次被处理。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Bucle infinito con interrupciones <span class="tag">M28.3</span></h2>
+<p class="hook"><span class="zh">有的外设很紧急，等不起一整圈。怎么办？</span><span class="es">Las interrupciones permiten a los periféricos hacer peticiones a la CPU.</span></p>
+<p>让外设自己"举手"：中断。可 M21 §8 已经说过，RTI 要短。于是分工：RTI 只改一个 flag 就返回，主循环周期性地检查这些 flag，flag 说需要时，再做完整的处理。这正是 <a href="m21.html#s8">M21 §8 的 tareas-interrupción 模型</a>。</p>
+<figure class="stage" data-scene="" id="m28-sc-irq">
+<div class="stage-title"><span>Escena 2 · bucle infinito con interrupciones</span><b>6 步</b></div>
+<div aria-label="动画：中断改 flag、主循环执行任务，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-irq-t" role="img" viewbox="0 0 800 420">
+<title id="m28-sc-irq-t">左边主循环检查 flag_1、flag_2 并执行 Tarea 1、Tarea 2；右边 RTI A、RTI B 置 flag，RTI C 直接处理完</title>
+<path class="ln thin m dash" d="M450 10 V392"></path>
+<text class="tz sm m" x="20" y="412">programa principal</text>
+<text class="tz sm m" x="470" y="412">RTI · interrupciones</text>
+<rect class="bx hollow w" height="40" rx="8" width="200" x="60" y="8"></rect>
+<text class="tz sm w mid" x="160" y="33">Inicializar periféricos</text>
+<path class="ln m" d="M160 48 V68" marker-end="url(#m28-ah-m)"></path>
+<polygon class="bx hollow w" points="85,110 160,72 235,110 160,148"></polygon>
+<text class="tm sm w mid" x="160" y="115">¿flag_1?</text>
+<path class="ln g" d="M235 110 H256" marker-end="url(#m28-ah-g)"></path>
+<text class="tz sm g" x="236" y="100">sí</text>
+<rect class="bx b" data-hl="3" height="48" rx="6" width="150" x="260" y="86"></rect>
+<text class="tz sm b mid" x="335" y="106">Tarea 1 (larga)</text>
+<text class="tm xs r mid" x="335" y="126">→ borrar flag_1</text>
+<path class="ln thin m" d="M335 134 V170 H166" marker-end="url(#m28-ah-m)"></path>
+<path class="ln m" d="M160 148 V208" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m" x="128" y="186">no</text>
+<polygon class="bx hollow w" points="85,250 160,212 235,250 160,288"></polygon>
+<text class="tm sm w mid" x="160" y="255">¿flag_2?</text>
+<path class="ln g" d="M235 250 H256" marker-end="url(#m28-ah-g)"></path>
+<text class="tz sm g" x="236" y="240">sí</text>
+<rect class="bx b" data-hl="4" height="48" rx="6" width="150" x="260" y="226"></rect>
+<text class="tz sm b mid" x="335" y="246">Tarea 2 (larga)</text>
+<text class="tm xs r mid" x="335" y="266">→ borrar flag_2</text>
+<path class="ln thin m" d="M335 274 V310 H166" marker-end="url(#m28-ah-m)"></path>
+<path class="ln m" d="M160 288 V370 H40 V58 H154" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m" x="128" y="346">no</text>
+<text class="tz sm m" x="52" y="392">↺ bucle infinito</text>
+<rect class="bx r" data-hl="2" height="26" rx="13" width="84" x="270" y="36"></rect>
+<text class="tm xs r mid" x="312" y="53">flag_1</text>
+<rect class="bx r" data-hl="4" height="26" rx="13" width="84" x="270" y="176"></rect>
+<text class="tm xs r mid" x="312" y="193">flag_2</text>
+<g data-step="2">
+<text class="tz sm r" x="596" y="40">evento A ↓</text>
+<rect class="bx r" height="64" rx="8" width="196" x="590" y="52"></rect>
+<text class="tm sm r" x="604" y="76">RTI A</text>
+<text class="tz sm w" x="604" y="102">flag_1 = 1 → return</text>
+<path class="ln r draw" d="M588 80 C 500 80, 420 49, 358 49" marker-end="url(#m28-ah-r)"></path>
+</g>
+<g data-step="3">
+<path class="ln thin r dash draw" d="M270 49 C 230 49, 210 70, 198 86" marker-end="url(#m28-ah-r)"></path>
+</g>
+<g data-step="4">
+<text class="tz sm r" x="596" y="180">evento B ↓</text>
+<rect class="bx r" height="64" rx="8" width="196" x="590" y="192"></rect>
+<text class="tm sm r" x="604" y="216">RTI B</text>
+<text class="tz sm w" x="604" y="242">flag_2 = 1 → return</text>
+<path class="ln r draw" d="M588 220 C 500 220, 420 189, 358 189" marker-end="url(#m28-ah-r)"></path>
+<path class="ln thin r dash draw" d="M270 189 C 230 189, 210 210, 198 226" marker-end="url(#m28-ah-r)"></path>
+</g>
+<g data-step="5">
+<text class="tz sm r" x="596" y="300">evento C ↓</text>
+<rect class="bx r" data-hl="5" height="64" rx="8" width="196" x="590" y="312"></rect>
+<text class="tm sm r" x="604" y="336">RTI C · 处理很短</text>
+<text class="tz sm w" x="604" y="362">直接在这里做完 · 无 tarea</text>
+</g>
+<g data-step="6">
+<text class="tz sm y" x="262" y="350">每个 tarea 一个 flag</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>主循环不再去问外设，而是问 <b>flag</b>：¿flag_1? ¿flag_2? flag 为 1 时执行对应的 tarea。</li>
+<li data-dur="3600">事件 A 发生，<span class="c-r">RTI A</span> 立即执行：只把 flag_1 置 1，马上返回。</li>
+<li data-dur="3800">主循环转到 ¿flag_1? 时看到 1，执行 Tarea 1（真正耗时的处理在这里做），做完再<b>清掉 flag_1</b>（borrar flag）。</li>
+<li>事件 B 同理：RTI B 置 flag_2，Tarea 2 在主循环里完成，再清 flag_2。</li>
+<li data-dur="3800">事件 C 只需要很短的处理：直接在 RTI C 里做完，不需要 tarea，也不需要 flag。</li>
+<li data-dur="3800">中断与任务之间的 <b>interacción</b> 靠 flag：每个 tarea 一个 flag，由需要它的那个中断来置位。</li>
+</ol>
+
+</figure>
+<p>这里要分清三个概念：</p>
+<div class="grid3">
+<div class="cell r">
+<span class="k c-r">interrupciones</span>
+<h3>中断与 RTI</h3>
+<p>对应必须尽快处理的重要事件，所以每个中断的专用代码（RTI）要尽量短、尽量快。默认情况下执行 RTI 时<b>不允许中断嵌套</b>（<b class="t">anidamiento (ES) / nesting (EN)</b>——嵌套），这也是 RTI 必须短的原因。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">tareas</span>
+<h3>任务</h3>
+<p><b class="t">tarea (ES) / task (EN)</b>——任务：处理过程太长、太慢，不适合放进 RTI 的代码段，通常与某些中断关联。</p>
+</div>
+<div class="cell y">
+<span class="k c-y">interacción</span>
+<h3>两者怎样配合</h3>
+<p>靠 flag：每个 tarea 有一个 flag，由需要执行它的那个中断置位。</p>
+</div>
+</div>
+<div class="panel">
+<h3>哪些中断需要 tarea？</h3>
+<ul>
+<li>处理<b>短而快</b>的：在 RTI 里直接做完，不需要额外的 tarea。</li>
+<li>处理<b>长而慢</b>的：需要一个 tarea 来做，RTI 只负责激活这个 tarea（置它的 flag）。</li>
+</ul>
+</div>
+<pre aria-label="bucle infinito con interrupciones 的代码骨架（示意）" class="code"><code><span class="ln-row"><span class="kw">volatile unsigned char</span> flag_1 = 0, flag_2 = 0;   <span class="cm">// 每个 tarea 一个 flag</span></span><span class="ln-row"> </span><span class="ln-row"><span class="fn">inicializar_perifericos</span>();</span><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="kw">if</span> (flag_1) { <span class="fn">tarea_1</span>(); flag_1 = 0; }      <span class="cm">// 先 atender，再 borrar flag</span></span><span class="ln-row">    <span class="kw">if</span> (flag_2) { <span class="fn">tarea_2</span>(); flag_2 = 0; }      <span class="cm">// 长处理放在主循环</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="cm">/* RTI A：只置 flag 就返回      RTI C：短处理，直接在 RTI 里做完 */</span></span></code></pre>
+<div class="note">
+<span class="lbl">补充</span>
+<p>清 flag 的时机：Escena 2 的流程是先处理、后清 flag。如果 tarea 执行期间同一个外设又来了中断，RTI 重新置的 flag 会被随后的"borrar"清掉，这次事件就丢了。所以实际代码里常常<b>先清 flag，再执行 tarea</b>。</p>
+</div>
+<p class="takeaway">中断负责"尽快知道"，主循环负责"慢慢做完"。RTI 置 flag、主循环查 flag 执行 tarea 再清 flag；短处理可以直接留在 RTI 里。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Bucle infinito con bajo consumo e interrupciones <span class="tag">M28.4</span></h2>
+<p class="hook"><span class="zh">火灾探测器每 4–5 秒看一眼传感器就够了。其余时间，CPU 在干什么？</span><span class="es">La mayor parte del tiempo, dando vueltas sin hacer nada.</span></p>
+<p>看一个例子：火灾探测。CPU 不必一直盯着传感器，每 4 到 5 秒查一次就绰绰有余；每次查只要毫秒级的时间。火灾是罕见事件，绝大多数时候结果都是"没事"，CPU 又要等 4–5 秒才需要再查。</p>
+<figure class="stage" data-scene="" id="m28-sc-lpm">
+<div class="stage-title"><span>Escena 3 · detector de incendios</span><b>6 步</b></div>
+<div aria-label="动画：用低功耗状态代替空转的无限循环，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-lpm-t" role="img" viewbox="0 0 800 440">
+<title id="m28-sc-lpm-t">上面是低功耗架构的流程图：初始化外设后进入 LPM，中断唤醒，检查 flag，读传感器，再回到 LPM；下面两条时间线对比无限循环和低功耗的 CPU 状态</title>
+
+<g data-step="3">
+<rect class="bx hollow w" height="40" rx="8" width="200" x="25" y="14"></rect>
+<text class="tz sm w mid" x="125" y="39">Inicializar periféricos</text>
+<path class="ln m" d="M125 54 V80" marker-end="url(#m28-ah-m)"></path>
+<rect class="bx t" data-hl="3" height="52" rx="8" width="170" x="40" y="84"></rect>
+<text class="tm t mid" x="125" y="106">LPM · zZ</text>
+<text class="tz sm t mid" x="125" y="127">procesador dormido</text>
+<path class="ln m" d="M125 136 V156" marker-end="url(#m28-ah-m)"></path>
+<polygon class="bx hollow w" data-hl="5" points="55,194 125,160 195,194 125,228"></polygon>
+<text class="tm sm w mid" x="125" y="199">¿flag?</text>
+<path class="ln g" d="M195 194 H226" marker-end="url(#m28-ah-g)"></path>
+<text class="tz sm g" x="198" y="184">sí</text>
+<rect class="bx b" data-hl="5" height="46" rx="6" width="150" x="230" y="172"></rect>
+<text class="tz sm b mid" x="305" y="192">Tarea: leer sensor</text>
+<text class="tm xs r mid" x="305" y="210">≈ ms → borrar flag</text>
+<path class="ln thin m" d="M305 172 V124 H214" marker-end="url(#m28-ah-m)"></path>
+<path class="ln thin m" d="M55 194 H22 V112 H36" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m" x="26" y="222">no</text>
+<rect class="bx o" height="50" rx="8" width="250" x="480" y="14"></rect>
+<text class="tm sm o mid" x="605" y="35">Periférico interno</text>
+<text class="tz sm o mid" x="605" y="56">sigue funcionando</text>
+</g>
+<g data-step="4">
+<path class="ln o" d="M605 64 V96" marker-end="url(#m28-ah-o)"></path>
+<text class="tz sm o" x="614" y="86">cada 4–5 s</text>
+<rect class="bx r" data-hl="4" height="56" rx="8" width="250" x="480" y="100"></rect>
+<text class="tm sm r mid" x="605" y="122">RTI</text>
+<text class="tz sm w mid" x="605" y="145">flag = 1 · despertar CPU</text>
+<path class="ln r dash draw" d="M478 128 C 380 128, 300 98, 214 98" id="m28-p-wake" marker-end="url(#m28-ah-r)"></path>
+<text class="tz sm r mid" x="420" y="154">despierta</text>
+<path class="ln thin p" d="M605 156 V170" marker-end="url(#m28-ah-p)"></path>
+<rect class="bx p" data-hl="4" height="44" rx="8" width="250" x="480" y="174"></rect>
+<text class="tm xs p mid" x="605" y="192">pila: SR guardado</text>
+<text class="tz sm w mid" x="605" y="211">清掉 LPM 位 → RETI 后醒着</text>
+</g>
+<circle class="sl r" data-move="#m28-p-wake" data-step="4" r="6"></circle>
+
+<text class="tz sm m" x="20" y="287">bucle</text>
+<text class="tz sm m" data-step="6" x="20" y="347">bajo consumo</text>
+<g data-step="2">
+<rect class="bx y" height="24" rx="3" width="630" x="150" y="270"></rect>
+<text class="tm xs y mid" x="265" y="286">sondeo…</text>
+<text class="tm xs y mid" x="455" y="286">sondeo…</text>
+<text class="tm xs y mid" x="645" y="286">sondeo…</text>
+</g>
+<rect class="bx b" data-hl="1" height="32" rx="1" width="6" x="171" y="266"></rect>
+<rect class="bx b" data-hl="1" height="32" rx="1" width="6" x="360" y="266"></rect>
+<rect class="bx b" data-hl="1" height="32" rx="1" width="6" x="549" y="266"></rect>
+<rect class="bx b" data-hl="1" height="32" rx="1" width="6" x="738" y="266"></rect>
+<g data-step="6">
+<rect class="bx hollow t" height="24" rx="3" width="630" x="150" y="330"></rect>
+<text class="tm xs t mid" x="265" y="346">zZ</text>
+<text class="tm xs t mid" x="455" y="346">zZ</text>
+<text class="tm xs t mid" x="645" y="346">zZ</text>
+<rect class="bx b" height="32" rx="1" width="6" x="171" y="326"></rect>
+<rect class="bx b" height="32" rx="1" width="6" x="360" y="326"></rect>
+<rect class="bx b" height="32" rx="1" width="6" x="549" y="326"></rect>
+<rect class="bx b" height="32" rx="1" width="6" x="738" y="326"></rect>
+<path class="ln thin y" d="M177 314 H358" marker-end="url(#m28-ah-y)" marker-start="url(#m28-ah-y)"></path>
+<text class="tz sm y mid" x="267" y="310">cada 4–5 s</text>
+</g>
+<path class="ln thin m" d="M150 376 H780"></path>
+<text class="tm xs m mid" x="150" y="394">0 s</text>
+<text class="tm xs m mid" x="360" y="394">5 s</text>
+<text class="tm xs m mid" x="570" y="394">10 s</text>
+<text class="tm xs m mid" x="780" y="394">15 s</text>
+<text class="tz sm m mid" x="465" y="426">蓝色 = 读传感器；宽度放大了，实际每次只有毫秒级</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">每隔 4–5 秒读一次传感器（蓝色竖条），每次只需毫秒级。时间轴上，真正有用的工作只占极小一部分。</li>
+<li data-dur="4200">如果用 bucle infinito：其余时间 CPU 一直在循环里打转，除了耗电什么也不做，电池可能就这样耗光。</li>
+<li data-dur="4200">有低功耗能力的微控制器可以让 CPU 进入 <b class="t">bajo consumo (ES) / low power (EN)</b>——低功耗状态：CPU 睡着，几乎不耗电流；而部分内部外设继续工作。</li>
+<li data-dur="5200">需要 CPU 时，外设用<span class="c-r">中断</span>把它叫醒：RTI 置 flag，并<b>修改保存在栈（pila）上的 SR</b>，清掉低功耗位。RETI 恢复的是改过的 SR，CPU 就醒着返回。</li>
+<li>CPU 醒来后检查 flag，执行任务（读传感器），清掉 flag，然后回到低功耗状态。</li>
+<li data-dur="4800">结果：CPU 绝大部分时间在睡。这种架构和 §2 几乎一样，主要区别是：<b>无限循环被一个 CPU 睡眠的低功耗状态代替了</b>。相应地，需要 tarea 的 RTI 还要负责让 CPU 醒着返回。</li>
+</ol>
+<p class="stage-note">这里简化成火灾探测器的一个传感器、一个 flag。"每 4–5 秒由内部外设产生一次中断"只是示意：产生周期中断的是哪个内部外设，这里不作规定，下面代码里用定时器只是一种写法。</p>
+
+</figure>
+<p>代码骨架（示意）。主循环和 RTI 分开看：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="main" type="button">主循环</button>
+<button aria-pressed="false" data-view="rti" type="button">RTI</button>
+</div>
+<pre class="code" data-pane="main"><code><span class="ln-row"><span class="fn">inicializar_perifericos</span>();                 <span class="cm">// 包括那个周期性产生中断的外设</span></span><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="fn">__bis_SR_register</span>(LPM3_bits + GIE);    <span class="cm">// 睡：CPU 停，外设继续（见 M26）</span></span><span class="ln-row">    <span class="kw">if</span> (flag_sensor) {                      <span class="cm">// 被叫醒后从这里继续</span></span><span class="ln-row">        <span class="fn">leer_sensor</span>();                       <span class="cm">// ≈ ms</span></span><span class="ln-row">        flag_sensor = 0;                       <span class="cm">// 先 atender，再 borrar flag</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="rti" hidden=""><code><span class="ln-row"><span class="pp">#pragma vector=TIMER0_A0_VECTOR</span>              <span class="cm">// 示意：用定时器做周期唤醒</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">RTI_periodica</span>(<span class="kw">void</span>) {</span><span class="ln-row">    flag_sensor = 1;                           <span class="cm">// 只置 flag</span></span><span class="ln-row">    <span class="fn">__bic_SR_register_on_exit</span>(LPM3_bits);   <span class="cm">// 改栈上保存的 SR：返回后 CPU 醒着</span></span><span class="ln-row">}</span></code></pre>
+</div>
+<div class="note">
+<span class="lbl">怎样醒着返回</span>
+<p>如果中断的处理需要通过一个 tarea 完成，就在 RTI 里让 CPU 退出低功耗状态，办法是<b>修改保存在栈（pila）上的 SR</b>。原因：进入 RTI 时 SR 被压栈，RETI 再把它恢复（见 <a href="m21.html#s3">M21 §3</a>）；不改的话，恢复的就是睡前的 SR，CPU 返回后接着睡。反过来推：处理在 RTI 里就能做完的中断不必改 SR，返回后 CPU 继续睡。</p>
+</div>
+<div class="note">
+<span class="lbl">补充</span>
+<p>上面的 <code>LPM3_bits</code>、<code>__bis_SR_register</code>、<code>__bic_SR_register_on_exit</code> 和定时器向量是 MSP430 C 编译器的常见写法：<code>__bic_SR_register_on_exit</code> 改的正是栈上保存的那份 SR。进入 RTI 时 SR 被清零（SCG0 除外），所以 RTI 本身总是醒着执行的。各个 LPM 模式关掉什么、怎样唤醒，见 <a href="m26.html">M26 Modos de bajo consumo</a>。</p>
+</div>
+<p class="takeaway">没事做的时候，与其空转，不如睡觉。CPU 睡在低功耗状态里，外设在需要时用中断叫醒它；需要 tarea 的 RTI 修改栈上的 SR，让 CPU 醒着返回。其余和 §2 一样。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Arquitectura de planificador <span class="tag">M28.5</span></h2>
+<p class="hook"><span class="zh">外设 2 的任务正在执行，更重要的外设 1 来了中断。它要等多久？</span><span class="es">El problema de prioridades entre tareas.</span></p>
+<p>§3 的架构优化了 CPU 的时间，却没有解决<b>任务之间的优先级</b>：正在执行外设 2 的任务时，优先级更高的外设 1 中断了，可在其他外设都处理完之前，外设 1 不会被处理。最直接的办法是把外设 1 的任务搬进它的 RTI——看看会怎样：</p>
+<figure class="stage" data-scene="" id="m28-sc-prio">
+<div class="stage-title"><span>Escena 4a · dos malas opciones</span><b>5 步</b></div>
+<div aria-label="动画：靠 flag 时紧急任务要排队；把任务搬进 RTI 又挡住其他中断" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-prio-t" role="img" viewbox="0 0 800 330">
+<title id="m28-sc-prio-t">上面一条时间线：P1 的任务要等 Tarea 2 和 Tarea 3；下面一条：把 Tarea 1 放进 RTI 1，RTI 变长，P3 的中断只能挂起</title>
+<g data-step="1">
+<text class="tz sm w" x="20" y="30">靠 flag（§2、§3）</text>
+<text class="tm sm m" x="20" y="85">CPU</text>
+<path class="ln thin r dash" d="M227 46 V100"></path>
+<text class="tz sm r mid" x="227" y="42">IRQ P1</text>
+<rect class="bx b" height="28" rx="3" width="90" x="130" y="66"></rect>
+<text class="tm xs b mid" x="175" y="84">Tarea 2</text>
+<rect class="bx r" height="28" rx="2" width="14" x="220" y="66"></rect>
+<rect class="bx b" height="28" rx="3" width="176" x="234" y="66"></rect>
+<text class="tm xs b mid" x="322" y="84">Tarea 2</text>
+<rect class="bx g" height="28" rx="3" width="130" x="410" y="66"></rect>
+<text class="tm xs g mid" x="475" y="84">Tarea 3</text>
+<rect class="bx y" data-hl="2" height="28" rx="3" width="100" x="540" y="66"></rect>
+<text class="tm xs y mid" x="590" y="84">Tarea 1</text>
+</g>
+<g data-step="2">
+<path class="ln y" d="M232 114 H536" marker-end="url(#m28-ah-y)" marker-start="url(#m28-ah-y)"></path>
+<text class="tz sm y mid" x="384" y="138">P1 等待：Tarea 2 → Tarea 3 → 才轮到它</text>
+</g>
+<g data-step="3">
+<text class="tz sm w" x="20" y="176">把 Tarea 1 搬进 RTI 1</text>
+<text class="tm sm m" x="20" y="225">CPU</text>
+<rect class="bx b" height="28" rx="3" width="90" x="130" y="206"></rect>
+<text class="tm xs b mid" x="175" y="224">Tarea 2</text>
+<rect class="bx r" data-hl="3" height="28" rx="3" width="200" x="220" y="206"></rect>
+<text class="tm xs r mid" x="320" y="224">RTI 1 + Tarea 1</text>
+<rect class="bx b" height="28" rx="3" width="176" x="434" y="206"></rect>
+<text class="tm xs b mid" x="522" y="224">Tarea 2</text>
+</g>
+<g data-step="4">
+<path class="ln thin r dash" d="M280 188 V242"></path>
+<text class="tz sm r mid" x="280" y="184">IRQ P3</text>
+<rect class="ln thin r dash" height="22" rx="3" width="140" x="280" y="244"></rect>
+<text class="tm xs r mid" x="350" y="259">RTI 3 挂起</text>
+<rect class="bx r" height="28" rx="2" width="14" x="420" y="206"></rect>
+<path class="ln r" d="M284 282 H416" marker-end="url(#m28-ah-r)" marker-start="url(#m28-ah-r)"></path>
+<text class="tz sm r mid" x="350" y="302">其他外设无法中断</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" x="400" y="326">→ 需要：给任务排优先级，同时让 RTI 保持短</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>靠 flag 的架构：Tarea 2 正在执行，P1（优先级更高）的中断来了。RTI 1 立即执行，置好 flag，又回到 Tarea 2。</li>
+<li data-dur="3800">可 Tarea 1 要等主循环转到它：先做完 Tarea 2，再轮到 Tarea 3，最后才是 Tarea 1。flag 能"立刻知道"，却不能"优先处理"。</li>
+<li data-dur="3600">最直接的解决办法：把 Tarea 1 搬进 RTI 1。这样 P1 确实被立即处理了，但 RTI 变得很长。</li>
+<li data-dur="4200">RTI 执行期间，其他外设没法中断（默认不嵌套）。这时 P3 的中断来了，只能挂起等待。这可能是一个更大的问题。</li>
+<li>两条路都不好。需要的是：任务之间能排优先级，同时 RTI 依然很短。</li>
+</ol>
+</figure>
+<p>当应用需要给各个外设的处理任务不同的优先级时，更合适的是 <b class="t">planificador (ES) / scheduler (EN)</b>——调度器架构。原理很简单：无限循环依次执行一个<b>函数队列</b>（cola de funciones）里的函数，而中断负责往队列里添加函数。关键在于：中断<b>不一定把函数加到队尾</b>，可以按优先级或紧急程度插到前面。</p>
+<figure class="stage" data-scene="" id="m28-sc-sched">
+<div class="stage-title"><span>Escena 4b · cola de funciones</span><b>5 步</b></div>
+<div aria-label="动画：调度器的函数队列和按优先级插入" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-sched-t" role="img" viewbox="0 0 800 310">
+<title id="m28-sc-sched-t">左边无限循环执行队首函数；中断把函数按优先级插入队列：f_P2 插到 f_P4 前，f_P1 插到最前</title>
+<text class="tm xs m" x="40" y="40">prioridad: P1 &gt; P2 &gt; P3 &gt; P4</text>
+<path class="ln m" d="M70 138 C 70 96, 200 96, 200 134" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m mid" x="135" y="90">bucle infinito ↺</text>
+<rect class="bx hollow w" data-hl="4 5" height="54" rx="8" width="190" x="40" y="140"></rect>
+<text class="tm b mid" data-out="4" x="135" y="173">f_P3</text>
+<text class="tm y mid" data-step="4" x="135" y="173">f_P1</text>
+<text class="tz sm m mid" x="135" y="216">ejecutando</text>
+<rect class="ln thin m dash" height="74" rx="10" width="500" x="280" y="130"></rect>
+<path class="ln m" d="M278 167 H236" marker-end="url(#m28-ah-m)"></path>
+<text class="tz sm m" x="284" y="226">cabeza · mayor prioridad</text>
+<text class="tz sm m end" x="776" y="226">final · menor</text>
+
+<g data-out="2">
+<rect class="bx b" height="50" rx="6" width="110" x="292" y="142"></rect>
+<text class="tm b mid" x="347" y="172">f_P4</text>
+</g>
+
+<g data-out="3" data-step="2">
+<rect class="bx b" data-hl="2" height="50" rx="6" width="110" x="292" y="142"></rect>
+<text class="tm b mid" x="347" y="172">f_P2</text>
+<rect class="bx b" height="50" rx="6" width="110" x="412" y="142"></rect>
+<text class="tm b mid" x="467" y="172">f_P4</text>
+</g>
+
+<g data-out="4" data-step="3">
+<rect class="bx y" data-hl="3" height="50" rx="6" width="110" x="292" y="142"></rect>
+<text class="tm y mid" x="347" y="172">f_P1</text>
+<rect class="bx b" height="50" rx="6" width="110" x="412" y="142"></rect>
+<text class="tm b mid" x="467" y="172">f_P2</text>
+<rect class="bx b" height="50" rx="6" width="110" x="532" y="142"></rect>
+<text class="tm b mid" x="587" y="172">f_P4</text>
+</g>
+
+<g data-step="4">
+<rect class="bx b" height="50" rx="6" width="110" x="292" y="142"></rect>
+<text class="tm b mid" x="347" y="172">f_P2</text>
+<rect class="bx b" height="50" rx="6" width="110" x="412" y="142"></rect>
+<text class="tm b mid" x="467" y="172">f_P4</text>
+</g>
+<g data-step="2">
+<rect class="bx r" height="40" rx="6" width="110" x="470" y="30"></rect>
+<text class="tm sm r mid" x="525" y="55">RTI P2</text>
+</g>
+<path class="ln r draw" d="M525 72 C 525 112, 347 100, 347 136" data-out="3" data-step="2" marker-end="url(#m28-ah-r)"></path>
+<g data-step="3">
+<rect class="bx r" height="40" rx="6" width="110" x="300" y="30"></rect>
+<text class="tm sm r mid" x="355" y="55">RTI P1</text>
+</g>
+<path class="ln r draw" d="M355 72 V136" data-out="4" data-step="3" marker-end="url(#m28-ah-r)"></path>
+<g data-step="5">
+<text class="tz sm y" x="40" y="264">限制：f_P1 来时 f_P3 已经在执行，f_P1 只能等它做完</text>
+<text class="tz sm m" x="40" y="290">正在执行的函数不会被打断 → §5</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>无限循环一遍遍地取<b>队首</b>的函数来执行。现在正在执行 f_P3，队列里还有 f_P4。</li>
+<li data-dur="3800">P2 的中断：RTI P2 把 f_P2 加入队列。如果按先来后到，它该排在 f_P4 后面；按优先级，它插到 f_P4 前面。</li>
+<li data-dur="3800">P1（最紧急）的中断：RTI P1 把 f_P1 直接插到队首。RTI 只做"插入"这一件小事，依然很短。</li>
+<li>f_P3 执行完，循环取队首：f_P1 先于更早到达的 f_P2 和 f_P4 执行。</li>
+<li data-dur="4200">剩下的限制：一个函数开始执行后，要等它执行完，才能执行队列里的下一个。f_P1 再紧急，也得等 f_P3 做完。</li>
+</ol>
+<p class="stage-note">插队的顺序是示意。</p>
+
+</figure>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="bucle" type="button">主程序</button>
+<button aria-pressed="false" data-view="rti" type="button">RTI</button>
+</div>
+<pre class="code" data-pane="bucle"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fn">inicializar_cola</span>(&amp;cola);          <span class="cm">// 先准备好函数队列……</span></span><span class="ln-row">    <span class="fn">inicializar_perifericos</span>();        <span class="cm">// ……再初始化外设（之后随时可能来中断）</span></span><span class="ln-row">    <span class="kw">while</span> (1) {</span><span class="ln-row">        <span class="kw">if</span> (!<span class="fn">cola_vacia</span>(&amp;cola)) {</span><span class="ln-row">            <span class="kw">funcion_t</span> f = <span class="fn">sacar_primera</span>(&amp;cola);   <span class="cm">// 取队首</span></span><span class="ln-row">            <span class="fn">f</span>();                                  <span class="cm">// 执行完才会取下一个</span></span><span class="ln-row">        }</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="rti" hidden=""><code><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">RTI_P1</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="cm">// Añadir función 1 a la cola → Retorno de interrupción</span></span><span class="ln-row">    <span class="cm">// 不一定放队尾：按优先级插入</span></span><span class="ln-row">    <span class="fn">insertar_por_prioridad</span>(&amp;cola, atender_p1, PRIO_ALTA);</span><span class="ln-row">}</span></code></pre>
+</div>
+<div class="note">
+<span class="lbl">补充</span>
+<p>函数名都是示意。实际实现时，队列同时被 RTI 和主循环修改，主循环取函数的那几条指令一般要短暂关中断，避免两边同时改队列。</p>
+</div>
+<p class="takeaway">Planificador：无限循环执行函数队列，中断往队列里按优先级或紧急程度插入函数。任务有了优先级，RTI 也保持短；但正在执行的函数不能被打断。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Sistema operativo en tiempo real <span class="tag">M28.6</span></h2>
+<p class="hook"><span class="zh">如果连"等当前任务做完"都等不起呢？</span><span class="es">Una tarea en ejecución puede ser interrumpida por otra que debe ejecutarse inmediatamente.</span></p>
+<p>有些应用要求：正在执行的任务能被另一个必须<b>立即</b>执行的任务打断。调度器做不到，这时通常用 <b class="t">RTOS, Real Time Operating System (EN) / sistema operativo en tiempo real (ES)</b>——实时操作系统。RTOS 一般不自己写，而是作为商业产品购买。</p>
+<figure class="stage" data-scene="" id="m28-sc-rtos">
+<div class="stage-title"><span>Escena 5 · RTOS</span><b>6 步</b></div>
+<div aria-label="动画：RTOS 按优先级决定立即执行还是等待" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m28-sc-rtos-t" role="img" viewbox="0 0 800 400">
+<title id="m28-sc-rtos-t">主程序只做初始化后交给 RTOS；三个任务各是一个无限循环；中断向 RTOS 发信号；时间线上高优先级的 T1 立即执行，低优先级的 T3 等 T2 做完</title>
+<g data-step="2">
+<rect class="bx hollow w" height="56" rx="8" width="240" x="540" y="16"></rect>
+<text class="tz sm m mid" x="660" y="38">programa principal</text>
+<text class="tm xs w mid" x="660" y="60">periféricos → tareas → RTOS</text>
+<path class="ln thin m" d="M538 44 H506" marker-end="url(#m28-ah-m)"></path>
+<rect class="bx p" data-hl="2" height="56" rx="8" width="200" x="300" y="16"></rect>
+<text class="tm p mid" x="400" y="40">RTOS</text>
+<text class="tz sm p mid" x="400" y="62">decide por prioridad</text>
+<path class="ln thin p" d="M360 74 L 170 106" marker-end="url(#m28-ah-p)"></path>
+<path class="ln thin p" d="M400 74 V106" marker-end="url(#m28-ah-p)"></path>
+<path class="ln thin p" d="M440 74 L 630 106" marker-end="url(#m28-ah-p)"></path>
+</g>
+<g data-step="3">
+<rect class="bx r" data-hl="3" height="42" rx="8" width="190" x="24" y="24"></rect>
+<text class="tm sm r mid" x="119" y="50">RTI P1 → señal</text>
+<path class="ln r draw" d="M216 45 H296" id="m28-p-sig" marker-end="url(#m28-ah-r)"></path>
+</g>
+<circle class="sl r" data-move="#m28-p-sig" data-step="3" r="6"></circle>
+<rect class="bx y" height="60" rx="8" width="210" x="40" y="110"></rect>
+<text class="tm sm y mid" x="145" y="134">Tarea 1 · alta</text>
+<text class="tm xs m mid" x="145" y="157">for(;;){esperar; atender}</text>
+<rect class="bx b" height="60" rx="8" width="210" x="295" y="110"></rect>
+<text class="tm sm b mid" x="400" y="134">Tarea 2 · media</text>
+<text class="tm xs m mid" x="400" y="157">for(;;){esperar; atender}</text>
+<rect class="bx g" height="60" rx="8" width="210" x="550" y="110"></rect>
+<text class="tm sm g mid" x="655" y="134">Tarea 3 · baja</text>
+<text class="tm xs m mid" x="655" y="157">for(;;){esperar; atender}</text>
+<g data-step="4">
+<text class="tm sm y" x="20" y="215">T1</text>
+<text class="tm sm b" x="20" y="255">T2</text>
+<text class="tm sm g" x="20" y="295">T3</text>
+<path class="ln thin r dash" d="M330 186 V310"></path>
+<text class="tz sm r mid" x="330" y="183">IRQ P1</text>
+<rect class="bx b" height="24" rx="3" width="250" x="80" y="238"></rect>
+<rect class="bx y" data-hl="4" height="24" rx="3" width="130" x="340" y="198"></rect>
+<rect class="ln thin b dash" height="24" rx="3" width="140" x="332" y="238"></rect>
+<rect class="bx b" height="24" rx="3" width="120" x="480" y="238"></rect>
+<text class="tz sm y" x="300" y="334">IRQ P1：优先级更高 → 立即执行，T2 等着</text>
+</g>
+<g data-step="5">
+<path class="ln thin r dash" d="M540 186 V310"></path>
+<text class="tz sm r mid" x="540" y="183">IRQ P3</text>
+<rect class="ln thin g dash" height="24" rx="3" width="62" x="540" y="278"></rect>
+<rect class="bx g" data-hl="5" height="24" rx="3" width="130" x="610" y="278"></rect>
+<text class="tz sm g" x="300" y="358">IRQ P3：优先级更低 → 等 T2 做完</text>
+</g>
+<g data-step="6">
+<text class="tz sm p" x="20" y="390">代价：RTOS 消耗 CPU 和内存 · MSP430 中只有资源多的型号（如 F5529）能用</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>每个任务都是一个<b>无限循环</b>，负责照看（atender）自己的外设。</li>
+<li data-dur="4400">主程序只做初始化：Inicializar periféricos → tareas → RTOS，自己没有循环。之后由 RTOS 决定此刻哪个任务使用 CPU，依据是任务的优先级。</li>
+<li data-dur="3600">中断不再改 flag、也不往队列里放函数，而是向 RTOS 发一个<span class="c-r">信号</span>（señal）：与这个中断关联的任务需要执行。</li>
+<li data-dur="4400">T2 正在执行，P1 的信号到了。T1 的优先级更高 → RTOS <b>立即</b>让 T1 执行，T2 暂停，等 T1 做完再继续。</li>
+<li data-dur="4000">T2 执行中，P3 的信号到了。T3 的优先级更低 → 等当前任务 T2 做完。</li>
+<li data-dur="4600">代价：RTOS 本身要消耗 CPU 和内存，资源或处理能力紧张时不一定可行。MSP430 家族里只有资源较多的器件（例如 F5529）能用这种架构。</li>
+</ol>
+<p class="stage-note">这里画 3 个任务，是为了同时演示"立即执行"和"等待"。时间线的长短是示意。</p>
+
+</figure>
+<pre aria-label="RTOS 主程序、任务与 RTI 的骨架（伪 API，示意）" class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {                   <span class="cm">// 主程序只做初始化</span></span><span class="ln-row">    <span class="fn">inicializar_perifericos</span>();</span><span class="ln-row">    <span class="fn">inicializar_tareas</span>();</span><span class="ln-row">    <span class="fn">inicializar_RTOS</span>();           <span class="cm">// 之后 CPU 由 RTOS 调度，main 没有自己的循环</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">tarea_p1</span>(<span class="kw">void</span>) {               <span class="cm">// 每个任务都是一个无限循环</span></span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">esperar_senal</span>(S_P1);        <span class="cm">// 伪 API：等中断发来的信号</span></span><span class="ln-row">        <span class="fn">atender_p1</span>();</span><span class="ln-row">    }</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">RTI_P1</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fn">enviar_senal</span>(S_P1);             <span class="cm">// Enviar Señal 1 → 告诉 RTOS：tarea_p1 需要执行</span></span><span class="ln-row">}</span></code></pre>
+<div class="note">
+<span class="lbl">补充</span>
+<p><code>esperar_senal</code>、<code>enviar_senal</code> 是为了说明而编的名字。真实 RTOS 的 <code>inicializar_RTOS()</code> 一般就是启动调度器，调用后不再返回。实际的 RTOS 用信号量（semáforo / semaphore）、任务通知等机制，而高优先级任务打断低优先级任务的做法一般叫 <b class="t">expropiación (ES) / preemption (EN)</b>——抢占。</p>
+</div>
+<div class="note warm">
+<span class="lbl">往后看</span>
+<p>硕士的 <b>MicroKernels</b>（MICROK）这门课专门讲用这种架构设计应用。</p>
+</div>
+<p class="takeaway">RTOS：主程序只做初始化（periféricos → tareas → RTOS）；中断向 RTOS 发信号；RTOS 根据该任务的优先级，立即执行它，或者等当前任务做完。每个任务都是一个无限循环。功能最强，但要消耗 CPU 和内存。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>同一组事件，五种架构 <span class="tag">M28.2–M28.6</span></h2>
+<p class="hook"><span class="zh">把同样的事件交给五种架构，谁先响应？谁让紧急任务等得最久？谁能睡觉？</span><span class="es">Misma carga, cinco arquitecturas.</span></p>
+<p>三个外设：P1 最紧急（优先级最高，任务 3 u），P2（6 u），P3（4 u）。RTI 都很短（1 u）。选一种架构，看 CPU 时间线；在时间轴上放几个事件，再换一种架构比较。下面的表格同时给出五种架构的结果。</p>
+<ul>
+<li><b>首次响应</b>：事件发生到 CPU 第一次为它做事的时间。架构 1 是开始处理的时刻；架构 2–5 是 RTI 开始执行的时刻。</li>
+<li><b>P1 任务等待</b>：P1 的事件发生到它的任务开始执行的时间。</li>
+</ul>
+<figure class="stage" id="m28-sim">
+<div class="stage-title"><span>Simulador · 5 arquitecturas</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m28-sim-t" role="img" viewbox="0 0 800 236">
+<title id="m28-sim-t">事件与 CPU 时间线：上面三行是 P1、P2、P3 的事件和等待时间，下面一行是 CPU 每个时间单位在做什么</title>
+<defs><clippath id="m28-clip"><rect height="236" id="m28-clip-r" width="800" x="0" y="0"></rect></clippath></defs>
+<text class="tm sm y" x="16" y="65">P1</text>
+<text class="tm sm b" x="16" y="97">P2</text>
+<text class="tm sm g" x="16" y="129">P3</text>
+<text class="tm sm w" x="16" y="168">CPU</text>
+<path class="ln thin m faint" d="M70 44 V186 M190 44 V186 M310 44 V186 M430 44 V186 M550 44 V186 M670 44 V186 M790 44 V186"></path>
+<path class="ln thin m" d="M70 196 H790"></path>
+<text class="tm xs m mid" x="70" y="214">0</text>
+<text class="tm xs m mid" x="190" y="214">10</text>
+<text class="tm xs m mid" x="310" y="214">20</text>
+<text class="tm xs m mid" x="430" y="214">30</text>
+<text class="tm xs m mid" x="550" y="214">40</text>
+<text class="tm xs m mid" x="670" y="214">50</text>
+<text class="tm xs m mid" x="790" y="214">60 u</text>
+<text class="tz sm m" id="m28-sim-name" x="70" y="32">Bucle infinito con interrupciones</text>
+<g clip-path="url(#m28-clip)" id="m28-dyn"></g>
+<line class="ln thin y" id="m28-cur" style="opacity:0" x1="70" x2="70" y1="40" y2="192"></line>
+</svg>
+</div>
+<div class="stage-ctl">
+<div aria-label="选择架构" class="m28-row" role="group">
+<button aria-pressed="false" class="mini" data-arch="1" type="button">1 · Bucle</button>
+<button aria-pressed="true" class="mini" data-arch="2" type="button">2 · + RTI</button>
+<button aria-pressed="false" class="mini" data-arch="3" type="button">3 · + LPM</button>
+<button aria-pressed="false" class="mini" data-arch="4" type="button">4 · Planificador</button>
+<button aria-pressed="false" class="mini" data-arch="5" type="button">5 · RTOS</button>
+</div>
+<div class="m28-row">
+<label class="m28-rng" for="m28-t">事件时刻 <input id="m28-t" max="50" min="0" step="1" type="range" value="12"/> <b id="m28-tv">t = 12</b></label>
+<button class="press" data-src="0" type="button">+ P1 紧急</button>
+<button class="press" data-src="1" type="button">+ P2</button>
+<button class="press" data-src="2" type="button">+ P3</button>
+</div>
+<div class="m28-row">
+<button class="mini" id="m28-play" type="button">▶ 回放</button>
+<button class="mini" id="m28-preset" type="button">示例事件</button>
+<button class="mini" id="m28-clear" type="button">清空</button>
+</div>
+<p aria-live="polite" class="out" id="m28-out">载入示例事件后，这里会说明当前架构的表现。</p>
+</div>
+<p class="stage-note">这是一个简化模型，用来比较架构的定性差别，数值不是 MSP430 的真实时间。模型的约定：轮询或检查一个 flag 占 1 u；同一外设还没被取走的多个事件合并处理；架构 3 只在一轮开始时、没有待处理的 flag 才睡（§3 的流程是每轮查完就回去睡）；架构 4、5 在没有任务时画成"空转"，因为 §4、§5 的流程图里都没有画睡眠；RTOS 每次切换任务算 1 u 开销，只是为了体现"RTOS 要消耗 CPU"。</p>
+</figure>
+<div aria-label="图例" class="legend m28-legend">
+<span><i style="background:var(--yellow)"></i>P1 任务</span>
+<span><i style="background:var(--blue)"></i>P2 任务</span>
+<span><i style="background:var(--green)"></i>P3 任务</span>
+<span><i style="background:var(--red)"></i>RTI</span>
+<span><i style="background:var(--muted)"></i>轮询 / 检查 flag</span>
+<span><i style="border-color:var(--muted)"></i>空转</span>
+<span><i style="background:var(--purple)"></i>RTOS 切换</span>
+<span><i style="border-color:var(--st-teal)"></i>睡眠 LPM</span>
+</div>
+<div class="tbl-wrap">
+<table class="cmp" id="m28-cmp">
+<thead><tr><th>架构</th><th>首次响应（平均）</th><th>P1 任务等待（平均）</th><th>CPU 时间</th></tr></thead>
+<tbody id="m28-cmp-b"><tr><td colspan="4">需要 JavaScript 才能计算。</td></tr></tbody>
+</table>
+</div>
+<p class="aside">点表格的一行也能切换架构。CPU 时间条：蓝 = 有用的工作（任务 + RTI），灰 = 醒着但没做有用的事（轮询、检查、空转、切换），青 = 睡眠。</p>
+<div class="note">
+<span class="lbl">试试看</span>
+<p>只放一个 P2 事件和紧跟其后的一个 P1 事件（例如 t = 10 和 t = 12），依次切换 1 → 5：架构 2、3 把"首次响应"降到 0，但 P1 的任务照样排队；架构 3 多出了睡眠；架构 4 让 P1 插队，但仍要等 P2 做完；只有架构 5 让 P1 立刻执行。</p>
+</div>
+<p>最后，把五种架构放在一张表里：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>架构</th><th>RTI 做什么</th><th>Programa principal</th><th>任务优先级</th><th>任务能被另一个任务打断</th><th>代价</th></tr></thead>
+<tbody>
+<tr><td>1 · Bucle infinito</td><td>没有 RTI：CPU 轮询</td><td>循环：¿Necesita atención el periférico n? → Atender periférico n</td><td>无，按循环顺序</td><td>否</td><td>最简单；CPU 一直醒着</td></tr>
+<tr><td>2 · + interrupciones</td><td>Cambiar Flag_n → Retorno（短处理可直接在 RTI 做完）</td><td>循环：¿Flag_n? → Atender periférico n → Borrar Flag_n</td><td>无，按检查 flag 的顺序</td><td>否</td><td>RTI 必须短；CPU 一直醒着</td></tr>
+<tr><td>3 · + bajo consumo</td><td>同 2；需要 tarea 时再改栈上的 SR，退出低功耗</td><td>Procesador dormido → 醒来依次查 ¿Flag_n? → 回去睡</td><td>无（没有解决优先级问题：“no resuelve el problema de prioridades”）</td><td>否</td><td>需要低功耗能力；省电</td></tr>
+<tr><td>4 · Planificador</td><td>Añadir función n a la cola（可按优先级插入）</td><td>先 Inicializar cola de funciones；循环：Ejecutar siguiente función de la cola</td><td>有：按优先级或紧急程度插入</td><td>否：做完一个才执行下一个</td><td>需要一个函数队列</td></tr>
+<tr><td>5 · RTOS</td><td>Enviar Señal n → Retorno</td><td>只做初始化：periféricos → tareas → RTOS；每个 tarea 是 Atender periférico n 的无限循环</td><td>有：RTOS 按优先级决定</td><td>是：更高优先级的立即执行</td><td>消耗 CPU 和内存；通常购买</td></tr>
+</tbody>
+</table>
+</div>
+<p class="takeaway">每往上一级，都是在解决上一级的一个具体问题：等一整圈 → 用中断立即知道；空转耗电 → 睡觉；没有优先级 → 队列插队；不能打断正在执行的任务 → RTOS。代价是复杂度和资源一路上升。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">13 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M28">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>按复杂度从低到高，本章的 5 种架构顺序是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>bucle infinito → planificador → + interrupciones → + bajo consumo → RTOS</button>
+<button data-o="b" type="button"><span class="k">B</span>bucle infinito → + interrupciones → + bajo consumo e interrupciones → planificador → RTOS</button>
+<button data-o="c" type="button"><span class="k">C</span>+ interrupciones → bucle infinito → planificador → + bajo consumo → RTOS</button>
+<button data-o="d" type="button"><span class="k">D</span>RTOS → planificador → + bajo consumo → + interrupciones → bucle infinito</button>
+</div>
+<p class="why"><b>B。</b>按 §1–§5 的顺序，复杂度逐级升高（§0）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>选择哪种程序架构，主要取决于什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只看哪种最新</button>
+<button data-o="b" type="button"><span class="k">B</span>总是选最复杂的那种</button>
+<button data-o="c" type="button"><span class="k">C</span>只看开发工具支持哪种</button>
+<button data-o="d" type="button"><span class="k">D</span>要实现的功能，以及物理资源的约束（内存、功耗、成本……）</button>
+</div>
+<p class="why"><b>D。</b>前提是微控制器具备相应能力（中断、低功耗、内存和速度）；在此之上看功能和资源约束（§0）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>在 bucle infinito 架构中，外设需要处理时是怎样被发现的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CPU 在循环里依次查询（sondea）每个外设</button>
+<button data-o="b" type="button"><span class="k">B</span>外设发出中断，打断 CPU</button>
+<button data-o="c" type="button"><span class="k">C</span>外设把处理函数放进队列</button>
+<button data-o="d" type="button"><span class="k">D</span>RTOS 把信号转给对应的任务</button>
+</div>
+<p class="why"><b>A。</b>不是外设打断 CPU，而是 CPU 去轮询每个可能需要处理的外设（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>某个外设需要非常紧急地被处理。bucle infinito 为什么不合适？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>因为它的代码太复杂</button>
+<button data-o="b" type="button"><span class="k">B</span>因为 CPU 会进入低功耗，醒不过来</button>
+<button data-o="c" type="button"><span class="k">C</span>因为要等其他外设都处理完，才能再次处理这个外设</button>
+<button data-o="d" type="button"><span class="k">D</span>因为它需要购买商业 RTOS</button>
+</div>
+<p class="why"><b>C。</b>循环必须先转完一整圈（§1）。简单恰恰是它的优点。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>在 bucle infinito con interrupciones 中，处理过程又长又慢的中断，它的 RTI 应该做什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>在 RTI 里把整个处理做完</button>
+<button data-o="b" type="button"><span class="k">B</span>只激活对应 tarea 的 flag，然后返回</button>
+<button data-o="c" type="button"><span class="k">C</span>关闭 GIE，直到处理结束</button>
+<button data-o="d" type="button"><span class="k">D</span>让 CPU 进入低功耗</button>
+</div>
+<p class="why"><b>B。</b>RTI 只负责激活 tarea（置 flag）；长处理由主循环里的 tarea 完成（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>哪一类中断<b>不需要</b>关联 tarea？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>所有中断都需要 tarea</button>
+<button data-o="b" type="button"><span class="k">B</span>处理长而慢的中断</button>
+<button data-o="c" type="button"><span class="k">C</span>优先级最高的中断</button>
+<button data-o="d" type="button"><span class="k">D</span>处理短而快的中断：直接在 RTI 里完成</button>
+</div>
+<p class="why"><b>D。</b>是否需要 tarea 取决于处理量：短而快的留在 RTI，长而慢的交给 tarea（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>为什么强调 RTI 必须尽量短？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>默认执行 RTI 时不允许中断嵌套，长 RTI 会让其他中断等着</button>
+<button data-o="b" type="button"><span class="k">B</span>RTI 里不能访问变量</button>
+<button data-o="c" type="button"><span class="k">C</span>RTI 只能有一条指令</button>
+<button data-o="d" type="button"><span class="k">D</span>RTI 执行时 CPU 处于低功耗</button>
+</div>
+<p class="why"><b>A。</b>默认没有 anidamiento，所以 RTI 越长，其他中断被挡得越久（§2、§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>火灾探测器为什么不适合用 bucle infinito？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>因为传感器每毫秒都必须读一次</button>
+<button data-o="b" type="button"><span class="k">B</span>因为火灾检测必须用 RTOS</button>
+<button data-o="c" type="button"><span class="k">C</span>每 4–5 秒读一次、每次只需毫秒级，CPU 大部分时间空转，只消耗能量，可能耗尽电池</button>
+<button data-o="d" type="button"><span class="k">D</span>因为传感器不能产生中断</button>
+</div>
+<p class="why"><b>C。</b>这正是加入低功耗的理由（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>bucle infinito con bajo consumo e interrupciones 和 bucle infinito con interrupciones 的区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>前者不用中断</button>
+<button data-o="b" type="button"><span class="k">B</span>无限循环被一个低功耗状态代替：CPU 睡着，部分外设继续工作并在需要时唤醒它</button>
+<button data-o="c" type="button"><span class="k">C</span>前者用函数队列代替 flag</button>
+<button data-o="d" type="button"><span class="k">D</span>前者的任务可以互相打断</button>
+</div>
+<p class="why"><b>B。</b>这种架构和上一种类似，只是无限循环换成了 CPU 睡眠的低功耗状态。相应地，需要 tarea 的 RTI 要让 CPU 醒着返回（见下一题；§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>在 bucle infinito con bajo consumo e interrupciones 中，某个中断的处理要交给 tarea 完成。按 §3 的流程，RTI 怎样让 CPU 退出低功耗？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>什么都不用做：RETI 之后 CPU 自动保持醒着</button>
+<button data-o="b" type="button"><span class="k">B</span>在 RTI 里关闭 GIE</button>
+<button data-o="c" type="button"><span class="k">C</span>修改保存在栈（pila）上的 SR，清掉低功耗位</button>
+<button data-o="d" type="button"><span class="k">D</span>把 tarea 整个搬进 RTI，这样 CPU 就不用醒</button>
+</div>
+<p class="why"><b>C。</b>进入 RTI 时 SR 被压栈，RETI 会把它恢复；不改的话恢复的是睡前的 SR，CPU 返回后接着睡（所以 A 错）。处理在 RTI 里就能做完的中断不需要这样做（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">11</span>为了让 P1 的任务优先，把它直接搬进 P1 的 RTI。问题是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>P1 的任务就不会被执行</button>
+<button data-o="b" type="button"><span class="k">B</span>CPU 会一直睡下去</button>
+<button data-o="c" type="button"><span class="k">C</span>RTI 变长，在这段时间里其他外设无法中断</button>
+<button data-o="d" type="button"><span class="k">D</span>队列会溢出</button>
+</div>
+<p class="why"><b>C。</b>这可能是一个更大的问题，所以需要 planificador（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>planificador 架构的关键是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>中断不一定把函数加到队尾，可以按优先级或紧急程度插入</button>
+<button data-o="b" type="button"><span class="k">B</span>每个任务都是一个独立的无限循环</button>
+<button data-o="c" type="button"><span class="k">C</span>正在执行的函数可以随时被打断</button>
+<button data-o="d" type="button"><span class="k">D</span>主循环按固定顺序轮询外设</button>
+</div>
+<p class="why"><b>A。</b>B 和 C 是 RTOS 的特点，D 是 bucle infinito（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">13</span>RTOS 架构中，中断发生后会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RTI 直接执行完整的任务</button>
+<button data-o="b" type="button"><span class="k">B</span>总是等当前任务做完</button>
+<button data-o="c" type="button"><span class="k">C</span>总是立即执行，不看优先级</button>
+<button data-o="d" type="button"><span class="k">D</span>中断向 RTOS 发信号；RTOS 按该任务的优先级，立即执行它或等当前任务做完</button>
+</div>
+<p class="why"><b>D。</b>此外，RTOS 要消耗 CPU 和内存；MSP430 中只有资源较多的器件（如 F5529）能用（§5）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">14 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">arquitectura de programa<small>program architecture</small></span><span class="back"><b>程序架构</b><br/>程序的整体骨架。本章列出 5 种，按复杂度递增。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bucle infinito<small>infinite loop</small></span><span class="back"><b>无限循环</b><br/>最简单的架构：CPU 在循环里轮询每个外设。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sondeo<small>polling</small></span><span class="back"><b>轮询</b><br/>CPU 主动去查外设是否需要处理，外设不打断 CPU。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RTI<small>Rutina de Tratamiento de Interrupción · ISR</small></span><span class="back"><b>中断服务程序</b><br/>每个中断的专用代码，要尽量短、尽量快。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">tarea<small>task</small></span><span class="back"><b>任务</b><br/>太长太慢、不适合放进 RTI 的处理代码。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">flag<small>interacción interrupción–tarea</small></span><span class="back"><b>标志</b><br/>每个 tarea 一个，由需要它的中断置位，主循环检查。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">anidamiento<small>nesting</small></span><span class="back"><b>中断嵌套</b><br/>RTI 里再被中断。默认不允许，所以 RTI 要短。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bajo consumo<small>low power · LPM</small></span><span class="back"><b>低功耗</b><br/>CPU 睡着几乎不耗电，部分外设继续工作并能唤醒它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">planificador<small>scheduler</small></span><span class="back"><b>调度器</b><br/>无限循环执行函数队列，中断往队列里插入函数。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">cola de funciones<small>function queue</small></span><span class="back"><b>函数队列</b><br/>可按优先级或紧急程度插入，不一定放在队尾。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">prioridad<small>priority · urgencia</small></span><span class="back"><b>优先级</b><br/>前三种架构解决不了任务间的优先级问题。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RTOS<small>Real Time Operating System</small></span><span class="back"><b>实时操作系统</b><br/>中断发信号，按优先级立即执行或等待；通常购买。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">preemption<small>expropiación</small></span><span class="back"><b>抢占</b><br/>高优先级任务打断正在执行的任务（§5）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MicroKernels<small>MICROK</small></span><span class="back"><b>硕士课程</b><br/>专门讲用 RTOS 架构设计应用。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M28"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+  var NS = "http://www.w3.org/2000/svg";
+  var T = 60, DUR = [3, 6, 4], X0 = 70, DX = 12, MAXEV = 12;
+  var ROWY = [60, 92, 124], COL = ["y", "b", "g"], PN = ["P1", "P2", "P3"];
+  var NAME = ["", "Bucle infinito", "Bucle infinito con interrupciones", "Bucle infinito con bajo consumo e interrupciones", "Planificador", "RTOS"];
+  var PRESET = [{ t: 2, s: 1 }, { t: 5, s: 2 }, { t: 6, s: 0 }, { t: 26, s: 2 }, { t: 30, s: 0 }, { t: 44, s: 1 }, { t: 47, s: 0 }];
+  var st = { arch: 2, events: PRESET.slice(), anim: 0 };
+  var dyn = $("m28-dyn"), clipR = $("m28-clip-r"), cur = $("m28-cur"), out = $("m28-out");
+  if (!dyn || !out) return;
+
+  
+  function simulate(arch, events) {
+    var ev = events.map(function (e) { return { t: e.t, s: e.s, resp: null, start: null }; });
+    var tl = [], t, s;
+    var hw = [[], [], []];      
+    var flag = [[], [], []];    
+    var queue = [];             
+    var job = null, idx = 0, sleeping = false;
+    function insert(j) { var p = 0; while (p < queue.length && queue[p].s <= j.s) p++; queue.splice(p, 0, j); }
+    function run(t) {
+      job.evs.forEach(function (e) { if (e.start == null) e.start = t; if (e.resp == null) e.resp = t; });
+      var a = { k: "task", s: job.s };
+      if (--job.rem === 0) { job = null; if (arch <= 3) idx = (idx + 1) % 3; }
+      return a;
+    }
+    for (t = 0; t < T; t++) {
+      ev.forEach(function (e) { if (e.t === t) hw[e.s].push(e); });
+      var act, q = -1;
+      if (arch > 1) for (s = 2; s >= 0; s--) if (hw[s].length) q = s;
+      if (arch === 1) {
+        if (!job && hw[idx].length) job = { s: idx, evs: hw[idx].splice(0), rem: DUR[idx] };
+        if (job) act = run(t);
+        else { act = { k: "poll", s: idx }; idx = (idx + 1) % 3; }
+      } else if (q >= 0) {
+        var got = hw[q].splice(0);
+        got.forEach(function (e) { e.resp = t; });
+        act = { k: "rti", s: q };
+        if (arch <= 3) { flag[q] = flag[q].concat(got); sleeping = false; }
+        else insert({ s: q, evs: got, rem: DUR[q] });
+      } else if (arch <= 3) {
+        if (!job && !sleeping && arch === 3 && idx === 0 && !(flag[0].length || flag[1].length || flag[2].length)) sleeping = true;
+        if (!job && !sleeping && flag[idx].length) job = { s: idx, evs: flag[idx].splice(0), rem: DUR[idx] };
+        if (job) act = run(t);
+        else if (sleeping) act = { k: "sleep" };
+        else { act = { k: "poll", s: idx }; idx = (idx + 1) % 3; }
+      } else if (arch === 4) {
+        if (!job && queue.length) job = queue.shift();
+        act = job ? run(t) : { k: "idle" };
+      } else {
+        if (queue.length && (!job || queue[0].s < job.s)) {
+          if (job) insert(job);
+          job = queue.shift();
+          act = { k: "os" };
+        } else act = job ? run(t) : { k: "idle" };
+      }
+      tl.push(act);
+    }
+    return { tl: tl, ev: ev };
+  }
+  function avg(a) { if (!a.length) return null; var x = 0; a.forEach(function (v) { x += v; }); return x / a.length; }
+  function stats(r) {
+    var c = { task: 0, rti: 0, poll: 0, idle: 0, os: 0, sleep: 0 }, resp = [], w1 = [], pend = 0;
+    r.tl.forEach(function (a) { c[a.k]++; });
+    r.ev.forEach(function (e) {
+      if (e.resp != null) resp.push(e.resp - e.t);
+      if (e.start == null) pend++;
+      else if (e.s === 0) w1.push(e.start - e.t);
+    });
+    return { c: c, work: (c.task + c.rti) / T, awake: (c.poll + c.idle + c.os) / T, sleep: c.sleep / T, resp: avg(resp), w1: avg(w1), pend: pend };
+  }
+  function fmt(v) { return v == null ? "—" : (Math.round(v * 10) / 10) + " u"; }
+  function pct(v) { return Math.round(v * 100) + "%"; }
+
+  
+  function mk(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    dyn.appendChild(e);
+    return e;
+  }
+  function X(t) { return X0 + t * DX; }
+  var CLS = { rti: "bx r", poll: "bx m", idle: "bx hollow m", os: "bx p", sleep: "bx hollow t" };
+  function draw(r) {
+    while (dyn.firstChild) dyn.removeChild(dyn.firstChild);
+    
+    var i = 0;
+    while (i < T) {
+      var a = r.tl[i], j = i + 1;
+      while (j < T && r.tl[j].k === a.k && r.tl[j].s === a.s) j++;
+      var w = (j - i) * DX - 1;
+      var cls = a.k === "task" ? "bx " + COL[a.s] : CLS[a.k];
+      mk("rect", { x: X(i) + 0.5, y: 146, width: w, height: 34, rx: 2, "class": cls });
+      var lab = a.k === "task" ? PN[a.s] : a.k === "sleep" ? "zZ" : a.k === "os" ? "OS" : "";
+      if (lab && w >= 22) mk("text", { x: X(i) + w / 2, y: 167, "class": "tm xs mid " + (a.k === "task" ? COL[a.s] : a.k === "sleep" ? "t" : "p") }, lab);
+      i = j;
+    }
+    
+    r.ev.forEach(function (e) {
+      var y = ROWY[e.s], x0 = X(e.t) + DX / 2;
+      if (e.start != null) {
+        var x1 = X(e.start) + 1;
+        if (x1 > x0 + 1) mk("path", { d: "M" + x0 + " " + y + " H" + x1, "class": "ln " + COL[e.s] });
+        mk("path", { d: "M" + x1 + " " + (y - 8) + " V" + (y + 8), "class": "ln " + COL[e.s] });
+      } else {
+        mk("path", { d: "M" + x0 + " " + y + " H" + X(T), "class": "ln dash " + COL[e.s] });
+      }
+      mk("circle", { cx: x0, cy: y, r: 5, "class": "sl r" });
+    });
+  }
+
+  
+  function say(arch, s) {
+    var t = "<b>" + NAME[arch] + "</b>：";
+    if (arch === 1) t += "没有中断，CPU 一直醒着轮询（醒着但没干活 " + pct(s.awake) + "）。事件要等循环转到对应外设才被处理：首次响应平均 <b>" + fmt(s.resp) + "</b>，P1 任务平均等 <b>" + fmt(s.w1) + "</b>。";
+    else if (arch === 2) t += "RTI 立即响应（首次响应 <b>" + fmt(s.resp) + "</b>），但 P1 的 tarea 平均仍等 <b>" + fmt(s.w1) + "</b>：主循环按顺序检查 flag。CPU 从不睡（醒着但没干活 " + pct(s.awake) + "）。";
+    else if (arch === 3) t += "响应方式和 2 一样（P1 任务平均等 <b>" + fmt(s.w1) + "</b>），但没有 flag 时 CPU 睡觉：睡眠 <b>" + pct(s.sleep) + "</b>。";
+    else if (arch === 4) t += "RTI 把函数按优先级插进队列，P1 平均只等 <b>" + fmt(s.w1) + "</b>：只需等正在执行的函数做完。";
+    else t += "更高优先级的任务立即得到 CPU：P1 平均等 <b>" + fmt(s.w1) + "</b>（RTI + 切换）。低优先级任务等得更久；示意的 RTOS 切换共 " + s.c.os + " u。";
+    if (s.pend) t += " 窗口结束时还有 " + s.pend + " 个事件没轮到。";
+    if (!st.events.length) t = "<b>" + NAME[arch] + "</b>：还没有事件。用滑块选时刻，再点 + P1 / + P2 / + P3。";
+    out.innerHTML = t;
+  }
+
+  
+  var tbody = $("m28-cmp-b");
+  function table() {
+    if (!tbody) return;
+    var html = "";
+    for (var a = 1; a <= 5; a++) {
+      var s = stats(simulate(a, st.events));
+      html += '<tr class="pick' + (a === st.arch ? " on" : "") + '" data-arch="' + a + '" tabindex="0" role="button" aria-pressed="' + (a === st.arch) + '">' +
+        "<td>" + a + " · " + NAME[a].replace("Bucle infinito con ", "+ ").replace(" e interrupciones", "") + "</td>" +
+        '<td class="num">' + fmt(s.resp) + "</td>" +
+        '<td class="num">' + fmt(s.w1) + "</td>" +
+        '<td><span class="sub">工作 ' + pct(s.work) + " · 空等 " + pct(s.awake) + " · 睡 " + pct(s.sleep) + '</span><span class="m28-bar"><i class="w" style="width:' + pct(s.work) + '"></i><i class="a" style="width:' + pct(s.awake) + '"></i><i class="s" style="width:' + pct(s.sleep) + '"></i></span></td></tr>';
+    }
+    tbody.innerHTML = html;
+  }
+  if (tbody) {
+    tbody.addEventListener("click", function (e) {
+      var tr = e.target.closest ? e.target.closest("tr[data-arch]") : null;
+      if (tr) setArch(+tr.getAttribute("data-arch"));
+    });
+    tbody.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var tr = e.target.closest ? e.target.closest("tr[data-arch]") : null;
+      if (tr) { e.preventDefault(); setArch(+tr.getAttribute("data-arch")); }
+    });
+  }
+
+  
+  function stopAnim() { st.anim++; clipR.setAttribute("width", 800); cur.style.opacity = 0; }
+  function play() {
+    stopAnim();
+    if (reduce) return;
+    var token = st.anim, t0 = null, dur = 6000, x1 = X(T);
+    cur.style.opacity = 1;
+    function f(ts) {
+      if (token !== st.anim) return;
+      if (t0 == null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur), x = X0 + (x1 - X0) * k;
+      clipR.setAttribute("width", x.toFixed(1));
+      cur.setAttribute("x1", x.toFixed(1)); cur.setAttribute("x2", x.toFixed(1));
+      if (k < 1) requestAnimationFrame(f);
+      else { clipR.setAttribute("width", 800); cur.style.opacity = 0; }
+    }
+    clipR.setAttribute("width", X0);
+    requestAnimationFrame(f);
+  }
+
+  
+  var archBtns = Array.prototype.slice.call(document.querySelectorAll("#m28-sim [data-arch]"));
+  function render() {
+    stopAnim();
+    var r = simulate(st.arch, st.events);
+    draw(r);
+    $("m28-sim-name").textContent = st.arch + " · " + NAME[st.arch];
+    archBtns.forEach(function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-arch") === st.arch ? "true" : "false"); });
+    say(st.arch, stats(r));
+    table();
+  }
+  function setArch(a) { if (a < 1 || a > 5) return; st.arch = a; render(); }
+  archBtns.forEach(function (b) { b.addEventListener("click", function () { setArch(+b.getAttribute("data-arch")); }); });
+
+  var rng = $("m28-t"), tv = $("m28-tv");
+  function tNow() { return Math.max(0, Math.min(50, parseInt(rng.value, 10) || 0)); }
+  rng.addEventListener("input", function () { tv.textContent = "t = " + tNow(); });
+  Array.prototype.slice.call(document.querySelectorAll("#m28-sim [data-src]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      var s = +b.getAttribute("data-src"), t = tNow();
+      for (var i = 0; i < st.events.length; i++) {
+        if (st.events[i].s === s && st.events[i].t === t) { out.innerHTML = "t = " + t + " 已经有一个 " + PN[s] + " 事件了。"; return; }
+      }
+      if (st.events.length >= MAXEV) { out.innerHTML = "最多 " + MAXEV + " 个事件。先点“清空”。"; return; }
+      st.events.push({ t: t, s: s });
+      st.events.sort(function (x, y) { return x.t - y.t || x.s - y.s; });
+      render();
+    });
+  });
+  $("m28-preset").addEventListener("click", function () { st.events = PRESET.slice(); render(); });
+  $("m28-clear").addEventListener("click", function () { st.events = []; render(); });
+  $("m28-play").addEventListener("click", play);
+
+  render();
+})();
+</script>
+</body>
+</html>

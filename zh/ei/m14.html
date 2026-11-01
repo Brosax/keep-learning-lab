@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M14 La Internet de las Cosas · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+  
+  .msg.on .s-box { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 2; }
+  .msg:focus { outline: none; }
+  .msg:focus-visible .s-box { stroke: var(--signal); stroke-width: 2.4; }
+  
+  .calc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .9rem 1.1rem; display: flex; flex-direction: column; gap: .8rem; min-width: 0; }
+  .calc .lbl { font: 600 12px/1.4 var(--f-mono); color: var(--muted); letter-spacing: .04em; }
+  .calc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
+  .calc input[type="number"], .calc input[type="text"] {
+    font: 600 15px/1.4 var(--f-mono); color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; min-width: 0;
+  }
+  .calc input[type="number"] { width: 6.5rem; }
+  .calc input.wide-in { width: 12rem; max-width: 100%; }
+  .calc input[type="text"] { flex: 1 1 15rem; width: 100%; }
+  .calc input[type="range"] { flex: 1 1 10rem; min-width: 0; accent-color: var(--accent); }
+  .calc input:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+  .res { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 10px; }
+  .res .cell { background: var(--bg); }
+  .res .num { font: 700 1.15rem/1.35 var(--f-mono); color: var(--accent); overflow-wrap: anywhere; }
+  .res .mono { overflow-wrap: anywhere; }
+  .formula { font: 400 13px/1.8 var(--f-mono); background: var(--sunk); border-radius: var(--r); padding: .5rem .8rem; overflow-wrap: anywhere; }
+  .formula sup, .res sup, .conv sup { font-size: .72em; line-height: 0; }
+  .conv th { white-space: nowrap; width: 1%; }
+  .conv td { overflow-wrap: anywhere; word-break: break-all; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="章节" class="chain" data-chain="M14"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 1 · Introducción · M14</div>
+<h1>La Internet de las Cosas y más allá</h1>
+<p class="zh">物联网及其之后</p>
+<div class="meta">
+
+<span><b>7</b> 个学习目标</span>
+<span>阅读约 30 分钟</span>
+
+
+</div>
+<p class="lede">Internet 先把计算机连起来，又把人连起来；<b class="t">Internet de las Cosas (ES) / Internet of Things, IoT (EN)</b>——物联网，要把“物”也连上。这一章先沿时间线看 IoT 从哪里来，再分清四个常被混用的词：IoT、M2M、CPS、gemelo digital；然后看三个大主题 Big Data、smart grid、smart city（以 Santander 为例）；最后用计算器体会，为什么说 IPv6 是 IoT 的前提。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">1.4.1</span>
+<div class="txt"><span>讲清 IoT 的起源和演变</span><span class="es">Explicar los orígenes y evolución de IoT (Internet Of Things).</span><a href="#s1">→ §1 从 ARPANET 到 IoT</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.4.2</span>
+<div class="txt"><span>区分 IoT、M2M、CPS 和 Digital Twins</span><span class="es">Distinguir entre IoT, M2M (Machine To Machine), CPS (Cyber Physical Systems) y Digital Twins.</span><a href="#s4">→ §4 四个概念对照（§2、§3 先分别讲）</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.4.3</span>
+<div class="txt"><span>定义 Big Data</span><span class="es">Definir Big Data.</span><a href="#s5">→ §5 Big Data</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.4.4</span>
+<div class="txt"><span>解释 smart grid 的概念</span><span class="es">Explicar el concepto de smart grid.</span><a href="#s6">→ §6 Smart grid</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.4.5</span>
+<div class="txt"><span>解释 smart city 的概念</span><span class="es">Explicar el concepto de smart city.</span><a href="#s7">→ §7 Smart city</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.4.6</span>
+<div class="txt"><span>分析几个 smart city 的实例</span><span class="es">Analizar algunos ejemplos de smart city.</span><a href="#s8">→ §8 Santander 与 Málaga</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.4.7</span>
+<div class="txt"><span>区分 IPv6 和 IPv4（ejercicio）</span><span class="es">Distinguir entre IPv6 y IPv4 (ejercicio).</span><a href="#s9">→ §9 IPv4 与 IPv6 · 计算器</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.4.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M14"><span class="val">0 / 7 已掌握</span><span class="bar"><i></i></span></div>
+<p class="aside">标 <span class="tag plain">补充</span> 的内容属于拓展，可以略读；其余内容是本章重点。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>从 ARPANET 到“物”的互联网 <span class="tag">1.4.1</span></h2>
+<p>IoT 不是某一天突然发明的，而是几条线慢慢汇合的结果：Internet 本身、<b class="t">informática ubicua (ES) / ubiquitous computing (EN)</b>——泛在计算、<b class="t">RFID (Radio Frequency IDentification)</b>——射频识别、M2M 遥测，以及后来的 CPS 和数字孪生。点「下一步」把时间线走一遍：</p>
+<div class="stepper" id="tl">
+<figure>
+<div class="fig">
+<svg aria-label="IoT 起源与演变的时间线：1960 年代 ARPANET、1980 年代 Mobitex、1988 Weiser 泛在计算、1990 年代 WWW 与 IP、1999 Auto-ID Center、2000 年代 M2M、2005 UIT 报告、2006 CPS、2010 digital twin、2011 Industria 4.0、2012 UIT 定义、2020 预测 500 亿台设备" role="img" viewbox="0 0 670 196">
+<defs>
+<marker id="m14a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-life" x1="24" x2="650" y1="105" y2="105"></line>
+<line class="s-line" marker-end="url(#m14a)" x1="630" x2="656" y1="105" y2="105"></line>
+<g aria-label="1960 年代 ARPANET" class="msg hot" data-step="1" role="button" tabindex="0">
+<line class="s-line" x1="60" x2="60" y1="66" y2="98"></line><circle class="s-box" cx="60" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="60" y="58">1960s</text><text class="s-t2" text-anchor="middle" x="60" y="40">ARPANET</text>
+</g>
+<g aria-label="1980 年代 Mobitex" class="msg hot" data-step="2" role="button" tabindex="0">
+<line class="s-line" x1="110" x2="110" y1="112" y2="144"></line><circle class="s-box" cx="110" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="110" y="160">1980s</text><text class="s-t2" text-anchor="middle" x="110" y="178">Mobitex</text>
+</g>
+<g aria-label="1988 Weiser 泛在计算" class="msg hot" data-step="3" role="button" tabindex="0">
+<line class="s-line" x1="160" x2="160" y1="66" y2="98"></line><circle class="s-box" cx="160" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="160" y="58">1988</text><text class="s-t2" text-anchor="middle" x="160" y="40">Weiser · ubicua</text>
+</g>
+<g aria-label="1990 年代 WWW 与 IP" class="msg hot" data-step="4" role="button" tabindex="0">
+<line class="s-line" x1="210" x2="210" y1="112" y2="144"></line><circle class="s-box" cx="210" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="210" y="160">1990s</text><text class="s-t2" text-anchor="middle" x="210" y="178">WWW · IP</text>
+</g>
+<g aria-label="1999 Auto-ID Center" class="msg hot" data-step="5" role="button" tabindex="0">
+<line class="s-line" x1="260" x2="260" y1="66" y2="98"></line><circle class="s-box" cx="260" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="260" y="58">1999</text><text class="s-t2" text-anchor="middle" x="260" y="40">Auto-ID · «IoT»</text>
+</g>
+<g aria-label="2000 年代 M2M" class="msg hot" data-step="6" role="button" tabindex="0">
+<line class="s-line" x1="310" x2="310" y1="112" y2="144"></line><circle class="s-box" cx="310" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="310" y="160">2000s</text><text class="s-t2" text-anchor="middle" x="310" y="178">M2M celular</text>
+</g>
+<g aria-label="2005 UIT 报告" class="msg hot" data-step="7" role="button" tabindex="0">
+<line class="s-line" x1="360" x2="360" y1="66" y2="98"></line><circle class="s-box" cx="360" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="360" y="58">2005</text><text class="s-t2" text-anchor="middle" x="360" y="40">Informe UIT</text>
+</g>
+<g aria-label="2006 CPS" class="msg hot" data-step="8" role="button" tabindex="0">
+<line class="s-line" x1="410" x2="410" y1="112" y2="144"></line><circle class="s-box" cx="410" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="410" y="160">2006</text><text class="s-t2" text-anchor="middle" x="410" y="178">CPS</text>
+</g>
+<g aria-label="2010 digital twin" class="msg hot" data-step="9" role="button" tabindex="0">
+<line class="s-line" x1="460" x2="460" y1="66" y2="98"></line><circle class="s-box" cx="460" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="460" y="58">2010</text><text class="s-t2" text-anchor="middle" x="460" y="40">digital twin</text>
+</g>
+<g aria-label="2011 Industria 4.0" class="msg hot" data-step="10" role="button" tabindex="0">
+<line class="s-line" x1="510" x2="510" y1="112" y2="144"></line><circle class="s-box" cx="510" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="510" y="160">2011</text><text class="s-t2" text-anchor="middle" x="510" y="178">Industria 4.0</text>
+</g>
+<g aria-label="2012 UIT 定义" class="msg hot" data-step="11" role="button" tabindex="0">
+<line class="s-line" x1="560" x2="560" y1="66" y2="98"></line><circle class="s-box" cx="560" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="560" y="58">2012</text><text class="s-t2" text-anchor="middle" x="560" y="40">定义 UIT</text>
+</g>
+<g aria-label="2020 预测 500 亿台设备" class="msg hot" data-step="12" role="button" tabindex="0">
+<line class="s-line" x1="610" x2="610" y1="112" y2="144"></line><circle class="s-box" cx="610" cy="105" r="6"></circle>
+<text class="s-ta" text-anchor="middle" x="610" y="160">2020</text><text class="s-t2" text-anchor="middle" x="610" y="178">预测 500 亿台</text>
+</g>
+</svg>
+</div>
+<figcaption>时间线不按时间比例；2005 年 UIT 报告这个节点，以及节点说明里标“补充”的内容，属于拓展。<span class="hint">也可以直接点节点</span></figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+<p>为什么偏偏是这个时候？有四个推动因素，它们组合在一起，让“任何东西”都能接入 Internet：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">1</span><h3>Sistemas empotrados</h3><p>各种能接入 Internet 的嵌入式系统。</p></div>
+<div class="cell"><span class="eyebrow">2</span><h3>WSN</h3><p><b class="t">redes de sensores inalámbricas (ES) / wireless sensor networks, WSN (EN)</b>——无线传感器网络。</p></div>
+<div class="cell"><span class="eyebrow">3</span><h3>Orientación a servicios</h3><p>面向服务的编程（M21 的 SOA 就是这条路线）。</p></div>
+<div class="cell"><span class="eyebrow">4</span><h3>Cloud Computing</h3><p>云计算。要特别注意：WSN 计算和存储能力弱，正好由云来补足——两者互补。</p></div>
+</div>
+<p>于是什么都能联网：环境传感器、智能手机、心脏监护仪、家居设备、工业设备、停车计时器、自动售货机、超市货架、汽车、轮胎，甚至一头奶牛。</p>
+
+<p>把这些“物”组织起来的是什么？可以把 IoT 的基础画成一棵树：根是技术，树干是软件，树冠是应用。点每一层：</p>
+<div class="stack" data-explain="tec">
+<figure>
+<div class="fig">
+<svg aria-label="IoT 的基础：底层 Technology 包括 Sensing、Embedded Processing、Connectivity；中间 Software；顶层 Applications，如 Smart Grid、Smart Homes、Smart Health、M2M；右侧 Technology Innovations 推动整棵树" role="img" viewbox="0 0 640 316">
+<defs>
+<marker id="m14i" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g aria-label="Applications" class="hot" data-key="app" role="button" tabindex="0">
+<rect class="s-box" height="94" rx="10" width="440" x="20" y="12"></rect>
+<text class="s-t" text-anchor="middle" x="240" y="34">Applications</text>
+<text class="s-t2" text-anchor="middle" x="240" y="56">Smart Grid · Smart Homes · Smart Parking · Smart Energy</text>
+<text class="s-t2" text-anchor="middle" x="240" y="74">Smart Lighting · Smart Cars · Smart Tags · Smart Health</text>
+<text class="s-t2" text-anchor="middle" x="240" y="92">M2M · BLDG Automation · Air Quality · Supply Chain · …</text>
+</g>
+<line class="s-line" marker-end="url(#m14i)" x1="240" x2="240" y1="126" y2="109"></line>
+<g aria-label="Software" class="hot" data-key="sw" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="6" width="140" x="170" y="128"></rect>
+<text class="s-t" text-anchor="middle" x="240" y="153">Software</text>
+</g>
+<line class="s-line" marker-end="url(#m14i)" x1="100" x2="196" y1="190" y2="171"></line>
+<line class="s-line" marker-end="url(#m14i)" x1="240" x2="240" y1="190" y2="171"></line>
+<line class="s-line" marker-end="url(#m14i)" x1="380" x2="284" y1="190" y2="171"></line>
+<g aria-label="Technology" class="hot" data-key="tec" role="button" tabindex="0">
+<rect class="s-box" height="112" rx="6" width="140" x="20" y="192"></rect>
+<text class="s-t" text-anchor="middle" x="90" y="212">Sensing</text>
+<text class="s-t2" text-anchor="middle" x="90" y="232">accelerometer</text>
+<text class="s-t2" text-anchor="middle" x="90" y="248">magnetometer · gyro</text>
+<text class="s-t2" text-anchor="middle" x="90" y="264">pressure · altimeter</text>
+<text class="s-t2" text-anchor="middle" x="90" y="280">temperature…</text>
+<rect class="s-box" height="112" rx="6" width="140" x="170" y="192"></rect>
+<text class="s-t" text-anchor="middle" x="240" y="210">Embedded</text>
+<text class="s-t" text-anchor="middle" x="240" y="229">Processing</text>
+<text class="s-t2" text-anchor="middle" x="240" y="248">MCU · MPU</text>
+<text class="s-t2" text-anchor="middle" x="240" y="264">hybrid MCU/MPU</text>
+<text class="s-t2" text-anchor="middle" x="240" y="280">network processor</text>
+<rect class="s-box" height="112" rx="6" width="140" x="320" y="192"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="212">Connectivity</text>
+<text class="s-t2" text-anchor="middle" x="390" y="232">NFC · GPS · RFID</text>
+<text class="s-t2" text-anchor="middle" x="390" y="248">6LoWPAN · BT/BTLE</text>
+<text class="s-t2" text-anchor="middle" x="390" y="264">Sub-GHz · Wi-Fi</text>
+<text class="s-t2" text-anchor="middle" x="390" y="280">ZigBee · Cellular</text>
+</g>
+<g aria-label="Technology Innovations" class="hot" data-key="inn" role="button" tabindex="0">
+<rect class="s-box" height="124" rx="10" width="152" x="478" y="12"></rect>
+<text class="s-t" text-anchor="middle" x="554" y="32">Technology</text>
+<text class="s-t" text-anchor="middle" x="554" y="50">Innovations</text>
+<text class="s-t2" text-anchor="middle" x="554" y="70">miniaturization</text>
+<text class="s-t2" text-anchor="middle" x="554" y="86">advances in flash</text>
+<text class="s-t2" text-anchor="middle" x="554" y="102">low-cost, low-power MCUs</text>
+<text class="s-t2" text-anchor="middle" x="554" y="118">cloud services</text>
+</g>
+<path class="s-dash" d="M554,138 L554,248 L464,248" marker-end="url(#m14i)"></path>
+</svg>
+</div>
+<figcaption>下层 Technology（树根）、中间 Software（树干）、上层 Applications（树冠）；箭头向上，表示由技术支撑起应用。右侧的 Technology Innovations 用虚线箭头表示它推动整棵树（简化）。<span class="hint">点击各层看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="tec" hidden="">
+<h3>Technology · 技术（树根）</h3>
+<p>三类基础技术：<b>Sensing</b>——感知（加速度计、磁力计、陀螺仪、气压、高度计、温度等传感器）；<b>Embedded Processing</b>——嵌入式处理（MCU、MPU、MCU/MPU 混合、网络处理器）；<b>Connectivity</b>——连接（NFC、6LoWPAN、Sub-GHz、ZigBee、GPS、BT/BTLE、Wi-Fi、RFID、蜂窝网）。其中的 6LoWPAN 就是 §9 讲的“低功耗网络上的 IPv6”。</p>
+</div>
+<div class="panel" data-panel="sw" hidden="">
+<h3>Software · 软件（树干）</h3>
+<p>把底层的感知、处理、连接能力输送到上层的各种应用。</p>
+</div>
+<div class="panel" data-panel="app" hidden="">
+<h3>Applications · 应用（树冠）</h3>
+<p>Smart Grid、Smart Lighting、Smart Cars、Smart Tags、Smart Health、Smart Energy、Smart Parking、Smart Homes，以及 M2M、楼宇自动化（BLDG Automation）、空气质量监控、供应链自动化、行人导航（Pedestrian Navigation）、汽车安全（Auto Safety）、Remote Appliance Avoidance……中间写着 “Many other services”。注意 <b>M2M 在这里是众多应用之一</b>，和 §2 “M2M 只是 IoT 的一部分”一致。</p>
+</div>
+<div class="panel" data-panel="inn" hidden="">
+<h3>Technology Innovations · 技术创新</h3>
+<p>让这棵树长起来的技术进步：小型化和封装技术的进步、flash 存储的进步、强大而又便宜、低功耗的新一代 MCU、基于云的服务。可以和上面的四个推动因素对照：嵌入式系统、WSN、面向服务、云计算。</p>
+</div>
+</div>
+
+<div class="panel">
+<h3>“y más allá”：Internet 带来的其他创新</h3>
+<p class="aside">章名里的“más allá”指的就是这些。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Web 的形态</span><p><b>web 2.0</b>（2004）：协作式，社交网络、博客、wiki、YouTube。<br/><b>web 3.0 / web semántica</b>：给数据加上含义和用途（metadatos）。<br/><b>web3</b>：用 blockchain 类技术让 web 去中心化。</p></div>
+<div class="cell"><span class="eyebrow">数据与智能</span><p>搜索引擎；<b>Cloud computing</b>；<b>Big Data</b>（§5）；<b>Deep learning</b>：让网络从海量信息中学习，形成自适应的智能系统。</p></div>
+<div class="cell"><span class="eyebrow">连接物理世界</span><p><b>IoT</b>；<b>Cyber-physical systems</b>（背后是 Industria 4.0）；<b>Digital twins</b>；<b>Metaverso</b>：虚拟与增强现实 + 社交网络 + IoT。还有 Second Life（2003）、Google Earth（2005）、Street View（2007）改变了人们对虚拟空间的感受。</p></div>
+</div>
+
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>IoT 与 M2M <span class="tag">1.4.2</span></h2>
+<div class="note">
+<span class="lbl">定义 · IoT（UIT）</span>
+<p><b class="t">UIT (ES) / ITU (EN)</b>——国际电信联盟（Unión Internacional de Telecomunicaciones）：IoT 是信息社会的一种全球基础设施——<i>“infraestructura mundial de la sociedad de la información”</i>——它利用现有的和不断演进的、可互操作的 <b class="t">TIC (ES) / ICT (EN)</b>——信息通信技术，把<b>物理的和虚拟的“物”</b>互联起来，提供高级服务。</p>
+<p class="aside">这个定义 2012 年 7 月 4 日发布；UIT 强调 IoT 是一种“visión”，不是单一技术。在 IoT 里，“物”和人处在同一层级，可以像人一样被识别。</p>
+</div>
+<div class="note">
+<span class="lbl">定义 · M2M（oneM2M）</span>
+<p><b class="t">M2M (Machine To Machine)</b>——机器对机器：<i>“combinación de dispositivos, software y servicios que funcionan con una intervención humana escasa o nula”</i>，即设备、软件和服务的组合，运行时几乎不需要人工干预。</p>
+</div>
+<p><b>两者什么关系？</b>答案很直接：常有人把 M2M 和 IoT 混为一谈，但 <b>M2M 只是 IoT 的一部分</b>。有人说它是 IoT 的 <i>facilitador</i>（推动者），也有人说它是 IoT 的“tuberías”（管道）。换个角度说也一样：M2M 可能是 IoT “最早的形态”，主要在 B2B 市场，是 IoT 的重要推动者。</p>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">M2M</span>
+<h3>机器之间的自动通信</h3>
+<p>遥测和工业控制是它的前身；通常用于企业之间（B2B）。部署者事先知道要拿数据做什么，数据归部署者所有。</p>
+</div>
+<div class="cell">
+<span class="eyebrow">IoT</span>
+<h3>连接一切，并加上情境</h3>
+<p>还包括本身不智能的物体：通过手机读二维码、RFID、NFC 把它们带进网络，再加上地理位置等情境。数据是开放的，不知道谁会用、用来做什么。</p>
+</div>
+</div>
+<p class="aside"><span class="tag plain">补充</span> 上面两格里“数据归谁”“非智能物体”的对比，是 Nick Gall（Gartner）和 Usman Haque（Pachube/Cosm）的观点；Gall 的结论是 M2M 是 IoT 的一个子领域。</p>
+<p>§1 末尾那幅拼图右下角的三轴图说的就是这一步：以前的连接是 anytime、any place，现在多了第三个轴 <b>anything</b>。<span class="tag plain">补充</span> 2005 年 UIT 的报告 <i>The Internet of Things</i> 把它形容为“一个新维度”，并列出 IoT 的四项使能技术：RFID、传感器、smart things（物体内嵌智能）、微型化与纳米技术。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Any TIME</span><p>移动中、室内和室外、白天和夜里。</p></div>
+<div class="cell"><span class="eyebrow">Any PLACE</span><p>移动中、户外、室内（离开 PC）、在 PC 前。</p></div>
+<div class="cell"><span class="eyebrow">Any THING</span><p>PC 之间、人对人（H2H，不用 PC）、人对物（H2T，用通用设备）、物对物（T2T）。</p></div>
+</div>
+<p>还有一个说法叫 <b class="t">Internet of Everything</b>（¿Qué será?）。<span class="tag plain">补充</span> 这是 Cisco 提出的说法，把人、流程、数据和物都连起来。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>CPS 与 gemelo digital <span class="tag">1.4.2</span></h2>
+<div class="note">
+<span class="lbl">定义 · CPS</span>
+<p><b class="t">sistema ciberfísico (ES) / cyber-physical system, CPS (EN)</b>——信息物理系统：物理的、生物的和人工的系统，其运行由一个 <i>“núcleo informático”</i>（计算核心）来集成、监督和/或控制。这个词由美国 NSF 的 Helen Gill 在 2006 年提出，指<b>计算与物理过程的集成</b>。</p>
+<p>在 CPS 里，嵌入式系统和网络<b>实时</b>监控物理过程，通常带有 <b class="t">bucles de realimentación</b>——反馈回路：物理过程影响计算，计算也反过来影响物理过程。</p>
+</div>
+<div class="stack" data-explain="pa">
+<figure>
+<div class="fig">
+<svg aria-label="基本 CPS：Physical Plant 的状态送到 Computational Platform A；A 经 Network Fabric 单向发给 Computational Platform B；B 同时接收 Physical Plant 的测量，并对 Physical Plant 施加动作" role="img" viewbox="0 0 640 300">
+<defs>
+<marker id="m14b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+
+<path class="s-line" d="M220,236 L24,236 L24,58 L62,58" marker-end="url(#m14b)"></path>
+<text class="s-tm" x="30" y="150">medida</text>
+
+<line class="s-line" marker-end="url(#m14b)" x1="210" x2="252" y1="58" y2="58"></line>
+<line class="s-line" marker-end="url(#m14b)" x1="388" x2="430" y1="58" y2="58"></line>
+
+<path class="s-line" d="M392,208 L392,96 L430,96" marker-end="url(#m14b)"></path>
+<text class="s-tm" x="398" y="150">medida</text>
+
+<path class="s-line" d="M594,76 L616,76 L616,236 L420,236" marker-end="url(#m14b)"></path>
+<text class="s-tm" text-anchor="end" x="610" y="150">acción</text>
+<g aria-label="Computational Platform A" class="hot" data-key="pa" role="button" tabindex="0">
+<rect class="s-box" height="56" rx="2" width="146" x="64" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="137" y="54">Computational</text>
+<text class="s-t" text-anchor="middle" x="137" y="72">Platform A</text>
+</g>
+<g aria-label="Network Fabric" class="hot" data-key="red" role="button" tabindex="0">
+<rect class="s-box" height="64" rx="16" width="134" x="254" y="26"></rect>
+<text class="s-t" text-anchor="middle" x="321" y="54">Network</text>
+<text class="s-t" text-anchor="middle" x="321" y="72">Fabric</text>
+</g>
+<g aria-label="Computational Platform B" class="hot" data-key="pb" role="button" tabindex="0">
+<rect class="s-box" height="64" rx="2" width="162" x="432" y="44"></rect>
+<text class="s-t" text-anchor="middle" x="513" y="71">Computational</text>
+<text class="s-t" text-anchor="middle" x="513" y="89">Platform B</text>
+</g>
+<g aria-label="Physical Plant" class="hot" data-key="planta" role="button" tabindex="0">
+<ellipse class="s-box" cx="320" cy="236" rx="100" ry="40"></ellipse>
+<text class="s-t" text-anchor="middle" x="320" y="232">Physical</text>
+<text class="s-t" text-anchor="middle" x="320" y="250">Plant</text>
+</g>
+</svg>
+</div>
+<figcaption>两台嵌入式计算机（A、B）经网络相连，并和同一个物理对象相互作用；“medida / acción”两个小标签标出箭头的含义。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="pa" hidden="">
+<h3>Computational Platform A · 计算平台 A</h3>
+<p>一台嵌入式计算机。它只有<b>一条来自物理对象的输入</b>（相当于通过传感器测量），输出只送进网络——A 自己不直接动作物理对象。</p>
+</div>
+<div class="panel" data-panel="red" hidden="">
+<h3>Network Fabric · 通信网络</h3>
+<p>图里网络是<b>单向</b>的：A → Network Fabric → B。两台嵌入式计算机“entre ellos a través de una red de comunicaciones”交互。CPS 是联网的系统，不是一台孤立的控制器。</p>
+</div>
+<div class="panel" data-panel="pb" hidden="">
+<h3>Computational Platform B · 计算平台 B</h3>
+<p>有两条输入：来自网络（A 的结果）和来自物理对象（自己的测量）；它的输出<b>回到物理对象</b>（相当于通过执行器动作）。于是形成两个反馈回路：Plant → A → 网络 → B → Plant，以及 Plant → B → Plant。</p>
+</div>
+<div class="panel" data-panel="planta" hidden="">
+<h3>Physical Plant · 物理对象</h3>
+<p>被监控的物理过程。图里没有单独画传感器、执行器的方框：计算机通过“sensores y actuadores”和物理对象交互，就是这些进出 Physical Plant 的箭头——出来的是测量，进去的是动作。物理过程影响计算，计算也反过来影响物理过程。</p>
+<p>CPS 会成为航空航天、交通、工业制造、医疗等领域许多新技术的关键：将来任何物体或结构都会内嵌计算、通信和控制能力。</p>
+</div>
+</div>
+
+<div class="grid3">
+<div class="cell"><span class="eyebrow">别混淆</span><h3>CPS ≠ ciberespacio</h3><p>CPS 常被误认为和 <b class="t">ciberespacio</b>——赛博空间（计算机创造的虚拟领域）有关。其实两者只是都来自 <b class="t">cibernética</b>——控制论：数学家 Norbert Wiener 推广的、研究机器和人中控制与通信的科学（希腊语 kybernetes＝舵手）。</p></div>
+<div class="cell"><span class="eyebrow">别混淆</span><h3>CPS、IoT、Industria 4.0</h3><p>三者都把物理世界和计算世界连起来。区别：<b>CPS 是理论概念</b>，不谈具体实现或应用；<b>IoT 基于 Internet 技术</b>；<b>Industria 4.0 面向工业应用</b>。</p></div>
+<div class="cell"><span class="eyebrow">Industria 4.0</span><h3>第四次工业革命</h3><p>德国政府 2011 年提出：以 CPS 为基础，利用 IoT、cloud computing、big data、deep learning 等新技术，带来更高的生产率、灵活性和敏捷性。</p></div>
+</div>
+<p>为什么叫“4.0”？把四次工业革命排成一道台阶，越往右越晚、越往上越复杂。点每一级台阶：</p>
+<div class="stack" data-explain="r4">
+<figure>
+<div class="fig">
+<svg aria-label="四次工业革命台阶图：18 世纪末机械化，20 世纪初电气化大规模生产，1970 年代初电子与 IT 自动化，今天以信息物理系统为基础" role="img" viewbox="0 0 640 268">
+<defs>
+<marker id="m14g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m14g)" x1="30" x2="612" y1="226" y2="226"></line>
+<text class="s-tm" text-anchor="end" x="616" y="246">tiempo</text>
+<line class="s-line" marker-end="url(#m14g)" x1="30" x2="30" y1="226" y2="14"></line>
+<text class="s-tm" x="38" y="22">complejidad</text>
+<g aria-label="1.ª revolución industrial" class="hot" data-key="r1" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="4" width="132" x="44" y="178"></rect>
+<text class="s-t" text-anchor="middle" x="110" y="197">1.ª · mecánica</text>
+<text class="s-t2" text-anchor="middle" x="110" y="213">agua y vapor</text>
+</g>
+<g aria-label="2.ª revolución industrial" class="hot" data-key="r2" role="button" tabindex="0">
+<rect class="s-box" height="92" rx="4" width="132" x="186" y="130"></rect>
+<text class="s-t" text-anchor="middle" x="252" y="149">2.ª · eléctrica</text>
+<text class="s-t2" text-anchor="middle" x="252" y="165">producción en masa</text>
+</g>
+<g aria-label="3.ª revolución industrial" class="hot" data-key="r3" role="button" tabindex="0">
+<rect class="s-box" height="140" rx="4" width="132" x="328" y="82"></rect>
+<text class="s-t" text-anchor="middle" x="394" y="101">3.ª · electrónica</text>
+<text class="s-t2" text-anchor="middle" x="394" y="117">electrónica + IT</text>
+</g>
+<g aria-label="4.ª revolución industrial" class="hot" data-key="r4" role="button" tabindex="0">
+<rect class="s-box" height="188" rx="4" width="132" x="470" y="34"></rect>
+<text class="s-t" text-anchor="middle" x="536" y="53">4.ª · CPS</text>
+<text class="s-t2" text-anchor="middle" x="536" y="69">Industria 4.0</text>
+</g>
+<text class="s-tm" text-anchor="middle" x="110" y="248">fin s. XVIII</text>
+<text class="s-tm" text-anchor="middle" x="252" y="248">inicio s. XX</text>
+<text class="s-tm" text-anchor="middle" x="394" y="248">inicio 1970s</text>
+<text class="s-tm" text-anchor="middle" x="536" y="248">hoy</text>
+</svg>
+</div>
+<figcaption>横轴是时间，纵轴是复杂度；每一级台阶是一次工业革命。<span class="hint">点击台阶看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="r1" hidden="">
+<h3>1.ª revolución industrial · 18 世纪末</h3>
+<p>引入<b>水力和蒸汽</b>驱动的机械化生产设施。标志：第一台机械织机（first mechanical loom），1784 年。</p>
+</div>
+<div class="panel" data-panel="r2" hidden="">
+<h3>2.ª revolución industrial · 20 世纪初</h3>
+<p>基于<b>劳动分工</b>、用<b>电力</b>驱动的大规模生产。标志：第一条生产线，Cincinnati 的屠宰场，1870 年。</p>
+</div>
+<div class="panel" data-panel="r3" hidden="">
+<h3>3.ª revolución industrial · 1970 年代初</h3>
+<p>用<b>电子和 IT</b> 让制造进一步自动化。标志：第一台可编程逻辑控制器 <b class="t">PLC (Programmable Logic Controller)</b>——可编程逻辑控制器，Modicon 084，1969 年。</p>
+</div>
+<div class="panel" data-panel="r4" hidden="">
+<h3>4.ª revolución industrial · 今天</h3>
+<p>以 <b>Cyber-Physical Systems</b> 为基础——这就是 Industria 4.0。它利用 IoT、cloud computing、big data、deep learning，提高生产率、灵活性和敏捷性。</p>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">定义 · Digital twin</span>
+<p><b class="t">gemelo digital (ES) / digital twin (EN)</b>——数字孪生：一个对象或系统的<b>虚拟表示</b>，覆盖它的整个生命周期，用实时数据更新，并用仿真、machine learning 和推理来辅助决策。它可以看作物理世界与虚拟世界之间的<b>双向结合</b>，用来做智能数据分析和系统监控。</p>
+<p>要记住：它比 CPS <b>更进一步</b>（“un paso más allá”）。简短版：通过传感器或自动化装置获得的信息，建立一个过程、产品或服务的虚拟模型。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="数字孪生：Real Space 用实线箭头 Data 把数据送到 Virtual Space；Virtual Space 用虚线箭头 Information / Process 把信息和流程送回 Real Space" role="img" viewbox="0 0 600 236">
+<defs>
+<marker id="m14c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+<marker id="m14h" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-t" text-anchor="middle" x="120" y="24">Real Space</text>
+<rect class="s-box" height="140" rx="14" width="200" x="20" y="36"></rect>
+<text class="s-t2" text-anchor="middle" x="120" y="100">producto físico</text>
+<text class="s-t2" text-anchor="middle" x="120" y="118">(cohete y sus piezas)</text>
+<text class="s-t" text-anchor="middle" x="480" y="24">Virtual Space</text>
+<rect class="s-box" height="140" rx="14" width="200" x="380" y="36"></rect>
+<text class="s-t2" text-anchor="middle" x="480" y="100">réplica virtual</text>
+<text class="s-t2" text-anchor="middle" x="480" y="118">(el mismo cohete)</text>
+<line class="s-line" marker-end="url(#m14c)" x1="222" x2="376" y1="76" y2="76"></line>
+<text class="s-ta" text-anchor="middle" x="300" y="66">Data</text>
+<line class="s-dash" marker-end="url(#m14h)" x1="378" x2="224" y1="136" y2="136"></line>
+<text class="s-ta" text-anchor="middle" x="300" y="126">Information</text>
+<text class="s-ta" text-anchor="middle" x="300" y="154">Process</text>
+<text class="s-tm" text-anchor="middle" x="300" y="210">unión bidireccional mundo físico ↔ virtual</text>
+</svg>
+</div>
+<figcaption>以一枚火箭及其部件为例：实线 Data 从真实空间到虚拟空间，虚线 Information / Process 从虚拟空间回到真实空间。底部一行就是定义里的“双向结合”。</figcaption>
+</figure>
+
+<p>读图：真实产品把<b>数据</b>送进虚拟空间；虚拟空间里的模型经过分析、仿真后，把<b>信息和流程</b>送回真实空间，指导真实产品的制造和运行。两边是同一个对象的两份“孪生”。</p>
+<p><b>来历</b>：David Gelernter 1992 年的书 <i>Mirror Worlds</i> 里已经有这个想法；Michael Grieves 2003 年最早把它用于工业制造；NASA 的 John Vickers（Grieves 的合作者）2010 年创造了 digital twin 这个词。其实 NASA 在 1960 年代的太空任务中已经在用这个概念。</p>
+<p><b>应用</b>：一个很有前景的方向——人或某个器官的数字孪生：模拟你的生理状态，用植入的纳米传感器提供真实数据来预测健康，必要时通过纳米执行器干预。</p>
+<p class="aside"><span class="tag plain">补充</span> “Sin datos reales, no hay digital twin”：传感器实时采集数据 → 云端处理并与情境参数比较 → 先在虚拟中修改，满足要求后才实际生产。好处：在问题发生前避免它、减少停机、通过仿真规划未来、按客户要求定制生产。</p>
+<p class="aside">有些资料说 digital twin 这个词是 NASA 的 John Vickers 在 2010 年创造的；也有资料说是 NASA 在 2012 年。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>四个概念放在一起比 <span class="tag">1.4.2</span></h2>
+<p>切换看每个概念的一句话定义、重点和例子：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换概念" class="seg" role="group">
+<button aria-pressed="true" data-view="iot" type="button">IoT</button>
+<button aria-pressed="false" data-view="m2m" type="button">M2M</button>
+<button aria-pressed="false" data-view="cps" type="button">CPS</button>
+<button aria-pressed="false" data-view="dt" type="button">Digital twin</button>
+</div>
+<div class="panel" data-pane="iot">
+<div class="grid3">
+<div class="cell"><span class="eyebrow">一句话</span><p>信息社会的全球基础设施，用 ICT 把物理和虚拟的“物”互联，提供高级服务（UIT）。</p></div>
+<div class="cell"><span class="eyebrow">重点</span><p>基于 <b>Internet 技术</b>；连接“任何东西”；“物”和人同一层级。</p></div>
+<div class="cell"><span class="eyebrow">例子</span><p>监测环境的 WSN、smart grids、smart cities 和 smart homes（节能、服务管理、安全）。</p></div>
+</div>
+</div>
+<div class="panel" data-pane="m2m" hidden="">
+<div class="grid3">
+<div class="cell"><span class="eyebrow">一句话</span><p>设备、软件和服务的组合，几乎不需要人工干预（oneM2M）。</p></div>
+<div class="cell"><span class="eyebrow">重点</span><p>机器之间的自动通信；IoT 的一部分、它的“管道”；B2B。</p></div>
+<div class="cell"><span class="eyebrow">例子</span><p>2000 年代初用蜂窝调制解调器监控自动售货机、水泵；1980 年代的 Mobitex 遥测。</p></div>
+</div>
+</div>
+<div class="panel" data-pane="cps" hidden="">
+<div class="grid3">
+<div class="cell"><span class="eyebrow">一句话</span><p>运行由 núcleo informático 集成、监督和/或控制的物理、生物和人工系统。</p></div>
+<div class="cell"><span class="eyebrow">重点</span><p>计算与物理过程的集成；<b>实时 + 反馈回路</b>；是一个<b>理论概念</b>。</p></div>
+<div class="cell"><span class="eyebrow">例子</span><p>Industria 4.0；航空航天、交通、工业制造、医疗。</p></div>
+</div>
+</div>
+<div class="panel" data-pane="dt" hidden="">
+<div class="grid3">
+<div class="cell"><span class="eyebrow">一句话</span><p>对象或系统的虚拟表示，覆盖生命周期，用实时数据更新，用仿真、ML 和推理辅助决策。</p></div>
+<div class="cell"><span class="eyebrow">重点</span><p>物理 ↔ 虚拟<b>双向</b>；比 CPS 更进一步。</p></div>
+<div class="cell"><span class="eyebrow">例子</span><p>人或器官的数字孪生；预防机器故障、按需定制生产（补充）。</p></div>
+</div>
+</div>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="关系图：WSN、M2M、CPS 都属于 IoT；WSN 是 CPS 的基础、M2M 的补充；CPS 是 M2M 的演进；数字孪生比 CPS 更进一步；Industria 4.0 以 CPS 为基础" role="img" viewbox="0 0 640 280">
+<defs>
+<marker id="m14d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-dash" height="256" rx="12" width="440" x="10" y="14"></rect>
+<text class="s-tm" x="24" y="36">IoT · vista de arquitectura</text>
+<rect class="s-box" height="52" rx="6" width="140" x="160" y="56"></rect>
+<text class="s-t" text-anchor="middle" x="230" y="78">CPS</text>
+<text class="s-t2" text-anchor="middle" x="230" y="97">evolución de M2M</text>
+<rect class="s-box" height="52" rx="6" width="150" x="30" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="105" y="218">WSN</text>
+<text class="s-t2" text-anchor="middle" x="105" y="237">escenario básico</text>
+<rect class="s-box" height="52" rx="6" width="150" x="280" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="355" y="218">M2M</text>
+<text class="s-t2" text-anchor="middle" x="355" y="237">patrón principal hoy</text>
+<line class="s-line" marker-end="url(#m14d)" x1="105" x2="195" y1="194" y2="111"></line>
+<text class="s-tm" text-anchor="end" x="138" y="150">base</text>
+<line class="s-line" marker-end="url(#m14d)" x1="355" x2="265" y1="194" y2="111"></line>
+<text class="s-tm" text-anchor="end" x="298" y="150">evoluciona</text>
+<line class="s-line" marker-end="url(#m14d)" marker-start="url(#m14d)" x1="182" x2="278" y1="222" y2="222"></line>
+<text class="s-tm" text-anchor="middle" x="230" y="214">complemento</text>
+<rect class="s-soft" height="52" rx="6" width="150" x="480" y="56"></rect>
+<text class="s-t" text-anchor="middle" x="555" y="78">Gemelo digital</text>
+<text class="s-t2" text-anchor="middle" x="555" y="97">un paso más allá</text>
+<line class="s-line" marker-end="url(#m14d)" x1="302" x2="478" y1="82" y2="82"></line>
+<rect class="s-soft" height="52" rx="6" width="150" x="480" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="555" y="218">Industria 4.0</text>
+<text class="s-t2" text-anchor="middle" x="555" y="237">uso industrial</text>
+<line class="s-line" marker-end="url(#m14d)" x1="296" x2="478" y1="108" y2="208"></line>
+<text class="s-tm" text-anchor="middle" x="555" y="186">basada en CPS</text>
+</svg>
+</div>
+<figcaption><span class="tag plain">补充</span> 虚线框内：WSN、M2M、CPS 从架构角度都属于 IoT；WSN 是 IoT 最基础的场景、CPS 的基础、M2M 的补充；M2M 是现阶段 IoT 的主要形态；CPS 是 M2M 在智能信息处理上的演进，是 IoT 未来的重要形式。框外两项（数字孪生比 CPS 更进一步、Industria 4.0 以 CPS 为基础）是 §3 讲过的。</figcaption>
+</figure>
+
+<div class="grid3">
+<div class="cell"><span class="eyebrow">补充 · M2M 与 CPS 对比</span><h3>只有 CPS 具备的特征</h3><p>跨域通信流、确定性时延的通信流、多域数据源、跨域的多种数据分辨率、分布式实时/自主控制。</p></div>
+<div class="cell"><span class="eyebrow">补充 · M2M 与 CPS 对比</span><h3>只有 M2M 具备的特征</h3><p>标准制定组织：M2M 的标准化已经在 3GPP、ETSI、IEEE、TIA 等组织推进；CPS 还需要理论和技术上的突破。</p></div>
+<div class="cell"><span class="eyebrow">一句话记住</span><h3>M2M 重“连”，CPS 重“控”</h3><p>M2M 强调在很少人工干预下的连接；CPS 强调闭环/实时控制和高度自动化。</p></div>
+</div>
+<p><b>配对：</b>先点左边的描述，再点右边对应的概念。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="m2m" type="button">设备 + 软件 + 服务，几乎不要人工干预 <span class="es">intervención humana escasa o nula</span></button>
+<button data-l="iot" type="button">信息社会的全球基础设施，互联物理和虚拟的“物” <span class="es">infraestructura mundial de la sociedad de la información</span></button>
+<button data-l="cps" type="button">运行由计算核心集成和监控，带反馈回路 <span class="es">núcleo informático · bucles de realimentación</span></button>
+<button data-l="dt" type="button">覆盖生命周期、随实时数据更新的虚拟表示 <span class="es">representación virtual · ciclo de vida</span></button>
+<button data-l="i40" type="button">以 CPS 为基础的第四次工业革命 <span class="es">cuarta revolución industrial</span></button>
+</div>
+<div class="col">
+<button data-r="dt" type="button">Gemelo digital</button>
+<button data-r="i40" type="button">Industria 4.0</button>
+<button data-r="cps" type="button">CPS</button>
+<button data-r="m2m" type="button">M2M</button>
+<button data-r="iot" type="button">IoT</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p><b>判断对错：</b>先自己判断，再<b>点击右列</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>说法</th><th>判断（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>CPS 就是 ciberespacio 的另一种说法。</td><td class="ans">错。两者只是都源自 cibernética（§3）。</td></tr>
+<tr class="reveal"><td>M2M 和 IoT 是同义词。</td><td class="ans">错。M2M 只是 IoT 的一部分（§2）。</td></tr>
+<tr class="reveal"><td>CPS 是理论概念；IoT 以 Internet 技术为基础。</td><td class="ans">对（§3）。</td></tr>
+<tr class="reveal"><td>数字孪生比 CPS 更进一步。</td><td class="ans">对（§3）。</td></tr>
+<tr class="reveal"><td>Industria 4.0 是以 CPS 为基础的工业革命。</td><td class="ans">对（§3）。</td></tr>
+<tr class="reveal"><td>M2M 系统运行时需要大量人工参与。</td><td class="ans">错。正相反：intervención humana escasa o nula。</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Big Data <span class="tag">1.4.3</span></h2>
+<div class="note">
+<span class="lbl">定义 · 1.4.3</span>
+<p><b class="t">Big Data (ES/EN)</b>——大数据：一组<b>技术和策略</b>的集合，能够<b>以经济的方式</b>（<i>de forma económica</i>）、<b>高速</b>地采集和分析来自<b>多个异构来源</b>的<b>大量数据</b>。</p>
+</div>
+<p>这个定义摆出了 Big Data 著名的三个 “v”，但还缺一个变量。点开看：</p>
+<div class="stack" data-explain="vol">
+<div aria-label="Big Data 的四个变量" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="vol" type="button">Volumen</button>
+<button aria-pressed="false" class="chip" data-key="vel" type="button">Velocidad</button>
+<button aria-pressed="false" class="chip" data-key="var" type="button">Variedad</button>
+<button aria-pressed="false" class="chip" data-key="rt" type="button">Tiempo real <small>第 4 个</small></button>
+</div>
+<div class="panel" data-panel="vol" hidden="">
+<h3>Volumen · 量大</h3>
+<p>数据无处不在：条形码、信用卡、手机基站、水表电表、传感器，以及人们在社交网络上产生的海量内容。</p>
+<p class="aside"><span class="tag plain">补充</span> “多大才算 Big”没有统一标准：有的说“超过 1 TB”，也有的说“超过‘普通’的 GB 级”。</p>
+</div>
+<div class="panel" data-panel="vel" hidden="">
+<h3>Velocidad · 快</h3>
+<p>数据产生得快，也要分析得快（<i>a una alta velocidad</i>）。几个数字：每分钟发出 2 亿多封 email、Google 上 200 万次搜索、Instagram 上传 3 600 张照片、YouTube 上 48 小时视频。</p>
+</div>
+<div class="panel" data-panel="var" hidden="">
+<h3>Variedad · 杂</h3>
+<p>来自<b>多个异构来源</b>：既有结构化数据（机器能直接处理），也有非结构化数据。来源包括企业和政府（Open Data 运动希望公开这些数据）、社交网络，以及装满传感器的智能手机。</p>
+</div>
+<div class="panel" data-panel="rt" hidden="">
+<span class="verdict star">第四个变量</span>
+<p>三个 v 之外，“falta una cuarta variable: el tiempo real”——还缺第四个变量：<b>实时</b>。例如 Amazon、Google、Facebook、Twitter 能实时生成成千上万条个性化推荐。</p>
+</div>
+</div>
+<p>Big Data 的价值不在“多”，而在把大量数据<b>变成智能</b>。这一步靠 <b class="t">Ciencia de los Datos</b>——数据科学：</p>
+<div class="flow">
+<div class="cell">
+<span class="eyebrow">数据</span>
+<p>传感器（低功耗、降价、无线通信 → WSN）、web social、Open Data，以及用开源硬件自己造联网设备的公民。</p>
+</div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell">
+<span class="eyebrow">Big Data</span>
+<p>经济、高速地采集和分析。Google 为索引整个 Internet 创造的底层技术就是今天的 Hadoop。背后要有 Cloud Computing。</p>
+</div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell">
+<span class="eyebrow">智能</span>
+<p>实时个性化推荐、预测模型、医疗、保险、零售中的个性化；再用可视化把数据变成业务。</p>
+</div>
+</div>
+<p class="aside">总结一下：1980 年代是 PC 革命，1990 年代是 Internet 革命，新世纪带来 Web 2.0，现在是<b>数据革命</b>。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Smart grid：会“思考”的电网 <span class="tag">1.4.4</span></h2>
+<div class="note">
+<span class="lbl">定义 · 1.4.4</span>
+<p><b class="t">smart grid (EN) / red eléctrica inteligente (ES)</b>——智能电网：新一代电网，能够<b>预测</b>所有接入用户（生产者、消费者和 <b class="t">prosumidores</b>——既生产又消费的产消者）的行为，并<b>智能地、经济有效地</b>作出响应，从而提供一个经济高效、可持续、低损耗的电力系统，具备高水平的<b>质量、供电可用性（disponibilidad en el suministro）和安全</b>。</p>
+<p class="aside">简单说：smart grid 用来提高节能和能效。</p>
+</div>
+<p>为什么非要 smart grid？电网最大的挑战是大规模引入 TIC；只有这样，欧洲才能完成 <b>objetivo 20/20/20</b>：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">CO₂</span><h3>−20%</h3><p>排放比 1990 年减少 20%。</p></div>
+<div class="cell"><span class="eyebrow">能耗</span><h3>−20%</h3><p>能源消耗减少 20%。</p></div>
+<div class="cell"><span class="eyebrow">可再生</span><h3>20%</h3><p>能源中 20% 来自可再生能源。</p></div>
+</div>
+<p>还有两件事：一是<b>标准化</b>，让众多技术、流程和参与者能互操作——欧盟委员会 2011 年向 CEN、CENELEC、ETSI 下达 <b>mandato M/490</b>，要求它们确定和完善 smart grid 的标准；二是<b>智能电表</b>（Smart Meters），用户会因此成为 20/20/20 承诺中主动的一方。</p>
+<p><span class="tag plain">补充</span> 传统电网和 smart grid 的差别在哪？切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换电网类型" class="seg" role="group">
+<button aria-pressed="true" data-view="trad" type="button">Red tradicional</button>
+<button aria-pressed="false" data-view="sg" type="button">Smart grid</button>
+</div>
+<div class="panel" data-pane="trad">
+<div class="fig">
+<svg aria-label="传统电网：发电、配电、用电单向流动，用户的消费没有反馈" role="img" viewbox="0 0 600 180">
+<defs>
+<marker id="m14e" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" text-anchor="middle" x="300" y="40">información en un solo sentido · sin realimentación del consumo</text>
+<rect class="s-box" height="50" rx="6" width="160" x="20" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="92">Generación</text>
+<text class="s-t2" text-anchor="middle" x="100" y="110">centrales</text>
+<rect class="s-box" height="50" rx="6" width="160" x="220" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="100">Distribución</text>
+<rect class="s-box" height="50" rx="6" width="160" x="420" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="500" y="92">Uso</text>
+<text class="s-t2" text-anchor="middle" x="500" y="110">hogares · empresas</text>
+<line class="s-line" marker-end="url(#m14e)" x1="180" x2="218" y1="95" y2="95"></line>
+<line class="s-line" marker-end="url(#m14e)" x1="380" x2="418" y1="95" y2="95"></line>
+<text class="s-t2" text-anchor="middle" x="500" y="142">contador: 1 lectura al mes</text>
+<text class="s-tm" x="20" y="170">→ flujo de energía</text>
+</svg>
+</div>
+<p>“generación-distribución-uso” 的模式几十年没变：信息<b>单向</b>流动，家庭的用电情况不反馈回来。发电能力和消费不平衡，部分电能就浪费了。</p>
+</div>
+<div class="panel" data-pane="sg" hidden="">
+<div class="fig">
+<svg aria-label="智能电网：在发电、配电、用电之间加上双向实时数据，用户变成产消者，可再生能源接入配电网，智能电表每 15 分钟读数" role="img" viewbox="0 0 600 180">
+<defs>
+<marker id="m14f" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<path class="s-dash" d="M500,68 L500,44 L100,44 L100,68" marker-end="url(#m14f)" marker-start="url(#m14f)"></path>
+<text class="s-ta" text-anchor="middle" x="300" y="34">datos bidireccionales en tiempo real</text>
+<rect class="s-box" height="50" rx="6" width="160" x="20" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="92">Generación</text>
+<text class="s-t2" text-anchor="middle" x="100" y="110">centrales</text>
+<rect class="s-box" height="50" rx="6" width="160" x="220" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="100">Distribución</text>
+<rect class="s-box" height="50" rx="6" width="160" x="420" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="500" y="92">Prosumidores</text>
+<text class="s-t2" text-anchor="middle" x="500" y="110">consumen y producen</text>
+<line class="s-line" marker-end="url(#m14f)" x1="180" x2="218" y1="95" y2="95"></line>
+<line class="s-line" marker-end="url(#m14f)" x1="380" x2="418" y1="95" y2="95"></line>
+<rect class="s-soft" height="30" rx="4" width="120" x="240" y="140"></rect>
+<text class="s-t2" text-anchor="middle" x="300" y="160">renovables</text>
+<line class="s-line" marker-end="url(#m14f)" x1="300" x2="300" y1="140" y2="122"></line>
+<text class="s-t2" text-anchor="middle" x="500" y="142">contador inteligente:</text>
+<text class="s-t2" text-anchor="middle" x="500" y="160">lectura cada 15 min</text>
+<text class="s-tm" x="20" y="170">→ energía  - - datos</text>
+</svg>
+</div>
+<p><b class="t">Smart Energy Grid</b> 打破单向结构，改成<b>双向通信</b>，实时让生产匹配消费，改善配电、降低开支。前提是家里有能测量瞬时用电、并能接入网络的设备；电表读数可以从一个月一次变成每 15 分钟一次。</p>
+</div>
+</div>
+<p class="aside">这两种电网的图都是示意图。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Smart city <span class="tag">1.4.5</span></h2>
+<div class="note">
+<span class="lbl">定义 · 1.4.5</span>
+<p><b class="t">smart city (EN) / ciudad inteligente (ES)</b>——智慧城市：技术部署在城市的街道上，用来<b>提升向市民提供的服务的质量和管理</b>，从而带来<b>更高的生活质量</b>的城市。</p>
+<p class="aside">smart cities 和 smart homes 都是 IoT 的重要应用：节能与能效、服务管理、安全等。</p>
+</div>
+<div class="panel">
+<h3>更完整的定义 <span class="tag plain">补充</span></h3>
+<p>smart city 用 TIC 让它的<b>关键基础设施、组成部分和公共服务</b>更具互动性、更高效，并让市民更了解它们。</p>
+<ul>
+<li>它和 IoT 紧密相连：两者都以 <b>M2M</b> 通信为基础，所以 smart city 被称为“IoT 的第一步”。</li>
+<li>描述性的说法：一个拥有<b>数以百万计的传感器和执行器</b>的城市空间，其中也包括人和他们的手机；城市能“听懂”正在发生什么，从而做出更好的决策。</li>
+<li>“smart”不是一个达成就结束的目标，而是各方持续改进的过程。</li>
+</ul>
+</div>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">为什么 · 补充</span><h3>城市的分量</h3><p>2007 年 7 月城市人口超过农村人口；到 2050 年约 70% 的人口住在城市。城市只占全球 2% 的土地，却消耗约 75% 的能源，产生约 80% 的温室气体。</p></div>
+<div class="cell"><span class="eyebrow">做什么 · 补充</span><h3>常见的领域</h3><p>城市交通、能效与环境、基础设施和公共建筑管理、政府与市民、公共安全、健康、教育与文化、电子商务。</p></div>
+<div class="cell"><span class="eyebrow">怎么做 · 补充</span><h3>整体规划</h3><p>要有城市的整体视角，按优先级逐步部署服务，避免形成互不相通的信息孤岛；模式可以是纯公共的，也可以是公私合作。</p></div>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>实例：Santander 与 Málaga <span class="tag">1.4.6</span></h2>
+<p>“分析”一个实例，可以按同一个框架来拆：</p>
+<div class="flow">
+<div class="cell"><span class="eyebrow">问题</span><p>城市要解决什么？例：司机找不到车位，交通拥堵。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">感知与数据</span><p>部署什么传感器、谁提供数据？例：路面停车位传感器。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">服务与效益</span><p>给谁、带来什么？例：通过路边面板、手机应用、GPS 引导司机去空位。</p></div>
+</div>
+<p class="aside">再加一问：谁出钱、谁参与（Santander 的项目多数由欧盟资助，公私合作）。</p>
+<p><b>Santander</b> 的项目。点开每个项目：</p>
+<div class="stack" data-explain="ss">
+<div aria-label="Santander 的项目" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="ss" type="button">SmartSantander</button>
+<button aria-pressed="false" class="chip" data-key="os" type="button">OutSmart</button>
+<button aria-pressed="false" class="chip" data-key="bu" type="button">Burba</button>
+<button aria-pressed="false" class="chip" data-key="sr" type="button">Smart Search</button>
+<button aria-pressed="false" class="chip" data-key="nfc" type="button">Pago NFC</button>
+<button aria-pressed="false" class="chip" data-key="red" type="button">Red de Ciudades Inteligentes</button>
+</div>
+<div class="panel" data-panel="ss" hidden="">
+<h3>SmartSantander · 最重要的项目</h3>
+<p>欧盟资助，投资 880 万欧元，合作方包括 Telefónica、Alcatel、Ericsson、TTI Norte、Universidad de Cantabria 等。目标是在城市里部署一个<b>全球独一无二的实验平台</b>：在全城安装 <b>20 000 个传感器</b>，用来试验 smart city 的典型应用和服务（其中 Santander 本地 12 000 个 IoT 设备，另在 Belgrado、Guildford、Lübeck 部署）。第一年已部署 3 000 个。</p>
+<ul>
+<li><b>停车</b>：传感器检测路面空车位，通过面板、手机应用（iOS、Android）或 GPS 引导司机。</li>
+<li><b>智能灌溉</b>：在 parque de las Llamas 优化用水。</li>
+<li><b>增强现实</b>：用二维码和 NFC 标签提供旅游、商业、古迹信息，整座城市变成信息点。</li>
+<li><b>参与式感知</b>（“pace of the city”）：市民用智能手机充当移动传感器。</li>
+<li><b>移动感知</b>：在市政车辆、出租车、公交车、警车上装传感器，测量环境参数。</li>
+</ul>
+</div>
+<div class="panel" data-panel="os" hidden="">
+<h3>OutSmart · 能效</h3>
+<p>欧洲项目，在 Santander 应用于<b>公共照明</b>。其他参与城市各有方向：Berlín（垃圾收集）、Birmingham（交通，特别是自行车）、Trento（水资源）、Aarhus（下水道和水）。</p>
+</div>
+<div class="panel" data-panel="bu" hidden="">
+<h3>Burba · 智能垃圾收集</h3>
+<p>在一个街区试验<b>“智能”垃圾箱</b>：测量各种参数，用来规划收运路线、确定所需垃圾箱和车辆的数量、选择最合适的收运时间。参与方来自中国、意大利、葡萄牙和西班牙。</p>
+</div>
+<div class="panel" data-panel="sr" hidden="">
+<h3>Smart Search · “活的橱窗”</h3>
+<p>开发一个<b>搜索引擎</b>，为 IoT 提供情境：把 Internet 上发生的事（社交网络）和街上发生的事（摄像头的实时图像）联系起来，还可以叠加 SmartSantander 的交通、环境数据。预算 410 万欧元（欧盟出 270 万），为期 36 个月。</p>
+</div>
+<div class="panel" data-panel="nfc" hidden="">
+<h3>Pago NFC · 手机支付</h3>
+<p>西班牙首创的试点：先在公共交通、商店和 Universidad de Cantabria 校园用手机贴近终端付款，SIM 卡变成能存多张银行卡的虚拟钱包；之后扩展到市政服务，如预订体育设施、缴纳市政税费、OLA 停车费、图书馆。</p>
+</div>
+<div class="panel" data-panel="red" hidden="">
+<h3>Red de Ciudades Inteligentes · 智慧城市网络</h3>
+<p>由 Santander 主持，成员包括 Logroño、Madrid、Barcelona、Sevilla、Valencia、<b>Málaga</b> 等。目的：交流经验；推动用新技术改善公共服务；为企业建立稳定的法律框架，让一个城市开发的应用能用于全国市场；联合申请欧洲资金、节约成本。</p>
+</div>
+</div>
+<p><b>配对：</b>这个服务属于哪个项目？</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="ss" type="button">检测空车位并引导司机</button>
+<button data-l="os" type="button">提高公共照明的能效</button>
+<button data-l="bu" type="button">智能垃圾箱，规划收运路线</button>
+<button data-l="sr" type="button">把社交网络和摄像头的信息联系起来的搜索引擎</button>
+<button data-l="nfc" type="button">手机贴近终端就能付款</button>
+</div>
+<div class="col">
+<button data-r="sr" type="button">Smart Search</button>
+<button data-r="bu" type="button">Burba</button>
+<button data-r="nfc" type="button">Pago NFC</button>
+<button data-r="ss" type="button">SmartSantander</button>
+<button data-r="os" type="button">OutSmart</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<div class="panel">
+<h3>Málaga Smart City <span class="tag plain">补充</span></h3>
+<p>Málaga 是 Santander 智慧城市网络的成员；它的能源项目被称为能效和能源管理领域<b>世界级的参考</b>。项目 2009 年启动，预算 3 100 万欧元，为期四年，包括四条线：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Smart Grids</span><p>配电的智能管理：智能电表、远程管理，实时、自动地操作配电网。</p></div>
+<div class="cell"><span class="eyebrow">Smart Generation and Storage</span><p>可再生能源的自发电和储能：公共建筑装光伏、酒店用微型发电、微型风电；电池储能供建筑空调、公共照明和电动交通使用。</p></div>
+<div class="cell"><span class="eyebrow">Smart Energy Management</span><p>终端用能的高效管理；推广电动汽车，安装充电桩、组建车队。</p></div>
+<div class="cell"><span class="eyebrow">Smart and Informed Customer</span><p>让用户掌握用电数据，第一次成为电力系统中主动的一方，负责任地用电。</p></div>
+</div>
+<p>当时已受益的用户：300 个工业用户、900 家服务业企业、11 000 个家庭用户。目标是落实欧盟 20/20/20 计划，对 Málaga 来说相当于每年少排放 6 000 吨 CO₂。</p>
+</div>
+<p><span class="tag plain">补充</span> 用 Málaga Smart City 的数据，可以估算 smart city 能省多少。先猜，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>应用领域</th><th>节约（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>公园和绿地灌溉</td><td class="ans">用水减少 15%</td></tr>
+<tr class="reveal"><td>垃圾收集</td><td class="ans">运输需求减少 25%（按垃圾类型）</td></tr>
+<tr class="reveal"><td>交通管理</td><td class="ans">CO₂ 排放减少 17%</td></tr>
+<tr class="reveal"><td>Smart Metering</td><td class="ans">电耗减少 10%，家庭用水减少 7%</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>IPv4 与 IPv6 <span class="tag">1.4.7</span><span class="tag plain">ejercicio</span></h2>
+<div class="note warm">
+<span class="lbl">先说清楚</span>
+<p>这个目标标注为 ejercicio：先看 IPv6 和 IoT 的几条要点，再用对比表、计算器和地址转换器练习。</p>
+</div>
+<div class="note">
+<span class="lbl">要点</span>
+<ul>
+<li><b>设备数爆炸。</b>按 Cisco 2011 年的预测，联网设备 2010 年 125 亿、2015 年 250 亿、2020 年 500 亿，而世界人口只有 68 亿、72 亿、76 亿（下表）。IPv4 的约 43 亿个地址显然不够分。</li>
+<li><b>IPv6 是实现 IoT 的关键。</b>2015 年约 250 亿、2020 年约 500 亿台设备联网的预测，是在 UIT 2013 年一场题为“La necesidad de más direcciones IP”（需要更多 IP 地址）的会议上发布的；部署 IPv6 被认为对实现 IoT 必不可少。</li>
+<li>§1 那棵 IoT 树的 Connectivity 一栏也列出了 6LoWPAN。IETF 为 IoT 制定的协议包括：低功耗无线个域网上的 IPv6、低功耗有损网络的 IPv6 路由协议、受限应用协议。M23 Redes 会讲到其中的 <b class="t">6LoWPAN</b> 和 <b class="t">CoAP</b>。</li>
+<li><span class="tag plain">补充</span> 云、传感器、新的 IPv6 协议、开源硬件和智能手机共同推动 IoT；Steven Leibson 说，“podríamos asignar una dirección IPv6 a cada átomo en la superficie de la tierra”，而且还够再分给 100 个地球。</li>
+</ul>
+</div>
+<p>先猜，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>年份</th><th>世界人口</th><th>联网设备（点击揭晓）</th><th>每人设备数</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>2003</td><td>63 亿</td><td class="ans">5 亿</td><td>0.08</td></tr>
+<tr class="reveal"><td>2010</td><td>68 亿</td><td class="ans">125 亿</td><td>1.84</td></tr>
+<tr class="reveal"><td>2015</td><td>72 亿</td><td class="ans">250 亿</td><td>3.47</td></tr>
+<tr class="reveal"><td>2020</td><td>76 亿</td><td class="ans">500 亿</td><td>6.58</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure>
+<div class="fig">
+<svg aria-label="地址长度按比例对比：IPv4 是 4 组 8 位，共 32 位；IPv6 是 8 组 16 位，共 128 位" role="img" viewbox="0 0 640 156">
+<text class="s-t" text-anchor="end" x="88" y="46">IPv4</text>
+<rect class="s-box" height="26" width="32.5" x="100" y="28"></rect>
+<rect class="s-box" height="26" width="32.5" x="132.5" y="28"></rect>
+<rect class="s-box" height="26" width="32.5" x="165" y="28"></rect>
+<rect class="s-box" height="26" width="32.5" x="197.5" y="28"></rect>
+<text class="s-tm" text-anchor="middle" x="116.25" y="46">8</text>
+<text class="s-tm" text-anchor="middle" x="148.75" y="46">8</text>
+<text class="s-tm" text-anchor="middle" x="181.25" y="46">8</text>
+<text class="s-tm" text-anchor="middle" x="213.75" y="46">8</text>
+<text class="s-t2" x="244" y="46">4 × 8 = 32 bits · ≈ 4.3 × 10⁹ direcciones</text>
+<text class="s-t" text-anchor="end" x="88" y="110">IPv6</text>
+<rect class="s-soft" height="26" width="65" x="100" y="92"></rect>
+<rect class="s-box" height="26" width="65" x="165" y="92"></rect>
+<rect class="s-soft" height="26" width="65" x="230" y="92"></rect>
+<rect class="s-box" height="26" width="65" x="295" y="92"></rect>
+<rect class="s-soft" height="26" width="65" x="360" y="92"></rect>
+<rect class="s-box" height="26" width="65" x="425" y="92"></rect>
+<rect class="s-soft" height="26" width="65" x="490" y="92"></rect>
+<rect class="s-box" height="26" width="65" x="555" y="92"></rect>
+<text class="s-tm" text-anchor="middle" x="132.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="197.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="262.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="327.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="392.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="457.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="522.5" y="110">16</text>
+<text class="s-tm" text-anchor="middle" x="587.5" y="110">16</text>
+<text class="s-t2" x="100" y="142">8 × 16 = 128 bits · ≈ 3.4 × 10³⁸ direcciones</text>
+</svg>
+</div>
+<figcaption>按比例画的地址长度：IPv4 写成 4 个十进制数，用点分隔，如 <code>192.0.2.1</code>；IPv6 写成 8 组十六进制数，用冒号分隔，如 <code>2001:db8::1</code>。位数只多 4 倍，地址数却多 2<sup>96</sup> 倍。</figcaption>
+</figure>
+<p><b>计算器：</b>地址有 n 位，就有 2<sup>n</sup> 个地址。拖动或输入位数，再选一个设备数，看看够不够分。</p>
+<div class="calc" id="ipcalc">
+<div class="calc-row">
+<label class="lbl" for="m14-bits">地址位数 n</label>
+<input aria-label="地址位数滑块" id="m14-bits-r" max="128" min="1" type="range" value="32"/>
+<input id="m14-bits" max="128" min="1" step="1" type="number" value="32"/>
+</div>
+<div aria-label="位数预设" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-n="32" type="button">IPv4 · 32</button>
+<button aria-pressed="false" class="chip" data-n="64" type="button">64 <small>IPv6 子网的主机部分</small></button>
+<button aria-pressed="false" class="chip" data-n="128" type="button">IPv6 · 128</button>
+</div>
+<div class="calc-row">
+<label class="lbl" for="m14-dev">设备数 D</label>
+<input class="wide-in" id="m14-dev" min="1" step="1" type="number" value="50000000000"/>
+</div>
+<div aria-label="设备数预设" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-d="8000000000" type="button">80 亿 <small>全球智能手机</small></button>
+<button aria-pressed="false" class="chip" data-d="12500000000" type="button">125 亿 <small>2010 年联网设备</small></button>
+<button aria-pressed="false" class="chip" data-d="50000000000" type="button">500 亿 <small>2020 年预测</small></button>
+</div>
+<div aria-live="polite" class="res">
+<div class="cell"><span class="eyebrow">地址总数 N</span><span class="num" data-out="sci"></span><span class="mono aside" data-out="exact"></span></div>
+<div class="cell"><span class="eyebrow">和 IPv4 比</span><span class="num" data-out="ratio"></span></div>
+<div class="cell"><span class="eyebrow">每台设备分到</span><span class="num" data-out="per"></span><span data-out="verdict"></span></div>
+</div>
+<p class="formula" data-out="formula"></p>
+</div>
+<p class="aside">64 位预设的含义：IPv6 地址通常分成 64 位网络前缀和 64 位接口标识，所以一个子网就有 2<sup>64</sup> 个地址。</p>
+<p><b>地址写法转换：</b>输入一个 IPv4 或 IPv6 地址，看它的完整写法、压缩写法和二进制。</p>
+<div class="calc" id="ipconv">
+<div class="calc-row">
+<label class="lbl" for="m14-addr">地址</label>
+<input autocapitalize="off" autocomplete="off" id="m14-addr" spellcheck="false" type="text" value="192.168.1.10"/>
+</div>
+<div aria-label="示例地址" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-addr="192.168.1.10" type="button">192.168.1.10</button>
+<button aria-pressed="false" class="chip" data-addr="2001:0db8:0000:0000:0000:ff00:0042:8329" type="button">2001:0db8:0000:…:8329</button>
+<button aria-pressed="false" class="chip" data-addr="fe80::1" type="button">fe80::1</button>
+<button aria-pressed="false" class="chip" data-addr="::1" type="button">::1</button>
+<button aria-pressed="false" class="chip" data-addr="::ffff:192.0.2.1" type="button">::ffff:192.0.2.1</button>
+</div>
+<p><span class="verdict" data-out="kind"></span></p>
+<div class="tbl-wrap">
+<table class="conv">
+<tbody aria-live="polite"></tbody>
+</table>
+</div>
+</div>
+<p class="aside">IPv6 每组开头的 0 可以省略；连续两组以上的全 0 可以用 <code>::</code> 代替，但一个地址里 <code>::</code> 只能出现一次（否则不知道每处代表几组）。规范写法（RFC 5952）用小写字母，并压缩最长的那一段 0。“类型提示”只识别几类常见的特殊地址。</p>
+<p><b>对比表：</b>先想 IPv6 一栏，再<b>点击</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>方面</th><th>IPv4</th><th>IPv6（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>地址长度</td><td>32 位</td><td class="ans">128 位</td></tr>
+<tr class="reveal"><td>地址数量</td><td>2<sup>32</sup> ≈ 4.3 × 10<sup>9</sup></td><td class="ans">2<sup>128</sup> ≈ 3.4 × 10<sup>38</sup></td></tr>
+<tr class="reveal"><td>写法</td><td>点分十进制 <code>192.0.2.1</code></td><td class="ans">8 组十六进制，冒号分隔，可用 :: 压缩</td></tr>
+<tr class="reveal"><td>基本报头</td><td>20–60 字节，长度可变</td><td class="ans">固定 40 字节</td></tr>
+<tr class="reveal"><td>分片</td><td>路由器可以分片</td><td class="ans">路由器不分片，主机按路径 MTU 发包</td></tr>
+<tr class="reveal"><td>最小链路 MTU</td><td>68 字节</td><td class="ans">1 280 字节</td></tr>
+<tr class="reveal"><td>地址不够怎么办</td><td>NAT：多台设备共用一个公网地址</td><td class="ans">地址充足，每个“物”都能有全球唯一的地址</td></tr>
+<tr class="reveal"><td>自动配置</td><td>手动或 DHCP</td><td class="ans">还可以无状态自动配置（SLAAC）</td></tr>
+<tr class="reveal"><td>低功耗 IoT 网络</td><td>—</td><td class="ans">6LoWPAN：在 IEEE 802.15.4 上传 IPv6（见 M23 Redes）</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">为什么低功耗 IoT 网络要专门的 6LoWPAN？IPv6 路由器不像 IPv4 路由器那样对外发的包分片；所有链路的最小 MTU 是 1 280 字节，而 IEEE 802.15.4 整帧只有 127 字节，40 字节的 IPv6 固定报头占去很大一块，所以要有 6LoWPAN 适配层来分片重组、压缩报头。</p>
+<p class="aside">两个日期：IANA 在 2011 年 2 月分配完最后的 IPv4 地址块；2011 年 6 月 8 日是 World IPv6 Day，各大网站一起做了 24 小时的 IPv6 试运行。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M14">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>按 §1 的时间线，“Internet de las cosas”这个说法是谁创造的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Xerox PARC 的 Mark Weiser</button>
+<button data-o="b" type="button"><span class="k">B</span>NSF 的 Helen Gill</button>
+<button data-o="c" type="button"><span class="k">C</span>MIT Auto-ID Center 的团队（包括 Kevin Ashton）</button>
+<button data-o="d" type="button"><span class="k">D</span>NASA 的 John Vickers</button>
+</div>
+<p class="why"><b>C。</b>1999 年成立的 Auto-ID Center 团队创造了这个说法（§1）。Weiser 对应泛在计算，Gill 对应 CPS，Vickers 对应 digital twin。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>IoT 起步时想做的是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>用超文本把所有计算机连起来</button>
+<button data-o="b" type="button"><span class="k">B</span>给任何东西加上能从 Internet 读取的标签，比如 RFID</button>
+<button data-o="c" type="button"><span class="k">C</span>让工业控制只用私有协议</button>
+<button data-o="d" type="button"><span class="k">D</span>用 blockchain 让 web 去中心化</button>
+</div>
+<p class="why"><b>B。</b>IoT 开始时想的就是给任何物体加上可从 Internet 读取的标签，比如给奶牛挂 RFID 来定位（§1）。A 是 WWW，D 是 web3，C 正好相反：工业自动化是从私有方案转向 IP。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>“Combinación de dispositivos, software y servicios que funcionan con una intervención humana escasa o nula”是哪个概念的定义？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>IoT（UIT 的定义）</button>
+<button data-o="b" type="button"><span class="k">B</span>sistema ciberfísico</button>
+<button data-o="c" type="button"><span class="k">C</span>gemelo digital</button>
+<button data-o="d" type="button"><span class="k">D</span>M2M（oneM2M 的定义）</button>
+</div>
+<p class="why"><b>D。</b>oneM2M 对 M2M 的定义（§2）。UIT 对 IoT 的定义关键词是 “infraestructura mundial de la sociedad de la información”。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>M2M 和 IoT 是什么关系？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>M2M 只是 IoT 的一部分，有人称它是 IoT 的 facilitador 或“tuberías”</button>
+<button data-o="b" type="button"><span class="k">B</span>IoT 是 M2M 的一部分</button>
+<button data-o="c" type="button"><span class="k">C</span>两者是同义词</button>
+<button data-o="d" type="button"><span class="k">D</span>两者没有关系</button>
+</div>
+<p class="why"><b>A。</b>常有人把 M2M 和 IoT 混淆，但 M2M 只是 IoT 的一部分（§2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>关于 CPS，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CPS 就是 ciberespacio 的另一种说法</button>
+<button data-o="b" type="button"><span class="k">B</span>CPS 这个词是德国政府 2011 年提出的</button>
+<button data-o="c" type="button"><span class="k">C</span>CPS 是理论概念，不谈具体实现或应用</button>
+<button data-o="d" type="button"><span class="k">D</span>CPS 里计算不会影响物理过程</button>
+</div>
+<p class="why"><b>C。</b>见 §3。A 是常见误解；2011 年德国提出的是 Industria 4.0；CPS 恰恰有反馈回路，计算和物理过程互相影响。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>下面哪一项描述的是 gemelo digital？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>物理、生物和人工系统，其运行由一个 núcleo informático 集成、监督和/或控制</button>
+<button data-o="b" type="button"><span class="k">B</span>信息社会的全球基础设施，把物理和虚拟的“物”互联起来</button>
+<button data-o="c" type="button"><span class="k">C</span>设备、软件和服务的组合，几乎不需要人工干预</button>
+<button data-o="d" type="button"><span class="k">D</span>对象或系统的虚拟表示，覆盖生命周期、用实时数据更新，并用仿真、ML 和推理辅助决策</button>
+</div>
+<p class="why"><b>D。</b>数字孪生的定义（§3、§4）。A 是 CPS，B 是 IoT，C 是 M2M。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>Big Data 的定义是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>以经济的方式、高速地采集和分析来自多个异构来源的大量数据的技术与策略的集合</button>
+<button data-o="b" type="button"><span class="k">B</span>任何超过 1 GB 的数据库</button>
+<button data-o="c" type="button"><span class="k">C</span>一种 IaaS 云服务</button>
+<button data-o="d" type="button"><span class="k">D</span>让网络从数据中学习的 deep learning</button>
+</div>
+<p class="why"><b>A。</b>§5 的定义。deep learning 是 §1 “y más allá” 里列出的另一项创新。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>smart grid 和传统电网的关键区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>smart grid 只用可再生能源</button>
+<button data-o="b" type="button"><span class="k">B</span>smart grid 借助 TIC 预测并智能响应生产者、消费者和 prosumidores 的行为，信息双向流动</button>
+<button data-o="c" type="button"><span class="k">C</span>smart grid 取消了配电网</button>
+<button data-o="d" type="button"><span class="k">D</span>smart grid 的信息只从电厂流向用户</button>
+</div>
+<p class="why"><b>B。</b>§6 的定义：传统电网信息单向，smart grid 改成双向。D 描述的正是传统电网。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>按 §7 的定义，smart city 是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>技术部署在街道上、用来提升市民服务的质量和管理、从而提高生活质量的城市</button>
+<button data-o="b" type="button"><span class="k">B</span>人口超过 1 000 万的城市</button>
+<button data-o="c" type="button"><span class="k">C</span>只用可再生能源供电的城市</button>
+<button data-o="d" type="button"><span class="k">D</span>所有市民都用 NFC 付款的城市</button>
+</div>
+<p class="why"><b>A。</b>§7 的定义。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>SmartSantander 项目的核心是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一个用手机 NFC 付款的系统</button>
+<button data-o="b" type="button"><span class="k">B</span>在城市里部署 20 000 个传感器、用来试验 smart city 应用和服务的实验平台</button>
+<button data-o="c" type="button"><span class="k">C</span>把社交网络和摄像头信息联系起来的搜索引擎</button>
+<button data-o="d" type="button"><span class="k">D</span>智能垃圾箱</button>
+</div>
+<p class="why"><b>B。</b>A 是 NFC 试点，C 是 Smart Search，D 是 Burba（§8）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>Málaga Smart City 主要聚焦什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>停车位引导</button>
+<button data-o="b" type="button"><span class="k">B</span>增强现实旅游信息</button>
+<button data-o="c" type="button"><span class="k">C</span>手机支付</button>
+<button data-o="d" type="button"><span class="k">D</span>能效：smart grid、可再生能源的发电与储能、智能电表、让用户负责任地用电</button>
+</div>
+<p class="why"><b>D。</b>见 §8 的 Málaga Smart City。A、B、C 都是 Santander 的项目。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>IPv6 的地址数量是 IPv4 的多少倍？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>4 倍</button>
+<button data-o="b" type="button"><span class="k">B</span>96 倍</button>
+<button data-o="c" type="button"><span class="k">C</span>2<sup>96</sup> 倍</button>
+<button data-o="d" type="button"><span class="k">D</span>2<sup>128</sup> 倍</button>
+</div>
+<p class="why"><b>C。</b>2<sup>128</sup> ÷ 2<sup>32</sup> = 2<sup>96</sup> ≈ 7.9 × 10<sup>28</sup>。4 倍是位数之比，不是地址数之比（§9）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">IoT<small>Internet of Things · Internet de las Cosas</small></span><span class="back"><b>物联网</b><br/>UIT：信息社会的全球基础设施，把物理和虚拟的“物”互联，提供高级服务。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">M2M<small>Machine To Machine</small></span><span class="back"><b>机器对机器</b><br/>设备、软件和服务的组合，几乎不需要人工干预；IoT 的一部分。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">oneM2M</span><span class="back"><b>M2M 标准化联盟</b><br/>大型标准化组织的国际联盟，2012 年 7 月成立，给出 M2M 的定义。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RFID<small>Radio Frequency IDentification</small></span><span class="back"><b>射频识别</b><br/>IoT 起步的关键：给物体贴上可从 Internet 读取的标签。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">informática ubicua<small>ubiquitous computing</small></span><span class="back"><b>泛在计算</b><br/>Weiser 1988 年提出：计算无处不在，又融入日常、不被察觉。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">WSN<small>Wireless Sensor Network</small></span><span class="back"><b>无线传感器网络</b><br/>IoT 最基础的场景；计算和存储能力的不足由云补足。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sistema ciberfísico<small>CPS · cyber-physical system</small></span><span class="back"><b>信息物理系统</b><br/>运行由计算核心集成和监控的物理系统，实时、带反馈回路。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">cibernética<small>cybernetics</small></span><span class="back"><b>控制论</b><br/>Wiener 推广的、研究机器和人中控制与通信的科学；kybernetes＝舵手。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Industria 4.0</span><span class="back"><b>工业 4.0</b><br/>德国政府 2011 年提出：以 CPS 为基础的第四次工业革命。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gemelo digital<small>digital twin</small></span><span class="back"><b>数字孪生</b><br/>覆盖生命周期、随实时数据更新的虚拟表示，辅助决策；比 CPS 更进一步。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Big Data</span><span class="back"><b>大数据</b><br/>以经济的方式高速采集和分析海量异构数据的技术与策略。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Cloud Computing</span><span class="back"><b>云计算</b><br/>提供几乎无限的计算和存储能力，让 Big Data 和 IoT 成为可能。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">smart grid<small>red eléctrica inteligente</small></span><span class="back"><b>智能电网</b><br/>能预测并智能响应所有用户行为的新一代电网，信息双向流动。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">prosumidor<small>prosumer</small></span><span class="back"><b>产消者</b><br/>既消费又生产电能的用户。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">objetivo 20/20/20</span><span class="back"><b>欧盟 20/20/20 目标</b><br/>CO₂ 比 1990 年减 20%、能耗减 20%、可再生能源占 20%。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">smart city<small>ciudad inteligente</small></span><span class="back"><b>智慧城市</b><br/>技术部署在街道上，提升市民服务的质量和管理，提高生活质量。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IPv6<small>Internet Protocol version 6</small></span><span class="back"><b>第 6 版互联网协议</b><br/>128 位地址；部署 IPv6 被认为对实现 IoT 必不可少。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">6LoWPAN<small>IPv6 over Low-power Wireless Personal Area Networks</small></span><span class="back"><b>低功耗无线个域网上的 IPv6</b><br/>让 IPv6 数据包能在 IEEE 802.15.4 网络上传输。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M14"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var box = document.getElementById("tl");
+  if (!box) return;
+  var msgs = Array.prototype.slice.call(box.querySelectorAll(".msg"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var T = [
+    "共 12 个节点。点「下一步」逐个看，当前节点会高亮；也可以直接点时间线上的节点。",
+    "<b>1960 年代 · Licklider</b>：J.C.R. Licklider 提出一个全球计算机网络，叫 <i>Intergalactic Computer Network</i>。它以美国军方的 ARPANET 为基础，后来发展成今天的 Internet。",
+    "<b>1980 年代初 · Mobitex</b>：瑞典 Televerket（后来与 Ericsson 合作）开发的低速分组无线数据网，提供遥测服务，是最早直接服务 M2M 市场的技术之一。基本的遥测和工业控制系统可以看作 M2M 的前身。",
+    "<b>1988 / 1991 · Weiser</b>：Xerox PARC 的 Mark Weiser 1988 年构想了 <b>informática ubicua</b>（泛在计算），1991 年在 Scientific American 发表 “The Computer for the 21st Century”。他说泛在计算需要三样东西：低功耗计算机、把它们连起来的网络、实现泛在应用的系统。这正对应 IoT 架构的设备、网络和应用三个领域。",
+    "<b>1990 年代 · WWW 与 IP</b>：超文本让所有联网计算机上的信息都能访问，Internet 变成 World Wide Web。同一时期，私有的工业自动化系统开始被基于 IP 等标准的系统取代。",
+    "<b>1999 · Auto-ID Center</b>：约 1998 年，MIT 的 Sanjay Sarma 和 David Brock 想到给各种东西贴上廉价 RFID 标签并连到 Internet。1999 年 MIT 成立 Auto-ID Center，团队中的 Kevin Ashton 等人创造了 “Internet de las cosas” 这个说法；目标之一是用 EPC 取代条形码 UPC。IoT 起步时想的就是给任何东西加上能从 Internet 读取的标签，比如给奶牛挂 RFID 来定位。",
+    "<b>2000 年代初 · M2M</b>：工业遥测和控制大量使用蜂窝调制解调器（和许多其他网络）来监控各种设备，从自动售货机到水泵，这就叫 <b>M2M</b>。楼宇自动化同样从私有方案转向 IP；全球 80 多亿部智能手机也都基于 IP。",
+    "<b>2005 · UIT 报告</b>（补充）：UIT 的报告 “The Internet of Things” 说，连接从 anytime、any place、anyone 扩展到了 <b>anything</b>（三轴图见 §1 末尾的拼图和 §2），并列出四项使能技术：RFID、传感器、smart things（物体内嵌智能）、微型化与纳米技术。",
+    "<b>2006 · CPS</b>：美国 NSF 的 Helen Gill 提出 <b>sistema ciberfísico</b>（CPS）一词，指计算与物理过程的集成。",
+    "<b>2010 · digital twin</b>：NASA 的 John Vickers 创造了 digital twin 一词。此前 Gelernter 1992 年的书 <i>Mirror Worlds</i> 已有这种想法，Grieves 2003 年最早把它用于工业制造。",
+    "<b>2011 · Industria 4.0</b>：德国政府定义 Industria 4.0，即以 CPS 为基础的第四次工业革命。同年 6 月 8 日是 World IPv6 Day：各大网站一起做了 24 小时的 IPv6 全球试运行（补充）。",
+    "<b>2012 · UIT 定义</b>：UIT 在 2012 年 7 月 4 日发布 IoT 的定义，并强调 IoT 是一种“visión”，不是单一技术，有技术和社会两方面的影响。同年 7 月 oneM2M 成立。",
+    "<b>2020 · 500 亿台？</b>：Cisco 2011 年的预测：联网设备 2003 年 5 亿、2010 年 125 亿、2015 年 250 亿、2020 年 500 亿；按世界人口平均，每人 0.08 → 1.84 → 3.47 → 6.58 台；2003 到 2010 年之间，联网设备开始多于联网的人（“más dispositivos que personas conectados”）。Ericsson 同样预测 2020 年 500 亿台。设备这么多，就需要更多 IP 地址，这就引出 §9 的 IPv6。"
+  ];
+  var N = T.length - 1;
+  var i = 0;
+  function render() {
+    msgs.forEach(function (m) {
+      var s = +m.getAttribute("data-step");
+      m.classList.toggle("on", i > 0 && s === i);
+      m.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 个节点";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  msgs.forEach(function (m) {
+    function go() { i = +m.getAttribute("data-step"); render(); }
+    m.addEventListener("click", go);
+    m.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
+    });
+  });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("ipcalc");
+  if (!root) return;
+  function out(k) { return root.querySelector('[data-out="' + k + '"]'); }
+  if (typeof BigInt === "undefined") {
+    out("formula").textContent = "当前浏览器不支持 BigInt，无法精确计算。";
+    return;
+  }
+  var nIn = document.getElementById("m14-bits"), nR = document.getElementById("m14-bits-r"), dIn = document.getElementById("m14-dev");
+  var nChips = Array.prototype.slice.call(root.querySelectorAll("[data-n]"));
+  var dChips = Array.prototype.slice.call(root.querySelectorAll("[data-d]"));
+  var ONE = BigInt(1);
+  function pow2(n) { return ONE << BigInt(n); }
+  function group3(s) { return s.replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+  function sciStr(s) {
+    var e = s.length - 1;
+    var m = Number(s.slice(0, 16)) / Math.pow(10, Math.min(15, e));
+    var mt = m.toFixed(2);
+    if (mt === "10.00") { mt = "1.00"; e++; }
+    return e === 0 ? s : mt + " × 10<sup>" + e + "</sup>";
+  }
+  function sci(bi) { return sciStr(bi.toString()); }
+  function fmtNum(x) {
+    if (x >= 1e6) return sciStr(Math.round(x).toLocaleString("en-US", { useGrouping: false }));
+    if (x >= 100) return group3(String(Math.round(x)));
+    return String(Math.round(x * 10) / 10);
+  }
+  function clamp(v, a, b) { v = Math.round(v); if (isNaN(v)) v = a; return Math.max(a, Math.min(b, v)); }
+  function render(fromRange) {
+    var n = clamp(+(fromRange ? nR.value : nIn.value), 1, 128);
+    if (String(n) !== nIn.value) nIn.value = n;
+    nR.value = n;
+    var N = pow2(n);
+    var exact = group3(N.toString());
+    out("sci").innerHTML = "2<sup>" + n + "</sup> ≈ " + sci(N);
+    out("exact").textContent = "精确值：" + exact;
+    if (n >= 32) {
+      var k = n - 32;
+      out("ratio").innerHTML = k === 0 ? "正好是 IPv4（2<sup>32</sup>）" : "IPv4 的 2<sup>" + k + "</sup> ≈ " + sci(pow2(k)) + " 倍";
+    } else {
+      out("ratio").innerHTML = "只有 IPv4 的 1 / 2<sup>" + (32 - n) + "</sup>";
+    }
+    var D = Math.floor(+dIn.value);
+    var verdict = out("verdict");
+    if (!(D >= 1) || D > 1e18) {
+      out("per").textContent = "—";
+      verdict.className = "verdict no";
+      verdict.textContent = "设备数请填 1 到 10¹⁸ 之间的整数";
+    } else {
+      var Db = BigInt(D);
+      var q = N / Db;
+      if (q >= ONE) {
+        out("per").innerHTML = "约 " + (q < BigInt(1000000) ? group3(q.toString()) : sci(q)) + " 个地址";
+        verdict.className = "verdict ok";
+        verdict.textContent = "够分";
+      } else {
+        out("per").innerHTML = "不到 1 个";
+        verdict.className = "verdict no";
+        verdict.textContent = "不够：平均每个地址要被约 " + (D / Number(N) >= 1e6 ? (D / Number(N)).toExponential(2) : fmtNum(D / Number(N))) + " 台设备共用";
+      }
+    }
+    out("formula").innerHTML =
+      "N = 2<sup>n</sup> = 2<sup>" + n + "</sup><br>" +
+      "每台设备 = N ÷ D = 2<sup>" + n + "</sup> ÷ " + group3(String(isNaN(D) ? 0 : D)) + "<br>" +
+      "IPv6 ÷ IPv4 = 2<sup>128</sup> ÷ 2<sup>32</sup> = 2<sup>96</sup> ≈ " + sci(pow2(96));
+    nChips.forEach(function (c) { c.setAttribute("aria-pressed", +c.getAttribute("data-n") === n ? "true" : "false"); });
+    dChips.forEach(function (c) { c.setAttribute("aria-pressed", +c.getAttribute("data-d") === D ? "true" : "false"); });
+  }
+  nIn.addEventListener("input", function () { render(false); });
+  nIn.addEventListener("change", function () { nIn.value = clamp(+nIn.value, 1, 128); render(false); });
+  nR.addEventListener("input", function () { render(true); });
+  dIn.addEventListener("input", function () { render(false); });
+  nChips.forEach(function (c) { c.addEventListener("click", function () { nIn.value = c.getAttribute("data-n"); render(false); }); });
+  dChips.forEach(function (c) { c.addEventListener("click", function () { dIn.value = c.getAttribute("data-d"); render(false); }); });
+  render(false);
+})();
+
+
+(function () {
+  var root = document.getElementById("ipconv");
+  if (!root) return;
+  var inp = document.getElementById("m14-addr");
+  var body = root.querySelector("tbody");
+  var kind = root.querySelector('[data-out="kind"]');
+  var chips = Array.prototype.slice.call(root.querySelectorAll("[data-addr]"));
+  function pad(s, n) { while (s.length < n) s = "0" + s; return s; }
+  function row(k, v, mono) {
+    var tr = document.createElement("tr");
+    var th = document.createElement("th"); th.textContent = k;
+    var td = document.createElement("td"); td.textContent = v;
+    if (mono) td.className = "mono";
+    tr.appendChild(th); tr.appendChild(td); body.appendChild(tr);
+  }
+  function parse4(s) {
+    var m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(s);
+    if (!m) return null;
+    var o = [+m[1], +m[2], +m[3], +m[4]];
+    for (var i = 0; i < 4; i++) if (o[i] > 255) return null;
+    return o;
+  }
+  function hexGroups(p) {
+    if (p === "") return [];
+    var g = p.split(":"), r = [];
+    for (var i = 0; i < g.length; i++) {
+      if (!/^[0-9a-f]{1,4}$/.test(g[i])) return null;
+      r.push(parseInt(g[i], 16));
+    }
+    return r;
+  }
+  function parse6(s) {
+    s = s.toLowerCase();
+    if (!/^[0-9a-f:.]+$/.test(s) || s.indexOf(":") === -1) return null;
+    var tail = [];
+    if (s.indexOf(".") !== -1) {
+      var lc = s.lastIndexOf(":");
+      var v4 = parse4(s.slice(lc + 1));
+      if (!v4) return null;
+      tail = [(v4[0] << 8) | v4[1], (v4[2] << 8) | v4[3]];
+      s = s.slice(0, lc + 1);
+      if (s.slice(-2) !== "::") s = s.slice(0, -1);
+    }
+    var parts = s.split("::");
+    if (parts.length > 2) return null;
+    var head = hexGroups(parts[0]);
+    if (head === null) return null;
+    if (parts.length === 2) {
+      var back = hexGroups(parts[1]);
+      if (back === null) return null;
+      back = back.concat(tail);
+      var miss = 8 - head.length - back.length;
+      if (miss < 1) return null;
+      var z = [];
+      for (var i = 0; i < miss; i++) z.push(0);
+      return head.concat(z, back);
+    }
+    var all = head.concat(tail);
+    return all.length === 8 ? all : null;
+  }
+  function compress(g) {
+    var best = -1, len = 0, i = 0;
+    while (i < 8) {
+      if (g[i] === 0) {
+        var j = i;
+        while (j < 8 && g[j] === 0) j++;
+        if (j - i > len) { best = i; len = j - i; }
+        i = j;
+      } else i++;
+    }
+    var h = g.map(function (x) { return x.toString(16); });
+    if (len < 2) return h.join(":");
+    return h.slice(0, best).join(":") + "::" + h.slice(best + len).join(":");
+  }
+  function hint4(o) {
+    if (o[0] === 10 || (o[0] === 172 && o[1] >= 16 && o[1] <= 31) || (o[0] === 192 && o[1] === 168)) return "私有地址（RFC 1918）：只在内网用，访问 Internet 要经过 NAT";
+    if (o[0] === 127) return "回环地址 loopback（本机）";
+    if (o[0] === 169 && o[1] === 254) return "链路本地地址 link-local";
+    if (o[0] === 0 && o[1] === 0 && o[2] === 0 && o[3] === 0) return "未指定地址";
+    if (o[0] >= 224 && o[0] <= 239) return "组播地址 multicast";
+    if (o[0] === 255 && o[1] === 255 && o[2] === 255 && o[3] === 255) return "受限广播地址";
+    if ((o[0] === 192 && o[1] === 0 && o[2] === 2) || (o[0] === 198 && o[1] === 51 && o[2] === 100) || (o[0] === 203 && o[1] === 0 && o[2] === 113)) return "文档示例专用地址（TEST-NET）";
+    return "未识别为常见的特殊地址，一般是公网地址";
+  }
+  function hint6(g) {
+    var z = function (a, b) { for (var i = a; i <= b; i++) if (g[i] !== 0) return false; return true; };
+    if (z(0, 7)) return "未指定地址 ::";
+    if (z(0, 6) && g[7] === 1) return "回环地址 loopback ::1";
+    if (z(0, 4) && g[5] === 0xffff) return "IPv4-mapped：在 IPv6 里表示一个 IPv4 地址（::ffff:0:0/96）";
+    if ((g[0] & 0xffc0) === 0xfe80) return "链路本地地址 link-local（fe80::/10）";
+    if ((g[0] & 0xfe00) === 0xfc00) return "唯一本地地址 ULA（fc00::/7），类似 IPv4 的私有地址";
+    if ((g[0] & 0xff00) === 0xff00) return "组播地址 multicast（ff00::/8）";
+    if (g[0] === 0x2001 && g[1] === 0x0db8) return "文档示例专用地址（2001:db8::/32）";
+    if ((g[0] & 0xe000) === 0x2000) return "全球单播地址 global unicast（2000::/3）";
+    return "未识别为常见类型";
+  }
+  function render() {
+    var s = inp.value.trim();
+    body.innerHTML = "";
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", c.getAttribute("data-addr") === s ? "true" : "false"); });
+    if (!s) { kind.className = "verdict"; kind.textContent = "请输入一个地址"; return; }
+    var o = parse4(s);
+    if (o) {
+      kind.className = "verdict ok";
+      kind.textContent = "IPv4 · 32 位";
+      var hi = ((o[0] << 8) | o[1]).toString(16), lo = ((o[2] << 8) | o[3]).toString(16);
+      row("点分十进制", o.join("."), true);
+      row("二进制（4 × 8 位）", o.map(function (x) { return pad(x.toString(2), 8); }).join("."), true);
+      row("十六进制", "0x" + o.map(function (x) { return pad(x.toString(16), 2); }).join("").toUpperCase(), true);
+      row("32 位整数", String(((o[0] * 256 + o[1]) * 256 + o[2]) * 256 + o[3]).replace(/\B(?=(\d{3})+(?!\d))/g, " "), true);
+      row("写成 IPv6（IPv4-mapped）", "::ffff:" + o.join(".") + "  =  ::ffff:" + hi + ":" + lo, true);
+      row("类型提示", hint4(o), false);
+      return;
+    }
+    var g = parse6(s);
+    if (g) {
+      kind.className = "verdict ok";
+      kind.textContent = "IPv6 · 128 位";
+      var mapped = g[5] === 0xffff && g[0] === 0 && g[1] === 0 && g[2] === 0 && g[3] === 0 && g[4] === 0;
+      row("完整写法（8 × 4 位十六进制）", g.map(function (x) { return pad(x.toString(16), 4); }).join(":"), true);
+      row("压缩写法（RFC 5952）", compress(g) + (mapped ? "  或  ::ffff:" + [g[6] >> 8, g[6] & 255, g[7] >> 8, g[7] & 255].join(".") : ""), true);
+      row("二进制（8 × 16 位）", g.map(function (x) { return pad(x.toString(2), 16); }).join(" "), true);
+      row("位数", "8 组 × 16 位 = 128 位", false);
+      row("类型提示", hint6(g), false);
+      return;
+    }
+    kind.className = "verdict no";
+    kind.textContent = "无法识别";
+    row("说明", "不是合法的 IPv4 地址（4 个 0–255 的十进制数，用点分隔），也不是合法的 IPv6 地址（最多 8 组 1–4 位十六进制数，用冒号分隔，:: 最多出现一次）。", false);
+  }
+  inp.addEventListener("input", render);
+  chips.forEach(function (c) { c.addEventListener("click", function () { inp.value = c.getAttribute("data-addr"); render(); }); });
+  render();
+})();
+</script>
+</body>
+</html>

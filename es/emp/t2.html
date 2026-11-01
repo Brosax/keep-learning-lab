@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T2 Multitarea: procesos y threads · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t2-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t2-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t2-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t2-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t2-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="Volver al portal OpenSEEI">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>Apuntes interactivos</a></span>
+<nav aria-label="Tema 2 Capítulos" class="chain" data-chain="T2"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Procesos ligeros · Hilos y sincronización</div>
+<h1>Multitarea: procesos y threads</h1>
+<p class="zh">Control de ejecución concurrente: desde fork y pthreads hasta cerrojos y variables de condición</p>
+<div class="meta">
+<span><b>10</b> Objetivos clave</span>
+<span>Lectura aprox. 25 min</span>
+</div>
+<p class="lede">En el mundo físico los sucesos ocurren de forma simultánea: llegan datos por la interfaz de red, el usuario pulsa un botón y los temporizadores avanzan. Un programa con un único hilo de ejecución difícilmente puede atender todas estas demandas con garantías temporales. Linux ofrece dos mecanismos fundamentales: crear múltiples <b class="t">procesos (processes)</b> aislados o lanzar múltiples <b class="t">hilos (threads)</b> compartiendo el mismo espacio de memoria. Este tema aborda cómo crearlos, sincronizarlos y gestionarlos, cómo planifica la CPU el sistema operativo y cómo resolver los tres grandes desafíos del acceso compartido: condiciones de carrera, sincronización y bloqueos mutuos.</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>Objetivos clave <span class="tag">Objetivos del tema</span></h2>
+<p>A continuación se detallan los conceptos esenciales de este tema. Tras estudiar cada sección, comprueba tu comprensión y pulsa el botón lateral para registrar tu avance.</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T2.1</span>
+<div class="txt"><span>Justificar la necesidad de multitarea en software de control; distinguir concurrencia de paralelismo y multitarea de grano grueso frente a grano fino</span><span class="es">Multitarea de grano grueso y de grano fino; concurrencia frente a paralelismo.</span><a href="#s1">→ §1 ¿Por qué multitarea?</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.1" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.2</span>
+<div class="txt"><span>Gestionar procesos desde la consola de comandos: ejecución en segundo plano (&amp;), persistencia (nohup), inspección (ps), prioridad (renice) y finalización (kill)</span><span class="es">Ejecución desde la línea de comandos.</span><a href="#s2">→ §2 Gestión de procesos</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.2" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.3</span>
+<div class="txt"><span>Explicar por qué la familia de llamadas <code>exec</code> no retorna en caso de éxito y comparar su modelo destructivo con la creación no destructiva mediante <code>posix_spawn</code></span><span class="es">Ejecución destructiva (exec) y no destructiva (posix_spawn).</span><a href="#s2b">→ §2 Ejecutar nuevos programas</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.3" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.4</span>
+<div class="txt"><span>Diferenciar proceso padre e hijo según el valor de retorno de <code>fork</code>; gestionar la sincronización y salida con <code>exit</code>, <code>wait</code> y <code>waitpid</code> para evitar procesos zombi</span><span class="es">Bifurcación: fork, exit, wait, waitpid.</span><a href="#s2c">→ §2 Bifurcación con fork</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.4" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.5</span>
+<div class="txt"><span>Identificar qué recursos comparten los hilos de un mismo proceso y cuáles son privados; enumerar las ventajas operativas de los hilos frente a los procesos</span><span class="es">¿Qué es un thread? Recursos compartidos y datos particulares.</span><a href="#s3">→ §3 Concepto de hilo (thread)</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.5" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.6</span>
+<div class="txt"><span>Crear y recolectar hilos POSIX con <code>pthread_create</code>, <code>pthread_exit</code> y <code>pthread_join</code>; pasar parámetros por puntero correctamente y enlazar con <code>-lpthread</code></span><span class="es">Creación, finalización y espera de threads.</span><a href="#s3b">→ §3 Ciclo de vida de un hilo</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.6" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.7</span>
+<div class="txt"><span>Describir el ciclo de estados de un hilo y la rodaja de tiempo; diferenciar las políticas SCHED_OTHER, SCHED_FIFO y SCHED_RR, y configurar prioridades con atributos</span><span class="es">Scheduling: políticas, prioridad, atributos, sched_yield.</span><a href="#s4">→ §4 Planificación (Scheduling)</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.7" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.8</span>
+<div class="txt"><span>Definir condición de carrera y sección crítica; proteger datos compartidos mediante cerrojos <code>pthread_mutex</code> diferenciando lock frente a trylock y tipos de mutex</span><span class="es">Sincronización: mutex.</span><a href="#s5">→ §5 Cerrojos (Mutex)</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.8" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.9</span>
+<div class="txt"><span>Sincronizar hilos mediante variables de condición y semáforos POSIX; estructurar el patrón clásico productor-consumidor</span><span class="es">Variables condicionales y semáforos.</span><a href="#s6">→ §6 Sincronización avanzada</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.9" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.10</span>
+<div class="txt"><span>Analizar las cuatro condiciones de Coffman que provocan bloqueo mutuo (deadlock) y aplicar técnicas de prevención (orden jerárquico de recursos); identificar fallos típicos</span><span class="es">Bloqueo mutuo (deadlock) y errores habituales.</span><a href="#s7">→ §7 Bloqueo mutuo y depuración</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.10" type="button"><span class="box"></span><span class="lab">Marcar dominado</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T2"><span class="val">0 / 10 dominados</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>¿Por qué necesitamos multitarea? <span class="tag">T2.1</span></h2>
+<p class="hook"><span class="zh">¿Puede un bucle while(1) atender la red, leer sensores y actualizar la pantalla sin retrasos?</span><span class="es">El mundo físico es concurrente.</span></p>
+<p>El esquema habitual en microcontroladores simples es un super-bucle (super-loop) que consulta secuencialmente el estado de cada periférico (sondeo / polling). Este diseño presenta un grave inconveniente: si una tarea se bloquea esperando una respuesta de red o realizando un cálculo largo, todas las demás tareas quedan congeladas. La programación secuencial se vuelve frágil y difícil de mantener.</p>
+<p>Linux proporciona soporte nativo para <b class="t">multitarea (multitasking)</b>: cada tarea se programa como una secuencia de código lineal independiente que puede bloquearse cuando no hay trabajo, dejando que el planificador del sistema operativo asigne la CPU a las tareas preparadas para ejecutarse.</p>
+<div class="grid2">
+<div class="cell b">
+<span class="k c-b">grano grueso · coarse-grained</span>
+<h3>Multiproceso</h3>
+<p>Múltiples procesos independientes con espacios de memoria completamente aislados por la MMU. Máxima robustez: si un proceso cae, el resto continúa intacto. La comunicación interproceso (IPC) requiere mecanismos explícitos (tuberías, memoria compartida, sockets).</p>
+</div>
+<div class="cell g">
+<span class="k c-g">grano fino · fine-grained</span>
+<h3>Multihilo (Multithreading)</h3>
+<p>Múltiples hilos ejecutándose dentro del mismo proceso. Comparten la misma memoria global, variables y descriptores de fichero. Creación y conmutación mucho más ligeras y comunicación instantánea, requiriendo mecanismos de exclusión mutua para evitar corrupción de datos.</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">Concurrencia frente a paralelismo</span>
+<p><b>Concurrencia</b> hace referencia a la estructura lógica del software: múltiples tareas progresan de forma solapada en el tiempo mediante multiplexación rápida en un único núcleo de CPU. <b>Paralelismo</b> se refiere a la ejecución física simultánea en el mismo instante, posible únicamente si el hardware dispone de múltiples núcleos (multicore).</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Gestión de procesos <span class="tag">T2.2 · T2.3 · T2.4</span></h2>
+<p class="hook"><span class="zh">¿Cómo se controla un proceso desde la terminal y qué ocurre cuando un programa bifurca a otro?</span><span class="es">Cada proceso posee un identificador numérico único: PID (Process ID).</span></p>
+<p>Desde la consola de Linux, un proceso en primer plano mantiene ocupada la terminal hasta su terminación. Añadir el operador <code>&amp;</code> al final del comando lo ejecuta en segundo plano (background). Para evitar que un proceso finalice al cerrar la sesión de terminal (señal SIGHUP), se antepone la utilidad <code>nohup</code>.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Comando</th><th>Función</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>ps / ps aux</td><td>Lista procesos en ejecución con su PID, consumo de CPU y estado</td><td><code>ps aux | grep servidor</code></td></tr>
+<tr><td>kill [señal] PID</td><td>Envía una señal al proceso (por defecto SIGTERM 15; forzar con SIGKILL 9)</td><td><code>kill -9 1420</code></td></tr>
+<tr><td>renice -n val -p PID</td><td>Modifica la prioridad de planificación (-20 máxima prioridad a +19 mínima)</td><td><code>renice -n -5 -p 1420</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="s2b">Ejecutar nuevos programas: exec frente a posix_spawn</h3>
+<p>Para que un proceso ejecute un binario distinto existen dos vías fundamentales:</p>
+<ul>
+<li><b>Familia <code>exec</code> (ejecución destructiva)</b>: <code>execv</code>, <code>execlp</code>, etc. Reemplazan completamente el espacio de memoria, código y datos del proceso llamante con la nueva imagen de ejecutable. El PID se conserva, pero el código original desaparece por completo. <b>Por esta razón, una llamada exitosa a exec nunca retorna</b>. Solo retorna (con -1) si el fichero no existe o no se tienen permisos.</li>
+<li><b><code>posix_spawn</code> (ejecución no destructiva)</b>: Función estandarizada por POSIX que crea un nuevo proceso y ejecuta el binario especificado en una sola operación atómica, sin destruir el proceso original y optimizando el consumo de memoria en sistemas empotrados.</li>
+</ul>
+
+<h3 id="s2c">Bifurcación con fork y prevención de procesos zombi</h3>
+<p>La llamada fundamental para crear nuevos procesos en UNIX es <b class="t">fork()</b>. Duplica el proceso llamante: el hijo recibe una copia exacta del espacio de direcciones virtuales, descriptores y variables del padre:</p>
+<figure class="stage" data-scene="" id="sc-fork">
+<div class="stage-title"><span>Escena 1 · Bifurcación con fork()</span><b>3 Pasos</b></div>
+<div aria-label="Animación interactiva: Ciclo de bifurcación de procesos con fork y retorno" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-fork-t" role="img" viewbox="0 0 800 240">
+<title id="sc-fork-t">Llamada a fork: se invoca una vez pero retorna dos veces, devolviendo el PID del hijo al padre y 0 al hijo</title>
+<rect class="bx hollow p" height="70" rx="8" width="220" x="24" y="50"></rect>
+<text class="tx sm w mid" x="134" y="80">Proceso Padre (PID 100)</text>
+<text class="tm xs m mid" x="134" y="105">pid_t pid = fork();</text>
+<g data-step="1">
+<path class="ln thin p" d="M244 85 H400" marker-end="url(#t2-ah-p)"></path>
+<text class="tz sm p" x="260" y="75">Clonación del proceso</text>
+</g>
+<g data-step="2">
+<rect class="bx hollow b" height="70" rx="8" width="220" x="420" y="50"></rect>
+<text class="tx sm w mid" x="530" y="80">Proceso Hijo (PID 101)</text>
+<text class="tm xs b mid" x="530" y="105">Retorno: pid = 0</text>
+<text class="tm xs p mid" x="134" y="145">En el padre retorna: pid = 101</text>
+</g>
+<g data-step="3">
+<rect class="bx g" height="50" rx="6" width="340" x="230" y="170"></rect>
+<text class="tz sm g mid" x="400" y="195">El padre invoca wait(&amp;status) para recoger el código de salida</text>
+<text class="tz sm g mid" x="400" y="212">Evita que el hijo quede en estado zombi al terminar</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><code>fork()</code> se invoca una sola vez pero <b>retorna dos veces</b>: una en el proceso padre y otra en el proceso hijo recién clonado.</li>
+<li data-dur="3800">El valor de retorno diferencia en qué proceso nos encontramos: en el proceso <b>hijo</b> retorna <code>0</code>; en el proceso <b>padre</b> retorna el <code>PID</code> del hijo (entero &gt; 0). Si falla, retorna <code>-1</code>.</li>
+<li data-dur="4000">Cuando un hijo finaliza con <code>exit(codigo)</code>, su memoria se libera pero su entrada en la tabla de procesos del kernel permanece registrada como <b class="t">proceso zombi (defunct)</b> hasta que el padre invoque <code>wait(&amp;status)</code> o <code>waitpid()</code> para consultar su estado de finalización.</li>
+</ol>
+</figure>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Hilos de ejecución (Threads) <span class="tag">T2.5 · T2.6</span></h2>
+<p class="hook"><span class="zh">¿Por qué usar hilos en lugar de múltiples procesos para controlar sensores y actuadores?</span><span class="es">Los hilos comparten el mismo mapa de memoria: no hay barrera de MMU entre ellos.</span></p>
+<p>Un <b class="t">hilo (thread)</b> es la unidad más pequeña de procesamiento que puede ser planificada por el sistema operativo. Mientras que dos procesos diferentes tienen espacios de memoria virtuales aislados, todos los hilos creados dentro de un mismo proceso comparten el mismo espacio de direcciones.</p>
+<div class="grid2">
+<div class="panel">
+<h3>Recursos compartidos entre hilos</h3>
+<ul>
+<li>Memoria global, variables estáticas y memoria dinámica (heap).</li>
+<li>Tabla de descriptores de fichero abiertos (ficheros, sockets).</li>
+<li>Identificador de proceso (PID) y credenciales de usuario.</li>
+<li>Manejadores de señales y directorio de trabajo actual.</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Elementos privados de cada hilo</h3>
+<ul>
+<li>Identificador único de hilo: <code>pthread_t</code>.</li>
+<li>Pila propia (stack) para variables locales y llamadas a función.</li>
+<li>Copia de los registros del procesador (incluido SP y PC).</li>
+<li>Máscara de señales bloqueadas y prioridad de planificación.</li>
+<li>Variable de error local: <code>errno</code> (reentrante en entornos multihilo).</li>
+</ul>
+</div>
+</div>
+
+<h3 id="s3b">Creación, paso de argumentos y recolección (pthreads)</h3>
+<p>El estándar POSIX define la biblioteca <code>pthread</code> (enlace mediante <code>-lpthread</code>):</p>
+<pre class="code"><code><span class="ln-row"><span class=\"pp\">#include</span> &lt;pthread.h&gt;</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"kw\">void</span> *<span class=\"fn\">tarea</span>(<span class=\"kw\">void</span> *arg) {</span><span class=\"ln-row\">    <span class=\"kw\">int</span> id = *(<span class=\"kw\">int</span> *)arg;</span><span class=\"ln-row\">    <span class=\"fn\">printf</span>(<span class=\"st\">\"Hilo %d en ejecución\\n\"</span>, id);</span><span class=\"ln-row\">    <span class=\"kw\">return</span> NULL;                               <span class=\"cm\">// o pthread_exit(NULL)</span></span><span class=\"ln-row\">}</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"kw\">int</span> <span class=\"fn\">main</span>(<span class=\"kw\">void</span>) {</span><span class=\"ln-row\">    pthread_t h;</span><span class=\"ln-row\">    <span class=\"kw\">int</span> param = <span class=\"nm\">1</span>;</span><span class=\"ln-row\">    <span class=\"fn\">pthread_create</span>(&amp;h, NULL, tarea, &amp;param);   <span class=\"cm\">// Lanza el hilo</span></span><span class=\"ln-row\">    <span class=\"fn\">pthread_join</span>(h, NULL);                     <span class=\"cm\">// Espera su finalización</span></span><span class=\"ln-row\">    <span class=\"kw\">return</span> <span class=\"nm\">0</span>;</span><span class=\"ln-row\">}</span></code></pre>
+<p class="aside">Precaución al pasar argumentos por puntero: no se debe pasar la dirección de una variable local que pueda cambiar o salir de ámbito antes de que el hilo comience su ejecución. Si el hilo no necesita ser esperado mediante <code>pthread_join</code>, se debe marcar con <code>pthread_detach(h)</code> para que sus recursos internos se liberen automáticamente al finalizar.</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Planificación de la CPU (Scheduling) <span class="tag">T2.7</span></h2>
+<p class="hook"><span class="zh">Si hay 10 hilos listos y un solo núcleo de procesador, ¿a quién le toca y durante cuánto tiempo?</span><span class="es">SCHED_OTHER (tiempo compartido) vs SCHED_FIFO / SCHED_RR (tiempo real).</span></p>
+<p>El planificador (scheduler) del kernel decide qué hilo ocupa la CPU en cada momento. Un hilo transita entre tres estados básicos: <b>Listo (Ready)</b> esperando CPU, <b>En ejecución (Running)</b> ocupando el procesador, o <b>Bloqueado (Blocked)</b> a la espera de un evento externo, temporizador o cerrojo.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Política</th><th>Tipo</th><th>Comportamiento</th></tr></thead>
+<tbody>
+<tr><td>SCHED_OTHER</td><td>Estándar (Tiempo compartido)</td><td>Política predeterminada. Asigna rodajas de tiempo dinámicas según el factor 'nice'. No ofrece garantías de tiempo real.</td></tr>
+<tr><td>SCHED_FIFO</td><td>Tiempo real estricto</td><td>El hilo con mayor prioridad toma la CPU y no la cede hasta que termina, se bloquea voluntariamente o es desalojado por un hilo de mayor prioridad. No hay rodajas de tiempo.</td></tr>
+<tr><td>SCHED_RR</td><td>Tiempo real Round-Robin</td><td>Similar a FIFO, pero entre hilos de la misma prioridad se asigna una rodaja de tiempo fija. Si se agota, el hilo pasa a la cola de su nivel de prioridad.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Las políticas de tiempo real (FIFO y RR) disponen de niveles de prioridad de 1 (mínima) a 99 (máxima), y requieren permisos de superusuario (root). Si un hilo voluntariamente desea ceder su rodaja a otros hilos listos de su misma prioridad, puede invocar <code>sched_yield()</code>.</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Condiciones de carrera y cerrojos (Mutex) <span class="tag">T2.8</span></h2>
+<p class="hook"><span class="zh">Dos hilos incrementan un contador 1000 veces cada uno. ¿Por qué el resultado final es 1650 en lugar de 2000?</span><span class="es">Una condición de carrera ocurre cuando el resultado depende del orden de entrelazado de instrucciones.</span></p>
+<p>La instrucción en C <code>contador++</code> no es atómica: el procesador debe leer la variable de memoria a un registro, incrementarla en el registro y volver a escribirla en memoria. Si un cambio de contexto ocurre a mitad de esta secuencia, un hilo sobreescribe los cambios del otro, produciendo una <b class="t">condición de carrera (race condition)</b>.</p>
+<p>El fragmento de código que accede a datos compartidos se denomina <b>sección crítica</b>. Para garantizar que solo un hilo acceda a la sección crítica en un instante determinado se utiliza un cerrojo de <b class="t">exclusión mutua (mutex)</b>:</p>
+<pre class="code"><code><span class="ln-row">pthread_mutex_t cerrojo = PTHREAD_MUTEX_INITIALIZER;</span><span class=\"ln-row\"> </span><span class=\"ln-row\"><span class=\"fn\">pthread_mutex_lock</span>(&amp;cerrojo);     <span class=\"cm\">// Adquiere el cerrojo; si está ocupado, se bloquea</span></span><span class=\"ln-row\">contador++;                       <span class=\"cm\">// Sección crítica protegida</span></span><span class=\"ln-row\"><span class=\"fn\">pthread_mutex_unlock</span>(&amp;cerrojo);   <span class=\"cm\">// Libera el cerrojo y despierta a los que esperan</span></span></code></pre>
+<p class="aside">La variante <code>pthread_mutex_trylock()</code> intenta adquirir el cerrojo de inmediato: si está libre lo adquiere y retorna 0; si está ocupado retorna <code>EBUSY</code> de forma no bloqueante, permitiendo al hilo realizar otra tarea alternativa.</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">Normal</span>
+<h3>PTHREAD_MUTEX_NORMAL</h3>
+<p>Sin comprobación de reentradas. Si el mismo hilo intenta adquirirlo dos veces seguidas, se produce un auto-bloqueo permanente (deadlock).</p>
+</div>
+<div class="cell y">
+<span class="k c-y">Recursive</span>
+<h3>PTHREAD_MUTEX_RECURSIVE</h3>
+<p>Permite al hilo poseedor bloquearlo múltiples veces consecutivas. Requiere el mismo número exacto de llamadas a unlock para quedar liberado.</p>
+</div>
+<div class="cell r">
+<span class="k c-r">Errorcheck</span>
+<h3>PTHREAD_MUTEX_ERRORCHECK</h3>
+<p>Detecta y devuelve error si un hilo intenta bloquear un cerrojo que ya posee o desbloquear un cerrojo poseído por otro hilo.</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Sincronización avanzada <span class="tag">T2.9</span></h2>
+<p class="hook"><span class="zh">¿Cómo espera un hilo a que ocurra un evento sin consumir el 100% de la CPU en un bucle vacío?</span><span class="es">Variables condicionales y semáforos permiten la espera pasiva.</span></p>
+<p>Una espera activa con un bucle <code>while(!listo);</code> desperdicia ciclos de CPU e impide la ejecución de otros hilos. Para evitarlo, POSIX proporciona mecanismos de sincronización basados en suspensión pasiva:</p>
+<h3>Variables de condición (pthread_cond_t)</h3>
+<p>Permiten suspender un hilo de forma atómica hasta que otro hilo notifique que se cumple una determinada condición de negocio. Siempre van asociadas a un mutex:</p>
+<pre class="code"><code><span class="ln-row"><span class=\"fn\">pthread_mutex_lock</span>(&amp;mtx);</span><span class=\"ln-row\"><span class=\"kw\">while</span> (cola_vacia()) {                 <span class=\"cm\">// Debe usarse while por despertares espurios</span></span><span class=\"ln-row\">    <span class=\"fn\">pthread_cond_wait</span>(&amp;cond, &amp;mtx);    <span class=\"cm\">// Libera mtx y se bloquea atómicamente</span></span><span class=\"ln-row\">}</span><span class=\"ln-row\">elemento = desencolar();</span><span class=\"ln-row\"><span class=\"fn\">pthread_mutex_unlock</span>(&amp;mtx);</span></code></pre>
+<p>El hilo que produce el dato y cambia la condición ejecuta:</p>
+<pre class="code"><code><span class=\"ln-row\"><span class=\"fn\">pthread_mutex_lock</span>(&amp;mtx);</span><span class=\"ln-row\">encolar(elemento);</span><span class=\"ln-row\"><span class=\"fn\">pthread_cond_signal</span>(&amp;cond);           <span class=\"cm\">// Despierta a un hilo en espera (broadcast despierta a todos)</span></span><span class=\"ln-row\"><span class=\"fn\">pthread_mutex_unlock</span>(&amp;mtx);</span></code></pre>
+
+<h3>Semáforos POSIX (&lt;semaphore.h&gt;)</h3>
+<p>Un <b class="t">semáforo (semaphore)</b> mantiene un contador entero no negativo que representa unidades disponibles de un recurso:</p>
+<ul>
+<li><code>sem_wait(&amp;s)</code>: Si el contador es &gt; 0, lo decrementa en 1 y continúa. Si es 0, bloquea al hilo hasta que otro lo incremente.</li>
+<li><code>sem_post(&amp;s)</code>: Incrementa el contador en 1 y despierta a un hilo bloqueado. A diferencia de los cerrojos mutex, <code>sem_post</code> puede ser invocado con seguridad desde manejadores de señal o por un hilo distinto al que hizo la espera.</li>
+</ul>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Bloqueo mutuo y errores habituales <span class="tag">T2.10</span></h2>
+<p class="hook"><span class="zh">El hilo A tiene el recurso 1 y espera el 2; el hilo B tiene el 2 y espera el 1. ¿Qué ocurre?</span><span class="es">Bloqueo mutuo (Deadlock): el sistema queda congelado para siempre.</span></p>
+<p>El problema del <b class="t">bloqueo mutuo (deadlock)</b> se produce cuando dos o más hilos quedan detenidos indefinidamente esperando recursos que están retenidos por los demás. Ilustrado célebremente por el problema de los filósofos comensales (donde cada filósofo necesita dos tenedores adyacentes para comer y todos toman primero el izquierdo, bloqueándose mutuamente).</p>
+<p>Para que se produzca un interbloqueo deben cumplirse simultáneamente las cuatro <b>condiciones de Coffman</b>:</p>
+<ol>
+<li><b>Exclusión mutua</b>: Los recursos no son compartibles al mismo tiempo.</li>
+<li><b>Retención y espera (Hold and wait)</b>: Un hilo retiene un recurso mientras solicita otro adicional.</li>
+<li><b>No apropiación (No preemption)</b>: Los recursos solo pueden ser liberados voluntariamente por el hilo que los posee.</li>
+<li><b>Espera circular</b>: Existe una cadena cerrada de procesos donde cada uno espera un recurso en poder del siguiente.</li>
+</ol>
+<div class="note">
+<span class="lbl">Prevención de interbloqueos: orden jerárquico</span>
+<p>La técnica más eficaz para prevenir bloqueos mutuos consiste en romper la espera circular: <b>establecer un orden global estricto en la adquisición de los cerrojos</b>. Si todos los hilos del sistema adquieren siempre el cerrojo A antes que el cerrojo B, la condición de espera circular resulta físicamente imposible.</p>
+</div>
+<h3>Inversión de prioridades</h3>
+<p>Ocurre cuando un hilo de baja prioridad adquiere un recurso compartido, un hilo de alta prioridad lo solicita y queda bloqueado, pero un hilo de prioridad media (que no usa el recurso) desaloja al de baja prioridad por tener más prioridad de CPU. En la práctica, el hilo de alta prioridad queda indebidamente retenido por el hilo de media prioridad. Se soluciona mediante el protocolo de <b>herencia de prioridades</b> (el hilo de baja prioridad hereda temporalmente la prioridad del hilo de alta prioridad que espera su recurso).</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>Práctica numérica aleatoria <span class="tag plain">2 tipos de ejercicios</span></h2>
+<p class="aside">Ejercicios numéricos generados proceduralmente según las reglas de este tema. Nuevos valores en cada intento con solución paso a paso.</p>
+<div class="drills">
+<div class="drill" data-drill="rr"></div>
+<div class="drill" data-drill="fork"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>Preguntas de repaso <span class="tag plain">12 preguntas</span></h2>
+<p class="aside">Cuestiones de repaso sobre los contenidos de este tema. Un único intento por pregunta; la justificación aparece al responder.</p>
+<div class="quiz" data-quiz="T2">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>¿Cuál es una ventaja principal de utilizar hilos (threads) frente a procesos independientes?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Los hilos disponen de espacios de memoria virtual totalmente aislados por la MMU</button>
+<button data-o="b" type="button"><span class="k">B</span>Si un hilo genera un fallo de segmentación, los demás hilos continúan funcionando sin inmutarse</button>
+<button data-o="c" type="button"><span class="k">C</span>Menor sobrecarga de creación y cambio de contexto, y compartición directa de memoria global</button>
+<button data-o="d" type="button"><span class="k">D</span>Los hilos no requieren mecanismos de sincronización para acceder a datos comunes</button>
+</div>
+<p class="why"><b>C.</b> Al compartir el mismo mapa de memoria, el cambio de contexto entre hilos no requiere invalidar la tabla de páginas de la MMU ni duplicar estructuras pesadas del sistema (§1 y §3).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>¿Qué sucede cuando un proceso ejecuta con éxito una llamada de la familia <code>exec</code> (como <code>execv</code>)?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Se crea un nuevo proceso hijo y el proceso padre recibe el nuevo PID</button>
+<button data-o="b" type="button"><span class="k">B</span>La imagen del ejecutable actual se sustituye completamente por el nuevo programa y la función no retorna</button>
+<button data-o="c" type="button"><span class="k">C</span>El programa original continúa su ejecución en segundo plano</button>
+<button data-o="d" type="button"><span class="k">D</span>Se lanza un nuevo hilo POSIX que ejecuta la función main del nuevo binario</button>
+</div>
+<p class="why"><b>B.</b> Las funciones exec son de ejecución destructiva: sustituyen la memoria de código y datos del proceso por el nuevo binario conservando el PID (§2).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>Tras invocar <code>pid_t p = fork();</code>, ¿cómo identifica el código si se encuentra en el proceso padre o en el proceso hijo?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>En el hijo p == 0; en el padre p &gt; 0 (contiene el PID del hijo)</button>
+<button data-o="b" type="button"><span class="k">B</span>En el padre p == 0; en el hijo p &gt; 0 (contiene el PID del padre)</button>
+<button data-o="c" type="button"><span class="k">C</span>En ambos procesos p devuelve el mismo número positivo</button>
+<button data-o="d" type="button"><span class="k">D</span>El proceso hijo no recibe retorno de la función</button>
+</div>
+<p class="why"><b>A.</b> fork retorna 0 al hijo recién creado y el PID del hijo al proceso padre, permitiendo ramificar la lógica de control mediante una sentencia if (§2).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>¿Qué es exactamente un proceso en estado zombi (defunct) en Linux?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Un proceso que ha entrado en bucle infinito consumiendo el 100% de la CPU</button>
+<button data-o="b" type="button"><span class="k">B</span>Un proceso bloqueado indefinidamente a la espera de un cerrojo mutex</button>
+<button data-o="c" type="button"><span class="k">C</span>Un proceso hijo cuyo proceso padre ha terminado antes que él</button>
+<button data-o="d" type="button"><span class="k">D</span>Un proceso que ha finalizado con exit pero cuyo padre aún no ha leído su estado de terminación mediante wait()</button>
+</div>
+<p class="why"><b>D.</b> El kernel mantiene la entrada del proceso zombi en su tabla de procesos para preservar el código de salida hasta que el padre invoque wait() o waitpid() (§2).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>¿Cuál de los siguientes elementos <b>no se comparte</b> entre los hilos de un mismo proceso?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Las variables globales y estáticas del programa</button>
+<button data-o="b" type="button"><span class="k">B</span>Los descriptores de fichero abiertos y conexiones de red</button>
+<button data-o="c" type="button"><span class="k">C</span>La pila (stack) y los registros de la CPU de cada hilo</button>
+<button data-o="d" type="button"><span class="k">D</span>El identificador de proceso (PID)</button>
+</div>
+<p class="why"><b>C.</b> Cada hilo dispone obligatoriamente de su propia pila para albergar variables locales y registros de llamada, manteniendo su propio flujo de control (§3).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>En una aplicación con hilos POSIX, ¿qué función se utiliza para esperar la finalización de un hilo y obtener su resultado?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>waitpid()</button>
+<button data-o="b" type="button"><span class="k">B</span>pthread_join()</button>
+<button data-o="c" type="button"><span class="k">C</span>pthread_detach()</button>
+<button data-o="d" type="button"><span class="k">D</span>pthread_yield()</button>
+</div>
+<p class="why"><b>B.</b> pthread_join bloquea al hilo llamante hasta que el hilo indicado finaliza y recupera el puntero de retorno devuelto en pthread_exit o return (§3).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>¿En qué se diferencian las políticas de planificación de tiempo real SCHED_FIFO y SCHED_RR?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>En SCHED_RR los hilos de la misma prioridad comparten el tiempo mediante rodajas (quantum), mientras que en SCHED_FIFO no hay límite temporal</button>
+<button data-o="b" type="button"><span class="k">B</span>SCHED_FIFO utiliza prioridades dinámicas y SCHED_RR prioridades estáticas</button>
+<button data-o="c" type="button"><span class="k">C</span>SCHED_FIFO solo admite un único hilo en el sistema</button>
+<button data-o="d" type="button"><span class="k">D</span>SCHED_RR no permite desalojar a un hilo por otro de mayor prioridad</button>
+</div>
+<p class="why"><b>A.</b> En SCHED_FIFO un hilo retiene la CPU hasta bloquearse o ser desalojado por mayor prioridad; en SCHED_RR los hilos de igual prioridad rotan periódicamente (§4).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>¿Por qué es indispensable evaluar la condición asociada a <code>pthread_cond_wait()</code> dentro de un bucle <code>while</code> y no de un simple <code>if</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Porque pthread_cond_wait solo puede ejecutarse en bucles</button>
+<button data-o="b" type="button"><span class="k">B</span>Porque el compilador optimiza la condición y la elimina si está en un if</button>
+<button data-o="c" type="button"><span class="k">C</span>Por la posibilidad de despertares espurios o porque otro hilo despierte antes y consuma el recurso</button>
+<button data-o="d" type="button"><span class="k">D</span>Para desbloquear automáticamente el cerrojo mutex</button>
+</div>
+<p class="why"><b>C.</b> Los estándares POSIX advierten que un hilo puede despertar sin señal explícita (despertar espurio) o que otro hilo haya modificado el estado antes de que este reanude el mutex (§6).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">09</span>¿Qué sucede si un hilo invoca <code>pthread_mutex_lock()</code> sobre un mutex de tipo PTHREAD_MUTEX_NORMAL que ya tenía previamente bloqueado?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>La función retorna inmediatamente con el código de error EDEADLK</button>
+<button data-o="b" type="button"><span class="k">B</span>El cerrojo se incrementa de forma recursiva</button>
+<button data-o="c" type="button"><span class="k">C</span>El kernel cancela automáticamente el hilo</button>
+<button data-o="d" type="button"><span class="k">D</span>El hilo se bloquea a sí mismo permanentemente, produciendo un interbloqueo</button>
+</div>
+<p class="why"><b>D.</b> Los cerrojos normales no verifican la reentrada del propio hilo poseedor, resultando en un auto-bloqueo. Para reentradas seguras debe emplearse PTHREAD_MUTEX_RECURSIVE (§5).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>¿Cuál de las siguientes acciones permite romper la condición de espera circular y prevenir interbloqueos (deadlocks)?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Utilizar exclusivamente cerrojos de tipo normal</button>
+<button data-o="b" type="button"><span class="k">B</span>Imponer un orden jerárquico global y único en la adquisición de todos los cerrojos del programa</button>
+<button data-o="c" type="button"><span class="k">C</span>Aumentar la prioridad de planificación de todos los hilos al nivel de tiempo real</button>
+<button data-o="d" type="button"><span class="k">D</span>Sustituir todos los cerrojos mutex por esperas activas con variables volátiles</button>
+</div>
+<p class="why"><b>B.</b> Si todos los hilos adquieren los cerrojos en el mismo orden predeterminado (por ejemplo, cerrojo A antes de cerrojo B), no puede formarse un ciclo cerrado de dependencia (§7).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>En el problema de la inversión de prioridades, ¿cuál es la técnica estándar para evitar que un hilo de prioridad media bloquee indirectamente a uno de alta prioridad?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Protocolo de herencia de prioridades (Priority Inheritance)</button>
+<button data-o="b" type="button"><span class="k">B</span>Uso de la política SCHED_OTHER</button>
+<button data-o="c" type="button"><span class="k">C</span>Eliminación de todos los cerrojos mutex</button>
+<button data-o="d" type="button"><span class="k">D</span>Llamadas continuas a sched_yield()</button>
+</div>
+<p class="why"><b>A.</b> La herencia de prioridades eleva temporalmente la prioridad del hilo de baja prioridad mientras retenga un recurso solicitado por el hilo de alta prioridad (§7).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>¿Cuál es una diferencia esencial entre un semáforo POSIX (<code>sem_t</code>) y un cerrojo mutex (<code>pthread_mutex_t</code>)?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Un semáforo solo puede ser utilizado por un único hilo a la vez</button>
+<button data-o="b" type="button"><span class="k">B</span>Los cerrojos mutex pueden ser desbloqueados de forma segura desde un manejador de interrupción/señal</button>
+<button data-o="c" type="button"><span class="k">C</span>El mutex tiene concepto de propiedad (solo quien lo bloquea debe desbloquearlo), mientras que el semáforo puede ser incrementado (sem_post) por cualquier hilo o manejador</button>
+<button data-o="d" type="button"><span class="k">D</span>Los semáforos no admiten esperas bloqueantes</button>
+</div>
+<p class="why"><b>C.</b> El cerrojo mutex modela la posesión de una sección crítica exclusiva, mientras que el semáforo modela la disponibilidad y señalización de recursos y eventos (§5 y §6).</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">Reiniciar</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>Tarjetas de conceptos <span class="tag plain">18 tarjetas</span></h2>
+<p class="aside">Concepto técnico en el anverso; haz clic para descubrir su significado y características principales.</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">proceso<small>process</small></span><span class="back"><b>Proceso</b><br/>Instancia de un programa en ejecución con su propio espacio de memoria virtual y recursos aislados.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hilo<small>thread · proceso ligero</small></span><span class="back"><b>Hilo de ejecución</b><br/>Unidad básica de planificación que comparte el espacio de direcciones y descriptores con otros hilos del proceso.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">concurrencia · paralelismo</span><span class="back"><b>Concurrencia vs Paralelismo</b><br/>Progreso temporal solapado mediante multiplexación frente a ejecución simultánea en múltiples núcleos.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fork()</span><span class="back"><b>Bifurcación fork</b><br/>Clona el proceso llamante retornando 0 al hijo y el PID del hijo al padre.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">exec()</span><span class="back"><b>Familia exec</b><br/>Reemplaza el código y memoria del proceso actual por una nueva imagen binaria; no retorna si tiene éxito.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">proceso zombi<small>defunct</small></span><span class="back"><b>Proceso zombi</b><br/>Proceso finalizado que retiene su entrada en la tabla del kernel hasta que el padre llama a wait().</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_create</span><span class="back"><b>Creación de hilos</b><br/>Lanza un nuevo hilo POSIX indicando atributos, función de entrada y puntero a parámetros.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_join</span><span class="back"><b>Recolección de hilos</b><br/>Bloquea la ejecución hasta que el hilo indicado finaliza y recupera su código de retorno.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_detach</span><span class="back"><b>Desvinculación de hilos</b><br/>Marca el hilo para que sus recursos se liberen automáticamente al concluir sin requerir join.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SCHED_FIFO</span><span class="back"><b>Planificación FIFO</b><br/>Política de tiempo real estricta sin rodajas de tiempo; el hilo retiene la CPU hasta cederla.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SCHED_RR</span><span class="back"><b>Planificación Round-Robin</b><br/>Política de tiempo real con rodajas fijas de tiempo distribuidas entre hilos de igual prioridad.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">condición de carrera<small>race condition</small></span><span class="back"><b>Condición de carrera</b><br/>Fallo de sincronización cuando el resultado depende del orden impredecible de acceso a datos comunes.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sección crítica</span><span class="back"><b>Sección crítica</b><br/>Fragmento de código que manipula recursos compartidos y debe ejecutarse con exclusión mutua.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mutex<small>pthread_mutex_t</small></span><span class="back"><b>Cerrojo de exclusión mutua</b><br/>Primitiva de sincronización que asegura que solo un hilo acceda a la sección crítica a la vez.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">trylock</span><span class="back"><b>Bloqueo no bloqueante</b><br/>Intenta adquirir el cerrojo de inmediato; si está ocupado devuelve EBUSY sin suspender el hilo.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">variable de condición<small>pthread_cond_t</small></span><span class="back"><b>Variable de condición</b><br/>Mecanismo para suspender un hilo de forma pasiva hasta que otro hilo señale un cambio de estado.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">semáforo<small>sem_t</small></span><span class="back"><b>Semáforo POSIX</b><br/>Contador de recursos con operaciones atómicas wait (decrementar) y post (incrementar).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bloqueo mutuo<small>deadlock</small></span><span class="back"><b>Bloqueo mutuo</b><br/>Situación de interbloqueo permanente donde dos o más hilos esperan recursos retenidos recíprocamente.</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="Navegación entre temas" class="pager" data-pager="T2"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · Educación Abierta en Sistemas Electrónicos e Inteligentes</strong> · Apuntes interactivos de la comunidad elaborados por estudiantes; no es material oficial de ninguna universidad o institución. Animaciones y ejercicios interactivos son obras originales.</p>
+<p><a href="../../index.html">← Volver al portal OpenSEEI</a> · <a href="../../index.html#sync">Sincronización de progreso con Google</a> · Contenido compartido bajo licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">CC BY-NC-SA 4.0</a>.</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

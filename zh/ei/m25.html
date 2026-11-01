@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M25 Nodos · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.drill-hd { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font: 600 12px/1.4 var(--f-mono); color: var(--muted); }
+.drill .chips:empty, .drill .opts:empty { display: none; }
+.drill .chip:disabled { cursor: default; }
+.drill .chip.right { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+.drill .chip.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.drill .d-q { min-height: 3em; }
+.calc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: .9rem; }
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 10px 14px; }
+.calc label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+.calc input, .calc select { font: 14px/1.4 var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 8px; width: 100%; min-width: 0; }
+.calc-out { border-top: 1px solid var(--line); padding-top: .8rem; display: flex; flex-direction: column; gap: .5rem; }
+.calc-out .big { font: 700 1.45rem/1.25 var(--f-mono); color: var(--signal); }
+.calc-out .life { font-weight: 600; }
+.calc-out .formula { font: 400 12.5px/1.7 var(--f-mono); color: var(--muted); background: var(--sunk); border-radius: var(--r); padding: .5rem .7rem; overflow-x: auto; }
+.share { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--sunk); }
+.share i { display: block; height: 100%; }
+.sa { background: var(--accent); }
+.sr { background: var(--signal); }
+.ss { background: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.legend b { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.panel table { font-size: 13px; }
+.m25-orig > summary { cursor: pointer; font: 600 12.5px/1.6 var(--f-mono); color: var(--accent); padding: 4px 0; }
+.m25-orig > figure { margin-top: .6rem; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 2 章节" class="chain" data-chain="M25"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Arquitecturas y Tecnologías · M25</div>
+<h1>Nodos</h1>
+<p class="zh">节点</p>
+<div class="meta">
+
+<span><b>5</b> 个学习目标</span>
+<span>阅读约 30 分钟</span>
+
+
+</div>
+<p class="lede">智能环境里的“节点”，小到一颗靠太阳能供电的温湿度传感器，大到插着市电的服务器，速度和功耗能差好几个数量级。这一章先按性能和功耗把节点分成三类，再看实现它们的电子方案：ARM 处理器、8 位和 32 位 <b class="t">microcontrolador (ES) / microcontroller, MCU (EN)</b>——微控制器，以及 FPGA、SOC、DSP、ASIP。最后像工程师一样读一份 WSN <b class="t">mota (ES) / mote (EN)</b>——传感器节点的 datasheet（规格书）。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">2.5.1</span>
+<div class="txt"><span>区分智能环境中的几类节点：autónomos、móviles、estáticos</span><span class="es">Distinguir entre diferentes tipos de nodos en un entorno inteligente (autónomos, móviles y estáticos).</span><a href="#s1">→ §1 三种节点</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.5.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.5.2</span>
+<div class="txt"><span>区分 ARM 处理器的不同家族</span><span class="es">Distinguir entre diferentes familias de procesadores ARM.</span><a href="#s2">→ §2 ARM 处理器家族</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.5.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.5.3</span>
+<div class="txt"><span>识别 8 位和 32 位微控制器的典型特征</span><span class="es">Identificar características típicas de microcontroladores de 8 y 32 bits.</span><a href="#s5">→ §5 8 位与 32 位 MCU</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.5.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.5.4</span>
+<div class="txt"><span>区分不同的设计方案：MCU、FPGA、SOC、DSP、ASIP</span><span class="es">Distinguir entre diferentes soluciones de diseño (Microcontroladores, FPGA, SOC, DSP, ASIP).</span><a href="#s4">→ §4 设计方案</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.5.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.5.5</span>
+<div class="txt"><span>分析一个 WSN mota 的规格</span><span class="es">Analizar las especificaciones de una mota WSN.</span><a href="#s6">→ §6 读 mota 的规格</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.5.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M25"><span class="val">0 / 5 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>三种节点：autónomo、móvil、estático <span class="tag">2.5.1</span></h2>
+<p>节点在 prestaciones（性能）、conectividad（连接）、movilidad（移动性）、consumo（功耗）和 coste（成本）上差别很大。按这些差别，节点分成三类：</p>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">Kbps · µW–mW</span>
+<h3>Nodo autónomo</h3>
+<p>典型是环境传感器（温度、湿度）或识别类节点（RFID）。算力和存储都很低，却集成了很多技术：MEMS 传感器、<b class="t">recolector de energía (ES) / energy harvester (EN)</b>——能量收集器、微控制器、射频模块。要能接入 WSN，还要经得起恶劣环境。<b>以 microcontrolador 为核心。</b></p>
+</div>
+<div class="cell">
+<span class="eyebrow">Mbps · mW–W</span>
+<h3>Nodo móvil</h3>
+<p>智能手机、平板之类。要处理多媒体：音视频标准、信号处理、压缩，接入速率和 QoS 要求各不相同的网络。靠电池供电，所以能效非常重要。<b>通用的 procesador de aplicaciones（应用处理器）配 DSP 和 GPU，集成在 SOC 里。</b></p>
+</div>
+<div class="cell">
+<span class="eyebrow">Gbps · W</span>
+<h3>Nodo estático</h3>
+<p>接市电的设备，例如服务器。速度和功耗都很高，承担人工智能、自然交互、3D 图形、分布式计算等任务。<b>高性能的 GPP（通用处理器）、高性能图形子系统、大容量存储和网络连接。</b></p>
+</div>
+</div>
+<p class="aside">有些资料正文把这一类叫 móvil，下面的结构图和对比表的标签写的是 portable，指的是同一类。estático 的速度和功耗都是 “muy alta”，量级是 Gbps 和 W。</p>
+<p>把三类节点放进一个场景看：汽车、人和房子里散布着大小不同的点，<b>点的大小代表功耗量级</b>：大点 Watt（static），中点 milliWatt（mobile），小点 microWatt（autonomous）。虚线是节点之间的连接，最后通向 cellular network、road information backbone 和 internet backbone。</p>
+
+<p><b>三类节点的内部结构</b>：切换着看，留意哪些模块每一类都有，哪些模块是后两类才有的。</p>
+<div class="stack" data-seg="">
+<div aria-label="切换节点类型" class="seg" role="group">
+<button aria-pressed="true" data-view="aut" type="button">Autónomo</button>
+<button aria-pressed="false" data-view="por" type="button">Portable</button>
+<button aria-pressed="false" data-view="est" type="button">Estático</button>
+</div>
+<div class="panel" data-pane="aut">
+<figure>
+<div class="fig">
+<svg aria-label="Autónomo 节点架构：被测量的物理量进入 Sensor interface（Sensor、Ampl.、ADC），再进入 Digital controller（µP/DSP、Timer、RAM/ROM），控制器和 Communication interface（DAC/ADC、PLL、RF）双向相连；Energy supply chain（Solar cell、Capacitor、Battery、BMS、DC/DC）给三个模块供电" role="img" viewbox="0 0 660 300">
+<defs>
+<marker id="m25f" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="226" rx="6" width="112" x="10" y="40"></rect>
+<text class="s-tm" x="20" y="60">magnitudes</text>
+<text class="s-t2" x="20" y="82">Light</text>
+<text class="s-t2" x="20" y="102">Temperature</text>
+<text class="s-t2" x="20" y="122">Speed</text>
+<text class="s-t2" x="20" y="142">Vibration</text>
+<text class="s-t2" x="20" y="162">Magnetic field</text>
+<text class="s-t2" x="20" y="182">Acoustics</text>
+<text class="s-t2" x="20" y="202">Moisture</text>
+<text class="s-t2" x="20" y="222">Air pressure</text>
+<text class="s-t2" x="20" y="242">…</text>
+<line class="s-line" marker-end="url(#m25f)" x1="122" x2="148" y1="160" y2="160"></line>
+<rect class="s-box" height="80" rx="6" width="140" x="150" y="120"></rect>
+<text class="s-t" text-anchor="middle" x="220" y="142">Sensor interface</text>
+<rect class="s-soft" height="26" rx="3" width="40" x="158" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="178" y="177">Sensor</text>
+<rect class="s-soft" height="26" rx="3" width="40" x="202" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="222" y="177">Ampl.</text>
+<rect class="s-soft" height="26" rx="3" width="36" x="246" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="264" y="177">ADC</text>
+<rect class="s-box" height="82" rx="6" width="180" x="300" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="42">Digital controller</text>
+<rect class="s-soft" height="26" rx="3" width="54" x="308" y="62"></rect>
+<text class="s-t2" text-anchor="middle" x="335" y="79">µP/DSP</text>
+<rect class="s-soft" height="26" rx="3" width="44" x="366" y="62"></rect>
+<text class="s-t2" text-anchor="middle" x="388" y="79">Timer</text>
+<rect class="s-soft" height="26" rx="3" width="64" x="410" y="62"></rect>
+<text class="s-t2" text-anchor="middle" x="442" y="79">RAM/ROM</text>
+<rect class="s-box" height="80" rx="6" width="150" x="480" y="120"></rect>
+<text class="s-t" text-anchor="middle" x="555" y="142">Communication</text>
+<rect class="s-soft" height="26" rx="3" width="62" x="488" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="519" y="177">DAC · ADC</text>
+<rect class="s-soft" height="26" rx="3" width="34" x="554" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="571" y="177">PLL</text>
+<rect class="s-soft" height="26" rx="3" width="32" x="592" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="608" y="177">RF</text>
+<text class="s-tm" x="636" y="178">Y</text>
+<path class="s-line" d="M290,140 H330 V104" marker-end="url(#m25f)"></path>
+<path class="s-line" d="M482,62 H555 V118" marker-end="url(#m25f)" marker-start="url(#m25f)"></path>
+<rect class="s-box" height="90" rx="6" width="170" x="300" y="200"></rect>
+<text class="s-t" text-anchor="middle" x="385" y="218">Energy supply chain</text>
+<rect class="s-soft" height="24" rx="3" width="74" x="308" y="228"></rect>
+<text class="s-t2" text-anchor="middle" x="345" y="244">Solar cell</text>
+<rect class="s-soft" height="24" rx="3" width="74" x="388" y="228"></rect>
+<text class="s-t2" text-anchor="middle" x="425" y="244">Capacitor</text>
+<rect class="s-soft" height="24" rx="3" width="54" x="308" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="335" y="274">Battery</text>
+<rect class="s-soft" height="24" rx="3" width="40" x="366" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="386" y="274">BMS</text>
+<rect class="s-soft" height="24" rx="3" width="52" x="410" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="436" y="274">DC/DC</text>
+<path class="s-line" d="M300,245 H220 V202" marker-end="url(#m25f)"></path>
+<line class="s-line" marker-end="url(#m25f)" x1="400" x2="400" y1="200" y2="104"></line>
+<path class="s-line" d="M470,245 H555 V202" marker-end="url(#m25f)"></path>
+</svg>
+</div>
+<figcaption>Autónomo：一条信号链：物理量 → 传感器接口 → 数字控制器 → 通信接口；电源链里有 <b>Solar cell 和 Capacitor</b>，也就是 energy harvesting。</figcaption>
+</figure>
+</div>
+<div class="panel" data-pane="por" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="Portable 节点架构：Camera、Display、Speaker、Microphone 与 A/V/D interface 双向相连；A/V/D interface 与 Digital signal processing（Timer、µP、DSP、RAM、ROM）双向相连；DSP 与 Storage、Communication 双向相连，Storage 与 Communication 相连；Energy management（Battery、BMS、DC/DC）给 A/V/D、DSP 和 Communication 供电" role="img" viewbox="0 0 660 300">
+<defs>
+<marker id="m25g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="96" rx="6" width="92" x="10" y="110"></rect>
+<text class="s-t2" x="20" y="134">Camera</text>
+<text class="s-t2" x="20" y="154">Display</text>
+<text class="s-t2" x="20" y="174">Speaker</text>
+<text class="s-t2" x="20" y="194">Microphone</text>
+<line class="s-line" marker-end="url(#m25g)" x1="104" x2="128" y1="150" y2="150"></line>
+<line class="s-line" marker-end="url(#m25g)" x1="128" x2="104" y1="166" y2="166"></line>
+<rect class="s-box" height="150" rx="6" width="190" x="130" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="225" y="80">A/V/D interface</text>
+<rect class="s-soft" height="22" rx="3" width="48" x="138" y="92"></rect>
+<text class="s-t2" text-anchor="middle" x="162" y="107">driver</text>
+<rect class="s-soft" height="22" rx="3" width="48" x="138" y="120"></rect>
+<text class="s-t2" text-anchor="middle" x="162" y="135">Sensor</text>
+<rect class="s-soft" height="22" rx="3" width="48" x="138" y="148"></rect>
+<text class="s-t2" text-anchor="middle" x="162" y="163">PA</text>
+<rect class="s-soft" height="22" rx="3" width="48" x="138" y="176"></rect>
+<text class="s-t2" text-anchor="middle" x="162" y="191">Sensor</text>
+<rect class="s-soft" height="22" rx="3" width="72" x="190" y="92"></rect>
+<text class="s-t2" text-anchor="middle" x="226" y="107">Amp/filter</text>
+<rect class="s-soft" height="22" rx="3" width="72" x="190" y="120"></rect>
+<text class="s-t2" text-anchor="middle" x="226" y="135">Amp/filter</text>
+<rect class="s-soft" height="22" rx="3" width="72" x="190" y="148"></rect>
+<text class="s-t2" text-anchor="middle" x="226" y="163">Filter</text>
+<rect class="s-soft" height="22" rx="3" width="72" x="190" y="176"></rect>
+<text class="s-t2" text-anchor="middle" x="226" y="191">Amp/filter</text>
+<rect class="s-soft" height="22" rx="3" width="46" x="266" y="92"></rect>
+<text class="s-t2" text-anchor="middle" x="289" y="107">DAC</text>
+<rect class="s-soft" height="22" rx="3" width="46" x="266" y="120"></rect>
+<text class="s-t2" text-anchor="middle" x="289" y="135">ADC</text>
+<rect class="s-soft" height="22" rx="3" width="46" x="266" y="148"></rect>
+<text class="s-t2" text-anchor="middle" x="289" y="163">DAC</text>
+<rect class="s-soft" height="22" rx="3" width="46" x="266" y="176"></rect>
+<text class="s-t2" text-anchor="middle" x="289" y="191">ADC</text>
+<line class="s-line" marker-end="url(#m25g)" marker-start="url(#m25g)" x1="322" x2="338" y1="135" y2="135"></line>
+<rect class="s-box" height="150" rx="6" width="120" x="340" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="400" y="80">Digital signal</text>
+<text class="s-t" text-anchor="middle" x="400" y="96">processing</text>
+<rect class="s-soft" height="22" rx="3" width="50" x="348" y="110"></rect>
+<text class="s-t2" text-anchor="middle" x="373" y="125">Timer</text>
+<rect class="s-soft" height="22" rx="3" width="50" x="348" y="138"></rect>
+<text class="s-t2" text-anchor="middle" x="373" y="153">µP</text>
+<rect class="s-soft" height="22" rx="3" width="50" x="348" y="166"></rect>
+<text class="s-t2" text-anchor="middle" x="373" y="181">DSP</text>
+<rect class="s-soft" height="22" rx="3" width="48" x="404" y="138"></rect>
+<text class="s-t2" text-anchor="middle" x="428" y="153">RAM</text>
+<rect class="s-soft" height="22" rx="3" width="48" x="404" y="166"></rect>
+<text class="s-t2" text-anchor="middle" x="428" y="181">ROM</text>
+<path class="s-line" d="M462,90 H476 V60 H488" marker-end="url(#m25g)" marker-start="url(#m25g)"></path>
+<line class="s-line" marker-end="url(#m25g)" marker-start="url(#m25g)" x1="462" x2="488" y1="165" y2="165"></line>
+<rect class="s-box" height="88" rx="6" width="150" x="490" y="14"></rect>
+<text class="s-t" text-anchor="middle" x="565" y="34">Storage</text>
+<rect class="s-soft" height="22" rx="3" width="38" x="498" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="517" y="59">RAM</text>
+<rect class="s-soft" height="22" rx="3" width="50" x="540" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="565" y="59">AD/DA</text>
+<rect class="s-soft" height="22" rx="3" width="38" x="594" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="613" y="59">amp</text>
+<rect class="s-soft" height="22" rx="3" width="72" x="498" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="534" y="87">Amp/filter</text>
+<rect class="s-soft" height="22" rx="3" width="58" x="574" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="603" y="87">driver</text>
+<line class="s-line" x1="565" x2="565" y1="102" y2="120"></line>
+<rect class="s-box" height="96" rx="6" width="150" x="490" y="120"></rect>
+<text class="s-t" text-anchor="middle" x="565" y="140">Communication</text>
+<rect class="s-soft" height="22" rx="3" width="60" x="498" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="528" y="167">DAC/ADC</text>
+<rect class="s-soft" height="22" rx="3" width="32" x="562" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="578" y="167">PLL</text>
+<rect class="s-soft" height="22" rx="3" width="34" x="598" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="615" y="167">RF</text>
+<rect class="s-soft" height="22" rx="3" width="60" x="498" y="182"></rect>
+<text class="s-t2" text-anchor="middle" x="528" y="197">DAC/ADC</text>
+<rect class="s-soft" height="22" rx="3" width="32" x="562" y="182"></rect>
+<text class="s-t2" text-anchor="middle" x="578" y="197">PLL</text>
+<rect class="s-soft" height="22" rx="3" width="34" x="598" y="182"></rect>
+<text class="s-t2" text-anchor="middle" x="615" y="197">RF</text>
+<rect class="s-box" height="62" rx="6" width="170" x="340" y="228"></rect>
+<text class="s-t" text-anchor="middle" x="425" y="248">Energy management</text>
+<rect class="s-soft" height="24" rx="3" width="54" x="348" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="375" y="274">Battery</text>
+<rect class="s-soft" height="24" rx="3" width="40" x="406" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="426" y="274">BMS</text>
+<rect class="s-soft" height="24" rx="3" width="52" x="450" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="476" y="274">DC/DC</text>
+<path class="s-line" d="M340,259 H225 V212" marker-end="url(#m25g)"></path>
+<line class="s-line" marker-end="url(#m25g)" x1="400" x2="400" y1="228" y2="212"></line>
+<path class="s-line" d="M510,259 H565 V218" marker-end="url(#m25g)"></path>
+</svg>
+</div>
+<figcaption>Portable：新增了面向摄像头、显示屏、扬声器、麦克风的 <b>A/V/D interface</b>、<b>Storage</b>，以及<b>两条</b>射频链（两根天线）；处理模块里 µP 和 DSP 并存；电源只剩 Battery、BMS、DC/DC，没有 Solar cell。</figcaption>
+</figure>
+</div>
+<div class="panel" data-pane="est" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="Estático 节点架构：一个大的 Digital signal processing 模块，内有 RAM、两个 µP 和八个 DSP，与 Storage、Communication 双向相连；Communication 指向 Storage，一条链接有线电缆、一条接天线；Power management（Battery、BMS、DC/DC）给处理模块和 Communication 供电" role="img" viewbox="0 0 660 300">
+<defs>
+<marker id="m25h" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="160" rx="6" width="330" x="10" y="40"></rect>
+<text class="s-t" x="22" y="64">Digital signal processing</text>
+<rect class="s-soft" height="24" rx="3" width="54" x="278" y="48"></rect>
+<text class="s-t2" text-anchor="middle" x="305" y="64">RAM</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="180" y="82"></rect>
+<text class="s-t2" text-anchor="middle" x="216" y="99">µP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="260" y="82"></rect>
+<text class="s-t2" text-anchor="middle" x="296" y="99">µP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="20" y="118"></rect>
+<text class="s-t2" text-anchor="middle" x="56" y="135">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="100" y="118"></rect>
+<text class="s-t2" text-anchor="middle" x="136" y="135">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="180" y="118"></rect>
+<text class="s-t2" text-anchor="middle" x="216" y="135">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="260" y="118"></rect>
+<text class="s-t2" text-anchor="middle" x="296" y="135">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="20" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="56" y="169">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="100" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="136" y="169">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="180" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="216" y="169">DSP</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="260" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="296" y="169">DSP</text>
+<line class="s-line" marker-end="url(#m25h)" marker-start="url(#m25h)" x1="342" x2="428" y1="66" y2="66"></line>
+<line class="s-line" marker-end="url(#m25h)" marker-start="url(#m25h)" x1="342" x2="428" y1="170" y2="170"></line>
+<rect class="s-box" height="88" rx="6" width="170" x="430" y="14"></rect>
+<text class="s-t" text-anchor="middle" x="515" y="34">Storage</text>
+<rect class="s-soft" height="22" rx="3" width="44" x="438" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="460" y="59">RAM</text>
+<rect class="s-soft" height="22" rx="3" width="58" x="486" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="515" y="59">AD · DA</text>
+<rect class="s-soft" height="22" rx="3" width="76" x="438" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="476" y="87">Amp/filter</text>
+<rect class="s-soft" height="22" rx="3" width="74" x="518" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="555" y="87">amp · driver</text>
+<line class="s-line" marker-end="url(#m25h)" x1="515" x2="515" y1="128" y2="104"></line>
+<rect class="s-box" height="90" rx="6" width="170" x="430" y="130"></rect>
+<text class="s-t" text-anchor="middle" x="515" y="150">Communication</text>
+<rect class="s-soft" height="22" rx="3" width="62" x="438" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="469" y="175">DAC · ADC</text>
+<rect class="s-soft" height="22" rx="3" width="34" x="504" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="521" y="175">PLL</text>
+<rect class="s-soft" height="22" rx="3" width="50" x="542" y="160"></rect>
+<text class="s-t2" text-anchor="middle" x="567" y="175">filtro</text>
+<rect class="s-soft" height="22" rx="3" width="62" x="438" y="190"></rect>
+<text class="s-t2" text-anchor="middle" x="469" y="205">DAC · ADC</text>
+<rect class="s-soft" height="22" rx="3" width="34" x="504" y="190"></rect>
+<text class="s-t2" text-anchor="middle" x="521" y="205">PLL</text>
+<rect class="s-soft" height="22" rx="3" width="50" x="542" y="190"></rect>
+<text class="s-t2" text-anchor="middle" x="567" y="205">filtro</text>
+<line class="s-line" x1="600" x2="614" y1="171" y2="171"></line>
+<text class="s-tm" x="618" y="175">cable</text>
+<line class="s-line" x1="600" x2="614" y1="201" y2="201"></line>
+<text class="s-tm" x="618" y="205">radio</text>
+<rect class="s-box" height="62" rx="6" width="180" x="150" y="228"></rect>
+<text class="s-t" text-anchor="middle" x="240" y="248">Power management</text>
+<rect class="s-soft" height="24" rx="3" width="54" x="158" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="185" y="274">Battery</text>
+<rect class="s-soft" height="24" rx="3" width="40" x="216" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="236" y="274">BMS</text>
+<rect class="s-soft" height="24" rx="3" width="62" x="260" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="291" y="274">DC/DC</text>
+<line class="s-line" marker-end="url(#m25h)" x1="240" x2="240" y1="228" y2="202"></line>
+<path class="s-line" d="M330,259 H515 V222" marker-end="url(#m25h)"></path>
+</svg>
+</div>
+<figcaption>Estático：处理模块变成一大块：<b>两个 µP 加八个 DSP</b>；没有面向用户的 A/V/D 接口；通信有一条接<b>有线电缆</b>、一条接天线。</figcaption>
+</figure>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">读图 · 三类节点的结构</span>
+<ul>
+<li><b>三类都有</b>：处理模块、通信模块、电源模块（Battery、BMS、DC/DC）。</li>
+<li><b>只有 autónomo</b>：直接面对物理量的 Sensor interface（Sensor、Ampl.、ADC），以及电源链里的 Solar cell 和 Capacitor（energy harvesting）。处理模块最小：µP/DSP、Timer、RAM/ROM，对应 autónomo 的“baja complejidad computacional y de memoria”。</li>
+<li><b>portable 新增</b>：多媒体的 A/V/D interface、Storage、两条射频链，对应 móvil 的“información multimedia”和“conectividad a redes diversas”。</li>
+<li><b>estático</b>：处理模块最大（多个 µP 和 DSP），通信多了有线连接，对应 estático 的“altos requerimientos de computación”和 LAN。</li>
+</ul>
+<p class="aside">图中的缩写：BMS = Battery Management System（电池管理），DC/DC = 直流电压转换器，PLL = Phase-Locked Loop（锁相环，射频链里产生载波），PA = Power Amplifier（功率放大器）。</p>
+<p class="aside">有些资料的结构图和对比表有两处对不上：结构图里 estático 的处理模块画的是 µP 和 DSP，对比表写的是 GPP、GPU；Power management 里画了 Battery，对比表写的供电是 red eléctrica。</p>
+</div>
+<p><b>背一背三类节点的对比表</b>（Comparativa de los tres tipos de nodos）：先自己说出三类节点各是什么，再<b>点击一行</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>Autónomo</th><th>Portable（móvil）</th><th>Estático</th></tr></thead>
+<tbody>
+<tr class="reveal"><td><b>Velocidad</b></td><td class="ans">Kbps</td><td class="ans">Mbps</td><td class="ans">Gbps</td></tr>
+<tr class="reveal"><td><b>Consumo</b></td><td class="ans">µW–mW</td><td class="ans">mW–W</td><td class="ans">W</td></tr>
+<tr class="reveal"><td><b>Capacidad de cómputo</b></td><td class="ans">baja</td><td class="ans">media</td><td class="ans">alta</td></tr>
+<tr class="reveal"><td><b>Memoria</b></td><td class="ans">baja</td><td class="ans">media</td><td class="ans">muy alta</td></tr>
+<tr class="reveal"><td><b>Integración</b></td><td class="ans">alta</td><td class="ans">alta</td><td class="ans">media</td></tr>
+<tr class="reveal"><td><b>Alimentación</b></td><td class="ans">energy harvesting / baterías</td><td class="ans">baterías</td><td class="ans">red eléctrica</td></tr>
+<tr class="reveal"><td><b>Procesadores</b></td><td class="ans">microcontroladores</td><td class="ans">DSP, GPU, SOC</td><td class="ans">GPP, GPU</td></tr>
+<tr class="reveal"><td><b>Conectividad</b></td><td class="ans">WSN</td><td class="ans">WLAN, 3G</td><td class="ans">LAN, WLAN</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>分一分：</b>下面的设备属于哪一类节点？</p>
+<div class="drill q" id="d25a">
+<div class="drill-hd"><span class="d-n"></span><span class="d-s"></span></div>
+<p class="qt d-q"></p>
+<div aria-label="节点类型" class="chips d-o" role="group"></div>
+<p aria-live="polite" class="why d-w" hidden=""></p>
+<div class="stepper-ctl">
+<button class="btn primary" data-act="next" type="button">下一题 →</button>
+<button class="btn" data-act="again" type="button">重新开始</button>
+</div>
+</div>
+<div class="note">
+<span class="lbl">要点 · 2.5.1</span>
+<p>抓住一条线来区分：<b>供电方式</b>（energy harvesting/电池 → 电池 → 市电）定下了功耗预算，功耗预算又决定了<b>处理器</b>（微控制器 → DSP/GPU/SOC → GPP/GPU）和<b>连接</b>（WSN → WLAN/3G → LAN/WLAN）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>ARM 处理器家族 <span class="tag">2.5.2</span></h2>
+<p><b>ARM</b> 是设计 procesadores de aplicaciones（应用处理器）和微控制器的世界领导者，产品针对功耗和成本优化，覆盖几乎所有市场：IoT、嵌入式、手机、wearables（可穿戴设备）、domótica e inmótica（住宅和楼宇自动化）。本节末尾有一个小任务。</p>
+<p>先弄清一点：ARM 本身不生产芯片。它设计处理器架构和处理器核，把这些 IP 授权给芯片厂商（ST、NXP、TI、Microchip、高通……），由它们做成具体的芯片。所以同一个 Cortex 核会出现在许多厂商的产品里。</p>
+<div class="stack" data-explain="m">
+<figure>
+<div class="fig">
+<svg aria-label="Arm 处理器家族示意：Cortex-M、Cortex-R、Cortex-A、Neoverse 按性能和功耗从左到右排列，下方是其他 Arm 产品" role="img" viewbox="0 0 640 300">
+<defs>
+<marker id="m25a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" x="20" y="24">Arm · 按用途划分的处理器家族</text>
+<g aria-label="Cortex-M" class="hot" data-key="m" role="button" tabindex="0">
+<rect class="s-box" height="130" rx="8" width="140" x="20" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="90" y="66">Cortex-M</text>
+<text class="s-t2" text-anchor="middle" x="90" y="84">Microcontroller</text>
+<text class="s-t2" text-anchor="middle" x="90" y="110">低功耗 · 低成本</text>
+<text class="s-t2" text-anchor="middle" x="90" y="128">裸机 / RTOS</text>
+<text class="s-tm" text-anchor="middle" x="90" y="154">M0+ · M4 · M33</text>
+</g>
+<g aria-label="Cortex-R" class="hot" data-key="r" role="button" tabindex="0">
+<rect class="s-box" height="130" rx="8" width="140" x="170" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="240" y="66">Cortex-R</text>
+<text class="s-t2" text-anchor="middle" x="240" y="84">Real-time</text>
+<text class="s-t2" text-anchor="middle" x="240" y="110">确定性的实时响应</text>
+<text class="s-t2" text-anchor="middle" x="240" y="128">MPU · 高可靠</text>
+<text class="s-tm" text-anchor="middle" x="240" y="154">R5 · R52</text>
+</g>
+<g aria-label="Cortex-A" class="hot" data-key="a" role="button" tabindex="0">
+<rect class="s-box" height="130" rx="8" width="140" x="320" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="66">Cortex-A</text>
+<text class="s-t2" text-anchor="middle" x="390" y="84">Application</text>
+<text class="s-t2" text-anchor="middle" x="390" y="110">MMU · Linux/Android</text>
+<text class="s-t2" text-anchor="middle" x="390" y="128">多核 · 集成进 SOC</text>
+<text class="s-tm" text-anchor="middle" x="390" y="154">A8 · A53</text>
+</g>
+<g aria-label="Neoverse" class="hot" data-key="n" role="button" tabindex="0">
+<rect class="s-box" height="130" rx="8" width="140" x="470" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="540" y="66">Neoverse</text>
+<text class="s-t2" text-anchor="middle" x="540" y="84">Infraestructura</text>
+<text class="s-t2" text-anchor="middle" x="540" y="110">服务器</text>
+<text class="s-t2" text-anchor="middle" x="540" y="128">数据中心 · 网络</text>
+<text class="s-tm" text-anchor="middle" x="540" y="154">N · V · E</text>
+</g>
+<text class="s-ta" text-anchor="middle" x="90" y="192">→ nodo autónomo</text>
+<text class="s-ta" text-anchor="middle" x="240" y="192">→ tiempo real</text>
+<text class="s-ta" text-anchor="middle" x="390" y="192">→ nodo móvil</text>
+<text class="s-ta" text-anchor="middle" x="540" y="192">→ nodo estático</text>
+<g aria-label="其他 Arm 产品" class="hot" data-key="otros" role="button" tabindex="0">
+<rect class="s-box" height="40" rx="8" width="590" x="20" y="208"></rect>
+<text class="s-t2" text-anchor="middle" x="315" y="233">其他：Classic（ARM7/9/11）· SecurCore · 非 CPU 的 IP：Mali GPU、Ethos NPU</text>
+</g>
+<line class="s-line" marker-end="url(#m25a)" x1="20" x2="608" y1="268" y2="268"></line>
+<text class="s-tm" x="20" y="288">bajo consumo · bajo coste</text>
+<text class="s-tm" text-anchor="end" x="610" y="288">más rendimiento · más consumo</text>
+</svg>
+</div>
+<figcaption>Cortex 的三条主线首字母正好是 A、R、M（Application、Real-time、Microcontroller），可以这样记。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="m" hidden="">
+<h3>Cortex-M · Microcontroller</h3>
+<p>面向微控制器。低功耗、低成本、面积小；中断响应快而且时间确定；通常没有 MMU（可以有 MPU），跑裸机程序或 RTOS。从最省电的 M0/M0+，到带 DSP 指令和可选浮点单元的 M4、性能最高的 M7，再到带 TrustZone 安全扩展的 M23/M33，以及面向机器学习的 M55/M85。</p>
+<p><b>对应节点：</b>nodo autónomo、简单的可穿戴设备。</p>
+<p class="es">实际芯片的例子：</p>
+<ul>
+<li>Adafruit GEMMA M0 可穿戴开发板：Microchip ATSAMD21E18（Cortex-M0+），32 kB RAM、256 kB flash，取代了原来的 ATtiny85。</li>
+<li>ST 的 STM32H753：Cortex-M7，400 MHz。2017 年时，M7 被称为 Arm 性能最高的嵌入式核。</li>
+<li>Nordic nRF9160 开发套件：Cortex-M33，用于 LTE-M、NB-IoT 蜂窝 IoT 和 GNSS。</li>
+</ul>
+</div>
+<div class="panel" data-panel="r" hidden="">
+<h3>Cortex-R · Real-time</h3>
+<p>面向硬实时、高可靠的场合。响应时间确定，通常用 MPU（内存保护单元）而不是 MMU。典型用途：汽车电子（制动、安全气囊等控制器）、硬盘和 SSD 控制器、蜂窝 modem 的基带。例：R5、R52。</p>
+<p><b>对应：</b>它不对应 §1 三类节点中的哪一类，而是嵌在别的系统里做实时控制的 sistema empotrado（§3）。</p>
+</div>
+<div class="panel" data-panel="a" hidden="">
+<h3>Cortex-A · Application</h3>
+<p>面向应用处理器。性能高，有 MMU，能跑 Linux、Android 等完整的操作系统；常是多核，和 GPU（如 Arm 自己的 Mali）、DSP、modem 一起集成在 SOC 里。用于手机、平板、单板机、网关。</p>
+<p><b>对应节点：</b>nodo móvil，正是 §1 说的“procesadores de aplicaciones + DSP + GPU，集成在 SOC 里”。</p>
+<p class="es">实际芯片的例子：</p>
+<ul>
+<li>Raspberry Pi 3 Model B 和 Qualcomm DragonBoard 410c：ARM Cortex-A53，1.2 GHz；BeagleBone Black：AM335X ARM Cortex-A8，1 GHz。</li>
+<li>Eurotech ReliaGATE 10-12 IoT 网关：TI AM3352 Cortex-A8，1 GHz，1 GB RAM，整机 2 W。</li>
+</ul>
+</div>
+<div class="panel" data-panel="n" hidden="">
+<h3>Neoverse · Infraestructura</h3>
+<p>面向服务器、数据中心和网络基础设施的高性能核，追求多核扩展能力和每瓦性能。</p>
+<p><b>对应节点：</b>nodo estático。§1 的对比表只说 estático 用 GPP 和 GPU。</p>
+</div>
+<div class="panel" data-panel="otros" hidden="">
+<h3>其他 Arm 产品</h3>
+<ul>
+<li><b>Classic</b>（ARM7、ARM9、ARM11）：Cortex 之前的老一代核，新设计已经很少用。</li>
+<li><b>SecurCore</b>：面向智能卡和安全芯片。</li>
+<li>Arm 也授权 CPU 以外的 IP：<b>Mali</b>（GPU）、<b>Ethos</b>（NPU，神经网络处理器，见 §4 的 NPU）。</li>
+</ul>
+<p class="aside">Arm 的产品线经常更新，以官网为准。</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>看看 ARM 为 <a href="https://www.arm.com/solutions/wearables">wearables</a> 提供的方案，弄清它用的是哪类处理器。</p>
+<p class="aside">离线做不了，这里给一个参考，以官网为准：简单的手环、健身追踪器主要用 Cortex-M（如 M0+、M4、M33、M55）；跑完整操作系统的智能手表用低功耗的 Cortex-A，并常配一颗 Cortex-M 做传感器协处理（sensor hub）。上面例子里的 GEMMA M0（Cortex-M0+）就是一块面向 wearables 的开发板。</p>
+</div>
+<div class="note">
+<span class="lbl">要点 · 2.5.2</span>
+<p>区分 ARM 家族就看用途：<b>A</b> = 应用处理器（MMU、完整操作系统，手机、平板、单板机）；<b>R</b> = 实时（确定性、高可靠，汽车、存储控制器）；<b>M</b> = 微控制器（低功耗、低成本，裸机或 RTOS，传感器节点）。服务器级的是 Neoverse。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Microsistemas：通用与专用 <span class="tag plain">背景</span></h2>
+<p>按应用，电子系统分成两类：<b>propósito general</b>（通用）追求灵活、可扩展、高性能和较短的硬件开发周期；<b>propósito específico</b>（专用）为具体应用专门设计，通常优化体积、功耗和成本。</p>
+<p><b>下图把两类系统画成同样的三个单元</b>，挂在一条总线上：UCP（处理）、UCM（存储）、UES（输入输出）。差别在每个单元里装的东西。<b>点击一个单元</b>，对比两边：</p>
+<div class="stack" data-explain="ucm">
+<figure>
+<div class="fig">
+<svg aria-label="通用与专用系统的典型架构：左为 Propósito general，UCP 里有多个 µP 和 Caches SRAM，UCM 里 Flash 用于 arranque、DRAM 放 S.O. y aplicaciones，UES 里有 Caches DRAM，外接电话、打印机、显示器；右为 Propósito específico，UCP 里一个 µP，UCM 里 Flash NOR 放 programa、SRAM 放 variables，UES 里 Flash NAND，外接传感器、执行器、电机、摄像机、电话等。两边的三个单元都挂在一条总线上" role="img" viewbox="0 0 760 300">
+<text class="s-tm" x="16" y="18">PROPÓSITO GENERAL</text>
+<text class="s-tm" x="376" y="18">PROPÓSITO ESPECÍFICO</text>
+<rect class="s-box" height="14" rx="3" width="256" x="30" y="236"></rect>
+<rect class="s-box" height="14" rx="3" width="256" x="390" y="236"></rect>
+<line class="s-line" x1="60" x2="60" y1="210" y2="236"></line>
+<line class="s-line" x1="156" x2="156" y1="210" y2="236"></line>
+<line class="s-line" x1="252" x2="252" y1="210" y2="236"></line>
+<line class="s-line" x1="420" x2="420" y1="210" y2="236"></line>
+<line class="s-line" x1="516" x2="516" y1="210" y2="236"></line>
+<line class="s-line" x1="612" x2="612" y1="210" y2="236"></line>
+<g aria-label="UCP" class="hot" data-key="ucp" role="button" tabindex="0">
+<rect class="s-box" height="180" rx="4" width="88" x="16" y="30"></rect>
+<text class="s-t" text-anchor="end" x="96" y="50">UCP</text>
+<rect class="s-dash" height="26" rx="3" width="44" x="34" y="66"></rect>
+<rect class="s-soft" height="26" rx="3" width="44" x="28" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="50" y="89">µP</text>
+<rect class="s-soft" height="40" rx="3" width="68" x="26" y="134"></rect>
+<text class="s-t2" text-anchor="middle" x="60" y="151">Caches</text>
+<text class="s-t2" text-anchor="middle" x="60" y="166">SRAM</text>
+<rect class="s-box" height="180" rx="4" width="88" x="376" y="30"></rect>
+<text class="s-t" text-anchor="end" x="456" y="50">UCP</text>
+<rect class="s-soft" height="28" rx="3" width="52" x="394" y="110"></rect>
+<text class="s-t2" text-anchor="middle" x="420" y="128">µP</text>
+</g>
+<g aria-label="UCM" class="hot" data-key="ucm" role="button" tabindex="0">
+<rect class="s-box" height="180" rx="4" width="88" x="112" y="30"></rect>
+<text class="s-t" text-anchor="end" x="192" y="50">UCM</text>
+<rect class="s-soft" height="26" rx="3" width="68" x="122" y="62"></rect>
+<text class="s-t2" text-anchor="middle" x="156" y="79">Flash</text>
+<text class="s-ta" text-anchor="middle" x="156" y="104">arranque</text>
+<rect class="s-soft" height="26" rx="3" width="68" x="122" y="120"></rect>
+<text class="s-t2" text-anchor="middle" x="156" y="137">DRAM</text>
+<text class="s-ta" text-anchor="middle" x="156" y="164">S.O. y</text>
+<text class="s-ta" text-anchor="middle" x="156" y="180">aplicaciones</text>
+<rect class="s-box" height="180" rx="4" width="88" x="472" y="30"></rect>
+<text class="s-t" text-anchor="end" x="552" y="50">UCM</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="480" y="62"></rect>
+<text class="s-t2" text-anchor="middle" x="516" y="79">Flash NOR</text>
+<text class="s-ta" text-anchor="middle" x="516" y="104">programa</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="480" y="120"></rect>
+<text class="s-t2" text-anchor="middle" x="516" y="137">SRAM</text>
+<text class="s-ta" text-anchor="middle" x="516" y="164">variables</text>
+</g>
+<g aria-label="UES" class="hot" data-key="ues" role="button" tabindex="0">
+<rect class="s-box" height="180" rx="4" width="88" x="208" y="30"></rect>
+<text class="s-t" text-anchor="end" x="288" y="50">UES</text>
+<rect class="s-soft" height="40" rx="3" width="68" x="218" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="252" y="89">Caches</text>
+<text class="s-t2" text-anchor="middle" x="252" y="104">DRAM</text>
+<rect class="s-box" height="180" rx="4" width="88" x="568" y="30"></rect>
+<text class="s-t" text-anchor="end" x="648" y="50">UES</text>
+<rect class="s-soft" height="26" rx="3" width="72" x="576" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="612" y="89">Flash NAND</text>
+</g>
+<line class="s-line" x1="296" x2="304" y1="80" y2="64"></line>
+<text class="s-t2" x="306" y="62">teléfono</text>
+<line class="s-line" x1="296" x2="304" y1="130" y2="130"></line>
+<text class="s-t2" x="306" y="134">impresora</text>
+<line class="s-line" x1="296" x2="304" y1="190" y2="200"></line>
+<text class="s-t2" x="306" y="206">monitor</text>
+<path class="s-line" d="M656,60 H668 M656,130 H668 M656,196 H668 M668,48 V214"></path>
+<text class="s-t2" x="674" y="58">Sensores</text>
+<text class="s-t2" x="674" y="88">Actuadores</text>
+<text class="s-t2" x="674" y="118">Motores</text>
+<text class="s-t2" x="674" y="148">Videocámara</text>
+<text class="s-t2" x="674" y="178">Teléfono</text>
+<text class="s-t2" x="674" y="208">…</text>
+<text class="s-tm" text-anchor="middle" x="158" y="272">bus</text>
+<text class="s-tm" text-anchor="middle" x="518" y="272">bus</text>
+</svg>
+</div>
+<figcaption>Arquitecturas típicas de sistemas de propósito general y específico——通用与专用系统的典型架构。两边都是 UCP、UCM、UES 三个单元挂在一条总线上。<span class="hint">点击单元看对比</span></figcaption>
+</figure>
+<div class="panel" data-panel="ucp" hidden="">
+<h3>UCP · 处理单元</h3>
+<ul>
+<li><b>General</b>：几个叠在一起的 µP（多核），外加 <b>Caches SRAM</b>。也就是：通用处理器，处理、寻址和内存管理能力强（§4 GPP 的微架构里就有 cache）。</li>
+<li><b>Específico</b>：只有一个 µP，<b>没有 cache</b>。这和 §4 的 MCU 一致：为了确定性响应，MCU 一般避开 cache、推测执行这类预测性机制。</li>
+</ul>
+<p class="aside">UCP = Unidad Central de Proceso（中央处理单元）。</p>
+</div>
+<div class="panel" data-panel="ucm" hidden="">
+<h3>UCM · 存储</h3>
+<ul>
+<li><b>General</b>：<b>Flash 用于 arranque</b>（启动），<b>DRAM 放 S.O. y aplicaciones</b>（操作系统和应用）。也就是下面说的：非易失的 Flash NOR 用于启动和初始化，易失的 DDR DRAM 放操作系统和应用程序。</li>
+<li><b>Específico</b>：<b>Flash NOR 放 programa</b>（程序本身），<b>SRAM 放 variables</b>（变量）。没有操作系统要装，程序直接从 Flash 运行；和 §5 MCU 框图里的“Memoria de programa · Tipo Flash”“Memoria de datos · Tipo SRAM”是同一个意思。</li>
+</ul>
+<p class="aside">对比记忆：通用系统的 Flash 只管开机，程序搬进 DRAM 跑；专用系统的程序一直在 Flash 里。</p>
+</div>
+<div class="panel" data-panel="ues" hidden="">
+<h3>UES · 输入输出</h3>
+<ul>
+<li><b>General</b>：外接<b>常规外设</b>，图里画的是电话、打印机、显示器；常规外设指键盘、鼠标、显示器、打印机、网络连接，走标准 E/S 接口（PCI Express、USB、SATA）。图在这个单元里写的是 “Caches DRAM”。</li>
+<li><b>Específico</b>：直接连到它所控制的系统：<b>Sensores、Actuadores、Motores、Videocámara、Teléfono…</b>；单元里有 <b>Flash NAND</b>。</li>
+</ul>
+<p class="aside">按上下文，UCM 是存储单元，UES 是 E/S 单元（Entrada/Salida）。NAND Flash 常用来存大量数据。</p>
+</div>
+</div>
+
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">Propósito general · 例：PC</span>
+<ul>
+<li>通用处理器，处理、寻址和内存管理能力强。</li>
+<li>非易失的 Flash NOR 存启动代码，易失的 DDR DRAM 放操作系统和应用。</li>
+<li>高集成度 chipset 连接处理器、存储器和图形、音频、高速通信等子系统，并产生 E/S 总线（现在内存控制器已集成进处理器）。</li>
+<li>有操作系统，让应用和硬件解耦；外设用标准接口（PCI Express、USB、SATA）。</li>
+</ul>
+</div>
+<div class="cell">
+<span class="eyebrow">Propósito específico</span>
+<ul>
+<li><b class="t">sistema empotrado (ES) / embedded system (EN)</b>——嵌入式系统：通常装在它所控制的另一个系统里（不一定，关键是“专用”）。</li>
+<li>有的专做 procesado de control（实时仲裁大量事件），有的专做 procesado de señal（对数据流做密集计算），也有介于两者之间的器件。</li>
+<li>占处理器市场的 90% 以上。典型例子：微控制器，以及近年的 SOC。</li>
+</ul>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>浏览 Libelium 的 mota Waspmote V1.2 的特性。→ 在 §6 一起做。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Partición HW/SW 与设计方案 <span class="tag">2.5.4</span></h2>
+<p>今天设计一个可编程电子系统时，硬件和软件能实现的功能没有本质区别。某个功能用 <i>lógica cableada</i>（硬连线逻辑，即硬件）还是用处理器代码（软件）来做，多数时候只是在几个设计指标之间权衡：prestaciones（性能）、consumo（功耗）、tamaño（尺寸），尤其是 flexibilidad（灵活性）。所以 <b class="t">partición hardware/software (ES) / hardware/software partitioning (EN)</b>——软硬件划分，是得到最优设计最关键的步骤之一。</p>
+<p>下面这张图把各种方案放在一起：<b>横轴是 programmability</b>（可编程性，从 Inflexible 到 Flexible），<b>纵轴是 peak performance</b>（峰值性能，MIPS，对数刻度），每个椭圆旁边的数字是<b>能效</b>（MIPS/mW）。<b>点击椭圆</b>读它的位置：</p>
+<div class="stack" data-explain="asic">
+<figure>
+<div class="fig">
+<svg aria-label="峰值性能、能效与可编程性对比：横轴可编程性从 Inflexible 到 Flexible，纵轴峰值性能 10 到 10 的 5 次方 MIPS。左上是 ASICs（1000 MIPS/mW）和 TPUs，旁边 PLAs（100 MIPS/mW）；中间是 Coarse-grain adaptable architectures（10 MIPS/mW）、Domain LAs（5–10 MIPS/mW）、FPGAs（1–10 MIPS/mW）、ASIPs（1–10 MIPS/mW）、DSPs（1–5 MIPS/mW），右上 GPUs；右下 GPPs（0.1–1 MIPS/mW）和峰值最低的 µCs" role="img" viewbox="0 0 660 410">
+<defs>
+<marker id="m25c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m25c)" x1="90" x2="90" y1="356" y2="16"></line>
+<line class="s-line" marker-end="url(#m25c)" x1="90" x2="644" y1="356" y2="356"></line>
+<line class="s-line" x1="85" x2="90" y1="70" y2="70"></line>
+<line class="s-line" x1="85" x2="90" y1="140" y2="140"></line>
+<line class="s-line" x1="85" x2="90" y1="210" y2="210"></line>
+<line class="s-line" x1="85" x2="90" y1="280" y2="280"></line>
+<line class="s-line" x1="85" x2="90" y1="350" y2="350"></line>
+<text class="s-tm" text-anchor="end" x="80" y="74">10⁵</text>
+<text class="s-tm" text-anchor="end" x="80" y="144">10⁴</text>
+<text class="s-tm" text-anchor="end" x="80" y="214">10³</text>
+<text class="s-tm" text-anchor="end" x="80" y="284">10²</text>
+<text class="s-tm" text-anchor="end" x="80" y="354">10¹</text>
+<text class="s-tm" text-anchor="middle" transform="translate(30,200) rotate(-90)" x="0" y="0">Peak performance (MIPS)</text>
+<text class="s-t2" x="96" y="376">Inflexible</text>
+<text class="s-t2" text-anchor="end" x="640" y="376">Flexible</text>
+<text class="s-tm" text-anchor="middle" x="365" y="400">Programmability</text>
+<g aria-label="ASICs" class="hot" data-key="asic" role="button" tabindex="0">
+<ellipse class="s-box" cx="166" cy="76" rx="38" ry="33"></ellipse>
+<text class="s-t" text-anchor="middle" x="166" y="74">ASICs</text>
+</g>
+<g aria-label="TPUs" class="hot" data-key="tpu" role="button" tabindex="0">
+<ellipse class="s-box" cx="161" cy="135" rx="40" ry="33"></ellipse>
+<text class="s-t" text-anchor="middle" x="161" y="140">TPUs</text>
+</g>
+<g aria-label="PLAs, Coarse-grain y Domain LAs" class="hot" data-key="la" role="button" tabindex="0">
+<ellipse class="s-box" cx="218" cy="125" rx="23" ry="20"></ellipse>
+<text class="s-t2" text-anchor="middle" x="218" y="129">PLAs</text>
+<ellipse class="s-box" cx="284" cy="195" rx="41" ry="37"></ellipse>
+<text class="s-t2" text-anchor="middle" x="284" y="192">Coarse-grain</text>
+<text class="s-t2" text-anchor="middle" x="284" y="207">adaptable</text>
+<ellipse class="s-box" cx="367" cy="217" rx="42" ry="35"></ellipse>
+<text class="s-t2" text-anchor="middle" x="362" y="214">Domain</text>
+<text class="s-t2" text-anchor="middle" x="362" y="229">LAs</text>
+</g>
+<g aria-label="FPGAs" class="hot" data-key="fpga" role="button" tabindex="0">
+<ellipse class="s-box" cx="453" cy="199" rx="52" ry="54"></ellipse>
+<text class="s-t" text-anchor="middle" x="455" y="192">FPGAs</text>
+</g>
+<g aria-label="GPUs" class="hot" data-key="gpu" role="button" tabindex="0">
+<ellipse class="s-box" cx="507" cy="142" rx="43" ry="38"></ellipse>
+<text class="s-t" text-anchor="middle" x="507" y="147">GPUs</text>
+</g>
+<g aria-label="ASIPs" class="hot" data-key="asip" role="button" tabindex="0">
+<ellipse class="s-box" cx="426" cy="242" rx="28" ry="31"></ellipse>
+<text class="s-t" text-anchor="middle" x="426" y="247">ASIPs</text>
+</g>
+<g aria-label="DSPs" class="hot" data-key="dsp" role="button" tabindex="0">
+<ellipse class="s-box" cx="478" cy="257" rx="28" ry="30"></ellipse>
+<text class="s-t" text-anchor="middle" x="478" y="262">DSPs</text>
+</g>
+<g aria-label="GPPs" class="hot" data-key="gpp" role="button" tabindex="0">
+<ellipse class="s-box" cx="574" cy="314" rx="52" ry="27"></ellipse>
+<text class="s-t" text-anchor="middle" x="580" y="316">GPPs</text>
+</g>
+<g aria-label="µCs" class="hot" data-key="uc" role="button" tabindex="0">
+<ellipse class="s-box" cx="512" cy="340" rx="37" ry="12"></ellipse>
+<text class="s-t" text-anchor="middle" x="512" y="345">µCs</text>
+</g>
+<text class="s-tm" x="206" y="48">1000 MIPS/mW</text>
+<text class="s-tm" x="244" y="110">100 MIPS/mW</text>
+<text class="s-tm" text-anchor="middle" x="284" y="248">10 MIPS/mW</text>
+<text class="s-tm" text-anchor="middle" x="352" y="270">5–10 MIPS/mW</text>
+<text class="s-tm" text-anchor="middle" x="405" y="134">1–10 MIPS/mW</text>
+<text class="s-tm" text-anchor="middle" x="410" y="290">1–10 MIPS/mW</text>
+<text class="s-tm" x="512" y="232">1–5 MIPS/mW</text>
+<text class="s-tm" text-anchor="middle" x="590" y="280">0.1–1 MIPS/mW</text>
+</svg>
+</div>
+<figcaption>Comparación de prestaciones de pico, eficiencia energética y programabilidad——峰值性能、能效和可编程性的对比。uCs、GPUs、TPUs 三个没有标能效。<span class="hint">点击椭圆看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="asic" hidden="">
+<h3>ASICs · 左上角</h3>
+<p>最不灵活，峰值最高（读图约 10⁴·⁵–10⁵·⁴ MIPS），能效 <b>1000 MIPS/mW</b>，全图最高。原因是它只有解决某个问题所需的硬连线逻辑，所以计算效率约为 GPP 的 1000 倍。</p>
+</div>
+<div class="panel" data-panel="tpu" hidden="">
+<h3>TPUs · 紧挨 ASICs</h3>
+<p>也在 Inflexible 一端，峰值仅次于 ASIC（读图约 10³·⁶–10⁴·⁶ MIPS）。TPU 本身就是为深度学习设计的 ASIC，所以位置挨着 ASIC。图上没标能效。</p>
+</div>
+<div class="panel" data-panel="la" hidden="">
+<h3>PLAs · Coarse-grain · Domain LAs</h3>
+<ul>
+<li><b>PLAs</b>：100 MIPS/mW。</li>
+<li><b>Coarse-grain Adaptable Architectures</b>（图中举例 RaPiD、PipeRench）：10 MIPS/mW。</li>
+<li><b>Domain LAs</b>（图中举例 RSVP、VEAL、CGRAs）：5–10 MIPS/mW。</li>
+</ul>
+<p class="aside">这三种加速器只出现在图里，本章没有展开讲，也不在 学习目标 里。图里的 LA 应是 loop accelerator（循环加速器），PLA 应是 programmable loop accelerator，不是可编程逻辑阵列。</p>
+</div>
+<div class="panel" data-panel="fpga" hidden="">
+<h3>FPGAs · 中间偏灵活</h3>
+<p>峰值跨度很大（读图约 10²·⁴–10³·⁹ MIPS），正上方标的是 <b>1–10 MIPS/mW</b>。FPGA 能重新配置自己的硬连线逻辑；位级并行时性能很高，并行度有限、运算复杂时效率不高，这也许就是它在纵轴上拉得这么长的原因。</p>
+<p class="aside">图上这个 “1–10 MIPS/mW” 标在 FPGAs 上方、GPUs 左边，按位置归给 FPGAs。</p>
+</div>
+<div class="panel" data-panel="gpu" hidden="">
+<h3>GPUs · 右上</h3>
+<p>相当灵活（shader 可由用户编程），峰值很高（读图约 10³·⁴–10⁴·⁵ MIPS），在可编程的方案里最高。原因是成千上万个核按 SIMD 大规模并行。图上没标能效。</p>
+</div>
+<div class="panel" data-panel="asip" hidden="">
+<h3>ASIPs</h3>
+<p>中等可编程性，峰值约 10²–10³ MIPS，能效 <b>1–10 MIPS/mW</b>。比 GPP 不灵活一点（要为应用改硬件），换来高一个数量级以上的峰值和能效。</p>
+</div>
+<div class="panel" data-panel="dsp" hidden="">
+<h3>DSPs</h3>
+<p>比 ASIP 更靠灵活一侧，峰值约 10²–10²·⁸ MIPS，能效 <b>1–5 MIPS/mW</b>。专长信号处理，所以在这个领域比 GPP 高效。</p>
+</div>
+<div class="panel" data-panel="gpp" hidden="">
+<h3>GPPs · 右下角</h3>
+<p><b>最灵活</b>，但峰值只有约 10¹–10² MIPS，能效 <b>0.1–1 MIPS/mW</b>，全图最低。原因是实现可编程性所需的微架构硬件很耗电，所以计算效率低。</p>
+</div>
+<div class="panel" data-panel="uc" hidden="">
+<h3>µCs · 最底下</h3>
+<p>贴着 GPP、在灵活一侧，<b>峰值性能最低</b>（约 10¹ MIPS 出头）。uCs 也属于两端之间的方案，专长事件控制；图上它的位置说明：MCU 不靠峰值算力取胜，而是靠低功耗、低成本和确定性响应（§5）。图上没标能效。</p>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">读图 · 性能、能效与灵活性</span>
+<ul>
+<li>两端：<b>ASIC</b> 左上（不灵活、峰值最高、1000 MIPS/mW），<b>GPP</b> 右下（最灵活、0.1–1 MIPS/mW）。两者能效差 1000–10 000 倍；上面 ASIC 的说明里“计算效率约为 GPP 的 1000 倍（1000 veces）”，对应的是 GPP 的上限 1 MIPS/mW。</li>
+<li>大致规律：越不灵活，峰值和能效越高。GPU 是例外，比较灵活，峰值也很高。</li>
+<li>能效从高到低：ASIC 1000 → PLA 100 → coarse-grain 10 → domain LA 5–10 → FPGA、ASIP 1–10 → DSP 1–5 → GPP 0.1–1（MIPS/mW）。</li>
+</ul>
+</div>
+<ul>
+<li><b class="t">ASIC (Application-Specific Integrated Circuit)</b>——专用集成电路：解决非常具体的问题时性能最高、功耗最低，但规格一变就很难快速适应。</li>
+<li><b class="t">GPP (General Purpose Processor)</b>——通用处理器：能效很差，有时还达不到系统的性能要求。</li>
+<li>两者之间的<b>折中方案</b>想兼顾处理器的灵活和 ASIC 的效率，但不一定做得到：DSP、GPU、ASIP、FPGA、TPU。</li>
+</ul>
+<p>这几种方案各有专长：uCs、DSP、GPU、TPU <i>respectivamente</i>（分别）专长于事件控制、信号处理、图形渲染和深度学习；FPGA 能重新配置自己的硬连线逻辑。<b>配对：</b>先点左边的方案，再点右边它的专长。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="uc" type="button">uC <span class="es">microcontrolador</span></button>
+<button data-l="dsp" type="button">DSP</button>
+<button data-l="gpu" type="button">GPU</button>
+<button data-l="tpu" type="button">TPU</button>
+<button data-l="fpga" type="button">FPGA</button>
+<button data-l="asip" type="button">ASIP</button>
+</div>
+<div class="col">
+<button data-r="gpu" type="button">renderizado gráfico <span class="es">图形渲染</span></button>
+<button data-r="asip" type="button">ampliar su juego de instrucciones <span class="es">扩展指令集</span></button>
+<button data-r="uc" type="button">control de eventos <span class="es">事件控制</span></button>
+<button data-r="tpu" type="button">deep learning <span class="es">深度学习</span></button>
+<button data-r="fpga" type="button">reconfigurar su lógica cableada <span class="es">重构硬连线逻辑</span></button>
+<button data-r="dsp" type="button">proceso de señal <span class="es">信号处理</span></button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p><b>逐个看：</b>点一个方案读要点。带 ★ 的是目标 2.5.4 点名要区分的五种。</p>
+<div class="stack" data-explain="mcu">
+<div aria-label="设计方案" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="gpp" type="button">GPP</button>
+<button aria-pressed="false" class="chip" data-key="mcu" type="button">Microcontrolador ★</button>
+<button aria-pressed="false" class="chip" data-key="dsp" type="button">DSP ★</button>
+<button aria-pressed="false" class="chip" data-key="gpu" type="button">GPU</button>
+<button aria-pressed="false" class="chip" data-key="fpga" type="button">FPGA ★</button>
+<button aria-pressed="false" class="chip" data-key="asip" type="button">ASIP ★</button>
+<button aria-pressed="false" class="chip" data-key="soc" type="button">SOC ★</button>
+<button aria-pressed="false" class="chip" data-key="tpu" type="button">TPU</button>
+<button aria-pressed="false" class="chip" data-key="npu" type="button">NPU · LPU</button>
+</div>
+<div class="panel" data-panel="gpp" hidden="">
+<h3>GPP · microprocesador</h3>
+<p>集成在一颗芯片上的中央处理器（UCP），是 PC 这类应用平台的核心，<b>能执行任何程序</b>。为了这种灵活性，它的指令集越来越强大多样，寻址能力也很大。为提高性能，时钟从 KHz 升到 GHz，寄存器从 4 位经过 8、16、32 位到 64 位；微架构也越来越复杂：内存管理单元、cache、超流水线、分支预测、浮点和多媒体指令、超标量、推测执行、多核、虚拟化……</p>
+</div>
+<div class="panel" data-panel="mcu" hidden="">
+<span class="verdict star">目标 2.5.4</span>
+<h3>Microcontrolador · MCU</h3>
+<p>集成在一颗芯片里的小型可编程数字系统，专用，专长于<b>控制处理</b>。通常工作在实时条件下，要给出<b>确定的响应</b>，所以一般避开微处理器的预测性机制（cache、推测执行），用很快的上下文切换，在几个时钟周期内检测并响应外部事件；通常直接访问硬件，不用操作系统（有时用 RTOS）。</p>
+<p>外设很丰富：定时器、并口、串口、PWM、ADC；不少还有 Ethernet、CAN、USB、射频接口或图形控制器，甚至智能卡读卡、MP3 解码、电池充电监测。还有集成 DSP（这种叫 <b class="t">DSC (Digital Signal Controller)</b>）或 FPGA 的混合型 MCU。8 位和 32 位的区别见 §5。</p>
+</div>
+<div class="panel" data-panel="dsp" hidden="">
+<span class="verdict star">目标 2.5.4</span>
+<h3>DSP · Digital Signal Processor</h3>
+<p>专门做信号处理的处理器，架构为<b>实时、密集地处理数据流</b>而优化。通常不用操作系统（用的话是 RTOS），以便把代码效率压到极致。</p>
+<p>信号处理要求不高时，可以用 procesadores unificados（统一处理器）：在同一个执行引擎里结合微处理器和 DSP，例如很多微处理器里的多媒体指令。好处是降低成本和复杂度（不必做多处理器系统），开发也更简单。</p>
+</div>
+<div class="panel" data-panel="gpu" hidden="">
+<h3>GPU · Graphics Processing Unit</h3>
+<p>专门执行大量非常简单、重复的任务，架构<b>大规模并行</b>：成千上万个 core 按 SIMD（Single Instruction Multiple Data，一条指令同时作用于很多数据）方式成组工作，这种结构叫 SM（Streaming Multiprocessor）。在核心上运行的用户程序叫 shader，每次处理一个像素、顶点或几何元素，用 HLSL（DirectX）、GLSL（OpenGL）、Cg（NVIDIA）等高级语言编写。核心有不同类型：INT32（整数）、FP32（浮点）、tensor cores（深度学习）、RT cores（实时光线追踪）。</p>
+</div>
+<div class="panel" data-panel="fpga" hidden="">
+<span class="verdict star">目标 2.5.4</span>
+<h3>FPGA · Field Programmable Gate Array</h3>
+<p>可编程、可重构的逻辑器件，能实现从简单逻辑函数到复杂数字系统的各种电路。<b>位级并行计算</b>性能很高（典型应用：数据加密），但对并行度有限、运算复杂的应用效率不高。很适合<b>小批量生产、短开发周期</b>。</p>
+<p>新一代 FPGA 能通过授权、复用 <b class="t">IP (Intellectual Property)</b>——知识产权核，集成处理器、控制器和标准外设（USB、PCI、Ethernet）。处理器分两种：</p>
+<ul>
+<li><b>hard core</b>（硬核）：嵌进 FPGA 的已知架构处理器，例如 Xilinx 的 PowerPC、Altera 的 ARM。</li>
+<li><b>soft core</b>（软核）：用 FPGA 自己的逻辑资源实现，例如 Altera 的 NIOS、Xilinx 的 MicroBlaze。可以多次实例化，比 hard core 更灵活、更便宜，但性能通常较低。</li>
+</ul>
+</div>
+<div class="panel" data-panel="asip" hidden="">
+<span class="verdict star">目标 2.5.4</span>
+<h3>ASIP · Application Specific Instruction-set Processor</h3>
+<p>可配置处理器：<b>允许修改硬件以适应某个具体应用</b>的微处理器。可以加入新的专用指令和数据类型、所需宽度的特殊寄存器，以及为定制算法设计的专用执行单元。这样，所需时钟频率比 GPP 低，也不必用外部硬件加速。有高层次设计工具，生成可综合的代码，可以在 FPGA 和 SOC 上实现。例：Cadence、Synopsys 的可配置处理器。</p>
+</div>
+<div class="panel" data-panel="soc" hidden="">
+<span class="verdict star">目标 2.5.4</span>
+<h3>SOC · System On Chip</h3>
+<p>也把系统集成进一颗芯片，但和 MCU 不同，它能实现<b>完整的通用系统</b>，还能集成模拟器件、传感器和射频单元。通常用一个或多个高性能处理器，跑操作系统（Linux、Windows CE 等），需要外部存储器和标准外设接口。</p>
+<ul>
+<li><b class="t">SIP (System In Package)</b>——系统级封装：SOC 的一种变体，把几颗芯片压进一个封装。</li>
+<li><b class="t">MSOC (Multiprocessor System-on-Chip)</b>——多处理器片上系统：几十甚至上百个核，用于大规模并行的密集计算（超级计算）。</li>
+</ul>
+<p class="aside"></p>
+</div>
+<div class="panel" data-panel="tpu" hidden="">
+<h3>TPU · Tensor Processing Unit</h3>
+<p>专为深度学习设计的 ASIC。要做的主要是<b>数据量极大、精度较低</b>的矩阵运算。</p>
+</div>
+<div class="panel" data-panel="npu" hidden="">
+<h3>NPU · LPU</h3>
+<p>AI 热潮带来了 <b class="t">NPU (Neural Processing Unit)</b>：直接集成在消费级处理器（手机、笔记本）里的小型 ASIC，为人工神经网络优化；以及 <b class="t">LPU (Language Processing Unit)</b>：为大语言模型（LLM）优化。未来还有模仿人脑结构和工作方式的 chips neuromórficos（神经形态芯片），以及光子计算。</p>
+<p class="aside">想深入可以读一篇神经网络硬件加速的综述，文献见本节末尾的资料。</p>
+</div>
+</div>
+<p><b>按需求选方案：</b>读每个场景，从五种方案里选最合适的一个。</p>
+<div class="drill q" id="d25b">
+<div class="drill-hd"><span class="d-n"></span><span class="d-s"></span></div>
+<p class="qt d-q"></p>
+<div aria-label="设计方案" class="chips d-o" role="group"></div>
+<p aria-live="polite" class="why d-w" hidden=""></p>
+<div class="stepper-ctl">
+<button class="btn primary" data-act="next" type="button">下一题 →</button>
+<button class="btn" data-act="again" type="button">重新开始</button>
+</div>
+</div>
+<div class="note">
+<span class="lbl">要点 · 2.5.4</span>
+<ul>
+<li><b>MCU</b>：单芯片、控制处理、确定性实时，片上外设丰富，通常不用操作系统。</li>
+<li><b>DSP</b>：实时、密集处理数据流（信号处理），通常不用操作系统。</li>
+<li><b>FPGA</b>：可重构的硬件，位级并行强，适合小批量和短开发周期；可放 hard core 或 soft core。</li>
+<li><b>SOC</b>：整套通用系统上一颗芯片：高性能处理器 + 操作系统 + 外部存储，还能集成模拟、传感器、RF。</li>
+<li><b>ASIP</b>：能扩展指令、寄存器和执行单元的可配置处理器，按应用定制。</li>
+</ul>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>8 位与 32 位微控制器 <span class="tag">2.5.3</span></h2>
+<p>市面上的 MCU 数量庞大，厂商还常给同一型号出几十个版本，尽量贴合客户的需求。按位数分，有 4、8、16 和 32 位。</p>
+<div class="note">
+<span class="lbl">定义 · 位数</span>
+<p>MCU 的位数指它<b>基本寄存器的宽度</b>。</p>
+</div>
+<p><b>MCU 的内部</b>：四大块都在同一颗芯片上。<b>点击一块</b>看它包含什么：</p>
+<div class="stack" data-explain="proc">
+<figure>
+<div class="fig">
+<svg aria-label="微控制器框图。Control de sistema（Control de interrupciones、Control de depurado、Protección y seguridad、Gestión de energía）连到 Entrada/Salida 和 Procesador；Procesador 含 Lógica de control、Registros、Unidad Aritmético Lógica；Memoria 含 Memoria de programa tipo Flash 和 Memoria de datos tipo SRAM；Entrada/Salida 含 Puertos paralelo、Comunicaciones serie、Interfaz analógico、Moduladores de anchura de pulsos、Contadores de eventos、Contadores 和 Temporizadores，通过内部总线连到处理器和存储器。PWM 向外输出，事件计数器从外部输入，串口和模拟接口双向" role="img" viewbox="0 0 660 385">
+<defs>
+<marker id="m25d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" style="stroke-width:3" x1="220" x2="220" y1="100" y2="120"></line>
+<line class="s-line" style="stroke-width:3" x1="400" x2="440" y1="55" y2="55"></line>
+<g aria-label="Control de sistema" class="hot" data-key="ctl" role="button" tabindex="0">
+<rect class="s-box" height="90" rx="4" width="360" x="40" y="10"></rect>
+<text class="s-t" x="52" y="28">Control de sistema</text>
+<rect class="s-soft" height="50" rx="3" width="104" x="52" y="38"></rect>
+<text class="s-t2" text-anchor="middle" x="104" y="59">Control de</text>
+<text class="s-t2" text-anchor="middle" x="104" y="75">interrupciones</text>
+<rect class="s-soft" height="50" rx="3" width="92" x="164" y="38"></rect>
+<text class="s-t2" text-anchor="middle" x="210" y="59">Control de</text>
+<text class="s-t2" text-anchor="middle" x="210" y="75">depurado</text>
+<rect class="s-soft" height="26" rx="3" width="128" x="264" y="36"></rect>
+<text class="s-t2" text-anchor="middle" x="328" y="53">Protección y seguridad</text>
+<rect class="s-soft" height="26" rx="3" width="128" x="264" y="68"></rect>
+<text class="s-t2" text-anchor="middle" x="328" y="85">Gestión de energía</text>
+</g>
+<g aria-label="Procesador" class="hot" data-key="proc" role="button" tabindex="0">
+<rect class="s-box" height="170" rx="4" width="210" x="440" y="10"></rect>
+<text class="s-t" x="452" y="28">Procesador</text>
+<rect class="s-soft" height="124" rx="3" width="76" x="452" y="42"></rect>
+<text class="s-t2" text-anchor="middle" x="490" y="100">Lógica de</text>
+<text class="s-t2" text-anchor="middle" x="490" y="116">control</text>
+<rect class="s-soft" height="40" rx="3" width="92" x="548" y="42"></rect>
+<text class="s-t2" text-anchor="middle" x="594" y="66">Registros</text>
+<rect class="s-soft" height="74" rx="3" width="92" x="548" y="92"></rect>
+<text class="s-t2" text-anchor="middle" x="594" y="116">Unidad</text>
+<text class="s-t2" text-anchor="middle" x="594" y="132">Aritmético</text>
+<text class="s-t2" text-anchor="middle" x="594" y="148">Lógica</text>
+<path class="s-line" d="M528,104 H538 V62 H548 M538,129 H548" style="stroke-width:3"></path>
+</g>
+<line class="s-line" style="stroke-width:3" x1="545" x2="545" y1="180" y2="210"></line>
+<g aria-label="Memoria" class="hot" data-key="mem" role="button" tabindex="0">
+<rect class="s-box" height="150" rx="4" width="210" x="440" y="210"></rect>
+<text class="s-t" x="452" y="228">Memoria</text>
+<rect class="s-soft" height="106" rx="3" width="100" x="452" y="240"></rect>
+<text class="s-t2" text-anchor="middle" x="502" y="276">Memoria de</text>
+<text class="s-t2" text-anchor="middle" x="502" y="292">programa</text>
+<text class="s-t2" text-anchor="middle" x="502" y="316">Tipo Flash</text>
+<rect class="s-soft" height="78" rx="3" width="80" x="562" y="254"></rect>
+<text class="s-t2" text-anchor="middle" x="602" y="278">Memoria de</text>
+<text class="s-t2" text-anchor="middle" x="602" y="294">datos</text>
+<text class="s-t2" text-anchor="middle" x="602" y="316">Tipo SRAM</text>
+</g>
+<g aria-label="Entrada/Salida" class="hot" data-key="es" role="button" tabindex="0">
+<rect class="s-box" height="255" rx="4" width="360" x="40" y="120"></rect>
+<text class="s-t" x="52" y="138">Entrada/Salida</text>
+<rect class="s-soft" height="26" rx="3" width="140" x="100" y="150"></rect>
+<text class="s-t2" text-anchor="middle" x="170" y="167">Puertos paralelo</text>
+<rect class="s-soft" height="26" rx="3" width="140" x="100" y="184"></rect>
+<text class="s-t2" text-anchor="middle" x="170" y="201">Comunicaciones serie</text>
+<rect class="s-soft" height="26" rx="3" width="140" x="100" y="218"></rect>
+<text class="s-t2" text-anchor="middle" x="170" y="235">Interfaz analógico</text>
+<rect class="s-soft" height="36" rx="3" width="140" x="100" y="252"></rect>
+<text class="s-t2" text-anchor="middle" x="170" y="267">Moduladores de</text>
+<text class="s-t2" text-anchor="middle" x="170" y="282">anchura de pulsos</text>
+<rect class="s-soft" height="36" rx="3" width="140" x="100" y="298"></rect>
+<text class="s-t2" text-anchor="middle" x="170" y="313">Contadores de</text>
+<text class="s-t2" text-anchor="middle" x="170" y="328">eventos</text>
+<rect class="s-soft" height="76" rx="3" width="80" x="266" y="258"></rect>
+<text class="s-t2" text-anchor="middle" x="306" y="300">Contadores</text>
+<rect class="s-soft" height="24" rx="3" width="110" x="266" y="344"></rect>
+<text class="s-t2" text-anchor="middle" x="321" y="360">Temporizadores</text>
+<path class="s-line" d="M240,163 H370 M240,197 H370 M240,231 H370 M346,298 H370 M370,163 V298" style="stroke-width:3"></path>
+<line class="s-line" style="stroke-width:3" x1="240" x2="266" y1="270" y2="270"></line>
+<line class="s-line" style="stroke-width:3" x1="240" x2="266" y1="316" y2="316"></line>
+<line class="s-line" style="stroke-width:3" x1="306" x2="306" y1="334" y2="344"></line>
+</g>
+<path class="s-line" d="M370,195 H545" style="stroke-width:3"></path>
+<line class="s-line" style="stroke-width:4" x1="4" x2="100" y1="163" y2="163"></line>
+<line class="s-line" marker-end="url(#m25d)" marker-start="url(#m25d)" x1="6" x2="98" y1="197" y2="197"></line>
+<line class="s-line" marker-end="url(#m25d)" marker-start="url(#m25d)" x1="6" x2="98" y1="231" y2="231"></line>
+<line class="s-line" marker-end="url(#m25d)" x1="100" x2="6" y1="270" y2="270"></line>
+<line class="s-line" marker-end="url(#m25d)" x1="4" x2="98" y1="316" y2="316"></line>
+</svg>
+</div>
+<figcaption>Diagrama de bloques de un microcontrolador——微控制器框图。粗线是内部总线；左边是引脚方向：并口是一组线，串口和模拟接口双向，PWM 只向外输出，事件计数器只从外部输入。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="ctl" hidden="">
+<h3>Control de sistema · 系统控制</h3>
+<ul>
+<li><b>Control de interrupciones</b>（中断控制）：对应 §4 说的，MCU 用很快的上下文切换，在几个时钟周期内检测并响应外部事件。</li>
+<li><b>Control de depurado</b>（调试控制）、<b>Protección y seguridad</b>（保护与安全）、<b>Gestión de energía</b>（能源管理）：图里只列了名字。调试控制让开发工具能在芯片上设断点、单步执行；保护与安全包括看门狗、内存保护、加密等；能源管理负责时钟和低功耗模式（比如 §6 Waspmote 的 Sleep、Hibernate）。</li>
+</ul>
+<p class="aside">IoT 带来了集成加密安全区（zonas seguras criptográficas）的 MCU，这就属于 “Protección y seguridad” 这一块。</p>
+</div>
+<div class="panel" data-panel="proc" hidden="">
+<span class="verdict star">2.5.3</span>
+<h3>Procesador · 处理器</h3>
+<p><b>Lógica de control</b>（控制逻辑）+ <b>Registros</b>（寄存器）+ <b>Unidad Aritmético Lógica</b>（ALU，算术逻辑单元）。说 MCU 是 8 位还是 32 位，指的就是这里<b>基本寄存器的宽度</b>。</p>
+</div>
+<div class="panel" data-panel="mem" hidden="">
+<h3>Memoria · 存储器</h3>
+<p><b>Memoria de programa · Tipo Flash</b>（程序存储器，Flash）和 <b>Memoria de datos · Tipo SRAM</b>（数据存储器，SRAM）。和 §3 架构图里专用系统的 “Flash NOR → programa、SRAM → variables” 一致。还要记住：存储器在 MCU 里是“稀缺品”，所以代码密度很重要。</p>
+<p class="es">例：Waspmote 的 ATmega1281 是 128 KB Flash、8 KB SRAM（§6）。</p>
+</div>
+<div class="panel" data-panel="es" hidden="">
+<h3>Entrada/Salida · 片上外设</h3>
+<ul>
+<li><b>Puertos paralelo</b>（并口）、<b>Comunicaciones serie</b>（串行通信）、<b>Interfaz analógico</b>（模拟接口，ADC 等）。</li>
+<li><b>Moduladores de anchura de pulsos</b>：PWM，向外输出。</li>
+<li><b>Contadores de eventos</b>：数外部事件，从外部输入。PWM 和事件计数器都连到 <b>Contadores</b>（计数器），后者再连 <b>Temporizadores</b>（定时器）。</li>
+</ul>
+<p>MCU 的标准外设也就是这几样：temporizadores、puertos paralelo、puerto serie、PWM、ADC。</p>
+</div>
+</div>
+
+<p class="aside">图里没画的可选模块：Ethernet、CAN、USB、射频接口、图形控制器；还有集成 DSP（DSC）或 FPGA 的混合型 MCU。</p>
+<p><b>切换看两类的典型特征</b>，以及几颗实际的芯片：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换位数" class="seg" role="group">
+<button aria-pressed="true" data-view="b8" type="button">8 bits</button>
+<button aria-pressed="false" data-view="b32" type="button">16 / 32 bits</button>
+</div>
+<div class="panel" data-pane="b8">
+<ul>
+<li><b>速度高</b>：每秒几千万条指令（decenas de millones de instrucciones por segundo）。</li>
+<li><b class="t">densidad de código (ES) / code density (EN)</b>——代码密度高：同样的程序占用的存储器更少，而存储器在 MCU 里是“稀缺品”。</li>
+<li>工艺成熟：<b>芯片便宜、功耗很低</b>，开发工具<b>简单、便宜</b>。</li>
+<li>编程已从汇编转向 C 这类高级语言：可移植、可复用，靠编译器优化，代码效率损失不大。</li>
+</ul>
+<p class="aside">4 位 MCU 很便宜，适合简单应用，但架构限制了算力，正在被 8 位取代。</p>
+<p class="es">实际的 8 位芯片：</p>
+<ul>
+<li>ATmega1281：Waspmote 的 MCU，14.7456 MHz，8 KB SRAM、128 KB Flash，属于 8 位 AVR 系列。</li>
+<li>ATmega 128：Gator 智能屋（见下面的 小任务）传感器平台的处理模块，8 位（an 8-bit Atmel ATmega 128）。</li>
+<li>ATMega328PU：Arduino Uno 的 8 位 MCU，时钟 16 MHz。</li>
+</ul>
+</div>
+<div class="panel" data-pane="b32" hidden="">
+<ul>
+<li>用在需要<b>更高算力和更多存储</b>的地方：工业控制、汽车电子、数据加密、联网、多媒体（音频、图像、视频）。</li>
+<li>复杂度高，常要引入 <b class="t">RTOS (Real Time Operating System)</b>——实时操作系统，因此<b>需要更多存储器</b>。</li>
+<li>32 位的<b>价格已经降到接近 8 位</b>，迁移越来越容易、越来越划算。</li>
+<li>但设计者<b>不愿更换开发工具、放弃成熟高效的代码</b>，因为这两点都影响开发时间和成本；于是很多厂商开发了帮助迁移的新工具。</li>
+</ul>
+<p class="es">实际的 32 位芯片：</p>
+<ul>
+<li>STM32F205（32 位，120 MHz）：Particle Electron，集成蜂窝 modem；Tensilica L106（32 位，80 MHz）：ESP8266-01，集成 WiFi。</li>
+<li>ATSAMD21E18（Cortex-M0+）：GEMMA M0 用它取代了原来的 ATtiny85，三个 GPIO 焊盘沿用原名，<b>现有的 Arduino 代码不用改就能跑</b>。这正是上面说的“厂商帮助迁移”的一个例子；原来的 ATtiny85 是 8 位 MCU。</li>
+<li>STM32H753（Cortex-M7，400 MHz）：见 §2。</li>
+</ul>
+</div>
+</div>
+<p><b>8 还是 32？</b>每条特征属于哪一类？</p>
+<div class="drill q" id="d25c">
+<div class="drill-hd"><span class="d-n"></span><span class="d-s"></span></div>
+<p class="qt d-q"></p>
+<div aria-label="位数" class="chips d-o" role="group"></div>
+<p aria-live="polite" class="why d-w" hidden=""></p>
+<div class="stepper-ctl">
+<button class="btn primary" data-act="next" type="button">下一题 →</button>
+<button class="btn" data-act="again" type="button">重新开始</button>
+</div>
+</div>
+<p>新趋势：IoT 带来了集成各种射频收发器和加密安全区（zonas seguras criptográficas）的 MCU；AI 带来了带专用硬件加速器的 MCU。开源架构 <b>RISC-V</b> 的兴起也很值得关注。</p>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>读 Gator 智能屋（“The Gator tech smart house: A programmable pervasive space”）的 <b>SENSOR PLATFORM</b> 一节。§6 的节点架构图沿用这个传感器平台的模块化结构，方框里换成了 Waspmote 的规格。文献见本节末尾的资料。</p>
+</div>
+<div class="note">
+<span class="lbl">要点 · 2.5.3</span>
+<p><b>8 位</b>：快（几十 MIPS）、代码密度高、便宜、功耗低、工具简单，C 语言编程。<b>16/32 位</b>：算力和存储更强，用于工业、汽车、加密、联网、多媒体，常配 RTOS、需要更多存储；价格已接近 8 位，但迁移有工具和存量代码的阻力。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>读一份 WSN mota 的规格 <span class="tag">2.5.5</span></h2>
+<p>WSN 的 mota 就是 §1 说的 nodo autónomo。这一节拿 Libelium Waspmote V1.2 的规格书做例子（§3 的 小任务）。分析时可以用一个框架：一个 IoT 设备可以用四种能力来描述。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">1</span><h3>Data acquisition and control</h3><p>采集与控制：传感器、ADC 分辨率（10 位 = 1024 个值）、GPIO 和总线（I2C、SPI、UART）。</p></div>
+<div class="cell"><span class="eyebrow">2</span><h3>Data processing and storage</h3><p>处理与存储：处理器的时钟和核数决定处理速度，非易失 flash 的容量决定离线时能存多少数据。</p></div>
+<div class="cell"><span class="eyebrow">3</span><h3>Connectivity</h3><p>连接：WiFi、Bluetooth、RFID、蜂窝、LPWAN（LoRa、SigFox、NB-IoT），或有线的 Ethernet、UART、CAN。</p></div>
+<div class="cell"><span class="eyebrow">4</span><h3>Power management</h3><p>电源管理：靠电池或太阳能的设备，要周期性进入 sleep 或低功耗模式。</p></div>
+</div>
+<p>下面把 Waspmote 的规格放到节点架构图上。Gator 智能屋的传感器平台也是这种模块化的堆叠设计：存储、处理、通信、电源模块，加上传感器阵列。<b>点击各模块：</b></p>
+<div class="stack" data-explain="proc">
+<figure>
+<div class="fig">
+<svg aria-label="传感器节点的模块化架构：传感器和执行器阵列连接处理器模块，处理器连接通信模块和存储模块，电源模块给各模块供电" role="img" viewbox="0 0 640 300">
+<defs>
+<marker id="m25e" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" x="10" y="18">MOTA WSN · arquitectura modular</text>
+<g aria-label="Sensores y actuadores" class="hot" data-key="sens" role="button" tabindex="0">
+<rect class="s-box" height="255" rx="8" width="170" x="10" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="95" y="52">Sensor array</text>
+<text class="s-t2" text-anchor="middle" x="95" y="70">传感器 · 执行器</text>
+<rect class="s-soft" height="28" rx="4" width="130" x="30" y="84"></rect>
+<text class="s-t2" text-anchor="middle" x="95" y="103">Sensor 1</text>
+<rect class="s-soft" height="28" rx="4" width="130" x="30" y="118"></rect>
+<text class="s-t2" text-anchor="middle" x="95" y="137">Sensor 2</text>
+<rect class="s-soft" height="28" rx="4" width="130" x="30" y="152"></rect>
+<text class="s-t2" text-anchor="middle" x="95" y="171">Actuador 1</text>
+<rect class="s-soft" height="28" rx="4" width="130" x="30" y="186"></rect>
+<text class="s-t2" text-anchor="middle" x="95" y="205">Actuador 2</text>
+<rect class="s-soft" height="28" rx="4" width="130" x="30" y="220"></rect>
+<text class="s-t2" text-anchor="middle" x="95" y="239">Sensor 3</text>
+<text class="s-tm" text-anchor="middle" x="95" y="272">adquisición y control</text>
+</g>
+<g aria-label="Comunicaciones" class="hot" data-key="com" role="button" tabindex="0">
+<rect class="s-box" height="62" rx="6" width="180" x="250" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="340" y="56">Comunicaciones</text>
+<text class="s-t2" text-anchor="middle" x="340" y="76">XBee · LoRa · Sigfox…</text>
+</g>
+<g aria-label="Procesador" class="hot" data-key="proc" role="button" tabindex="0">
+<rect class="s-box" height="62" rx="6" width="180" x="250" y="119"></rect>
+<text class="s-t" text-anchor="middle" x="340" y="145">Procesador</text>
+<text class="s-t2" text-anchor="middle" x="340" y="165">ATmega1281 · 14.7456 MHz</text>
+</g>
+<g aria-label="Memoria" class="hot" data-key="mem" role="button" tabindex="0">
+<rect class="s-box" height="62" rx="6" width="180" x="250" y="208"></rect>
+<text class="s-t" text-anchor="middle" x="340" y="234">Memoria</text>
+<text class="s-t2" text-anchor="middle" x="340" y="254">SRAM · EEPROM · Flash · SD</text>
+</g>
+<g aria-label="Energía" class="hot" data-key="pot" role="button" tabindex="0">
+<rect class="s-box" height="240" rx="6" width="130" x="500" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="565" y="140">Energía</text>
+<text class="s-t2" text-anchor="middle" x="565" y="160">电池 · 太阳能</text>
+<text class="s-t2" text-anchor="middle" x="565" y="178">低功耗模式</text>
+</g>
+<line class="s-line" marker-end="url(#m25e)" marker-start="url(#m25e)" x1="182" x2="248" y1="150" y2="150"></line>
+<text class="s-tm" text-anchor="middle" x="215" y="141">E/S</text>
+<line class="s-line" marker-end="url(#m25e)" marker-start="url(#m25e)" x1="340" x2="340" y1="117" y2="94"></line>
+<line class="s-line" marker-end="url(#m25e)" marker-start="url(#m25e)" x1="340" x2="340" y1="183" y2="206"></line>
+<line class="s-line" marker-end="url(#m25e)" x1="500" x2="432" y1="61" y2="61"></line>
+<line class="s-line" marker-end="url(#m25e)" x1="500" x2="432" y1="150" y2="150"></line>
+<line class="s-line" marker-end="url(#m25e)" x1="500" x2="432" y1="239" y2="239"></line>
+</svg>
+</div>
+<figcaption>Sensor platform architecture——传感器节点的模块化架构，方框里标上了 Waspmote 的对应规格。<span class="hint">点击方框看规格</span></figcaption>
+</figure>
+<div class="panel" data-panel="sens" hidden="">
+<h3>Adquisición y control · 采集与控制</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>项目</th><th>规格值</th></tr></thead>
+<tbody>
+<tr><td>Inputs/Outputs</td><td class="mono">7 Analog (I), 8 Digital (I/O), 1 PWM, 2 UART, 1 I2C, 1 USB, 1 SPI</td></tr>
+<tr><td>板载温度传感器</td><td class="mono">−40 ºC … +85 ºC · accuracy 0.25 ºC</td></tr>
+<tr><td>板载加速度计</td><td class="mono">±2g / ±4g / ±8g · low power 0.5–10 Hz · normal 50–1000 Hz</td></tr>
+<tr><td>中断 · asíncronas</td><td>传感器（阈值可编程）、加速度计（自由落体、冲击）、XBee (DigiMesh)</td></tr>
+<tr><td>中断 · síncronas</td><td class="mono">Watchdog 32 ms – 8 s · RTC 1 s – días</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">要问：有几路模拟输入？传感器走哪种总线（I2C、SPI、UART）？能不能靠事件中断唤醒，而不是定时醒来查看？</p>
+</div>
+<div class="panel" data-panel="proc" hidden="">
+<h3>Procesador · 处理</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>项目</th><th>规格值</th></tr></thead>
+<tbody>
+<tr><td>Microcontroller</td><td class="mono">ATmega1281</td></tr>
+<tr><td>Frequency</td><td class="mono">14.7456 MHz</td></tr>
+<tr><td>Clock</td><td class="mono">RTC (32KHz)</td></tr>
+</tbody>
+</table>
+</div>
+<p>ATmega1281 属于 8 位 AVR 系列；Gator 传感器平台用的 ATmega 128 也是 8 位。一颗 8 位 MCU 加一个 32 kHz 的 RTC，是 nodo autónomo 的典型配置（§1、§5）。</p>
+<p class="aside">要问：处理放在节点上做（edge analytics，需要更强的处理器），还是只做校验、换算就发出去？</p>
+</div>
+<div class="panel" data-panel="mem" hidden="">
+<h3>Memoria · 存储</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>项目</th><th>规格值</th></tr></thead>
+<tbody>
+<tr><td>SRAM</td><td class="mono">8KB</td></tr>
+<tr><td>EEPROM</td><td class="mono">4KB</td></tr>
+<tr><td>FLASH</td><td class="mono">128KB</td></tr>
+<tr><td>SD Card</td><td class="mono">2GB</td></tr>
+</tbody>
+</table>
+</div>
+<p>Flash 放程序，SRAM 放运行时的数据（掉电就丢），EEPROM 放少量需要掉电保存的参数，SD 卡用来在本地记录数据。Gator 的节点把传感器的启动数据和驱动放在 EEPROM 里。</p>
+<p class="aside">要问：节点多久联网一次？几小时才联网一次的设备需要更多存储，在本地暂存数据。</p>
+</div>
+<div class="panel" data-panel="com" hidden="">
+<h3>Comunicaciones · 连接</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>模块</th><th>频段</th><th>TX</th><th>灵敏度</th><th>距离</th></tr></thead>
+<tbody>
+<tr><td>XBee-802.15.4-Pro</td><td class="mono">2.4 GHz</td><td class="mono">100 mW</td><td class="mono">−100 dBm</td><td class="mono">7000 m*</td></tr>
+<tr><td>XBee-ZB-Pro</td><td class="mono">2.4 GHz</td><td class="mono">50 mW</td><td class="mono">−102 dBm</td><td class="mono">7000 m*</td></tr>
+<tr><td>XBee-868</td><td class="mono">868 MHz</td><td class="mono">315 mW</td><td class="mono">−112 dBm</td><td class="mono">12 km*</td></tr>
+<tr><td>XBee-900</td><td class="mono">900 MHz</td><td class="mono">50 mW</td><td class="mono">−100 dBm</td><td class="mono">10 km*</td></tr>
+<tr><td>LoRaWAN 868/433</td><td class="mono">868 / 433 MHz</td><td class="mono">≤ +14 dBm</td><td class="mono">≥ −136 dBm</td><td>&gt;15 km 郊区 · &gt;5 km 城区</td></tr>
+<tr><td>Sigfox</td><td class="mono">868 MHz</td><td class="mono">14 dBm</td><td class="mono">−126 dBm</td><td>每个基站几 km</td></tr>
+<tr><td>LoRa (SX1272)</td><td class="mono">860–1000 MHz</td><td class="mono">14 dBm</td><td class="mono">−137 dBm</td><td>21+ km 视距 · 2+ km 非视距</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>* 视距、菲涅尔区无遮挡、用 5 dBi 偶极天线时的距离。XBee 支持 star、tree、mesh 拓扑，AES 128 加密。</li>
+<li>LoRaWAN 模块：LoRaWAN 1.0 Class A，速率 250–5470 bps（868/433），芯片电流 38.9 mA。</li>
+<li>Sigfox：ETSI 限制<b>每个模块每天 140 条 12 字节的消息</b>，速率 100 bps，发送电流 49 mA。</li>
+<li>LoRa 模块用 Libelium 自己的协议，<b>不兼容 LoRaWAN</b>，拓扑只有 star。</li>
+</ul>
+<p class="aside">灵敏度越负，能收到的信号越弱，一般也就能传得越远。</p>
+</div>
+<div class="panel" data-panel="pot" hidden="">
+<h3>Energía · 电源管理</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>项目</th><th>规格值</th></tr></thead>
+<tbody>
+<tr><td>ON</td><td class="mono">15mA</td></tr>
+<tr><td>Sleep</td><td class="mono">55μA</td></tr>
+<tr><td>Deep Sleep</td><td class="mono">55μA</td></tr>
+<tr><td>Hibernate</td><td class="mono">0.07μA</td></tr>
+<tr><td>Operation without recharging</td><td class="mono">1 year *（以 Hibernate 为省电模式）</td></tr>
+<tr><td>Battery voltage</td><td class="mono">3.3 V – 4.2 V</td></tr>
+<tr><td>USB · solar charging</td><td class="mono">5 V – 100 mA · 6 – 12 V – 280 mA</td></tr>
+<tr><td>Baterías</td><td class="mono">6600 mAh Li-Ion recargable · 13000 / 26000 / 52000 mAh no recargables</td></tr>
+<tr><td>Paneles solares</td><td class="mono">rígido 7 V – 500 mA · flexible 7.2 V – 100 mA</td></tr>
+</tbody>
+</table>
+</div>
+<p>注意 Sleep 和 Deep Sleep 写的是同一个数。本节最后的估算器就用这些数字。</p>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">整板数据</span>
+<p>重量 20 g，尺寸 73.5 × 51 × 13 mm，工作温度 [−10 ºC, +65 ºC]。对比一下：单板机 Raspberry Pi 3 典型工作电流约 700–1000 mA，是 Waspmote ON 状态 15 mA 的 47–67 倍。</p>
+</div>
+<p><b>读规格书的几个习惯：</b></p>
+<ol>
+<li><b>看脚注和条件。</b>“Operation without recharging: 1 year” 带星号：用 Hibernate 作省电模式时才成立；XBee 的距离是在视距、5 dBi 天线的条件下给的。</li>
+<li><b>分清整板和单个器件。</b>板载温度传感器能测 −40 到 +85 ºC，整板的工作温度却只有 −10 到 +65 ºC。</li>
+<li><b>盯住单位和量级。</b>mA 和 µA 差 1000 倍：ON 的 15 mA 约是 Sleep 55 µA 的 270 倍。</li>
+<li><b>比较 MCU 功耗别只看 µA/MHz。</b>µA/MHz、µA/MIPS 这类指标都不太准，因为没考虑 CPU 架构，每个周期做的事不一样。</li>
+<li><b>睡得多的节点，看待机电流和唤醒时间。</b>应用大部分时间在睡、周期性醒来时，待机功耗是主导因素；占空比很低的系统，MCU 还要能在几微秒内醒来。</li>
+</ol>
+
+<p><b>Datasheet 挑战：</b>每题都能在上面的规格里找到答案。</p>
+<div class="drill q" id="d25d">
+<div class="drill-hd"><span class="d-n"></span><span class="d-s"></span></div>
+<p class="qt d-q"></p>
+<div class="opts d-o"></div>
+<p aria-live="polite" class="why d-w" hidden=""></p>
+<div class="stepper-ctl">
+<button class="btn primary" data-act="next" type="button">下一题 →</button>
+<button class="btn" data-act="again" type="button">重新开始</button>
+</div>
+</div>
+<p><b>估一估：一节电池能撑多久？</b>用平均电流公式：平均电流 = 各状态的电流 × 时间之和 ÷ 周期。电流都取规格书里的数字，改一改参数看看谁在耗电。</p>
+<div class="calc" id="c25">
+<div class="calc-grid">
+<label>周期 T（每隔多久醒一次）· min<input id="c25-T" inputmode="decimal" min="1" step="1" type="number" value="5"/></label>
+<label>ON 时间 t<sub>on</sub>（每次醒着多久）· s<input id="c25-on" inputmode="decimal" min="0" step="1" type="number" value="10"/></label>
+<label>无线模块（芯片电流）<select id="c25-rad">
+<option value="0">不用无线</option>
+<option selected="" value="38.9">LoRaWAN 868 · 38.9 mA</option>
+<option value="49">Sigfox TX · 49 mA</option>
+</select></label>
+<label>无线发送时间 t<sub>radio</sub> · s<input id="c25-tr" inputmode="decimal" min="0" step="0.5" type="number" value="2"/></label>
+<label>省电模式<select id="c25-sl">
+<option value="0.055">Sleep / Deep Sleep · 55 µA</option>
+<option selected="" value="0.00007">Hibernate · 0.07 µA</option>
+</select></label>
+<label>电池<select id="c25-bat">
+<option selected="" value="6600">6600 mAh · Li-Ion 可充电</option>
+<option value="13000">13000 mAh · 不可充电</option>
+<option value="26000">26000 mAh · 不可充电</option>
+<option value="52000">52000 mAh · 不可充电</option>
+</select></label>
+</div>
+<div aria-live="polite" class="calc-out">
+<span class="big c-avg"></span>
+<span class="life c-life"></span>
+<div aria-hidden="true" class="share"><i class="sa c-pa"></i><i class="sr c-pr"></i><i class="ss c-ps"></i></div>
+<div class="legend c-leg"></div>
+<p class="formula c-f"></p>
+<p class="aside c-note"></p>
+</div>
+</div>
+<p class="aside">理想估算：忽略传感器、唤醒过程、电池自放电和温度的影响；假设无线模块工作时，它的电流叠加在 ON 的 15 mA 上。默认参数算出来接近一年只是巧合，规格书没写 “1 year” 用的是什么占空比。电池续航的完整计算见 M26 Consumo energético。</p>
+<div class="note">
+<span class="lbl">要点 · 2.5.5</span>
+<p>分析 mota 的规格：按<b>采集与控制、处理与存储、连接、电源</b>四块逐项找数字，再对照应用检查：工作条件（温度、距离的测量条件）、各模式的电流和占空比、无线的灵敏度、速率和消息限制、本地存储够不够离线记录。</p>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M25">
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">01</span>按 §1 的对比表，nodo autónomo 的典型速度和功耗是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Kbps · µW–mW</button>
+<button data-o="b" type="button"><span class="k">B</span>Mbps · mW–W</button>
+<button data-o="c" type="button"><span class="k">C</span>Gbps · W</button>
+<button data-o="d" type="button"><span class="k">D</span>Kbps · W</button>
+</div>
+<p class="why"><b>A。</b>Mbps · mW–W 是 portable（móvil），Gbps · W 是 estático（§1 对比表）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>nodo móvil（智能手机、平板）通常用什么处理器？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只用微控制器</button>
+<button data-o="b" type="button"><span class="k">B</span>ASIC</button>
+<button data-o="c" type="button"><span class="k">C</span>应用处理器配 DSP 和 GPU，集成在 SOC 里</button>
+<button data-o="d" type="button"><span class="k">D</span>只用 FPGA</button>
+</div>
+<p class="why"><b>C。</b>nodo móvil 的处理器是 <i>procesadores de aplicaciones combinados con DSP y GPU, integrados en SOC</i>；§1 对比表里写的是 DSP, GPU, SOC。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">03</span>一个靠电池供电、要求低功耗和确定性中断响应的 WSN 节点，最可能用哪个 Arm 家族？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Cortex-A</button>
+<button data-o="b" type="button"><span class="k">B</span>Cortex-M</button>
+<button data-o="c" type="button"><span class="k">C</span>Neoverse</button>
+<button data-o="d" type="button"><span class="k">D</span>Mali</button>
+</div>
+<p class="why"><b>B。</b>Cortex-M 面向微控制器（§2）。§2 的例子里，可穿戴开发板 GEMMA M0 用的就是 Cortex-M0+。Cortex-A 面向跑完整操作系统的应用处理器，Neoverse 面向服务器，Mali 是 GPU 而不是 CPU。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>Raspberry Pi 3 和 DragonBoard 410c 用的处理器是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>ARM Cortex-A53</button>
+<button data-o="b" type="button"><span class="k">B</span>ARM Cortex-M7</button>
+<button data-o="c" type="button"><span class="k">C</span>ATMega328PU</button>
+<button data-o="d" type="button"><span class="k">D</span>Tensilica L106</button>
+</div>
+<p class="why"><b>A</b>（§2，Cortex-A 的例子）。Cortex-M7 在 STM32H753 里，ATMega328PU 是 Arduino Uno，Tensilica L106 是 ESP8266（§2、§5）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">05</span>说一个微控制器“是 8 位的”，指的是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>外部数据总线有 8 根线</button>
+<button data-o="b" type="button"><span class="k">B</span>Flash 容量是 8 KB</button>
+<button data-o="c" type="button"><span class="k">C</span>有 8 种外设</button>
+<button data-o="d" type="button"><span class="k">D</span>基本寄存器的宽度是 8 位</button>
+</div>
+<p class="why"><b>D。</b>位数指基本寄存器的宽度：<i>El número de bits se refiere al tamaño de sus registros básicos</i>（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>下面哪一项是 §5 列出的 8 位 MCU 的典型特征？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>复杂度高，通常要用 RTOS</button>
+<button data-o="b" type="button"><span class="k">B</span>代码密度高，开发工具简单便宜</button>
+<button data-o="c" type="button"><span class="k">C</span>主要用于多媒体和数据加密</button>
+<button data-o="d" type="button"><span class="k">D</span>价格远高于 32 位</button>
+</div>
+<p class="why"><b>B。</b>A、C 是 16/32 位的特点；D 反了：32 位的价格已经接近 8 位（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span>32 位 MCU 已经和 8 位差不多便宜，为什么很多设计者还不迁移？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>32 位 MCU 不支持 C 语言</button>
+<button data-o="b" type="button"><span class="k">B</span>32 位 MCU 不能集成无线</button>
+<button data-o="c" type="button"><span class="k">C</span>不愿更换开发工具、放弃成熟高效的代码</button>
+<button data-o="d" type="button"><span class="k">D</span>8 位 MCU 算力更强</button>
+</div>
+<p class="why"><b>C。</b>这两点都影响开发时间和成本，所以很多厂商推出了帮助迁移的工具（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>“可以加入专用指令、专用寄存器和执行单元，以适应某个具体应用的处理器”是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>ASIP</button>
+<button data-o="b" type="button"><span class="k">B</span>GPP</button>
+<button data-o="c" type="button"><span class="k">C</span>TPU</button>
+<button data-o="d" type="button"><span class="k">D</span>SIP</button>
+</div>
+<p class="why"><b>A。</b>ASIP 能以比 GPP 更低的时钟完成任务，不用外部硬件加速（§4）。SIP 是把几颗芯片装进一个封装。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>关于 FPGA 里的 hard core 和 soft core，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>soft core 的性能通常更高</button>
+<button data-o="b" type="button"><span class="k">B</span>hard core 用 FPGA 自己的逻辑资源实现</button>
+<button data-o="c" type="button"><span class="k">C</span>soft core 用 FPGA 的资源实现，可多次实例化，更灵活便宜，但性能通常较低</button>
+<button data-o="d" type="button"><span class="k">D</span>两者只是名称不同</button>
+</div>
+<p class="why"><b>C。</b>hard core 是嵌进 FPGA 的已知架构处理器（如 Xilinx 的 PowerPC、Altera 的 ARM），soft core 如 NIOS、MicroBlaze（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">10</span>哪种方案专为“实时、密集地处理数据流”而优化，通常不用操作系统？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>GPU</button>
+<button data-o="b" type="button"><span class="k">B</span>FPGA</button>
+<button data-o="c" type="button"><span class="k">C</span>TPU</button>
+<button data-o="d" type="button"><span class="k">D</span>DSP</button>
+</div>
+<p class="why"><b>D</b>（§4）。GPU 擅长大规模并行的简单重复任务，TPU 做数据量大、精度低的矩阵运算，FPGA 擅长位级并行。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>Waspmote 的规格书里，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Deep Sleep 比 Sleep 省电得多</button>
+<button data-o="b" type="button"><span class="k">B</span>Sleep 和 Deep Sleep 都写着 55 µA</button>
+<button data-o="c" type="button"><span class="k">C</span>Hibernate 写着 55 µA</button>
+<button data-o="d" type="button"><span class="k">D</span>ON 状态是 15 µA</button>
+</div>
+<p class="why"><b>B</b>（§6 的电源管理）。Hibernate 是 0.07 µA，ON 是 15 mA。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">12</span>Waspmote 的 LoRa 模块（SX1272）和 LoRaWAN 模块是什么关系？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>完全相同，只是名字不同</button>
+<button data-o="b" type="button"><span class="k">B</span>LoRa 模块就是 LoRaWAN Class A</button>
+<button data-o="c" type="button"><span class="k">C</span>LoRa 模块的灵敏度差得多</button>
+<button data-o="d" type="button"><span class="k">D</span>LoRa 模块用 Libelium 自己的协议，不兼容 LoRaWAN</button>
+</div>
+<p class="why"><b>D。</b>规格书写的是 “Own, developed at Libelium. Not compatible with LoRaWAN.”；LoRaWAN 模块是 LoRaWAN 1.0 Class A。灵敏度 LoRa −137 dBm，还略好于 LoRaWAN 的 −136 dBm（§6）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">nodo autónomo</span><span class="back"><b>自主节点</b><br/>Kbps、µW–mW，靠能量收集或电池，以 MCU 为核心，接入 WSN。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">nodo móvil<small>portable</small></span><span class="back"><b>移动节点</b><br/>Mbps、mW–W，手机、平板；应用处理器 + DSP + GPU 集成在 SOC 里。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">nodo estático</span><span class="back"><b>固定节点</b><br/>Gbps、W，接市电的服务器；GPP、GPU，LAN/WLAN。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">energy harvesting<small>recolección de energía</small></span><span class="back"><b>能量收集</b><br/>从环境中获取能量给节点供电，是自主节点的供电方式之一。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mota<small>mote · WSN</small></span><span class="back"><b>传感器节点</b><br/>WSN 里的自主节点，例如 Libelium 的 Waspmote。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Cortex-A · R · M</span><span class="back"><b>Arm 的三条主线</b><br/>应用处理器、实时、微控制器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GPP<small>General Purpose Processor</small></span><span class="back"><b>通用处理器</b><br/>能执行任何程序，最灵活，能效最低。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ASIC<small>Application-Specific Integrated Circuit</small></span><span class="back"><b>专用集成电路</b><br/>硬连线逻辑，性能最高、功耗最低，没有灵活性。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DSP<small>Digital Signal Processor</small></span><span class="back"><b>数字信号处理器</b><br/>实时、密集处理数据流，通常不用操作系统。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GPU<small>Graphics Processing Unit</small></span><span class="back"><b>图形处理器</b><br/>成千上万个核按 SIMD 并行，运行 shader。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">FPGA<small>Field Programmable Gate Array</small></span><span class="back"><b>现场可编程门阵列</b><br/>可重构逻辑，位级并行强，适合小批量、短开发周期。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hard core / soft core</span><span class="back"><b>硬核 / 软核</b><br/>嵌进 FPGA 的固定处理器 / 用 FPGA 资源实现的处理器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ASIP<small>Application Specific Instruction-set Processor</small></span><span class="back"><b>专用指令集处理器</b><br/>能扩展指令、寄存器和执行单元的可配置处理器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TPU · NPU<small>Tensor / Neural Processing Unit</small></span><span class="back"><b>张量 / 神经网络处理器</b><br/>为深度学习、神经网络优化的 ASIC。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">microcontrolador<small>MCU</small></span><span class="back"><b>微控制器</b><br/>单芯片的专用可编程系统，擅长确定性的实时控制。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOC · SIP<small>System On Chip · System In Package</small></span><span class="back"><b>片上系统 · 系统级封装</b><br/>整套通用系统做进一颗芯片 / 几颗芯片装进一个封装。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RTOS<small>Real Time Operating System</small></span><span class="back"><b>实时操作系统</b><br/>复杂的 32 位 MCU 常用，也意味着需要更多存储器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">densidad de código<small>code density</small></span><span class="back"><b>代码密度</b><br/>越高，同样的程序占的存储器越少；8 位 MCU 的优点。</span><span class="flipcue"></span></button>
+</div>
+
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M25"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  function drill(id, items, fixed, mode) {
+    var root = document.getElementById(id);
+    if (!root) return;
+    var nEl = root.querySelector(".d-n"), sEl = root.querySelector(".d-s"), qEl = root.querySelector(".d-q");
+    var oEl = root.querySelector(".d-o"), wEl = root.querySelector(".d-w");
+    var next = root.querySelector('[data-act="next"]'), again = root.querySelector('[data-act="again"]');
+    var i = 0, ok = 0, done = false;
+    function render() {
+      var it = items[i], labels = fixed || it.o;
+      nEl.textContent = "第 " + (i + 1) + " / " + items.length + " 题";
+      sEl.textContent = "答对 " + ok;
+      qEl.innerHTML = it.q;
+      oEl.innerHTML = "";
+      labels.forEach(function (lab, k) {
+        var b = document.createElement("button");
+        b.type = "button";
+        if (mode === "chips") { b.className = "chip"; b.innerHTML = lab; }
+        else { b.innerHTML = '<span class="k">' + "ABCDE".charAt(k) + "</span>" + lab; }
+        b.addEventListener("click", function () { answer(k); });
+        oEl.appendChild(b);
+      });
+      wEl.hidden = true;
+      wEl.innerHTML = "";
+      next.disabled = true;
+      next.textContent = i === items.length - 1 ? "看结果" : "下一题 →";
+      done = false;
+    }
+    function answer(k) {
+      if (done) return;
+      done = true;
+      var it = items[i];
+      Array.prototype.forEach.call(oEl.querySelectorAll("button"), function (b, j) {
+        b.disabled = true;
+        if (j === it.a) b.classList.add("right");
+        else if (j === k) b.classList.add("wrong");
+      });
+      var right = k === it.a;
+      if (right) ok++;
+      sEl.textContent = "答对 " + ok;
+      wEl.innerHTML = '<span class="verdict ' + (right ? "ok" : "no") + '">' + (right ? "答对了" : "不对") + "</span> " + it.w;
+      wEl.hidden = false;
+      next.disabled = false;
+    }
+    function finish() {
+      nEl.textContent = "完成";
+      qEl.innerHTML = "答对 " + ok + " / " + items.length + (ok === items.length ? "，全对。" : "。点「重新开始」再练一遍。");
+      oEl.innerHTML = "";
+      wEl.hidden = true;
+      next.disabled = true;
+    }
+    next.addEventListener("click", function () {
+      if (i < items.length - 1) { i++; render(); } else { finish(); }
+    });
+    again.addEventListener("click", function () { i = 0; ok = 0; render(); });
+    render();
+  }
+
+  
+  drill("d25a", [
+    { q: "田间的土壤湿度传感器，靠一块小太阳能板供电，每次通过 WSN 发几个字节。", a: 0,
+      w: "Kbps、µW–mW、energy harvesting、WSN，全是对比表里 autónomo 那一列。" },
+    { q: "能播放视频、通过 WLAN 和 3G 联网、靠电池工作的平板电脑。", a: 1,
+      w: "多媒体、Mbps、电池、WLAN/3G：móvil（portable）。" },
+    { q: "接市电、为整栋楼做人工智能推理和数据存储的服务器。", a: 2,
+      w: "Gbps、W、市电供电、GPP/GPU、高算力和大存储：estático。" },
+    { q: "门禁系统里的 RFID 识别节点。", a: 0,
+      w: "identificación (RFID) 类节点是 autónomo 的典型。" },
+    { q: "处理器、DSP 和 GPU 集成在一颗 SOC 里的智能手机。", a: 1,
+      w: "procesador de aplicaciones + DSP + GPU，集成在 SOC：móvil 的典型结构。" },
+    { q: "做 3D 图形计算、通过 LAN 联网的工作站。", a: 2,
+      w: "computación gráfica 3D、高性能图形子系统、LAN：estático。" },
+    { q: "Waspmote：ATmega1281 微控制器、Li-Ion 电池、XBee 无线模块。", a: 0,
+      w: "以微控制器为核心、电池供电、接入 WSN：autónomo（§6 详细分析它的规格）。" }
+  ], ["Autónomo", "Móvil", "Estático"], "chips");
+
+  
+  drill("d25b", [
+    { q: "实时均衡一路音频：样本源源不断地进来，要做大量乘加运算，不需要操作系统。", a: 3,
+      w: "DSP：架构为实时、密集处理数据流而优化，通常不用操作系统。" },
+    { q: "WSN 节点每分钟测一次温度，外部事件来了要在几个时钟周期内响应，成本要尽量低。", a: 0,
+      w: "MCU：专长控制处理，确定性实时响应，单芯片集成外设，便宜省电。" },
+    { q: "自研的压缩算法在标准处理器上太慢。你想给处理器加几条专用指令和一个专用执行单元，用更低的时钟跑，也不想外挂加速芯片。", a: 4,
+      w: "ASIP：可扩展指令集、寄存器和执行单元，时钟比 GPP 低，不用外部硬件加速。" },
+    { q: "平板电脑的主芯片：多个高性能核跑 Android，外接 DRAM，还要集成射频和模拟电路。", a: 2,
+      w: "SOC：能实现完整的通用系统，跑操作系统，需要外部存储器，可以集成模拟器件、传感器和射频。" },
+    { q: "一个位级并行很强的加密原型，只生产 50 台，下个月就要交付。", a: 1,
+      w: "FPGA：位级并行性能很高（加密是典型应用），适合小批量和短开发周期。" },
+    { q: "IoT 网关：Cortex-A8 处理器跑嵌入式 Linux 和 Java，1 GB RAM，有 LTE、Wi-Fi、Ethernet（类似 §2 例子里的 ReliaGATE 10-12）。", a: 2,
+      w: "SOC：高性能处理器 + 操作系统 + 外部存储 + 标准外设接口。MCU 一般不跑这种完整的操作系统。" }
+  ], ["MCU", "FPGA", "SOC", "DSP", "ASIP"], "chips");
+
+  
+  drill("d25c", [
+    { q: "代码密度高，同样的程序占的存储器更少。", a: 0, w: "8 位的特征；存储器在 MCU 里是“稀缺品”。" },
+    { q: "用于工业控制、汽车电子、数据加密、联网、多媒体。", a: 1, w: "需要更高算力和存储的应用：16/32 位。" },
+    { q: "工艺成熟：芯片便宜、功耗很低，开发工具简单又便宜。", a: 0, w: "8 位的典型特征。" },
+    { q: "复杂度高，常要引入 RTOS，因此需要更多存储器。", a: 1, w: "16/32 位：RTOS 带来更大的存储需求。" },
+    { q: "每秒几千万条指令，正在取代 4 位 MCU。", a: 0, w: "8 位提供高速度（decenas de MIPS），4 位正被 8 位取代。" },
+    { q: "价格已经降到接近另一类，迁移越来越划算。", a: 1, w: "说的是 32 位的价格接近 8 位。" },
+    { q: "Gator 智能屋传感器平台里的 ATmega 128。", a: 0, w: "Gator 传感器平台用的是 an 8-bit Atmel ATmega 128 processor（§5）。" },
+    { q: "Particle Electron 开发板上的 STM32F205。", a: 1, w: "Particle Electron 用的是 32 位的 STM32F205，120 MHz（§5）。" }
+  ], ["8 bits", "16 / 32 bits"], "chips");
+
+  
+  drill("d25d", [
+    { q: "Waspmote V1.2 用的是哪颗微控制器？按 §5 的分类，它是几位的？",
+      o: ["ATmega1281 · 8 位", "STM32F205 · 32 位", "ATMega328PU · 8 位", "ATSAMD21E18 · 32 位"], a: 0,
+      w: "Waspmote 用的是 ATmega1281，属于 8 位 AVR 系列。ATMega328PU 是 Arduino Uno，STM32F205 是 Particle Electron，ATSAMD21E18 是 GEMMA M0。" },
+    { q: "哪种模式的电流最小？",
+      o: ["ON · 15 mA", "Sleep · 55 µA", "Deep Sleep · 55 µA", "Hibernate · 0.07 µA"], a: 3,
+      w: "Hibernate 0.07 µA，比 Sleep 小约 800 倍。" },
+    { q: "Sleep 和 Deep Sleep，规格书里哪个更省电？",
+      o: ["Deep Sleep 明显更省", "Sleep 更省", "两个写的都是 55 µA", "规格书没给数字"], a: 2,
+      w: "规格书里两行都是 55μA。别被名字骗了，要看数字。" },
+    { q: "ON 状态的电流大约是 Sleep 的多少倍？",
+      o: ["约 27 倍", "约 270 倍", "约 2 700 倍", "约 15 倍"], a: 1,
+      w: "15 mA ÷ 0.055 mA ≈ 273。先把 µA 换成 mA 再除。" },
+    { q: "“Operation without recharging: 1 year” 的前提是什么？",
+      o: ["接上太阳能板", "用 52000 mAh 的电池", "用 Hibernate 作为省电模式", "关掉所有无线模块"], a: 2,
+      w: "星号脚注写的是：Time obtained using the Hibernate mode as the energy saving mode。占空比等其他条件规格书没写。" },
+    { q: "网络要装在 −20 ºC 的冷库里。按规格书，判断是？",
+      o: ["没问题：板载温度传感器能测到 −40 ºC", "超出规格：整板工作温度是 [−10 ºC, +65 ºC]", "没问题：Li-Ion 电池不受温度影响", "规格书里没有温度信息"], a: 1,
+      w: "Temperature Range [-10ºC, +65ºC] 是整板的；−40…+85 ºC 是板载温度传感器的测量范围。" },
+    { q: "哪个无线模块的接收灵敏度最好？",
+      o: ["XBee-868 · −112 dBm", "Sigfox · −126 dBm", "LoRaWAN · −136 dBm", "LoRa SX1272 · −137 dBm"], a: 3,
+      w: "灵敏度越负越好。−137 dBm 的 LoRa 略好于 −136 dBm 的 LoRaWAN，Sigfox −126 dBm，XBee-868 −112 dBm。" },
+    { q: "每 5 分钟用 Sigfox 发一条 12 字节的读数，行吗？",
+      o: ["不行：一天要发 288 条，超过 ETSI 每天 140 条的限制", "行：100 bps 足够", "行：限制是按基站算的", "不行：Sigfox 发不了 12 字节"], a: 0,
+      w: "24 × 60 ÷ 5 = 288 条/天。规格书写的是 ETSI limitation: 140 messages of 12 bytes, per module per day。每 11 分钟左右发一条才不超限。" }
+  ], null, "opts");
+})();
+
+
+(function () {
+  var root = document.getElementById("c25");
+  if (!root) return;
+  var I_ON = 15;
+  var el = function (id) { return document.getElementById(id); };
+  var inT = el("c25-T"), inOn = el("c25-on"), inRad = el("c25-rad"), inTr = el("c25-tr"), inSl = el("c25-sl"), inBat = el("c25-bat");
+  var oAvg = root.querySelector(".c-avg"), oLife = root.querySelector(".c-life"), oF = root.querySelector(".c-f");
+  var oNote = root.querySelector(".c-note"), oLeg = root.querySelector(".c-leg");
+  var pA = root.querySelector(".c-pa"), pR = root.querySelector(".c-pr"), pS = root.querySelector(".c-ps");
+  function num(x, def) { var v = parseFloat(x); return isFinite(v) && v >= 0 ? v : def; }
+  function f(x) {
+    if (x >= 1000) return Math.round(x).toLocaleString("en-US").replace(/,/g, " ");
+    if (x >= 100) return x.toFixed(0);
+    if (x >= 10) return x.toFixed(1);
+    if (x >= 1) return x.toFixed(2);
+    return String(+x.toPrecision(3));
+  }
+  function pct(x) { return x >= 10 ? x.toFixed(0) + "%" : x.toFixed(1) + "%"; }
+  function calc() {
+    var notes = [];
+    var T = Math.max(1, num(inT.value, 5)) * 60;
+    var tOn = num(inOn.value, 10);
+    if (tOn > T) { tOn = T; notes.push("ON 时间不能超过周期，已按 T 计算。"); }
+    var iR = num(inRad.value, 0);
+    var tR = iR > 0 ? num(inTr.value, 0) : 0;
+    if (tR > tOn) { tR = tOn; notes.push("无线发送时间不能超过 ON 时间，已按 t_on 计算。"); }
+    var iS = num(inSl.value, 0.055), C = num(inBat.value, 6600);
+    var qA = I_ON * tOn, qR = iR * tR, qS = iS * (T - tOn), q = qA + qR + qS;
+    var iAvg = q / T;
+    var h = C / iAvg, d = h / 24, y = d / 365;
+    oAvg.textContent = "I_avg ≈ " + f(iAvg) + " mA" + (iAvg < 1 ? "（" + f(iAvg * 1000) + " µA）" : "");
+    oLife.textContent = "续航 ≈ " + f(h) + " h ≈ " + f(d) + " 天 ≈ " + f(y) + " 年";
+    oF.innerHTML = "I_avg = (" + I_ON + " mA × " + f(tOn) + " s" +
+      (iR > 0 ? " + " + iR + " mA × " + f(tR) + " s" : "") +
+      " + " + iS + " mA × " + f(T - tOn) + " s) ÷ " + f(T) + " s = " + f(iAvg) + " mA<br>" +
+      "续航 = " + C + " mAh ÷ " + f(iAvg) + " mA ≈ " + f(h) + " h";
+    var a = q > 0 ? qA / q * 100 : 0, r = q > 0 ? qR / q * 100 : 0, s = q > 0 ? qS / q * 100 : 0;
+    pA.style.width = a + "%"; pR.style.width = r + "%"; pS.style.width = s + "%";
+    oLeg.innerHTML = '<span><b class="sa"></b>ON（MCU 板）' + pct(a) + "</span>" +
+      '<span><b class="sr"></b>无线 ' + pct(r) + "</span>" +
+      '<span><b class="ss"></b>省电模式 ' + pct(s) + "</span>";
+    if (s > 50) notes.push("这组参数下，大部分电量花在省电模式上：此时待机电流是主导因素，换 Hibernate 效果最明显。");
+    else if (r > a) notes.push("这组参数下，无线发送是最大的耗电项。");
+    oNote.textContent = notes.join(" ");
+  }
+  [inT, inOn, inTr].forEach(function (x) { x.addEventListener("input", calc); });
+  [inRad, inSl, inBat].forEach(function (x) { x.addEventListener("change", calc); });
+  calc();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M34 Normativa y estándares · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.m34-sort { display: flex; flex-direction: column; gap: .7rem; }
+.m34-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr)); gap: 10px; }
+.m34-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .7rem .85rem; display: flex; flex-direction: column; gap: .45rem; min-width: 0; transition: border-color .25s; }
+.m34-item .nm { font-weight: 700; font-size: 14.5px; line-height: 1.45; }
+.m34-item .nm small { display: block; font-weight: 400; font-size: 12.5px; color: var(--muted); }
+.m34-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.m34-pick button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 3px 12px; font-size: 13px; cursor: pointer; }
+.m34-pick button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.m34-pick button:disabled { cursor: default; }
+.m34-pick button.right { border-color: var(--good); background: var(--good-soft); color: var(--good); font-weight: 600; }
+.m34-pick button.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.m34-item.ok { border-color: var(--good); }
+.m34-item.ko { border-color: var(--bad); }
+.m34-why { font-size: 13px; color: var(--muted); }
+.m34-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.m34-status { font: 600 12px/1.4 var(--f-mono); color: var(--muted); }
+.m34-step, .m34-arr { transition: opacity .25s; }
+.m34-step.dim, .m34-arr.dim { opacity: .25; }
+.m34-step.on .s-box { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 2.2; }
+.m34-step.on .s-t { fill: var(--signal); }
+.m34-arr.on .s-line { stroke: var(--signal); stroke-width: 2; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 3 章节" class="chain" data-chain="M34"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Otros aspectos · M34</div>
+<h1>Normativa y estándares</h1>
+<p class="zh">规范与标准</p>
+<div class="meta">
+
+<span><b>4</b> 个学习目标</span>
+<span>阅读约 20 分钟</span>
+
+
+</div>
+<p class="lede">智能建筑很长时间发展缓慢，原因之一就是各方迟迟没有就一个能互操作的共同标准达成一致。这一章回答四个问题：标准是市场“用出来”的还是官方“批出来”的？谁在制定标准？西班牙的 AENOR 做什么？拿到一份标准化文件，该怎么读？</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">3.4.1</span>
+<div class="txt"><span>区分 de facto 标准和 de iure 标准</span><span class="es">Distinguir entre estándares de facto y de iure.</span><a href="#s2">→ §2 De facto 还是 de iure（§3 接着讲 de iure 怎么诞生）</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.4.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.4.2</span>
+<div class="txt"><span>列举标准化组织（ISO、ETSI……）和厂商联盟（Zigbee、Bluetooth……）</span><span class="es">Enumerar organismos de normalización (ISO, ETSI,,..) y alianzas de fabricantes (Zigbee, Bluetooth,..).</span><a href="#s4">→ §4 组织地图</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.4.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.4.3</span>
+<div class="txt"><span>描述 AENOR 的职能</span><span class="es">Describir las funciones de AENOR.</span><a href="#s5">→ §5 AENOR</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.4.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.4.4</span>
+<div class="txt"><span>分析与智能环境标准化组织有关的文件</span><span class="es">Analizar documentos relativos a organismos de normalización para entornos inteligentes.</span><a href="#s6">→ §6–§8 读标准化文件</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.4.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M34"><span class="val">0 / 4 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>标准是什么，为什么需要</h2>
+<div class="note">
+<span class="lbl">关键词</span>
+<p><b class="t">estándar (ES) / standard (EN)</b>——标准：一组<b>定义和规则</b>，用来刻画一个产品或服务的某些方面。</p>
+</div>
+<p>标准对三方都有必要：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Fabricante</span><h3>厂商</h3><p>更容易<b>收回</b>开发新电子系统的投资（amortización de las inversiones）。</p></div>
+<div class="cell"><span class="eyebrow">Desarrollador</span><h3>开发者</h3><p>可以<b>复用</b>自己积累的经验。</p></div>
+<div class="cell"><span class="eyebrow">Usuario</span><h3>用户</h3><p>得到质量和安全的<b>保证</b>；标准促进竞争，<b>成本下降</b>。</p></div>
+</div>
+<p>反过来，没有共同标准会怎样？就是开头说的智能建筑：缺少能实现 <b class="t">interoperabilidad (ES) / interoperability (EN)</b>——互操作性的共同标准，不同厂商的设备就难以协同工作。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>De facto 还是 de iure？ <span class="tag">3.4.1</span></h2>
+<p>标准按“怎样成为标准”分成两类。两个拉丁词的字面意思，就是答案。</p>
+<div class="note">
+<span class="lbl">定义 · 3.4.1 · de facto</span>
+<p><b class="t">estándar de facto (ES) / de facto standard (EN)</b>——事实标准。de facto 意为“de hecho”（事实上）。有两种来源：</p>
+<ul>
+<li><b>某一个厂商</b>的标准，公开（de dominio público），并在市场上被广泛接受。例：IBM PC 的开放架构。</li>
+<li><b>厂商联盟</b>（alianza entre fabricantes）为开发某项技术或产品而制定。例：ZigBee Alliance（现在叫 CSA）、Bluetooth SIG、Z-Wave Alliance、EnOcean Alliance、O-RAN Alliance。</li>
+</ul>
+</div>
+<div class="note">
+<span class="lbl">定义 · 3.4.1 · de iure</span>
+<p><b class="t">estándar de iure (ES) / de jure standard (EN)</b>——法定标准（正式标准）。de iure 意为“por derecho de acuerdo con la ley”（依法、按权利）。它由<b>官方标准化组织</b>（organismo oficial de normalización）批准，例如 ISO、ETSI、ITU、TIA。</p>
+</div>
+<p class="aside">一句话记：de facto 是市场“用出来”的，de iure 是官方机构“批出来”的。</p>
+<p><b>分一分：</b>下面每一项是 de facto 还是 de iure？点你的答案，会显示理由。</p>
+<div class="m34-sort" id="sort-tipo">
+<div class="m34-items">
+<div class="m34-item" data-bin="facto">
+<span class="nm">Arquitectura abierta del IBM PC<small>IBM PC 的开放架构</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">单个厂商的标准，公开且被市场广泛接受，是 de facto 的典型例子。</p>
+</div>
+<div class="m34-item" data-bin="facto">
+<span class="nm">ZigBee<small>ZigBee Alliance，现在叫 CSA</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">厂商联盟开发的技术，属于 de facto。</p>
+</div>
+<div class="m34-item" data-bin="iure">
+<span class="nm">ISO/IEC 8802-11<small>IEEE 802.11 由 ISO 发布的版本</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">由官方标准化组织 ISO 发布，所以是 de iure。§3 会一步步看它是怎么来的。</p>
+</div>
+<div class="m34-item" data-bin="facto">
+<span class="nm">Bluetooth<small>Bluetooth SIG</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">同样来自厂商联盟，属于 de facto。</p>
+</div>
+<div class="m34-item" data-bin="iure">
+<span class="nm">UNE 178104<small>智慧城市平台的互操作性要求</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">西班牙的正式标准（norma UNE），由标准化委员会 CTN178 制定（§8）。</p>
+</div>
+<div class="m34-item" data-bin="iure">
+<span class="nm">ISO/IEC 29182<small>传感器网络参考架构</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">ISO/IEC JTC 1/WG 7 制定的国际标准（§7）。</p>
+</div>
+<div class="m34-item" data-bin="facto">
+<span class="nm">Z-Wave<small>Z-Wave Alliance</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">厂商联盟，属于 de facto。</p>
+</div>
+<div class="m34-item" data-bin="iure">
+<span class="nm">IEC 61850<small>变电站通信</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">国际电工委员会 IEC 的技术委员会 TC57 制定的国际标准（§4 的 IEC）。</p>
+</div>
+<div class="m34-item" data-bin="facto">
+<span class="nm">WirelessHART（2010 年以前）<small>37 家公司在 HART Communication Foundation 开发</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">由厂商组织开发，按上面的定义属于 de facto。2010 年 4 月 IEC 一致通过，它成为国际标准 IEC 62591，从此就是 de iure。</p>
+</div>
+<div class="m34-item" data-bin="facto">
+<span class="nm">O-RAN<small>O-RAN Alliance</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">厂商联盟，属于 de facto。</p>
+</div>
+<div class="m34-item" data-bin="iure">
+<span class="nm">ITU-T Y.4200<small>源自 UNE 178104 的国际建议书</small></span>
+<div class="m34-pick"><button data-pick="facto" type="button">de facto</button><button data-pick="iure" type="button">de iure</button></div>
+<p class="m34-why" hidden="">由 ITU（UIT）发布的 Recomendación。ITU 是官方标准化组织之一。</p>
+</div>
+</div>
+<div class="m34-ctl"><span aria-live="polite" class="m34-status"></span><button class="btn" data-act="reset" type="button">重来</button></div>
+</div>
+<p><b>既然 de iure 更正规，为什么不总是选它？</b>先自己想，再<b>点击右列</b>揭晓三个原因：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>角度</th><th>de iure 标准的问题（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>时间</td><td class="ans">发布太慢（tardan mucho en publicarse），常常跟不上市场需求</td></tr>
+<tr class="reveal"><td>博弈</td><td class="ans">有时只是为了平息厂商间激烈竞争而达成的妥协（acuerdos de compromiso）</td></tr>
+<tr class="reveal"><td>成本</td><td class="ans">获取标准要花钱，有些小企业负担不起</td></tr>
+</tbody>
+</table>
+</div>
+<p>所以很多智能环境里的技术来自厂商联盟。§7 的文章也会提到：节点到网关之间的无线技术交给其他组织和技术论坛，于是有了 ZigBee、Bluetooth、Wi-Fi 这些“或多或少标准化”的技术。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>一个 de iure 标准是怎么诞生的 <span class="tag">3.4.1</span></h2>
+<p>一个 de iure 标准从提出到能用在产品上，要经过好几个环节。用 WiFi 做例子，逐步看：</p>
+<div class="stepper" id="iure">
+<figure>
+<div class="fig">
+<svg aria-label="de iure 标准的六个环节：官方标准化组织 ISO、专家组织 IEEE、专家组 IEEE 802、标准 IEEE 802.11、ISO 发布 ISO/IEC 8802-11、认证 sello Wi-Fi" role="img" viewbox="0 0 600 374">
+<defs>
+<marker id="m34a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g class="m34-step" data-step="1">
+<text class="s-tm" text-anchor="end" x="176" y="37">Organismo oficial</text>
+<rect class="s-box" height="44" rx="6" width="200" x="190" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="290" y="37">ISO</text>
+<text class="s-t2" x="404" y="37">detecta la necesidad</text>
+</g>
+<g class="m34-arr" data-step="2"><line class="s-line" marker-end="url(#m34a)" x1="290" x2="290" y1="55" y2="70"></line></g>
+<g class="m34-step" data-step="2">
+<text class="s-tm" text-anchor="end" x="176" y="99">Organización experta</text>
+<rect class="s-box" height="44" rx="6" width="200" x="190" y="72"></rect>
+<text class="s-t" text-anchor="middle" x="290" y="99">IEEE</text>
+<text class="s-t2" x="404" y="99">forma un grupo experto</text>
+</g>
+<g class="m34-arr" data-step="3"><line class="s-line" marker-end="url(#m34a)" x1="290" x2="290" y1="117" y2="132"></line></g>
+<g class="m34-step" data-step="3">
+<text class="s-tm" text-anchor="end" x="176" y="161">Grupo experto</text>
+<rect class="s-box" height="44" rx="6" width="200" x="190" y="134"></rect>
+<text class="s-t" text-anchor="middle" x="290" y="161">IEEE 802</text>
+<text class="s-t2" x="404" y="161">desarrolla un borrador</text>
+</g>
+<g class="m34-arr" data-step="4"><line class="s-line" marker-end="url(#m34a)" x1="290" x2="290" y1="179" y2="194"></line></g>
+<g class="m34-step" data-step="4">
+<text class="s-tm" text-anchor="end" x="176" y="223">Estándar</text>
+<rect class="s-box" height="44" rx="6" width="200" x="190" y="196"></rect>
+<text class="s-t" text-anchor="middle" x="290" y="223">IEEE 802.11</text>
+<text class="s-t2" x="404" y="223">se refina (años) y se publica</text>
+</g>
+<g class="m34-arr" data-step="5"><line class="s-line" marker-end="url(#m34a)" x1="290" x2="290" y1="241" y2="256"></line></g>
+<g class="m34-step" data-step="5">
+<text class="s-tm" text-anchor="end" x="176" y="285">Publicación ISO</text>
+<rect class="s-box" height="44" rx="6" width="200" x="190" y="258"></rect>
+<text class="s-t" text-anchor="middle" x="290" y="285">ISO/IEC 8802-11</text>
+<text class="s-t2" x="404" y="285">publicación oficial</text>
+</g>
+<g class="m34-arr" data-step="6"><line class="s-line" marker-end="url(#m34a)" x1="290" x2="290" y1="303" y2="318"></line></g>
+<g class="m34-step" data-step="6">
+<text class="s-tm" text-anchor="end" x="176" y="347">Certificación</text>
+<rect class="s-box" height="44" rx="6" width="200" x="190" y="320"></rect>
+<text class="s-t" text-anchor="middle" x="290" y="347">sello Wi-Fi</text>
+<text class="s-t2" x="404" y="347">certifica la compatibilidad</text>
+</g>
+</svg>
+</div>
+<figcaption>左边是每个环节的角色名，中间是 WiFi 的例子，右边是这一步做什么。</figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">易混点</span>
+<ul>
+<li>在 WiFi 例子里，<b>官方标准化组织是 ISO</b>。IEEE 是受托的 organización experta，IEEE 802 是它组成的 grupo experto。</li>
+<li><b>sello Wi-Fi 是认证</b>（certificación），不是标准本身。产品<b>必须</b>符合标准；认证是为了和其他符合同一标准的厂商产品<b>兼容</b>。</li>
+</ul>
+</div>
+<p>IoT 领域也有类似分工：<b>IETF</b> 通过它的 <b>6LoWPAN</b> 工作组参与，<b>ISO</b> 通过 <b>ISO/IEC JTC 1/SWG 5</b> 参与。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>谁在制定标准：组织地图 <span class="tag">3.4.2</span></h2>
+<p>制定标准的组织分两类：<b class="t">organismo de normalización (ES) / standards body (EN)</b>——标准化组织，产出 de iure 标准；<b class="t">alianza de fabricantes (ES) / industry alliance (EN)</b>——厂商联盟，产出 de facto 标准。下图按层级排好，<b>点击任一方框</b>看说明。</p>
+<div class="stack" data-explain="iso">
+<figure>
+<div class="fig">
+<svg aria-label="标准化组织分层图：国际层 ISO、IEC、ITU；欧洲层 CEN、CENELEC、ETSI；欧洲以外 TIA、ATIS、CCSA、TTA、TTC；国家层 AENOR；专业组织 IEEE、IETF；右侧为厂商联盟 CSA、Bluetooth SIG、Z-Wave Alliance、EnOcean Alliance、O-RAN Alliance、Wi-Fi Alliance" role="img" viewbox="0 0 680 366">
+<rect class="s-dash" height="350" rx="10" width="444" x="8" y="8"></rect>
+<text class="s-tm" x="22" y="28">ORGANISMOS DE NORMALIZACIÓN</text>
+<text class="s-tm" text-anchor="end" x="438" y="28">→ de iure</text>
+<text class="s-tm" text-anchor="middle" x="167" y="50">general</text>
+<text class="s-tm" text-anchor="middle" x="279" y="50">electrotécnico</text>
+<text class="s-tm" text-anchor="middle" x="391" y="50">telecomunicación</text>
+<text class="s-t2" x="22" y="85">Internacional</text>
+<g aria-label="ISO" class="hot" data-key="iso" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="102" x="116" y="58"></rect>
+<text class="s-t" text-anchor="middle" x="167" y="85">ISO</text>
+</g>
+<g aria-label="IEC" class="hot" data-key="iec" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="102" x="228" y="58"></rect>
+<text class="s-t" text-anchor="middle" x="279" y="85">IEC</text>
+</g>
+<g aria-label="ITU · UIT" class="hot" data-key="itu" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="102" x="340" y="58"></rect>
+<text class="s-t" text-anchor="middle" x="391" y="85">ITU · UIT</text>
+</g>
+<text class="s-t2" x="22" y="133">Europa</text>
+<text class="s-t2" x="22" y="149">(regional)</text>
+<g aria-label="CEN" class="hot" data-key="cen" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="102" x="116" y="114"></rect>
+<text class="s-t" text-anchor="middle" x="167" y="141">CEN</text>
+</g>
+<g aria-label="CENELEC" class="hot" data-key="cenelec" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="102" x="228" y="114"></rect>
+<text class="s-t" text-anchor="middle" x="279" y="141">CENELEC</text>
+</g>
+<g aria-label="ETSI" class="hot" data-key="etsi" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="102" x="340" y="114"></rect>
+<text class="s-t" text-anchor="middle" x="391" y="141">ETSI</text>
+</g>
+<text class="s-t2" x="22" y="189">Fuera de</text>
+<text class="s-t2" x="22" y="205">Europa</text>
+<g aria-label="TIA y ATIS, Norteamérica" class="hot" data-key="noram" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="158" x="116" y="170"></rect>
+<text class="s-t" text-anchor="middle" x="195" y="188">TIA · ATIS</text>
+<text class="s-t2" text-anchor="middle" x="195" y="205">Norteamérica</text>
+</g>
+<g aria-label="CCSA, TTA y TTC" class="hot" data-key="asia" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="158" x="284" y="170"></rect>
+<text class="s-t" text-anchor="middle" x="363" y="188">CCSA · TTA · TTC</text>
+<text class="s-t2" text-anchor="middle" x="363" y="205">China · Corea · Japón</text>
+</g>
+<text class="s-t2" x="22" y="253">Nacional</text>
+<g aria-label="AENOR" class="hot" data-key="aenor" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="326" x="116" y="226"></rect>
+<text class="s-t" text-anchor="middle" x="279" y="244">AENOR → normas UNE</text>
+<text class="s-t2" text-anchor="middle" x="279" y="261">España · ver §5</text>
+</g>
+<line class="s-life" x1="22" x2="438" y1="284" y2="284"></line>
+<text class="s-t2" x="22" y="317">Organizaciones</text>
+<text class="s-t2" x="22" y="333">expertas</text>
+<g aria-label="IEEE" class="hot" data-key="ieee" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="158" x="116" y="298"></rect>
+<text class="s-t" text-anchor="middle" x="195" y="316">IEEE</text>
+<text class="s-t2" text-anchor="middle" x="195" y="333">organización experta</text>
+</g>
+<g aria-label="IETF" class="hot" data-key="ietf" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="6" width="158" x="284" y="298"></rect>
+<text class="s-t" text-anchor="middle" x="363" y="316">IETF</text>
+<text class="s-t2" text-anchor="middle" x="363" y="333">grupo 6LoWPAN (IoT)</text>
+</g>
+<rect class="s-dash" height="350" rx="10" width="204" x="468" y="8"></rect>
+<text class="s-tm" x="482" y="28">ALIANZAS DE FABRICANTES</text>
+<text class="s-tm" x="482" y="44">→ de facto</text>
+<g aria-label="CSA, antes ZigBee Alliance" class="hot" data-key="csa" role="button" tabindex="0">
+<rect class="s-box" height="42" rx="6" width="176" x="482" y="56"></rect>
+<text class="s-t" text-anchor="middle" x="570" y="74">CSA</text>
+<text class="s-t2" text-anchor="middle" x="570" y="90">ex ZigBee Alliance · Matter</text>
+</g>
+<g aria-label="Bluetooth SIG" class="hot" data-key="bt" role="button" tabindex="0">
+<rect class="s-box" height="42" rx="6" width="176" x="482" y="104"></rect>
+<text class="s-t" text-anchor="middle" x="570" y="122">Bluetooth SIG</text>
+<text class="s-t2" text-anchor="middle" x="570" y="138">especificación Bluetooth</text>
+</g>
+<g aria-label="Z-Wave Alliance" class="hot" data-key="zwave" role="button" tabindex="0">
+<rect class="s-box" height="42" rx="6" width="176" x="482" y="152"></rect>
+<text class="s-t" text-anchor="middle" x="570" y="170">Z-Wave Alliance</text>
+<text class="s-t2" text-anchor="middle" x="570" y="186">domótica inalámbrica</text>
+</g>
+<g aria-label="EnOcean Alliance" class="hot" data-key="enocean" role="button" tabindex="0">
+<rect class="s-box" height="42" rx="6" width="176" x="482" y="200"></rect>
+<text class="s-t" text-anchor="middle" x="570" y="218">EnOcean Alliance</text>
+<text class="s-t2" text-anchor="middle" x="570" y="234">energy harvesting</text>
+</g>
+<g aria-label="O-RAN Alliance" class="hot" data-key="oran" role="button" tabindex="0">
+<rect class="s-box" height="42" rx="6" width="176" x="482" y="248"></rect>
+<text class="s-t" text-anchor="middle" x="570" y="266">O-RAN Alliance</text>
+<text class="s-t2" text-anchor="middle" x="570" y="282">red de acceso radio abierta</text>
+</g>
+<g aria-label="Wi-Fi Alliance" class="hot" data-key="wifi" role="button" tabindex="0">
+<rect class="s-box" height="42" rx="6" width="176" x="482" y="296"></rect>
+<text class="s-t" text-anchor="middle" x="570" y="314">Wi-Fi Alliance</text>
+<text class="s-t2" text-anchor="middle" x="570" y="330">certifica: sello Wi-Fi</text>
+</g>
+</svg>
+</div>
+<figcaption>左边是标准化组织，按国际、欧洲、欧洲以外、国家分层；右边是厂商联盟。§2 的定义里举到的是 ISO、ETSI、ITU、TIA 和五个联盟（CSA、Bluetooth SIG、Z-Wave、EnOcean、O-RAN）；其余几个帮你把层级串起来。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="iso" hidden="">
+<h3>ISO · International Organization for Standardization</h3>
+<p>国际标准化组织，官方标准化组织（organismo oficial de normalización）之一；WiFi 例子里就是它发布了 ISO/IEC 8802-11。它和 IEC 合组 <b>JTC 1</b>（Comité Técnico Conjunto ISO/IEC，AENOR 参与其中），JTC 1/WG 7 负责传感器网络标准（§7）。</p>
+</div>
+<div class="panel" data-panel="iec" hidden="">
+<h3>IEC · International Electrotechnical Commission</h3>
+<p>国际电工委员会，电工电子领域的国际标准化组织，和 ISO 合组 JTC 1。例子：变电站通信标准 IEC 61850 由它的 TC57 制定；2010 年它把 WirelessHART 批准为国际标准 IEC 62591。</p>
+</div>
+<div class="panel" data-panel="itu" hidden="">
+<h3>ITU / UIT · Unión Internacional de Telecomunicaciones</h3>
+<p>国际电信联盟，官方标准化组织之一。它的工作“más recomendatoria que normalizadora”（偏建议，而不是制定标准）：产出的是 Recomendación（建议书），例如 ITU-R 5A 关于广域传感器/执行器网络（WASN）的建议草案，以及源自西班牙 UNE 178104 的 ITU-T Y.4200、Y.4201（§8）。</p>
+</div>
+<div class="panel" data-panel="cen" hidden="">
+<h3>CEN · Comité Europeo de Normalización</h3>
+<p>欧洲三个标准化组织（ESO, European Standardisation Organisations）之一。欧盟委员会给欧洲标准化组织发过 <b class="t">mandato (ES) / mandate (EN)</b>——标准化委托。其中两份，RFID 的 M/436（2009）和 Smart Grids 的 M/490（2011），都同时发给 CEN、CENELEC 和 ETSI。</p>
+</div>
+<div class="panel" data-panel="cenelec" hidden="">
+<h3>CENELEC · Comité Europeo de Normalización Electrotécnica</h3>
+<p>欧洲的电工标准化组织，ESO 之一。和 CEN、ETSI 一起接受 M/436、M/490 等 mandato，并在 Smart Grids 上共同组成协调组 SG-CG（§9）。</p>
+</div>
+<div class="panel" data-panel="etsi" hidden="">
+<h3>ETSI · European Telecommunications Standards Institute</h3>
+<p>欧洲电信标准协会，官方标准化组织之一，也是 ESO 之一。2009 年成立 <b>TC M2M</b>，从五个用例出发制定 M2M 架构标准，用的术语是 M2M（§7）。</p>
+</div>
+<div class="panel" data-panel="noram" hidden="">
+<h3>TIA · ATIS（Norteamérica）</h3>
+<p>北美的标准化组织，都在做传感器网络相关工作（§7）；TIA 也是 §2 举的官方标准化组织之一。全称：Telecommunications Industry Association；Alliance for Telecommunications Industry Solutions。</p>
+</div>
+<div class="panel" data-panel="asia" hidden="">
+<h3>CCSA · TTA · TTC</h3>
+<p>亚洲的标准化组织，同样在做传感器网络相关工作（§7）：CCSA（中国）、TTA（韩国）、TTC（日本）。全称：China Communications Standards Association；Telecommunications Technology Association；Telecommunication Technology Committee。</p>
+</div>
+<div class="panel" data-panel="aenor" hidden="">
+<h3>AENOR · Asociación Española de Normalización y Certificación</h3>
+<p>西班牙的国家层面：制定 UNE 标准，在区域和国际组织中代表西班牙，并做认证。详见 §5。</p>
+</div>
+<div class="panel" data-panel="ieee" hidden="">
+<h3>IEEE · Institute of Electrical and Electronics Engineers</h3>
+<p>在 §3 的 WiFi 例子里，IEEE 是官方机构 ISO 委托的 <b>organización experta</b>，由 IEEE 802 组成 grupo experto，写出 IEEE 802.11。它也发布很多别的标准，例如 IEEE 802.15.4：ZigBee 和 IETF 的 6LoWPAN 都建在它上面。</p>
+</div>
+<div class="panel" data-panel="ietf" hidden="">
+<h3>IETF · Internet Engineering Task Force</h3>
+<p>负责制定互联网标准。它通过 6LoWPAN 工作组参与了 IoT 标准化；IETF 的 IoT 工作组有 6LoWPAN、ROLL、CoRE；而且 IETF 标准完全开放，参与不收费（§9）。</p>
+</div>
+<div class="panel" data-panel="csa" hidden="">
+<h3>CSA · Connectivity Standards Alliance</h3>
+<p>原来的 <b>ZigBee Alliance</b>（<i>ahora csa</i>）。ZigBee 建在 IEEE 802.15.4 的物理层和 MAC 层之上，再加上网络、安全和应用层。Matter 连接标准也出自这个联盟。</p>
+</div>
+<div class="panel" data-panel="bt" hidden="">
+<h3>Bluetooth SIG</h3>
+<p>负责 Bluetooth 规范的厂商联盟（SIG = Special Interest Group）。§2 把它列为 de facto 标准的来源之一。</p>
+</div>
+<div class="panel" data-panel="zwave" hidden="">
+<h3>Z-Wave Alliance</h3>
+<p>§2 列出的联盟之一。Z-Wave 是面向家庭自动化的低功耗无线 mesh 技术。</p>
+</div>
+<div class="panel" data-panel="enocean" hidden="">
+<h3>EnOcean Alliance</h3>
+<p>§2 列出的联盟之一。EnOcean 主打 energy harvesting（能量收集）：无电池的无线开关和传感器，常用于楼宇自动化。</p>
+</div>
+<div class="panel" data-panel="oran" hidden="">
+<h3>O-RAN Alliance</h3>
+<p>§2 列出的联盟之一。它制定开放的无线接入网（RAN, Radio Access Network）接口，让移动网络（如 5G）的设备可以来自不同厂商。</p>
+</div>
+<div class="panel" data-panel="wifi" hidden="">
+<h3>Wi-Fi Alliance · sello Wi-Fi</h3>
+<p>§3 的 WiFi 例子里，最后一步是 <b>sello Wi-Fi</b> 认证（wi-fi.org）。注意：WiFi 的<b>标准</b>是 de iure 的 IEEE 802.11 / ISO/IEC 8802-11；这个联盟做的是<b>认证</b>，保证不同厂商的产品能互通。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>AENOR <span class="tag">3.4.3</span></h2>
+<div class="note">
+<span class="lbl">定义 · 3.4.3</span>
+<p><b class="t">AENOR · Asociación Española de Normalización y Certificación</b>——西班牙标准化与认证协会。它是一个<b>私营的非营利实体</b>（entidad privada sin fines lucrativos），工作是帮助提升企业及其产品和服务的质量与竞争力。它有两项职能：</p>
+<ol>
+<li><b>Normalización</b>：制定西班牙技术标准，即 <b class="t">normas UNE</b>，对所有相关方开放参与；并在区域和国际标准化组织中<b>代表西班牙</b>。</li>
+<li><b>Certificación</b>：<b>认证</b>产品、服务和企业。</li>
+</ol>
+</div>
+<p class="aside">记法：名字里就有答案——Asociación Española de <b>Normalización</b> y <b>Certificación</b>。</p>
+<p><b>分一分：</b>下面这些事属于 AENOR 的哪项职能？第 1 项职能包含“制定”和“代表”两件事，这里拆成两个按钮。</p>
+<div class="m34-sort" id="sort-aenor">
+<div class="m34-items">
+<div class="m34-item" data-bin="rep">
+<span class="nm">成立 AEN/CTN71/GT7<small>ISO/IEC JTC 1/WG 7 的西班牙镜像工作组</small></span>
+<div class="m34-pick"><button data-pick="norma" type="button">制定 UNE</button><button data-pick="rep" type="button">代表西班牙</button><button data-pick="cert" type="button">认证</button></div>
+<p class="m34-why" hidden="">国内专家通过这个镜像组参与国际工作组的活动，对任何相关方开放（§7）。</p>
+</div>
+<div class="m34-item" data-bin="cert">
+<span class="nm">检验一款智能插座，合格后发证书<small>示例</small></span>
+<div class="m34-pick"><button data-pick="norma" type="button">制定 UNE</button><button data-pick="rep" type="button">代表西班牙</button><button data-pick="cert" type="button">认证</button></div>
+<p class="m34-why" hidden="">认证产品（certificar productos），第 2 项职能。</p>
+</div>
+<div class="m34-item" data-bin="norma">
+<span class="nm">CTN178 制定 UNE 178104、UNE 178108<small>智慧城市与智能建筑</small></span>
+<div class="m34-pick"><button data-pick="norma" type="button">制定 UNE</button><button data-pick="rep" type="button">代表西班牙</button><button data-pick="cert" type="button">认证</button></div>
+<p class="m34-why" hidden="">制定西班牙技术标准（§8）。§8 的文章里这个机构写作 UNE，见下面的「注意」。</p>
+</div>
+<div class="m34-item" data-bin="rep">
+<span class="nm">2012 年成立 FCSG<small>Foro de Coordinación Smart Grids</small></span>
+<div class="m34-pick"><button data-pick="norma" type="button">制定 UNE</button><button data-pick="rep" type="button">代表西班牙</button><button data-pick="cert" type="button">认证</button></div>
+<p class="m34-why" hidden="">跟踪欧洲和国际层面的智能电网标准化报告，必要时确立西班牙的国家立场（§9）。</p>
+</div>
+<div class="m34-item" data-bin="cert">
+<span class="nm">审核一家企业，颁发证书<small>示例</small></span>
+<div class="m34-pick"><button data-pick="norma" type="button">制定 UNE</button><button data-pick="rep" type="button">代表西班牙</button><button data-pick="cert" type="button">认证</button></div>
+<p class="m34-why" hidden="">认证企业（certificar empresas），第 2 项职能。</p>
+</div>
+<div class="m34-item" data-bin="norma">
+<span class="nm">起草标准时，让所有相关方都能参与<small>participación abierta</small></span>
+<div class="m34-pick"><button data-pick="norma" type="button">制定 UNE</button><button data-pick="rep" type="button">代表西班牙</button><button data-pick="cert" type="button">认证</button></div>
+<p class="m34-why" hidden="">第 1 项职能写明：制定 UNE 标准时，参与对所有相关方开放。</p>
+</div>
+</div>
+<div class="m34-ctl"><span aria-live="polite" class="m34-status"></span><button class="btn" data-act="reset" type="button">重来</button></div>
+</div>
+<div class="panel">
+<h3>注意：AENOR 还是 UNE？</h3>
+<p>有些资料把制定 UNE 标准、代表西班牙和认证都归给 AENOR；有的资料把西班牙的标准化机构写作 UNE（Asociación Española de Normalización）。AENOR 制定 UNE 标准、代表西班牙、做认证。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>怎样读一份标准化文件 <span class="tag">3.4.4</span></h2>
+<p>目标 3.4.4 要求能<b>分析</b>与智能环境标准化组织有关的文件。本章要读两篇短文：一篇讲 IoT 的标准（小任务：<b>读</b>，§7），一篇讲联网的建筑（小任务：<b>浏览</b>，§8）。读之前，先准备 6 个问题：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">01 · ¿Quién lo pide?</span><h3>谁要它？</h3><p>例：欧盟委员会的 mandato M/436 要求 CEN、CENELEC、ETSI 做 RFID 的隐私和安全标准。</p></div>
+<div class="cell"><span class="eyebrow">02 · ¿Quién lo redacta?</span><h3>谁起草？</h3><p>哪个组织、哪个委员会或工作组：CTN178、JTC 1/WG 7、ETSI TC M2M……</p></div>
+<div class="cell"><span class="eyebrow">03 · ¿A qué nivel?</span><h3>在哪一层？</h3><p>国际、欧洲还是国家（§4），以及层与层之间怎么接：镜像组 AEN/CTN71/GT7、UNE 178104 变成 ITU-T Y.4200。</p></div>
+<div class="cell"><span class="eyebrow">04 · ¿Qué tipo?</span><h3>什么性质？</h3><p>norma、especificación técnica、informe 还是 recomendación？例：ITU 的工作“más recomendatoria que normalizadora”。</p></div>
+<div class="cell"><span class="eyebrow">05 · ¿En qué fase?</span><h3>到哪一步？</h3><p>borrador de trabajo（WD）、borrador del comité（CD），还是已经发布？</p></div>
+<div class="cell"><span class="eyebrow">06 · ¿Qué alcance?</span><h3>规定什么、不规定什么？</h3><p>例：JTC 1/WG 7 和 TC M2M 规定通用架构和用例，<b>不</b>规定节点到网关的无线技术。</p></div>
+</div>
+<p><b>看编号认文件：</b>编号本身就透露了是谁发的、是什么性质。先看提示猜一猜，再<b>点击右列</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>编号</th><th>提示</th><th>是什么 · 谁发布（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td class="mono">UNE 178104</td><td>智慧城市</td><td class="ans">西班牙标准（norma UNE），CTN178 制定：智慧城市平台的互操作性要求</td></tr>
+<tr class="reveal"><td class="mono">ISO/IEC 29182</td><td>传感器网络</td><td class="ans">ISO 和 IEC 联合（JTC 1/WG 7）的国际标准：传感器网络参考架构，共 7 部分</td></tr>
+<tr class="reveal"><td class="mono">ETSI TS 102 690</td><td>M2M</td><td class="ans">ETSI 的 Technical Specification：M2M Functional Architecture</td></tr>
+<tr class="reveal"><td class="mono">ETSI TR 102 692</td><td>智能电表</td><td class="ans">ETSI 的 Technical Report：Smart Metering 用例</td></tr>
+<tr class="reveal"><td class="mono">M/490</td><td>Smart Grids</td><td class="ans">欧盟委员会给 CEN、CENELEC、ETSI 的标准化 mandato（2011）</td></tr>
+<tr class="reveal"><td class="mono">ITU-T Y.4200</td><td>智慧城市平台</td><td class="ans">ITU（UIT）的 Recomendación，以 UNE 178104 为基础</td></tr>
+<tr class="reveal"><td class="mono">IEEE 802.11</td><td>无线局域网</td><td class="ans">IEEE（grupo 802）的标准，ISO 以 ISO/IEC 8802-11 发布</td></tr>
+<tr class="reveal"><td class="mono">RFC 4944</td><td>IoT · IPv6</td><td class="ans">IETF 6LoWPAN 工作组的文件：在 IEEE 802.15.4 网络上传输 IPv6</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">编号里的 TS = Technical Specification（技术规范），TR = Technical Report（技术报告），RFC = Request for Comments。两份 ETSI 文件在 §7 的 ETSI M2M 文件图里也能找到（切到 ETSI TC M2M 那一栏）。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>第一篇文章：IoT 的标准 <span class="tag">3.4.4</span></h2>
+<p>作者来自 i2CAT、AENOR 和 COIT，文章发表在 BIT 187（2011 年 12 月）。出发点：IoT 首先要能<b>识别</b>物体（RFID），再用<b>传感器</b>采集物体状态的变化，加上嵌入式智能、小型化，以及让任何物体随时随地可控的 IPv6。标准化是保证互操作性和服务质量的前提。文章聚焦两块：</p>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">Identificación por radiofrecuencia</span>
+<h3>RFID</h3>
+<ul>
+<li>十多年来，标准覆盖 5 个方面：空中接口和通信协议（含防碰撞算法）、数据内容、读写器与服务器的通信、应用、符合性测试。</li>
+<li>安全：2009 年欧盟委员会发出 <b>Mandato M/436</b>，给 CEN、CENELEC 和 ETSI，聚焦数据保护、隐私和信息安全，分两个阶段完成。</li>
+<li>ISO/IEC 的 RFID 标准归 <b>JTC 1/SC 31</b>；在西班牙，AENOR 是各相关方开展标准化工作的交汇点。</li>
+</ul>
+</div>
+<div class="cell">
+<span class="eyebrow">Redes de sensores</span>
+<h3>传感器网络</h3>
+<ul>
+<li>文章引用的估计：2020 年将有 500 亿台联网设备。</li>
+<li>相关组织很多：ATIS、TIA（北美）、CCSA（中国）、TTA（韩国）、TTC（日本）……文章重点讲 <b>ISO/IEC JTC 1</b>（AENOR 参与）和 <b>ETSI</b>。</li>
+<li>ITU 的工作更偏建议：ITU-R 5A 在起草广域传感器/执行器网络（WASN）的建议书。</li>
+</ul>
+</div>
+</div>
+<p><b>同一件事，两种叫法。</b>ETSI 说 <b class="t">M2M (máquina a máquina) / machine-to-machine</b>——机器对机器通信，ISO/IEC JTC 1 说 <b class="t">WSN (Wireless Sensor Networks)</b>——无线传感器网络。下图画出两者的范围，<b>点击</b>图中各部分：</p>
+<div class="stack" data-explain="gateway">
+<figure>
+<div class="fig">
+<svg aria-label="M2M 与 WSN 的范围：应用和用户经核心网连到 M2M 网关，网关连到传感器网络；ETSI 的 M2M 范围从应用到网关，ISO/IEC JTC 1 的 WSN 范围是网关和传感器网络" role="img" viewbox="0 0 660 290">
+<rect class="s-dash" height="230" rx="10" width="528" x="6" y="24"></rect>
+<text class="s-tm" x="10" y="16">M2M · ETSI TC M2M</text>
+<rect class="s-dash" height="236" rx="10" width="244" x="412" y="44"></rect>
+<text class="s-tm" text-anchor="end" x="648" y="272">WSN · ISO/IEC JTC 1/WG 7</text>
+<line class="s-line" x1="144" x2="188" y1="73" y2="98"></line>
+<line class="s-line" x1="144" x2="188" y1="201" y2="178"></line>
+<line class="s-line" x1="374" x2="422" y1="140" y2="140"></line>
+<line class="s-line" x1="520" x2="548" y1="140" y2="140"></line>
+<g aria-label="Aplicación" class="hot" data-key="aplicacion" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="120" x="24" y="48"></rect>
+<text class="s-t" text-anchor="middle" x="84" y="70">Aplicación</text>
+<text class="s-t2" text-anchor="middle" x="84" y="88">servidor externo</text>
+</g>
+<rect class="s-box" height="50" rx="6" width="120" x="24" y="176"></rect>
+<text class="s-t" text-anchor="middle" x="84" y="206">Usuario</text>
+<g aria-label="Núcleo de red y Service Capabilities" class="hot" data-key="nucleo" role="button" tabindex="0">
+<rect class="s-box" height="134" rx="28" width="190" x="184" y="70"></rect>
+<text class="s-t" text-anchor="middle" x="279" y="96">Núcleo de red</text>
+<text class="s-t2" text-anchor="middle" x="279" y="114">fija · móvil · satélite</text>
+<rect class="s-soft" height="56" rx="6" width="160" x="199" y="128"></rect>
+<text class="s-t" text-anchor="middle" x="279" y="152">Service Capabilities</text>
+<text class="s-t2" text-anchor="middle" x="279" y="172">capacidades de servicio</text>
+</g>
+<g aria-label="Gateway M2M" class="hot" data-key="gateway" role="button" tabindex="0">
+<rect class="s-box" height="56" rx="6" width="98" x="422" y="112"></rect>
+<text class="s-t" text-anchor="middle" x="471" y="136">Gateway</text>
+<text class="s-t2" text-anchor="middle" x="471" y="154">terminal M2M</text>
+</g>
+<g aria-label="Red de sensores" class="hot" data-key="sensores" role="button" tabindex="0">
+<rect class="s-box" height="180" rx="14" width="100" x="548" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="598" y="84">Red de</text>
+<text class="s-t" text-anchor="middle" x="598" y="100">sensores</text>
+<line class="s-life" x1="574" x2="622" y1="136" y2="128"></line>
+<line class="s-life" x1="574" x2="598" y1="136" y2="170"></line>
+<line class="s-life" x1="622" x2="598" y1="128" y2="170"></line>
+<line class="s-life" x1="598" x2="628" y1="170" y2="204"></line>
+<line class="s-life" x1="598" x2="570" y1="170" y2="206"></line>
+<circle class="s-box" cx="574" cy="136" r="6"></circle>
+<circle class="s-box" cx="622" cy="128" r="6"></circle>
+<circle class="s-box" cx="598" cy="170" r="6"></circle>
+<circle class="s-box" cx="628" cy="204" r="6"></circle>
+<circle class="s-box" cx="570" cy="206" r="6"></circle>
+<text class="s-t2" text-anchor="middle" x="598" y="230">nodos sensores</text>
+</g>
+</svg>
+</div>
+<figcaption>Redes M2M y WSN——M2M 网络和传感器网络。网关同时属于两边，所以落在两个虚线框的重叠处。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="aplicacion" hidden="">
+<h3>Aplicación · 应用</h3>
+<p>应用运行在网络外部的服务器上。ETSI 定义的 M2M 平台，主要就是方便<b>设备和这个应用之间</b>的通信。</p>
+</div>
+<div class="panel" data-panel="nucleo" hidden="">
+<h3>Núcleo de red · 核心网与 service capabilities</h3>
+<p>ETSI 定义的是一个<b>应用层</b>，可以建在多种核心网（固定、移动、卫星……）之上。做法是提供一组 service capabilities（服务能力），分布在设备、网关和 M2M 平台本身。这些实体和接口与 TISPAN、3GPP、OMA 等其他组织的定义相适配。</p>
+</div>
+<div class="panel" data-panel="gateway" hidden="">
+<h3>Gateway · 网关 = 也是 terminal M2M</h3>
+<p><b>terminal M2M</b> 给一台机器提供通信，移动通信时通常是它装着 SIM 卡。例：自动售货机、销售终端（terminal de punto de venta）。让传感器网络通向外部的汇聚节点或网关，也算 terminal M2M。所以图里网关落在两个框的重叠处。</p>
+</div>
+<div class="panel" data-panel="sensores" hidden="">
+<h3>Red de sensores · 传感器节点</h3>
+<p><b>nodo sensor</b> 和其他传感器或汇聚节点（网关）通信。例：自动灌溉用的湿度传感器是 nodo sensor，<b>不是</b> terminal M2M。节点到网关之间用什么无线技术，WG 7 和 TC M2M 都不管（见下方结论）。</p>
+</div>
+</div>
+
+<p>有了这些区分，文章说：WSN 工作组（ISO/IEC JTC 1/WG 7）和 M2M 工作组（ETSI TC M2M）其实在讲<b>同一个概念</b>——传感器和机器网络的发展，只是尺度不同。两个工作组对比：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换工作组" class="seg" role="group">
+<button aria-pressed="true" data-view="wg7" type="button">ISO/IEC JTC 1/WG 7</button>
+<button aria-pressed="false" data-view="m2m" type="button">ETSI TC M2M</button>
+</div>
+<div class="panel" data-pane="wg7">
+<div class="tbl-wrap">
+<table>
+<tbody>
+<tr><th>术语</th><td>WSN：范围限定在传感器网络</td></tr>
+<tr><th>成立</th><td>2009 年起工作</td></tr>
+<tr><th>核心项目</th><td><b>ISO/IEC 29182</b> “Reference architecture for sensor network applications and services”：一份多部分国际标准，规定通用的传感器网络参考架构，覆盖水平和垂直应用</td></tr>
+<tr><th>其他项目</th><td>ISO/IEC 20005（智能传感器网络中协作信息处理 CIP 的服务和接口）；ISO/IEC 30101（传感器网络及其与 Smart Grid 系统的接口）</td></tr>
+<tr><th>进度（2011）</th><td>开过 4 次会，平均每年 2 次；文件处于 WD（borrador de trabajo）或 CD（borrador del comité）阶段，预计 2013 年完成</td></tr>
+<tr><th>西班牙</th><td>AENOR 内的镜像组 <b>AEN/CTN71/GT7</b>，由 COIT 主持，对所有相关方开放；国内专家通过它参与国际工作组</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">ISO/IEC 29182 的 7 个部分：1 General overview and requirements · 2 Vocabulary/Terminology · 3 Reference architecture views · 4 Entity models · 5 Interface definitions · 6 Application Profiles · 7 Interoperability guidelines。</p>
+</div>
+<div class="panel" data-pane="m2m" hidden="">
+<div class="tbl-wrap">
+<table>
+<tbody>
+<tr><th>术语</th><td>M2M（comunicaciones máquina a máquina）</td></tr>
+<tr><th>成立</th><td>2009 年；成员有厂商和运营商</td></tr>
+<tr><th>目标</th><td>定义 M2M 通信架构，找出现有标准的空白，协调各论坛和其他标准化组织</td></tr>
+<tr><th>方法</th><td>与众不同：从 <b>5 个用例</b>出发制定标准——smart grids 的智能电表、eSalud、usuario conectado（家庭和办公）、汽车与交通、ciudades automáticas o inteligentes</td></tr>
+<tr><th>架构</th><td>一个<b>水平平台</b>，方便开发垂直应用（就是上面这些用例）</td></tr>
+<tr><th>进度（2011）</th><td>规范还是草案，但 2011 年已有全套；开过 17 次会，预计 2012 或 2013 年完成。ETSI 还提议成立 M2M 的 Partnership Project，把 JTC 1 等组织的工作合起来</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+<div class="note">
+<span class="lbl">文章结论</span>
+<p>JTC 1/WG 7 和 ETSI TC M2M 都<b>不</b>打算规范某一种具体技术，而是从整体架构和功能出发，规范<b>通用方案和具体用例</b>。传感器节点到网关之间的通信技术它们不管：这些网络很小、很局部（一辆车、一栋房子，甚至一座城市），每次都可以选最合适的无线技术和频段。这部分由其他组织和技术论坛负责，于是有了 ZigBee、Bluetooth、Wi-Fi 等技术。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>第二篇文章：联网的建筑 <span class="tag">3.4.4</span></h2>
+<p>作者是 COIT 的三位电信工程师，文章发表在 BIT 211（2019）。核心观点：一座城市要能和它内部的所有“物体”（各种建筑、港口、机场、车站、垃圾收集车……）互动，才算 inteligente；而<b>建筑</b>是城市的基本单元（célula básica）之一，人们 85% 以上的时间在室内。要把建筑和智慧城市连起来，就需要标准。</p>
+
+<div class="flow">
+<div class="cell"><span class="eyebrow">谁推动</span><p><b>SEAD</b>（Secretaría de Estado para el Avance Digital）把标准化作为 Plan Nacional de Ciudades Inteligentes 的支柱之一。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">怎么组织</span><p>SEAD 与 UNE 自 2012 年合作，推动标准化技术委员会 <b>CTN178</b>“Ciudades inteligentes”；COIT 的专家积极参与。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">产出</span><p>23 项西班牙国家标准；其中 <b>UNE 178104</b>（2015 年第一版）成为 ITU-T <b>Y.4200</b>、<b>Y.4201</b> 的基础。</p></div>
+</div>
+<p>CTN178 本身的组织：超过 700 名专家，分为 SC1 Infraestructuras、SC2 Indicadores y semántica、SC3 Movilidad、SC4 Energía y medio ambiente、SC5 Destinos turísticos、SC6 Gobierno y Servicios Públicos 4.0，另有负责国际推广的 GT ad hoc。</p>
+
+<p>文章把这项工作分成“向外”和“向内”两个方向。<b>点击</b>图中各部分：</p>
+<div class="stack" data-explain="nodo">
+<figure>
+<div class="fig">
+<svg aria-label="建筑与智慧城市的连接：建筑内的传感器和执行器经 Nodo IoT 把数据送到城市平台，再到市政管理者和市民；建筑内部依靠 ICT 基础设施" role="img" viewbox="0 0 660 264">
+<defs>
+<marker id="m34b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g aria-label="Plataforma de la ciudad, UNE 178104" class="hot" data-key="plataforma" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="150" x="12" y="36"></rect>
+<text class="s-t" text-anchor="middle" x="87" y="62">Plataforma de</text>
+<text class="s-t" text-anchor="middle" x="87" y="79">la ciudad</text>
+<text class="s-t2" text-anchor="middle" x="87" y="98">UNE 178104</text>
+</g>
+<line class="s-line" marker-end="url(#m34b)" x1="87" x2="87" y1="112" y2="148"></line>
+<rect class="s-soft" height="56" rx="6" width="150" x="12" y="150"></rect>
+<text class="s-t2" text-anchor="middle" x="87" y="174">gestores municipales</text>
+<text class="s-t2" text-anchor="middle" x="87" y="192">ciudadanos</text>
+<g aria-label="Nodo IoT, UNE 178108" class="hot" data-key="nodo" role="button" tabindex="0">
+<rect class="s-box" height="50" rx="6" width="120" x="228" y="48"></rect>
+<text class="s-t" text-anchor="middle" x="288" y="70">Nodo IoT</text>
+<text class="s-t2" text-anchor="middle" x="288" y="88">UNE 178108</text>
+</g>
+<line class="s-line" marker-end="url(#m34b)" x1="226" x2="164" y1="73" y2="73"></line>
+<text class="s-tm" text-anchor="middle" x="195" y="64">datos</text>
+<line class="s-line" marker-end="url(#m34b)" x1="410" x2="350" y1="73" y2="73"></line>
+<text class="s-tm" text-anchor="middle" x="380" y="64">datos</text>
+<g aria-label="Edificio inteligente" class="hot" data-key="edificio" role="button" tabindex="0">
+<rect class="s-box" height="236" rx="8" width="236" x="412" y="14"></rect>
+<text class="s-t" text-anchor="middle" x="530" y="38">Edificio inteligente</text>
+<text class="s-t2" text-anchor="middle" x="530" y="56">objeto de la ciudad</text>
+<rect class="s-soft" height="40" rx="5" width="96" x="430" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="478" y="96">Sensores</text>
+<rect class="s-soft" height="40" rx="5" width="96" x="536" y="72"></rect>
+<text class="s-t2" text-anchor="middle" x="584" y="96">Actuadores</text>
+<text class="s-t2" text-anchor="middle" x="530" y="138">alarmas · consumos</text>
+<text class="s-t2" text-anchor="middle" x="530" y="156">sostenibilidad · comunicación</text>
+</g>
+<g aria-label="ICT, hacia el interior, CTN133" class="hot" data-key="ict" role="button" tabindex="0">
+<rect class="s-box" height="60" rx="6" width="200" x="430" y="172"></rect>
+<text class="s-t" text-anchor="middle" x="530" y="197">ICT · hacia el interior</text>
+<text class="s-t2" text-anchor="middle" x="530" y="216">CTN133 Telecomunicaciones</text>
+</g>
+<path class="s-line" d="M12,224 v8 H404 v-8"></path>
+<text class="s-ta" text-anchor="middle" x="208" y="252">hacia el exterior · CTN178</text>
+</svg>
+</div>
+<figcaption>数据从建筑经 Nodo IoT 流向城市平台；底部的横线标出“向外”这一方向涉及的部分。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="plataforma" hidden="">
+<h3>Plataforma de la ciudad · UNE 178104</h3>
+<p>UNE 178104 规定<b>智慧城市平台的互操作性要求</b>。平台开放、标准化之后，就能和外部平台互操作。它 2015 年出第一版，后来成为 ITU-T Y.4200（智慧城市平台互操作性要求）和 Y.4201（平台的高层要求和参考框架）的基础，西班牙模式由此走向国际。</p>
+</div>
+<div class="panel" data-panel="nodo" hidden="">
+<h3>Nodo IoT · UNE 178108</h3>
+<p>CTN178 最突出的工作之一，是把<b>智能建筑</b>列为城市的内部物体。每座建筑里的 <b class="t">Nodo IoT</b>——IoT 节点收集数据，传给城市的管理平台。<b>UNE 178108</b> 规定智能建筑要满足哪些要求，才能按 UNE 178104 被视为 Nodo IoT。</p>
+</div>
+<div class="panel" data-panel="edificio" hidden="">
+<h3>Edificio · 城市里的一个物体</h3>
+<p>文章列出建筑的四种角色：</p>
+<ul>
+<li><b>关键告警</b>的来源：消防、车库 CO₂ 浓度、水浸、燃气泄漏、危险物质；</li>
+<li>公共服务<b>消耗</b>的信息单元：电、水、燃气、柴油（gasoil）；</li>
+<li><b>可持续性指标</b>的来源（地基、结构）；</li>
+<li>与城市及其他节点<b>通信</b>的元素。</li>
+</ul>
+<p>再加入 actuadores（执行器），建筑就不只是“报告者”，还能自动、安全、快速地对情况作出反应。</p>
+</div>
+<div class="panel" data-panel="ict" hidden="">
+<h3>ICT · hacia el interior</h3>
+<p>建筑要能采集和发出信息，先得有基础设施。所以还要“向内”做：利用西班牙关于建筑内 <b class="t">ICT (Infraestructuras Comunes de Telecomunicaciones)</b>——共用电信基础设施的法规（Real Decreto-ley 1/1998、Real Decreto 346/2011 等），由 UNE 的 <b>CTN133</b>（Telecomunicaciones）推进。文章认为 CTN133 是完整规范 Nodo IoT 的关键；COIT 担任它的秘书处，先编写技术指南，再把指南变成标准。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>拓展：Smart grids 与 IETF <span class="tag plain">拓展</span></h2>
+<p class="aside">除了 §7、§8 两篇文章，其他资料属于拓展。这里只把其中几篇浓缩成要点，帮你把前面的组织和层级串起来。</p>
+<p><b>配对：</b>欧盟委员会给欧洲标准化组织（ESO）发过好几份 mandato（标准化委托）。先点左边的编号，再点右边的主题。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="rfid" type="button">M/436 <span class="es">2009</span></button>
+<button data-l="meter" type="button">M/441 <span class="es">2009</span></button>
+<button data-l="ev" type="button">M/468 <span class="es">2010</span></button>
+<button data-l="sg" type="button">M/490 <span class="es">2011</span></button>
+</div>
+<div class="col">
+<button data-r="sg" type="button">Smart Grids</button>
+<button data-r="rfid" type="button">RFID：数据保护、隐私、安全</button>
+<button data-r="ev" type="button">电动汽车充电连接器</button>
+<button data-r="meter" type="button">Smart Meters（智能电表）</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p>Smart grids 的标准化正好展示了“欧盟 → 欧洲标准化组织 → 国家”三层怎样接力：</p>
+<div class="flow">
+<div class="cell"><span class="eyebrow">Comisión Europea</span><p>2009 年底成立 SGTF（Smart Grids Task Force）；2011 年 3 月发出 <b>M/490</b>，给 CEN、CENELEC、ETSI。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">ESO</span><p>2011 年 9 月成立 <b>SG-CG</b>（Smart Grid Coordination Group）协调工作，下设 4 个工作组。它<b>不写标准</b>，标准由三家的技术委员会制定。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">España</span><p>2012 年 4 月 <b>AENOR</b> 成立 <b>FCSG</b>：跟踪欧洲和国际的标准化报告，作为讨论平台，必要时确立国家立场。</p></div>
+</div>
+<div class="grid3">
+<div class="cell">
+<span class="eyebrow">SG-CG · Arquitectura de Referencia</span>
+<h3>SGAM：5 层模型</h3>
+<p>用技术中立的方式表示所有互操作场景：Business、Function、Information、Communication、Component。其他工作组收集了 450 多个用例、100 多个角色，2011 年找出 32 处标准空白。</p>
+</div>
+<div class="cell">
+<span class="eyebrow">IETF · Internet de las Cosas</span>
+<h3>IETF 的三个工作组</h3>
+<p><b>6LoWPAN</b>：在 IEEE 802.15.4 上传 IPv6（RFC 4944）；<b>ROLL</b>：低功耗有损网络的路由（RPL，RFC 6550）；<b>CoRE</b>（2010）：给受限设备做 RESTful web 服务（CoAP）。IETF 标准完全开放、参与不收费，对照 §2 里 de iure 标准“要花钱”的缺点。</p>
+</div>
+<div class="cell">
+<span class="eyebrow">Smart grids · protección y control</span>
+<h3>智能电网标准化的难点</h3>
+<p>与现有标准兼容（NIST 优先协调，如 IEEE C37.118 与 IEC 61850）；兼顾各地不同做法；符合性测试之外还要互操作测试；需要更多电力公司（包括小公司）参与；标准化之前先做 proof-of-concept。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。只考 §1–§8 的内容。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M34">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>“estándar de facto”是什么意思？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>“por derecho”：由官方标准化组织批准的标准</button>
+<button data-o="b" type="button"><span class="k">B</span>“de hecho”：某厂商公开且被市场广泛接受的标准，或厂商联盟制定的标准</button>
+<button data-o="c" type="button"><span class="k">C</span>由法律强制所有厂商执行的标准</button>
+<button data-o="d" type="button"><span class="k">D</span>还没有正式发布的标准草案</button>
+</div>
+<p class="why"><b>B。</b>de facto = de hecho（事实上），两种来源：单个厂商（如 IBM PC 开放架构）或厂商联盟。A 说的是 de iure（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>下面哪一项是 de iure 标准？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>IBM PC 的开放架构</button>
+<button data-o="b" type="button"><span class="k">B</span>Bluetooth SIG 的规范</button>
+<button data-o="c" type="button"><span class="k">C</span>Z-Wave</button>
+<button data-o="d" type="button"><span class="k">D</span>ISO/IEC 8802-11</button>
+</div>
+<p class="why"><b>D。</b>ISO/IEC 8802-11 由官方标准化组织 ISO 发布。A 是单个厂商的 de facto 标准，B、C 来自厂商联盟（§2、§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">03</span>在 §3 的 WiFi 例子里，IEEE 扮演什么角色？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>organismo oficial de normalización</button>
+<button data-o="b" type="button"><span class="k">B</span>entidad certificadora</button>
+<button data-o="c" type="button"><span class="k">C</span>organización experta，并由 IEEE 802 组成 grupo experto</button>
+<button data-o="d" type="button"><span class="k">D</span>alianza de fabricantes</button>
+</div>
+<p class="why"><b>C。</b>官方标准化组织是 ISO；IEEE 是受托的 organización experta，IEEE 802 是 grupo experto；认证是 sello Wi-Fi（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>厂商的产品已经符合某个 de iure 标准。如果还想让它和其他符合同一标准的厂商产品兼容，下一步要做什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>找一家认证机构给产品做认证，例如 sello Wi-Fi</button>
+<button data-o="b" type="button"><span class="k">B</span>向 ISO 申请把产品写进新标准</button>
+<button data-o="c" type="button"><span class="k">C</span>加入 IEEE 802 工作组</button>
+<button data-o="d" type="button"><span class="k">D</span>什么都不用做，符合标准就自动兼容</button>
+</div>
+<p class="why"><b>A。</b>符合标准是必须的；要和其他厂商产品兼容，还要找 entidad certificadora 认证（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">05</span>以下哪一项<b>不是</b> §2 列出的 de iure 标准的缺点？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>发布很慢，常常跟不上市场需求</button>
+<button data-o="b" type="button"><span class="k">B</span>有时只是厂商激烈竞争下的妥协</button>
+<button data-o="c" type="button"><span class="k">C</span>获取标准要花钱，小企业可能负担不起</button>
+<button data-o="d" type="button"><span class="k">D</span>不同厂商的产品不能同时采用它</button>
+</div>
+<p class="why"><b>D。</b>§2 给的三个缺点是 A、B、C。标准的意义恰恰在于让不同厂商都能采用（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">06</span>哪一组<b>全部</b>是标准化组织（organismos de normalización）？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>ISO、ETSI、ITU、TIA</button>
+<button data-o="b" type="button"><span class="k">B</span>ISO、Bluetooth SIG、ETSI、EnOcean Alliance</button>
+<button data-o="c" type="button"><span class="k">C</span>CSA、Z-Wave Alliance、O-RAN Alliance、ITU</button>
+<button data-o="d" type="button"><span class="k">D</span>ETSI、ZigBee Alliance、TIA、Bluetooth SIG</button>
+</div>
+<p class="why"><b>A。</b>这四个正是 §2 举的官方标准化组织。Bluetooth SIG、EnOcean、CSA、Z-Wave、O-RAN、ZigBee 都是厂商联盟（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>ZigBee Alliance 现在改名了。它现在叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Wi-Fi Alliance</button>
+<button data-o="b" type="button"><span class="k">B</span>CSA</button>
+<button data-o="c" type="button"><span class="k">C</span>CENELEC</button>
+<button data-o="d" type="button"><span class="k">D</span>O-RAN Alliance</button>
+</div>
+<p class="why"><b>B。</b>ZigBee Alliance 现在叫 CSA（<i>ahora csa</i>），即 Connectivity Standards Alliance（§2、§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>关于 AENOR 的性质，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>西班牙政府的公共机构</button>
+<button data-o="b" type="button"><span class="k">B</span>营利性的咨询公司</button>
+<button data-o="c" type="button"><span class="k">C</span>私营的非营利实体</button>
+<button data-o="d" type="button"><span class="k">D</span>欧洲层面的标准化组织</button>
+</div>
+<p class="why"><b>C。</b>AENOR 是 entidad privada sin fines lucrativos。它在国家层面工作，在欧洲和国际组织里代表西班牙（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>按 §5，AENOR 的职能是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>制定 UNE 标准并在区域和国际标准化组织中代表西班牙；认证产品、服务和企业</button>
+<button data-o="b" type="button"><span class="k">B</span>起草欧盟法律，并向 CEN、CENELEC、ETSI 发出 mandato</button>
+<button data-o="c" type="button"><span class="k">C</span>只负责给 WiFi 产品颁发 sello Wi-Fi</button>
+<button data-o="d" type="button"><span class="k">D</span>运营西班牙的电信网络，并分配无线频段</button>
+</div>
+<p class="why"><b>A。</b>两项职能：normalización（制定 UNE、代表西班牙）和 certificación。发 mandato 的是欧盟委员会（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>按 §7 的文章，ETSI 和 ISO/IEC JTC 1 分别用什么术语？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>ETSI 用 WSN，JTC 1 用 M2M</button>
+<button data-o="b" type="button"><span class="k">B</span>两者都用 IoT</button>
+<button data-o="c" type="button"><span class="k">C</span>ETSI 用 M2M，JTC 1 用 WSN</button>
+<button data-o="d" type="button"><span class="k">D</span>ETSI 用 RFID，JTC 1 用 NFC</button>
+</div>
+<p class="why"><b>C。</b>ETSI（TC M2M）说 M2M；JTC 1（WG 7）说 WSN，范围限定在传感器网络。文章认为两者讲的是同一概念，尺度不同（§7）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>按 §7 文章里的例子，下面哪一个是 nodo sensor，而<b>不是</b> terminal M2M？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>自动售货机</button>
+<button data-o="b" type="button"><span class="k">B</span>销售终端（terminal de punto de venta）</button>
+<button data-o="c" type="button"><span class="k">C</span>让传感器网络通向外部的网关</button>
+<button data-o="d" type="button"><span class="k">D</span>自动灌溉用的湿度传感器</button>
+</div>
+<p class="why"><b>D。</b>售货机、销售终端和网关都算 terminal M2M；湿度传感器和其他传感器或网关通信，是 nodo sensor（§7）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>按 §8 的文章，UNE 178108 规定的是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>智慧城市平台的互操作性要求</button>
+<button data-o="b" type="button"><span class="k">B</span>智能建筑要被视为 Nodo IoT（依据 UNE 178104）需满足的要求</button>
+<button data-o="c" type="button"><span class="k">C</span>建筑内共用电信基础设施（ICT）的法规</button>
+<button data-o="d" type="button"><span class="k">D</span>ITU-T 关于智慧城市平台的建议书</button>
+</div>
+<p class="why"><b>B。</b>A 是 UNE 178104；C 是 Real Decreto-ley 1/1998 等 ICT 法规，归 CTN133 推进；D 是 Y.4200、Y.4201（§8）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">estándar<small>standard</small></span><span class="back"><b>标准</b><br/>刻画产品或服务某些方面的一组定义和规则。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">estándar de facto</span><span class="back"><b>事实标准</b><br/>“de hecho”：厂商公开且被市场接受，或由厂商联盟制定。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">estándar de iure</span><span class="back"><b>法定标准</b><br/>“por derecho”：由官方标准化组织批准。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">organismo de normalización</span><span class="back"><b>标准化组织</b><br/>批准 de iure 标准的官方机构，如 ISO、ETSI、ITU、TIA。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">alianza de fabricantes</span><span class="back"><b>厂商联盟</b><br/>厂商联合开发技术，产出 de facto 标准，如 CSA、Bluetooth SIG。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">organización experta<small>grupo experto</small></span><span class="back"><b>专家组织 / 专家组</b><br/>受官方机构委托起草标准。WiFi 例子：IEEE / IEEE 802。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">certificación<small>sello Wi-Fi</small></span><span class="back"><b>认证</b><br/>证明产品符合标准、能和其他厂商产品兼容。不是标准本身。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ISO</span><span class="back"><b>国际标准化组织</b><br/>官方标准化组织；和 IEC 合组 JTC 1。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IEC</span><span class="back"><b>国际电工委员会</b><br/>电工电子领域的国际标准，如 IEC 61850、IEC 62591。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ETSI<small>European Telecommunications Standards Institute</small></span><span class="back"><b>欧洲电信标准协会</b><br/>欧洲的官方标准化组织之一，TC M2M 用 M2M 一词。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ITU / UIT</span><span class="back"><b>国际电信联盟</b><br/>官方组织，工作偏建议：产出 Recomendación，如 Y.4200。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CSA<small>ex ZigBee Alliance</small></span><span class="back"><b>连接标准联盟</b><br/>原 ZigBee Alliance，厂商联盟，de facto。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AENOR<small>Asociación Española de Normalización y Certificación</small></span><span class="back"><b>西班牙标准化与认证协会</b><br/>私营非营利；制定 UNE、代表西班牙、认证。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">norma UNE</span><span class="back"><b>西班牙标准</b><br/>西班牙的技术标准，如 UNE 178104、UNE 178108。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">M2M<small>máquina a máquina</small></span><span class="back"><b>机器对机器通信</b><br/>ETSI 的用词；网关也算 terminal M2M。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">WSN<small>Wireless Sensor Networks</small></span><span class="back"><b>无线传感器网络</b><br/>ISO/IEC JTC 1 的用词，范围限定在传感器网络。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Nodo IoT</span><span class="back"><b>IoT 节点</b><br/>建筑里收集数据、送往城市平台的节点（UNE 178108）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mandato<small>M/436 · M/490</small></span><span class="back"><b>标准化委托</b><br/>欧盟委员会委托 CEN、CENELEC、ETSI 制定某领域的标准。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M34"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var boxes = document.querySelectorAll(".m34-sort");
+  Array.prototype.forEach.call(boxes, function (box) {
+    var items = Array.prototype.slice.call(box.querySelectorAll(".m34-item"));
+    var status = box.querySelector(".m34-status");
+    var reset = box.querySelector('[data-act="reset"]');
+    var done = 0, ok = 0;
+    function upd() {
+      if (!status) return;
+      status.textContent = done === items.length
+        ? "全部分完 · 答对 " + ok + " / " + items.length + (ok === items.length ? " ✓" : "")
+        : "已分类 " + done + " / " + items.length + " · 答对 " + ok;
+    }
+    items.forEach(function (it) {
+      var ans = it.getAttribute("data-bin");
+      var btns = Array.prototype.slice.call(it.querySelectorAll("button[data-pick]"));
+      var why = it.querySelector(".m34-why");
+      btns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          if (it.classList.contains("ok") || it.classList.contains("ko")) return;
+          var right = b.getAttribute("data-pick") === ans;
+          btns.forEach(function (x) {
+            x.disabled = true;
+            if (x.getAttribute("data-pick") === ans) x.classList.add("right");
+          });
+          if (!right) b.classList.add("wrong");
+          it.classList.add(right ? "ok" : "ko");
+          if (why) why.hidden = false;
+          done++;
+          if (right) ok++;
+          upd();
+        });
+      });
+    });
+    if (reset) reset.addEventListener("click", function () {
+      items.forEach(function (it) {
+        it.classList.remove("ok", "ko");
+        Array.prototype.forEach.call(it.querySelectorAll("button[data-pick]"), function (x) {
+          x.disabled = false;
+          x.classList.remove("right", "wrong");
+        });
+        var why = it.querySelector(".m34-why");
+        if (why) why.hidden = true;
+      });
+      done = 0; ok = 0;
+      upd();
+    });
+    upd();
+  });
+})();
+
+
+(function () {
+  var box = document.getElementById("iure");
+  if (!box) return;
+  var steps = Array.prototype.slice.call(box.querySelectorAll(".m34-step"));
+  var arrs = Array.prototype.slice.call(box.querySelectorAll(".m34-arr"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var N = 6;
+  var T = [
+    "de iure 标准的 6 个环节一览，例子是 WiFi。点「下一步」逐步播放，当前这一步会高亮。",
+    "<b>Organismo oficial de normalización</b>（这里是 ISO）发现需要一个标准。",
+    "它找到一个 <b>organización experta</b>（IEEE），由后者组成专家组。",
+    "<b>Grupo experto</b>（IEEE 802）起草 borrador（草案）。",
+    "草案一点点完善，可能要花好几年，直到定稿发布：<b>IEEE 802.11</b>。",
+    "官方机构以自己的名义发布：<b>ISO/IEC 8802-11</b>。它经官方组织批准，所以是 de iure 标准。",
+    "厂商造产品时必须符合这个标准；如果还想和其他符合同一标准的厂商产品<b>兼容</b>，要找 entidad certificadora 认证。WiFi 的认证就是 <b>sello Wi-Fi</b>。"
+  ];
+  var i = 0;
+  function render() {
+    steps.forEach(function (g) {
+      var s = +g.getAttribute("data-step");
+      g.classList.toggle("on", i > 0 && s === i);
+      g.classList.toggle("dim", i > 0 && s > i);
+    });
+    arrs.forEach(function (g) {
+      var s = +g.getAttribute("data-step");
+      g.classList.toggle("on", i > 0 && s === i);
+      g.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 步";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+</script>
+</body>
+</html>

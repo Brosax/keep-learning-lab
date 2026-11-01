@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M41 ESP32-S3 · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+h3[id] { scroll-margin-top: 80px; }
+.stage .led-on { fill: var(--st-green); stroke: var(--st-green); filter: drop-shadow(0 0 8px rgb(131 193 103 / .9)); }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.press:disabled, .mini:disabled, .sw:disabled { opacity: .35; cursor: default; }
+
+.stage g.hot { cursor: pointer; }
+.stage g.hot:focus { outline: none; }
+.stage g.hot > .bx { transition: stroke .2s, stroke-width .2s; }
+.stage g.hot:hover > .bx, .stage g.hot:focus-visible > .bx { stroke: var(--st-yellow); }
+.stage g.hot.on > .bx { stroke: var(--st-yellow); stroke-width: 3.5; filter: drop-shadow(0 0 6px rgb(244 211 69 / .55)); }
+.soc-panel { min-height: 9.5rem; }
+.soc-panel .big { font: 700 1.1rem/1.3 var(--f-mono); color: var(--yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.tt td { font-family: var(--f-mono); font-size: 13px; }
+.tt td.lo { color: var(--red); font-weight: 700; }
+.tt td.hi { color: var(--green); }
+.tt td:last-child { font-family: var(--f-body); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m41-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m41-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m41-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m41-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m41-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m41-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+<marker id="m41-ah-w" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-ink)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 4 章节" class="chain" data-chain="M41"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 4 · Otras arquitecturas: ESP32-S3 · M41–M44</div>
+<h1>ESP32-S3</h1>
+<p class="zh">另一种架构：ESP32-S3 与 ESP-IDF</p>
+<div class="meta">
+
+
+
+<span><b>8</b> 个要点</span>
+<span>阅读约 14 分钟</span>
+
+
+</div>
+<p class="lede">前三个 Bloque 都围着一颗 16 位、单核、没有无线的 MSP430F5529 转。Bloque 4 换一颗很不一样的芯片：Espressif 的 ESP32-S3，一颗双核 32 位、自带 Wi-Fi 和 Bluetooth LE 的 <b class="t">SoC (ES/EN: sistema en chip / system on chip)</b>——片上系统。这一章做两件事：先看懂芯片和板子，再把"写代码 → 编译 → 烧录 → 调试"这条链路走通。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M41.1</span>
+<div class="txt"><span>对比 MSP430F5529 与 ESP32-S3：位宽、核心数、主频、存储、无线、供电与低功耗</span><span class="es">¿Por qué otra arquitectura? Comparativa MSP430F5529 – ESP32-S3.</span><a href="#s0">→ §0 为什么换一种架构</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.2</span>
+<div class="txt"><span>说出 ESP32-S3 SoC 的主要模块：双核 LX7、ROM/SRAM、RTC 与 ULP、Wi-Fi + BLE、射频、外设、interrupt matrix</span><span class="es">Diagrama de bloques funcional del SoC.</span><a href="#s1">→ §1 芯片里有什么</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.3</span>
+<div class="txt"><span>解释为什么要引脚复用，以及 IO MUX 与 GPIO Matrix 的区别和代价</span><span class="es">IO MUX y GPIO Matrix.</span><a href="#m41-iomux">→ §1 IO MUX 与 GPIO Matrix</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.4</span>
+<div class="txt"><span>区分芯片、模块（WROOM-1）、开发板（DevKitC-1）；说出板上两个 USB 口、RGB LED（GPIO38）和两个按键的作用</span><span class="es">Chip, módulo y placa de desarrollo ESP32-S3-DevKitC-1.</span><a href="#s2">→ §2 芯片、模块、开发板</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.5</span>
+<div class="txt"><span>用 strapping 引脚（GPIO0、GPIO46）和 auto-program 真值表，解释芯片怎样进入下载模式</span><span class="es">Modos de arranque y circuito de auto-programación (DTR/RTS → EN/IO0).</span><a href="#m41-ap">→ §2 Auto-program</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.6</span>
+<div class="txt"><span>说出 ESP-IDF 工具链的组成，以及安装要点：EIM、v6.0.2 / 6.0.3、Java 21+、路径规则</span><span class="es">Toolchain, CMake/Ninja, OpenOCD, ESP-IDF, Espressif-IDE.</span><a href="#s3">→ §3 工具链</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.7</span>
+<div class="txt"><span>描述 build → flash → monitor 的流程，以及每一步由谁完成</span><span class="es">Construcción, carga en la placa y monitorización.</span><a href="#s4">→ §4 从代码到板子</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M41.8</span>
+<div class="txt"><span>画出调试链 Espressif-IDE → ESP-GDB → OpenOCD → USB Serial/JTAG → CPU0/CPU1；知道超时错误怎么处理、命令行怎么备选</span><span class="es">Configuración del depurador.</span><a href="#s5">→ §5 调试链</a></div>
+<button aria-pressed="false" class="chk" data-obj="M41.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M41"><span class="val">0 / 8 已掌握</span><span class="bar"><i></i></span></div>
+<div class="note warm">
+<span class="lbl">模块编号</span>
+
+</div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>为什么要换一种架构 <span class="tag">M41.1</span></h2>
+<p class="hook"><span class="zh">MSP430F5529 已经学了三个 Bloque，为什么最后还要学一颗完全不同的芯片？</span><span class="es">¿Por qué otra arquitectura?</span></p>
+<p>MSP430 的强项是超低功耗和简单。可是设备如果要联网（Wi-Fi、Bluetooth），或者要跑更重的计算，就需要另一类芯片。先把两颗芯片并排放在一起，看看量级差多少：</p>
+<figure class="stage" data-scene="" id="m41-sc-intro">
+<div class="stage-title"><span>Escena 0 · MSP430F5529 vs ESP32-S3</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：两颗芯片的对比，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m41-sc-intro-t" role="img" viewbox="0 0 800 360">
+<title id="m41-sc-intro-t">左边 MSP430F5529：一个 16 位 CPU、最高 25 MHz、没有无线；右边 ESP32-S3：两个 32 位 LX7 核、最高 240 MHz、Wi-Fi 与 Bluetooth LE；下方是主频和片上 SRAM 的条形对比</title>
+<g data-step="1">
+<rect class="ln thin m" height="200" rx="12" width="372" x="16" y="16"></rect>
+<text class="tm b" x="36" y="48">MSP430F5529</text>
+<text class="tm xs m" x="36" y="70">TI · 16-bit RISC</text>
+<rect class="bx b" height="72" rx="8" width="150" x="36" y="88"></rect>
+<text class="tm b mid" x="111" y="120">CPUX</text>
+<text class="tm xs m mid" x="111" y="144">16 bit</text>
+<text class="tm sm o" x="206" y="108">≤ 25 MHz</text>
+<text class="tm sm p" x="206" y="132">Flash 128 KB</text>
+<text class="tm sm p" x="206" y="156">SRAM 8 + 2 KB</text>
+<text class="tm sm w" x="206" y="180">63 I/O · USB</text>
+<text class="tz sm m" x="36" y="198">无线：没有</text>
+</g>
+<g data-step="2">
+<rect class="ln thin m" height="200" rx="12" width="372" x="412" y="16"></rect>
+<text class="tm b" x="432" y="48">ESP32-S3</text>
+<text class="tm xs m" x="432" y="70">Espressif · Xtensa LX7 · 32-bit</text>
+<rect class="bx b" height="72" rx="8" width="72" x="432" y="88"></rect>
+<rect class="bx b" height="72" rx="8" width="72" x="510" y="88"></rect>
+<text class="tm sm b mid" x="468" y="120">CPU0</text>
+<text class="tm sm b mid" x="546" y="120">CPU1</text>
+<text class="tm xs m mid" x="468" y="144">32 bit</text>
+<text class="tm xs m mid" x="546" y="144">32 bit</text>
+<text class="tm sm o" x="600" y="108">≤ 240 MHz</text>
+<text class="tm sm p" x="600" y="132">ROM 384 KB</text>
+<text class="tm sm p" x="600" y="156">SRAM 512 KB</text>
+<text class="tm sm w" x="600" y="180">45 GPIO · USB</text>
+</g>
+<g data-step="3">
+<path class="ln thin g" d="M752 92 V60"></path>
+<path class="ln g draw" d="M738 52 Q752 38 766 52"></path>
+<path class="ln g draw" d="M728 42 Q752 18 776 42"></path>
+<text class="tz sm g" x="432" y="200">Wi-Fi 802.11 b/g/n · Bluetooth LE 5</text>
+</g>
+<g data-step="4">
+<text class="tz sm o" x="16" y="256">最高主频</text>
+<text class="tm xs m" x="16" y="283">F5529</text>
+<rect class="bx o" height="16" rx="2" width="31" x="80" y="270"></rect>
+<text class="tm xs o" x="118" y="283">25 MHz</text>
+<text class="tm xs m" x="16" y="313">S3</text>
+<rect class="bx o draw" height="16" rx="2" width="300" x="80" y="300"></rect>
+<text class="tm xs w end" x="374" y="313">240 MHz</text>
+<text class="tz sm p" x="420" y="256">片上 SRAM</text>
+<text class="tm xs m" x="420" y="283">F5529</text>
+<rect class="bx p" height="16" rx="1" width="6" x="484" y="270"></rect>
+<text class="tm xs p" x="498" y="283">8 + 2 KB</text>
+<text class="tm xs m" x="420" y="313">S3</text>
+<rect class="bx p draw" height="16" rx="2" width="296" x="484" y="300"></rect>
+<text class="tm xs w end" x="774" y="313">512 KB</text>
+<text class="tz sm y mid" x="400" y="348">主频约 10 倍 · 片上 SRAM 约 50 倍</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>MSP430F5529：一个 16 位 RISC CPU（CPUX），最高 25 MHz；128 KB flash、8 + 2 KB SRAM；没有无线。</li>
+<li><b>ESP32-S3</b>：两个 32 位 <b>Xtensa LX7</b> 核心（CPU0、CPU1），最高 240 MHz；384 KB ROM、512 KB SRAM。</li>
+<li data-dur="3400">最大的区别：片上集成了 2.4 GHz 的 <span class="c-g">Wi-Fi（802.11 b/g/n）和 Bluetooth LE 5</span>，连射频部分也在芯片里。</li>
+<li data-dur="4600">按同一比例画出来：主频约 10 倍，片上 SRAM 约 50 倍。代价在功耗：ESP32-S3 最省电的 Deep-sleep 是 7 µA，F5529 的 LPM3 约 2 µA，LPM4.5 只有 0.18 µA。</li>
+</ol>
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>MSP430F5529</th><th>ESP32-S3</th></tr></thead>
+<tbody>
+<tr><td>CPU</td><td>16 位 RISC（CPUX，扩展内存）</td><td>Xtensa 32 位 LX7，<b>双核</b>；单精度 FPU、SIMD 指令</td></tr>
+<tr><td>主频</td><td>最高 25 MHz</td><td>最高 240 MHz</td></tr>
+<tr><td>片上存储</td><td>Flash 128 KB · SRAM 8 + 2 KB</td><td>ROM 384 KB · SRAM 512 KB · RTC SRAM 16 KB</td></tr>
+<tr><td>程序存在哪</td><td>片上 flash</td><td>flash：芯片可选封装内 flash；WROOM-1 模块上最多 16 MB Quad SPI flash</td></tr>
+<tr><td>I/O</td><td>63 个 I/O（80 引脚 PN 封装）</td><td>芯片 45 个 GPIO；WROOM-1 模块引出 36 个</td></tr>
+<tr><td>无线</td><td>没有</td><td>Wi-Fi 802.11 b/g/n（2.4 GHz）+ Bluetooth LE 5</td></tr>
+<tr><td>USB</td><td>Full-speed USB（集成 PHY）</td><td>Full-speed USB OTG + USB Serial/JTAG 控制器</td></tr>
+<tr><td>供电</td><td>1.8 – 3.6 V</td><td>3.0 – 3.6 V</td></tr>
+<tr><td>低功耗</td><td>LPM3 1.9 µA（2.2 V）/ 2.1 µA（3.0 V）；LPM4.5 0.18 µA</td><td>Deep-sleep 7 µA（只有 RTC 域供电）</td></tr>
+<tr><td>开发环境</td><td>CCS</td><td>ESP-IDF + Espressif-IDE（§3）</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">功耗都是典型值，两颗芯片的测试条件不同，只能看量级。</p>
+<p class="takeaway">ESP32-S3 不是"更大的 MSP430"，而是为另一类应用设计的：联网和算力。中断、复位、时钟、低功耗、外设这些概念都还在，只是规模和名字变了（§1 有对照表）。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>芯片里有什么 <span class="tag">M41.2 · M41.3</span></h2>
+<p class="hook"><span class="zh">一颗 7 × 7 mm 的芯片里，装着哪些东西？</span><span class="es">Diagrama de bloques funcional del ESP32-S3.</span></p>
+<p>下面是芯片功能框图的简化版。点任意一块（或下面的按钮），说明会显示在图下方。</p>
+<div class="stack" data-explain="cpu">
+<figure class="stage" id="m41-soc">
+<div class="stage-title"><span>Interactivo · ESP32-S3 Functional Block Diagram</span><b>点一块看说明</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m41-soc-t" role="group" viewbox="0 0 800 420">
+<title id="m41-soc-t">ESP32-S3 功能框图：CPU 与存储、Wi-Fi、Bluetooth LE、射频、RTC 与低功耗、外设、GPIO</title>
+<rect class="ln thin m" height="400" rx="14" width="780" x="10" y="10"></rect>
+<text class="tm xs m" x="28" y="34">ESP32-S3 · SoC</text>
+<g aria-label="CPU：Xtensa LX7 双核" class="hot" data-key="cpu" role="button" tabindex="0">
+<rect class="bx b" height="106" rx="8" width="272" x="28" y="46"></rect>
+<text class="tm b" x="44" y="74">Xtensa LX7 ×2</text>
+<text class="tm xs o end" x="288" y="74">≤ 240 MHz</text>
+<rect class="bx hollow b" height="46" rx="5" width="110" x="44" y="90"></rect>
+<rect class="bx hollow b" height="46" rx="5" width="110" x="170" y="90"></rect>
+<text class="tm sm b mid" x="99" y="118">CPU0</text>
+<text class="tm sm b mid" x="225" y="118">CPU1</text>
+</g>
+<g aria-label="存储：ROM、SRAM、Cache" class="hot" data-key="mem" role="button" tabindex="0">
+<rect class="bx p" height="76" rx="8" width="272" x="28" y="164"></rect>
+<text class="tm sm p" x="44" y="192">ROM 384 KB</text>
+<text class="tm sm p" x="44" y="220">SRAM 512 KB</text>
+<text class="tm xs m" x="176" y="192">Cache</text>
+<text class="tm xs m" x="176" y="220">→ flash / PSRAM</text>
+</g>
+<g aria-label="Interrupt Matrix 中断矩阵" class="hot" data-key="intr" role="button" tabindex="0">
+<rect class="bx r" height="60" rx="8" width="130" x="28" y="252"></rect>
+<text class="tm sm r mid" x="93" y="277">Interrupt</text>
+<text class="tm sm r mid" x="93" y="299">Matrix</text>
+</g>
+<g aria-label="Security 安全模块" class="hot" data-key="sec" role="button" tabindex="0">
+<rect class="bx m" height="60" rx="8" width="130" x="170" y="252"></rect>
+<text class="tm sm w mid" x="235" y="277">Security</text>
+<text class="tm xs m mid" x="235" y="299">AES SHA RSA</text>
+</g>
+<g aria-label="时钟" class="hot" data-key="clk" role="button" tabindex="0">
+<rect class="bx o" height="70" rx="8" width="272" x="28" y="324"></rect>
+<text class="tm sm o" x="44" y="352">Clock</text>
+<text class="tm xs m" x="44" y="376">XTAL · PLL · fast RC 17.5 MHz</text>
+</g>
+<g aria-label="Wi-Fi" class="hot" data-key="wifi" role="button" tabindex="0">
+<rect class="bx g" height="64" rx="8" width="220" x="320" y="46"></rect>
+<text class="tm sm g" x="336" y="74">Wi-Fi MAC + BB</text>
+<text class="tm xs m" x="336" y="96">IEEE 802.11 b/g/n</text>
+</g>
+<g aria-label="Bluetooth LE" class="hot" data-key="ble" role="button" tabindex="0">
+<rect class="bx g" height="64" rx="8" width="220" x="320" y="120"></rect>
+<text class="tm sm g" x="336" y="148">Bluetooth LE</text>
+<text class="tm xs m" x="336" y="170">Link ctrl + BB · BT 5</text>
+</g>
+<g aria-label="射频 RF 2.4 GHz" class="hot" data-key="rf" role="button" tabindex="0">
+<rect class="bx hollow g" height="60" rx="8" width="220" x="320" y="194"></rect>
+<text class="tm sm g" x="336" y="220">RF 2.4 GHz</text>
+<text class="tm xs m" x="336" y="242">TX · RX · synth · balun</text>
+</g>
+<g aria-label="RTC 与低功耗、ULP 协处理器" class="hot" data-key="rtc" role="button" tabindex="0">
+<rect class="bx t" height="128" rx="8" width="220" x="320" y="266"></rect>
+<text class="tm sm t" x="336" y="292">RTC · low power</text>
+<text class="tm xs m" x="336" y="316">PMU</text>
+<text class="tm xs m" x="336" y="338">ULP-RISC-V / ULP-FSM</text>
+<text class="tm xs m" x="336" y="360">RTC memory 16 KB</text>
+<text class="tm xs m" x="336" y="382">RTC GPIO · RTC WDT</text>
+</g>
+<g aria-label="外设" class="hot" data-key="periph" role="button" tabindex="0">
+<rect class="bx b" height="244" rx="8" width="212" x="560" y="46"></rect>
+<text class="tm sm b" x="576" y="74">Peripherals</text>
+<text class="tm xs m" x="576" y="100">UART×3  I2C×2  I2S×2</text>
+<text class="tm xs m" x="576" y="122">SPI2/3  TWAI  RMT</text>
+<text class="tm xs m" x="576" y="144">USB OTG</text>
+<text class="tm xs w" x="576" y="166">USB Serial/JTAG</text>
+<text class="tm xs m" x="576" y="188">LED PWM  MCPWM</text>
+<text class="tm xs m" x="576" y="210">LCD  Camera  SD/MMC</text>
+<text class="tm xs m" x="576" y="232">ADC×2  Touch  Temp</text>
+<text class="tm xs m" x="576" y="254">Timers  WDT×3  GDMA</text>
+</g>
+<g aria-label="GPIO、IO MUX 与 GPIO Matrix" class="hot" data-key="gpio" role="button" tabindex="0">
+<rect class="bx w" height="92" rx="8" width="212" x="560" y="302"></rect>
+<text class="tm sm w" x="576" y="330">45 GPIO</text>
+<text class="tm xs m" x="576" y="354">IO MUX</text>
+<text class="tm xs m" x="576" y="376">GPIO Matrix</text>
+</g>
+</svg>
+</div>
+</figure>
+<div aria-label="选择框图中的模块" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="cpu" type="button">CPU</button>
+<button aria-pressed="false" class="chip" data-key="mem" type="button">存储</button>
+<button aria-pressed="false" class="chip" data-key="rtc" type="button">RTC · ULP</button>
+<button aria-pressed="false" class="chip" data-key="wifi" type="button">Wi-Fi</button>
+<button aria-pressed="false" class="chip" data-key="ble" type="button">Bluetooth LE</button>
+<button aria-pressed="false" class="chip" data-key="rf" type="button">RF</button>
+<button aria-pressed="false" class="chip" data-key="intr" type="button">中断矩阵</button>
+<button aria-pressed="false" class="chip" data-key="clk" type="button">时钟</button>
+<button aria-pressed="false" class="chip" data-key="sec" type="button">安全</button>
+<button aria-pressed="false" class="chip" data-key="periph" type="button">外设</button>
+<button aria-pressed="false" class="chip" data-key="gpio" type="button">GPIO</button>
+</div>
+<div aria-live="polite" class="panel soc-panel" data-panel="cpu">
+<span class="big">Xtensa® LX7 双核 · CPU0 / CPU1</span>
+<p>两个 32 位 Xtensa LX7 核心，主频最高 240 MHz；五级流水线、单精度 FPU、128 位数据总线和专用 SIMD 指令（面向 AI 和 DSP 算法）。CoreMark：双核 240 MHz 时 1329.92 分。对比 F5529：一个 16 位 CPU，最高 25 MHz。调试窗口里能同时看到两个核（§5）。</p>
+</div>
+<div class="panel soc-panel" data-panel="mem" hidden="">
+<span class="big">存储 · ROM / SRAM / Cache</span>
+<p>384 KB ROM（启动和核心函数）、512 KB 片上 SRAM（数据和指令）。程序本身放在 flash 里：可以是芯片封装内的 flash，也可以是外部 flash（WROOM-1 模块上最多 16 MB），经 SPI0/1 接口和 cache 映射到 CPU 的地址空间。另有 4096 位 eFuse（一次性编程，1792 位留给用户）。</p>
+</div>
+<div class="panel soc-panel" data-panel="rtc" hidden="">
+<span class="big">RTC 与低功耗 · ULP 协处理器</span>
+<p>RTC 域在 Deep-sleep 时仍然供电：16 KB RTC SRAM（8 KB fast + 8 KB slow）、RTC GPIO、RTC watchdog、PMU（电源管理单元）。两个 <b class="t">ULP coprocessor (EN)</b>——超低功耗协处理器（ULP-RISC-V 和 ULP-FSM，二者不能同时工作）在睡眠时代替主 CPU，读 RTC GPIO 和传感器。四种功耗模式：Active、Modem-sleep、Light-sleep、Deep-sleep；Deep-sleep 7 µA。</p>
+</div>
+<div class="panel soc-panel" data-panel="wifi" hidden="">
+<span class="big">Wi-Fi · IEEE 802.11 b/g/n</span>
+<p>2.4 GHz，20 MHz 和 40 MHz 带宽，1T1R 模式下最高 150 Mbps；可以工作在 Station、SoftAP，或 Station + SoftAP 模式。MAC 和 baseband 都在片上。</p>
+</div>
+<div class="panel soc-panel" data-panel="ble" hidden="">
+<span class="big">Bluetooth LE · Bluetooth 5</span>
+<p>Bluetooth 5、Bluetooth Mesh；速率 125 Kbps、500 Kbps、1 Mbps、2 Mbps；高功率模式最高 20 dBm。和 Wi-Fi 共用同一根天线（芯片内部有共存机制）。芯片的功能列表里只有 LE。</p>
+</div>
+<div class="panel soc-panel" data-panel="rf" hidden="">
+<span class="big">RF · 2.4 GHz</span>
+<p>射频部分：2.4 GHz 接收器、发射器、频率合成器（RF synthesizer）、balun + 开关。MSP430F5529 完全没有这一块。天线不在芯片里：WROOM-1 模块上是 PCB 天线，WROOM-1U 是外接天线座（§2）。</p>
+</div>
+<div class="panel soc-panel" data-panel="intr" hidden="">
+<span class="big">Interrupt Matrix · 中断矩阵</span>
+<p>99 个外设中断源作为输入，分配到 CPU0 的 26 个外设中断和 CPU1 的 26 个外设中断（每个核另有 6 个内部中断）。和 MSP430 的固定向量表（M21）不同：哪个外设的中断送到哪个核、哪个中断号，是可以配置的。</p>
+</div>
+<div class="panel soc-panel" data-panel="clk" hidden="">
+<span class="big">Clock · 时钟</span>
+<p>CPU 时钟有三个来源：外部主晶振、内部 fast RC（约 17.5 MHz，可调）、PLL；复位后默认是外部主晶振二分频。<b>没有外部主晶振，芯片无法工作</b>——WROOM-1 模块里有一颗 40 MHz 晶振。RTC slow clock 可以来自外部 32 kHz 晶振、内部 slow RC（约 136 kHz）或 fast RC 的 256 分频。</p>
+</div>
+<div class="panel soc-panel" data-panel="sec" hidden="">
+<span class="big">Security · 安全</span>
+<p>Secure boot、flash encryption；SHA、AES、RSA、HMAC 硬件加速器，RSA 数字签名外设（RSA_DS），随机数发生器（RNG）。联网设备要保护固件和密钥，所以这些都做进了芯片。</p>
+</div>
+<div class="panel soc-panel" data-panel="periph" hidden="">
+<span class="big">外设 · Peripherals</span>
+<p>UART ×3、I2C ×2、I2S ×2、通用 SPI ×2（SPI2/3）、TWAI（兼容 CAN 2.0）、full-speed USB OTG、USB Serial/JTAG、SD/MMC host、LED PWM（最多 8 通道）、MCPWM ×2、RMT、脉冲计数器、LCD 和 camera 接口；两个 12 位 SAR ADC（最多 20 通道）、14 个电容触摸 IO、温度传感器；4 个 54 位通用定时器、52 位系统定时器、3 个 watchdog；GDMA 5 发 5 收。</p>
+</div>
+<div class="panel soc-panel" data-panel="gpio" hidden="">
+<span class="big">45 GPIO · IO MUX · GPIO Matrix</span>
+<p>45 个可编程 GPIO，其中 4 个是 <b>strapping</b> 引脚（GPIO0、GPIO3、GPIO45、GPIO46），复位时被采样，决定启动方式等配置（§2）。封装内有 flash 或 PSRAM 时，还要占用 6 或 7 个 GPIO。每个引脚接哪个外设，由 IO MUX 和 GPIO Matrix 决定（下面的动画）。</p>
+</div>
+
+</div>
+<h3>在 MSP430 上学过的概念，在 ESP32-S3 上叫什么</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>概念</th><th>MSP430F5529（前几章）</th><th>ESP32-S3</th></tr></thead>
+<tbody>
+<tr><td>中断</td><td>固定向量表 0xFF80–0xFFFF（M21）</td><td>Interrupt Matrix：99 个源 → 每个 CPU 26 个外设中断，可配置</td></tr>
+<tr><td>复位</td><td>BOR ⊃ POR ⊃ PUC（M21）</td><td>四级：CPU Reset、Core Reset、System Reset、Chip Reset</td></tr>
+<tr><td>时钟</td><td>UCS：XT1、XT2、DCO + FLL、REFO、VLO（M24）</td><td>外部主晶振（必需）、fast RC、PLL；RTC slow clock</td></tr>
+<tr><td>低功耗</td><td>LPM0 – LPM4.5（M26）</td><td>Active、Modem-sleep、Light-sleep、Deep-sleep</td></tr>
+<tr><td>引脚功能</td><td>PxSEL：GPIO 或外设功能（M14）</td><td>IO MUX + GPIO Matrix</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="m41-iomux">IO MUX 与 GPIO Matrix <span class="tag">M41.3</span></h3>
+<p>外设很多，引脚只有 45 个，所以必须 <b class="t">multiplexación de pines (ES) / pin multiplexing (EN)</b>——引脚复用，由软件写寄存器控制。分两层：</p>
+<ul>
+<li><b class="t">IO MUX</b>——引脚复用器：每个 GPIO 有一个配置寄存器 <code>IO_MUX_GPIOn_REG</code>，可以在 5 个功能（F0–F4）中选一个：要么经 GPIO Matrix 转接，要么直接连到某些外设。</li>
+<li><b class="t">GPIO Matrix</b>——GPIO 矩阵：外设信号和引脚之间的全交换矩阵。175 路外设输入可以来自任何 GPIO，任何 GPIO 的输出可以来自 184 路外设输出中的任何一路。</li>
+</ul>
+<figure class="stage" data-scene="" id="m41-sc-gpio">
+<div class="stage-title"><span>Escena 1 · GPIO Matrix vs IO MUX</span><b>4 步</b></div>
+<div aria-label="动画：外设信号经 GPIO Matrix 或 IO MUX 到达引脚" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m41-sc-gpio-t" role="img" viewbox="0 0 800 330">
+<title id="m41-sc-gpio-t">左边是外设信号，中间是 GPIO Matrix，右边是引脚；U1TXD、LED PWM、I2C SDA 经矩阵接到任意引脚，U0TXD 经 IO MUX 直连</title>
+<text class="tz sm m" x="20" y="34">外设信号</text>
+<text class="tz sm m" x="640" y="34">引脚</text>
+<rect class="bx b" height="40" rx="6" width="150" x="20" y="58"></rect>
+<text class="tm sm b mid" x="95" y="83">U1TXD</text>
+<rect class="bx b" height="40" rx="6" width="150" x="20" y="118"></rect>
+<text class="tm sm b mid" x="95" y="143">LED PWM</text>
+<rect class="bx b" height="40" rx="6" width="150" x="20" y="178"></rect>
+<text class="tm sm b mid" x="95" y="203">I2C SDA</text>
+<rect class="bx b" height="40" rx="6" width="150" x="20" y="258"></rect>
+<text class="tm sm b mid" x="95" y="283">U0TXD</text>
+<rect class="bx hollow w" height="180" rx="10" width="180" x="300" y="48"></rect>
+<path class="ln thin m dash" d="M300 93 H480 M300 138 H480 M300 183 H480 M345 48 V228 M390 48 V228 M435 48 V228"></path>
+<text class="tm sm w mid" x="390" y="40">GPIO Matrix</text>
+<rect class="bx w" height="26" rx="3" width="26" x="640" y="60"></rect>
+<text class="tm sm w" x="676" y="78">GPIO4</text>
+<rect class="bx w" height="26" rx="3" width="26" x="640" y="110"></rect>
+<text class="tm sm w" x="676" y="128">GPIO5</text>
+<rect class="bx w" height="26" rx="3" width="26" x="640" y="160"></rect>
+<text class="tm sm w" x="676" y="178">GPIO6</text>
+<rect class="bx w" height="26" rx="3" width="26" x="640" y="210"></rect>
+<text class="tm sm w" x="676" y="228">GPIO7</text>
+<rect class="bx w" height="26" rx="3" width="26" x="640" y="265"></rect>
+<text class="tm sm w" x="676" y="283">U0TXD</text>
+<g data-step="2">
+<path class="ln b draw" d="M170 78 H300 C 390 78, 390 223, 480 223 H636" id="m41-p-tx" marker-end="url(#m41-ah-b)"></path>
+<path class="ln b draw" d="M170 198 H300 C 390 198, 390 123, 480 123 H636" marker-end="url(#m41-ah-b)"></path>
+</g>
+<path class="ln b draw" d="M170 138 H300 C 390 138, 390 73, 480 73 H636" data-out="3" data-step="2" marker-end="url(#m41-ah-b)"></path>
+<circle class="sl b" data-move="#m41-p-tx" data-out="3" data-step="2" r="6"></circle>
+<path class="ln y draw" d="M170 138 H300 C 390 138, 390 173, 480 173 H636" data-step="3" marker-end="url(#m41-ah-y)"></path>
+<g data-step="4">
+<path class="ln b draw" d="M170 278 H636" marker-end="url(#m41-ah-b)"></path>
+<text class="tm xs b mid" x="405" y="268">IO MUX · 直连，绕过矩阵</text>
+</g>
+<text class="tz sm m mid" data-out="3" x="400" y="318">外设信号远多于引脚：175 路输入、184 路输出，只有 45 个 GPIO</text>
+<text class="tz sm y mid" data-out="4" data-step="3" x="400" y="318">改配置就能换引脚 · 代价：经过矩阵可能增加延迟</text>
+<text class="tz sm w mid" data-step="4" x="400" y="318">高速信号（SPI、JTAG、UART）可以经 IO MUX 直连固定引脚</text>
+</svg>
+</div>
+<ol class="captions">
+<li>左边是外设信号，右边是引脚。外设信号比引脚多得多，所以引脚必须复用。</li>
+<li data-dur="4200">经过 <b>GPIO Matrix</b>，几乎任何外设信号都能接到任何 GPIO：这里 U1TXD → GPIO7，LED PWM → GPIO4，I2C SDA → GPIO5。怎么连，由软件写寄存器决定。</li>
+<li data-dur="4200">PCB 上 LED 接在 GPIO6？改一下配置，把 LED PWM 映射到 <span class="c-y">GPIO6</span> 即可。灵活的代价：信号经过矩阵，可能增加延迟。</li>
+<li data-dur="4200">需要高频性能的信号（SPI、JTAG、UART 等）可以经 <b>IO MUX</b> 直接连到固定引脚，绕过矩阵。例如 UART0 的 U0TXD 有自己的引脚。</li>
+</ol>
+<p class="stage-note">引脚编号只是示意，不对应 DevKitC-1 的实际走线。</p>
+
+</figure>
+<p class="takeaway">MSP430 的 PxSEL 是在"GPIO / 固定的外设功能"之间选择；ESP32-S3 的 GPIO Matrix 让外设和引脚之间几乎可以任意连接，需要高速的信号再走 IO MUX 直连。两者本质上都是写寄存器。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>芯片、模块、开发板 <span class="tag">M41.4 · M41.5</span></h2>
+<p class="hook"><span class="zh">你桌上那块板子，是芯片、模块，还是开发板？</span><span class="es">Chip ESP32-S3 → módulo ESP32-S3-WROOM-1 → placa ESP32-S3-DevKitC-1.</span></p>
+<figure class="stage" data-scene="" id="m41-sc-nest">
+<div class="stage-title"><span>Escena 2 · chip ⊂ módulo ⊂ placa</span><b>4 步</b></div>
+<div aria-label="动画：芯片装进模块，模块装上开发板" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m41-sc-nest-t" role="img" viewbox="0 0 800 400">
+<title id="m41-sc-nest-t">ESP32-S3 芯片装在 WROOM-1 模块里（加晶振、flash、天线），模块装在 DevKitC-1 开发板上（加 USB、CP2102N、auto-program、按键、RGB LED、LDO、排针）</title>
+<g data-step="3">
+<rect class="ln g" height="376" rx="16" width="776" x="12" y="12"></rect>
+<text class="tm sm g" x="30" y="40">ESP32-S3-DevKitC-1 · placa</text>
+<circle class="bx w" cx="48" cy="100" r="13"></circle>
+<text class="tm xs w" x="68" y="104">RST</text>
+<circle class="bx w" cx="48" cy="160" r="13"></circle>
+<text class="tm xs w" x="68" y="164">BOOT</text>
+<rect class="bx r" height="60" rx="6" width="120" x="110" y="110"></rect>
+<text class="tm xs r mid" x="170" y="135">Auto program</text>
+<text class="tm xs m mid" x="170" y="155">Q1 · Q2</text>
+<path class="ln thin r" d="M230 128 H290 M230 154 H290"></path>
+<text class="tm xs r" x="250" y="122">EN</text>
+<text class="tm xs r" x="248" y="148">IO0</text>
+<rect class="bx g" data-hl="4" height="36" rx="4" width="64" x="24" y="226"></rect>
+<text class="tm sm g mid" x="56" y="249">USB</text>
+<path class="ln thin g" d="M88 244 H290" data-hl="4"></path>
+<text class="tm xs g" x="100" y="236">D− D+</text>
+<text class="tm xs g" x="180" y="236">→ GPIO19/20</text>
+<rect class="bx b" data-hl="4" height="36" rx="4" width="64" x="24" y="300"></rect>
+<text class="tm xs b mid" x="56" y="322">μUSB</text>
+<path class="ln thin b" d="M88 318 H110 M230 318 H290" data-hl="4"></path>
+<rect class="bx b" height="44" rx="5" width="120" x="110" y="296"></rect>
+<text class="tm sm b mid" x="170" y="316">CP2102N</text>
+<text class="tm xs m mid" x="170" y="332">USB → UART</text>
+<text class="tm xs b" x="240" y="310">UART0</text>
+<path class="ln thin b" d="M170 296 V170"></path>
+<text class="tm xs b" x="178" y="284">DTR · RTS</text>
+<path class="ln thin y" d="M530 110 H584"></path>
+<circle class="bx g" cx="600" cy="110" r="16"></circle>
+<text class="tm xs w" x="626" y="106">RGB LED</text>
+<text class="tm xs y" x="626" y="124">GPIO38</text>
+<path class="ln thin w" d="M530 205 H560"></path>
+<rect class="bx w" height="50" rx="6" width="200" x="560" y="180"></rect>
+<text class="tm sm w" x="576" y="204">LDO 3.3 V</text>
+<text class="tm xs m" x="576" y="222">SGM2212</text>
+<rect class="ln thin m dash" height="70" rx="6" width="200" x="560" y="262"></rect>
+<text class="tm sm w" x="576" y="290">J1 · J3</text>
+<text class="tm xs m" x="576" y="312">2 × 22 pins</text>
+</g>
+<g data-step="2">
+<rect class="bx t" height="300" rx="6" width="240" x="290" y="56"></rect>
+<text class="tm xs t" x="302" y="76">ESP32-S3-WROOM-1 · módulo</text>
+<rect class="ln thin g" height="44" rx="4" width="216" x="302" y="86"></rect>
+<path class="ln thin g draw" d="M314 118 h14 v-16 h14 v16 h14 v-16 h14 v16 h14 v-16 h14 v16"></path>
+<text class="tm xs g" x="424" y="114">PCB antenna</text>
+<rect class="bx p" height="50" rx="4" width="76" x="440" y="160"></rect>
+<text class="tm xs p mid" x="478" y="182">Flash</text>
+<text class="tm xs m mid" x="478" y="200">≤ 16 MB</text>
+<rect class="bx o" height="50" rx="4" width="76" x="440" y="220"></rect>
+<text class="tm xs o mid" x="478" y="242">XTAL</text>
+<text class="tm xs m mid" x="478" y="260">40 MHz</text>
+<text class="tm xs t mid" x="410" y="300">36 GPIO · 3.0 – 3.6 V</text>
+<text class="tm xs m mid" x="410" y="322">18.0 × 25.5 mm</text>
+</g>
+<g data-step="1">
+<rect class="bx b" height="110" rx="6" width="110" x="316" y="160"></rect>
+<text class="tm sm b mid" x="371" y="208">ESP32-S3</text>
+<text class="tm xs m mid" x="371" y="230">QFN56</text>
+<text class="tm xs m mid" x="371" y="248">7 × 7 mm</text>
+</g>
+<text class="tz sm y mid" data-step="4" x="400" y="376">两个 micro-USB：μUSB → CP2102N → UART0 · "USB" → USB Serial/JTAG</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">最里面是<b>芯片</b>（chip / SoC）：QFN56 封装，7 × 7 mm。它单独还不能工作：至少要外接主晶振（§1），还要有存程序的 flash 和天线。</li>
+<li data-dur="4600"><b class="t">módulo (ES) / module (EN)</b>——模块 ESP32-S3-WROOM-1 把这些装在一起：40 MHz 晶振、最多 16 MB 的 Quad SPI flash、PCB 天线（WROOM-1U 换成外接天线座）。共 41 个引脚，其中 36 个 GPIO；供电 3.0 – 3.6 V。</li>
+<li data-dur="5200"><b class="t">placa de desarrollo (ES) / development board (EN)</b>——开发板 ESP32-S3-DevKitC-1（按 V1.1 原理图）再加上：3.3 V LDO、CP2102N USB-to-UART 桥、auto-program 电路（Q1、Q2）、两个按键、一颗 RGB LED（SK68XXMINI-HS，接 <span class="c-y">GPIO38</span>），以及两排 22 针的排针 J1、J3。</li>
+<li data-dur="5200">两个 micro-USB 口：一个经 CP2102N 连到 UART0（U0TXD / U0RXD）；另一个直接连芯片的 USB_D− / D+（GPIO19 / 20），也就是片内的 USB Serial/JTAG 控制器。调试时，线要插在印着 "USB" 的那个口上（§5）。</li>
+</ol>
+<p class="stage-note">布局是示意，不是元件在 PCB 上的真实位置。</p>
+
+</figure>
+<h3 id="m41-ap">Auto-program：DTR、RTS 怎样把芯片送进下载模式 <span class="tag">M41.5</span></h3>
+<p>先看启动方式。复位释放的那一刻，芯片采样 <b class="t">strapping pins (EN)</b>——启动配置引脚，把值锁存下来；之后这些引脚就当普通 GPIO 用。启动方式由 GPIO0 和 GPIO46 决定：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>启动方式</th><th>GPIO0</th><th>GPIO46</th><th>做什么</th></tr></thead>
+<tbody>
+<tr><td>SPI Boot（默认）</td><td>1</td><td>任意</td><td>从 flash 启动，运行你的程序</td></tr>
+<tr><td>Joint Download Boot</td><td>0</td><td>0</td><td>等待通过 USB（USB-Serial-JTAG 或 USB-OTG）或 UART 下载程序</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">默认值：GPIO0 有弱上拉（= 1），GPIO46 有弱下拉（= 0）。所以什么都不接时，芯片按 SPI Boot 运行程序。</p>
+<p>所以"烧录"的关键是：<b>EN 释放的那一刻，让 GPIO0 = 0</b>。手动的办法是按住 BOOT，按一下 RST，再松开 BOOT。DevKitC-1 用两只三极管把 CP2102N 的 DTR、RTS 两根线变成 EN 和 IO0，真值表如下（点一行试试）：</p>
+<div class="tbl-wrap">
+<table class="tt" id="m41-tt">
+<thead><tr><th>DTR</th><th>RTS</th><th>EN</th><th>IO0</th><th>效果</th></tr></thead>
+<tbody>
+<tr class="pick on" data-dtr="1" data-rts="1"><td>1</td><td>1</td><td class="hi">1</td><td class="hi">1</td><td>不干预，芯片照常运行</td></tr>
+<tr class="pick" data-dtr="0" data-rts="0"><td>0</td><td>0</td><td class="hi">1</td><td class="hi">1</td><td>不干预，芯片照常运行</td></tr>
+<tr class="pick" data-dtr="1" data-rts="0"><td>1</td><td>0</td><td class="lo">0</td><td class="hi">1</td><td>EN = 0：芯片保持复位</td></tr>
+<tr class="pick" data-dtr="0" data-rts="1"><td>0</td><td>1</td><td class="hi">1</td><td class="lo">0</td><td>IO0 = 0：如果此刻正好释放复位 → 下载模式</td></tr>
+</tbody>
+</table>
+</div>
+<figure class="stage" id="m41-ap-sim">
+<div class="stage-title"><span>Simulador · DTR / RTS → EN / IO0 → modo de arranque</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m41-ap-t" role="img" viewbox="0 0 800 260">
+<title id="m41-ap-t">CP2102N 的 DTR、RTS 经 auto-program 电路变成 EN 和 IO0；RST 键拉低 EN，BOOT 键拉低 IO0；右边是芯片当前的状态</title>
+<rect class="bx b" height="180" rx="10" width="150" x="20" y="40"></rect>
+<text class="tm sm b mid" x="95" y="70">CP2102N</text>
+<text class="tm xs m mid" x="95" y="90">USB → UART</text>
+<text class="tm sm b" x="36" y="145">DTR</text>
+<text class="tm b end" id="m41-v-dtr" x="156" y="146">1</text>
+<text class="tm sm b" x="36" y="185">RTS</text>
+<text class="tm b end" id="m41-v-rts" x="156" y="186">1</text>
+<line class="ln g" id="m41-w-dtr" x1="170" x2="260" y1="140" y2="140"></line>
+<line class="ln g" id="m41-w-rts" x1="170" x2="260" y1="180" y2="180"></line>
+<rect class="bx r" height="110" rx="8" width="160" x="260" y="100"></rect>
+<text class="tm sm r mid" x="340" y="128">Auto program</text>
+<text class="tm xs m mid" x="340" y="150">Q1 · Q2</text>
+<text class="tz sm m mid" x="340" y="190">两只三极管</text>
+<line class="ln g" id="m41-w-en" x1="420" x2="560" y1="140" y2="140"></line>
+<line class="ln g" id="m41-w-io0" x1="420" x2="560" y1="180" y2="180"></line>
+<text class="tm sm w" x="432" y="130">EN</text>
+<text class="tm sm w" x="432" y="170">IO0</text>
+<line class="ln thin m" x1="500" x2="500" y1="94" y2="140"></line>
+<circle class="bx m" cx="500" cy="80" id="m41-btn-rst" r="14"></circle>
+<text class="tm xs w" x="520" y="84">RST</text>
+<line class="ln thin m" x1="500" x2="500" y1="180" y2="218"></line>
+<circle class="bx m" cx="500" cy="232" id="m41-btn-boot" r="14"></circle>
+<text class="tm xs w" x="520" y="236">BOOT</text>
+<rect class="bx g" height="190" id="m41-chip" rx="10" width="224" x="560" y="40"></rect>
+<text class="tm sm w" x="578" y="68">ESP32-S3</text>
+<text class="tm xs m" x="578" y="96">GPIO46 = 0（默认下拉）</text>
+<text class="tm sm w" id="m41-v-en" x="578" y="145">EN (CHIP_PU) = 1</text>
+<text class="tm sm w" id="m41-v-io0" x="578" y="185">GPIO0 = 1</text>
+<text class="tz sm g mid" id="m41-chip-st" x="672" y="216">运行 · SPI Boot</text>
+</svg>
+</div>
+<div class="stage-ctl">
+<button aria-pressed="true" class="sw" id="m41-dtr" type="button"><span class="knob"></span><span class="lab">DTR = 1</span></button>
+<button aria-pressed="true" class="sw" id="m41-rts" type="button"><span class="knob"></span><span class="lab">RTS = 1</span></button>
+<button aria-pressed="false" class="sw" id="m41-boot" type="button"><span class="knob"></span><span class="lab">按住 BOOT</span></button>
+<button class="press" id="m41-rst" type="button">按一下 RST</button>
+<button class="mini" id="m41-seq-dl" type="button">自动：进入下载模式</button>
+<button class="mini" id="m41-seq-run" type="button">自动：复位并运行</button>
+<p aria-live="polite" class="out" id="m41-ap-out">现在 DTR = 1、RTS = 1 → EN = 1、IO0 = 1：芯片在运行。试试"自动：进入下载模式"，或者手动按住 BOOT 再按一下 RST。</p>
+</div>
+
+</figure>
+<div class="note">
+<span class="lbl">读这张真值表</span>
+<p>两根线同为 1 或同为 0 时，EN 和 IO0 都是 1（0 / 1 按原理图表格的约定）：串口软件把这两根线一起拉高或拉低，不会误复位芯片。"自动"按钮演示的是这张真值表能实现的一种顺序（不一定是烧录工具实际用的顺序）：先 (1, 0) 把芯片按在复位里，再 (0, 1) 在 IO0 = 0 时释放复位。</p>
+</div>
+<p class="aside">插在 "USB" 口（原生 USB）时不需要这套电路：USB Serial/JTAG 控制器本身支持由主机控制的芯片复位和进入下载模式。</p>
+<p class="aside">RGB LED 接 GPIO38 是 v1.1 版开发板的接法；早期的 v1.0 版接在 GPIO48（板上丝印 RGB@IO48）。写程序前先看一眼自己板子上的丝印。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>工具链：ESP-IDF 由哪几层组成 <span class="tag">M41.6</span></h2>
+<p class="hook"><span class="zh">在 CCS 里点一下 Build 就完了。ESP32-S3 的 "Build" 背后站着哪些工具？</span><span class="es">Toolchain, CMake/Ninja, OpenOCD, ESP-IDF y Espressif-IDE.</span></p>
+<p>开发环境由四种工具组成，再加一个图形界面。从下往上搭起来：</p>
+<figure class="stage" data-ms="3400" data-scene="" id="m41-sc-stack">
+<div class="stage-title"><span>Escena 3 · la pila de herramientas</span><b>6 步</b></div>
+<div aria-label="动画：ESP-IDF 开发工具的层次" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m41-sc-stack-t" role="img" viewbox="0 0 800 380">
+<title id="m41-sc-stack-t">从下往上：Toolchain、CMake 和 Ninja、ESP-IDF、右边的 OpenOCD，最上面是 Espressif-IDE；左边的 EIM 负责安装下面所有工具</title>
+<g data-step="1">
+<rect class="bx b" height="50" rx="6" width="360" x="220" y="300"></rect>
+<text class="tm sm b" x="236" y="330">Toolchain</text>
+<text class="tz sm m end" x="566" y="330">编译 · 链接</text>
+</g>
+<g data-step="2">
+<rect class="bx t" height="50" rx="6" width="360" x="220" y="240"></rect>
+<text class="tm sm t" x="236" y="270">CMake · Ninja</text>
+<text class="tz sm m end" x="566" y="270">自动构建，调用 Toolchain</text>
+</g>
+<g data-step="3">
+<rect class="bx g" height="60" rx="6" width="360" x="220" y="170"></rect>
+<text class="tm sm g" x="236" y="196">ESP-IDF v6.0.2</text>
+<text class="tz sm m" x="236" y="218">SoC、模块、板子的固件 + 脚本</text>
+</g>
+<g data-step="4">
+<rect class="bx r" height="110" rx="6" width="180" x="600" y="240"></rect>
+<text class="tm sm r" x="616" y="270">OpenOCD</text>
+<text class="tz sm m" x="616" y="296">调试 · §5</text>
+</g>
+<g data-step="5">
+<rect class="bx w" height="60" rx="6" width="360" x="220" y="90"></rect>
+<text class="tm sm w" x="236" y="116">Espressif-IDE 4.3.0</text>
+<text class="tm xs m" x="236" y="138">Eclipse · Java 21+</text>
+<text class="tm xs y end" x="566" y="138">Activate Selected</text>
+<path class="ln thin w" d="M400 150 V166" marker-end="url(#m41-ah-w)"></path>
+</g>
+<g data-step="6">
+<rect class="ln thin o dash" height="196" rx="10" width="576" x="212" y="162"></rect>
+<rect class="bx o" height="180" rx="8" width="170" x="20" y="170"></rect>
+<text class="tm o" x="36" y="202">EIM</text>
+<text class="tm xs m" x="36" y="224">Installation</text>
+<text class="tm xs m" x="36" y="242">Manager</text>
+<text class="tm xs m" x="36" y="276">+ Python</text>
+<text class="tm xs m" x="36" y="298">+ drivers</text>
+<text class="tm xs m" x="36" y="320">Git 要先装好</text>
+<path class="ln o" d="M190 260 H208" marker-end="url(#m41-ah-o)"></path>
+<text class="tm sm g" x="220" y="44">C:/esp  ✓</text>
+<text class="tm sm r" x="380" y="44">C:/Mis Documentos/Iñaki  ✗</text>
+<text class="tz sm m" x="220" y="72">路径里不要有重音、ñ、空格</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>最底层是 <b class="t">Toolchain</b>——工具链：为 ESP32-S3 编译、链接代码。相当于 CCS 背后的 TI 编译器和链接器。</li>
+<li><b>CMake</b> 和 <b>Ninja</b>：构建工具，自动调用 Toolchain，把整个应用构建出来。</li>
+<li data-dur="3800"><b class="t">ESP-IDF</b>——Espressif 的开发框架：包含 SoC、模块和板子的固件，以及通过构建工具操作 Toolchain 的脚本。2026-27 学年用 <b>v6.0.2 或 6.0.3</b>。</li>
+<li><b>OpenOCD</b>：调试工具，§5 用它连到芯片的 JTAG。</li>
+<li data-dur="4200">最上面是 <b>Espressif-IDE</b>：Espressif 定制的 Eclipse 图形界面，连接 ESP-IDF。本课程用 4.3.0 版，需要 Java 21 或更高。第一次启动时，在 ESP-IDF Manager 里选中 v6.0.2，按 "Activate Selected"。</li>
+<li data-dur="4600">除了 IDE，下面这些都由 <b>EIM</b>（ESP-IDF Installation Manager）一并安装，包括 Python 等前提条件；Git 要事先装好。安装路径默认是 <code>C:/esp</code>，路径里不能有重音、ñ、空格这类字符。</li>
+</ol>
+<p class="stage-note">EIM 的方框只表示"由它安装"，不是软件结构上的一层。"C:/Mis Documentos/Iñaki" 只是举例用的反例。</p>
+</figure>
+<div class="panel">
+<h3>安装要点（摘要）</h3>
+<ul>
+<li><b>EIM</b>（在线安装器，约 34 MB）→ 选 <b>Custom Installation</b>，目标芯片选 ESP32-S3。</li>
+<li><b>版本</b>：课程指定的 v6.0.2 或 6.0.3，不一定是最新的；列表里没有就勾选 "Show old stable versions"。</li>
+</ul>
+
+<ul>
+<li><b>功能包</b>：必选的 core，再加 ide；工具只装默认的，不需要 qemu。</li>
+<li><b>路径</b>：默认 <code>C:/esp</code>；Espressif-IDE 建议解压到 <code>C:/Espressif/tools/Espressif-IDE</code>；workspace 路径同样不要有特殊字符。</li>
+<li><b>驱动</b>：以管理员身份再开一次 EIM → Open Dashboards → Install Drivers，只需要做一次。</li>
+</ul>
+
+<ul>
+<li><b>Espressif-IDE 4.3.0</b>：前提是 Git、Python 和 Java 21+；第一次启动时激活 v6.0.2（以后在 Espressif → ESP-IDF Manager 里切换）。</li>
+</ul>
+</div>
+<div class="note alert">
+<span class="lbl">注意 · Python 版本</span>
+<p>安装指南前后两处对 Python 版本的要求不一样（&gt; 3.10 和 &gt; 3.12）；手动安装时按较高的要求。EIM 会自动检查并安装 Python。</p>
+</div>
+<div class="note">
+<span class="lbl">vault 的约定</span>
+<p>ESP-IDF 不支持路径里有空格，而这个 vault 的路径里有空格。所以 ESP32 工程不放在 vault 里，放到像 <code>SEEI-code\</code> 这样不带空格的文件夹，笔记里链接过去。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>从代码到板子：build → flash → monitor <span class="tag">M41.7</span></h2>
+<p class="hook"><span class="zh">代码写完了，它要经过哪几站，才能在板子上跑起来？</span><span class="es">Construcción, carga en la placa y monitorización.</span></p>
+<p>工具装好以后，第一件事是从一个已有的例子新建工程，构建（build），再加载（flash）到板子上，确认成功。把这条路线画出来：</p>
+<figure class="stage" data-ms="3400" data-scene="" id="m41-sc-flow">
+<div class="stage-title"><span>Escena 4 · build → flash → run → monitor</span><b>5 步</b></div>
+<div aria-label="动画：从源代码到板子运行和串口输出" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m41-sc-flow-t" role="img" viewbox="0 0 800 320">
+<title id="m41-sc-flow-t">上面一排：源文件经 CMake、Ninja、Toolchain 变成二进制；下面：二进制经 USB 写进 flash，芯片复位后从 flash 运行，串口输出回到 PC</title>
+<path d="M140 62 H650" id="m41-p-build" style="fill:none;stroke:none"></path>
+<rect class="bx w" height="64" rx="6" width="120" x="20" y="30"></rect>
+<text class="tm sm w mid" x="80" y="58">main.c</text>
+<text class="tz sm m mid" x="80" y="80">+ 构建配置</text>
+<rect class="ln thin w" height="130" rx="10" width="250" x="20" y="170"></rect>
+<text class="tm sm w" x="36" y="196">PC · terminal</text>
+<rect class="ln thin g" height="150" rx="12" width="450" x="330" y="150"></rect>
+<text class="tm xs g" x="344" y="170">DevKitC-1</text>
+<rect class="bx b" height="96" rx="8" width="160" x="350" y="186"></rect>
+<text class="tm sm b mid" x="430" y="214">ESP32-S3</text>
+<rect class="bx p" height="46" rx="6" width="100" x="560" y="196"></rect>
+<text class="tm sm p mid" x="610" y="224">flash</text>
+<circle class="bx m" cx="720" cy="250" data-out="4" r="12"></circle>
+<circle class="led-on" cx="720" cy="250" data-step="4" r="12"></circle>
+<text class="tm xs m" x="706" y="286">LED</text>
+<g data-step="2">
+<path class="ln thin w" d="M140 62 H176" marker-end="url(#m41-ah-w)"></path>
+<rect class="bx t" height="64" rx="6" width="110" x="180" y="30"></rect>
+<text class="tm sm t mid" x="235" y="67">CMake</text>
+<path class="ln thin w" d="M290 62 H326" marker-end="url(#m41-ah-w)"></path>
+<rect class="bx t" height="64" rx="6" width="110" x="330" y="30"></rect>
+<text class="tm sm t mid" x="385" y="67">Ninja</text>
+<path class="ln thin w" d="M440 62 H476" marker-end="url(#m41-ah-w)"></path>
+<rect class="bx b" height="64" rx="6" width="130" x="480" y="30"></rect>
+<text class="tm sm b mid" x="545" y="58">Toolchain</text>
+<text class="tz sm m mid" x="545" y="80">编译 · 链接</text>
+<path class="ln thin w" d="M610 62 H646" marker-end="url(#m41-ah-w)"></path>
+<rect class="bx p" height="64" rx="6" width="130" x="650" y="30"></rect>
+<text class="tm sm p mid" x="715" y="58">.bin</text>
+<text class="tz sm m mid" x="715" y="80">二进制镜像</text>
+</g>
+<circle class="sl y" data-move="#m41-p-build" data-move-dur="1600" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<path class="ln p draw" d="M715 96 C 715 150, 610 150, 610 192" id="m41-p-flash" marker-end="url(#m41-ah-p)"></path>
+<text class="tm xs p" x="724" y="146">USB</text>
+</g>
+<circle class="sl p" data-move="#m41-p-flash" data-out="4" data-step="3" r="6"></circle>
+<g data-out="4" data-step="3">
+<text class="tm xs r mid" x="430" y="248">Download Boot</text>
+<text class="tz sm r mid" x="430" y="268">等待烧录</text>
+</g>
+<g data-step="4">
+<text class="tm xs g mid" x="430" y="248">SPI Boot</text>
+<text class="tz sm g mid" x="430" y="268">程序运行</text>
+<path class="ln g draw" d="M560 219 H514" marker-end="url(#m41-ah-g)"></path>
+<text class="tz sm g mid" x="537" y="210">取指</text>
+</g>
+<g data-step="5">
+<path class="ln b draw" d="M350 262 H274" id="m41-p-mon" marker-end="url(#m41-ah-b)"></path>
+<text class="tz sm b mid" x="312" y="254">串口</text>
+<text class="tm xs m" x="36" y="232">&gt; monitor</text>
+<text class="tm xs g" x="36" y="256">hello from ESP32-S3</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>工程 = 源文件（例如 <code>main.c</code>）+ 构建配置。课程里的做法是从一个已有的例子复制出新工程。</li>
+<li data-dur="4000"><b>Build</b>：CMake 生成构建规则，Ninja 按规则调用 Toolchain 编译、链接，得到可以写进 flash 的二进制文件。</li>
+<li data-dur="5200"><b>Flash</b>：通过 USB 把二进制写进 flash。走 CP2102N 那个口时，auto-program 电路先让芯片进入下载模式（§2）；走原生 "USB" 口时，由 USB Serial/JTAG 控制器负责。Espressif-IDE 的 Launch Target（齿轮）里要选对芯片型号和 COM 口。</li>
+<li data-dur="3800">烧完后复位，这次 GPIO0 = 1 → <span class="c-g">SPI Boot</span>：芯片从 flash 取指令，程序开始运行，LED 亮起来。</li>
+<li data-dur="4200"><b>Monitor</b>：程序通过串口打印的信息回到 PC，在终端里查看。和 M34 里用 putty 看 MSP430 的 UART 输出是同一个思路。</li>
+</ol>
+<p class="stage-note">终端里的文字是示意。</p>
+
+</figure>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="ide" type="button">Espressif-IDE</button>
+<button aria-pressed="false" data-view="cli" type="button">命令行 · idf.py</button>
+</div>
+<div class="panel" data-pane="ide">
+<p>课程用的是 IDE：在 <b>Launch Target</b> 里选芯片（ESP32-S3）和板子对应的 COM 口（这个窗口和齿轮按钮的截图见 <a href="#s5">§5</a>「在 Espressif-IDE 里」一栏的“硬件”一条），然后构建、加载。</p>
+</div>
+<div class="stack" data-pane="cli" hidden="">
+<pre class="code"><code><span class="ln-row"><span class="fn">idf.py</span> set-target esp32s3      <span class="cm"># 选目标芯片</span></span><span class="ln-row"><span class="fn">idf.py</span> build                   <span class="cm"># CMake + Ninja + Toolchain</span></span><span class="ln-row"><span class="fn">idf.py</span> -p COM5 flash           <span class="cm"># 烧录；COM 口看设备管理器</span></span><span class="ln-row"><span class="fn">idf.py</span> -p COM5 monitor         <span class="cm"># 串口监视器；Ctrl+] 退出</span></span></code></pre>
+<p class="aside">这几条命令供参考。EIM 安装完成时会创建一个命令行快捷方式；调试用的 <code>idf.py gdbgui</code> 见 §5。COM5 只是举例。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>调试链：从 IDE 到两个 CPU <span class="tag">M41.8</span></h2>
+<p class="hook"><span class="zh">在 CCS 里按一下 Debug 就能单步。在 ESP32-S3 上，这一下要穿过几层？</span><span class="es">Espressif-IDE → ESP-GDB → OpenOCD → JTAG.</span></p>
+<figure class="stage" data-ms="3600" data-scene="" id="m41-sc-debug">
+<div class="stage-title"><span>Escena 5 · cadena de depuración</span><b>6 步</b></div>
+<div aria-label="动画：调试链从 Espressif-IDE 到两个 CPU" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m41-sc-debug-t" role="img" viewbox="0 0 800 400">
+<title id="m41-sc-debug-t">PC 上：Espressif-IDE、ESP-GDB、OpenOCD；USB 线连到板子的 USB 口，经片内 USB Serial/JTAG 到 CPU0、CPU1；下面是 FreeRTOS 的 IDLE0、IDLE1 任务</title>
+<g data-step="1">
+<text class="tm xs m" x="24" y="30">PC · Windows 11</text>
+<rect class="bx w" height="64" rx="6" width="170" x="24" y="44"></rect>
+<text class="tm sm w mid" x="109" y="72">Espressif-IDE</text>
+<text class="tm xs m mid" x="109" y="94">debug perspective</text>
+</g>
+<g data-step="2">
+<path class="ln thin w" d="M198 76 H230" marker-end="url(#m41-ah-w)" marker-start="url(#m41-ah-w)"></path>
+<rect class="bx b" height="64" rx="6" width="150" x="234" y="44"></rect>
+<text class="tm sm b mid" x="309" y="72">ESP-GDB</text>
+<text class="tm xs m mid" x="309" y="94">GDB · Xtensa</text>
+</g>
+<g data-step="3">
+<path class="ln thin w" d="M388 76 H420" marker-end="url(#m41-ah-w)" marker-start="url(#m41-ah-w)"></path>
+<rect class="bx r" height="64" rx="6" width="170" x="424" y="44"></rect>
+<text class="tm sm r mid" x="509" y="72">OpenOCD</text>
+<text class="tm xs m mid" x="509" y="94">openocd.exe</text>
+<text class="tm xs y mid" x="509" y="128">Preferences → Global OpenOCD Path</text>
+</g>
+<g data-step="4">
+<path class="ln g draw" d="M594 76 H716 C 752 76, 753 150, 753 208" data-hl="6" marker-end="url(#m41-ah-g)"></path>
+<text class="tm xs g" x="606" y="66">Dispositivo serie USB</text>
+<rect class="ln thin g" height="210" rx="12" width="588" x="200" y="176"></rect>
+<text class="tm xs g" x="214" y="196">DevKitC-1</text>
+<rect class="bx g" height="34" rx="4" width="46" x="730" y="212"></rect>
+<text class="tm xs g mid" x="753" y="234">USB</text>
+<rect class="bx hollow b" height="166" rx="8" width="490" x="226" y="206"></rect>
+<text class="tm sm b" x="242" y="230">ESP32-S3</text>
+<rect class="bx g" height="48" rx="6" width="170" x="530" y="250"></rect>
+<text class="tm sm g mid" x="615" y="279">USB Serial/JTAG</text>
+<path class="ln thin g" d="M730 229 C 712 229, 712 274, 702 274"></path>
+</g>
+<g data-step="5">
+<rect class="bx b" height="44" rx="6" width="110" x="250" y="262"></rect>
+<text class="tm sm b mid" x="305" y="289">CPU0</text>
+<rect class="bx b" height="44" rx="6" width="110" x="380" y="262"></rect>
+<text class="tm sm b mid" x="435" y="289">CPU1</text>
+<path class="ln g draw" d="M530 274 H494" marker-end="url(#m41-ah-g)"></path>
+<path class="ln g draw" d="M530 262 C 500 236, 330 236, 305 258" marker-end="url(#m41-ah-g)"></path>
+<text class="tm xs g mid" x="512" y="266">JTAG</text>
+<path class="ln thin t" d="M305 306 V320 M435 306 V320"></path>
+<rect class="bx t" height="30" rx="4" width="86" x="262" y="322"></rect>
+<text class="tm xs t mid" x="305" y="342">IDLE0</text>
+<rect class="bx t" height="30" rx="4" width="86" x="392" y="322"></rect>
+<text class="tm xs t mid" x="435" y="342">IDLE1</text>
+<text class="tm xs m" x="500" y="342">FreeRTOS 任务</text>
+</g>
+<g data-step="6">
+<path class="ln r dash" d="M594 76 H716 C 752 76, 753 150, 753 208"></path>
+<text class="tm xs r" x="24" y="158">Process not Terminated → set remotetimeout 20 → 40 / 50</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>Espressif-IDE 提供调试视图（debug perspective），和 CCS 的很像：断点、单步、变量、寄存器。</li>
+<li data-dur="3800">真正的调试器是 <b class="t">ESP-GDB</b>——GNU GDB 针对 Xtensa 架构的分支（bifurcación）。IDE 把你的点击变成 GDB 命令。</li>
+<li data-dur="4600">GDB 不直接碰硬件，而是连到 <b class="t">OpenOCD</b>。当前版本的 Espressif-IDE 默认找不到 OpenOCD：要在 Window → Preferences → Espressif → <b>Global OpenOCD Path</b> 里指向 <code>Espressif\tools\openocd-esp32\&lt;版本&gt;\openocd-esp32\bin</code> 里的 openocd.exe，然后重启 IDE。</li>
+<li data-dur="5000">OpenOCD 经插在 <b>"USB" 口</b>上的线，连到芯片内置的 <b>USB Serial/JTAG</b> 控制器，不需要外接调试器（MSP430 LaunchPad 上是 eZ-FET）。设备管理器里会出现一个 "Dispositivo serie USB"（COM 口），在 Launch Target 里选它。</li>
+<li data-dur="5000">JTAG 直达两个核。调试窗口列出所有线程，包括不是你写的 FreeRTOS 任务：<b>IDLE0</b> 对应 CPU0，IDLE1 对应 CPU1。这些概念留给下一门课 Microkernels（MICROK）。</li>
+<li data-dur="5400">常见错误 "<span class="c-r">Process not Terminated</span>"：OpenOCD 和 JTAG 之间超时。在调试配置的 Debugger 标签 → Commands 里，把 <code>set remotetimeout</code> 从 20 改成 40 或 50；或者关掉弹窗，马上再按一次 Debug；也可以在 Startup 标签取消 "Flash every time with application binaries"。</li>
+</ol>
+
+</figure>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="ide" type="button">在 Espressif-IDE 里</button>
+<button aria-pressed="false" data-view="cli" type="button">命令行备选</button>
+</div>
+<div class="panel" data-pane="ide">
+<ul>
+<li><b>硬件</b>：线插 "USB" 口；在设备管理器里记下 "Dispositivo serie USB" 的 COM 口，Launch Target 里选芯片和这个 COM 口。</li>
+</ul>
+
+<ul>
+<li><b>一次性</b>：设置 Global OpenOCD Path，重启 IDE。</li>
+</ul>
+
+<ul>
+<li><b>每个工程</b>：先 build；然后 Debug As → Debug Configurations，新建一个 "ESP-IDF GDB OpenOCD Debugging" 配置，选项保持默认，按 Debug。IDE 会先烧录，再连 JTAG，并提示切换到调试视图。</li>
+</ul>
+
+</div>
+<div class="stack" data-pane="cli" hidden="">
+<pre class="code"><code><span class="ln-row"><span class="cm"># PowerShell 1（IDF_v6.0.2_Powershell 快捷方式）：开着别关</span></span><span class="ln-row"><span class="fn">openocd</span> -f board/esp32s3-builtin.cfg</span><span class="ln-row"> </span><span class="ln-row"><span class="cm"># PowerShell 2：进入要调试的工程文件夹</span></span><span class="ln-row"><span class="fn">idf.py</span> gdbgui</span></code></pre>
+<p class="aside">在 IDE 里调试不成时的备选办法：先关掉 Espressif-IDE，免得它占着连接；提示符变成 <code>(gdb)</code> 之后，就用 GDB 命令调试。</p>
+
+</div>
+</div>
+<p class="takeaway">调试链 = 界面（Espressif-IDE）→ 调试器（ESP-GDB）→ 桥（OpenOCD）→ 片内 USB Serial/JTAG → CPU0 / CPU1。哪一环没连上，就从那一环查起：OpenOCD 路径、COM 口、超时。</p>
+
+</section>
+
+
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M41">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>ESP32-S3 的 CPU 是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一个 16 位 RISC CPU，最高 25 MHz</button>
+<button data-o="b" type="button"><span class="k">B</span>两个 32 位 Xtensa LX7 核心，最高 240 MHz</button>
+<button data-o="c" type="button"><span class="k">C</span>一个 32 位 Xtensa LX7 核心，最高 240 MHz</button>
+<button data-o="d" type="button"><span class="k">D</span>两个 16 位核心，最高 80 MHz</button>
+</div>
+<p class="why"><b>B。</b>双核 32 位 LX7（CPU0、CPU1），最高 240 MHz。A 是 MSP430F5529（§0、§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>ESP32-S3 片上集成了哪些无线功能？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只有 Wi-Fi 802.11 b/g/n</button>
+<button data-o="b" type="button"><span class="k">B</span>5 GHz 的 Wi-Fi 802.11ac</button>
+<button data-o="c" type="button"><span class="k">C</span>2.4 GHz Wi-Fi 802.11 b/g/n 和 Bluetooth LE 5</button>
+<button data-o="d" type="button"><span class="k">D</span>没有无线，需要外接模块</button>
+</div>
+<p class="why"><b>C。</b>Wi-Fi（2.4 GHz，802.11 b/g/n）+ Bluetooth LE（Bluetooth 5），两者共用一根天线（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>ULP 协处理器是做什么用的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>在睡眠模式下代替主 CPU，读 RTC GPIO 和传感器</button>
+<button data-o="b" type="button"><span class="k">B</span>第三个 240 MHz 的应用核心</button>
+<button data-o="c" type="button"><span class="k">C</span>专门处理 Wi-Fi 协议</button>
+<button data-o="d" type="button"><span class="k">D</span>片上的 JTAG 调试器</button>
+</div>
+<p class="why"><b>A。</b>ULP-RISC-V / ULP-FSM 和 RTC 内存在 Deep-sleep 时仍然供电，可以代替主 CPU 值班（§1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>关于 GPIO Matrix 和 IO MUX，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>每个外设只能接一个固定的引脚</button>
+<button data-o="b" type="button"><span class="k">B</span>GPIO Matrix 只用于模拟信号</button>
+<button data-o="c" type="button"><span class="k">C</span>IO MUX 能把任何信号接到任何引脚，而且没有代价</button>
+<button data-o="d" type="button"><span class="k">D</span>GPIO Matrix 能把几乎任何外设信号接到任何 GPIO，但可能增加延迟；SPI、JTAG、UART 等可以经 IO MUX 直连</button>
+</div>
+<p class="why"><b>D。</b>矩阵灵活但有延迟代价；需要高频性能的信号走 IO MUX 直连（§1）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>哪些东西在 WROOM-1 模块上，但不在 ESP32-S3 芯片里？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>两个 LX7 核心和 512 KB SRAM</button>
+<button data-o="b" type="button"><span class="k">B</span>40 MHz 晶振、Quad SPI flash、PCB 天线</button>
+<button data-o="c" type="button"><span class="k">C</span>CP2102N 和 RGB LED</button>
+<button data-o="d" type="button"><span class="k">D</span>Wi-Fi 的 MAC 和 baseband</button>
+</div>
+<p class="why"><b>B。</b>A、D 在芯片里；C 在开发板 DevKitC-1 上，不在模块里（§2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>按 V1.1 原理图，DevKitC-1 上的 RGB LED 由哪个 GPIO 控制？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>GPIO0</button>
+<button data-o="b" type="button"><span class="k">B</span>GPIO19</button>
+<button data-o="c" type="button"><span class="k">C</span>GPIO38</button>
+<button data-o="d" type="button"><span class="k">D</span>GPIO46</button>
+</div>
+<p class="why"><b>C。</b>RGB_CTRL = GPIO38。GPIO0、GPIO46 是 strapping 引脚，GPIO19 是 USB D−（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>按 §2 的真值表，DTR = 1、RTS = 0 时会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>EN = 0、IO0 = 1：芯片被保持在复位</button>
+<button data-o="b" type="button"><span class="k">B</span>EN = 1、IO0 = 0</button>
+<button data-o="c" type="button"><span class="k">C</span>EN = 1、IO0 = 1：正常运行</button>
+<button data-o="d" type="button"><span class="k">D</span>EN = 0、IO0 = 0</button>
+</div>
+<p class="why"><b>A。</b>真值表：10 → EN 0、IO0 1；01 → EN 1、IO0 0；11 和 00 → 都是 1。EN 和 IO0 永远不会同时为 0（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">08</span>复位释放时 GPIO0 = 0、GPIO46 = 0（默认），芯片进入什么模式？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>SPI Boot：从 flash 运行程序</button>
+<button data-o="b" type="button"><span class="k">B</span>Deep-sleep</button>
+<button data-o="c" type="button"><span class="k">C</span>Light-sleep</button>
+<button data-o="d" type="button"><span class="k">D</span>Joint Download Boot：等待通过 USB 或 UART 下载程序</button>
+</div>
+<p class="why"><b>D。</b>GPIO0 = 1 才是 SPI Boot。strapping 值在复位释放时被锁存（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>Espressif-IDE 4.3.0 除了 Git 和 Python，还需要什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Code Composer Studio</button>
+<button data-o="b" type="button"><span class="k">B</span>Java 21 或更高</button>
+<button data-o="c" type="button"><span class="k">C</span>Visual Studio Code</button>
+<button data-o="d" type="button"><span class="k">D</span>QEMU 模拟器</button>
+</div>
+<p class="why"><b>B。</b>Espressif-IDE 是定制的 Eclipse，需要 Java 21+。qemu 在 EIM 里明确不用装（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>哪个安装路径最符合本章的建议？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>C:/Users/Iñaki/esp</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>C:/Mis proyectos/esp</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>C:/esp</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>C:/Users/José/esp</code></button>
+</div>
+<p class="why"><b>C。</b>C:/esp 是默认路径；其他三个含有 ñ、空格或重音（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>调试链的正确顺序是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Espressif-IDE → ESP-GDB → OpenOCD → USB Serial/JTAG → CPU0 / CPU1</button>
+<button data-o="b" type="button"><span class="k">B</span>Espressif-IDE → OpenOCD → ESP-GDB → CP2102N → CPU</button>
+<button data-o="c" type="button"><span class="k">C</span>Espressif-IDE → eZ-FET → CPU</button>
+<button data-o="d" type="button"><span class="k">D</span>ESP-GDB → Espressif-IDE → UART0 → CPU</button>
+</div>
+<p class="why"><b>A。</b>GDB 连 OpenOCD，OpenOCD 经 "USB" 口连片内 USB Serial/JTAG（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>调试时报 "Process not Terminated"（OpenOCD 与 JTAG 之间超时），本章建议怎么做？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>重装 ESP-IDF</button>
+<button data-o="b" type="button"><span class="k">B</span>在调试配置的 Debugger → Commands 里把 set remotetimeout 从 20 调到 40 或 50</button>
+<button data-o="c" type="button"><span class="k">C</span>把线换到 CP2102N 那个口</button>
+<button data-o="d" type="button"><span class="k">D</span>把 CPU 主频降到 25 MHz</button>
+</div>
+<p class="why"><b>B。</b>另外两个办法：马上再按一次 Debug；或在 Startup 标签取消 "Flash every time with application binaries"（§5）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">SoC<small>sistema en chip · system on chip</small></span><span class="back"><b>片上系统</b><br/>CPU、存储、无线、外设集成在一颗芯片里。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Xtensa LX7<small>CPU0 · CPU1</small></span><span class="back"><b>ESP32-S3 的处理器核</b><br/>32 位，两个，最高 240 MHz。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ULP<small>Ultra-Low-Power coprocessor</small></span><span class="back"><b>超低功耗协处理器</b><br/>ULP-RISC-V / ULP-FSM，睡眠时代替主 CPU 值班。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GPIO Matrix</span><span class="back"><b>GPIO 矩阵</b><br/>外设信号和任意 GPIO 之间的全交换矩阵；灵活，但可能有延迟。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IO MUX</span><span class="back"><b>引脚复用器</b><br/>每个引脚 5 个功能 F0–F4；高速信号可以直连，绕过矩阵。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">strapping pin<small>pin de configuración de arranque</small></span><span class="back"><b>启动配置引脚</b><br/>复位释放时采样并锁存：GPIO0、GPIO3、GPIO45、GPIO46。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Joint Download Boot</span><span class="back"><b>下载启动模式</b><br/>GPIO0 = 0、GPIO46 = 0：等待经 USB 或 UART 烧录。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">módulo<small>module · ESP32-S3-WROOM-1</small></span><span class="back"><b>模块</b><br/>芯片 + 40 MHz 晶振 + flash + 天线；36 个 GPIO。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">placa de desarrollo<small>development board · DevKitC-1</small></span><span class="back"><b>开发板</b><br/>模块 + 两个 USB 口、LDO、按键、RGB LED、排针。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CP2102N<small>USB-to-UART bridge</small></span><span class="back"><b>USB 转串口芯片</b><br/>连 UART0，并把 DTR / RTS 交给 auto-program 电路。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">USB Serial/JTAG</span><span class="back"><b>片内 USB 串口 + JTAG</b><br/>接 GPIO19 / 20；调试和烧录都可以用它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ESP-IDF</span><span class="back"><b>Espressif 的开发框架</b><br/>SoC、模块、板子的固件 + 脚本；本学年 v6.0.2 / 6.0.3。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">EIM<small>ESP-IDF Installation Manager</small></span><span class="back"><b>安装管理器</b><br/>一并安装 Toolchain、CMake/Ninja、OpenOCD、ESP-IDF 和前提条件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">OpenOCD</span><span class="back"><b>片上调试的桥</b><br/>一头接 GDB，一头接芯片的 JTAG。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ESP-GDB</span><span class="back"><b>Xtensa 版 GNU GDB</b><br/>Espressif-IDE 背后真正的调试器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IDLE0 · IDLE1<small>FreeRTOS</small></span><span class="back"><b>空闲任务</b><br/>FreeRTOS 为每个核准备的空闲任务：IDLE0 → CPU0，IDLE1 → CPU1。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M41"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+  if (!$("m41-ap-sim") || !$("m41-chip")) return;
+
+  var st = { dtr: 1, rts: 1, boot: 0, rst: 0, mode: "spi", prevEn: 1, busy: false };
+  var rows = Array.prototype.slice.call(document.querySelectorAll("#m41-tt tbody tr"));
+  var out = $("m41-ap-out");
+  var CTL = ["m41-dtr", "m41-rts", "m41-boot", "m41-rst", "m41-seq-dl", "m41-seq-run"];
+  var MODE = {
+    spi: { c: "g", t: "运行 · SPI Boot" },
+    reset: { c: "r", t: "复位中 · EN = 0" },
+    dl: { c: "y", t: "Joint Download Boot" }
+  };
+
+  
+  function enAuto() { return (st.dtr === 1 && st.rts === 0) ? 0 : 1; }
+  function io0Auto() { return (st.dtr === 0 && st.rts === 1) ? 0 : 1; }
+  function en() { return st.rst ? 0 : enAuto(); }
+  function io0() { return st.boot ? 0 : io0Auto(); }
+
+  function lvl(id, v) { $(id).setAttribute("class", "ln " + (v ? "g" : "r")); }
+  function setSw(id, on, lab) {
+    var b = $(id);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    var l = b.querySelector(".lab");
+    if (l && lab) l.textContent = lab;
+  }
+  function render() {
+    var e = en(), g = io0(), m = MODE[st.mode];
+    lvl("m41-w-dtr", st.dtr); lvl("m41-w-rts", st.rts);
+    lvl("m41-w-en", e); lvl("m41-w-io0", g);
+    $("m41-v-dtr").textContent = String(st.dtr);
+    $("m41-v-rts").textContent = String(st.rts);
+    $("m41-v-en").textContent = "EN (CHIP_PU) = " + e;
+    $("m41-v-io0").textContent = "GPIO0 = " + g;
+    $("m41-chip").setAttribute("class", "bx " + m.c);
+    var cs = $("m41-chip-st");
+    cs.textContent = m.t;
+    cs.setAttribute("class", "tz sm mid " + m.c);
+    $("m41-btn-rst").setAttribute("class", "bx " + (st.rst ? "r" : "m"));
+    $("m41-btn-boot").setAttribute("class", "bx " + (st.boot ? "r" : "m"));
+    setSw("m41-dtr", st.dtr, "DTR = " + st.dtr);
+    setSw("m41-rts", st.rts, "RTS = " + st.rts);
+    setSw("m41-boot", st.boot, null);
+    rows.forEach(function (tr) {
+      var on = +tr.getAttribute("data-dtr") === st.dtr && +tr.getAttribute("data-rts") === st.rts;
+      tr.classList.toggle("on", on);
+      tr.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    CTL.forEach(function (id) { $(id).disabled = st.busy; });
+  }
+  
+  function step(why) {
+    var e = en(), g = io0(), note;
+    if (st.prevEn === 1 && e === 0) {
+      st.mode = "reset";
+      note = "EN 被拉低：芯片进入复位。";
+    } else if (st.prevEn === 0 && e === 1) {
+      st.mode = g ? "spi" : "dl";
+      note = g ? "EN 释放的瞬间 GPIO0 = 1 → 锁存为 <b>SPI Boot</b>：从 flash 运行程序。"
+        : "EN 释放的瞬间 GPIO0 = 0（GPIO46 默认 0）→ 锁存为 <b>Joint Download Boot</b>：等待烧录。";
+    } else if (e === 0) {
+      note = "EN 仍是 0，芯片保持复位。";
+    } else {
+      note = "EN 没有变化，芯片保持当前状态：strapping 引脚只在复位释放时采样，现在改 GPIO0 不会改变启动方式。";
+    }
+    st.prevEn = e;
+    render();
+    out.innerHTML = why + " → EN = " + e + "、IO0 = " + g + "。" + note;
+  }
+  function lines() { return "DTR = " + st.dtr + "、RTS = " + st.rts; }
+
+  function run(seq) {
+    if (st.busy) return;
+    st.busy = true; render();
+    var i = 0, dt = reduce ? 300 : 1200;
+    function next() {
+      if (i >= seq.length) { st.busy = false; render(); return; }
+      var s = seq[i++];
+      st.dtr = s[0]; st.rts = s[1];
+      step(s[2] + lines());
+      setTimeout(next, dt);
+    }
+    next();
+  }
+
+  $("m41-dtr").addEventListener("click", function () { if (st.busy) return; st.dtr = st.dtr ? 0 : 1; step(lines()); });
+  $("m41-rts").addEventListener("click", function () { if (st.busy) return; st.rts = st.rts ? 0 : 1; step(lines()); });
+  $("m41-boot").addEventListener("click", function () {
+    if (st.busy) return;
+    st.boot = st.boot ? 0 : 1;
+    step(st.boot ? "按住 BOOT（GPIO0 被拉到 0）" : "松开 BOOT");
+  });
+  $("m41-rst").addEventListener("click", function () {
+    if (st.busy) return;
+    st.busy = true; st.rst = 1;
+    step("按下 RST（EN 被拉到 0）");
+    setTimeout(function () {
+      st.rst = 0; st.busy = false;
+      step("松开 RST");
+    }, reduce ? 300 : 900);
+  });
+  $("m41-seq-dl").addEventListener("click", function () {
+    run([[1, 0, "① "], [0, 1, "② "], [1, 1, "③ "]]);
+  });
+  $("m41-seq-run").addEventListener("click", function () {
+    run([[1, 0, "① "], [1, 1, "② "]]);
+  });
+  rows.forEach(function (tr) {
+    tr.tabIndex = 0;
+    tr.setAttribute("role", "button");
+    function pick() {
+      if (st.busy) return;
+      st.dtr = +tr.getAttribute("data-dtr"); st.rts = +tr.getAttribute("data-rts");
+      step(lines());
+    }
+    tr.addEventListener("click", pick);
+    tr.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+  render();
+})();
+</script>
+</body>
+</html>

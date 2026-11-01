@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M33 Comunicaciones serie · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .tint { stroke: none; }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.press:disabled, .mini:disabled { opacity: .35; cursor: default; }
+.m33-lab { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--f-mono); color: var(--st-muted); }
+.m33-in {
+  border: 1px solid #2B3340; background: var(--st-bg); color: var(--st-ink); border-radius: 6px;
+  padding: 4px 8px; font: 600 13px/1.4 var(--f-mono); max-width: 100%;
+}
+.m33-in:focus { outline: 2px solid var(--st-yellow); outline-offset: 1px; }
+input.m33-in[type="text"] { width: 3.2em; text-align: center; }
+.m33-range { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 600 12px/1.4 var(--f-mono); color: var(--st-muted); }
+.m33-range input { accent-color: var(--st-yellow); width: 11rem; max-width: 60vw; }
+.m33-range output { color: var(--st-yellow); min-width: 4.5em; }
+.stage-ctl .out .ok { color: var(--st-green); }
+.stage-ctl .out .bad { color: var(--st-red); }
+.stage-ctl .out .y { color: var(--st-yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.bauds td { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.bauds tr.std td:first-child { color: var(--yellow); }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m33-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m33-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m33-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m33-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m33-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+<marker id="m33-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 3 章节" class="chain" data-chain="M33"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 3 · Temporizadores y comunicaciones serie · M31–M34</div>
+<h1>Comunicaciones serie</h1>
+<p class="zh">串行通信与 UART 帧</p>
+<div class="meta">
+
+
+<span><b>9</b> 个要点</span>
+<span>阅读约 15 分钟</span>
+
+
+</div>
+<p class="lede">微控制器经常要接外部外设。线该怎么连？这一章从"几根线"讲起：并行还是串行、要不要传时钟、能不能双向；然后把最常用的异步串口 <b class="t">UART (Universal Asynchronous Receiver/Transmitter)</b>——通用异步收发器的一帧拆开，看发送端怎样把位一个个移出去、接收端怎样在每一位的中间采样；最后接到 PC 上：RS-232 和虚拟 COM 口。下一章 <a href="m34.html">M34</a> 再讲 MSP430 的 USCI 怎样实现它。</p>
+</section>
+
+<section class="sec" id="m33-obj">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M33.1</span>
+<div class="txt"><span>区分并行与串行接口，说出串行的 5 个优点和 1 个缺点</span><span class="es">Interfaz paralela vs serie; tiempo de bit.</span><a href="#m33-s0">→ §0 几根线</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.2</span>
+<div class="txt"><span>区分同步与异步：时钟是否传输、最少几根线、异步为什么要约定频率</span><span class="es">Comunicaciones síncronas y asíncronas.</span><a href="#m33-s1">→ §1 时钟传不传</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.3</span>
+<div class="txt"><span>说出 símplex、semi-dúplex、dúplex 的含义、最少线数和例子</span><span class="es">Clasificación según la dirección de la comunicación.</span><a href="#m33-s2">→ §2 方向</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.4</span>
+<div class="txt"><span>比较 SPI 与 I2C：主从、地址、起止条件、ACK、选择线、半双工与全双工、各自适合什么</span><span class="es">Interfaces serie síncronos SPI e I2C.</span><a href="#m33-s3">→ §3 SPI 与 I2C</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.5</span>
+<div class="txt"><span>画出 UART 帧：空闲高电平、起始位、7/8 个数据位（低位先发）、可选校验位、1/2 个停止位；说出要约定的 4 个参数</span><span class="es">Estructura de un carácter o trama UART.</span><a href="#m33-s4">→ §4 一帧</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.6</span>
+<div class="txt"><span>由帧格式和波特率算出每帧位数、tiempo de bit 和传输时间</span><span class="es">Velocidad en baudios y tiempo de bit.</span><a href="#m33-s4b">→ §4 算时间</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.7</span>
+<div class="txt"><span>描述 UART 发送器和接收器的结构：移位寄存器、下降沿检测、在位中心采样、计数器</span><span class="es">Esquema general del transmisor y receptor de la UART.</span><a href="#m33-s5">→ §5 发送与接收</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.8</span>
+<div class="txt"><span>解释时钟偏差为什么会读错、多数表决怎样抗干扰；记住标准波特率和 5% 的界限</span><span class="es">Deriva de relojes, mayoría de voto, tasas estándar.</span><a href="#m33-s6">→ §6 时钟偏差</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M33.9</span>
+<div class="txt"><span>说出 RS-232 的电平（mark / space）、DB9、15 m、点对点；为什么要电平转换；虚拟 COM 口和开发板上的 MSP Application UART1</span><span class="es">RS-232 y puertos COM virtuales.</span><a href="#m33-s7">→ §7 接到 PC</a></div>
+<button aria-pressed="false" class="chk" data-obj="M33.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M33"><span class="val">0 / 9 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="m33-s0">
+<h2><span class="n">§0</span>传一个字节，要几根线？ <span class="tag">M33.1</span></h2>
+<p class="hook"><span class="zh">要把一个字节送给外设，可以一次全送过去，也可以一位一位地送。</span><span class="es">¿Interfaz paralela o interfaz serie?</span></p>
+<figure class="stage" data-scene="" id="m33-sc-par">
+<div class="stage-title"><span>Escena 0 · paralela vs serie</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：并行接口与串行接口传送同一个字节" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-par-t" role="img" viewbox="0 0 800 360">
+<title id="m33-sc-par-t">左边并行：8 根线同时传 8 位；右边串行：一根数据线加地线，8 位一个接一个</title>
+<rect class="ln thin m" height="336" rx="12" width="378" x="12" y="12"></rect>
+<text class="tx w" x="32" y="48">Paralela</text>
+<text class="tz sm m" x="160" y="48">parallel · 并行</text>
+<rect class="bx b" height="222" rx="8" width="76" x="36" y="92"></rect>
+<text class="tm b mid" x="74" y="208">MCU</text>
+<rect class="bx t" height="222" rx="8" width="76" x="290" y="92"></rect>
+<text class="tm sm t mid" x="328" y="208">Perif.</text>
+<g data-step="1">
+<path class="ln thin b draw" d="M112 116 H290 M112 142 H290 M112 168 H290 M112 194 H290 M112 220 H290 M112 246 H290 M112 272 H290 M112 298 H290"></path>
+<text class="tm xs m" x="120" y="111">D0</text>
+<text class="tm xs m" x="120" y="137">D1</text>
+<text class="tm xs m" x="120" y="163">D2</text>
+<text class="tm xs m" x="120" y="189">D3</text>
+<text class="tm xs m" x="120" y="215">D4</text>
+<text class="tm xs m" x="120" y="241">D5</text>
+<text class="tm xs m" x="120" y="267">D6</text>
+<text class="tm xs m" x="120" y="293">D7</text>
+</g>
+<g data-step="2">
+<text class="tm sm y mid" x="230" y="111">1</text>
+<text class="tm sm y mid" x="230" y="137">0</text>
+<text class="tm sm y mid" x="230" y="163">0</text>
+<text class="tm sm y mid" x="230" y="189">0</text>
+<text class="tm sm y mid" x="230" y="215">0</text>
+<text class="tm sm y mid" x="230" y="241">0</text>
+<text class="tm sm y mid" x="230" y="267">1</text>
+<text class="tm sm y mid" x="230" y="293">0</text>
+<text class="tz sm y mid" x="201" y="80">'A' = 0x41 · 同一时刻</text>
+</g>
+<g data-step="5">
+<text class="tz sm m mid" x="201" y="338">8 根线 · 1 个时间单位</text>
+</g>
+<rect class="ln thin m" height="336" rx="12" width="378" x="410" y="12"></rect>
+<text class="tx w" x="430" y="48">Serie</text>
+<text class="tz sm m" x="520" y="48">serial · 串行</text>
+<g data-step="3">
+<rect class="bx b" height="96" rx="8" width="76" x="430" y="84"></rect>
+<text class="tm b mid" x="468" y="138">MCU</text>
+<rect class="bx t" height="96" rx="8" width="76" x="692" y="84"></rect>
+<text class="tm sm t mid" x="730" y="138">Perif.</text>
+<path class="ln b draw" d="M506 112 H692" id="m33-p-ser"></path>
+<text class="tz sm b mid" x="599" y="104">datos</text>
+<path class="ln thin m dash" d="M506 156 H692"></path>
+<text class="tz sm m mid" x="599" y="148">masa · GND</text>
+</g>
+<circle class="sl y" data-move="#m33-p-ser" data-out="4" data-step="3" r="7"></circle>
+<g data-step="4">
+<path class="ln thin m dash" d="M440 214 V292 M480 214 V292 M520 214 V292 M560 214 V292 M600 214 V292 M640 214 V292 M680 214 V292 M720 214 V292 M760 214 V292"></path>
+<path class="ln y draw" d="M440 236 H480 V276 H680 V236 H720 V276 H760"></path>
+<text class="tm xs m mid" x="460" y="310">b0</text>
+<text class="tm xs m mid" x="500" y="310">b1</text>
+<text class="tm xs m mid" x="540" y="310">b2</text>
+<text class="tm xs m mid" x="580" y="310">b3</text>
+<text class="tm xs m mid" x="620" y="310">b4</text>
+<text class="tm xs m mid" x="660" y="310">b5</text>
+<text class="tm xs m mid" x="700" y="310">b6</text>
+<text class="tm xs m mid" x="740" y="310">b7</text>
+<path class="ln thin o" d="M442 204 H478" marker-end="url(#m33-ah-o)" marker-start="url(#m33-ah-o)"></path>
+<text class="tz sm o" x="490" y="208">tiempo de bit</text>
+</g>
+<g data-step="5">
+<text class="tz sm m mid" x="599" y="338">1 根数据线 + 地 · 8 个 tiempo de bit</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>并行接口：<b>每一位占一根物理线</b>，而且整段时间都占着。它通常直接用通用 E/S 引脚（GPIO）实现，因为不同外设的线数和功能各不相同。</li>
+<li>一个字节 'A' = 0x41 的 8 位，在同一时刻出现在 8 根线上。</li>
+<li>串行接口：只用<b>一根数据线</b>（再加一根地线）。</li>
+<li data-dur="4400">同一个字节的 8 位一个接一个地上线，每一位在线上停留一段固定的时间，叫 <b>tiempo de bit</b>。这里按 b0 先发来画；先发哪一位由具体协议规定（UART 是低位先发，§4）。</li>
+<li data-dur="4200">代价：并行一个时间单位送完，串行要 8 个 tiempo de bit。所以串行总线比并行慢；换来的是线少、引脚少。</li>
+</ol>
+</figure>
+<ul>
+<li><b class="t">interfaz paralela (ES) / parallel interface (EN)</b>——并行接口：每一位信息用一根物理线，整段时间都占用这根线。</li>
+<li><b class="t">interfaz serie (ES) / serial interface (EN)</b>——串行接口：多位信息共用一根线，一位接一位地传；每一位在线上停留的时间叫 <b class="t">tiempo de bit (ES) / bit time (EN)</b>——位时间。</li>
+</ul>
+<p>串行接口有一批已经标准化的类型，微控制器通常会把实现主要标准所需的硬件集成在片内（§3）。</p>
+<div class="grid2">
+<div class="panel">
+<h3>串行的优点</h3>
+<ul>
+<li>需要的线更少</li>
+<li>芯片需要的引脚更少</li>
+<li>简化 PCB 设计</li>
+<li>电路改动更简单</li>
+<li>有些串行接口允许多个外设接在同一组线上</li>
+</ul>
+</div>
+<div class="panel">
+<h3>缺点</h3>
+<p>串行总线比并行总线<b class="c-r">慢</b>。</p>
+<p class="aside">直观理解：同样一个字节，并行一次送完，串行要排队送 8 次（见上面的动画）。</p>
+</div>
+</div>
+<p class="takeaway">并行 = 一位一根线、同时送；串行 = 一根线、一位接一位，每位占一个 tiempo de bit。串行用速度换来了线、引脚和 PCB 上的简单。</p>
+
+</section>
+
+<section class="sec" id="m33-s1">
+<h2><span class="n">§1</span>时钟传不传？ <span class="tag">M33.2</span></h2>
+<p class="hook"><span class="zh">一串 0 和 1 到了接收端。它怎么知道哪一刻该读下一位？</span><span class="es">Comunicaciones síncronas y asíncronas.</span></p>
+<p>先记住一句很关键的话：任何数字通信都需要一个时钟，发送端用它决定什么时候送下一位，接收端用它决定输入端的数据什么时候有效、可以读。区别只在于<b>这个时钟从哪里来</b>。</p>
+<figure class="stage" data-scene="" id="m33-sc-sync">
+<div class="stage-title"><span>Escena 1 · síncrona vs asíncrona</span><b>5 步</b></div>
+<div aria-label="动画：同步通信传时钟，异步通信两边各有时钟" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-sync-t" role="img" viewbox="0 0 800 350">
+<title id="m33-sc-sync-t">左边同步：数据线、时钟线、地线，接收端在时钟上升沿读到 0 1 1 0 1 0 0 0；右边异步：只有数据线和地线，两边各有自己的时钟 clk1、clk2，起始位的下降沿把两个时钟对齐，之后每个上升沿落在一位的中间</title>
+<rect class="ln thin m" height="326" rx="12" width="378" x="12" y="12"></rect>
+<text class="tx w" x="32" y="48">Síncrona</text>
+<text class="tz sm m" x="168" y="48">synchronous · 同步</text>
+<g data-step="1">
+<rect class="bx b" height="104" rx="8" width="70" x="36" y="80"></rect>
+<text class="tm b mid" x="71" y="138">A</text>
+<rect class="bx t" height="104" rx="8" width="70" x="296" y="80"></rect>
+<text class="tm t mid" x="331" y="138">B</text>
+<path class="ln b draw" d="M106 104 H292" marker-end="url(#m33-ah-b)"></path>
+<path class="ln o draw" d="M106 134 H292" marker-end="url(#m33-ah-o)"></path>
+<path class="ln thin m dash" d="M106 164 H296"></path>
+<text class="tz sm b mid" x="200" y="98">datos</text>
+<text class="tz sm o mid" x="200" y="128">reloj</text>
+<text class="tz sm m mid" x="200" y="158">masa</text>
+</g>
+<g data-step="2">
+<text class="tm xs o" x="16" y="240">CLK</text>
+<path class="ln o draw" d="M44 246 H64 V222 H84 V246 H104 V222 H124 V246 H144 V222 H164 V246 H184 V222 H204 V246 H224 V222 H244 V246 H264 V222 H284 V246 H304 V222 H324 V246 H344 V222 H364 V246"></path>
+<text class="tm xs b" x="16" y="286">DAT</text>
+<path class="ln b draw" d="M44 294 H84 V270 H164 V294 H204 V270 H244 V294 H364"></path>
+<path class="ln thin y dash" d="M64 214 V300 M104 214 V300 M144 214 V300 M184 214 V300 M224 214 V300 M264 214 V300 M304 214 V300 M344 214 V300"></path>
+<text class="tm xs y mid" x="64" y="314">0</text>
+<text class="tm xs y mid" x="104" y="314">1</text>
+<text class="tm xs y mid" x="144" y="314">1</text>
+<text class="tm xs y mid" x="184" y="314">0</text>
+<text class="tm xs y mid" x="224" y="314">1</text>
+<text class="tm xs y mid" x="264" y="314">0</text>
+<text class="tm xs y mid" x="304" y="314">0</text>
+<text class="tm xs y mid" x="344" y="314">0</text>
+<text class="tz sm y mid" x="200" y="333">B 在 clk 的上升沿读数据</text>
+</g>
+<g data-step="5">
+<text class="tm sm w mid" x="200" y="204">≥ 3 根线</text>
+</g>
+<rect class="ln thin m" height="326" rx="12" width="378" x="410" y="12"></rect>
+<text class="tx w" x="430" y="48">Asíncrona</text>
+<text class="tz sm m" x="580" y="48">asynchronous · 异步</text>
+<g data-step="3">
+<rect class="bx b" height="104" rx="8" width="70" x="434" y="80"></rect>
+<text class="tm b mid" x="469" y="130">A</text>
+<rect class="bx t" height="104" rx="8" width="70" x="694" y="80"></rect>
+<text class="tm t mid" x="729" y="130">B</text>
+<path class="ln b draw" d="M504 112 H690" marker-end="url(#m33-ah-b)"></path>
+<path class="ln thin m dash" d="M504 164 H694"></path>
+<text class="tz sm b mid" x="599" y="106">datos</text>
+<text class="tz sm m mid" x="599" y="158">masa</text>
+<text class="tm xs o mid" x="469" y="166">clk1</text>
+<text class="tm xs o mid" x="729" y="166">clk2</text>
+</g>
+<g data-step="4">
+<text class="tz sm w mid" x="599" y="140">约定同一个频率</text>
+<text class="tm xs b" x="412" y="228">datos</text>
+<path class="ln b draw" d="M450 214 H480 V232 H552 V214 H624 V232 H660 V214 H696 V232 H768"></path>
+<circle class="sl r" cx="480" cy="223" data-hl="4" r="4.5"></circle>
+<text class="tm xs m mid" x="465" y="248">rep.</text>
+<text class="tm xs r mid" x="498" y="248">arr.</text>
+<text class="tm xs y mid" x="534" y="248">0</text>
+<text class="tm xs y mid" x="570" y="248">1</text>
+<text class="tm xs y mid" x="606" y="248">1</text>
+<text class="tm xs y mid" x="642" y="248">0</text>
+<text class="tm xs y mid" x="678" y="248">1</text>
+<text class="tm xs y mid" x="714" y="248">0</text>
+<text class="tm xs y mid" x="750" y="248">0</text>
+<text class="tm xs o" x="412" y="272">clk1</text>
+<path class="ln o draw" d="M450 272 H498 V258 H516 V272 H534 V258 H552 V272 H570 V258 H588 V272 H606 V258 H624 V272 H642 V258 H660 V272 H678 V258 H696 V272 H714 V258 H732 V272 H750 V258 H768 V272"></path>
+<text class="tm xs o" x="412" y="298">clk2</text>
+<path class="ln o draw" d="M450 298 H498 V284 H516 V298 H534 V284 H552 V298 H570 V284 H588 V298 H606 V284 H624 V298 H642 V284 H660 V298 H678 V284 H696 V298 H714 V284 H732 V298 H750 V284 H768 V298"></path>
+<text class="tz sm y mid" x="599" y="324">起始位的下降沿让 clk1、clk2 对齐</text>
+</g>
+<g data-step="5">
+<text class="tm sm w mid" x="599" y="204">≥ 2 根线</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><b>同步</b>：除了数据线和地线（masa），还要传一根<span class="c-o">时钟线</span>，用来同步通信。</li>
+<li data-dur="4200">接收端不用自己猜时刻：对方送来的时钟告诉它什么时候数据有效、可以读。每个位值都对准 clk 的<b>上升沿</b>，这里读到 0 1 1 0 1 0 0 0。</li>
+<li><b>异步</b>：不传时钟，只有数据线和地线。每台设备有自己的<span class="c-o">时钟源</span>：发送端是 clk1，接收端是 clk2。</li>
+<li data-dur="5400">所以两边必须事先<b>约定同一个频率</b>，并用某种<b>同步策略</b>把两个时钟对齐。这里的策略就是 <b class="c-r">bit de arranque</b>（起始位）：空闲（reposo）时线是高电平，起始位的<span class="c-r">下降沿</span>让 clk1 和 clk2 对齐，之后两边的上升沿都落在每一位的中间（§4、§5）。</li>
+<li>最少线数：任何串行连接都至少要 2 根线（datos + masa）；同步再加一根时钟线。</li>
+</ol>
+
+</figure>
+<ul>
+<li><b class="t">comunicación síncrona (ES) / synchronous (EN)</b>——同步通信：时钟信号随数据一起传输。</li>
+<li><b class="t">comunicación asíncrona (ES) / asynchronous (EN)</b>——异步通信：不传时钟，收发双方各用自己的时钟，事先约定频率，并用某种方法同步。</li>
+</ul>
+<p class="takeaway">同步：时钟随线送过去，至少 3 根线。异步：只送数据，至少 2 根线，代价是两边要约好频率、自己对齐。</p>
+
+</section>
+
+<section class="sec" id="m33-s2">
+<h2><span class="n">§2</span>朝哪个方向？ <span class="tag">M33.3</span></h2>
+<p class="hook"><span class="zh">两台设备要互相说话。一根数据线够不够？</span><span class="es">Símplex, semi-dúplex y dúplex.</span></p>
+<figure class="stage" data-scene="" id="m33-sc-dir">
+<div class="stage-title"><span>Escena 2 · dirección de la comunicación</span><b>4 步</b></div>
+<div aria-label="动画：单向、半双工、全双工" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-dir-t" role="img" viewbox="0 0 800 330">
+<title id="m33-sc-dir-t">三行：símplex 一根数据线单向；semi-dúplex 一根数据线双向轮流；dúplex 两根数据线同时双向；每行都有地线</title>
+<g data-step="1">
+<rect class="bx b" height="56" rx="8" width="90" x="30" y="30"></rect>
+<text class="tm b mid" x="75" y="64">A</text>
+<rect class="bx t" height="56" rx="8" width="90" x="300" y="30"></rect>
+<text class="tm t mid" x="345" y="64">B</text>
+<path class="ln b draw" d="M120 50 H296" id="m33-p-sx" marker-end="url(#m33-ah-b)"></path>
+<path class="ln thin m dash" d="M120 72 H300"></path>
+<text class="tx sm w" x="430" y="46">símplex · 单向</text>
+<text class="tz sm m" x="430" y="70">≥ 2 根：datos + masa</text>
+<text class="tz sm b" x="430" y="92">例：UART unidireccional</text>
+</g>
+<circle class="sl y" data-move="#m33-p-sx" data-out="2" data-step="1" r="6"></circle>
+<g data-step="2">
+<rect class="bx b" height="56" rx="8" width="90" x="30" y="130"></rect>
+<text class="tm b mid" x="75" y="164">A</text>
+<rect class="bx t" height="56" rx="8" width="90" x="300" y="130"></rect>
+<text class="tm t mid" x="345" y="164">B</text>
+<path class="ln b draw" d="M124 150 H296" id="m33-p-hd" marker-end="url(#m33-ah-b)" marker-start="url(#m33-ah-b)"></path>
+<path class="ln thin m dash" d="M120 172 H300"></path>
+<text class="tx sm w" x="430" y="146">semi-dúplex · 半双工</text>
+<text class="tz sm m" x="430" y="170">≥ 2 根：1 根数据线轮流用 + masa</text>
+<text class="tz sm b" x="430" y="192">例：I2C</text>
+<text class="tz sm r mid" x="210" y="204">不能同时</text>
+</g>
+<circle class="sl y" data-move="#m33-p-hd" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<rect class="bx b" height="64" rx="8" width="90" x="30" y="236"></rect>
+<text class="tm b mid" x="75" y="274">A</text>
+<rect class="bx t" height="64" rx="8" width="90" x="300" y="236"></rect>
+<text class="tm t mid" x="345" y="274">B</text>
+<path class="ln b draw" d="M120 250 H296" id="m33-p-d1" marker-end="url(#m33-ah-b)"></path>
+<path class="ln b draw" d="M300 270 H124" id="m33-p-d2" marker-end="url(#m33-ah-b)"></path>
+<path class="ln thin m dash" d="M120 290 H300"></path>
+<text class="tx sm w" x="430" y="256">dúplex · 全双工</text>
+<text class="tz sm m" x="430" y="280">≥ 3 根：2 根数据线 + masa</text>
+<text class="tz sm b" x="430" y="302">例：SPI，UART bidireccional</text>
+</g>
+<circle class="sl y" data-move="#m33-p-d1" data-out="4" data-step="3" r="6"></circle>
+<circle class="sl g" data-move="#m33-p-d2" data-out="4" data-step="3" r="6"></circle>
+<g data-step="4">
+<rect class="ln y" height="24" rx="4" width="190" x="424" y="76"></rect>
+<rect class="ln y" height="24" rx="4" width="240" x="424" y="286"></rect>
+<text class="tz sm y" x="640" y="194">UART 出现两次</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><b>símplex</b>（单向）：信息只朝一个方向走。至少 2 根线：数据线和地线。例子：单向的 UART。</li>
+<li data-dur="4000"><b>semi-dúplex</b>（半双工）：双向，但只有<b>一根</b>数据线，两个方向轮流用，<span class="c-r">不能同时</span>。至少 2 根线。例子：I2C 接口。</li>
+<li data-dur="4000"><b>dúplex</b>（全双工）：有<b>两根</b>数据线，两个方向可以同时传。至少 3 根线：两根数据线加地线。例子：SPI 和双向 UART。</li>
+<li data-dur="4200">UART 出现了两次。有些资料一边把 UART 定义为双向、全双工，一边又拿“单向的 UART”作 símplex 的例子：只用一个方向时就是 símplex，收发都用时是 dúplex。</li>
+</ol>
+
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>类型</th><th>方向</th><th>最少线数</th><th>例子</th></tr></thead>
+<tbody>
+<tr><td>símplex</td><td>只有一个方向</td><td>2：datos + masa</td><td>UART unidireccional</td></tr>
+<tr><td>semi-dúplex</td><td>双向，但不同时</td><td>2：datos + masa</td><td>I2C</td></tr>
+<tr><td>dúplex</td><td>双向，可以同时</td><td>3：2 × datos + masa</td><td>SPI，UART bidireccional</td></tr>
+</tbody>
+</table>
+</div>
+<p class="takeaway">半双工和全双工的分界就是数据线的根数：一根只能轮流，两根才能同时。</p>
+
+</section>
+
+<section class="sec" id="m33-s3">
+<h2><span class="n">§3</span>两个同步接口：SPI 与 I2C <span class="tag">M33.4</span></h2>
+<p class="hook"><span class="zh">一根时钟线挂着好几个设备。它在跟谁说话？</span><span class="es">Interfaces serie síncronos SPI e I2C.</span></p>
+<p>微控制器最常集成的串行标准有两类：同步的 SPI、I2C，和异步的 UART。两个同步接口用途相近，规则相同：<b>产生时钟的设备是 <b class="t">maestro (ES) / master (EN)</b>——主机，接收时钟的是 <b class="t">esclavo (ES) / slave (EN)</b>——从机</b>。不同的是"选中从机"的办法。这里只讲概念。</p>
+<figure class="stage" data-scene="" id="m33-sc-bus">
+<div class="stage-title"><span>Escena 3 · I2C vs SPI</span><b>5 步</b></div>
+<div aria-label="动画：I2C 用地址和确认，SPI 用选择线和两根数据线" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-bus-t" role="img" viewbox="0 0 800 400">
+<title id="m33-sc-bus-t">左边 I2C：主机和三个带地址的从机共用数据线和时钟线，一次传输由起始条件、地址、读写、确认、数据、确认、停止组成；右边 SPI：两根数据线、一根时钟线，每个从机一根选择线</title>
+<rect class="ln thin m" height="384" rx="12" width="384" x="8" y="8"></rect>
+<text class="tx w" x="24" y="36">I2C</text>
+<text class="tz sm m" x="76" y="36">síncrono · semi-dúplex</text>
+<g data-step="1">
+<rect class="bx o" height="52" rx="8" width="120" x="24" y="52"></rect>
+<text class="tz sm o mid" x="84" y="83">maestro</text>
+<path class="ln b" d="M24 140 H340"></path>
+<path class="ln o" d="M24 162 H340"></path>
+<text class="tm xs b" x="346" y="144">datos</text>
+<text class="tm xs o" x="346" y="166">reloj</text>
+<path class="ln thin b" d="M64 104 V140"></path>
+<path class="ln thin o" d="M104 104 V162"></path>
+<rect class="bx t" height="52" rx="8" width="90" x="24" y="210"></rect>
+<rect class="bx t" height="52" rx="8" width="90" x="134" y="210"></rect>
+<rect class="bx t" height="52" rx="8" width="90" x="244" y="210"></rect>
+<path class="ln thin b" d="M54 210 V140 M164 210 V140 M274 210 V140"></path>
+<path class="ln thin o" d="M84 210 V162 M194 210 V162 M304 210 V162"></path>
+<text class="tz sm t mid" x="69" y="232">esclavo</text>
+<text class="tz sm t mid" x="179" y="232">esclavo</text>
+<text class="tz sm t mid" x="289" y="232">esclavo</text>
+<text class="tm xs w mid" x="69" y="252">dir. 1</text>
+<text class="tm xs w mid" x="179" y="252">dir. 2</text>
+<text class="tm xs w mid" x="289" y="252">dir. 3</text>
+</g>
+<g data-step="2">
+<text class="tz sm m" x="24" y="284">una transacción · 一次传输</text>
+<rect class="bx y" height="28" rx="3" width="26" x="24" y="292"></rect>
+<text class="tm xs y mid" x="37" y="310">S</text>
+<rect class="bx b" height="28" rx="3" width="100" x="50" y="292"></rect>
+<text class="tm xs b mid" x="100" y="310">dirección</text>
+<rect class="bx b" height="28" rx="3" width="36" x="150" y="292"></rect>
+<text class="tm xs b mid" x="168" y="310">L/E</text>
+</g>
+<g data-step="3">
+<rect class="bx g" data-hl="3" height="28" rx="3" width="42" x="186" y="292"></rect>
+<text class="tm xs g mid" x="207" y="310">ACK</text>
+<rect class="bx b" height="28" rx="3" width="72" x="228" y="292"></rect>
+<text class="tm xs b mid" x="264" y="310">dato</text>
+<rect class="bx g" height="28" rx="3" width="42" x="300" y="292"></rect>
+<text class="tm xs g mid" x="321" y="310">ACK</text>
+<rect class="bx y" height="28" rx="3" width="26" x="342" y="292"></rect>
+<text class="tm xs y mid" x="355" y="310">P</text>
+<text class="tz sm m" x="24" y="344">S / P = arranque / parada（maestro）</text>
+<text class="tz sm g" x="24" y="368">ACK = esclavo 把数据线拉低 1 位</text>
+</g>
+<rect class="ln thin m" height="384" rx="12" width="384" x="408" y="8"></rect>
+<text class="tx w" x="424" y="36">SPI</text>
+<text class="tz sm m" x="478" y="36">síncrono · dúplex</text>
+<g data-step="4">
+<rect class="bx o" height="52" rx="8" width="120" x="424" y="52"></rect>
+<text class="tz sm o mid" x="484" y="83">maestro</text>
+<path class="ln b" d="M440 140 H720"></path>
+<path class="ln b" d="M440 158 H720"></path>
+<path class="ln o" d="M440 176 H720"></path>
+<text class="tm xs b end" x="636" y="136">datos M→E</text>
+<text class="tm xs b end" x="636" y="154">datos E→M</text>
+<text class="tm xs o end" x="636" y="172">reloj</text>
+<path class="ln thin b" d="M450 104 V140 M470 104 V158"></path>
+<path class="ln thin o" d="M490 104 V176"></path>
+<rect class="bx t" height="52" rx="8" width="110" x="444" y="230"></rect>
+<rect class="bx t" height="52" rx="8" width="120" x="624" y="230"></rect>
+<path class="ln thin b" d="M464 230 V140 M484 230 V158 M644 230 V140 M664 230 V158"></path>
+<path class="ln thin o" d="M504 230 V176 M684 230 V176"></path>
+<text class="tz sm t mid" x="499" y="262">esclavo 1</text>
+<text class="tz sm t mid" x="684" y="262">esclavo 2</text>
+<g data-hl="4">
+<path class="ln r" d="M544 70 H570 V206 H536 V230"></path>
+<path class="ln r" d="M544 88 H730 V230"></path>
+</g>
+<text class="tz sm r" x="580" y="74">selección</text>
+<text class="tz sm m mid" x="594" y="310">sin dirección · sin ACK</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" x="594" y="344">线更多 · 更简单 · 更快</text>
+<text class="tz sm y mid" x="594" y="368">大量数据 → SPI</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200"><b>I2C</b>：所有设备挂在同一组线上（datos、reloj，再加 tierra）。<span class="c-o">maestro</span> 产生时钟；每个设备都有自己的<b>地址</b>（dirección），通信按一套协议进行。I2C 是为连接<b>大量设备</b>设计的总线。</li>
+<li data-dur="4600">一次通信完全由 maestro 主导：先发 <b>condición de arranque</b>（起始条件），再指出操作类型（读还是写，lectura / escritura）和要通信的从机地址。</li>
+<li data-dur="5200">从机每收到一个字节，都要回一个<span class="c-g">确认</span>（reconocimiento）：通信方向反转一位，从机把数据线<b>强制拉低</b>表示接受。最后 maestro 发 <b>condición de parada</b>。起止条件是数据线和时钟线的一种组合，在传输过程中不会出现，所以能被识别出来。</li>
+<li data-dur="4600"><b>SPI</b>：用一根<span class="c-r">选择线</span>（línea de selección）决定和哪个从机通信；数据走<b>两根</b>数据线，可以同时双向流动（dúplex）。没有地址，也没有确认，不对传输做这类控制。</li>
+<li data-dur="4200">结论：SPI 需要的连线比 I2C 多，但接口更简单、更快，所以要在设备之间传<b>大量数据</b>时更合适。</li>
+</ol>
+<p class="stage-note">I2C 的两根线通常叫 SDA、SCL，SPI 的通常叫 MOSI、MISO、SCLK、SS/CS。从机的个数、每个字段的宽度都只是示意。</p>
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>I2C</th><th>SPI</th></tr></thead>
+<tbody>
+<tr><td>时钟</td><td>maestro 产生（同步）</td><td>maestro 产生（同步）</td></tr>
+<tr><td>选中从机</td><td>每个设备有地址，maestro 发出地址</td><td>选择线（línea de selección）</td></tr>
+<tr><td>数据线</td><td>1 根 → semi-dúplex</td><td>2 根 → dúplex</td></tr>
+<tr><td>信号</td><td>datos、reloj、tierra 三根</td><td>比 I2C 多</td></tr>
+<tr><td>协议控制</td><td>起止条件、读/写位、每字节一个 ACK</td><td>没有地址，没有确认</td></tr>
+<tr><td>特点</td><td>为连接大量设备设计</td><td>更简单、更快，适合大量数据</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">微控制器还在加入其他串行接口 / 总线：<b>USB</b>（Universal Serial Bus）、<b>CAN</b>（Controller Area Network）、<b>LIN</b>（Local Interconnect Network）。本课只要知道名字，不展开。</p>
+<p class="takeaway">I2C 靠"地址 + 确认"在少量线上挂很多设备；SPI 靠"选择线 + 两根数据线"换来简单和速度。剩下那个异步的 UART，是这一章的主角。</p>
+
+</section>
+
+<section class="sec" id="m33-s4">
+<h2><span class="n">§4</span>一帧 UART <span class="tag">M33.5 · M33.6</span></h2>
+<p class="hook"><span class="zh">没有时钟线，接收端怎么知道"一个字符从这里开始"？</span><span class="es">La estructura de un carácter o trama.</span></p>
+<p>UART 定义了实现异步串行通信的物理接口，典型应用是 PC 和微控制器之间的通信。按定义，UART 是双向、全双工、<b>不传时钟</b>的通信，<b>一个字符一个字符</b>（一帧一帧）地传；帧与帧之间的间隔没有规定，但<b>帧内部的时序是刚性的</b>：每一位占一个 tiempo de bit，各位的顺序也永远不变。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m33-sc-frame">
+<div class="stage-title"><span>Escena 4 · estructura de la trama</span><b>核心场景</b></div>
+<div aria-label="动画：UART 一帧的结构，空闲、起始位、数据位、校验位、停止位" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-frame-t" role="img" viewbox="0 0 800 310">
+<title id="m33-sc-frame-t">字符 A（0x41）的一帧：空闲高电平，起始位 0，数据位从 b0 到 b7 为 1 0 0 0 0 0 1 0，偶校验位 0，停止位 1，再回到空闲</title>
+<text class="tm xs m" x="22" y="124">1</text>
+<text class="tm xs m" x="22" y="184">0</text>
+<path class="ln thin m dash" d="M96 102 V196 M152 102 V196 M208 102 V196 M264 102 V196 M320 102 V196 M376 102 V196 M432 102 V196 M488 102 V196 M544 102 V196 M600 102 V196 M656 102 V196 M712 102 V196"></path>
+<g data-step="1">
+<path class="ln b draw" d="M40 120 H96"></path>
+<text class="tm sm m mid" x="68" y="96">1</text>
+<text class="tm xs m mid" x="68" y="222">reposo</text>
+<text class="tz sm w" x="40" y="40">línea en reposo = nivel alto</text>
+</g>
+<g data-step="2">
+<path class="ln r draw" d="M96 120 V180 H152"></path>
+<circle class="sl r" cx="96" cy="150" data-hl="2" r="5"></circle>
+<text class="tz sm r mid" x="96" y="74">↓ flanco</text>
+<text class="tm sm r mid" x="124" y="96">0</text>
+<text class="tm xs r mid" x="124" y="222">arranque</text>
+</g>
+<g data-step="3">
+<path class="ln b draw" d="M152 180 V120 H208 V180 H488 V120 H544 V180 H600"></path>
+<text class="tm sm y mid" x="180" y="96">1</text>
+<text class="tm sm y mid" x="236" y="96">0</text>
+<text class="tm sm y mid" x="292" y="96">0</text>
+<text class="tm sm y mid" x="348" y="96">0</text>
+<text class="tm sm y mid" x="404" y="96">0</text>
+<text class="tm sm y mid" x="460" y="96">0</text>
+<text class="tm sm y mid" x="516" y="96">1</text>
+<text class="tm sm y mid" x="572" y="96">0</text>
+<text class="tm xs b mid" x="180" y="222">b0</text>
+<text class="tm xs b mid" x="236" y="222">b1</text>
+<text class="tm xs b mid" x="292" y="222">b2</text>
+<text class="tm xs b mid" x="348" y="222">b3</text>
+<text class="tm xs b mid" x="404" y="222">b4</text>
+<text class="tm xs b mid" x="460" y="222">b5</text>
+<text class="tm xs b mid" x="516" y="222">b6</text>
+<text class="tm xs b mid" x="572" y="222">b7</text>
+<text class="tm xs b mid" x="180" y="244">LSB</text>
+<text class="tz sm b mid" x="376" y="246">datos · 7 u 8 bits</text>
+<text class="tm xs b mid" x="572" y="244">MSB</text>
+<text class="tz sm y" x="300" y="40">'A' = 0x41 = 0100 0001</text>
+</g>
+<g data-step="4">
+<rect class="ln thin t dash" height="92" rx="3" width="52" x="602" y="104"></rect>
+<path class="ln t draw" d="M600 180 H656"></path>
+<text class="tm sm t mid" x="628" y="96">0</text>
+<text class="tm xs t mid" x="628" y="222">paridad</text>
+<text class="tm xs t mid" x="628" y="244">opcional</text>
+</g>
+<g data-step="5">
+<path class="ln g draw" d="M656 180 V120 H712"></path>
+<path class="ln b draw" d="M712 120 H768"></path>
+<text class="tm sm g mid" x="684" y="96">1</text>
+<text class="tm sm m mid" x="740" y="96">1</text>
+<text class="tm xs g mid" x="684" y="222">parada</text>
+<text class="tm xs g mid" x="684" y="244">1 o 2</text>
+<text class="tm xs m mid" x="740" y="222">reposo</text>
+</g>
+<g data-step="6">
+<path class="ln thin y" d="M100 272 H708" marker-end="url(#m33-ah-y)" marker-start="url(#m33-ah-y)"></path>
+<text class="tz sm y mid" x="404" y="298">1 帧 = 1 + 8 + 1 + 1 = 11 个 tiempo de bit</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>不发送字符时，线路处于 <b>reposo</b>（空闲），数据线保持<b>高电平</b>。</li>
+<li data-dur="4000">第一位是 <b class="c-r">bit de arranque</b>（起始位）：把线路拉低一个 tiempo de bit。它的<span class="c-r">下降沿</span>让收发两边的时钟同步起来（§5）。</li>
+<li data-dur="5200">然后是 <b>bits de datos</b>（数据位）：可以配置成 7 位或 8 位，<b>从低位到高位</b>发送。'A' = 0x41 = 0100 0001，所以起始位之后先出现 b0 = 1。只有数据位是要传的信息；其余都是控制位，让通信得以进行，但给帧增加了开销（sobrecarga）。</li>
+<li data-dur="5200"><b>bit de paridad</b>（校验位）：可配置有或没有，是可选位，用来检查帧里有没有错误。这里画的是偶校验：让数据位和校验位里 1 的总数为偶数。'A' 有两个 1，所以 P = 0。</li>
+<li data-dur="5200"><b class="c-g">bits de parada</b>（停止位）：可配置 1 位或 2 位，把线路拉回高电平。它们保证接收端能检测到<b>下一个字符起始位的下降沿</b>，也就是规定了下一个字符到来之前，线路至少要保持多久的高电平。</li>
+<li data-dur="4200">这一帧（8 个数据位、有校验、1 个停止位）一共 11 位。顺序永远是：起始 → 数据（低位先）→（校验）→ 停止。</li>
+</ol>
+<p class="stage-note">字符 'A' 和偶校验只是举例。</p>
+
+</figure>
+<p>所以收发双方必须事先约定下面 4 个参数，配置 UART 外设的程序要把它们全部设置好（怎样设置见 <a href="m34.html">M34</a>）：</p>
+<div class="grid2">
+<div class="panel">
+<h3>要约定的 4 个参数</h3>
+<ol>
+<li><b>速率</b>（velocidad de transmisión/recepción），单位 <b class="t">baudio (ES) / baud (EN)</b>——波特；它决定 tiempo de bit</li>
+<li><b>数据位数</b>：7 或 8</li>
+<li><b>校验</b>：有没有校验位</li>
+<li><b>停止位数</b>：1 或 2</li>
+</ol>
+</div>
+<div class="panel">
+<h3>baudio 和 bit/s</h3>
+<p>1 baudio = 信号每秒变化 1 次。UART 的编码方式下，线上每个"信号单元"就是一位，所以这里 <b>波特数 = 每秒位数</b>，tiempo de bit = 1 / baudios。</p>
+</div>
+</div>
+<h3>动手：帧构造器</h3>
+<p>输入一个字符，改数据位、校验、停止位和波特率，看 TX 线上的波形和时间。打开"RX 采样"能看到接收端在哪里采样（§5）；拖动偏差滑块，模拟接收端时钟偏快或偏慢（§6 详解）。</p>
+<figure class="stage" id="m33-builder">
+<div class="stage-title"><span>Simulador · trama UART</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m33-builder-t" role="img" viewbox="0 0 800 280">
+<title id="m33-builder-t">UART 帧构造器：按所选字符和格式画出 TX 线的波形；下方是接收端在每一位中间的采样点和读到的值</title>
+<g id="m33-fb-g"></g>
+<circle class="sl y" cx="20" cy="92" id="m33-fb-dot" r="8" style="opacity:0"></circle>
+</svg>
+</div>
+<div class="stage-ctl">
+<label class="m33-lab" for="m33-fb-ch">字符 <input autocomplete="off" class="m33-in" id="m33-fb-ch" maxlength="2" spellcheck="false" type="text" value="A"/></label>
+<label class="m33-lab" for="m33-fb-db">数据位 <select class="m33-in" id="m33-fb-db"><option selected="" value="8">8</option><option value="7">7</option></select></label>
+<label class="m33-lab" for="m33-fb-par">校验 <select class="m33-in" id="m33-fb-par"><option selected="" value="none">无 · sin paridad</option><option value="even">偶 · par</option><option value="odd">奇 · impar</option></select></label>
+<label class="m33-lab" for="m33-fb-sb">停止位 <select class="m33-in" id="m33-fb-sb"><option selected="" value="1">1</option><option value="2">2</option></select></label>
+<label class="m33-lab" for="m33-fb-baud">baudios <select class="m33-in" id="m33-fb-baud"><option value="110">110</option><option value="300">300</option><option value="1200">1200</option><option value="2400">2400</option><option value="4800">4800</option><option selected="" value="9600">9600</option><option value="14400">14400</option><option value="19200">19200</option><option value="28800">28800</option><option value="33600">33600</option><option value="57600">57600</option><option value="115200">115200</option></select></label>
+<label class="m33-range" for="m33-fb-drift">接收端 tiempo de bit 偏差 <input id="m33-fb-drift" max="10" min="-10" step="0.5" type="range" value="0"/><output for="m33-fb-drift" id="m33-fb-dv">0.0 %</output></label>
+<button aria-pressed="true" class="sw" id="m33-fb-rx" type="button"><span class="knob"></span><span class="lab">RX 采样</span></button>
+<button class="press" id="m33-fb-send" type="button">▶ 发送</button>
+<button class="mini" id="m33-fb-zero" type="button">偏差归零</button>
+<p aria-live="polite" class="out" id="m33-fb-out">'A' = 0x41：8 个数据位、无校验、1 个停止位，9600 baudios。</p>
+</div>
+<p class="stage-note">只支持 0–255 的单字节字符。7 个数据位时只发低 7 位。偏差 e &gt; 0 表示接收端的 tiempo de bit 比发送端长（时钟偏慢），e &lt; 0 表示偏短。</p>
+</figure>
+<h3 id="m33-s4b">一帧要多久 <span class="tag">M33.6</span></h3>
+<p>每一位都占一个 tiempo de bit，所以只要数清一帧有几位：</p>
+<div class="formula" data-tex="N = 1 + \class{c-b}{n_d} + n_p + n_s \qquad T_{bit} = \frac{1}{v} \qquad t = \frac{n_{car}\cdot N}{v}">N = 1 + n_d + n_p + n_s　　T_bit = 1 / v　　t = n_car · N / v</div>
+<p class="aside">N：每帧位数（1 个起始位 + n<sub>d</sub> 个数据位 + n<sub>p</sub> = 0 或 1 个校验位 + n<sub>s</sub> = 1 或 2 个停止位）；v：速率（baudios）；n<sub>car</sub>：字符数。帧与帧之间没有空闲时，t 是最短时间。</p>
+<div class="note">
+<span class="lbl">例 · 9600 baudios，8 个数据位，无校验，1 个停止位</span>
+<p>N = 1 + 8 + 0 + 1 = 10 位；T<sub>bit</sub> = 1 / 9600 s ≈ 104.2 µs；一帧 ≈ 1.04 ms，每秒最多约 960 个字符。数据位只占 8 / 10 = 80 %，其余 20 % 是起始位和停止位的开销（sobrecarga）。</p>
+</div>
+<p class="aside">练习里会出现 8N1、8E1 这样的缩写：数据位数 + 校验（N 无、E 偶、O 奇）+ 停止位数。</p>
+<div class="drill" data-drill="frame"></div>
+<p class="takeaway">一帧 = 起始 0 + 数据（低位先）+（校验）+ 停止 1，全部按同一个 tiempo de bit。速率、数据位、校验、停止位四个参数，两边必须一致。</p>
+
+</section>
+
+<section class="sec" id="m33-s5">
+<h2><span class="n">§5</span>发送器与接收器 <span class="tag">M33.7</span></h2>
+<p class="hook"><span class="zh">发送端按自己的时钟把位推出去；接收端没有这根时钟线，它怎么踩准节拍？</span><span class="es">Esquema general del transmisor y receptor de la UART.</span></p>
+<figure class="stage" data-ms="3600" data-scene="" id="m33-sc-txrx">
+<div class="stage-title"><span>Escena 5 · transmisor y receptor</span><b>6 步</b></div>
+<div aria-label="动画：UART 发送器的移位寄存器和时钟振荡器，接收器的起始位检测、振荡器、中心采样、计数器和并行输出" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-txrx-t" role="img" viewbox="0 0 800 520">
+<title id="m33-sc-txrx-t">上半部分发送器：b7 到 b0 并行装入移位寄存器，两端固定为停止位 1 和起始位 0，启动命令启动时钟振荡器，位从输出端逐个移出；下半部分接收器：串行信号进入移位寄存器，起始位检测电路启动接收时钟振荡器，在每个数据位的中心采样，计数器检查位数，最后并行输出</title>
+<text class="tx sm w" x="20" y="34">Transmisor</text>
+<g data-step="1">
+<text class="tz sm b mid" x="350" y="28">Entrada paralelo · 并行输入</text>
+<path class="ln b" d="M350 36 V60" marker-end="url(#m33-ah-b)"></path>
+<text class="tm xs g mid" x="152" y="68">parada</text>
+<text class="tm xs r mid" x="548" y="68">arranque</text>
+<rect class="bx g" height="34" rx="3" width="44" x="130" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="174" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="218" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="262" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="306" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="350" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="394" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="438" y="74"></rect>
+<rect class="bx b" height="34" rx="3" width="44" x="482" y="74"></rect>
+<rect class="bx r" height="34" rx="3" width="44" x="526" y="74"></rect>
+<text class="tm sm g mid" x="152" y="96">1</text>
+<text class="tm xs b mid" x="196" y="95">b7</text>
+<text class="tm xs b mid" x="240" y="95">b6</text>
+<text class="tm xs b mid" x="284" y="95">b5</text>
+<text class="tm xs b mid" x="328" y="95">b4</text>
+<text class="tm xs b mid" x="372" y="95">b3</text>
+<text class="tm xs b mid" x="416" y="95">b2</text>
+<text class="tm xs b mid" x="460" y="95">b1</text>
+<text class="tm xs b mid" x="504" y="95">b0</text>
+<text class="tm sm r mid" x="548" y="96">0</text>
+<rect class="bx b" height="24" rx="3" width="440" x="130" y="108"></rect>
+<text class="tm xs b mid" x="350" y="125">Registro de desplazamiento</text>
+</g>
+<g data-step="2">
+<text class="tm xs y" x="20" y="70">orden de</text>
+<text class="tm xs y" x="20" y="86">arranque</text>
+<path class="ln thin y" d="M52 94 V144" marker-end="url(#m33-ah-y)"></path>
+<rect class="bx o" data-hl="2" height="44" rx="6" width="104" x="14" y="148"></rect>
+<text class="tm xs o mid" x="66" y="166">oscilador</text>
+<text class="tm xs o mid" x="66" y="183">reloj TX</text>
+<path class="ln thin o" d="M118 170 H350 V138" marker-end="url(#m33-ah-o)"></path>
+<text class="tm xs o" x="362" y="160">1 bit / ciclo</text>
+</g>
+<g data-step="3">
+<path class="ln b draw" d="M570 91 H776 V307 H488" id="m33-p-txo" marker-end="url(#m33-ah-b)"></path>
+<text class="tm xs b" x="586" y="82">salida</text>
+<text class="tz sm b" x="590" y="298">señal serie</text>
+<text class="tz sm y" x="586" y="136">arranque + parada:</text>
+<text class="tz sm y" x="586" y="158">referencia de tiempo</text>
+<text class="tz sm y" x="586" y="180">común entre Tx y Rx</text>
+</g>
+<circle class="sl y" data-move="#m33-p-txo" data-move-dur="2200" data-out="4" data-step="3" r="6"></circle>
+<text class="tx sm w" x="20" y="250">Receptor</text>
+<g data-step="3">
+<rect class="bx b" height="34" rx="4" width="300" x="180" y="290"></rect>
+<text class="tm xs b mid" x="330" y="312">Registro de desplazamiento</text>
+</g>
+<g data-step="4">
+<path class="ln thin r" d="M720 307 V346" marker-end="url(#m33-ah-r)"></path>
+<rect class="bx r" data-hl="4" height="44" rx="6" width="150" x="640" y="350"></rect>
+<text class="tm xs r mid" x="715" y="368">detector ↓</text>
+<text class="tm xs r mid" x="715" y="386">bit de arranque</text>
+<path class="ln thin r" d="M640 372 H522" marker-end="url(#m33-ah-r)"></path>
+<rect class="bx o" height="44" rx="6" width="118" x="400" y="350"></rect>
+<text class="tm xs o mid" x="459" y="368">oscilador</text>
+<text class="tm xs o mid" x="459" y="386">reloj RX</text>
+<path class="ln thin o" d="M459 350 V330" marker-end="url(#m33-ah-o)"></path>
+</g>
+<g data-step="5">
+<text class="tm xs b" x="20" y="438">señal</text>
+<path class="ln b draw" d="M110 420 H150 V448 H202 V420 H254 V448 H306 V420 H462 V448 H514 V420 H566 V448 H618 V420 H740"></path>
+<text class="tm xs r mid" x="176" y="410">arranque</text>
+<text class="tm xs y mid" x="228" y="410">1</text>
+<text class="tm xs y mid" x="280" y="410">0</text>
+<text class="tm xs y mid" x="332" y="410">1</text>
+<text class="tm xs y mid" x="384" y="410">1</text>
+<text class="tm xs y mid" x="436" y="410">1</text>
+<text class="tm xs y mid" x="488" y="410">0</text>
+<text class="tm xs y mid" x="540" y="410">1</text>
+<text class="tm xs y mid" x="592" y="410">0</text>
+<text class="tm xs g mid" x="644" y="410">parada</text>
+<text class="tm xs o" x="20" y="490">reloj</text>
+<path class="ln o draw" d="M110 496 H202 V470 H228 V496 H254 V470 H280 V496 H306 V470 H332 V496 H358 V470 H384 V496 H410 V470 H436 V496 H462 V470 H488 V496 H514 V470 H540 V496 H566 V470 H592 V496 H740"></path>
+<path class="ln thin y dash" d="M228 416 V496 M280 416 V496 M332 416 V496 M384 416 V496 M436 416 V496 M488 416 V496 M540 416 V496 M592 416 V496"></path>
+<circle class="sl o" cx="228" cy="420" r="4.5"></circle>
+<circle class="sl o" cx="280" cy="448" r="4.5"></circle>
+<circle class="sl o" cx="332" cy="420" r="4.5"></circle>
+<circle class="sl o" cx="384" cy="420" r="4.5"></circle>
+<circle class="sl o" cx="436" cy="420" r="4.5"></circle>
+<circle class="sl o" cx="488" cy="448" r="4.5"></circle>
+<circle class="sl o" cx="540" cy="420" r="4.5"></circle>
+<circle class="sl o" cx="592" cy="448" r="4.5"></circle>
+<text class="tz sm o" x="606" y="486">muestreo centrado</text>
+</g>
+<g data-step="6">
+<rect class="bx t" data-hl="6" height="34" rx="6" width="124" x="20" y="290"></rect>
+<text class="tm xs t mid" x="82" y="312">contador</text>
+<path class="ln thin t" d="M144 302 H180 M144 312 H180"></path>
+<path class="ln b" d="M330 290 V266" marker-end="url(#m33-ah-b)"></path>
+<text class="tz sm b" x="342" y="272">salida paralelo · b7…b0</text>
+<text class="tz sm g" x="20" y="348">carácter recibido</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="5600"><b>发送器</b>：数据 b7…b0 <b>并行装入</b>（entrada paralelo）<b>移位寄存器</b>（registro de desplazamiento）。寄存器两端是固定的位：靠输出端的是<span class="c-r">起始位 0</span>，另一端是<span class="c-g">停止位 1</span>。所以最先出去的是起始位，接着是最低位 b0。</li>
+<li data-dur="4400">一个<b>启动命令</b>（orden de arranque）启动<span class="c-o">时钟振荡器</span>（oscilador reloj）。振荡器给移位寄存器打拍子：每个周期移出一位。</li>
+<li data-dur="5600">位从输出端（salida）一个接一个地送上串行线。要特别记住：起始位和停止位<b>建立并保持收发两边共同的时间基准</b>（establecen y mantienen una referencia de tiempo común entre Tx y Rx）。</li>
+<li data-dur="5600"><b>接收器</b>：串行信号（señal serie）一路进移位寄存器，一路进<span class="c-r">起始位检测电路</span>（circuito detector bit de arranque），它其实就是一个<b>下降沿检测器</b>。检测到起始位，就启动接收端的<span class="c-o">时钟振荡器</span>；它的频率必须和发送端时钟<b>相同，或者是它的倍数</b>。</li>
+<li data-dur="5600">接收时钟在相对每个 tiempo de bit <b>居中的时刻</b>采样线路，把值装进移位寄存器。这里采样落在接收时钟的下降沿，正对每个数据位的中心；收到的数据位是 1 0 1 1 1 0 1 0。</li>
+<li data-dur="4400">最后，<b>计数器</b>（contador）检查组成这一帧的位是否都已收到；收齐后，字符从移位寄存器<b>并行输出</b>（salida paralelo）。</li>
+</ol>
+
+</figure>
+<p class="takeaway">发送端：b7…b0 并行装入移位寄存器（两端固定起始位 0、停止位 1）→ 启动命令开动振荡器 → 逐位移出，b0 在前。接收端：下降沿检测器启动自己的振荡器 → 在每一位中间采样 → 移位寄存器 → 计数器确认收齐 → 并行输出。起始位和停止位建立并保持两边共同的时间基准，这就是 §1 说的"同步策略"。</p>
+
+</section>
+
+<section class="sec" id="m33-s6">
+<h2><span class="n">§6</span>两个时钟差一点点 <span class="tag">M33.8</span></h2>
+<p class="hook"><span class="zh">接收端的时钟只慢了 3%。读到第 10 位时，采样点偏了多远？</span><span class="es">Deriva entre relojes y mayoría de voto.</span></p>
+<p>接收端的时钟只在起始位的下降沿对齐一次，之后就自己走。收发时钟之间的<b class="t">deriva (ES) / drift (EN)</b>——偏差，会让对线路的采样读到错误的值。偏差每一位都在累积，所以一帧越往后越危险。</p>
+<figure class="stage" data-scene="" id="m33-sc-vote">
+<div class="stage-title"><span>Escena 6 · mayoría de voto</span><b>4 步</b></div>
+<div aria-label="动画：单次采样被干扰读错，多次采样多数表决" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-vote-t" role="img" viewbox="0 0 800 300">
+<title id="m33-sc-vote-t">一个值为 1 的位中间出现干扰毛刺；只采一次读成 0，用更快的时钟在中心附近采 3 次得到 1、0、1，多数表决结果为 1</title>
+<path class="ln thin m dash" d="M200 76 V196 M600 76 V196"></path>
+<path class="ln thin o" d="M202 212 H598" marker-end="url(#m33-ah-o)" marker-start="url(#m33-ah-o)"></path>
+<text class="tz sm o mid" x="400" y="234">1 tiempo de bit</text>
+<path class="ln b" d="M80 170 H200 V100 H600 V170 H720" data-out="2"></path>
+<g data-step="2">
+<path class="ln b" d="M80 170 H200 V100 H390 V170 H410 V100 H600 V170 H720"></path>
+<path class="ln r" d="M390 100 V170 H410 V100"></path>
+<text class="tz sm r" x="420" y="190">ruido · 干扰</text>
+</g>
+<g data-out="3" data-step="2">
+<path class="ln y dash" d="M400 70 V186"></path>
+<circle class="sl r" cx="400" cy="170" r="6"></circle>
+<text class="tz sm r mid" x="400" y="58">只采 1 次 → 0 ✗</text>
+</g>
+<g data-step="3">
+<path class="ln thin o" d="M200 252 V262 M225 252 V262 M250 252 V262 M275 252 V262 M300 252 V262 M325 252 V262 M350 252 V262 M375 252 V262 M400 252 V262 M425 252 V262 M450 252 V262 M475 252 V262 M500 252 V262 M525 252 V262 M550 252 V262 M575 252 V262 M600 252 V262"></path>
+<text class="tz sm o mid" x="400" y="286">更快的采样时钟（示意：每位 16 拍）</text>
+<path class="ln thin y dash" d="M375 76 V186 M400 76 V186 M425 76 V186"></path>
+<circle class="sl g" cx="375" cy="100" r="5.5"></circle>
+<circle class="sl r" cx="400" cy="170" r="5.5"></circle>
+<circle class="sl g" cx="425" cy="100" r="5.5"></circle>
+<text class="tm sm g mid" x="368" y="68">1</text>
+<text class="tm sm r mid" x="400" y="68">0</text>
+<text class="tm sm g mid" x="432" y="68">1</text>
+</g>
+<g data-step="4">
+<rect class="bx y" data-hl="4" height="32" rx="6" width="300" x="250" y="18"></rect>
+<text class="tm y mid" x="400" y="40">2 × 1 · 1 × 0 → 1 ✓</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>理想情况下，接收端在每一位的中心采一次样，离两边的跳变都最远。</li>
+<li data-dur="4400">可是线上会有干扰；而且只要收发时钟有偏差，采样点本身也会离开中心。如果只采一次，正好碰上毛刺就读错了。</li>
+<li data-dur="4800">所以采样通常用<b>频率更高</b>的时钟，在位时间的中心附近连续取<b>几个</b>样本。（这里画 3 个、每位 16 拍只是示意。）</li>
+<li data-dur="4000">取出现次数最多的那个值：<b class="t">mayoría de voto (ES) / majority vote (EN)</b>——多数表决。一个毛刺改变不了结果。</li>
+</ol>
+</figure>
+<h3>偏差为什么是"5% 左右"</h3>
+<p>结论：收发双方不但要约定速率，还要<b>尽可能长时间地保持它不变</b>；时钟之间的偏差<b class="c-r">超过 5%</b>，解码就可能出错。下面的推导只是帮助理解这个数从哪里来：</p>
+<div class="formula" data-tex="t_k = \left(k+\tfrac12\right) T_{bit}\,(1+e) \quad\Longrightarrow\quad |e| \lt \frac{1}{2k+1} \quad\xrightarrow{\;k\,=\,N-1\;}\quad |e| \lt \frac{1}{2N-1}">t_k = (k + ½)·T_bit·(1 + e) ⇒ |e| &lt; 1/(2k+1)；最后一位 k = N − 1 ⇒ |e| &lt; 1/(2N − 1)</div>
+<p class="aside">从起始位的下降沿算起，接收端第 k 位（起始位 k = 0）的采样时刻是 t<sub>k</sub>。e 是接收端 tiempo de bit 的相对偏差。采样点要留在第 k 位里，必须满足上面的不等式；最难满足的是最后一位。10 位的帧：1/19 ≈ 5.3 %；11 位：≈ 4.8 %；12 位：≈ 4.3 %。这是只考虑偏差的理想界限，实际电路还有检测下降沿本身的误差，余量更小。所以具体界限随帧长略有不同，要记的是 5 % 这个整数。</p>
+<div class="note">
+<span class="lbl">试试看</span>
+<p>回到 <a href="#m33-builder">§4 的帧构造器</a>，打开 RX 采样，把偏差拖到 +6 % 或 −6 %：最后几位的采样点会滑进相邻的位。黄色表示"位置已经错了，但相邻位的值碰巧相同"，红色表示真的读错。换一个字符（比如 'U'，0x55，相邻位交替），读错会更明显。</p>
+</div>
+<h3>标准速率</h3>
+<p>速率通常取标准值：<b>110、300、1200、2400、4800、9600、14400、19200、28800、33600、57600、115200</b>……baudios。右两列是按 T<sub>bit</sub> = 1 / v 和 8 个数据位、无校验、1 个停止位（10 位一帧）算出来的。</p>
+<div class="tbl-wrap">
+<table class="bauds">
+<thead><tr><th>baudios</th><th>tiempo de bit</th><th>10 位一帧时每秒最多字符数</th></tr></thead>
+<tbody>
+<tr><td>110</td><td>9.091 ms</td><td>11</td></tr>
+<tr><td>300</td><td>3.333 ms</td><td>30</td></tr>
+<tr><td>1200</td><td>833.3 µs</td><td>120</td></tr>
+<tr><td>2400</td><td>416.7 µs</td><td>240</td></tr>
+<tr><td>4800</td><td>208.3 µs</td><td>480</td></tr>
+<tr class="std"><td>9600</td><td>104.2 µs</td><td>960</td></tr>
+<tr><td>14400</td><td>69.44 µs</td><td>1440</td></tr>
+<tr><td>19200</td><td>52.08 µs</td><td>1920</td></tr>
+<tr><td>28800</td><td>34.72 µs</td><td>2880</td></tr>
+<tr><td>33600</td><td>29.76 µs</td><td>3360</td></tr>
+<tr><td>57600</td><td>17.36 µs</td><td>5760</td></tr>
+<tr><td>115200</td><td>8.681 µs</td><td>11520</td></tr>
+</tbody>
+</table>
+</div>
+<p class="takeaway">接收端只在起始位对齐一次，偏差逐位累积；界限是 5%。多数表决对付的是短促的干扰和不太大的偏差，不能替代"两边时钟要准"。</p>
+
+</section>
+
+<section class="sec" id="m33-s7">
+<h2><span class="n">§7</span>接到 PC：RS-232 与虚拟 COM 口 <span class="tag">M33.9</span></h2>
+<p class="hook"><span class="zh">PC 的"串口"也是 UART。为什么不能直接把它接到微控制器的引脚上？</span><span class="es">El estándar RS-232 y los puertos COM virtuales.</span></p>
+<p>PC 里有一个 UART，接在一套符合 <b class="t">RS-232</b> 标准的电路上，这就是所说的"PC 的串口"（puerto serie del PC）。这个标准规定了：</p>
+<ul>
+<li>通信协议；</li>
+<li>设备上使用的连接器；</li>
+<li>电气特性（线上的电压电平、阻抗……）；</li>
+<li>连接距离：<b>15 m</b>；</li>
+<li><b>点对点</b>（punto a punto）：不是多点总线，不能挂两台以上的设备。</li>
+</ul>
+<p>RS-232 规定的是 <b class="t">DTE, equipo terminal de datos (ES) / data terminal equipment (EN)</b>——数据终端设备和 <b class="t">DCE, equipo de comunicación de datos (ES)</b>——数据通信设备之间的通信。关键在电平：</p>
+<figure class="stage" data-scene="" id="m33-sc-rs232">
+<div class="stage-title"><span>Escena 7 · niveles RS-232</span><b>5 步</b></div>
+<div aria-label="动画：微控制器逻辑电平与 RS-232 电平的对比" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-rs232-t" role="img" viewbox="0 0 800 392">
+<title id="m33-sc-rs232-t">上方是微控制器一侧的逻辑电平帧；中间是电平转换器；下方是 RS-232 电压轴，mark 在负三到负二十四伏，space 在正三到正二十四伏，转换后的波形上下翻转</title>
+<path class="ln thin m" d="M120 160 V360"></path>
+<path class="ln thin m dash" d="M120 260 H740"></path>
+<text class="tm xs m end" x="112" y="168">+24 V</text>
+<text class="tm xs m end" x="112" y="216">+12</text>
+<text class="tm xs m end" x="112" y="252">+3</text>
+<text class="tm xs m end" x="112" y="264">0</text>
+<text class="tm xs m end" x="112" y="276">−3</text>
+<text class="tm xs m end" x="112" y="312">−12</text>
+<text class="tm xs m end" x="112" y="360">−24 V</text>
+<g data-step="1">
+<rect class="bx o tint" height="84" rx="3" style="opacity:.6" width="618" x="122" y="164"></rect>
+<rect class="bx b tint" height="84" rx="3" style="opacity:.6" width="618" x="122" y="272"></rect>
+<text class="tz sm o" x="132" y="186">space · '0' · +3 … +24 V</text>
+<text class="tz sm b" x="132" y="348">mark · '1' · −3 … −24 V</text>
+</g>
+<g data-step="2">
+<text class="tz sm b" x="20" y="62">MCU</text>
+<text class="tm xs m end" x="132" y="44">1</text>
+<text class="tm xs m end" x="132" y="80">0</text>
+<path class="ln b draw" d="M140 40 H190 V76 H240 V40 H290 V76 H540 V40 H590 V76 H640 V40 H740"></path>
+</g>
+<g data-step="3">
+<rect class="bx y" data-hl="3" height="34" rx="6" width="200" x="340" y="94"></rect>
+<text class="tm xs y mid" x="440" y="116">conversor de niveles</text>
+<path class="ln thin y" d="M440 128 V156" marker-end="url(#m33-ah-y)"></path>
+</g>
+<g data-step="4">
+<path class="ln y draw" d="M140 308 H190 V212 H240 V308 H290 V212 H540 V308 H590 V212 H640 V308 H740"></path>
+<text class="tm sm o" x="748" y="216">0</text>
+<text class="tm sm b" x="748" y="312">1</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" x="440" y="384">reposo = '1' = mark → −12 V</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4800">RS-232 的电平：逻辑 '1' 叫 <b class="c-b">mark</b>，通常是 <b>−12 V</b>；逻辑 '0' 叫 <b class="c-o">space</b>，通常是 <b>+12 V</b>。标准允许 mark 在 −3 到 −24 V 之间，space 在 +3 到 +24 V 之间。</li>
+<li data-dur="4000">微控制器这边，UART 帧用的是逻辑电平：空闲和 '1' 是高，'0' 是低。（同一个 'A'，8 个数据位、无校验、1 个停止位。）</li>
+<li data-dur="4000">两边的电压完全不同，所以要把微控制器接到 PC 的串口，中间必须加<b>电平转换器</b>（conversores de niveles）。</li>
+<li data-dur="4200">转换后的 RS-232 波形：'1' 变成 −12 V，'0' 变成 +12 V。和上面的逻辑波形比，看起来像上下翻了过来。</li>
+<li data-dur="4200">把两件事放在一起：UART 空闲时是高电平，也就是 '1' = mark，所以 RS-232 线在空闲时停在 −12 V 附近。</li>
+</ol>
+<p class="stage-note">RS-232 一侧的电压轴画到 ±24 V 的上限；微控制器一侧只画逻辑 1 / 0，不标电压。</p>
+</figure>
+<p>除了电气特性，标准还规定了机械特性：连接器是 9 针的 D 型连接器（<b class="t">DB9 / D9</b>）：</p>
+<div class="grid3">
+<div class="cell b"><span class="k c-b">2 针</span><h3>Tx、Rx</h3><p>数据的发送和接收。</p></div>
+<div class="cell p"><span class="k c-p">1 针</span><h3>masa común</h3><p>公共地。</p></div>
+<div class="cell o"><span class="k c-o">6 针</span><h3>control</h3><p>通信控制信号。</p></div>
+</div>
+<p>可是现在大多数台式机和笔记本已经没有这种串口和 D9 连接器了，所以要用 <b>USB-RS232</b> 或 <b>USB-UART</b> 转换线，并安装它们的驱动。驱动会创建一个 <b class="t">puerto COM virtual (ES) / virtual COM port, VCP (EN)</b>——虚拟 COM 口，它模拟一个标准 COM 口，用起来和 PC 上任何其他 COM 口一样。</p>
+<p>MSP-EXP430F5529LP 开发板自带这条通路（板子的结构见 <a href="m12.html#s1">M12 §1</a>）：</p>
+<figure class="stage" data-scene="" id="m33-sc-board">
+<div class="stage-title"><span>Escena 7b · de la placa al puerto COM</span><b>5 步</b></div>
+<div aria-label="动画：开发板上的 USB hub、ez-FET 复合设备和 MSP Application UART1" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m33-sc-board-t" role="img" viewbox="0 0 800 310">
+<title id="m33-sc-board-t">PC 经 USB 接到板上的 hub TUSB2046，hub 的两路分别接应用板和 ez-FET；ez-FET 有调试接口和虚拟 UART 接口，后者接到 F5529 的 USCI_A1；设备管理器的 Ports (COM &amp; LPT) 下出现 MSP Application UART1 和 MSP Debug Interface 两个 COM 口，串口通信选前者</title>
+<rect class="bx w" height="80" rx="8" width="120" x="16" y="100"></rect>
+<text class="tx sm w mid" x="76" y="136">PC</text>
+<text class="tm xs m mid" x="76" y="160">host USB</text>
+<g data-step="1">
+<path class="ln w draw" d="M136 140 H196"></path>
+<text class="tm xs m mid" x="166" y="130">USB</text>
+<rect class="bx m" height="96" rx="8" width="130" x="196" y="92"></rect>
+<text class="tz sm w mid" x="261" y="122">hub</text>
+<text class="tm xs w mid" x="261" y="146">TUSB2046</text>
+<text class="tm xs m mid" x="261" y="168">4 conexiones</text>
+<circle class="sl b" cx="334" cy="104" r="5"></circle>
+<circle class="sl b" cx="334" cy="126" r="5"></circle>
+<circle class="bx hollow m" cx="334" cy="154" r="5"></circle>
+<circle class="bx hollow m" cx="334" cy="176" r="5"></circle>
+</g>
+<g data-step="2">
+<path class="ln b draw" d="M339 104 H370 V59 H400"></path>
+<path class="ln b draw" d="M339 126 H370 V155 H400"></path>
+<rect class="bx t" height="50" rx="8" width="200" x="400" y="34"></rect>
+<text class="tz sm t mid" x="500" y="56">placa de aplicación</text>
+<text class="tm xs m mid" x="500" y="75">Target F5529 · USB</text>
+<rect class="bx o" height="70" rx="8" width="200" x="400" y="120"></rect>
+<text class="tm o mid" x="500" y="150">ez-FET</text>
+<text class="tm xs m mid" x="500" y="174">depurador-programador</text>
+<text class="tm xs m mid" x="261" y="210">2 de 4 en uso</text>
+</g>
+<g data-step="3">
+<path class="ln o draw" d="M600 145 H620 V122 H640"></path>
+<rect class="bx w" height="44" rx="6" width="150" x="640" y="100"></rect>
+<text class="tz sm w mid" x="715" y="119">depuración</text>
+<text class="tm xs m mid" x="715" y="137">JTAG · Spy-Bi-Wire</text>
+<text class="tm xs o mid" x="500" y="108">USB compuesto</text>
+</g>
+<g data-step="4">
+<path class="ln o draw" d="M600 165 H620 V202 H640"></path>
+<rect class="bx y" data-hl="4" height="44" rx="6" width="150" x="640" y="180"></rect>
+<text class="tz sm y mid" x="715" y="199">UART virtual</text>
+<text class="tm xs y mid" x="715" y="217">→ USCI_A1</text>
+<path class="ln thin y" d="M715 224 V252 H604" marker-end="url(#m33-ah-y)"></path>
+<rect class="bx b" height="38" rx="6" width="200" x="400" y="234"></rect>
+<text class="tm xs b mid" x="500" y="258">MSP430F5529 · USCI_A1</text>
+</g>
+<g data-step="5">
+<rect class="bx hollow m" height="84" rx="6" width="364" x="16" y="222"></rect>
+<text class="tm xs m" x="28" y="240">devmgmt.msc · Ports (COM &amp; LPT)</text>
+<text class="tm xs m" x="44" y="258">ECP Printer Port (LPT1)</text>
+<rect class="ln y" data-hl="5" height="22" rx="3" width="300" x="36" y="264"></rect>
+<text class="tm sm y" x="44" y="280">MSP Application UART1 (COM13)</text>
+<text class="tm xs w" x="44" y="299">MSP Debug Interface (COM12)</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4000">板上有一个 USB hub 芯片 <b>TUSB2046</b>，能和 PC 的 USB 主机建立 4 路物理连接。</li>
+<li data-dur="4600">实际用了其中 2 路：一路接应用板（placa de aplicación），这一路连的是 F5529 自带的 USB 外设，用来开发 USB 设备；另一路接调试 / 编程器 <b>ez-FET</b>。</li>
+<li data-dur="5200">ez-FET 实际上是一个 <b>USB 复合设备</b>（dispositivo USB compuesto），对 PC 呈现两个接口，两个都是虚拟串口。第一个用于对 MSP430F5529 上的程序进行下载和调试，走 JTAG 的 Spy-Bi-Wire 版本；设备管理器里叫 <b>MSP Debug Interface</b>。</li>
+<li data-dur="4800">第二个是<b>虚拟串口 UART</b>接口，接到微控制器的 <b class="c-y">USCI_A1</b>（M34 讲 USCI）；设备管理器里叫 <b class="c-y">MSP Application UART1</b>。它也叫 <b class="t">backchannel UART (EN)</b>——反向通道串口。</li>
+<li data-dur="5600">所以用 microUSB 线把板子接到 Windows PC，设备管理器（Win + R，输入 <code>devmgmt.msc</code>）的 <b>Ports (COM &amp; LPT)</b> 下会多出两个 COM 口。要和板子做串口通信，就用 <b class="c-y">MSP Application UART1</b> 对应的 COM 号。COM 号因电脑而异（图里是 COM13 和 COM12），名字不变。</li>
+</ol>
+
+</figure>
+<p class="takeaway">RS-232：mark '1' ≈ −12 V，space '0' ≈ +12 V，15 m，点对点，DB9（2 数据 + 1 地 + 6 控制），所以微控制器要经电平转换才能接。今天多用 USB 转换线和虚拟 COM 口；LaunchPad 上就是 ez-FET 提供的 MSP Application UART1 → USCI_A1（另一个 COM 口 MSP Debug Interface 是调试用的）。下一章 <a href="m34.html">M34</a> 讲怎样配置 USCI_A1 的 UART 模式和波特率寄存器。</p>
+
+</section>
+
+<section class="sec" id="m33-practica">
+<h2>随机数值练习 <span class="tag plain">1 种题型</span></h2>
+<p class="aside">按 §4 的公式随机出数，每次都不一样，重点是方法：先数清一帧有几位，再除以速率。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="frame"></div>
+</div>
+</section>
+
+<section class="sec" id="m33-quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M33">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>串行接口相对并行接口的优点里，<b>不</b>包括哪一项？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>需要的线更少</button>
+<button data-o="b" type="button"><span class="k">B</span>芯片需要的引脚更少</button>
+<button data-o="c" type="button"><span class="k">C</span>传输速度更快</button>
+<button data-o="d" type="button"><span class="k">D</span>简化 PCB 设计</button>
+</div>
+<p class="why"><b>C。</b>正好相反：串行总线比并行总线慢（§0）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>同步串行通信和异步串行通信最本质的区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>同步通信只能单向</button>
+<button data-o="b" type="button"><span class="k">B</span>同步通信把时钟信号随数据一起传；异步不传时钟，两边各用自己的时钟</button>
+<button data-o="c" type="button"><span class="k">C</span>异步通信不需要地线</button>
+<button data-o="d" type="button"><span class="k">D</span>异步通信的两边不需要约定频率</button>
+</div>
+<p class="why"><b>B。</b>异步也至少要数据线和地线，而且两边必须约定频率并想办法同步（§1）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>按 §2 的分类，I2C 属于哪一类？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>símplex：只能单向</button>
+<button data-o="b" type="button"><span class="k">B</span>dúplex：有两根数据线</button>
+<button data-o="c" type="button"><span class="k">C</span>异步接口</button>
+<button data-o="d" type="button"><span class="k">D</span>semi-dúplex：只有一根数据线，双向但不能同时</button>
+</div>
+<p class="why"><b>D。</b>I2C 是同步接口，只有一根数据线（datos，另有 reloj、tierra），两个方向轮流用，所以是半双工（§2、§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>SPI 怎样决定和哪个从机通信？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>用一根选择线（línea de selección）</button>
+<button data-o="b" type="button"><span class="k">B</span>maestro 先发从机地址</button>
+<button data-o="c" type="button"><span class="k">C</span>等从机回 ACK 后再开始</button>
+<button data-o="d" type="button"><span class="k">D</span>用起始位</button>
+</div>
+<p class="why"><b>A。</b>地址和 ACK 是 I2C 的做法；SPI 没有地址也没有确认（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>UART 线路上没有字符要发时，处于什么状态？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>低电平</button>
+<button data-o="b" type="button"><span class="k">B</span>高电平（reposo）</button>
+<button data-o="c" type="button"><span class="k">C</span>高阻态</button>
+<button data-o="d" type="button"><span class="k">D</span>不停地发 0x00</button>
+</div>
+<p class="why"><b>B。</b>空闲是高电平，起始位把线拉低，这个下降沿才能标出一帧的开始（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">06</span>用 8 个数据位发送 0x41（0100 0001），起始位之后线上依次出现的数据位是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>1 0 0 0 0 0 1 0</button>
+<button data-o="b" type="button"><span class="k">B</span>0 1 0 0 0 0 0 1</button>
+<button data-o="c" type="button"><span class="k">C</span>先发高半字节 0100，再发低半字节 0001</button>
+<button data-o="d" type="button"><span class="k">D</span>8 位同时出现</button>
+</div>
+<p class="why"><b>A。</b>数据位从低位到高位发送：b0 = 1 先出去，b7 = 0 最后（§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span>停止位的作用是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>把线路拉低一个 tiempo de bit</button>
+<button data-o="b" type="button"><span class="k">B</span>检查帧里有没有错</button>
+<button data-o="c" type="button"><span class="k">C</span>把线路拉回高电平，保证能检测到下一个字符起始位的下降沿</button>
+<button data-o="d" type="button"><span class="k">D</span>告诉接收端有几个数据位</button>
+</div>
+<p class="why"><b>C。</b>A 是起始位，B 是校验位；数据位数是事先约定的参数（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>9600 baudios，8 个数据位、无校验、1 个停止位。发送一个字符最少要多少时间？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>约 0.83 ms</button>
+<button data-o="b" type="button"><span class="k">B</span>约 1.04 ms</button>
+<button data-o="c" type="button"><span class="k">C</span>约 1.15 ms</button>
+<button data-o="d" type="button"><span class="k">D</span>9.6 ms</button>
+</div>
+<p class="why"><b>B。</b>1 + 8 + 0 + 1 = 10 位，10 / 9600 s ≈ 1.04 ms。A 只算了 8 个数据位，C 是按 11 位算的（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">09</span>UART 接收器怎样跟上发送端的节拍？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>使用发送端送来的时钟线</button>
+<button data-o="b" type="button"><span class="k">B</span>先比较地址</button>
+<button data-o="c" type="button"><span class="k">C</span>每个字节后回一个 ACK</button>
+<button data-o="d" type="button"><span class="k">D</span>下降沿检测器发现起始位后启动接收时钟，在每一位的中间采样</button>
+</div>
+<p class="why"><b>D。</b>UART 不传时钟；接收时钟的频率要和发送端相同或是它的倍数（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">10</span>接收端为什么常用更高频率的时钟、在位中心附近取几个样本？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>应对时钟偏差带来的错误采样：取出现次数最多的值（多数表决）</button>
+<button data-o="b" type="button"><span class="k">B</span>为了提高波特率</button>
+<button data-o="c" type="button"><span class="k">C</span>为了省掉停止位</button>
+<button data-o="d" type="button"><span class="k">D</span>为了产生校验位</button>
+</div>
+<p class="why"><b>A。</b>这就是 mayoría de voto。界限是：偏差超过 5% 就可能解码出错（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">11</span>RS-232 中逻辑 '1'（mark）通常是多少伏？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0 V</button>
+<button data-o="b" type="button"><span class="k">B</span>+3 V</button>
+<button data-o="c" type="button"><span class="k">C</span>−12 V</button>
+<button data-o="d" type="button"><span class="k">D</span>+12 V</button>
+</div>
+<p class="why"><b>C。</b>+12 V 是 '0'（space）。标准允许 mark 在 −3…−24 V、space 在 +3…+24 V，所以需要电平转换器（§7）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>用 USB 线把 MSP-EXP430F5529LP 接到 PC，要和板子做串口通信，应该打开哪个 COM 口？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>随便哪一个都行</button>
+<button data-o="b" type="button"><span class="k">B</span>MSP Application UART1 对应的那个</button>
+<button data-o="c" type="button"><span class="k">C</span>MSP Debug Interface 对应的那个</button>
+<button data-o="d" type="button"><span class="k">D</span>永远是 COM1</button>
+</div>
+<p class="why"><b>B。</b>它是 ez-FET 的虚拟 UART 接口，接到 USCI_A1。MSP Debug Interface 虽然也显示成 COM 口，却是下载和调试用的（JTAG / Spy-Bi-Wire）。COM 号因电脑而异，名字不变（§7）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="m33-terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">interfaz paralela / serie<small>parallel / serial interface</small></span><span class="back"><b>并行 / 串行接口</b><br/>一位一根线同时送 / 一根线一位接一位送。串行线少但慢。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">tiempo de bit<small>bit time</small></span><span class="back"><b>位时间</b><br/>每一位在线上停留的时间；= 1 / baudios。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">comunicación síncrona<small>synchronous</small></span><span class="back"><b>同步通信</b><br/>时钟随数据一起传；至少 3 根线。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">comunicación asíncrona<small>asynchronous</small></span><span class="back"><b>异步通信</b><br/>不传时钟，两边各有时钟，要约定频率并同步；至少 2 根线。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">símplex<small>simplex</small></span><span class="back"><b>单向</b><br/>只朝一个方向；至少 2 根线。例：单向 UART。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">semi-dúplex<small>half-duplex</small></span><span class="back"><b>半双工</b><br/>一根数据线，双向轮流；至少 2 根线。例：I2C。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">dúplex<small>full-duplex</small></span><span class="back"><b>全双工</b><br/>两根数据线，可以同时双向；至少 3 根线。例：SPI、双向 UART。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">maestro / esclavo<small>master / slave</small></span><span class="back"><b>主机 / 从机</b><br/>产生时钟的是主机，接收时钟的是从机。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">I2C<small>bus serie síncrono</small></span><span class="back"><b>I2C 总线</b><br/>每个设备有地址；起止条件、读/写、每字节 ACK；半双工；适合连很多设备。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SPI<small>interfaz serie síncrono</small></span><span class="back"><b>SPI 接口</b><br/>选择线选从机，两根数据线全双工；无地址无 ACK；线多但简单、快，适合大量数据。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UART<small>Universal Asynchronous Receiver/Transmitter</small></span><span class="back"><b>通用异步收发器</b><br/>不传时钟、逐帧传字符；帧内时序刚性。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bit de arranque<small>start bit</small></span><span class="back"><b>起始位</b><br/>把线拉低 1 个位时间；下降沿让收发时钟同步。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bit de paridad<small>parity bit</small></span><span class="back"><b>校验位</b><br/>可选，用来检查帧里有没有错。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bits de parada<small>stop bits</small></span><span class="back"><b>停止位</b><br/>1 或 2 位高电平；保证能检测到下一个起始位的下降沿。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">baudio<small>baud</small></span><span class="back"><b>波特</b><br/>信号每秒变化 1 次；UART 里等于 bit/s。标准值 …9600…115200。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mayoría de voto<small>majority vote</small></span><span class="back"><b>多数表决</b><br/>位中心附近采几个样本，取出现最多的值；偏差 &gt; 5% 可能解码出错。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RS-232 · mark / space</span><span class="back"><b>PC 串口标准</b><br/>'1' = mark ≈ −12 V，'0' = space ≈ +12 V；DB9；15 m；点对点。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">puerto COM virtual<small>VCP · MSP Application UART1</small></span><span class="back"><b>虚拟 COM 口</b><br/>驱动模拟的标准 COM 口。LaunchPad 会出现两个：MSP Application UART1（→ USCI_A1，串口通信用）和 MSP Debug Interface（调试用）。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M33"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  if (window.MICRO33Init) return;
+  window.MICRO33Init = true;
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+  var NS = "http://www.w3.org/2000/svg";
+  var g = $("m33-fb-g"), dot = $("m33-fb-dot"), out = $("m33-fb-out"), sendBtn = $("m33-fb-send");
+  if (!g || !dot || !out || !sendBtn) return;
+
+  var X0 = 20, X1 = 780, YH = 92, YL = 150;
+  var st = { code: 65, raw: 65, wide: false, db: 8, par: "none", sb: 1, baud: 9600, rx: true, drift: 0 };
+  var geo = null, anim = 0;
+
+  function mk(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    g.appendChild(e);
+    return e;
+  }
+  function fmt(x, d) { var s = (+x).toFixed(d); if (s.indexOf(".") >= 0) s = s.replace(/0+$/, "").replace(/\.$/, ""); return s; }
+  function tstr(sec) { return sec >= 1e-3 ? fmt(sec * 1e3, 3) + " ms" : fmt(sec * 1e6, 2) + " µs"; }
+  function hex2(v) { var s = v.toString(16).toUpperCase(); return "0x" + (s.length < 2 ? "0" + s : s); }
+  function bin(v, n) { var s = v.toString(2); while (s.length < n) s = "0" + s; return s; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function shown(v) { return v >= 33 && v < 127 ? "'" + esc(String.fromCharCode(v)) + "'" : (v === 32 ? "空格" : "（不可打印）"); }
+
+  function frame() {
+    var code = st.raw & (st.db === 8 ? 0xFF : 0x7F);
+    var list = [{ v: 0, n: "Arr", k: "r" }], ones = 0, i;
+    for (i = 0; i < st.db; i++) { var b = (code >> i) & 1; ones += b; list.push({ v: b, n: "b" + i, k: "b" }); }
+    if (st.par !== "none") list.push({ v: st.par === "even" ? ones % 2 : 1 - (ones % 2), n: "Par", k: "t" });
+    for (i = 0; i < st.sb; i++) list.push({ v: 1, n: "Stop", k: "g" });
+    return { code: code, list: list, ones: ones };
+  }
+
+  function draw() {
+    while (g.firstChild) g.removeChild(g.firstChild);
+    var f = frame(), L = f.list, N = L.length, slots = N + 2, w = (X1 - X0) / slots, xs = X0 + w, i;
+    var lev = [1];
+    for (i = 0; i < N; i++) lev.push(L[i].v);
+    lev.push(1);
+    geo = { w: w, lev: lev, slots: slots };
+
+    for (i = 0; i < N; i++) {
+      mk("rect", { "class": "bx tint " + L[i].k, x: (xs + i * w + 1.5).toFixed(1), y: 66, width: (w - 3).toFixed(1), height: 108, rx: 3, style: "opacity:.5" });
+    }
+    var d = "";
+    for (i = 1; i < slots; i++) d += "M" + (X0 + i * w).toFixed(1) + " 66 V176 ";
+    mk("path", { "class": "ln thin m dash", d: d });
+    var p = "M" + X0 + " " + (lev[0] ? YH : YL);
+    for (i = 0; i < slots; i++) {
+      if (i > 0 && lev[i] !== lev[i - 1]) p += " V" + (lev[i] ? YH : YL);
+      p += " H" + (X0 + (i + 1) * w).toFixed(1);
+    }
+    mk("path", { "class": "ln b", d: p });
+    mk("text", { "class": "tm xs m", x: X0 + 4, y: 56 }, "TX");
+    mk("text", { "class": "tm xs m mid", x: (X0 + w / 2).toFixed(1), y: 196 }, "rep.");
+    mk("text", { "class": "tm xs m mid", x: (X1 - w / 2).toFixed(1), y: 196 }, "rep.");
+    for (i = 0; i < N; i++) {
+      var cx = (xs + (i + 0.5) * w).toFixed(1);
+      mk("text", { "class": "tm sm mid " + (L[i].k === "b" ? "y" : L[i].k), x: cx, y: 56 }, String(L[i].v));
+      mk("text", { "class": "tm xs mid " + L[i].k, x: cx, y: 196 }, L[i].n);
+    }
+
+    var e = st.drift / 100, rx = [], wrongVal = [], wrongPos = [];
+    if (st.rx) {
+      mk("text", { "class": "tm xs m", x: X0 + 4, y: 262 }, "RX");
+      for (i = 0; i < N; i++) {
+        var pos = (i + 0.5) * (1 + e), idx = Math.floor(pos);
+        var v = idx >= 0 && idx < N ? L[idx].v : 1;
+        var okV = v === L[i].v, okP = idx === i;
+        rx.push(v);
+        if (!okV) wrongVal.push(L[i].n); else if (!okP) wrongPos.push(L[i].n);
+        var cls = !okV ? "r" : (!okP ? "y" : "o");
+        var sx = (xs + pos * w).toFixed(1);
+        mk("path", { "class": "ln thin dash " + cls, d: "M" + sx + " 66 V238" });
+        mk("circle", { "class": "sl " + cls, cx: sx, cy: v ? YH : YL, r: 4.5 });
+        mk("text", { "class": "tm sm mid " + (!okV ? "r" : "g"), x: sx, y: 262 }, String(v));
+      }
+    }
+
+    
+    var nd = st.db, np = st.par === "none" ? 0 : 1, ns = st.sb, tb = 1 / st.baud;
+    var order = [];
+    for (i = 1; i <= nd; i++) order.push(L[i].v);
+    var h = "<b>" + shown(f.code) + "</b> = " + hex2(f.code) + " = " + bin(f.code, nd) + "₂ → 先发低位：" + order.join(" ");
+    if (st.wide) h += " <span class=\"bad\">（只支持单字节字符，已改用 '?'）</span>";
+    else if (nd === 7 && st.raw > 127) h += " <span class=\"bad\">（编码大于 127，7 位只能发低 7 位）</span>";
+    h += "<br>每帧 N = 1 + " + nd + " + " + np + " + " + ns + " = <b>" + N + "</b> 位 · T<sub>bit</sub> = 1 / " + st.baud + " s = " + tstr(tb) +
+      " · 一帧 = <b>" + tstr(N * tb) + "</b> · 数据占 " + nd + " / " + N + " = " + fmt(100 * nd / N, 1) + " %";
+    if (np) h += "<br>校验（" + (st.par === "even" ? "偶" : "奇") + "）：数据里有 " + f.ones + " 个 1 → P = " + L[1 + nd].v;
+    if (st.rx) {
+      var got = 0;
+      for (i = 0; i < nd; i++) got |= rx[1 + i] << i;
+      var probs = [];
+      if (rx[0] !== 0) probs.push("起始位没读到 0");
+      if (np) {
+        var c1 = 0;
+        for (i = 0; i < nd; i++) c1 += rx[1 + i];
+        var pe = st.par === "even" ? c1 % 2 : 1 - (c1 % 2);
+        if (pe !== rx[1 + nd]) probs.push("校验不符");
+      }
+      for (i = 0; i < ns; i++) if (rx[1 + nd + np + i] !== 1) { probs.push("停止位读到 0"); break; }
+      var good = !wrongVal.length;
+      h += "<br>RX · 偏差 e = " + (st.drift > 0 ? "+" : "") + fmt(st.drift, 1) + " %：" +
+        (good ? "<span class=\"ok\">每一位都读对</span>" : "<span class=\"bad\">读错 " + wrongVal.join("、") + "</span>") +
+        (wrongPos.length ? "；<span class=\"y\">" + wrongPos.join("、") + " 的采样点已落进相邻位，只是值碰巧相同</span>" : "") +
+        " → 收到 " + hex2(got) + " " + shown(got) + (good ? " <span class=\"ok\">✓</span>" : " <span class=\"bad\">✗</span>") +
+        (probs.length ? "（" + probs.join("，") + "）" : "") +
+        "。这一帧的理想界限 ±1/(2N−1) = ±" + fmt(100 / (2 * N - 1), 2) + " %（见 §6）。";
+    }
+    out.innerHTML = h;
+  }
+
+  function cancel() {
+    anim++;
+    dot.style.opacity = 0;
+    sendBtn.disabled = false;
+  }
+  function send() {
+    cancel();
+    var my = anim;
+    if (!geo) return;
+    if (reduce) {
+      dot.setAttribute("cx", X1); dot.setAttribute("cy", YH); dot.style.opacity = 1;
+      setTimeout(function () { if (my === anim) dot.style.opacity = 0; }, 700);
+      return;
+    }
+    sendBtn.disabled = true;
+    dot.style.opacity = 1;
+    var t0 = null, dur = 3000;
+    function step(ts) {
+      if (my !== anim) return;
+      if (t0 == null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur), x = X0 + (X1 - X0) * k;
+      var j = Math.min(geo.slots - 1, Math.floor((x - X0) / geo.w));
+      dot.setAttribute("cx", x.toFixed(1));
+      dot.setAttribute("cy", geo.lev[j] ? YH : YL);
+      if (k < 1) { requestAnimationFrame(step); return; }
+      sendBtn.disabled = false;
+      setTimeout(function () { if (my === anim) dot.style.opacity = 0; }, 400);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function setChar(s) {
+    if (!s) return;
+    var c = s.charCodeAt(0);
+    if (c > 255) { st.wide = true; st.raw = 63; }
+    else { st.wide = false; st.raw = c; }
+  }
+  var chIn = $("m33-fb-ch"), dbIn = $("m33-fb-db"), parIn = $("m33-fb-par"), sbIn = $("m33-fb-sb"), baudIn = $("m33-fb-baud");
+  var drIn = $("m33-fb-drift"), drOut = $("m33-fb-dv"), rxBtn = $("m33-fb-rx"), zero = $("m33-fb-zero");
+  function showDrift() { drOut.textContent = (st.drift > 0 ? "+" : "") + st.drift.toFixed(1) + " %"; }
+  function changed() { cancel(); draw(); }
+
+  chIn.addEventListener("input", function () { if (!chIn.value) return; setChar(chIn.value); changed(); });
+  chIn.addEventListener("focus", function () { try { chIn.select(); } catch (e) {  } });
+  dbIn.addEventListener("change", function () { st.db = +dbIn.value; changed(); });
+  parIn.addEventListener("change", function () { st.par = parIn.value; changed(); });
+  sbIn.addEventListener("change", function () { st.sb = +sbIn.value; changed(); });
+  baudIn.addEventListener("change", function () { st.baud = +baudIn.value; changed(); });
+  drIn.addEventListener("input", function () { st.drift = parseFloat(drIn.value) || 0; showDrift(); changed(); });
+  rxBtn.addEventListener("click", function () {
+    st.rx = !st.rx;
+    rxBtn.setAttribute("aria-pressed", st.rx ? "true" : "false");
+    changed();
+  });
+  zero.addEventListener("click", function () { st.drift = 0; drIn.value = "0"; showDrift(); changed(); });
+  sendBtn.addEventListener("click", send);
+
+  
+  setChar(chIn.value || "A");
+  st.db = +dbIn.value || 8; st.par = parIn.value || "none"; st.sb = +sbIn.value || 1; st.baud = +baudIn.value || 9600;
+  st.drift = parseFloat(drIn.value) || 0;
+  showDrift();
+  draw();
+})();
+</script>
+</body>
+</html>

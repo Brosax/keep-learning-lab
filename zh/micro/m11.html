@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M11 CPU y memoria · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.sec ul.m11-cols { display: block; columns: 2 13rem; column-gap: 1.6rem; }
+.sec ul.m11-cols li { break-inside: avoid; margin-bottom: .2rem; }
+.srwrap { overflow-x: auto; padding-bottom: 2px; }
+.srbits { display: grid; grid-template-columns: 2.2fr repeat(9, minmax(0, 1fr)); gap: 4px; min-width: 33rem; }
+.srb {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 2px;
+  cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font: 600 12px/1.25 var(--f-mono); color: var(--muted); text-align: center;
+}
+.srb .bn { font-size: 11px; color: var(--muted); }
+.srb .bl { font-size: 12.5px; color: var(--ink); }
+.srb.f .bl { color: var(--blue); }
+.srb.g .bl { color: var(--green); }
+.srb.o .bl { color: var(--gold); }
+.srb:hover { border-color: var(--yellow); }
+.srb.on { border-color: var(--yellow); background: var(--yellow-soft); }
+.srx .panel { margin-top: 10px; min-height: 7rem; }
+.srx .panel .big { font: 700 1.15rem/1.3 var(--f-mono); color: var(--yellow); }
+.lk-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.lk-row input {
+  font: 600 15px/1.4 var(--f-mono); padding: 6px 10px; border-radius: 6px; width: 10rem; max-width: 100%;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.lk-row input:focus { outline: 2px solid var(--yellow); outline-offset: 1px; }
+.lk-out { min-height: 6.5rem; }
+.lk-out .big { font: 700 1.15rem/1.35 var(--f-mono); color: var(--yellow); }
+.memt td:first-child { font: 600 12.5px/1.5 var(--f-mono); white-space: nowrap; }
+.memt td:nth-child(3) { font: 600 12.5px/1.5 var(--f-mono); white-space: nowrap; }
+.memt .sub td:nth-child(2) { padding-left: 1.4rem; }
+.flags th, .flags td { text-align: center; }
+.flags td:first-child, .flags th:first-child { text-align: left; font-family: var(--f-mono); white-space: nowrap; }
+.flags .one { color: var(--yellow); font-weight: 700; }
+.mtab td:first-child { font-weight: 600; white-space: nowrap; }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m11-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m11-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m11-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m11-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m11-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m11-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+<marker id="m11-ah-t" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-teal)"></path></marker>
+<marker id="m11-ah-w" markerheight="5.5" markerwidth="5.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-ink)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 1 章节" class="chain" data-chain="M11"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 1 · Aspectos básicos del MSP430F5529 y E/S por sondeo · M11</div>
+<h1>La CPU y el modelo de memoria</h1>
+<p class="zh">CPU 与内存模型：一块芯片里装了什么，东西放在哪个地址</p>
+<div class="meta">
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 20 分钟</span>
+
+
+
+</div>
+<p class="lede">写程序之前，先弄清楚手里这块芯片的样子：它为什么叫 <b class="t">microcontrolador (ES) / microcontroller (EN)</b>——微控制器，CPU 怎样和内存相连，1 MB 的地址空间里外设、RAM、Flash 各放在哪里，一个 16 位的字怎样拆成两个字节存放，CPU 里那 16 个寄存器各管什么，以及栈是怎样一格一格长出来的。后面所有章节（端口、中断、低功耗）都建立在这张"地图"上。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M11.1</span>
+<div class="txt"><span>说出微控制器和微处理器的区别：总线层级、MMU 与完整操作系统、外设复杂度、功耗和成本</span><span class="es">Microcontroladores vs microprocesadores.</span><a href="#s0">→ §0 微控制器在哪里</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.2</span>
+<div class="txt"><span>列出 MSP430 家族的主要特点，说出 F5529 的外设；区分内部外设和外部外设</span><span class="es">La familia MSP430; periféricos internos y externos.</span><a href="#s1">→ §1 MSP430 家族与 F5529</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.3</span>
+<div class="txt"><span>说出描述 CPU 和内存的参数；比较 Flash、FRAM、RAM，知道程序和变量各放在哪种存储器</span><span class="es">Características de la CPU y de la memoria.</span><a href="#s2">→ §2 看哪些参数</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.4</span>
+<div class="txt"><span>比较 Harvard 和 Von Neumann 架构；说明 MSP430 是 Von Neumann、RISC、16 位</span><span class="es">Arquitectura Harvard vs Von Neumann.</span><a href="#s3">→ §3 一组总线还是两组</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.5</span>
+<div class="txt"><span>由地址位数算出可寻址空间：16 位 → 64 KB，CPUx 的 20 位 → 1 MB</span><span class="es">Bus de direcciones y capacidad de direccionamiento.</span><a href="#m11-s3b">→ §3 16 位与 20 位</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.6</span>
+<div class="txt"><span>画出 F5529 的内存映射：外设、BSL、信息 Flash、RAM、Flash、向量表的地址和大小，以及 64 KB 兼容边界</span><span class="es">El mapa de memoria del MSP430F5529.</span><a href="#s4">→ §4 内存映射</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.7</span>
+<div class="txt"><span>用 little endian 写出字在内存里的字节排列；说出字节、字、20 位数据的对齐规则</span><span class="es">Organización de los datos en memoria.</span><a href="#s5">→ §5 一个字，两个字节</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.8</span>
+<div class="txt"><span>说出 R0–R15 的用途和宽度、PC 的特点，以及写字节或字时寄存器高位怎样变化</span><span class="es">La CPUx y sus registros.</span><a href="#s6">→ §6 16 个寄存器</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.9</span>
+<div class="txt"><span>说出 SR 每一位的位置和含义（C、Z、N、GIE、CPUOFF、OSCOFF、SCG0、SCG1、V）；说明常数发生器的作用</span><span class="es">Registro de estado; generadores de constantes.</span><a href="#s7">→ §7 状态寄存器</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M11.10</span>
+<div class="txt"><span>用 SP 跟踪 PUSH、POP 的过程：LIFO、向低地址增长、先减后存、先取后加、SP 永远是偶数</span><span class="es">La pila y el puntero de pila.</span><a href="#s8">→ §8 栈</a></div>
+<button aria-pressed="false" class="chk" data-obj="M11.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M11"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>微控制器在哪里 <span class="tag">M11.1</span></h2>
+<p class="hook"><span class="zh">一个联网的小物件里，装的是微控制器还是微处理器？</span><span class="es">¿Qué sistema empotrado forma parte del objeto?</span></p>
+<p>物联网里的物件要在本地处理信息，这种处理能力通常由一个 <b class="t">sistema empotrado (ES) / embedded system (EN)</b>——嵌入式系统提供。选哪一种，要看四件事：要处理多少种不同的任务（contextos）、负载多重、成本上限、有没有功耗限制。候选有微控制器、微处理器、DSP、FPGA、协处理器，以及混合系统。</p>
+<p>两个例子：任务种类少、负载低、要低功耗低成本 → <b>微控制器</b>；任务种类少但计算非常密集 → <b>FPGA</b> 可能更好。</p>
+<figure class="stage" data-scene="" id="sc-m11-mcu">
+<div class="stage-title"><span>Escena 0 · MCU vs MPU</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：微控制器与微处理器的方块图，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-mcu-t" role="img" viewbox="0 0 800 400">
+<title id="sc-m11-mcu-t">左边是微控制器：CPU、内存、简单外设和一条总线在同一块芯片上；右边是微处理器：两层总线、MMU 和复杂外设</title>
+<rect class="ln thin m" height="376" rx="12" width="378" x="12" y="12"></rect>
+<text class="tx w" x="32" y="50">Microcontrolador</text>
+<text class="tz sm m" x="32" y="76">MCU · 微控制器</text>
+<g data-step="1">
+<rect class="ln thin g dash" height="226" rx="10" width="338" x="32" y="94"></rect>
+<text class="tm xs g" x="44" y="112">un solo chip</text>
+<rect class="bx b" height="56" rx="8" width="120" x="52" y="124"></rect>
+<text class="tx sm b mid" x="112" y="159">CPU</text>
+<rect class="bx p" height="56" rx="8" width="156" x="196" y="124"></rect>
+<text class="tm sm p mid" x="274" y="157">Flash + RAM</text>
+<path class="ln b draw" d="M52 206 H352"></path>
+<path class="ln thin b" d="M112 180 V206 M274 180 V206"></path>
+<path class="ln thin t" d="M98 206 V234 M202 206 V234 M306 206 V234"></path>
+<rect class="bx t" height="44" rx="6" width="92" x="52" y="234"></rect>
+<rect class="bx t" height="44" rx="6" width="92" x="156" y="234"></rect>
+<rect class="bx t" height="44" rx="6" width="92" x="260" y="234"></rect>
+<text class="tm sm t mid" x="98" y="261">Timer</text>
+<text class="tm sm t mid" x="202" y="261">ADC</text>
+<text class="tm sm t mid" x="306" y="261">GPIO</text>
+</g>
+<text class="tz sm g mid" data-step="2" x="201" y="348">外设简单：定时器 · 转换器 · 比较器</text>
+<rect class="ln thin m" height="376" rx="12" width="378" x="410" y="12"></rect>
+<text class="tx w" x="430" y="50">Microprocesador</text>
+<text class="tz sm m" x="430" y="76">MPU · 微处理器</text>
+<g data-step="3">
+<rect class="ln thin m dash" height="226" rx="10" width="338" x="430" y="94"></rect>
+<rect class="bx b" height="50" rx="8" width="96" x="446" y="108"></rect>
+<text class="tx sm b mid" x="494" y="140">CPU</text>
+<rect class="bx y" data-hl="4" height="50" rx="8" width="72" x="556" y="108"></rect>
+<text class="tm sm y mid" x="592" y="138">MMU</text>
+<rect class="bx p" height="50" rx="8" width="110" x="642" y="108"></rect>
+<text class="tm sm p mid" x="697" y="138">memoria</text>
+<path class="ln thin b" d="M542 133 H556 M592 158 V182 M697 158 V182"></path>
+<path class="ln b draw" d="M446 182 H752"></path>
+<rect class="bx w" height="34" rx="5" width="52" x="566" y="194"></rect>
+<text class="tm xs w mid" x="592" y="215">ctrl</text>
+<path class="ln thin b" d="M592 182 V194 M592 228 V240"></path>
+<path class="ln b draw" d="M446 240 H752"></path>
+<path class="ln thin t" d="M478 240 V256 M550 240 V256 M622 240 V256 M707 240 V256"></path>
+<rect class="bx t" height="36" rx="5" width="64" x="446" y="256"></rect>
+<rect class="bx t" height="36" rx="5" width="64" x="518" y="256"></rect>
+<rect class="bx t" height="36" rx="5" width="64" x="590" y="256"></rect>
+<rect class="bx t" height="36" rx="5" width="90" x="662" y="256"></rect>
+<text class="tm xs t mid" x="478" y="278">vídeo</text>
+<text class="tm xs t mid" x="550" y="278">red</text>
+<text class="tm xs t mid" x="622" y="278">USB</text>
+<text class="tm xs t mid" x="707" y="278">mem IF</text>
+</g>
+<text class="tz sm y mid" data-step="4" x="599" y="348">MMU → 虚拟内存 → 完整的 SO</text>
+<g data-step="5">
+<text class="tz sm g mid" x="201" y="374">功耗低 · 成本低</text>
+<text class="tz sm r mid" x="599" y="374">功耗高 · 成本高</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>微控制器（MCU）：CPU、存储器、外设和总线做在同一块芯片上。这四种方块，任何可编程数字系统都有。</li>
+<li>MCU 的外设通常比较简单：定时器、转换器、比较器。</li>
+<li data-dur="3800">微处理器（MPU）的方块图其实很像，只是每块都更复杂：出现了<b>多层总线</b>和控制单元，让各部分之间的传输更高效；外设也更复杂：视频、网络、完整的 USB、存储器接口……</li>
+<li data-dur="4200">更明确的分界是 <b>MMU</b>（Memory Management Unit）：它把内存虚拟化，给每个任务一个独立的逻辑地址空间，于是能运行 Linux、Windows 这样的完整操作系统（SO）。能跑完整 SO 的，就是微处理器。</li>
+<li>代价是功耗更高、成本更高。两者的边界不是一刀切的，有些器件两边都说得通；一个物件里也可能同时装了好几种。</li>
+</ol>
+</figure>
+<div class="grid3">
+<div class="cell g">
+<span class="k c-g">microcontrolador</span>
+<h3>任务少 · 负载低</h3>
+<p>要低功耗、低成本，不需要完整 SO。外设偏简单。本课的 MSP430F5529 就是这一类。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">microprocesador</span>
+<h3>任务多 · 要同时执行</h3>
+<p>很多不同的任务、有些要并行，就离不开操作系统；完整 SO 需要 MMU。总线层级和外设都更复杂。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">FPGA</span>
+<h3>任务少 · 计算密集</h3>
+<p>例：任务种类不多，但每一项的计算量都很大时，FPGA 可能是更好的选择。</p>
+</div>
+</div>
+<p class="takeaway">MCU 和 MPU 有同样的四种方块（CPU、存储器、外设、总线）；区别在复杂度：总线层级、有没有 MMU（能否运行完整 SO）、外设复杂度，以及随之而来的功耗和成本。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>MSP430 家族与 F5529 <span class="tag">M11.2</span></h2>
+<p class="hook"><span class="zh">为什么 MSP430 经常出现在靠电池供电的设备里？</span><span class="es">Bajo coste y ultra bajo consumo.</span></p>
+<p>Texas Instruments 有好几个嵌入式家族，MSP430 是其中之一。层级是：家族 MSP430 → 子家族 <b>MSP430x5xx</b> → 系列 MSP430F5xx → 本课用的 <b>MSP430F5529</b>。同一子家族的器件共享同一种架构（供电电压、工作频率、低功耗模式、存储器类型……），彼此的差别在存储器大小、外设和封装。在 TI 的产品线里，MSP430 属于 MCU 一栏：16 位超低功耗，最高 25 MHz、最多 512 KB Flash，单价约 0.25–9 美元；各子家族之间比较，F5529 所在的 <b>F5x/6x</b> 是“Low Power + Performance”一档，也是这张对比表里唯一带 USB 的一档。</p>
+
+<p>这个家族的特点：</p>
+<ul>
+<li><b>超低功耗</b>：低电压供电（具体电压见下面的框）、灵活的时钟系统带来多种低功耗模式、能自主工作的"智能"外设。所以适合电池供电的应用。</li>
+<li><b>Von Neumann、RISC、16 位</b>的 CPU：指令少而简单、执行快（§3）。</li>
+<li><b>外设多、性能高</b>：定时器、通信、转换器、LCD 控制器……</li>
+<li><b>成本低</b>：完整的开发套件和芯片都很便宜。</li>
+<li><b>开发和调试方便</b>：免费的 IDE，加上芯片内置的、基于 <b>JTAG</b> 的调试系统：暂停程序、单步、断点、查看内存和寄存器。</li>
+</ul>
+<div class="note">
+<span class="lbl">电压 · 两个数字</span>
+<p>有些资料写的供电范围是 0.9–3.6 V；F5529 的数据手册给的是 1.8–3.6 V。</p>
+</div>
+<p>微控制器是一种可编程的数字电子系统，一般的方块图如下：</p>
+<figure class="stage" data-scene="" id="sc-m11-blk">
+<div class="stage-title"><span>Escena 1 · sistema digital programable</span><b>5 步</b></div>
+<div aria-label="动画：可编程数字系统的方块图，最后换成 F5529 的具体参数" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-blk-t" role="img" viewbox="0 0 800 330">
+<title id="sc-m11-blk-t">CPU 通过地址、数据、控制三种总线连到存储器和输入输出外设，外设连到外部世界；最后标出 F5529 的 CPUx、128 KB Flash、10 KB RAM 和外设</title>
+<g data-step="1">
+<rect class="bx b" height="70" rx="10" width="140" x="330" y="30"></rect>
+<text class="tx b mid" x="400" y="68">CPU</text>
+</g>
+<g data-step="2">
+<path class="ln b draw" d="M110 150 H690"></path>
+<path class="ln b" d="M400 100 V150 M155 150 V190"></path>
+<text class="tm xs b" x="116" y="142">buses: direcciones · datos · control</text>
+<rect class="bx p" height="90" rx="10" width="190" x="60" y="190"></rect>
+<text class="tx sm p mid" x="155" y="222">Memoria</text>
+</g>
+<g data-step="3">
+<path class="ln b" d="M595 150 V190"></path>
+<rect class="bx t" height="90" rx="10" width="190" x="500" y="190"></rect>
+<text class="tx sm t mid" x="595" y="222">Periféricos E/S</text>
+</g>
+<g data-step="4">
+<path class="ln thin t draw" d="M690 222 H738" marker-end="url(#m11-ah-t)"></path>
+<path class="ln thin t draw" d="M740 256 H694" marker-end="url(#m11-ah-t)"></path>
+<text class="tz sm t" x="744" y="227">执行器</text>
+<text class="tz sm t" x="744" y="261">传感器</text>
+</g>
+<g data-step="5">
+<text class="tx y" x="40" y="60">MSP430F5529</text>
+<text class="tm xs b mid" x="400" y="90">CPUx · RISC · 16 位</text>
+<text class="tm xs p mid" x="155" y="250">Flash 128 KB</text>
+<text class="tm xs p mid" x="155" y="268">RAM 10 KB</text>
+<text class="tm xs t mid" x="595" y="250">P1–P8 · UART · SPI · I2C</text>
+<text class="tm xs t mid" x="595" y="268">ADC12 · USB · 4 timers …</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>CPU（Central Processing Unit）：协调和控制总线上的传输（CPU ↔ 存储器、CPU ↔ E/S），并对数据做运算。</li>
+<li data-dur="5200">存储器（memoria）：存放决定系统行为的程序，也存放数据。各方块之间靠<b>总线</b>相连，分三种：<b>direcciones</b>——地址总线，指出要操作的是系统里哪个部件、哪个位置；<b>datos</b>——数据总线，传送要处理的信息；<b>control</b>——控制总线，时钟、reset 这类辅助管理信号。</li>
+<li>输入/输出外设（Periféricos E/S，也叫 Unidad de Entrada/Salida）：把微控制器和外部世界连起来，接上别的器件，系统就多了新功能。</li>
+<li>外部世界：传感器、执行器、无线模块……都经由 E/S 接入。</li>
+<li data-dur="4200">换成 F5529：Von Neumann-RISC 16 位的 CPUx（带扩展内存），128 KB Flash、10 KB RAM，以及一大组外设。</li>
+</ol>
+
+</figure>
+<p>F5529 的外设（括号里是下面方块图和选型表里的细节）：</p>
+<ul class="m11-cols">
+<li>灵活的时钟系统（UCS：MCLK 给 CPU，ACLK、SMCLK 给外设）</li>
+<li>电源管理系统（PMM：LDO、SVM/SVS、brownout）</li>
+<li>8 个 E/S 端口 P1–P8，共 59 个引脚（P8 只有 3 个），加上和 JTAG 共用的 PJ 4 个，就是选型表里的 63 个 I/O；P1、P2 能产生中断和唤醒</li>
+<li>串行通信 USCI：A0、A1（UART、IrDA、SPI），B0、B1（SPI、I2C）</li>
+<li>32 位硬件乘法器 MPY32</li>
+<li>4 个定时器：TA0（5 个 CC 寄存器）、TA1（3）、TA2（3）、TB0（7）</li>
+<li>RTC 模块（RTC_A）</li>
+<li>CRC 生成模块（CRC16）</li>
+<li>3 通道 DMA</li>
+<li>12 位 ADC（ADC12_A：200 ksps，16 通道 = 14 外部 + 2 内部）</li>
+<li>12 通道比较器（COMP_B）</li>
+<li>电压基准模块（REF）</li>
+<li>全速 USB 模块（实现 USB device）</li>
+</ul>
+<p>F5529 的方块图里，CPU（<b>CPUXV2</b> 和工作寄存器，加上调试用的 EEM 和 JTAG/SBW 接口）、Flash、RAM 和所有外设都挂在同一组 <b>MAB</b>（Memory Address Bus，地址总线）和 <b>MDB</b>（Memory Data Bus，数据总线）上。这就是 §3 的 Von Neumann，也是外设寄存器能像内存一样按地址访问的原因（§4）：</p>
+
+<p>整个 MSP430 家族的通用方块图也是同一个结构：家族里每个型号都是这个骨架，差别只在挂上去的存储器和外设。</p>
+
+<p>在选型表里，F5529 是 F55xx 的最后一行：128 KB Flash、<b>8 + 2 KB</b> RAM（多出的 2 KB 是 USB RAM）、63 个 I/O、80 脚 LQFP 封装。</p>
+
+<p><b class="t">periférico (ES) / peripheral (EN)</b>——外设，给微控制器专门的功能，并把它和外部世界连起来。外设分成两组：</p>
+<div class="grid2">
+<div class="panel">
+<h3>Periféricos internos · 内部外设</h3>
+<p>集成在芯片里，<b>不</b>和外部相连，给 MCU 增加功能。例子：watchdog、时钟模块、低功耗模块、硬件乘法器。很多 MCU 的 ALU 只会加减，乘法交给硬件乘法器这个外设来做。</p>
+</div>
+<div class="panel">
+<h3>Periféricos externos · 外部外设</h3>
+<p>也集成在芯片里，但有通往外部的通道（E/S 端口），用来连接传感器、执行器、无线模块等外部器件，收发信息。</p>
+</div>
+</div>
+<p>很多器件采用<b class="t">interfaz estándar (ES) / standard interface (EN)</b>——标准接口：从物理层到协议层都有规定，例如串行接口 SPI 和 I2C。MCU 用硬件实现这些接口，就能直接和它们对话。一个例子：一块 MSP430F5529 通过 I2C 挂在应用处理器旁边，当一直开着的<b>协处理器</b>（always-on co-processor），替它管理传感器：</p>
+
+<p class="takeaway">MSP430 的卖点是超低功耗和低成本；F5529 属于 x5xx 子家族，在一块芯片上集成了 CPUx、128 KB Flash、10 KB RAM 和一大组外设。外设分内部（不连外部）和外部（经端口连外部）。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>CPU 和存储器：看哪些参数 <span class="tag">M11.3</span></h2>
+<p class="hook"><span class="zh">说一块单片机是"16 位"的，这个 16 指的是什么？</span><span class="es">Longitud de palabra, capacidad de memoria, arquitectura…</span></p>
+<p>选型时，CPU 和存储器是最先要看的两个方块，各有一组参数，切换着看：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="cpu" type="button">CPU 的参数</button>
+<button aria-pressed="false" data-view="mem" type="button">存储器的参数</button>
+</div>
+<div class="panel" data-pane="cpu">
+<ul>
+<li><b class="t">longitud de palabra (ES) / word length (EN)</b>——字长：一条指令最多处理多少位，和<b>数据总线</b>的宽度有关（8、16、32…）。说"16 位单片机"，说的就是它。</li>
+<li><b>capacidad de memoria</b>——寻址能力：一个地址能选中多少个位置，和<b>地址总线</b>有关：n 位地址 → 2<sup>n</sup> 个位置。</li>
+<li><b>velocidad de proceso</b>——处理速度：执行指令要多久，主要由 CPU 的时钟频率决定（kHz – MHz – GHz）。</li>
+<li><b>conjunto de instrucciones</b>——指令集：算术、逻辑、条件……</li>
+<li><b>modos de direccionamiento</b>——寻址方式：怎样找到操作数（寄存器、变址、立即数……）。</li>
+<li><b>registros</b>——寄存器：CPU 内部存放操作数的寄存器有几个、多宽、各干什么（§6）。</li>
+<li><b>organización de la memoria</b>——数据在内存里的存放格式：little endian 还是 big endian（§5）。</li>
+<li><b>arquitectura</b>——指令的数量和功能：<b class="t">CISC</b>（Complex Instruction Set Computer）指令多而复杂，减少访存次数，但 CPU 也复杂；<b class="t">RISC</b>（Reduced Instruction Set Computer）指令少而简单、执行快，CPU 更简单。</li>
+</ul>
+</div>
+<div class="panel" data-pane="mem" hidden="">
+<ul>
+<li><b>capacidad de almacenamiento</b>——容量：位置数 × 每个位置的大小。例：2 KB 的存储器有 2048 个字节大小的位置。</li>
+<li><b>modo de acceso</b>——访问方式：<b>secuencial</b>（顺序，要先经过前面的位置）、<b>aleatorio</b>（随机，任意位置直接访问，RAM）、<b>asociativo</b>（相联，用内容的一部分去查找，caché）。</li>
+<li><b>tiempo de acceso</b>——完成一次读、写、刷新等操作的延迟。</li>
+<li><b>mutabilidad</b>——能否修改：只读，或可读写。</li>
+<li><b>volatilidad</b>——断电后是否保持：<b>volátil</b>（易失，信息丢失）或 <b>no volátil</b>（非易失）。</li>
+</ul>
+</div>
+</div>
+<p>按这些参数，单片机里常见的存储器分成三支：ROM 家族放程序，RAM 放数据，FRAM 两样都能放。</p>
+<div class="tbl-wrap">
+<table class="mtab">
+<thead><tr><th>类型</th><th>记号</th><th>断电后</th><th>读 / 写</th><th>放什么</th><th>要注意</th></tr></thead>
+<tbody>
+<tr><td class="c-p">ROM 家族</td><td class="mono">NV</td><td>保持（非易失）</td><td>Máscara：<b>R</b>（只读）；PROM、EPROM、EEPROM、Flash：<b>Rw</b></td><td>程序</td><td>Rw 是可读写，但写比读慢。</td></tr>
+<tr><td class="c-p">↳ Flash</td><td class="mono">NV · Rw</td><td>保持（非易失）</td><td>读很普通；<b>写得慢</b></td><td>程序代码、常量数据</td><td>按块、段组织；写一个位置要用更高的电压，并且要对整块或整段编程。原型开发时，成本低、好烧写，是 ROM 家族里的首选。</td></tr>
+<tr><td class="c-p">FRAM</td><td class="mono">NV · RW</td><td>保持（非易失）</td><td>可读可写</td><td>程序，也可以放数据</td><td>单元是铁电电容，读出不破坏数据，功耗很低；缺点是读速度低于 8 MHz，不适合高速处理器。</td></tr>
+<tr><td class="c-b">RAM</td><td class="mono">V · RW</td><td>丢失（易失）</td><td>可读可写，简单</td><td>变量、<b>pila</b>（栈）、<b>montículo</b>（堆）</td><td>程序运行时的数据都在这里。分 SRAM 和 DRAM；DRAM 又有 FPM、EDO、BEDO、SDRAM、DDR，越往后越快。</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">记号：V 易失 · NV 非易失 · R 只读 · Rw 可读写（写更慢）· RW 可读写。</p>
+<p class="aside">原则：程序要在断电后还在，所以放<b>非易失</b>存储器（ROM 家族，例如 Flash，或 FRAM）；变量、栈和堆要频繁读写，所以放 RAM（或 FRAM）。F5529 用的是 Flash + RAM。</p>
+<p class="takeaway">"16 位"指字长（数据总线宽度）；寻址能力由地址总线决定（n 位 → 2<sup>n</sup> 个位置）。程序放非易失、写得慢的 Flash，变量、栈和堆放易失、好读写的 RAM。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>一组总线还是两组 <span class="tag">M11.4 · M11.5</span></h2>
+<p class="hook"><span class="zh">CPU 要先取一条指令，再取这条指令要处理的数据。这两件事能同时做吗？</span><span class="es">Arquitectura Harvard vs Von Neumann.</span></p>
+<p>答案取决于存储器怎样和 CPU 相连（下面是非常简化的示意）：</p>
+<figure class="stage" data-ms="3200" data-scene="" id="sc-m11-bus">
+<div class="stage-title"><span>Escena 3 · Harvard vs Von Neumann</span><b>6 步</b></div>
+<div aria-label="动画：Harvard 架构同时取指令和数据，Von Neumann 架构依次进行" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-bus-t" role="img" viewbox="0 0 800 380">
+<title id="sc-m11-bus-t">左边 Harvard：CPU 经两组地址总线分别选中程序存储器和数据存储器，指令单向送回 CPU，数据双向传输，两个点同时到达；右边 Von Neumann：一组地址总线加一组共享的指令–数据总线，两个点依次到达；最后标出 MSP430 的总线宽度 16 位</title>
+<rect class="ln thin m" height="356" rx="12" width="378" x="12" y="12"></rect>
+<text class="tx w" x="32" y="48">Harvard</text>
+<text class="tz sm m" x="32" y="74">两块存储器 · 两组总线</text>
+<g data-step="1">
+<rect class="bx b" height="176" rx="10" width="86" x="32" y="132"></rect>
+<text class="tx b mid" x="75" y="228">CPU</text>
+<rect class="ln thin p" height="232" rx="8" width="128" x="246" y="96"></rect>
+<text class="tm sm p mid" x="310" y="118">Memoria</text>
+<rect class="bx p" height="72" rx="6" width="104" x="258" y="130"></rect>
+<text class="tm sm p mid" x="310" y="171">programa</text>
+<rect class="bx p" height="72" rx="6" width="104" x="258" y="240"></rect>
+<text class="tm sm p mid" x="310" y="281">datos</text>
+</g>
+<g data-step="2">
+<path class="ln b draw" d="M256 148 H124" id="m11-p-hi" marker-end="url(#m11-ah-b)"></path>
+<path class="ln thin w draw" d="M120 184 H252" marker-end="url(#m11-ah-w)"></path>
+<path class="ln thin w draw" d="M120 258 H252" marker-end="url(#m11-ah-w)"></path>
+<path class="ln b draw" d="M256 294 H124" id="m11-p-hd" marker-end="url(#m11-ah-b)" marker-start="url(#m11-ah-b)"></path>
+<text class="tm xs m mid" x="187" y="140">instrucciones</text>
+<text class="tm xs m mid" x="187" y="176">direcciones</text>
+<text class="tm xs m mid" x="187" y="250">direcciones</text>
+<text class="tm xs m mid" x="187" y="286">datos</text>
+<text class="tz sm y mid" x="200" y="352">指令和数据同时取</text>
+</g>
+<circle class="sl y" data-move="#m11-p-hi" data-out="3" data-step="2" r="7"></circle>
+<circle class="sl y" data-move="#m11-p-hd" data-out="3" data-step="2" r="7"></circle>
+<rect class="ln thin m" height="356" rx="12" width="378" x="410" y="12"></rect>
+<text class="tx w" x="430" y="48">Von Neumann</text>
+<text class="tz sm m" x="430" y="74">一块存储器 · 一组共享总线</text>
+<g data-hl="6" data-step="3">
+<rect class="bx b" height="116" rx="10" width="86" x="430" y="150"></rect>
+<text class="tx b mid" x="473" y="216">CPU</text>
+<rect class="ln thin p" height="196" rx="8" width="128" x="646" y="96"></rect>
+<text class="tm sm p mid" x="710" y="118">Memoria</text>
+<rect class="bx p" height="144" rx="6" width="104" x="658" y="134"></rect>
+<text class="tm sm p mid" x="710" y="196">programa</text>
+<text class="tm sm p mid" x="710" y="226">datos</text>
+<path class="ln thin w draw" d="M518 184 H654" marker-end="url(#m11-ah-w)"></path>
+<path class="ln b draw" d="M656 234 H520" id="m11-p-vn" marker-end="url(#m11-ah-b)" marker-start="url(#m11-ah-b)"></path>
+<text class="tm xs m mid" x="585" y="176">direcciones</text>
+<text class="tm xs m mid" x="585" y="254">instr. – datos</text>
+</g>
+<circle class="sl y" data-move="#m11-p-vn" data-out="5" data-step="4" r="7"></circle>
+<circle class="sl y" data-move="#m11-p-vn" data-out="6" data-step="5" r="7"></circle>
+<text class="tz sm y mid" data-step="4" x="600" y="316">① 先取指令</text>
+<text class="tz sm y mid" data-step="5" x="600" y="340">② 再取数据：依次进行</text>
+<g data-step="6">
+<text class="tm xs y mid" x="585" y="160">16 bits = 64 KB</text>
+<text class="tm xs y mid" x="585" y="272">16 bits</text>
+<text class="tz sm y mid" x="600" y="362">MSP430 属于这一种</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><b>Harvard</b>：存储器分成两块独立的部分，一块放程序，一块放数据。</li>
+<li data-dur="5200">每块各有自己的总线：CPU 经 <b>direcciones</b>（地址）选中位置；<b>instrucciones</b> 从程序存储器<b>单向</b>送进 CPU，<b>datos</b> 在 CPU 和数据存储器之间<b>双向</b>传。两组总线能<b>同时</b>工作（宽度也可以不同），效率更高；代价是 CPU 的设计更复杂。</li>
+<li data-dur="4200"><b>Von Neumann</b>：同一块存储器既放程序也放数据；只有一组地址总线，和一组共享的、双向的 <b>instrucciones–datos</b> 总线。</li>
+<li>先通过这组总线取指令……</li>
+<li data-dur="3600">……再通过同一组总线取数据。要连续访问几次存储器，效率低一些，但 CPU 设计更简单。</li>
+<li data-dur="4600">MSP430 家族是 <b>Von Neumann、RISC、16 位</b>的架构。把位数标在总线上：地址总线 16 位 = 64 KB，指令–数据总线 16 位。（F5529 的 CPUx 把地址总线扩到 20 位，见下文。）</li>
+</ol>
+<p class="stage-note">白色是地址总线（CPU → 存储器），蓝色是指令 / 数据总线。</p>
+
+</figure>
+<p>放到 MSP430 上：</p>
+<ul>
+<li><b>Von Neumann</b>：程序和数据用<b>同一个</b>存储空间。</li>
+<li><b>16 位</b>：数据总线 16 位，所以字长是 16 位；CPU、存储器、外设之间一次传输最多 16 位。但 CPU 既能按<b>字</b>（palabra，16 位）也能按<b>字节</b>（byte，8 位）访问数据。</li>
+<li><b>RISC</b>：一小组简单、执行快的指令。</li>
+</ul>
+<h3 id="m11-s3b">16 位地址和 20 位地址 <span class="tag">M11.5</span></h3>
+<p>地址总线决定能寻址多大的空间。MSP430 里每个地址对应 <b>1 个字节</b>（字节是它处理的最小信息单位），所以：</p>
+<figure class="stage" data-scene="" id="sc-m11-space">
+<div class="stage-title"><span>Escena 3b · 2¹⁶ vs 2²⁰</span><b>5 步</b></div>
+<div aria-label="动画：16 位地址寻址 64 KB，20 位地址寻址 1 MB" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-space-t" role="img" viewbox="0 0 800 320">
+<title id="sc-m11-space-t">16 个地址位对应 64 KB；CPUx 再加 4 位成为 20 位，对应 1 MB，等于 16 块 64 KB；F5529 实际用到 0x243FF</title>
+<text class="tm b" data-out="3" x="40" y="64">16 位</text>
+<text class="tm y" data-step="3" x="40" y="64">20 位</text>
+<text class="tm xs m mid" x="294" y="32">15</text>
+<text class="tm xs m mid" x="744" y="32">0</text>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="280" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="310" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="340" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="370" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="400" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="430" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="460" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="490" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="520" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="550" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="580" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="610" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="640" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="670" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="700" y="40"></rect>
+<rect class="bx hollow b" height="36" rx="3" width="28" x="730" y="40"></rect>
+<text class="tm sm b" data-step="2" x="280" y="112">2¹⁶ = 65 536 个地址 × 1 B = 64 KB</text>
+<g data-step="3">
+<text class="tm xs y mid" x="174" y="32">19</text>
+<text class="tm xs y mid" x="264" y="32">16</text>
+<rect class="bx y" height="36" rx="3" width="28" x="160" y="40"></rect>
+<rect class="bx y" height="36" rx="3" width="28" x="190" y="40"></rect>
+<rect class="bx y" height="36" rx="3" width="28" x="220" y="40"></rect>
+<rect class="bx y" height="36" rx="3" width="28" x="250" y="40"></rect>
+</g>
+<g data-step="4">
+<text class="tm sm y" x="160" y="140">2²⁰ = 1 048 576 个地址 = 1 MB</text>
+<rect class="bx p" height="36" width="45" x="40" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="85" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="130" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="175" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="220" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="265" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="310" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="355" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="400" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="445" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="490" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="535" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="580" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="625" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="670" y="186"></rect>
+<rect class="ln thin m" height="36" width="45" x="715" y="186"></rect>
+<text class="tm xs p mid" x="62" y="208">64 KB</text>
+<text class="tm xs m mid" x="85" y="172">0x10000</text>
+<text class="tm xs m" x="40" y="240">0x00000</text>
+<text class="tm xs m end" x="760" y="240">0xFFFFF</text>
+<text class="tz sm p" x="40" y="272">最低的 64 KB：和 16 位地址的 MSP430 兼容</text>
+</g>
+<g data-step="5">
+<rect class="ln y" height="44" rx="2" width="102" x="40" y="182"></rect>
+<text class="tz sm y" x="40" y="302">F5529 实际用到 0x00000–0x243FF（Flash 到此为止）</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>地址总线 16 位：每个地址由 16 个二进制位组成。</li>
+<li>2<sup>16</sup> = 65 536 个地址，每个地址 1 字节 → <b>64 KB</b>。</li>
+<li>x5xx 子家族的 <b>CPUx</b>（CPU extendida）把地址总线扩展到 20 位：多出高 4 位（19–16）。</li>
+<li data-dur="4200">2<sup>20</sup> = 1 048 576 个地址 → <b>1 MB</b>，相当于 16 个 64 KB。最低的那个 64 KB 是兼容区：16 位地址的老 MSP430 只能看到它。</li>
+<li data-dur="3800">F5529 的存储器（128 KB Flash 的末尾）一直到 0x243FF，大约用了 2¼ 个 64 KB；再往上的地址空间没有放存储器（§4）。</li>
+</ol>
+</figure>
+<div class="formula" data-tex="N_{\text{pos}} = 2^{\,n} \qquad 2^{16} = 65\,536\ \text{B} = \class{c-b}{64\ \text{KB}} \qquad 2^{20} = 1\,048\,576\ \text{B} = \class{c-y}{1\ \text{MB}}">N = 2^n　　2^16 = 65 536 B = 64 KB　　2^20 = 1 048 576 B = 1 MB</div>
+<p class="aside">n 位地址 → 2<sup>n</sup> 个位置；1 KB = 1024 B，1 MB = 1024 KB。0x 前缀表示十六进制，另一种写法是在后面加 h：十进制 1024 = 0x400 = 0400h。</p>
+<div class="note">
+<span class="lbl">CPUx 向后兼容</span>
+<p>CPUx 有专门的寻址方式和指令去访问 64 KB 以上的区域，同时完全兼容老的 MSP430 CPU。为了兼容，F5529 把外设、校准信息、RAM 和一部分 Flash 都集中在最低的 64 KB 里（§4）。</p>
+</div>
+<div class="drill" data-drill="addr"></div>
+<p class="takeaway">MSP430 是 Von Neumann 架构：程序和数据共用一个存储空间和一组总线，依次访问。16 位地址 → 64 KB；F5529 的 CPUx 用 20 位地址 → 1 MB，但关键的东西都放在兼容的最低 64 KB 里。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>内存映射 <span class="tag">M11.6</span></h2>
+<p class="hook"><span class="zh">地址 0x1C00 里放的是什么？0xFFDE 呢？</span><span class="es">El mapa de memoria.</span></p>
+<p><b class="t">mapa de memoria (ES) / memory map (EN)</b>——内存映射，说的是地址怎样分配给系统里能被访问的各个部分。这些部分分三类：CPU 的特殊寄存器；E/S 外设的配置寄存器（<b class="t">periféricos mapeados en memoria</b>——存储器映射的外设，像访问内存一样访问它们）；存放数据和程序的存储器。</p>
+<p>规则只有一条：<b>每个地址只对应一个部分，每个部分只有一个地址。</b>描述时分两层：<b>funcional</b>（功能层：这个地址用来干什么——程序、数据、中断向量……）和 <b>físico</b>（物理层：这个地址上是什么器件——Flash、RAM、外设寄存器……）。同一子家族的芯片共享同一张映射，差别只在 Flash 和 RAM 的大小。F5529 有 <b>128 KB Flash</b> 和 <b>10 KB RAM</b>。</p>
+<figure class="stage" data-ms="3400" data-scene="" id="sc-m11-map">
+<div class="stage-title"><span>Escena 4 · mapa de memoria del F5529</span><b>7 步</b></div>
+<div aria-label="动画：F5529 的内存映射，从 1 MB 放大到最低的 64 KB" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-map-t" role="img" viewbox="0 0 800 460">
+<title id="sc-m11-map-t">左边是 1 MB 的地址空间；最低的 64 KB 被放大到右边，从下往上依次是外设、BSL、信息 Flash、RAM、Flash Bank A 和 B、中断向量表</title>
+<text class="tm sm w" x="130" y="28">1 MB · 20 位</text>
+<g data-step="1">
+<rect class="ln thin m dash" height="260" rx="4" width="100" x="130" y="40"></rect>
+<text class="tz sm m mid" x="180" y="175">未实现</text>
+<rect class="bx p" height="60" width="100" x="130" y="300"></rect>
+<text class="tm sm p mid" x="180" y="326">Flash</text>
+<text class="tm xs p mid" x="180" y="344">B · C · D</text>
+<rect class="bx hollow y" data-hl="2" height="80" width="100" x="130" y="360"></rect>
+<text class="tm sm y mid" x="180" y="405">64 KB</text>
+<text class="tm xs m end" x="122" y="48">0xFFFFF</text>
+<text class="tm xs m end" x="122" y="304">0x24400</text>
+<text class="tm xs m end" x="122" y="364">0x10000</text>
+<text class="tm xs m end" x="122" y="440">0x00000</text>
+</g>
+<g data-step="2">
+<path class="ln thin y dash draw" d="M230 360 L398 30"></path>
+<path class="ln thin y dash draw" d="M230 440 L398 440"></path>
+<text class="tz sm m" x="400" y="20">最低的 64 KB（不按比例）</text>
+<rect class="ln thin m" height="410" width="190" x="400" y="30"></rect>
+</g>
+<g data-step="3">
+<rect class="bx t" height="40" width="190" x="400" y="400"></rect>
+<text class="tm sm t mid" x="495" y="425">Periféricos</text>
+<text class="tm xs t" x="600" y="425">0x0000–0x0FFF · 4 KB</text>
+<rect class="bx hollow p" height="35" width="190" x="400" y="365"></rect>
+<text class="tm sm p mid" x="495" y="388">Flash BSL</text>
+<text class="tm xs p" x="600" y="388">0x1000–0x17FF · 2 KB</text>
+<rect class="bx hollow p" height="30" width="190" x="400" y="335"></rect>
+<text class="tm sm p mid" x="495" y="355">Flash Info</text>
+<text class="tm xs p" x="600" y="355">0x1800–0x19FF · 512 B</text>
+<rect class="ln thin m dash" height="15" width="190" x="400" y="320"></rect>
+<text class="tm xs m mid" x="495" y="332">libre</text>
+<text class="tm xs m" x="600" y="332">0x1A00–0x1BFF · 512 B</text>
+</g>
+<g data-step="4">
+<rect class="bx b" height="35" width="190" x="400" y="285"></rect>
+<text class="tm sm b mid" x="495" y="308">RAM · USB (S7)</text>
+<text class="tm xs b" x="600" y="308">0x1C00–0x23FF · 2 KB</text>
+<rect class="bx b" height="70" width="190" x="400" y="215"></rect>
+<text class="tm sm b mid" x="495" y="255">RAM · S0–S3</text>
+<text class="tm xs b" x="600" y="255">0x2400–0x43FF · 8 KB</text>
+</g>
+<g data-step="5">
+<rect class="bx p" height="105" width="190" x="400" y="110"></rect>
+<text class="tm sm p mid" x="495" y="167">Flash · Banco A</text>
+<text class="tm xs p" x="600" y="167">0x4400–0xC3FF · 32 KB</text>
+<rect class="bx p" height="55" width="190" x="400" y="55"></rect>
+<text class="tm sm p mid" x="495" y="87">Flash · Banco B</text>
+<text class="tm xs p" x="600" y="87">0xC400–0xFFFF · 15 KB</text>
+</g>
+<g data-step="6">
+<rect class="bx r" data-hl="6" height="25" width="190" x="400" y="30"></rect>
+<text class="tm xs r mid" x="495" y="47">Vectores</text>
+<text class="tm xs r" x="600" y="47">0xFF80–0xFFFF · 128 B</text>
+</g>
+<g data-step="7">
+<path class="ln y" d="M112 360 H242"></path>
+<path class="ln y" d="M396 30 H594"></path>
+<text class="tz sm y" x="240" y="404">frontera 64 KB</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4000">F5529 的地址总线 20 位，地址空间 1 MB（0x00000–0xFFFFF）。Flash 一直延伸到 0x243FF；再往上没有任何存储器。</li>
+<li>为了和 16 位地址的 MSP430 兼容，重要的部分都集中在最低的 64 KB（0x0000–0xFFFF）。把它放大看。</li>
+<li data-dur="4600">最底下：4 KB 的<b>外设寄存器</b>（0x0000–0x0FFF）；然后是 2 KB 的 <b>BSL</b> Flash（0x1000–0x17FF），里面是 bootstrap loader；再上面是 512 B 的<b>信息 Flash</b>（Flash IM，0x1800–0x19FF）。0x1A00–0x1BFF 这 512 B 标为 <b>LIBRE</b>（空闲，见下面的注意）。</li>
+<li data-dur="4600"><b>RAM</b> 10 KB（0x1C00–0x43FF），分成 5 个 2 KB 扇区：最低的 Sector 7 给 USB 外设用（不用 USB 时也能当普通 RAM），往上是 Sector 0–3。RAM 放变量、栈和堆。</li>
+<li data-dur="4600"><b>Flash</b> 128 KB 从 0x4400 开始，分成 4 个 32 KB 的 bank。Bank A 的 32 KB 和 Bank B 的 15 KB（共 47 KB）落在 64 KB 以内；Bank B 的其余部分和 Bank C、D 在 0x10000 以上。Flash 存放代码和常量数据。</li>
+<li>64 KB 的最顶端 0xFF80–0xFFFF 是<b>中断向量表</b>（M21）——同样是为了兼容才放在这里。它物理上仍是 Flash 的一部分。</li>
+<li data-dur="4200">0xFFFF / 0x10000 就是 64 KB 的兼容边界：边界以下，16 位地址就够；边界以上的 Flash，只能用 CPUx 的 20 位地址和对应的指令去访问。</li>
+</ol>
+<p class="stage-note">不按比例。</p>
+
+</figure>
+<p>下面这张表列出 F5529 的每一段。<b>输入一个地址</b>，或者点一行，看它落在哪里：</p>
+<div class="lk-row">
+<label class="aside" for="m11-lk-in">地址（十六进制）</label>
+<input autocomplete="off" id="m11-lk-in" inputmode="text" placeholder="例如 0x1C00" spellcheck="false" type="text" value="0xFFDE"/>
+<button class="btn primary" id="m11-lk-go" type="button">查询</button>
+</div>
+<div aria-label="常用地址" class="chips">
+<button class="chip" data-a="0x0200" type="button">0x0200</button>
+<button class="chip" data-a="0x1980" type="button">0x1980</button>
+<button class="chip" data-a="0x1C00" type="button">0x1C00</button>
+<button class="chip" data-a="0x43FE" type="button">0x43FE</button>
+<button class="chip" data-a="0x4400" type="button">0x4400</button>
+<button class="chip" data-a="0xFFDE" type="button">0xFFDE</button>
+<button class="chip" data-a="0x10000" type="button">0x10000</button>
+<button class="chip" data-a="0x30000" type="button">0x30000</button>
+</div>
+<div aria-live="polite" class="panel lk-out" id="m11-lk-out">
+<span class="big">0xFFDE → Vectores de interrupción</span>
+<p>0xFF80–0xFFFF · 128 B。64 个中断向量，每个 2 字节，存 RTI 的入口地址；物理上属于 Flash Bank B。向量 47 号，这是它的低字节（小端序，§5）。</p>
+<p class="aside">低 64 KB 以内：16 位地址就能访问。</p>
+</div>
+<div class="tbl-wrap">
+<table class="memt" id="m11-memt">
+<thead><tr><th>地址</th><th>区域</th><th>大小</th><th>内容</th></tr></thead>
+<tbody>
+<tr class="pick" data-i="0"><td>0x00000–0x00FFF</td><td>Periféricos</td><td>4 KB</td><td>外设寄存器</td></tr>
+<tr class="pick" data-i="1"><td>0x01000–0x017FF</td><td>Flash BSL</td><td>2 KB</td><td>bootstrap loader</td></tr>
+<tr class="pick" data-i="2"><td>0x01800–0x019FF</td><td>Flash de información</td><td>512 B</td><td>器件信息、校准数据</td></tr>
+<tr class="pick" data-i="3"><td>0x01A00–0x01BFF</td><td>Libre</td><td>512 B</td><td>标为空闲；器件描述符（TLV）从这里开始，见下面的注意</td></tr>
+<tr class="pick" data-i="4"><td>0x01C00–0x023FF</td><td>RAM · sector USB</td><td>2 KB</td><td>USB 缓冲；不用 USB 时当普通 RAM</td></tr>
+<tr class="pick" data-i="5"><td>0x02400–0x043FF</td><td>RAM</td><td>8 KB</td><td>变量、栈、堆</td></tr>
+<tr class="pick" data-i="6"><td>0x04400–0x0C3FF</td><td>Flash · Banco A</td><td>32 KB</td><td>代码、常量</td></tr>
+<tr class="pick" data-i="7"><td>0x0C400–0x0FFFF</td><td>Flash · Banco B（64 KB 以内）</td><td>15 KB</td><td>代码、常量</td></tr>
+<tr class="pick sub on" data-i="8"><td>0x0FF80–0x0FFFF</td><td>↳ Vectores de interrupción</td><td>128 B</td><td>RTI 入口地址</td></tr>
+<tr class="pick" data-i="9"><td>0x10000–0x143FF</td><td>Flash · Banco B（64 KB 以上）</td><td>17 KB</td><td>代码、常量</td></tr>
+<tr class="pick" data-i="10"><td>0x14400–0x1C3FF</td><td>Flash · Banco C</td><td>32 KB</td><td>代码、常量</td></tr>
+<tr class="pick" data-i="11"><td>0x1C400–0x243FF</td><td>Flash · Banco D</td><td>32 KB</td><td>代码、常量</td></tr>
+<tr class="pick" data-i="12"><td>0x24400–0xFFFFF</td><td>无存储器</td><td>—</td><td>这一段没有放存储器</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="lbl">细分</span>
+<p>信息 Flash（Flash IM）512 B 就是 0x1800–0x19FF，细分成 Info D、C、B、A 四段，各 128 B（Info A 在最上面，0x1980–0x19FF）。RAM 的 5 个扇区：USB 那一个叫 Sector 7（0x1C00–0x23FF），其余 4 个叫 Sector 0–3（0x2400–0x43FF）。BSL 分成 BSL 0–3，各 512 B。</p>
+<p><b class="t">descriptor del dispositivo (ES) / device descriptor, TLV (EN)</b>——器件描述符。</p>
+<p><b>注意：0x1A00–0x1BFF 这一段，有些资料标为空闲（libre），TI 数据手册却把器件描述符（TLV）放在 0x1A00 开始的地方。答题按有些资料说 libre；写程序时别往这里写东西。</b></p>
+</div>
+<div class="note warm">
+<span class="lbl">外设有字节宽，也有字宽</span>
+<p>外设区里有 8 位的外设，也有 16 位的外设。对 8 位外设做字访问，结果不可预测。这就是为什么后面配置端口时，<code>P1DIR</code>、<code>P1OUT</code> 这些寄存器都按字节去写。</p>
+</div>
+<p class="takeaway">F5529 的低 64 KB 从下往上：外设 4 KB（0x0000）→ BSL 2 KB（0x1000）→ 信息 Flash 512 B（0x1800）→ 空闲 512 B（0x1A00）→ RAM 10 KB（0x1C00–0x43FF）→ Flash（从 0x4400 开始，共 128 KB，延伸到 0x243FF）；最顶端 0xFF80–0xFFFF 是中断向量表。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>一个字，两个字节 <span class="tag">M11.7</span></h2>
+<p class="hook"><span class="zh">内存按字节编号，可一个字有两个字节。哪一个放在前面？</span><span class="es">¿Cómo quedan almacenados los bytes y las palabras?</span></p>
+<p>先对上几个词。字长是 16 位，但最小的访问单位是字节，所以存储空间按字节编号：1 MB = 2<sup>20</sup> = 1 048 576 个字节位置。</p>
+<ul>
+<li>一个字由 2 个字节组成：权重低的叫 <b class="t">LSB (Least Significant Byte)</b>——低字节，权重高的叫 <b class="t">MSB (Most Significant Byte)</b>——高字节。</li>
+<li>一个字节由 8 位组成：最低位叫 <b>LSb</b>（Least Significant bit），最高位叫 <b>MSb</b>（Most Significant bit）。注意大小写：B 是 byte，b 是 bit。</li>
+<li>多字节数据在内存里的排列格式叫 <b class="t">endianness</b>——字节序。<b>Little endian</b>：LSB 放在低地址，MSB 放在高地址。<b>Big endian</b>：正好相反。</li>
+</ul>
+<figure class="stage" data-scene="" id="sc-m11-endian">
+<div class="stage-title"><span>Escena 5 · little endian</span><b>6 步</b></div>
+<div aria-label="动画：字 0xA2B7 按小端序放进内存，以及字节、字、20 位数据的对齐规则" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-endian-t" role="img" viewbox="0 0 800 390">
+<title id="sc-m11-endian-t">字 0xA2B7 拆成高字节 A2 和低字节 B7；小端序下 B7 在 0x2400，A2 在 0x2401；字节可放在奇地址，字只能从偶地址开始；20 位数据占两个字</title>
+<g data-step="1">
+<text class="tm sm w" x="40" y="70">字 0xA2B7</text>
+<text class="tm xs m mid" x="300" y="30">MSB · bits 15–8</text>
+<text class="tm xs m mid" x="460" y="30">LSB · bits 7–0</text>
+<rect class="bx b" height="48" rx="6" width="160" x="220" y="40"></rect>
+<rect class="bx b" height="48" rx="6" width="160" x="380" y="40"></rect>
+<text class="tm lg b mid" x="300" y="72">A2</text>
+<text class="tm lg b mid" x="460" y="72">B7</text>
+<text class="tm xs m" x="556" y="70">→ 存到地址 0x2400</text>
+</g>
+<text class="tz sm g" x="40" y="142">Little endian · MSP430</text>
+<text class="tm xs m mid" x="68" y="166">2400</text>
+<text class="tm xs m mid" x="128" y="166">2401</text>
+<text class="tm xs m mid" x="188" y="166">2402</text>
+<text class="tm xs m mid" x="248" y="166">2403</text>
+<text class="tm xs m mid" x="308" y="166">2404</text>
+<text class="tm xs m mid" x="368" y="166">2405</text>
+<text class="tm xs m mid" x="428" y="166">2406</text>
+<text class="tm xs m mid" x="488" y="166">2407</text>
+<text class="tm xs m mid" x="548" y="166">2408</text>
+<text class="tm xs m mid" x="608" y="166">2409</text>
+<text class="tm xs m mid" x="668" y="166">240A</text>
+<text class="tm xs m mid" x="728" y="166">240B</text>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="40" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="100" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="160" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="220" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="280" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="340" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="400" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="460" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="520" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="580" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="640" y="176"></rect>
+<rect class="bx hollow p" height="46" rx="4" width="56" x="700" y="176"></rect>
+<path class="ln thin y dash" d="M460 90 C 460 150, 68 120, 68 199" data-out="3" data-step="2" id="m11-p-lsb"></path>
+<path class="ln thin y dash" d="M300 90 C 300 150, 128 120, 128 199" data-out="3" data-step="2" id="m11-p-msb"></path>
+<g data-move="#m11-p-lsb" data-out="3" data-step="2"><rect class="bx y" height="28" rx="4" width="40" x="-20" y="-14"></rect><text class="tm sm y mid" x="0" y="5">B7</text></g>
+<g data-move="#m11-p-msb" data-out="3" data-step="2"><rect class="bx y" height="28" rx="4" width="40" x="-20" y="-14"></rect><text class="tm sm y mid" x="0" y="5">A2</text></g>
+<text class="tm b mid" data-step="2" x="68" y="205">B7</text>
+<text class="tm b mid" data-step="2" x="128" y="205">A2</text>
+<g data-step="3">
+<text class="tz sm m" x="40" y="262">Big endian · 对比（MSP430 不用）</text>
+<rect class="bx hollow m" height="46" rx="4" width="56" x="40" y="272"></rect>
+<rect class="bx hollow m" height="46" rx="4" width="56" x="100" y="272"></rect>
+<text class="tm m mid" x="68" y="301">A2</text>
+<text class="tm m mid" x="128" y="301">B7</text>
+</g>
+<g data-step="4">
+<rect class="ln g" height="46" rx="4" width="56" x="220" y="176"></rect>
+<text class="tm g mid" x="248" y="205">5C</text>
+<text class="tm xs g mid" x="248" y="240">byte ✓</text>
+</g>
+<g data-step="5">
+<rect class="ln r dash" height="54" rx="5" width="120" x="338" y="172"></rect>
+<text class="tm lg r mid" x="398" y="207">✗</text>
+<text class="tm xs r mid" x="398" y="240">word ✗</text>
+</g>
+<g data-step="6">
+<rect class="ln y" height="54" rx="5" width="240" x="518" y="172"></rect>
+<text class="tm y mid" x="548" y="205">C8</text>
+<text class="tm y mid" x="608" y="205">F3</text>
+<text class="tm y mid" x="668" y="205">01</text>
+<text class="tm y mid" x="728" y="205">00</text>
+<text class="tm xs y mid" x="578" y="240">15:0</text>
+<text class="tm xs y mid" x="698" y="240">19:16 · 20–31 = 0</text>
+<text class="tm xs y" x="520" y="142">0x1F3C8 → 0x2408</text>
+</g>
+<text class="tz sm w" data-out="2" x="40" y="372">一个字 = 2 个字节：MSB（高字节）+ LSB（低字节）</text>
+<text class="tz sm y" data-out="3" data-step="2" x="40" y="372">Little endian：LSB → 低地址 0x2400，MSB → 0x2401</text>
+<text class="tz sm m" data-out="4" data-step="3" x="40" y="372">Big endian 正好相反：MSB 在低地址</text>
+<text class="tz sm g" data-out="5" data-step="4" x="40" y="372">字节：奇地址、偶地址都可以</text>
+<text class="tz sm r" data-out="6" data-step="5" x="40" y="372">字：只能从偶地址开始，0x2405 不行</text>
+<text class="tz sm y" data-step="6" x="40" y="372">20 位数据：两个字，从偶地址开始，第 20–31 位补 0</text>
+</svg>
+</div>
+<ol class="captions">
+<li>字 0xA2B7：高字节（MSB，第 15–8 位）是 A2，低字节（LSB，第 7–0 位）是 B7。要把它存到地址 0x2400。</li>
+<li data-dur="3800">MSP430 是 <b>little endian</b>：低字节 B7 放在低地址 0x2400（偶地址），高字节 A2 放在紧挨着的奇地址 0x2401。</li>
+<li>对比 big endian：MSB 在低地址。MSP430 不用这种格式。</li>
+<li>访问<b>字节</b>可以在任何地址，偶数奇数都行：例如把 0x5C 存在 0x2403。</li>
+<li data-dur="3600">访问<b>字</b>只能在偶地址：偶地址放 LSB，下一个奇地址放 MSB。从 0x2405 开始放一个字是不行的。</li>
+<li data-dur="4600">CPUx 还能处理 <b>20 位</b>数据：在内存里占 2 个字，只能放在偶地址，第 20–31 位补 0。0x1F3C8 存在 0x2408：C8、F3、01、00。</li>
+</ol>
+<p class="stage-note">数值只作演示。</p>
+
+</figure>
+<p class="aside">CPUx 能访问四种单位：<b>单个位</b>（bits individuales）；<b>字节</b>，奇偶地址都行；<b>字</b>（16 位），只能偶地址；<b>20 位 address-word</b>，只能偶地址，占两个字，第 19–16 位放在第二个字的最低 4 位。</p>
+
+<div class="formula" data-tex="\mathrm{mem}[A] = \class{c-b}{\text{LSB}} \qquad \mathrm{mem}[A+1] = \class{c-b}{\text{MSB}} \qquad (A \bmod 2 = 0)">mem[A] = LSB　　mem[A+1] = MSB　　（A 为偶数）</div>
+<p class="aside">寄存器里的约定见 §6：比 20 位短的数据放在寄存器的低位部分，高位清零。</p>
+<div class="drill" data-drill="endian"></div>
+<p class="takeaway">MSP430 是 little endian：低字节在低地址。字节可以放在任何地址；字和 20 位数据只能从偶地址开始，20 位数据占两个字。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>CPUx 的 16 个寄存器 <span class="tag">M11.8</span></h2>
+<p class="hook"><span class="zh">CPU 里离运算最近、最快的存储，是哪 16 个格子？</span><span class="es">Los registros de la CPUx.</span></p>
+<p>F5529 的 CPU 是 <b class="t">CPUx (CPU extendida)</b>——扩展 CPU：20 位地址总线，能访问 1 MB，带有访问这些区域的专用寻址方式和指令，并且和老的 MSP430 CPU 向后兼容。它有 16 个寄存器 <b>R0–R15</b>，既能放数据，也能放"数据在哪里"的地址。除了状态寄存器 SR 为了兼容仍是 16 位，<b>其余都是 20 位</b>。</p>
+<figure class="stage" data-scene="" id="sc-m11-regs">
+<div class="stage-title"><span>Escena 6 · R0–R15 + ALU</span><b>5 步</b></div>
+<div aria-label="动画：CPUx 的 16 个寄存器和 ALU" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-regs-t" role="img" viewbox="0 0 800 380">
+<title id="sc-m11-regs-t">左边是有专门用途的 R0 PC、R1 SP（两者第 0 位固定为 0）、R2 SR 和常数发生器、R3 常数发生器；右边是 12 个通用寄存器 R4–R15；下面是 MCLK 驱动的 ALU，它把标志 Z C V N 写回 SR；寄存器经 16 位 MDB 和 20 位 MAB 连到存储器</title>
+<g data-step="1">
+<rect class="bx b" height="46" rx="6" width="360" x="30" y="30"></rect>
+<text class="tm b" x="44" y="59">R0 · PC</text>
+<text class="tz sm w" x="150" y="59">contador de programa</text>
+<text class="tm xs m end" x="348" y="59">20 b</text>
+<rect class="bx hollow y" height="28" rx="3" width="24" x="358" y="39"></rect>
+<text class="tm sm y mid" x="370" y="58">0</text>
+</g>
+<g data-step="2">
+<rect class="bx p" height="46" rx="6" width="360" x="30" y="84"></rect>
+<text class="tm p" x="44" y="113">R1 · SP</text>
+<text class="tz sm w" x="150" y="113">puntero de pila</text>
+<text class="tm xs m end" x="348" y="113">20 b</text>
+<rect class="bx hollow y" height="28" rx="3" width="24" x="358" y="93"></rect>
+<text class="tm sm y mid" x="370" y="112">0</text>
+</g>
+<g data-step="3">
+<rect class="bx t" height="46" rx="6" width="360" x="30" y="138"></rect>
+<text class="tm t" x="44" y="167">R2 · SR/CG1</text>
+<text class="tz sm w" x="170" y="167">estado + constantes</text>
+<text class="tm xs y end" x="380" y="167">16 b</text>
+<rect class="bx m" height="46" rx="6" width="360" x="30" y="192"></rect>
+<text class="tm m" x="44" y="221">R3 · CG2</text>
+<text class="tz sm w" x="170" y="221">constantes</text>
+<text class="tm xs m end" x="380" y="221">20 b</text>
+</g>
+<g data-step="4">
+<text class="tm xs b" x="420" y="22">R4–R15 · propósito general · 20 b</text>
+<rect class="bx b" height="40" rx="5" width="112" x="420" y="30"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="540" y="30"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="660" y="30"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="420" y="78"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="540" y="78"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="660" y="78"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="420" y="126"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="540" y="126"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="660" y="126"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="420" y="174"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="540" y="174"></rect>
+<rect class="bx b" height="40" rx="5" width="112" x="660" y="174"></rect>
+<text class="tm sm b mid" x="476" y="55">R4</text>
+<text class="tm sm b mid" x="596" y="55">R5</text>
+<text class="tm sm b mid" x="716" y="55">R6</text>
+<text class="tm sm b mid" x="476" y="103">R7</text>
+<text class="tm sm b mid" x="596" y="103">R8</text>
+<text class="tm sm b mid" x="716" y="103">R9</text>
+<text class="tm sm b mid" x="476" y="151">R10</text>
+<text class="tm sm b mid" x="596" y="151">R11</text>
+<text class="tm sm b mid" x="716" y="151">R12</text>
+<text class="tm sm b mid" x="476" y="199">R13</text>
+<text class="tm sm b mid" x="596" y="199">R14</text>
+<text class="tm sm b mid" x="716" y="199">R15</text>
+</g>
+<g data-step="5">
+<path class="ln thin b draw" d="M210 238 V264 H360 V286"></path>
+<path class="ln thin b draw" d="M596 214 V264 H440 V286"></path>
+<path class="bx w" d="M300 290 H500 L470 350 H330 Z"></path>
+<text class="tm sm w mid" x="400" y="326">ALU 16/20 b</text>
+<path class="ln o draw" d="M196 314 H312" marker-end="url(#m11-ah-o)"></path>
+<text class="tm sm o" x="130" y="319">MCLK</text>
+<path class="ln thin r draw" d="M322 342 H248" marker-end="url(#m11-ah-r)"></path>
+<text class="tm xs r end" x="240" y="346">Z · C · V · N → SR</text>
+<text class="tm xs b" x="420" y="246">MDB 16 b · MAB 20 b</text>
+<text class="tz sm m" x="520" y="314">乘法不在 ALU 里：</text>
+<text class="tz sm m" x="520" y="338">交给硬件乘法器（外设）</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800"><b>R0 = PC</b>（contador de programa，程序计数器）：20 位，总是指向下一条要执行的指令。它的第 0 位固定为 0，所以 PC 永远是偶数。</li>
+<li><b>R1 = SP</b>（puntero de pila，栈指针）：20 位，指向最后存进栈里的数据（§8）；第 0 位同样固定为 0。</li>
+<li data-dur="4200"><b>R2</b>：<b>SR</b>（registro de estado，状态寄存器），同时兼作常数发生器，生成常用常数；<b>R3</b> 也是常数发生器（§7）。SR 是唯一的 16 位寄存器。</li>
+<li><b>R4–R15</b>：12 个通用寄存器，20 位，不区分放的是数据还是地址。C 编译器把临时的局部变量放在这里。</li>
+<li data-dur="6000"><b>ALU</b>（16/20 位）由时钟 <b>MCLK</b> 驱动：加减、XOR / AND / NOT、位操作、清零、自增、移位、循环移位，结果的标志 <b>Z、C、V、N</b> 写回 SR（§7）。乘法不在 ALU 里；有些型号用一个专门的外设——硬件乘法器——来做，F5529 有（32 位乘法器）。寄存器经 <b>MDB</b>（数据总线，16 位）和 <b>MAB</b>（地址总线，20 位）连到存储器。</li>
+</ol>
+<p class="stage-note">PC、SP 最右边那格“0”就是固定为 0 的第 0 位。</p>
+
+</figure>
+<div class="panel">
+<h3>PC 的三个特点</h3>
+<ul>
+<li>20 位，总是指向下一条要读取 / 执行的指令（或指令的下一部分）。</li>
+<li><b>总是偶地址</b>：每条指令的长度都是偶数个字节（2、4、6 或 8），而且按字读取；硬件上第 0 位固定为 0。</li>
+<li>读指令时自动增加。</li>
+</ul>
+</div>
+<p>CPUx 能处理三种大小的数据：<b>字节</b>（8 位）、<b>字</b>（16 位）和 <b>20 位</b>数据；TI 的汇编分别用后缀 <code>.B</code>、<code>.W</code>、<code>.A</code> 表示。数据比 20 位短时，放在寄存器的低位部分，<b>高位清零</b>。看一个寄存器在三种写入下怎样变化：</p>
+<figure class="stage" data-ms="3200" data-scene="" id="sc-m11-regw">
+<div class="stage-title"><span>Escena 6b · .B / .W / .A</span><b>4 步</b></div>
+<div aria-label="动画：写字节、写字、写 20 位时寄存器 R5 的变化" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-regw-t" role="img" viewbox="0 0 800 230">
+<title id="sc-m11-regw-t">R5 分成 19–16、15–8、7–0 三段；写字节清掉 19–8 位，写字清掉 19–16 位，写 20 位全部写入</title>
+<text class="tm lg b" x="60" y="96">R5</text>
+<text class="tm xs m mid" x="210" y="54">19</text>
+<text class="tm xs m mid" x="270" y="54">16</text>
+<text class="tm xs m mid" x="290" y="54">15</text>
+<text class="tm xs m mid" x="470" y="54">8</text>
+<text class="tm xs m mid" x="490" y="54">7</text>
+<text class="tm xs m mid" x="670" y="54">0</text>
+<rect class="bx b" data-hl="2 3" height="48" rx="4" width="80" x="200" y="64"></rect>
+<rect class="bx b" data-hl="2" height="48" rx="4" width="200" x="280" y="64"></rect>
+<rect class="bx b" height="48" rx="4" width="200" x="480" y="64"></rect>
+<text class="tm lg b mid" data-out="2" x="240" y="96">A</text>
+<text class="tm lg b mid" data-out="2" x="380" y="96">BC</text>
+<text class="tm lg b mid" data-out="2" x="580" y="96">DE</text>
+<text class="tm lg m mid" data-out="3" data-step="2" x="240" y="96">0</text>
+<text class="tm lg m mid" data-out="3" data-step="2" x="380" y="96">00</text>
+<text class="tm lg y mid" data-out="3" data-step="2" x="580" y="96">5E</text>
+<text class="tm lg m mid" data-out="4" data-step="3" x="240" y="96">0</text>
+<text class="tm lg y mid" data-out="4" data-step="3" x="380" y="96">12</text>
+<text class="tm lg y mid" data-out="4" data-step="3" x="580" y="96">34</text>
+<text class="tm lg y mid" data-step="4" x="240" y="96">3</text>
+<text class="tm lg y mid" data-step="4" x="380" y="96">AB</text>
+<text class="tm lg y mid" data-step="4" x="580" y="96">CD</text>
+<text class="tm y mid" data-out="2" x="440" y="162">R5 = 0xABCDE</text>
+<text class="tm y mid" data-out="3" data-step="2" x="440" y="162">MOV.B #0x5E, R5</text>
+<text class="tm y mid" data-out="4" data-step="3" x="440" y="162">MOV.W #0x1234, R5</text>
+<text class="tm y mid" data-step="4" x="440" y="162">MOVA #0x3ABCD, R5</text>
+<text class="tz sm w mid" data-out="2" x="440" y="202">20 位寄存器：19–16 · 15–8 · 7–0</text>
+<text class="tz sm w mid" data-out="3" data-step="2" x="440" y="202">写字节：19–8 位清零 → R5 = 0x0005E</text>
+<text class="tz sm w mid" data-out="4" data-step="3" x="440" y="202">写字：19–16 位清零 → R5 = 0x01234</text>
+<text class="tz sm w mid" data-step="4" x="440" y="202">写 20 位：全部写入 → R5 = 0x3ABCD</text>
+</svg>
+</div>
+<ol class="captions">
+<li>R5 是 20 位寄存器，现在的值是 0xABCDE：19–16 位是 A，15–8 位是 BC，7–0 位是 DE。</li>
+<li data-dur="3600">写一个字节（<code>.B</code>）：新字节进第 7–0 位，<b>第 19–8 位全部清零</b>。R5 = 0x0005E。</li>
+<li>写一个字（<code>.W</code>）：新字进第 15–0 位，<b>第 19–16 位清零</b>。R5 = 0x01234。</li>
+<li>写 20 位（<code>.A</code>，例如 <code>MOVA</code>）：20 位全部写入。R5 = 0x3ABCD。</li>
+</ol>
+<p class="stage-note">数值是示意。高位清零有一个例外：SXT 指令把符号位扩展到整个 20 位寄存器。</p>
+</figure>
+<p class="aside">寄存器和内存之间传 20 位数据：<b>寄存器 → 内存</b>时用 2 个字，低 16 位放在 Memory，第 19–16 位放在 Memory+2 的最低 4 位，Memory+2 其余的位（即第 20–31 位）写 0（§5 的最后一步）；<b>内存 → 寄存器</b>时，Memory+2 里没用到的高位直接忽略。</p>
+
+<p class="takeaway">R0 = PC、R1 = SP、R2 = SR（兼常数发生器）、R3 = 常数发生器，R4–R15 通用。除 SR（16 位）外都是 20 位；写字节清掉 19–8 位，写字清掉 19–16 位。PC 永远是偶数。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>状态寄存器 SR <span class="tag">M11.9</span></h2>
+<p class="hook"><span class="zh">CPU 做完一次加法，怎么知道结果是 0、是负数，还是溢出了？</span><span class="es">Registro de estado R2 (SR).</span></p>
+<p><b class="t">registro de estado (ES) / status register (EN)</b>——状态寄存器 SR 是 16 位的。它的位有三种作用：反映运算结果（<span class="c-b">标志位</span>）、控制低功耗模式（<span class="c-o">打开 / 关闭内部时钟部件</span>）、打开 / 关闭中断（<span class="c-g">GIE</span>）。点一位看它的含义：</p>
+<div class="srx" data-explain="8">
+<div class="srwrap">
+<div aria-label="SR 的位" class="srbits" role="group">
+<button aria-pressed="false" class="srb" data-key="r" type="button"><span class="bn">15–9</span><span class="bl">reservado</span></button>
+<button aria-pressed="false" class="srb f" data-key="8" type="button"><span class="bn">8</span><span class="bl">V</span></button>
+<button aria-pressed="false" class="srb o" data-key="7" type="button"><span class="bn">7</span><span class="bl">SCG1</span></button>
+<button aria-pressed="false" class="srb o" data-key="6" type="button"><span class="bn">6</span><span class="bl">SCG0</span></button>
+<button aria-pressed="false" class="srb o" data-key="5" type="button"><span class="bn">5</span><span class="bl">OSC OFF</span></button>
+<button aria-pressed="false" class="srb o" data-key="4" type="button"><span class="bn">4</span><span class="bl">CPU OFF</span></button>
+<button aria-pressed="false" class="srb g" data-key="3" type="button"><span class="bn">3</span><span class="bl">GIE</span></button>
+<button aria-pressed="false" class="srb f" data-key="2" type="button"><span class="bn">2</span><span class="bl">N</span></button>
+<button aria-pressed="false" class="srb f" data-key="1" type="button"><span class="bn">1</span><span class="bl">Z</span></button>
+<button aria-pressed="false" class="srb f" data-key="0" type="button"><span class="bn">0</span><span class="bl">C</span></button>
+</div>
+</div>
+<div class="panel" data-panel="r" hidden=""><span class="big">15–9 · reservado</span><p>保留位，不用。不要往 SR 里写 20 位的值，否则行为不可预测。</p></div>
+<div class="panel" data-panel="8"><span class="big">8 · V · overflow（溢出）</span><p>有<b>符号</b>运算的结果超出了目标能表示的范围。具体规则：加法里"正 + 正 = 负"或"负 + 负 = 正"时置 1；减法 / 比较里"正 − 负 = 负"或"负 − 正 = 正"时置 1；其他情况清零。</p></div>
+<div class="panel" data-panel="7" hidden=""><span class="big">7 · SCG1 · system clock generator 1</span><p>和 SCG0 一起，控制时钟系统里除晶体振荡器和主时钟之外的各个部件的开关，会影响依赖这些时钟的外设。例如：DCO 的偏置开关（具体作用随器件而定）。细节在 M24、M26。</p></div>
+<div class="panel" data-panel="6" hidden=""><span class="big">6 · SCG0 · system clock generator 0</span><p>和 SCG1 一起控制时钟系统的部件。例如：FLL 的开关（具体作用随器件而定）。细节在 M24、M26。</p></div>
+<div class="panel" data-panel="5" hidden=""><span class="big">5 · OSCOFF · oscillator off</span><p>置 1 时关闭晶体振荡器（对应 LPM4 模式）。更精确地说：在 LFXT1 没被 MCLK 或 SMCLK 使用时，把它关掉。</p></div>
+<div class="panel" data-panel="4" hidden=""><span class="big">4 · CPUOFF · CPU off</span><p>置 1 时关掉 CPU——实际上关的是驱动它的主时钟 MCLK。任何一种低功耗模式都会把它置 1。CPUOFF、OSCOFF、SCG0、SCG1 这四位一起请求系统进入某个低功耗模式（M26）。</p></div>
+<div class="panel" data-panel="3" hidden=""><span class="big">3 · GIE · general interrupt enable</span><p>为 1 时允许可屏蔽中断；为 0 时所有可屏蔽中断都被挡住。进入 RTI 时硬件会自动把它清零（M21）。</p></div>
+<div class="panel" data-panel="2" hidden=""><span class="big">2 · N · negativo</span><p>运算结果为负时置 1，为正时清零。</p></div>
+<div class="panel" data-panel="1" hidden=""><span class="big">1 · Z · zero</span><p>运算结果为 0 时置 1，否则清零。</p></div>
+<div class="panel" data-panel="0" hidden=""><span class="big">0 · C · carry</span><p>运算产生了进位（carry）或借位（borrow）时置 1。</p></div>
+</div>
+<p>三个 16 位加法的例子，看四个标志位怎样各自独立地变化：</p>
+<div class="tbl-wrap">
+<table class="flags">
+<thead><tr><th>ADD（16 位）</th><th>结果</th><th>C</th><th>Z</th><th>N</th><th>V</th></tr></thead>
+<tbody>
+<tr><td>0x7FFF + 0x0001</td><td class="mono">0x8000</td><td>0</td><td>0</td><td class="one">1</td><td class="one">1</td></tr>
+<tr><td>0xFFFF + 0x0001</td><td class="mono">0x0000</td><td class="one">1</td><td class="one">1</td><td>0</td><td>0</td></tr>
+<tr><td>0x8000 + 0x8000</td><td class="mono">0x0000</td><td class="one">1</td><td class="one">1</td><td>0</td><td class="one">1</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">第一行：按有符号数是 32767 + 1，正 + 正 却得到负数（第 15 位为 1）→ V = 1，但没有超出 16 位 → C = 0。第二行：按无符号数 65535 + 1 溢出 16 位 → C = 1，结果为 0 → Z = 1；按有符号数是 −1 + 1 = 0，没有溢出 → V = 0。第三行：负 + 负 得到 0（不是负数）→ V = 1，同时有进位 → C = 1。</p>
+<div class="note">
+<span class="lbl">SR 用了几位</span>
+<p>注意：有些资料正文说 SR 只用最低 8 位，但它自己的位图和 TI 手册都把 V 放在第 8 位，第 0–8 位都有定义。按位图记。</p>
+<p>第 0–8 位依次是 C、Z、N、GIE、CPUOFF、OSCOFF、SCG0、SCG1、V，第 9–15 位保留。这 9 位都是 <b>rw-0</b>：可读可写，复位后为 0。修改 SR 最好只用 MOV、BIS、BIC 指令。</p>
+</div>
+
+<h3>常数发生器 R2 和 R3</h3>
+<p><b class="t">generador de constantes (ES) / constant generator (EN)</b>——常数发生器：R2 和 R3 能产生最常用的 6 个常数 <b>2、4、8、0、1、−1</b>，代码里不必明写出来。好处是代码更短、执行更快，对程序员透明；它还让一批"模拟指令"（instrucciones emuladas）可以用基本指令实现。</p>
+<div class="note">
+<span class="lbl">细节</span>
+<p>有些资料的说法是：R2 的一个字节是 SR，另一个字节用来生成常数。实际机制看寻址方式：</p>
+<p>常数由源操作数的寻址方式 As 选出来：R2 在寄存器方式（As = 00）下就是 SR；As = 10 → +4，As = 11 → +8；R3 的 As = 00 → 0，01 → +1，10 → +2，11 → −1（FFh / FFFFh / FFFFFh）。汇编器遇到这 6 个立即数时自动使用常数发生器，不需要额外的代码字。MSP430 的 RISC 指令集只有 27 条指令，靠常数发生器又多出 24 条模拟指令，例如 <code>CLR dst</code> 实际是 <code>MOV #0, dst</code>（#0 由 R3 产生），<code>INC dst</code> 实际是 <code>ADD #1, dst</code>。</p>
+</div>
+<p class="takeaway">SR（R2）的第 0–8 位：C、Z、N 是结果标志，GIE 是中断总开关，CPUOFF、OSCOFF、SCG0、SCG1 控制低功耗模式，V 是有符号溢出。R2、R3 还兼作常数发生器，免费提供 2、4、8、0、1、−1。</p>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>栈 <span class="tag">M11.10</span></h2>
+<p class="hook"><span class="zh">调用一个子程序，CPU 怎么记得要回到哪里？</span><span class="es">La pila y el puntero de pila R1 (SP).</span></p>
+<p><b class="t">pila (ES) / stack (EN)</b>——栈，是内存里专门划出来的一块（放在 RAM 里）。CPU 用它<b>自动</b>保存：调用子程序时的返回地址（PC），以及处理中断时的返回地址 PC 和状态寄存器 SR（M21）。程序还可以用它传参数、存临时变量、切换上下文。</p>
+<p>栈是一种 <b>LIFO</b>（Last In First Out，后进先出）的数据结构：任何时候只能访问最上面那一项，即 <b>TOS</b>（Top Of Stack，栈顶）。有两个基本操作：<b>PUSH</b>（压入新数据）和 <b>POP</b>（取出最后的数据）。栈指针 SP 指向栈顶，也就是<b>最后存入的那个数据的地址</b>。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="sc-m11-stack">
+<div class="stage-title"><span>Escena 8 · PUSH / POP</span><b>核心场景</b></div>
+<div aria-label="动画：PUSH 和 POP 时 SP 和栈的变化，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-m11-stack-t" role="img" viewbox="0 0 800 360">
+<title id="sc-m11-stack-t">左边是 SP 和 R8–R12，右边是从 0x43FE 往下的栈；依次执行 PUSH R9、PUSH R10、POP R8、PUSH.B R11、PUSHX.A R12</title>
+<text class="tx sm w" x="30" y="32">CPU</text>
+<text class="tx sm p" x="470" y="32">Pila · stack</text>
+<rect class="bx p" data-hl="1 2 3 4 5 6" height="40" rx="6" width="300" x="30" y="50"></rect>
+<text class="tm p" x="44" y="76">SP</text>
+<text class="tm lg p end" data-out="2" x="316" y="78">0x4400</text>
+<text class="tm lg p end" data-out="3" data-step="2" x="316" y="78">0x43FE</text>
+<text class="tm lg p end" data-out="4" data-step="3" x="316" y="78">0x43FC</text>
+<text class="tm lg p end" data-out="5" data-step="4" x="316" y="78">0x43FE</text>
+<text class="tm lg p end" data-out="6" data-step="5" x="316" y="78">0x43FC</text>
+<text class="tm lg p end" data-step="6" x="316" y="78">0x43F8</text>
+<rect class="bx b" data-hl="4" height="40" rx="6" width="300" x="30" y="100"></rect>
+<text class="tm b" x="44" y="126">R8</text>
+<text class="tm m end" data-out="4" x="316" y="127">—</text>
+<text class="tm y end" data-step="4" x="316" y="127">0x0C35</text>
+<rect class="bx b" data-hl="2" height="40" rx="6" width="300" x="30" y="150"></rect>
+<text class="tm b" x="44" y="176">R9</text>
+<text class="tm b end" x="316" y="177">0x7E42</text>
+<rect class="bx b" data-hl="3" height="40" rx="6" width="300" x="30" y="200"></rect>
+<text class="tm b" x="44" y="226">R10</text>
+<text class="tm b end" x="316" y="227">0x0C35</text>
+<rect class="bx b" data-hl="5" height="40" rx="6" width="300" x="30" y="250"></rect>
+<text class="tm b" x="44" y="276">R11</text>
+<text class="tm b end" x="316" y="277">0x005A</text>
+<rect class="bx b" data-hl="6" height="40" rx="6" width="300" x="30" y="300"></rect>
+<text class="tm b" x="44" y="326">R12</text>
+<text class="tm b end" x="316" y="327">0x2ABCD</text>
+<text class="tm sm m end" x="462" y="74">4400</text>
+<path class="ln thin m dash" d="M470 70 H650"></path>
+<rect class="bx hollow p" height="40" rx="4" width="180" x="470" y="80"></rect>
+<rect class="bx hollow p" height="40" rx="4" width="180" x="470" y="126"></rect>
+<rect class="bx hollow p" height="40" rx="4" width="180" x="470" y="172"></rect>
+<rect class="bx hollow p" height="40" rx="4" width="180" x="470" y="218"></rect>
+<text class="tm sm m end" x="462" y="105">43FE</text>
+<text class="tm sm m end" x="462" y="151">43FC</text>
+<text class="tm sm m end" x="462" y="197">43FA</text>
+<text class="tm sm m end" x="462" y="243">43F8</text>
+<text class="tm p mid" data-step="2" x="560" y="106">7E42</text>
+<text class="tm p mid" data-out="4" data-step="3" x="560" y="152">0C35</text>
+<text class="tm m mid" data-out="5" data-step="4" x="560" y="152">0C35</text>
+<text class="tz sm m" data-out="5" data-step="4" x="604" y="152">旧值</text>
+<text class="tm p mid" data-step="5" x="560" y="152"><tspan class="sl m">0C</tspan>5A</text>
+<text class="tm p mid" data-step="6" x="560" y="198">0002</text>
+<text class="tm p mid" data-step="6" x="560" y="244">ABCD</text>
+<text class="tm xs m" data-step="6" x="478" y="197">19:16</text>
+<text class="tm xs m" data-step="6" x="478" y="243">15:0</text>
+<g data-out="2"><path class="sl p" d="M656 70 l12 -7 v14 z"></path><text class="tm sm p" x="672" y="75">SP</text></g>
+<g data-out="3" data-step="2"><path class="sl p" d="M656 100 l12 -7 v14 z"></path><text class="tm sm p" x="672" y="105">SP</text></g>
+<g data-out="4" data-step="3"><path class="sl p" d="M656 146 l12 -7 v14 z"></path><text class="tm sm p" x="672" y="151">SP</text></g>
+<g data-out="5" data-step="4"><path class="sl p" d="M656 100 l12 -7 v14 z"></path><text class="tm sm p" x="672" y="105">SP</text></g>
+<g data-out="6" data-step="5"><path class="sl p" d="M656 146 l12 -7 v14 z"></path><text class="tm sm p" x="672" y="151">SP</text></g>
+<g data-step="6"><path class="sl p" d="M656 238 l12 -7 v14 z"></path><text class="tm sm p" x="672" y="243">SP</text></g>
+<path class="ln thin p dash" d="M330 170 C 400 170, 400 100, 468 100" data-out="3" data-step="2" id="m11-p-s2"></path>
+<path class="ln thin p dash" d="M330 220 C 400 220, 400 146, 468 146" data-out="4" data-step="3" id="m11-p-s3"></path>
+<path class="ln thin p dash" d="M468 146 C 400 146, 400 120, 332 120" data-out="5" data-step="4" id="m11-p-s4"></path>
+<path class="ln thin p dash" d="M330 270 C 400 270, 400 146, 468 146" data-out="6" data-step="5" id="m11-p-s5"></path>
+<path class="ln thin p dash" d="M330 320 C 400 320, 400 215, 468 215" data-step="6" id="m11-p-s6"></path>
+<circle class="sl y" data-move="#m11-p-s2" data-out="3" data-step="2" r="6"></circle>
+<circle class="sl y" data-move="#m11-p-s3" data-out="4" data-step="3" r="6"></circle>
+<circle class="sl y" data-move="#m11-p-s4" data-out="5" data-step="4" r="6"></circle>
+<circle class="sl y" data-move="#m11-p-s5" data-out="6" data-step="5" r="6"></circle>
+<circle class="sl y" data-move="#m11-p-s6" data-step="6" r="6"></circle>
+<text class="tz sm m mid" x="560" y="282">栈向低地址增长 ↓</text>
+<rect class="bx y" height="44" rx="6" width="310" x="470" y="298"></rect>
+<text class="tm y mid" data-out="2" x="625" y="326">MOV.W #0x4400, SP</text>
+<text class="tm y mid" data-out="3" data-step="2" x="625" y="326">PUSH R9</text>
+<text class="tm y mid" data-out="4" data-step="3" x="625" y="326">PUSH R10</text>
+<text class="tm y mid" data-out="5" data-step="4" x="625" y="326">POP R8</text>
+<text class="tm y mid" data-out="6" data-step="5" x="625" y="326">PUSH.B R11</text>
+<text class="tm y mid" data-step="6" x="625" y="326">PUSHX.A R12</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">先给 SP 一个初值：栈的基址（base de la pila）。这里用 0x4400，正好在 RAM 顶端 0x43FF 之上（示意值）。栈现在是空的。</li>
+<li data-dur="4200"><code>PUSH R9</code>：<b>先</b>把 SP 减 2（predecremento）→ 0x43FE，<b>再</b>把 R9 的值 0x7E42 写到 SP 指向的位置。SP 指向刚存入的数据。</li>
+<li><code>PUSH R10</code>：SP 再减 2 → 0x43FC，存入 0x0C35。栈向<b>低地址</b>增长。</li>
+<li data-dur="4600"><code>POP R8</code>：<b>先</b>读出栈顶的 0x0C35 送进 R8，<b>再</b>把 SP 加 2（postincremento）→ 0x43FE。最后压入的最先出来：LIFO。0x43FC 里的旧值还在，但已经不属于栈了。</li>
+<li data-dur="4600"><code>PUSH.B R11</code>：只压一个字节，SP 照样减 2 → 0x43FC，保持偶地址。字节写进这个字的低字节，高字节不受影响（这里还是旧的 0C）。</li>
+<li data-dur="5000"><code>PUSHX.A R12</code>：CPUx 的指令，压一个 20 位的值。SP 减 4 → 0x43F8：低 16 位 ABCD 在 0x43F8，高 4 位（补成 0x0002）在 0x43FA。</li>
+</ol>
+<p class="stage-note">地址和寄存器的值是示意。</p>
+
+</figure>
+<div class="formula" data-tex="\textbf{PUSH}:\ \class{c-p}{SP} \leftarrow \class{c-p}{SP} - 2,\ \ \mathtt{@SP} \leftarrow \text{src} \qquad\qquad \textbf{POP}:\ \text{dst} \leftarrow \mathtt{@SP},\ \ \class{c-p}{SP} \leftarrow \class{c-p}{SP} + 2">PUSH：SP ← SP − 2，@SP ← src　　POP：dst ← @SP，SP ← SP + 2</div>
+<p class="aside">PUSH 先减后存（predecremento），POP 先取后加（postincremento）。PUSH 的源（origen）和 POP 的目的（destino）都可以是寄存器，也可以是内存。PUSHX.A 压 20 位值时 SP 减 4。</p>
+<div class="grid2">
+<div class="panel">
+<h3>记住四点</h3>
+<ul>
+<li>栈向<b>低地址</b>增长：压入时 SP 减小，取出时 SP 增大。</li>
+<li>SP <b>永远是偶数</b>：栈里可能放字节、字或 20 位数据；即使只压一个字节，SP 也移动 2。</li>
+<li>SP 指向<b>最后存入</b>的数据（TOS）。</li>
+<li>使用前必须给 SP 一个初值：栈的基址。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>和 M21 的联系</h3>
+<p>中断发生时，CPU 自动把 PC 和 SR 压栈，SP 共减 4；RETI 再把它们弹回来。CPUx 用 SR 里空着的高 4 位装下 PC 的第 19–16 位。这一切都靠这里讲的同一个栈。</p>
+</div>
+</div>
+<p class="takeaway">栈是 RAM 里一块后进先出的区域，SP（R1）指向栈顶。PUSH：SP − 2 再存；POP：先取再 SP + 2。栈向低地址增长，SP 永远是偶数。</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的规则随机出数，每次都不一样：地址位数 ↔ 寻址空间（§3），小端序的字节排列（§5）。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="addr"></div>
+<div class="drill" data-drill="endian"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M11">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>下面哪一项最能说明一个器件是微处理器，而不是微控制器？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它有 ADC</button>
+<button data-o="b" type="button"><span class="k">B</span>它有 MMU，能运行 Linux 这样的完整操作系统</button>
+<button data-o="c" type="button"><span class="k">C</span>它有 CPU、存储器和总线</button>
+<button data-o="d" type="button"><span class="k">D</span>它有定时器</button>
+</div>
+<p class="why"><b>B。</b>CPU、存储器、外设、总线两者都有；MMU 把内存虚拟化，使完整 SO 成为可能，是典型的分界（§0）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>关于 Von Neumann 架构，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>程序和数据放在两块独立的存储器里</button>
+<button data-o="b" type="button"><span class="k">B</span>能同时取指令和取数据，所以效率更高</button>
+<button data-o="c" type="button"><span class="k">C</span>程序和数据共用存储器和总线，要依次访问，但 CPU 设计更简单</button>
+<button data-o="d" type="button"><span class="k">D</span>两组总线可以有不同的宽度</button>
+</div>
+<p class="why"><b>C。</b>A、B、D 说的都是 Harvard。MSP430 是 Von Neumann（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">03</span>按字节寻址，地址总线 16 位，最多能寻址多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>16 KB</button>
+<button data-o="b" type="button"><span class="k">B</span>64 KB</button>
+<button data-o="c" type="button"><span class="k">C</span>1 MB</button>
+<button data-o="d" type="button"><span class="k">D</span>65 536 KB</button>
+</div>
+<p class="why"><b>B。</b>2<sup>16</sup> = 65 536 个地址 × 1 B = 64 KB。1 MB 是 20 位的 CPUx（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>F5529 能寻址 1 MB，为什么外设、RAM 和中断向量表都放在最低的 64 KB？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>因为 Flash 只能放在 64 KB 以上</button>
+<button data-o="b" type="button"><span class="k">B</span>为了和 16 位地址总线的 MSP430 保持兼容</button>
+<button data-o="c" type="button"><span class="k">C</span>因为 20 位地址只能访问 Flash</button>
+<button data-o="d" type="button"><span class="k">D</span>因为 RAM 必须紧挨着外设</button>
+</div>
+<p class="why"><b>B。</b>为了兼容，外设、校准信息、RAM 和一部分 Flash 集中在最低的 64 KB；向量表也在 64 KB 的最顶端（§4）。Flash 本身就从 0x4400 开始，A 不对。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>F5529 的 RAM（含 USB 扇区）占哪段地址？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x0000–0x0FFF</button>
+<button data-o="b" type="button"><span class="k">B</span>0x1000–0x17FF</button>
+<button data-o="c" type="button"><span class="k">C</span>0x1C00–0x43FF</button>
+<button data-o="d" type="button"><span class="k">D</span>0x4400–0x243FF</button>
+</div>
+<p class="why"><b>C。</b>10 KB = 5 个 2 KB 扇区，最低的给 USB。A 是外设，B 是 BSL，D 是 Flash（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>地址 0xFF90 落在哪个区域？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RAM</button>
+<button data-o="b" type="button"><span class="k">B</span>外设寄存器</button>
+<button data-o="c" type="button"><span class="k">C</span>BSL</button>
+<button data-o="d" type="button"><span class="k">D</span>中断向量表（0xFF80–0xFFFF）</button>
+</div>
+<p class="why"><b>D。</b>向量表在低 64 KB 的最顶端 0xFF80–0xFFFF，物理上属于 Flash（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>关于 FRAM，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>断电后信息丢失</button>
+<button data-o="b" type="button"><span class="k">B</span>非易失、可读可写、功耗低，但读速度低于 8 MHz</button>
+<button data-o="c" type="button"><span class="k">C</span>写一个位置要对整块编程，所以写得慢</button>
+<button data-o="d" type="button"><span class="k">D</span>读出会破坏数据</button>
+</div>
+<p class="why"><b>B。</b>C 说的是 Flash；FRAM 的读出不破坏数据。它的短板是速度，不适合高速处理器（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>字 0x5D19 存在地址 0x2C10。地址 0x2C11 里的字节是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x19</button>
+<button data-o="b" type="button"><span class="k">B</span>0x5D</button>
+<button data-o="c" type="button"><span class="k">C</span>0xD1</button>
+<button data-o="d" type="button"><span class="k">D</span>0x95</button>
+</div>
+<p class="why"><b>B。</b>Little endian：LSB 0x19 在偶地址 0x2C10，MSB 0x5D 在下一个奇地址 0x2C11（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>下面哪个地址可以作为一个字（16 位）的起始地址？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x2401</button>
+<button data-o="b" type="button"><span class="k">B</span>0x2403</button>
+<button data-o="c" type="button"><span class="k">C</span>0x2406</button>
+<button data-o="d" type="button"><span class="k">D</span>0x2409</button>
+</div>
+<p class="why"><b>C。</b>字只能在偶地址访问；字节才可以在任意地址（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>R6 = 0x4A2C1，执行 <code>MOV.B #0x7F, R6</code> 之后 R6 = ?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x4A27F</button>
+<button data-o="b" type="button"><span class="k">B</span>0x0007F</button>
+<button data-o="c" type="button"><span class="k">C</span>0x4A2C1</button>
+<button data-o="d" type="button"><span class="k">D</span>0x0A27F</button>
+</div>
+<p class="why"><b>B。</b>写字节时，数据进第 7–0 位，第 19–8 位全部清零（§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>SR 的 V 位（第 8 位）表示什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>结果为 0</button>
+<button data-o="b" type="button"><span class="k">B</span>有符号运算的结果溢出了</button>
+<button data-o="c" type="button"><span class="k">C</span>产生了进位或借位</button>
+<button data-o="d" type="button"><span class="k">D</span>允许可屏蔽中断</button>
+</div>
+<p class="why"><b>B。</b>A 是 Z（第 1 位），C 是 C（第 0 位），D 是 GIE（第 3 位）（§7）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>SP = 0x4400。依次执行 <code>PUSH R5</code>（R5 = 0x1111）、<code>PUSH R6</code>（R6 = 0x2222）、<code>POP R7</code>。之后 SP 和 R7 是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>SP = 0x43FE，R7 = 0x2222</button>
+<button data-o="b" type="button"><span class="k">B</span>SP = 0x43FC，R7 = 0x1111</button>
+<button data-o="c" type="button"><span class="k">C</span>SP = 0x4402，R7 = 0x2222</button>
+<button data-o="d" type="button"><span class="k">D</span>SP = 0x43FE，R7 = 0x1111</button>
+</div>
+<p class="why"><b>A。</b>两次 PUSH：SP → 0x43FE → 0x43FC；POP 取出最后压入的 0x2222（LIFO），SP 加 2 → 0x43FE（§8）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">17 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">microcontrolador<small>MCU · microcontroller</small></span><span class="back"><b>微控制器</b><br/>CPU、存储器、外设、总线做在一块芯片上；外设简单，功耗和成本低。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">microprocesador<small>MPU · microprocessor</small></span><span class="back"><b>微处理器</b><br/>多层总线、MMU、复杂外设，能运行完整操作系统；功耗和成本高。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MMU<small>Memory Management Unit</small></span><span class="back"><b>内存管理单元</b><br/>虚拟化内存，给每个任务独立的逻辑地址空间；完整 SO 需要它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Von Neumann</span><span class="back"><b>冯·诺依曼架构</b><br/>程序和数据共用一块存储器和一组总线，依次访问。MSP430 用它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Harvard</span><span class="back"><b>哈佛架构</b><br/>程序和数据分开存储、各有总线，可以同时访问；CPU 更复杂。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RISC · CISC<small>Reduced / Complex Instruction Set Computer</small></span><span class="back"><b>精简 / 复杂指令集</b><br/>RISC：指令少而简单、执行快；CISC：指令多而复杂、CPU 也复杂。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CPUx<small>CPU extendida · MSP430X CPU</small></span><span class="back"><b>扩展 CPU</b><br/>x5xx 的 CPU：20 位地址 → 1 MB，16 个寄存器，向后兼容。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mapa de memoria<small>memory map</small></span><span class="back"><b>内存映射</b><br/>每个地址对应唯一的部分，反之亦然；分功能层和物理层。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">periféricos mapeados en memoria<small>memory-mapped peripherals</small></span><span class="back"><b>存储器映射的外设</b><br/>外设寄存器占用地址，像内存一样读写；F5529 在 0x0000–0x0FFF。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BSL<small>bootstrap loader</small></span><span class="back"><b>引导加载程序</b><br/>0x1000–0x17FF 的 Flash 程序，通过串行接口给 Flash 和 RAM 编程。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">little endian<small>endianness</small></span><span class="back"><b>小端序</b><br/>低字节放在低地址。MSP430 用它；big endian 相反。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">LSB · MSB<small>Least / Most Significant Byte</small></span><span class="back"><b>低字节 · 高字节</b><br/>字里权重低 / 高的字节。小写 b 的 LSb、MSb 指位。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PC · R0<small>contador de programa</small></span><span class="back"><b>程序计数器</b><br/>20 位，指向下一条指令，总是偶地址。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SP · R1<small>puntero de pila · stack pointer</small></span><span class="back"><b>栈指针</b><br/>指向最后存入栈的数据；总是偶数。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SR · R2<small>registro de estado</small></span><span class="back"><b>状态寄存器</b><br/>16 位：C Z N GIE CPUOFF OSCOFF SCG0 SCG1 V（第 0–8 位）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">generador de constantes<small>constant generator · CG1/CG2</small></span><span class="back"><b>常数发生器</b><br/>R2、R3 产生 2、4、8、0、1、−1，不占额外代码字。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pila · LIFO<small>stack · PUSH / POP</small></span><span class="back"><b>栈 · 后进先出</b><br/>PUSH：SP − 2 再存；POP：先取再 SP + 2。向低地址增长。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M11"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  if (window.__m11Page) return;
+  window.__m11Page = true;
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+
+  
+  var REG = [
+    { a: 0x00000, b: 0x00FFF, n: "Periféricos", s: "4 KB", d: "外设寄存器（存储器映射的外设）。有 8 位外设，也有 16 位外设；对 8 位外设做字访问，结果不可预测。" },
+    { a: 0x01000, b: 0x017FF, n: "Flash BSL", s: "2 KB", d: "bootstrap loader：通过串行接口给 Flash 和 RAM 编程的程序。", k: "bsl" },
+    { a: 0x01800, b: 0x019FF, n: "Flash de información", s: "512 B", d: "器件信息、标识和部分外设的校准信息；器件描述符的位置见下面的注意。", k: "info" },
+    { a: 0x01A00, b: 0x01BFF, n: "Libre", s: "512 B", d: "有些资料标为空闲（libre）；TI 数据手册却把器件描述符（TLV）放在 0x01A00 开始的地方。答题按有些资料说 libre；写程序时别往这里写东西。" },
+    { a: 0x01C00, b: 0x023FF, n: "RAM · sector USB", s: "2 KB", d: "RAM 最低的 2 KB 扇区，给 USB 外设用；不用 USB 时可以当普通 RAM。也叫 Sector 7（USB RAM）。" },
+    { a: 0x02400, b: 0x043FF, n: "RAM", s: "8 KB", d: "通用 RAM：变量、栈、堆。", k: "ram" },
+    { a: 0x04400, b: 0x0C3FF, n: "Flash · Banco A", s: "32 KB", d: "程序代码和常量数据；整个 bank 都在低 64 KB 以内。" },
+    { a: 0x0C400, b: 0x0FFFF, n: "Flash · Banco B（64 KB 以内）", s: "15 KB", d: "程序代码和常量数据；Bank B 共 32 KB，这是落在 64 KB 以内的部分，最顶端是中断向量表。" },
+    { a: 0x0FF80, b: 0x0FFFF, n: "Vectores de interrupción", s: "128 B", d: "64 个中断向量，每个 2 字节，存 RTI 的入口地址；物理上属于 Flash Bank B。", k: "vec" },
+    { a: 0x10000, b: 0x143FF, n: "Flash · Banco B（64 KB 以上）", s: "17 KB", d: "Bank B 超出 64 KB 的部分。" },
+    { a: 0x14400, b: 0x1C3FF, n: "Flash · Banco C", s: "32 KB", d: "程序代码和常量数据。" },
+    { a: 0x1C400, b: 0x243FF, n: "Flash · Banco D", s: "32 KB", d: "程序代码和常量数据；128 KB Flash 到 0x243FF 结束。" },
+    { a: 0x24400, b: 0xFFFFF, n: "无存储器", s: "—", d: "1 MB 地址空间里，这一段没有放任何存储器。" }
+  ];
+  var rows = Array.prototype.slice.call(document.querySelectorAll("#m11-memt tr.pick"));
+  var out = $("m11-lk-out"), inp = $("m11-lk-in"), go = $("m11-lk-go");
+  if (!out || !inp || !go || !rows.length) return;
+
+  function hx(a) {
+    var s = a.toString(16).toUpperCase();
+    var w = a > 0xFFFF ? 5 : 4;
+    while (s.length < w) s = "0" + s;
+    return "0x" + s;
+  }
+  function parse(s) {
+    s = String(s).replace(/[\s_]/g, "");
+    var m = /^(?:0x)?([0-9a-f]{1,5})h?$/i.exec(s);
+    return m ? parseInt(m[1], 16) : NaN;
+  }
+  function find(a) {
+    var best = -1;
+    for (var i = 0; i < REG.length; i++) {
+      if (a >= REG[i].a && a <= REG[i].b && (best < 0 || REG[i].b - REG[i].a < REG[best].b - REG[best].a)) best = i;
+    }
+    return best;
+  }
+  function extra(r, a) {
+    if (r.k === "bsl") return "落在 BSL " + ((a - 0x1000) >> 9) + " 段（分 4 段，各 512 B）。";
+    if (r.k === "info") return "落在 Info " + "DCBA".charAt((a - 0x1800) >> 7) + " 段（分 D、C、B、A 四段，各 128 B）。";
+    if (r.k === "ram") return "落在 Sector " + ((a - 0x2400) >> 11) + "（各 2 KB）。";
+    if (r.k === "vec") return "向量 " + ((a - 0xFF80) >> 1) + " 号，这是它的" + (a & 1 ? "高" : "低") + "字节（小端序，§5）。";
+    return "";
+  }
+  function show(a) {
+    var i = find(a);
+    if (i < 0) { out.innerHTML = '<span class="big">?</span><p>请输入 0x00000–0xFFFFF 之间的十六进制地址。</p>'; return; }
+    var r = REG[i];
+    out.innerHTML = '<span class="big">' + hx(a) + " → " + r.n + "</span>" +
+      "<p>" + hx(r.a) + "–" + hx(r.b) + " · " + r.s + "。" + r.d + (extra(r, a) ? " " + extra(r, a) : "") + "</p>" +
+      '<p class="aside">' + (a <= 0xFFFF ? "低 64 KB 以内：16 位地址就能访问。" : "高于 0xFFFF：要用 CPUx 的 20 位地址和对应的指令。") + "</p>";
+    rows.forEach(function (tr) {
+      var on = +tr.getAttribute("data-i") === i;
+      tr.classList.toggle("on", on);
+      tr.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    try { rows[i].scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); } catch (e) {  }
+  }
+  function lookup() {
+    var a = parse(inp.value);
+    if (isNaN(a) || a < 0 || a > 0xFFFFF) { out.innerHTML = '<span class="big">?</span><p>没看懂 “' + String(inp.value).replace(/[<>&"]/g, "") + '”。请输入十六进制地址，例如 0x1C00、1C00 或 1C00h（按十六进制解释）。</p>'; return; }
+    show(a);
+  }
+  go.addEventListener("click", lookup);
+  inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); lookup(); } });
+  Array.prototype.slice.call(document.querySelectorAll(".chip[data-a]")).forEach(function (c) {
+    c.addEventListener("click", function () { inp.value = c.getAttribute("data-a"); lookup(); });
+  });
+  rows.forEach(function (tr) {
+    tr.tabIndex = 0;
+    tr.setAttribute("role", "button");
+    function pick() { var r = REG[+tr.getAttribute("data-i")]; inp.value = hx(r.a); show(r.a); }
+    tr.addEventListener("click", pick);
+    tr.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+})();
+</script>
+</body>
+</html>

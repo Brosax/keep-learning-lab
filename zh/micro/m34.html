@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M34 USCI en modo UART · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.mini {
+  border: 1px solid var(--st-line); background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini:disabled { opacity: .35; cursor: default; }
+.stage-ctl label.pick { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--f-mono); color: var(--st-muted); }
+.stage-ctl select {
+  font: 600 13px/1.4 var(--f-mono); color: var(--st-ink); background: var(--st-bg);
+  border: 1px solid var(--st-line); border-radius: 6px; padding: 4px 8px; max-width: 100%;
+}
+.stage-ctl select:focus-visible { outline: 2px solid var(--st-yellow); outline-offset: 1px; }
+.calc-res {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 4px 20px;
+  padding: 12px 18px 16px; background: var(--st-panel); border-top: 1px solid var(--st-line);
+  font: 500 13px/1.65 var(--f-mono); color: var(--st-ink);
+}
+.calc-res > div { min-width: 0; overflow-wrap: anywhere; }
+.calc-res .k { color: var(--st-muted); }
+.calc-res b { color: var(--st-yellow); font-weight: 700; }
+.calc-res .g { color: var(--st-green); } .calc-res .r { color: var(--st-red); } .calc-res .bl { color: var(--st-blue); }
+.calc-res .wide { grid-column: 1 / -1; }
+.calc-res .warn { color: var(--st-red); }
+.calc-res .ti { border-top: 1px dashed var(--st-line); padding-top: 6px; margin-top: 4px; color: var(--st-muted); }
+.pat td { font: 600 13px/1.4 var(--f-mono); text-align: center; }
+.pat td.one { color: var(--yellow); background: var(--yellow-soft); }
+.pat tr.on td:first-child { box-shadow: inset 3px 0 0 var(--yellow); }
+.map td:first-child, .map td:nth-child(2) { font: 600 12.5px/1.55 var(--f-mono); }
+.map td:nth-child(2) { color: var(--green); }
+.regs td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; color: var(--blue); }
+.steps-l { counter-reset: st; list-style: none; padding-left: 0 !important; }
+.steps-l > li { counter-increment: st; position: relative; padding-left: 2.1rem; }
+.steps-l > li::before {
+  content: counter(st); position: absolute; left: 0; top: .25rem; width: 1.45rem; height: 1.45rem; border-radius: 50%;
+  display: grid; place-items: center; font: 700 12px/1 var(--f-mono); background: var(--sunk); color: var(--yellow);
+}
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m34-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m34-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m34-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m34-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m34-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m34-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+<marker id="m34-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 3 章节" class="chain" data-chain="M34"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 3 · Temporizadores y comunicaciones serie · M34</div>
+<h1>USCI en modo UART</h1>
+<p class="zh">USCI 的 UART 模式与 driverlib</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 20 分钟</span>
+
+<span>PDF L34.2（driverlib）</span>
+
+</div>
+<p class="lede">M33 讲了 UART 帧在线上长什么样；这一章看芯片里是谁在收发它。MSP430F5529 用 <b class="t">USCI (ES/EN: Universal Serial Communication Interface)</b>——通用串行通信接口来做串口。我们会拆开它的发送、接收和<b class="t">generador de baudios (ES) / baud-rate generator (EN)</b>——波特率发生器，弄清楚 32768 Hz 怎么"数"出 9600 baud；然后按正确的顺序初始化、处理错误和中断，最后用 TI 的 <b class="t">driverlib</b>——外设驱动库把它写出来。</p>
+</section>
+
+<section class="sec" id="m34-objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M34.1</span>
+<div class="txt"><span>说出 USCI_A 和 USCI_B 各支持哪些模式、F5529 各有几个，以及怎样选中 UART 模式</span><span class="es">Módulos USCI_A / USCI_B; UCSYNC = 0, UCMODEx = 00.</span><a href="#m34-s1">→ §1 两种 USCI</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.2</span>
+<div class="txt"><span>找到 USCI_A1 的 UCA1TXD（P4.4）和 UCA1RXD（P4.5），用 PxSEL 交给外设；说明 LaunchPad 的 backchannel UART</span><span class="es">Terminales UCAxTXD / UCAxRXD; jumpers TXD/RXD.</span><a href="#m34-s1">→ §1 两种 USCI</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.3</span>
+<div class="txt"><span>画出 UART 模式的方块图：缓冲区、移位寄存器，UCTXIFG / UCRXIFG 何时置位、何时自动清零</span><span class="es">Diagrama de bloques: transmisor, receptor, generador de baudios.</span><a href="#m34-s2">→ §2 方块图</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.4</span>
+<div class="txt"><span>用 UCSSELx 选择 BRCLK；解释 N 不是整数时为什么需要调制器</span><span class="es">BRCLK, BITCLK, N = BRCLK / tasa; papel del modulador.</span><a href="#m34-s3">→ §3 数出 9600 baud</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.5</span>
+<div class="txt"><span>UCOS16 = 0：按本章的步骤算出 UCBRx、UCBRSx、N*、实际波特率和误差；最大波特率 BRCLK/3</span><span class="es">Modo de baja frecuencia: UCAxBR0, UCAxBR1, UCBRSx.</span><a href="#m34-s3">→ §3 数出 9600 baud</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.6</span>
+<div class="txt"><span>UCOS16 = 1：说明 BITCLK16 和采样窗口，算出 UCBRx、UCBRFx；最大波特率 BRCLK/16；知道 TI 表格是逐位优化的</span><span class="es">Modo de sobremuestreo: UCBRFx; tablas del fabricante.</span><a href="#m34-s4">→ §4 过采样</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.7</span>
+<div class="txt"><span>按顺序写出 UCSWRST 初始化流程，并用 UCAxCTL0 的 UC7BIT、UCPEN、UCPAR、UCSPB、UCMSB 配出帧格式</span><span class="es">Inicialización y RESET; formato de carácter.</span><a href="#m34-s5">→ §5 初始化</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.8</span>
+<div class="txt"><span>区分 UCFE、UCPE、UCOE、UCBRK、UCRXERR；说出 UCRXEIE、UCBRKIE 的作用和错误位怎样清除</span><span class="es">Errores detectados de forma automática (UCAxSTAT).</span><a href="#m34-s6">→ §6 接收错误</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.9</span>
+<div class="txt"><span>说明收发共用一个向量；用 UCAxIV（0x00 / 0x02 / 0x04）在 ISR 里分辨来源</span><span class="es">Interrupciones de TX y RX; registro UCAxIV.</span><a href="#m34-s7">→ §7 中断</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M34.10</span>
+<div class="txt"><span>把 driverlib 2.91.13.01 加进 CCS 项目（include 路径、__MSP430F5529__、driverlib.h），并把寄存器写法对应到 USCI_A_UART_* 函数</span><span class="es">Programación con una biblioteca de periféricos.</span><a href="#m34-s8">→ §8 driverlib</a></div>
+<button aria-pressed="false" class="chk" data-obj="M34.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M34"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="m34-s0">
+<h2><span class="n">§0</span>一个字节的旅程</h2>
+<p class="hook"><span class="zh">在 PC 的终端里按下 'A'，MSP430 里是谁把它接住的？</span><span class="es">¿Quién recibe el carácter dentro del MSP430F5529?</span></p>
+<figure class="stage" data-scene="" id="m34-sc-intro">
+<div class="stage-title"><span>Escena 0 · PC → UCA1RXBUF</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：字符 A 从 PC 经 backchannel UART 到达 USCI_A1，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-intro-t" role="img" viewbox="0 0 800 330">
+<title id="m34-sc-intro-t">PC 经 eZ-FET 的 backchannel UART 把字符 A 发到 P4.5/UCA1RXD，USCI_A1 把它收进 UCA1RXBUF 并置 UCRXIFG</title>
+<g data-step="2">
+<text class="tz sm m" x="20" y="30">'A' = 0x41 · 8N1 · LSB 先发</text>
+<path class="ln y draw" d="M150 56 H190 V84 H230 V56 H270 V84 H470 V56 H510 V84 H550 V56 H630"></path>
+<text class="tm xs y mid" x="210" y="46">0</text><text class="tm xs y mid" x="250" y="46">1</text><text class="tm xs y mid" x="290" y="46">0</text><text class="tm xs y mid" x="330" y="46">0</text><text class="tm xs y mid" x="370" y="46">0</text><text class="tm xs y mid" x="410" y="46">0</text><text class="tm xs y mid" x="450" y="46">0</text><text class="tm xs y mid" x="490" y="46">1</text><text class="tm xs y mid" x="530" y="46">0</text><text class="tm xs y mid" x="570" y="46">1</text>
+<text class="tm xs m mid" x="210" y="104">ST</text><text class="tm xs b mid" x="250" y="104">D0</text><text class="tm xs b mid" x="290" y="104">D1</text><text class="tm xs b mid" x="330" y="104">D2</text><text class="tm xs b mid" x="370" y="104">D3</text><text class="tm xs b mid" x="410" y="104">D4</text><text class="tm xs b mid" x="450" y="104">D5</text><text class="tm xs b mid" x="490" y="104">D6</text><text class="tm xs b mid" x="530" y="104">D7</text><text class="tm xs m mid" x="570" y="104">SP</text>
+</g>
+<rect class="bx w" height="64" rx="8" width="100" x="20" y="176"></rect>
+<text class="tx w mid" x="70" y="206">PC</text>
+<text class="tz sm m mid" x="70" y="228">终端</text>
+<path class="ln thin m" d="M120 208 H190"></path>
+<text class="tm xs m mid" x="155" y="200">USB</text>
+<rect class="bx w" data-hl="1" height="84" rx="8" width="150" x="190" y="166"></rect>
+<text class="tm w mid" x="265" y="196">eZ-FET</text>
+<text class="tz sm m mid" x="265" y="220">backchannel UART</text>
+<text class="tm xs m mid" x="265" y="270">COM · MSP Application UART1</text>
+<text class="tz sm m mid" x="389" y="166">JP6 跳线</text>
+<path class="ln thin b" d="M340 185 H558" id="m34-intro-rx" marker-end="url(#m34-ah-b)"></path>
+<path class="ln thin m" d="M558 221 H342" marker-end="url(#m34-ah-m)"></path>
+<rect class="bx m" height="18" rx="3" width="34" x="372" y="176"></rect>
+<text class="tm xs w mid" x="389" y="189">RXD</text>
+<rect class="bx m" height="18" rx="3" width="34" x="372" y="212"></rect>
+<text class="tm xs w mid" x="389" y="225">TXD</text>
+<rect class="ln thin m" height="190" rx="12" width="340" x="440" y="124"></rect>
+<text class="tm sm m" x="456" y="146">MSP430F5529</text>
+<rect class="sl b" height="12" width="12" x="434" y="179"></rect>
+<rect class="sl m" height="12" width="12" x="434" y="215"></rect>
+<text class="tm xs b" x="452" y="179">P4.5 · UCA1RXD</text>
+<text class="tm xs m" x="452" y="215">P4.4 · UCA1TXD</text>
+<rect class="bx b" data-hl="3 5" height="86" rx="8" width="100" x="560" y="160"></rect>
+<text class="tm sm b mid" x="610" y="186">USCI_A1</text>
+<text class="tz sm m mid" x="610" y="210">移位寄存器</text>
+<text class="tm xs y mid" data-step="3" x="610" y="234">0x41</text>
+<path class="ln thin b" d="M660 180 H674" marker-end="url(#m34-ah-b)"></path>
+<rect class="bx b" data-hl="3" height="40" rx="6" width="92" x="676" y="160"></rect>
+<text class="tm xs b mid" x="722" y="176">UCA1RXBUF</text>
+<text class="tm xs m mid" data-out="3" x="722" y="194">—</text>
+<text class="tm xs y mid" data-step="3" x="722" y="194">0x41 'A'</text>
+<rect class="bx r" data-hl="3 4" height="38" rx="6" width="92" x="676" y="208"></rect>
+<text class="tm xs r mid" x="722" y="223">UCRXIFG</text>
+<text class="tm sm m mid" data-out="3" x="722" y="241">0</text>
+<text class="tm sm r mid" data-out="4" data-step="3" x="722" y="241">1</text>
+<text class="tm sm g mid" data-step="4" x="722" y="241">0</text>
+<rect class="bx b" data-hl="4" height="40" rx="8" width="208" x="560" y="262"></rect>
+<text class="tm sm b mid" data-out="4" x="664" y="287">CPU</text>
+<text class="tm sm y mid" data-step="4" x="664" y="287">CPU 读到 'A'</text>
+<path class="ln thin y draw" d="M768 180 H778 V282 H772" data-step="4" marker-end="url(#m34-ah-y)"></path>
+<circle class="sl y" data-move="#m34-intro-rx" data-move-dur="1600" data-out="3" data-step="2" r="7"></circle>
+<g data-step="5">
+<rect class="ln y dash" height="102" rx="10" width="226" x="552" y="152"></rect>
+<text class="tz sm y mid" x="664" y="116">本章拆开的就是这一块</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">PC 和板子之间没有单独的串口线：LaunchPad 上的调试器 <b>eZ-FET</b> 顺便做了一个 USB ↔ UART 的 <b>backchannel UART</b>（后通道串口），PC 上看到的是一个 COM 口，名字叫 "MSP Application UART1"。</li>
+<li data-dur="4600">在终端里按下 'A'：eZ-FET 按 M33 讲过的帧格式把 0x41 发出来——起始位、8 个数据位（LSB 先）、停止位。信号经过 <b>RXD 跳线</b>（JP6.2，§1 有跳线图），进入 P4.5，也就是 <code>UCA1RXD</code>。</li>
+<li data-dur="4000">USCI_A1 按波特率逐位采样，填满移位寄存器后整体搬进 <code>UCA1RXBUF</code>，同时硬件把 <span class="c-r">UCRXIFG</span> 置 1。</li>
+<li>CPU（轮询或中断）读 <code>UCA1RXBUF</code> 拿到 'A'；读这一下，UCRXIFG 自动清零。</li>
+<li data-dur="4200">这一章就是拆开中间这一块：波特率从哪个时钟来、怎么初始化、出错怎么报告、怎样用中断——最后用 driverlib 写出来。</li>
+</ol>
+</figure>
+<p class="takeaway">UART 帧是 M33 的"线上格式"；USCI_A 是芯片里把字节变成帧、把帧变回字节的硬件。CPU 只和两个缓冲寄存器、两个 flag 打交道。</p>
+
+</section>
+
+<section class="sec" id="m34-s1">
+<h2><span class="n">§1</span>两种 USCI，四个模块 <span class="tag">M34.1 · M34.2</span></h2>
+<p class="hook"><span class="zh">F5529 上有好几个串口模块，哪个能做 UART？接在哪两个引脚上？</span><span class="es">USCI_A y USCI_B: ¿cuál implementa la UART?</span></p>
+<p>5xx 家族把串行通信集中在 USCI 模块里，分两种，用字母区分：</p>
+<div class="grid2">
+<div class="cell b">
+<span class="k c-b">USCI_A</span>
+<h3>UART 及其变体</h3>
+<ul>
+<li><b>UART</b> 模式</li>
+<li>IrDA 通信的脉冲整形（conformado de pulsos）</li>
+<li>LIN 通信的自动波特率检测</li>
+<li>SPI 模式</li>
+</ul>
+</div>
+<div class="cell p">
+<span class="k c-p">USCI_B</span>
+<h3>同步总线</h3>
+<ul>
+<li>I2C 模式</li>
+<li>SPI 模式</li>
+</ul>
+<p class="aside">没有 UART。有些 5xx 型号用的是改进版 <b>eUSCI</b>，F5529 用的是 USCI。</p>
+</div>
+</div>
+<p>MSP430F5529 有 <b>2 个 USCI_A</b>（USCI_A0、USCI_A1）和 <b>2 个 USCI_B</b>。在芯片方块图里它们只占一个方块 "USCI0,1"：</p>
+
+<p>寄存器名里的 x 换成模块号：USCI_A1 的 <span class="reg">UCAxTXBUF</span> 就是 <span class="reg">UCA1TXBUF</span>，引脚叫 UCA1TXD、UCA1RXD。</p>
+<p>USCI_A 默认就在 UART 模式：<span class="reg">UCAxCTL0</span> 里的 <b>UCSYNC = 0</b>（异步）、<b>UCMODEx = 00</b>（普通 UART），而这两个字段复位后都是 0。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>模块</th><th>TXD</th><th>RXD</th><th>中断向量</th><th>在 LaunchPad 上</th></tr></thead>
+<tbody>
+<tr><td class="mono">USCI_A0</td><td class="mono">P3.3 · UCA0TXD · 40 脚</td><td class="mono">P3.4 · UCA0RXD · 41 脚</td><td class="mono">56 · 0xFFF0</td><td>—</td></tr>
+<tr><td class="mono">USCI_A1</td><td class="mono">P4.4 · UCA1TXD · 51 脚</td><td class="mono">P4.5 · UCA1RXD · 52 脚</td><td class="mono">46 · 0xFFDC</td><td>经 TXD/RXD 跳线接到 eZ-FET 的 backchannel UART</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">P4 是可映射端口，51、52 脚的全名是 P4.4/PM_UCA1TXD/PM_UCA1SIMO、P4.5/PM_UCA1RXD/PM_UCA1SOMI：默认映射就是 USCI_A1，SPI 模式下同两个脚做 SIMO / SOMI。向量号见 <a href="m21.html#s4">M21 §4 向量表</a>。</p>
+<div class="note">
+<span class="lbl">引脚交给外设</span>
+<p>这两个引脚不再当普通 GPIO，而是交给 USCI：把 <span class="reg">P4SEL</span> 的第 4、5 位置 1（M14 讲过的 PxSEL）。方向由 USCI 自己控制：TXD 是输出，RXD 是输入。</p>
+</div>
+<div class="note warm">
+<span class="lbl">backchannel UART</span>
+<p>LaunchPad 上 eZ-FET 和目标芯片之间有一排隔离跳线：JP1 +5V、JP2 +3V3、JP3 GND、JP4.x 是调试用的 SBW，<b>JP6</b> 是串口。其中 <b>JP6.1 TXD</b> 把 P4.4/UCA1TXD 接到 eZ-FET 的 UARTRXD，<b>JP6.2 RXD</b> 把 eZ-FET 的 UARTTXD 接到 P4.5/UCA1RXD——线是交叉的，跳线按 MSP430 这一侧命名。插上时 eZ-FET 再经 USB 在 PC 上虚拟出一个 COM 口，所以和 PC 通信用 <b>USCI_A1</b>，不用另接 USB-串口线。JP6.3 CTS（P1.7）、JP6.4 RTS（P6.7）是硬件流控，本课不用。</p>
+
+</div>
+
+</section>
+
+<section class="sec" id="m34-s2">
+<h2><span class="n">§2</span>方块图：两个缓冲，两个 flag <span class="tag">M34.3</span></h2>
+<p class="hook"><span class="zh">已经有移位寄存器了，为什么还要一个缓冲寄存器？</span><span class="es">UCAxTXBUF → registro de desplazamiento → UCAxTXD.</span></p>
+<p>UART 模式下的 USCI_A 分成三块：<b>transmisor</b>、<b>receptor</b> 和 <b>generador de baudios</b>。CPU 只碰两个缓冲寄存器；逐位移出、移入由各自的 <b class="t">registro de desplazamiento (ES) / shift register (EN)</b>——移位寄存器完成，节拍来自波特率发生器。</p>
+<figure class="stage" data-ms="3400" data-scene="" id="m34-sc-block">
+<div class="stage-title"><span>Escena 2 · USCI_Ax en modo UART</span><b>6 步</b></div>
+<div aria-label="动画：USCI 方块图，发送和接收路径，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-block-t" role="img" viewbox="0 0 800 360">
+<title id="m34-sc-block-t">发送：CPU 写 UCA1TXBUF，数据进入发送移位寄存器后从 UCA1TXD 逐位发出；接收：UCA1RXD 的位移入接收移位寄存器，整帧搬进 UCA1RXBUF；波特率发生器给两边提供 BITCLK</title>
+<text class="tx sm b" x="20" y="30">Transmisor</text>
+<text class="tz sm w" x="20" y="76">CPU 写</text>
+<path class="ln b" d="M84 70 H226" id="m34-blk-w" marker-end="url(#m34-ah-b)"></path>
+<rect class="bx b" data-hl="2" height="52" rx="6" width="140" x="230" y="44"></rect>
+<text class="tm xs b mid" x="300" y="62">UCA1TXBUF</text>
+<text class="tm sm m mid" data-out="2" x="300" y="86">—</text>
+<text class="tm sm y mid" data-out="3" data-step="2" x="300" y="86">0x48 'H'</text>
+<text class="tz sm g mid" data-step="3" x="300" y="86">空 · 可写下一个</text>
+<path class="ln b" d="M370 70 H426" id="m34-blk-mv" marker-end="url(#m34-ah-b)"></path>
+<rect class="bx b" data-hl="3 4" height="52" rx="6" width="210" x="430" y="44"></rect>
+<text class="tm xs b mid" x="535" y="62">TX 移位寄存器</text>
+<text class="tm sm m mid" data-out="3" x="535" y="86">—</text>
+<text class="tm sm y mid" data-step="3" x="535" y="86">0100 1000 →</text>
+<path class="ln b" d="M640 70 H718" id="m34-blk-tx" marker-end="url(#m34-ah-b)"></path>
+<text class="tm xs b" x="724" y="66">UCA1TXD</text>
+<text class="tm xs m" x="724" y="84">P4.4</text>
+<text class="tz sm b mid" data-step="4" x="680" y="116">逐位 · LSB 先</text>
+<rect class="bx r" data-hl="2 3" height="34" rx="6" width="140" x="230" y="104"></rect>
+<text class="tm xs r" x="242" y="126">UCTXIFG =</text>
+<text class="tm sm r end" data-out="2" x="358" y="127">1</text>
+<text class="tm sm m end" data-out="3" data-step="2" x="358" y="127">0</text>
+<text class="tm sm r end" data-step="3" x="358" y="127">1</text>
+<text class="tm xs o" x="20" y="150">BRCLK ← UCSSELx</text>
+<rect class="bx o" data-hl="1" height="74" rx="8" width="170" x="20" y="158"></rect>
+<text class="tz sm o mid" x="105" y="186">波特率发生器</text>
+<text class="tm xs o mid" x="105" y="210">BR0 · BR1 · MCTL</text>
+<path class="ln thin o dash" d="M190 178 H535 V100" marker-end="url(#m34-ah-o)"></path>
+<path class="ln thin o dash" d="M190 212 H535 V268" marker-end="url(#m34-ah-o)"></path>
+<text class="tm xs o" x="404" y="172">BITCLK</text>
+<text class="tm xs o" x="404" y="228">BITCLK</text>
+<rect class="bx r" data-hl="5 6" height="34" rx="6" width="140" x="230" y="232"></rect>
+<text class="tm xs r" x="242" y="254">UCRXIFG =</text>
+<text class="tm sm m end" data-out="5" x="358" y="255">0</text>
+<text class="tm sm r end" data-out="6" data-step="5" x="358" y="255">1</text>
+<text class="tm sm g end" data-step="6" x="358" y="255">0</text>
+<rect class="bx b" data-hl="5" height="52" rx="6" width="140" x="230" y="272"></rect>
+<text class="tm xs b mid" x="300" y="290">UCA1RXBUF</text>
+<text class="tm sm m mid" data-out="5" x="300" y="314">—</text>
+<text class="tm sm y mid" data-step="5" x="300" y="314">0x69 'i'</text>
+<path class="ln b" d="M430 298 H374" marker-end="url(#m34-ah-b)"></path>
+<rect class="bx b" data-hl="5" height="52" rx="6" width="210" x="430" y="272"></rect>
+<text class="tm xs b mid" x="535" y="290">RX 移位寄存器</text>
+<text class="tm sm m mid" data-out="5" x="535" y="314">—</text>
+<text class="tm sm y mid" data-step="5" x="535" y="314">0110 1001</text>
+<path class="ln b" d="M720 298 H644" id="m34-blk-rx" marker-end="url(#m34-ah-b)"></path>
+<text class="tm xs b" x="724" y="294">UCA1RXD</text>
+<text class="tm xs m" x="724" y="312">P4.5</text>
+<path class="ln b" d="M228 298 H84" id="m34-blk-rd" marker-end="url(#m34-ah-b)"></path>
+<text class="tz sm w" x="20" y="304">CPU 读</text>
+<text class="tx sm b" x="20" y="350">Receptor</text>
+<circle class="sl y" data-move="#m34-blk-w" data-out="3" data-step="2" r="7"></circle>
+<circle class="sl y" data-move="#m34-blk-mv" data-out="4" data-step="3" r="7"></circle>
+<circle class="sl y" data-move="#m34-blk-tx" data-move-dur="1600" data-out="5" data-step="4" r="7"></circle>
+<circle class="sl y" data-move="#m34-blk-rx" data-move-dur="1600" data-out="6" data-step="5" r="7"></circle>
+<circle class="sl y" data-move="#m34-blk-rd" data-step="6" r="7"></circle>
+</svg>
+</div>
+<pre aria-label="用轮询方式发送和接收一个字节（USCI_A1）" class="code code-hl"><code><span class="ln-row" data-hl="2"><span class="kw">while</span> (!(<span class="fl">UCA1IFG</span> &amp; <span class="fl">UCTXIFG</span>));   <span class="cm">// 等 TXBUF 空（UCTXIFG = 1）</span></span><span class="ln-row" data-hl="2"><span class="rg">UCA1TXBUF</span> = 'H';                 <span class="cm">// 写入 → UCTXIFG 自动变 0</span></span><span class="ln-row" data-hl="3 4"><span class="cm">// 'H' 进了移位寄存器、逐位发出；TXBUF 又空了，可以写下一个</span></span><span class="ln-row"> </span><span class="ln-row" data-hl="5"><span class="kw">while</span> (!(<span class="fl">UCA1IFG</span> &amp; <span class="fl">UCRXIFG</span>));   <span class="cm">// 等收完一个字符（UCRXIFG = 1）</span></span><span class="ln-row" data-hl="6">c = <span class="rg">UCA1RXBUF</span>;                   <span class="cm">// 读出 → UCRXIFG 自动变 0</span></span></code></pre>
+<ol class="captions">
+<li>三块：上面发送，下面接收，左边波特率发生器。它的输入 BRCLK 由 <code>UCSSELx</code> 选；发送和接收用<b>同一个</b>波特率。</li>
+<li>发送：CPU 先确认 <span class="c-r">UCTXIFG = 1</span>（缓冲空），再写 <code>UCA1TXBUF = 'H'</code>。写入的同时 UCTXIFG 自动变 0。</li>
+<li data-dur="4200">发送移位寄存器空着，下一个 BITCLK 时数据就搬过去；TXBUF 又空了，<span class="c-r">UCTXIFG 回到 1</span>。这时 'H' 还没发出去，CPU 已经可以写下一个字节——这就是双缓冲的好处。</li>
+<li>移位寄存器按 BITCLK 的节拍，把起始位、数据位（LSB 先）、停止位一位一位推到 <code>UCA1TXD</code>。</li>
+<li data-dur="4200">接收：<code>UCA1RXD</code> 上的位被逐个采样、移入接收移位寄存器；一帧收完，整体搬进 <code>UCA1RXBUF</code>，硬件置 <span class="c-r">UCRXIFG = 1</span>。</li>
+<li data-dur="4200">CPU 读 <code>UCA1RXBUF</code>，UCRXIFG 自动清零。两个 flag 都可以轮询（上面的代码），也可以配合 <code>UCTXIE</code> / <code>UCRXIE</code> 和 GIE 产生中断（§7）。</li>
+</ol>
+
+</figure>
+<p>方块图里还有几块，动画没画：</p>
+<div class="tbl-wrap">
+<table class="regs">
+<thead><tr><th>方块</th><th>由谁配置 · 做什么</th></tr></thead>
+<tbody>
+<tr><td>Receive / Transmit Shift Register</td><td>由 UCPEN、UCPAR、UCMSB、UC7BIT 决定帧格式（§5）</td></tr>
+<tr><td>Receive State Machine</td><td>UCMODEx、UCSPB、UCDORM；置 UCBRK、UCADDR / UCIDLE，并把结果交给 Error Flags</td></tr>
+<tr><td>Error Flags</td><td>输入 UCRXEIE、UCBRKIE；输出 UCRXERR、UCPE、UCFE、UCOE 和 "Set UCRXIFG"（§6）</td></tr>
+<tr><td>Transmit State Machine</td><td>UCMODEx、UCSPB；置 UCTXIFG；UCTXBRK、UCTXADDR 用来发 break / 地址字符</td></tr>
+<tr><td>IrDA Encoder / Decoder</td><td>UCIREN = 1 时 TXD、RXD 经 IrDA 编解码；普通 UART 用 UCIREN = 0</td></tr>
+<tr><td>UCLISTEN</td><td>= 1 时发送输出在内部接回接收端（loopback——回环），用来自测</td></tr>
+<tr><td>UCABEN</td><td>自动波特率检测（LIN）的使能，在 UCAxABCTL 里</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid2">
+<div class="panel">
+<h3>UCTXIFG：TXBUF 空了</h3>
+<ul>
+<li>置 1：TXBUF 能接收新字节时；复位（PUC 或 UCSWRST = 1）之后也是 1</li>
+<li>清 0：<b>写 UCAxTXBUF</b> 时自动清；读 UCAxIV 也会清（§7）</li>
+</ul>
+</div>
+<div class="panel">
+<h3>UCRXIFG：RXBUF 里有新字节</h3>
+<ul>
+<li>置 1：一个完整字符搬进 UCAxRXBUF 时</li>
+<li>清 0：<b>读 UCAxRXBUF</b> 时自动清；复位时清</li>
+</ul>
+</div>
+</div>
+<p class="takeaway">发送看 UCTXIFG（"能写了吗"），接收看 UCRXIFG（"有货了吗"）。两个 flag 都是读写缓冲时由硬件自动清，一般不用手动清。</p>
+
+</section>
+
+<section class="sec" id="m34-s3">
+<h2><span class="n">§3</span>怎样"数"出 9600 baud <span class="tag">M34.4 · M34.5</span></h2>
+<p class="hook"><span class="zh">32768 / 9600 = 3.41。时钟只能一个一个地数，0.41 个周期怎么数？</span><span class="es">Si N = f(clk) / tasa no es entero, ¿qué se hace con la parte decimal?</span></p>
+<p>波特率发生器的输入叫 <b class="t">BRCLK</b>，由 <span class="reg">UCAxCTL1</span> 的 <b>UCSSELx</b> 选择：<span class="reg o">00</span> 外部引脚 UCAxCLK、<span class="reg o">01</span> ACLK、<span class="reg o">10</span> / <span class="reg o">11</span> SMCLK。外部时钟脚：USCI_A1 是 P4.0（PM_UCA1CLK，45 脚），USCI_A0 是 P2.7（UCA0CLK，36 脚），见 §1 的引脚图。输出 <b class="t">BITCLK</b> 就是位速率：每 N 个 BRCLK 周期是一个位时间。</p>
+<figure class="stage" id="m34-fig-brg">
+<div class="stage-title"><span>Figura · generador de baudios</span><b>方块图</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m34-fig-brg-t" role="img" viewbox="0 0 800 250">
+<title id="m34-fig-brg-t">UCSSELx 从 UCAxCLK、ACLK、SMCLK、SMCLK 四路里选出 BRCLK；BRCLK 经分频器（UCBRx，16 位）和调制器（UCBRFx 4 位、UCBRSx 3 位、UCOS16）得到收发共用的 BITCLK</title>
+<text class="tm xs b mid" x="213" y="22">UCSSELx</text>
+<path class="ln thin b" d="M206 28 V52 M220 28 V57"></path>
+<text class="tm xs o end" x="150" y="74">UCAxCLK</text>
+<text class="tm xs o end" x="150" y="108">ACLK</text>
+<text class="tm xs o end" x="150" y="142">SMCLK</text>
+<text class="tm xs o end" x="150" y="176">SMCLK</text>
+<path class="ln thin o" d="M156 70 H190 M156 104 H190 M156 138 H190 M156 172 H190"></path>
+<polygon class="bx o" points="190,46 236,62 236,190 190,206"></polygon>
+<text class="tm xs o mid" x="211" y="74">00</text>
+<text class="tm xs o mid" x="211" y="108">01</text>
+<text class="tm xs o mid" x="211" y="142">10</text>
+<text class="tm xs o mid" x="211" y="176">11</text>
+<path class="ln o" d="M236 126 H296" marker-end="url(#m34-ah-o)"></path>
+<text class="tm sm o mid" x="266" y="116">BRCLK</text>
+<text class="tz sm m" x="300" y="36">波特率发生器</text>
+<rect class="ln thin m" height="166" rx="8" width="260" x="300" y="44"></rect>
+<text class="tm xs b mid" x="430" y="60">UCBRx · 16 位（BR1:BR0）</text>
+<path class="ln thin b" d="M430 65 V76"></path>
+<rect class="bx o" height="46" rx="4" width="228" x="316" y="76"></rect>
+<text class="tm sm w mid" x="430" y="104">Prescaler / Divider</text>
+<rect class="bx o" height="46" rx="4" width="228" x="316" y="126"></rect>
+<text class="tm sm w mid" x="430" y="154">Modulator</text>
+<path class="ln thin b" d="M350 172 V184 M440 172 V184 M525 172 V184"></path>
+<text class="tm xs b mid" x="350" y="198">UCBRFx · 4</text>
+<text class="tm xs b mid" x="440" y="198">UCBRSx · 3</text>
+<text class="tm xs b mid" x="525" y="198">UCOS16</text>
+<path class="ln o" d="M560 99 H636" marker-end="url(#m34-ah-o)"></path>
+<path class="ln o" d="M560 149 H636" marker-end="url(#m34-ah-o)"></path>
+<text class="tm sm o" x="644" y="96">BITCLK</text>
+<text class="tm xs m" x="644" y="114">Receive Clock</text>
+<text class="tm sm o" x="644" y="146">BITCLK</text>
+<text class="tm xs m" x="644" y="164">Transmit Clock</text>
+<text class="tz sm m" x="20" y="238">UCOS16 = 1 时，前一级先生成 BITCLK16（16 × 波特率），再由第二级分出 BITCLK（§4）</text>
+</svg>
+</div>
+<p class="stage-note">收发两路时钟都是 BITCLK，所以发送和接收的波特率相同。</p>
+
+</figure>
+<div class="formula" data-tex="N = \frac{f_{\class{c-o}{\mathrm{BRCLK}}}}{\text{baud}}">N = f(BRCLK) / baud</div>
+<p>N 是整数时（例如 1.8432 MHz / 9600 = 192）直接整除就行。不是整数时，分两种情况：</p>
+<div class="grid2">
+<div class="cell g">
+<span class="k c-g">BRCLK 高</span>
+<h3>小数可以丢掉</h3>
+<p>XT2 = 8 MHz，9600 baud：N = 833.33。只用 833 → 9603.8 baud，误差 0.04 %，收发双方不会失步。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">BRCLK 低</span>
+<h3>小数不能丢</h3>
+<p>XT1 = 32768 Hz，4800 baud：N = 6.83。用 7 → 4681 baud，误差 −2.5 %，还能改进——要把小数部分"近似"出来。</p>
+</div>
+</div>
+<p>小数部分 1/N 越大越要紧。下面用一个例子：32768 Hz → 9600 baud，N = 3.4133。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m34-sc-mod">
+<div class="stage-title"><span>Escena 3 · el modulador</span><b>5 步</b></div>
+<div aria-label="动画：8 个位时间里数 3 个或 4 个 BRCLK 周期，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-mod-t" role="img" viewbox="0 0 800 320">
+<title id="m34-sc-mod-t">8 个位时间：全数 3 个周期太快，全数 4 个太慢，按 UCBRSx = 3 在第 1、3、5 位数 4 个，总长接近理想的 27.31 个周期</title>
+<text class="tz sm y" x="80" y="28">理想：每位 3.4133 个 BRCLK，8 位 = 27.31 个</text>
+<path class="ln thin y" d="M80 48 H653.44"></path>
+<path class="ln thin y" d="M151.68 42v12M223.36 42v12M295.04 42v12M366.72 42v12M438.4 42v12M510.08 42v12M581.76 42v12M653.44 42v12"></path>
+<text class="tm sm m" x="16" y="86">×3</text>
+<g data-step="2">
+<rect class="bx b" height="40" rx="3" width="63" x="80" y="60"></rect>
+<text class="tm sm b mid" x="111.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="143" y="60"></rect>
+<text class="tm sm b mid" x="174.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="206" y="60"></rect>
+<text class="tm sm b mid" x="237.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="269" y="60"></rect>
+<text class="tm sm b mid" x="300.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="332" y="60"></rect>
+<text class="tm sm b mid" x="363.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="395" y="60"></rect>
+<text class="tm sm b mid" x="426.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="458" y="60"></rect>
+<text class="tm sm b mid" x="489.5" y="82">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="521" y="60"></rect>
+<text class="tm sm b mid" x="552.5" y="82">3</text>
+<path class="ln thin m" d="M101 90v10M122 90v10M164 90v10M185 90v10M227 90v10M248 90v10M290 90v10M311 90v10M353 90v10M374 90v10M416 90v10M437 90v10M479 90v10M500 90v10M542 90v10M563 90v10"></path>
+<text class="tz sm r" x="80" y="124">全数 3：24 个周期 → 10922.7 baud · +13.78 %</text>
+</g>
+<text class="tm sm m" x="16" y="176">×4</text>
+<g data-step="3">
+<rect class="bx b" height="40" rx="3" width="84" x="80" y="150"></rect>
+<text class="tm sm b mid" x="122" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="164" y="150"></rect>
+<text class="tm sm b mid" x="206" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="248" y="150"></rect>
+<text class="tm sm b mid" x="290" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="332" y="150"></rect>
+<text class="tm sm b mid" x="374" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="416" y="150"></rect>
+<text class="tm sm b mid" x="458" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="500" y="150"></rect>
+<text class="tm sm b mid" x="542" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="584" y="150"></rect>
+<text class="tm sm b mid" x="626" y="172">4</text>
+<rect class="bx b" height="40" rx="3" width="84" x="668" y="150"></rect>
+<text class="tm sm b mid" x="710" y="172">4</text>
+<path class="ln thin m" d="M101 180v10M122 180v10M143 180v10M185 180v10M206 180v10M227 180v10M269 180v10M290 180v10M311 180v10M353 180v10M374 180v10M395 180v10M437 180v10M458 180v10M479 180v10M521 180v10M542 180v10M563 180v10M605 180v10M626 180v10M647 180v10M689 180v10M710 180v10M731 180v10"></path>
+<text class="tz sm r" x="80" y="214">全数 4：32 个周期 → 8192 baud · −14.67 %</text>
+</g>
+<text class="tm sm m" x="12" y="266">调制</text>
+<g data-step="4">
+<rect class="bx b" height="40" rx="3" width="63" x="80" y="240"></rect>
+<text class="tm sm b mid" x="111.5" y="262">3</text>
+<rect class="bx y" data-hl="5" height="40" rx="3" width="84" x="143" y="240"></rect>
+<text class="tm sm y mid" x="185" y="262">4</text>
+<rect class="bx b" height="40" rx="3" width="63" x="227" y="240"></rect>
+<text class="tm sm b mid" x="258.5" y="262">3</text>
+<rect class="bx y" data-hl="5" height="40" rx="3" width="84" x="290" y="240"></rect>
+<text class="tm sm y mid" x="332" y="262">4</text>
+<rect class="bx b" height="40" rx="3" width="63" x="374" y="240"></rect>
+<text class="tm sm b mid" x="405.5" y="262">3</text>
+<rect class="bx y" data-hl="5" height="40" rx="3" width="84" x="437" y="240"></rect>
+<text class="tm sm y mid" x="479" y="262">4</text>
+<rect class="bx b" height="40" rx="3" width="63" x="521" y="240"></rect>
+<text class="tm sm b mid" x="552.5" y="262">3</text>
+<rect class="bx b" height="40" rx="3" width="63" x="584" y="240"></rect>
+<text class="tm sm b mid" x="615.5" y="262">3</text>
+<path class="ln thin m" d="M101 270v10M122 270v10M164 270v10M185 270v10M206 270v10M248 270v10M269 270v10M311 270v10M332 270v10M353 270v10M395 270v10M416 270v10M458 270v10M479 270v10M500 270v10M542 270v10M563 270v10M605 270v10M626 270v10"></path>
+<text class="tz sm g" x="80" y="304">UCBRSx = 3：3+4+3+4+3+4+3+3 = 27 → 9709.04 baud · +1.14 %</text>
+</g>
+<g data-step="5">
+<text class="tm xs y mid" x="185" y="235">位 1</text>
+<text class="tm xs y mid" x="332" y="235">位 3</text>
+<text class="tm xs y mid" x="479" y="235">位 5</text>
+</g>
+<path class="ln thin y dash" d="M653.44 48 V292" data-hl="1"></path>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">理想情况：每一位 3.4133 个 BRCLK 周期，8 位一共 27.31 个。上面的黄色刻度是理想的位边界，虚线是第 8 位的理想结束点。</li>
+<li data-dur="4400">只用整数部分 3：每一位都短了，8 位只用 24 个周期，提前很多。波特率 32768 / 3 = 10922.7，快了 13.78 %。</li>
+<li data-dur="4000">改用 4：每一位都长了，32 个周期，8192 baud，慢了 14.67 %。两种都不行。</li>
+<li data-dur="4600"><b>调制</b>（modulación）：一位数 3、一位数 4，平均下来接近 3.41。8 位里数 4 的位数 M = round(0.4133 × 8) = round(3.31) = <b>3</b>，其余 5 位数 3：共 27 个周期，平均 3.375，9709.04 baud，误差 1.14 %。</li>
+<li data-dur="4600">哪几位数 4？由调制器决定：UCBRSx = 3 时是第 <span class="c-y">1、3、5</span> 位（第 0 位是起始位；见下面的图样表）。多出来的周期分散开，每一位边界的累积偏移都不会太大。</li>
+</ol>
+</figure>
+<p>把这个过程写成计算步骤（UCOS16 = 0，<b class="t">modo de baja frecuencia (ES) / low-frequency mode (EN)</b>——低频模式）：</p>
+<div class="formula" data-tex="\class{c-b}{\mathtt{UCBRx}} = \lfloor N \rfloor \qquad \class{c-y}{\mathtt{UCBRSx}} = M = \operatorname{round}\!\big((N-\lfloor N\rfloor)\cdot 8\big) \qquad N^{*} = \class{c-b}{\mathtt{UCBRx}} + \frac{\class{c-y}{M}}{8}">UCBRx = int(N)　UCBRSx = M = round((N − int N)·8)　N* = UCBRx + M/8</div>
+<div class="formula" data-tex="\text{baud}_{\text{real}} = \frac{f_{\mathrm{BRCLK}}}{N^{*}} \qquad \text{error} = \frac{\text{baud}_{\text{real}} - \text{baud}}{\text{baud}}">baud_real = f(BRCLK) / N*　error = (baud_real − baud) / baud</div>
+<div class="formula" data-tex="\text{baud} = \frac{f_{\mathrm{BRCLK}}}{\class{c-b}{\mathtt{UCBRx}} + \frac{1}{n}\sum_{i=0}^{n-1} m_i}">baud = f(BRCLK) / (UCBRx + (1/n)·Σ mᵢ)</div>
+<p class="aside">第一行的 UCBRx、UCBRSx 两式是一定要记住的内容。最后一行是另一种写法：m<sub>i</sub> 是第 i 位的调制位（0 或 1），n = 8，Σ m<sub>i</sub> = M，和 N* 是同一个式子。</p>
+<ol class="steps-l">
+<li><b>PASO 1</b>：整数部分写进 <span class="reg">UCAxBR0</span>（低字节）和 <span class="reg">UCAxBR1</span>（高字节），UCBRx = BR0 + 256·BR1。例：N = 3 + 0.4133 → BR1 = 0x00，BR0 = 0x03。</li>
+<li><b>PASO 2</b>：小数部分 × 8，四舍五入得 M（0.4133 × 8 = 3.3064 → 3），写进 <span class="reg">UCAxMCTL</span> 的 <b>UCBRSx</b>。M 是 8 个位时间里数 N + 1 的次数。</li>
+<li><b>PASO 3</b>：近似商 N* = 3 + 3/8 = 3.375，实际 BITCLK = 32768 / 3.375 = 9709.04 baud。不调制时误差 13.78 %，调制后 1.14 %（有些资料写作 13,7 % 和 1,13 %，是截断后的值）。</li>
+<li><b>PASO 4</b>：M 个"1"在 8 位里怎么分布，由调制器按下表决定——TI 逐位计算误差后定下的图样。</li>
+</ol>
+<div class="tbl-wrap">
+<table aria-label="BITCLK 调制图样：UCBRSx 对应 8 个位里哪几位多数一个 BRCLK" class="pat">
+<thead><tr><th>UCBRSx</th><th>位 0（ST）</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead>
+<tbody id="m34-pat">
+<tr data-s="0"><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr data-s="1"><td>1</td><td>0</td><td class="one">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr data-s="2"><td>2</td><td>0</td><td class="one">1</td><td>0</td><td>0</td><td>0</td><td class="one">1</td><td>0</td><td>0</td></tr>
+<tr class="on" data-s="3"><td>3</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td><td>0</td><td>0</td></tr>
+<tr data-s="4"><td>4</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td></tr>
+<tr data-s="5"><td>5</td><td>0</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td></tr>
+<tr data-s="6"><td>6</td><td>0</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td>0</td><td class="one">1</td><td class="one">1</td><td class="one">1</td></tr>
+<tr data-s="7"><td>7</td><td>0</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="one">1</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">1 表示这一位多数一个 BRCLK（m = 1）。图样每 8 位循环一次，每个新的起始位重新开始。高亮的是下面计算器当前用到的那一行。</p>
+<div class="note">
+<span class="lbl">采样：多数表决</span>
+<p>低频模式下，计数器先数 INT(N/2) + m 个 BRCLK 到位的中点，再数 INT(N/2) + R 个到位的末尾（R 是 N/2 的余数）。每一位在中点附近的 N/2 − ½、N/2、N/2 + ½ 个 BRCLK 处各采一次样（用 BRCLK 的上升沿和下降沿，相隔半个周期），取多数（<b class="t">majority vote</b>——多数表决）。三个样本一共只跨 1 个 BRCLK。这个模式的最大波特率是 <b>BRCLK / 3</b>。</p>
+</div>
+<figure class="stage" id="m34-fig-vote">
+<div class="stage-title"><span>Figura · tiempo de bit con UCOS16 = 0</span><b>时序图</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m34-fig-vote-t" role="img" viewbox="0 0 800 250">
+<title id="m34-fig-vote-t">N = 8 时的一个位时间：m = 0 时前半位 4 个 BRCLK、后半位 4 个，三个样本在第 3.5、4、4.5 个 BRCLK；m = 1 时前半位 5 个，位长 9 个 BRCLK，样本右移一个 BRCLK</title>
+<rect class="bx y" height="36" rx="2" width="40" x="330" y="188"></rect>
+<path class="ln thin m dash" d="M170 28 V226"></path>
+<text class="tm sm o" x="20" y="51">BRCLK</text>
+<path class="ln thin o" d="M130 58 H150 V34 H170 V58 H190 V34 H210 V58 H230 V34 H250 V58 H270 V34 H290 V58 H310 V34 H330 V58 H350 V34 H370 V58 H390 V34 H410 V58 H430 V34 H450 V58 H470 V34 H490 V58 H510 V34 H530 V58 H550 V34 H570"></path>
+<path class="ln thin y" d="M310 66 V90" marker-end="url(#m34-ah-y)"></path><path class="ln thin y" d="M330 66 V90" marker-end="url(#m34-ah-y)"></path><path class="ln thin y" d="M350 66 V90" marker-end="url(#m34-ah-y)"></path>
+<text class="tm xs y" x="585" y="82">3 个样本：N/2 − ½、N/2、N/2 + ½</text>
+<text class="tm sm o" x="20" y="112">BITCLK</text>
+<text class="tm xs m" x="20" y="128">m = 0</text>
+<path class="ln o" d="M130 102 H170 V126 H330 V102 H490 V126 H570"></path>
+<path class="ln thin m dash" d="M490 96 V132"></path>
+<text class="tm xs w" x="585" y="118">1 位 = 8 个 BRCLK</text>
+<text class="tm xs m mid" x="250" y="146">INT(N/2) + m = 4</text>
+<text class="tm xs m mid" x="410" y="146">INT(N/2) + R = 4</text>
+<path class="ln thin y" d="M350 158 V182" marker-end="url(#m34-ah-y)"></path><path class="ln thin y" d="M370 158 V182" marker-end="url(#m34-ah-y)"></path><path class="ln thin y" d="M390 158 V182" marker-end="url(#m34-ah-y)"></path>
+<text class="tm xs y" x="585" y="174">m = 1：样本右移 1 个 BRCLK</text>
+<text class="tm sm o" x="20" y="204">BITCLK</text>
+<text class="tm xs m" x="20" y="220">m = 1</text>
+<path class="ln o" d="M130 194 H170 V218 H370 V194 H530 V218 H570"></path>
+<path class="ln thin m dash" d="M530 188 V224"></path>
+<text class="tm xs w" x="585" y="210">1 位 = 9 个 BRCLK</text>
+<text class="tm xs m mid" x="270" y="242">INT(N/2) + m = 5</text>
+<text class="tm xs m mid" x="450" y="242">INT(N/2) + R = 4</text>
+</svg>
+</div>
+<p class="stage-note">图里取 N = 8（偶数，R = 0；N 为奇数时后半位多 1 个 BRCLK）。虚线是位的起点和终点；黄色格子是 m = 1 时多数的那个 BRCLK。BITCLK 的上升沿就在位的中点。</p>
+
+</figure>
+<p>下面的计算器按同样的步骤计算，并把 8 个位时间画出来：黄色的格子多数一个周期。下面的柱子是每一位末尾相对理想时刻的累积偏移（单位：一个位时间的百分比）——红色只用整数部分，绿色加了调制。</p>
+<figure class="stage" id="m34-calc">
+<div class="stage-title"><span>Calculadora · generador de baudios</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m34-calc-t" role="img" viewbox="0 0 800 300">
+<title id="m34-calc-t">按所选 BRCLK、波特率和 UCOS16，画出每个位时间的 BRCLK 周期数，以及 8 个位末尾的累积偏移</title>
+<g id="m34-calc-g"></g>
+</svg>
+</div>
+<div class="stage-ctl">
+<label class="pick">BRCLK
+          <select id="m34-brclk">
+<option selected="" value="32768">32768 Hz · ACLK</option>
+<option value="1000000">1 000 000 Hz</option>
+<option value="1048576">1 048 576 Hz · SMCLK 默认</option>
+<option value="4000000">4 MHz</option>
+<option value="8000000">8 MHz</option>
+<option value="12000000">12 MHz</option>
+<option value="16000000">16 MHz</option>
+<option value="20000000">20 MHz</option>
+</select>
+</label>
+<label class="pick">baud
+          <select id="m34-baud">
+<option value="1200">1200</option>
+<option value="2400">2400</option>
+<option value="4800">4800</option>
+<option selected="" value="9600">9600</option>
+<option value="19200">19200</option>
+<option value="38400">38400</option>
+<option value="57600">57600</option>
+<option value="115200">115200</option>
+</select>
+</label>
+<button aria-pressed="false" class="sw" id="m34-os16" type="button"><span class="knob"></span><span class="lab">UCOS16 = 0</span></button>
+<button class="mini" id="m34-ex1" type="button">例：32768 / 9600</button>
+<button class="mini" id="m34-ex2" type="button">例：1048576 / 9600 · UCOS16 = 1</button>
+<p aria-live="polite" class="out" id="m34-calc-out">默认是 §3 的例子：BRCLK = 32768 Hz，9600 baud，UCOS16 = 0。</p>
+</div>
+<div class="calc-res" id="m34-calc-res"></div>
+<p class="stage-note">UCOS16 = 1 时按本章的方法只用 UCBRFx（UCBRSx = 0）。"TI 表格"一栏只列出 TI 波特率表里查得到的组合。有几组分频比不在本页的计算范围内。</p>
+</figure>
+<div class="drill" data-drill="baud"></div>
+
+</section>
+
+<section class="sec" id="m34-s4">
+<h2><span class="n">§4</span>UCOS16 = 1：过采样 <span class="tag">M34.6</span></h2>
+<p class="hook"><span class="zh">BRCLK 是 1 MHz 时，一位里有 104 个周期，三次采样却挤在中间 1 µs 里。这样的"多数表决"还有意义吗？</span><span class="es">Modo de sobremuestreo: ventanas de muestreo más acordes con el tiempo de bit.</span></p>
+<p>低频模式的三个样本挤在 1 个 BRCLK 之内（相隔 ½ 个，见 §3 的时序图）。BRCLK 越快，窗口越窄，一个短毛刺就能左右结果。用三个例子比较<b>采样窗口</b>和位时间（9600 baud，T<sub>bit</sub> = 104.16 µs）：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>例</th><th>模式</th><th>BRCLK</th><th>采样窗口</th><th>窗口 / T<sub>bit</sub></th></tr></thead>
+<tbody>
+<tr><td class="mono">1</td><td class="mono">UCOS16 = 0</td><td class="mono">32768 Hz</td><td class="mono">1/32768 = 30.51 µs</td><td class="mono">29 %</td></tr>
+<tr><td class="mono">2</td><td class="mono">UCOS16 = 0</td><td class="mono">1 MHz</td><td class="mono">1/1 MHz = 1 µs</td><td class="mono">1 %</td></tr>
+<tr><td class="mono">3</td><td class="mono">UCOS16 = 1</td><td class="mono">1 MHz</td><td class="mono">3/153600 ≈ 19.5 µs</td><td class="mono">19 %</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">例 3 的窗口按 3 个 BITCLK16 周期算。</p>
+<p><b class="t">sobremuestreo (ES) / oversampling (EN)</b>——过采样：先生成一个快 16 倍的 <b>BITCLK16</b>，一位切成 16 份，三个样本各隔一份。</p>
+<figure class="stage" data-ms="3800" data-scene="" id="m34-sc-os16">
+<div class="stage-title"><span>Escena 4 · BITCLK16</span><b>4 步</b></div>
+<div aria-label="动画：低频模式与过采样模式的采样窗口，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-os16-t" role="img" viewbox="0 0 800 316">
+<title id="m34-sc-os16-t">同一个位时间：低频模式的采样窗口只有 1 µs；过采样模式把一位分成 16 个 BITCLK16，窗口 3 份；每份 BITCLK16 又是 6 或 7 个 BRCLK</title>
+<text class="tz sm m" x="40" y="42">UCOS16 = 0 · BRCLK = 1 MHz：1 位 = 104.17 µs ≈ 104 个 BRCLK</text>
+<rect class="bx b" height="36" rx="4" width="720" x="40" y="54"></rect>
+<text class="tm xs b" x="48" y="77">ST</text>
+<rect class="sl y" data-hl="1" height="48" width="6.91" x="396.55" y="48"></rect>
+<text class="tz sm y mid" x="400" y="114">3 个样本挤在 1 个 BRCLK 里 → 窗口 ≈ 1 µs</text>
+<g data-step="2">
+<text class="tz sm m" x="40" y="142">UCOS16 = 1 · BITCLK16 = 16 × 9600 = 153600 Hz</text>
+<rect class="bx b" height="36" rx="2" width="45" x="40" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="85" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="130" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="175" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="220" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="265" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="310" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="355" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="400" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="445" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="490" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="535" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="580" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="625" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="670" y="152"></rect>
+<rect class="bx b" height="36" rx="2" width="45" x="715" y="152"></rect>
+<rect class="ln y" data-hl="2" height="48" rx="4" width="135" x="332.5" y="146"></rect>
+<text class="tz sm y mid" x="400" y="212">3 × BITCLK16 → 窗口 ≈ 19.5 µs（位置是示意）</text>
+</g>
+<g data-step="3">
+<text class="tz sm m" x="40" y="238">BRCLK = 1048576 Hz · UCBRx = 6 · UCBRFx = 13（图样表的 0Dh 行）</text>
+<rect class="bx b" height="36" rx="2" width="39.63" x="40" y="248"></rect>
+<text class="tm xs b mid" x="59.82" y="271">6</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="79.63" y="248"></rect>
+<text class="tm xs y mid" x="102.75" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="125.87" y="248"></rect>
+<text class="tm xs y mid" x="148.99" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="172.11" y="248"></rect>
+<text class="tm xs y mid" x="195.23" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="218.35" y="248"></rect>
+<text class="tm xs y mid" x="241.47" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="264.59" y="248"></rect>
+<text class="tm xs y mid" x="287.71" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="310.83" y="248"></rect>
+<text class="tm xs y mid" x="333.94" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="357.06" y="248"></rect>
+<text class="tm xs y mid" x="380.18" y="271">7</text>
+<rect class="bx b" height="36" rx="2" width="39.63" x="403.3" y="248"></rect>
+<text class="tm xs b mid" x="423.12" y="271">6</text>
+<rect class="bx b" height="36" rx="2" width="39.63" x="442.94" y="248"></rect>
+<text class="tm xs b mid" x="462.75" y="271">6</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="482.57" y="248"></rect>
+<text class="tm xs y mid" x="505.69" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="528.81" y="248"></rect>
+<text class="tm xs y mid" x="551.93" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="575.05" y="248"></rect>
+<text class="tm xs y mid" x="598.17" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="621.28" y="248"></rect>
+<text class="tm xs y mid" x="644.4" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="667.52" y="248"></rect>
+<text class="tm xs y mid" x="690.64" y="271">7</text>
+<rect class="bx y" data-hl="4" height="36" rx="2" width="46.24" x="713.76" y="248"></rect>
+<text class="tm xs y mid" x="736.88" y="271">7</text>
+</g>
+<text class="tz sm g mid" data-step="4" x="400" y="308">1 位 = 16 × 6 + 13 = 109 个 BRCLK ≈ N = 109.23 · 最大 BRCLK/16</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4400">UCOS16 = 0、BRCLK = 1 MHz、9600 baud：一位 104 µs ≈ 104 个 BRCLK，三个样本挤在 1 个 BRCLK 之内，窗口约 1 µs（上表例 2）——黄色那一条细线。</li>
+<li data-dur="4600">UCOS16 = 1：先生成 BITCLK16 = 16 × 9600 = 153600 Hz，一位切成 16 份；三个样本相隔一个 BITCLK16，窗口约 19.5 µs（上表例 3），和位时间相称得多。</li>
+<li data-dur="4800">每一份 BITCLK16 又是 UCBRx 或 UCBRx + 1 个 BRCLK——由 <b>UCBRFx</b> 调制。例：1048576 / 9600，UCBRx = 6、UCBRFx = 13，16 份里 13 份数 7（黄）、3 份数 6（UCBRFx 图样表的 0Dh 行）。</li>
+<li data-dur="4400">合起来一位 = 16 × 6 + 13 = 109 个 BRCLK，很接近 N = 109.23。代价：最大波特率只有 <b>BRCLK / 16</b>，而且要求 N ≥ 16。</li>
+</ol>
+
+</figure>
+<div class="formula" data-tex="\class{c-b}{\mathtt{UCBRx}} = \left\lfloor \frac{N}{16} \right\rfloor \qquad \class{c-y}{\mathtt{UCBRFx}} = \operatorname{round}\!\Big(\Big(\frac{N}{16} - \Big\lfloor \frac{N}{16} \Big\rfloor\Big)\cdot 16\Big)">UCBRx = int(N/16)　UCBRFx = round((N/16 − int(N/16))·16)</div>
+<p>上式是这一节要记住的内容。例：N = 1048576 / 9600 = 109.226；N/16 = 6.8267 → <b>UCBRx = 6</b>；0.8267 × 16 = 13.23 → <b>UCBRFx = 13</b>。TI 的波特率表里这一行也是 6 · 0 · 13（UCBRx · UCBRSx · UCBRFx）。</p>
+<p class="aside">按位时间公式（UCBRSx = 0）：每位 16·UCBRx + UCBRFx = 109 个 BRCLK → 1048576 / 109 = 9619.96 baud，误差 +0.21 %。另外，UCBRx = 0 或 1 时第一级分频和调制被旁路，BITCLK16 = BRCLK，UCBRFx 不起作用。</p>
+<div class="note warm">
+<span class="lbl">TI 的表格和公式不总是一样</span>
+<p>上面的公式给的是"名义值"。TI 的波特率表（UCOS16 = 0 一张、UCOS16 = 1 一张）列出的值，是逐位计算误差、让<b>单个位的最大误差</b>最小的结果；UCOS16 = 1 时还会再用上 UCBRSx。所以个别组合会差 1。题目说“según la tabla del fabricante”时，要用 TI 的波特率表查值，不要用公式算。</p>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>BRCLK / baud</th><th>UCOS16</th><th>本章公式</th><th>TI 表格</th></tr></thead>
+<tbody>
+<tr><td class="mono">32768 / 9600</td><td class="mono">0</td><td class="mono">3 · S 3</td><td class="mono">3 · S 3 ✓</td></tr>
+<tr><td class="mono">32768 / 2400</td><td class="mono">0</td><td class="mono">13 · S 5</td><td class="mono c-y">13 · S 6</td></tr>
+<tr><td class="mono">1048576 / 57600</td><td class="mono">0</td><td class="mono">18 · S 2</td><td class="mono c-y">18 · S 1</td></tr>
+<tr><td class="mono">16 MHz / 57600</td><td class="mono">0</td><td class="mono">277 · S 6</td><td class="mono c-y">277 · S 7</td></tr>
+<tr><td class="mono">1048576 / 9600</td><td class="mono">1</td><td class="mono">6 · F 13</td><td class="mono">6 · S 0 · F 13 ✓</td></tr>
+<tr><td class="mono">1048576 / 19200</td><td class="mono">1</td><td class="mono">3 · F 7</td><td class="mono c-y">3 · S 1 · F 6</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">格式：UCBRx · S = UCBRSx · F = UCBRFx。可以在上面的计算器里逐个核对。</p>
+<p class="takeaway">BRCLK 低（例如 32768 Hz）只能用 UCOS16 = 0，最快 BRCLK/3；BRCLK 高且 N ≥ 16 时用 UCOS16 = 1，采样窗口更合理，最快 BRCLK/16。</p>
+
+</section>
+
+<section class="sec" id="m34-s5">
+<h2><span class="n">§5</span>初始化：先按住复位 <span class="tag">M34.7</span></h2>
+<p class="hook"><span class="zh">为什么改 USCI 的配置之前，要先让它"停下来"？</span><span class="es">La configuración de la USCI sólo se puede realizar mientras UCSWRST = 1.</span></p>
+<p>USCI 由 PUC 或 <span class="reg">UCAxCTL1</span> 的 <b class="t">UCSWRST</b>（software reset）位复位。PUC 之后 UCSWRST 自动是 1（UCAxCTL1 的复位值是 01h），模块保持在复位状态。<b>UCSWRST = 1 时</b>，硬件清掉 UCRXIE、UCTXIE、UCRXIFG、UCRXERR、UCBRK、UCPE、UCOE、UCFE、UCSTOE、UCBTOE，并把 <b>UCTXIFG 置 1</b>；清掉 UCSWRST，模块才开始工作。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m34-sc-init">
+<div class="stage-title"><span>Escena 5 · secuencia de inicialización</span><b>6 步</b></div>
+<div aria-label="动画：按 UCSWRST 流程初始化 USCI_A1，代码与寄存器一一对应" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-init-t" role="img" viewbox="0 0 800 262">
+<title id="m34-sc-init-t">六个寄存器随代码逐一配置：UCA1CTL1、UCA1CTL0、UCA1BR0/BR1、UCA1MCTL、P4SEL、UCA1IE；最后 UCSWRST 清零，模块运行</title>
+<rect class="bx b" data-hl="1 2 5" height="84" rx="8" width="240" x="20" y="20"></rect>
+<text class="tm sm b" x="34" y="44">UCA1CTL1</text>
+<text class="tm sm m" data-out="2" x="34" y="68">UCSSELx = ?</text>
+<text class="tm sm b" data-step="2" x="34" y="68">UCSSELx = 01 → ACLK</text>
+<text class="tm sm r" data-out="5" x="34" y="92">UCSWRST = 1 · 复位</text>
+<text class="tm sm g" data-step="5" x="34" y="92">UCSWRST = 0 · 运行</text>
+<rect class="bx b" data-hl="2" height="84" rx="8" width="240" x="280" y="20"></rect>
+<text class="tm sm b" x="294" y="44">UCA1CTL0</text>
+<text class="tm sm m" data-out="2" x="294" y="68">?</text>
+<text class="tm sm b" data-step="2" x="294" y="68">0x00 → 8N1 · LSB 先</text>
+<text class="tm xs m" data-step="2" x="294" y="90">UCSYNC = 0 · UCMODEx = 00</text>
+<rect class="bx b" data-hl="3" height="84" rx="8" width="240" x="540" y="20"></rect>
+<text class="tm sm b" x="554" y="44">UCA1BR0 · UCA1BR1</text>
+<text class="tm sm m" data-out="3" x="554" y="68">?</text>
+<text class="tm sm b" data-step="3" x="554" y="68">3 · 0 → UCBRx = 3</text>
+<rect class="bx b" data-hl="3" height="84" rx="8" width="240" x="20" y="118"></rect>
+<text class="tm sm b" x="34" y="142">UCA1MCTL</text>
+<text class="tm sm m" data-out="3" x="34" y="166">?</text>
+<text class="tm sm b" data-step="3" x="34" y="166">UCBRSx = 3 · UCOS16 = 0</text>
+<text class="tm xs m" data-step="3" x="34" y="188">= 0x06</text>
+<rect class="bx b" data-hl="4" height="84" rx="8" width="240" x="280" y="118"></rect>
+<text class="tm sm b" x="294" y="142">P4SEL</text>
+<text class="tm sm m" data-out="4" x="294" y="166">BIT4 = BIT5 = 0 · GPIO</text>
+<text class="tm sm b" data-step="4" x="294" y="166">BIT4 | BIT5 → USCI</text>
+<text class="tm xs m" data-step="4" x="294" y="188">P4.4 = UCA1TXD · P4.5 = UCA1RXD</text>
+<rect class="bx g" data-hl="6" height="84" rx="8" width="240" x="540" y="118"></rect>
+<text class="tm sm g" x="554" y="142">UCA1IE</text>
+<text class="tm xs m" data-out="6" x="554" y="166">UCRXIE = 0（被 UCSWRST 清）</text>
+<text class="tm sm g" data-step="6" x="554" y="166">UCRXIE = 1</text>
+<text class="tm xs r" x="554" y="188">注意：UCTXIFG 复位后 = 1</text>
+<g data-out="5">
+<rect class="bx r" height="36" rx="8" width="760" x="20" y="216"></rect>
+<text class="tz sm r mid" x="400" y="239">复位中：寄存器可以改，模块不收也不发</text>
+</g>
+<g data-step="5">
+<rect class="bx g" data-hl="5" height="36" rx="8" width="760" x="20" y="216"></rect>
+<text class="tz sm g mid" x="400" y="239">UCSWRST = 0：状态机运行。要改配置，先回到 ①</text>
+</g>
+</svg>
+</div>
+<pre aria-label="USCI_A1 初始化：32768 Hz ACLK，9600 baud，8N1（§3 的例子）" class="code code-hl"><code><span class="ln-row" data-hl="1"><span class="rg">UCA1CTL1</span> |= UCSWRST;               <span class="cm">// ① 按住复位（PUC 之后本来就是 1）</span></span><span class="ln-row" data-hl="2"><span class="rg">UCA1CTL0</span>  = 0;                     <span class="cm">// ② 8 位、无校验、1 个停止位、LSB 先、UART</span></span><span class="ln-row" data-hl="2"><span class="rg">UCA1CTL1</span> |= UCSSEL_1;              <span class="cm">// ② UCSSELx = 01：BRCLK = ACLK（32768 Hz）</span></span><span class="ln-row" data-hl="3"><span class="rg">UCA1BR0</span>   = 3;  <span class="rg">UCA1BR1</span> = 0;       <span class="cm">// ② UCBRx = 3</span></span><span class="ln-row" data-hl="3"><span class="rg">UCA1MCTL</span>  = UCBRS_3 + UCBRF_0;     <span class="cm">// ② UCBRSx = 3，UCOS16 = 0 → 0x06</span></span><span class="ln-row" data-hl="4"><span class="rg">P4SEL</span>    |= BIT4 + BIT5;           <span class="cm">// ③ 两个引脚交给 USCI_A1</span></span><span class="ln-row" data-hl="5"><span class="rg">UCA1CTL1</span> &amp;= ~UCSWRST;              <span class="cm">// ④ 放开复位：开始工作</span></span><span class="ln-row" data-hl="6"><span class="fl">UCA1IE</span>   |= UCRXIE;                <span class="cm">// ⑤（可选）开接收中断</span></span></code></pre>
+<ol class="captions">
+<li data-dur="4200">① <code>UCSWRST = 1</code>：USCI 进入复位。硬件顺带清掉两个中断使能、UCRXIFG 和全部错误位，并把 UCTXIFG 置 1。</li>
+<li data-dur="4400">② 帧格式：<code>UCA1CTL0 = 0</code> → 8 位数据、无校验、1 个停止位、LSB 先、UART 模式。时钟：<code>UCSSELx = 01</code> → BRCLK = ACLK。</li>
+<li>② 波特率：UCBRx = 3（BR0 = 3，BR1 = 0），UCAxMCTL 里 UCBRSx = 3、UCOS16 = 0——就是 §3 算出来的 9709 baud。</li>
+<li>③ 端口：P4SEL 的第 4、5 位置 1，P4.4 / P4.5 从 GPIO 变成 UCA1TXD / UCA1RXD。</li>
+<li>④ <code>UCSWRST = 0</code>：状态机启动。以后要改上面任何一个寄存器，都要先回到 ①。</li>
+<li data-dur="4600">⑤（可选）开中断 <code>UCRXIE</code> / <code>UCTXIE</code>。放在最后，因为 UCSWRST 会把它们清零。小心：UCTXIFG 复位后就是 1，一开 UCTXIE 就会立刻进一次发送中断。</li>
+</ol>
+</figure>
+<p class="aside">寄存器名和宏（UCSSEL_1、UCBRS_3、UCBRF_0）在 msp430f5529.h 里定义；数值是 §3 的例子。"配置端口"可以单列一步，也可以并进第 2 步——总之要在清 UCSWRST 之前。</p>
+<h3>帧格式：UCAxCTL0</h3>
+<p>M33 讲的帧参数，在这里一位对一位：</p>
+<div class="tbl-wrap">
+<table class="regs">
+<thead><tr><th>位</th><th>字段</th><th>0</th><th>1</th></tr></thead>
+<tbody>
+<tr><td>7 · UCPEN</td><td>校验使能</td><td>无校验</td><td>有校验</td></tr>
+<tr><td>6 · UCPAR</td><td>校验类型（UCPEN = 0 时不用）</td><td>奇校验 (impar)</td><td>偶校验 (par)</td></tr>
+<tr><td>5 · UCMSB</td><td>先发哪一位</td><td>LSB 先（UART 通常如此）</td><td>MSB 先</td></tr>
+<tr><td>4 · UC7BIT</td><td>数据长度</td><td>8 位</td><td>7 位</td></tr>
+<tr><td>3 · UCSPB</td><td>停止位个数</td><td>1 个</td><td>2 个</td></tr>
+<tr><td>2–1 · UCMODEx</td><td>异步模式</td><td colspan="2">00 UART · 01 idle-line 多机 · 10 address-bit 多机 · 11 自动波特率检测</td></tr>
+<tr><td>0 · UCSYNC</td><td>同步 / 异步</td><td>异步（UART）</td><td>同步（SPI）</td></tr>
+</tbody>
+</table>
+</div>
+<p>改几个位，看帧怎么变（起始位总是 0，停止位总是 1）：</p>
+<figure class="stage" id="m34-frame">
+<div class="stage-title"><span>Simulador · formato de carácter</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m34-frame-t" role="img" viewbox="0 0 800 150">
+<title id="m34-frame-t">按 UCAxCTL0 的设置画出一个字符的 UART 帧</title>
+<g id="m34-frame-g"></g>
+</svg>
+</div>
+<div class="stage-ctl">
+<button aria-pressed="false" class="sw" id="m34-f-7bit" type="button"><span class="knob"></span><span class="lab">UC7BIT</span></button>
+<button aria-pressed="false" class="sw" id="m34-f-pen" type="button"><span class="knob"></span><span class="lab">UCPEN</span></button>
+<button aria-pressed="false" class="sw" id="m34-f-par" type="button"><span class="knob"></span><span class="lab">UCPAR</span></button>
+<button aria-pressed="false" class="sw" id="m34-f-spb" type="button"><span class="knob"></span><span class="lab">UCSPB</span></button>
+<button aria-pressed="false" class="sw" id="m34-f-msb" type="button"><span class="knob"></span><span class="lab">UCMSB</span></button>
+<button class="mini" id="m34-f-char" type="button">换字符</button>
+<p aria-live="polite" class="out" id="m34-f-out">UCA1CTL0 = 0x00 → 8N1。</p>
+</div>
+</figure>
+<p class="aside">回顾帧的结构见 <a href="m33.html">M33 · Comunicaciones serie</a>。地址位（address-bit 多机模式）这里不画。</p>
+<div class="drill" data-drill="frame"></div>
+<p>USCI_Ax 的寄存器，一句话一个：</p>
+<div class="tbl-wrap">
+<table class="regs">
+<thead><tr><th>寄存器</th><th>偏移 · 复位值</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>UCAxCTL0</td><td class="mono">01h · 00h</td><td>帧格式和异步模式（上表）</td></tr>
+<tr><td>UCAxCTL1</td><td class="mono">00h · 01h</td><td>时钟源 UCSSELx、UCRXEIE、UCBRKIE、UCDORM、UCTXADDR、UCTXBRK、UCSWRST（复位值 01h 就是 UCSWRST = 1）</td></tr>
+<tr><td>UCAxBR0 · BR1</td><td class="mono">06h · 07h · 00h</td><td>分频值 UCBRx 的低 / 高字节</td></tr>
+<tr><td>UCAxMCTL</td><td class="mono">08h · 00h</td><td>UCBRFx（位 7–4）· UCBRSx（位 3–1）· UCOS16（位 0）</td></tr>
+<tr><td>UCAxSTAT</td><td class="mono">0Ah · 00h</td><td>接收状态和错误：UCLISTEN、UCFE、UCOE、UCPE、UCBRK、UCRXERR、UCADDR/UCIDLE、UCBUSY</td></tr>
+<tr><td>UCAxRXBUF · TXBUF</td><td class="mono">0Ch · 0Eh · 00h</td><td>接收 / 发送缓冲</td></tr>
+<tr><td>UCAxABCTL</td><td class="mono">10h · 00h</td><td>自动波特率检测（LIN）</td></tr>
+<tr><td>UCAxIRTCTL · IRRCTL</td><td class="mono">12h · 13h · 00h</td><td>IrDA 编码 / 解码控制（本课不用）</td></tr>
+<tr><td>UCAxIE · IFG</td><td class="mono">1Ch · 1Dh · 00h</td><td>UCTXIE / UCRXIE；UCTXIFG / UCRXIFG</td></tr>
+<tr><td>UCAxIV</td><td class="mono">1Eh · 0000h</td><td>16 位、只读：哪个 flag 请求了中断（§7）</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">偏移相对于模块的基地址。CTL1 在 00h、CTL0 在 01h：两者合起来是字寄存器 UCAxCTLW0（复位 0001h），同理 UCAxBRW = BR1:BR0。（寄存器总表把 UCAxIFG 的复位值写成 00h，但位说明里 UCTXIFG 复位后是 1。以后者为准。）除了 IE、IFG、IV、缓冲寄存器，其余寄存器都标着"Modify only when UCSWRST = 1"——只能在 UCSWRST = 1 时修改。</p>
+
+</section>
+
+<section class="sec" id="m34-s6">
+<h2><span class="n">§6</span>收到的字节可能是错的 <span class="tag">M34.8</span></h2>
+<p class="hook"><span class="zh">线路上有干扰、波特率不准、CPU 来不及读——USCI 怎么发现，又怎么告诉你？</span><span class="es">Errores detectados de forma automática por la UART.</span></p>
+<p>每收到一个字符，USCI_A 自动检查下面几种情况，结果放在 <span class="reg">UCAxSTAT</span> 里：</p>
+<div class="tbl-wrap">
+<table class="regs">
+<thead><tr><th>位</th><th>错误</th><th>什么时候置 1</th></tr></thead>
+<tbody>
+<tr><td>UCFE</td><td>error de trama · framing</td><td>停止位的位置是低电平；用 2 个停止位时两个都检查</td></tr>
+<tr><td>UCPE</td><td>error de paridad · parity</td><td>1 的个数和校验位对不上（UCPEN = 0 时总读出 0）</td></tr>
+<tr><td>UCOE</td><td>sobreescritura · overrun</td><td>上一个字符还没读，下一个字符又搬进了 RXBUF</td></tr>
+<tr><td>UCBRK</td><td>condición de BREAK</td><td>收到 10 个或更多低电平位、没有停止位；UCBRKIE = 1 时还会置 UCRXIFG</td></tr>
+<tr><td>UCRXERR</td><td>汇总</td><td>这个字符带错：UCBRK、UCPE、UCOE、UCFE 任一置位时也置位</td></tr>
+</tbody>
+</table>
+</div>
+<p>两个相关的使能位在 <span class="reg">UCAxCTL1</span> 里：<b>UCRXEIE = 0</b>（默认）时，有帧错误或校验错误的字符<b>不进 RXBUF</b>，也不置 UCRXIFG——错字符直接丢掉；UCRXEIE = 1 时照常收下并置位错误标志，由软件判断。<b>UCBRKIE = 1</b> 时，收到 break 也置 UCRXIFG。</p>
+<p>最容易遇到的是 <b>overrun</b>：</p>
+<figure class="stage" data-scene="" id="m34-sc-err">
+<div class="stage-title"><span>Escena 6 · error de sobreescritura</span><b>4 步</b></div>
+<div aria-label="动画：CPU 来不及读 RXBUF，第二个字符覆盖第一个，UCOE 置位" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-err-t" role="img" viewbox="0 0 800 290">
+<title id="m34-sc-err-t">时序图：字符 O 进入 RXBUF 后没被读，字符 K 覆盖了它，UCOE 置 1；CPU 读 STAT 和 RXBUF 后标志清零</title>
+<text class="tm xs b" x="20" y="62">UCA1RXD</text>
+<text class="tm xs b" x="20" y="112">UCA1RXBUF</text>
+<text class="tm xs r" x="20" y="164">UCRXIFG</text>
+<text class="tm xs r" x="20" y="214">UCOE</text>
+<text class="tm xs w" x="20" y="266">CPU</text>
+<g data-step="1">
+<rect class="bx b" height="28" rx="4" width="176" x="150" y="44"></rect>
+<text class="tm xs w mid" x="238" y="63">帧 1 · 'O'</text>
+<rect class="bx b" height="28" rx="4" width="188" x="330" y="94"></rect>
+<path class="ln r draw" d="M140 172 H330 V150 H520"></path>
+<path class="ln m" d="M140 222 H520"></path>
+<rect class="bx r" height="28" rx="4" width="536" x="150" y="248"></rect>
+<text class="tz sm r mid" x="418" y="267">CPU 在一个很长的 ISR 里，没空读</text>
+</g>
+<text class="tm sm b mid" data-out="2" x="424" y="113">'O'</text>
+<text class="tm xs r mid" data-step="2" x="424" y="113">'O' 被覆盖 ✗</text>
+<g data-step="2">
+<rect class="bx b" data-hl="2" height="28" rx="4" width="182" x="334" y="44"></rect>
+<text class="tm xs w mid" x="425" y="63">帧 2 · 'K'</text>
+<rect class="bx y" height="28" rx="4" width="260" x="520" y="94"></rect>
+<text class="tm sm y mid" x="600" y="113">'K'</text>
+<path class="ln r draw" d="M520 150 H700"></path>
+<path class="ln r draw" d="M520 222 V198 H700"></path>
+<text class="tm xs r" x="528" y="192">UCOE = 1</text>
+</g>
+<g data-step="3">
+<path class="ln thin g dash" d="M700 36 V282"></path>
+<text class="tm xs g mid" x="700" y="30">读 STAT → 读 RXBUF</text>
+<path class="ln g draw" d="M700 150 V172 H780"></path>
+<path class="ln g draw" d="M700 198 V222 H780"></path>
+<rect class="bx g" height="28" rx="4" width="86" x="694" y="248"></rect>
+<text class="tm xs g mid" x="737" y="267">读</text>
+</g>
+<g data-step="4">
+<path class="ln thin y" d="M336 30 H514" marker-end="url(#m34-ah-y)" marker-start="url(#m34-ah-y)"></path>
+<text class="tz sm y mid" x="425" y="22">一帧 = 10 位 / baud</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">第 1 个字符收完：RXBUF = 'O'，<span class="c-r">UCRXIFG = 1</span>。可 CPU 正忙——比如困在一个很长的 ISR 里（<a href="m21.html#s8">M21 §8</a>）。</li>
+<li data-dur="4400">第 2 个字符收完时，RXBUF 还没被读：'K' 覆盖了 'O'，<span class="c-r">UCOE = 1</span>。'O' 永远丢了。</li>
+<li data-dur="4600">CPU 终于来了：先读 <code>UCA1STAT</code> 看错误位，再读 <code>UCA1RXBUF</code>。读 RXBUF 会清掉 UCRXIFG 和错误位。UCOE 只能这样清，不能用软件写 0。</li>
+<li data-dur="4200">留给 CPU 的时间就是一帧：10 位 / baud。9600 baud 约 1.04 ms，115200 baud 只有约 87 µs。所以接收要及时：用中断、ISR 要短。</li>
+</ol>
+</figure>
+<div class="note alert">
+<span class="lbl">注意</span>
+<p>上表 UCBRK、UCRXERR 两行是有些资料的说法。TI 手册在这两点上不同：UCRXERR 只由 UCFE、UCPE、UCOE 置位（UCBRK 由接收状态机另外置位）；BREAK 指数据位、校验位、停止位全是低电平。写代码按 TI 手册。</p>
+</div>
+<p class="aside">这些错误位一直保持，直到软件清掉或读 UCAxRXBUF。推荐的顺序：先读 UCAxSTAT，再读 UCAxRXBUF，然后再看一次 UCOE（两次读之间可能又被覆盖）。</p>
+
+</section>
+
+<section class="sec" id="m34-s7">
+<h2><span class="n">§7</span>一个向量，两种原因 <span class="tag">M34.9</span></h2>
+<p class="hook"><span class="zh">收和发共用一个中断向量。进了 ISR，第一件事：是收到了，还是可以发了？</span><span class="es">Un único vector compartido: el registro UCAxIV.</span></p>
+<p>每个 USCI_Ax 只有<b>一个</b>中断向量，发送和接收共用（USCI_A0 是 56 号 0FFF0h，USCI_A1 是 46 号 0FFDCh；向量表见 <a href="m21.html#s4">M21 §4</a>）。两种请求条件和 <a href="m21.html#s1">M21 §1</a> 的事件链一样：</p>
+<div class="formula" data-tex="\big(\class{c-r}{\mathtt{UCRXIFG}} \wedge \class{c-g}{\mathtt{UCRXIE}}\big) \;\lor\; \big(\class{c-r}{\mathtt{UCTXIFG}} \wedge \class{c-g}{\mathtt{UCTXIE}}\big) \;\wedge\; \class{c-g}{\mathtt{GIE}} \;\Longrightarrow\; \class{c-y}{\text{IRQ}}">((UCRXIFG ∧ UCRXIE) 或 (UCTXIFG ∧ UCTXIE)) ∧ GIE ⇒ 中断请求</div>
+<p>进了 ISR，读 <span class="reg">UCAxIV</span> 就知道是谁（16 位只读，复位 0000h）：<b>0x00</b> 没有中断，<b>0x02</b> 接收（UCRXIFG，优先级最高），<b>0x04</b> 发送（UCTXIFG，优先级最低）。读或写 UCAxIV 都会清掉当前优先级最高的挂起 flag；没使能的源不影响它的值。</p>
+
+<figure class="stage" data-scene="" id="m34-sc-iv">
+<div class="stage-title"><span>Escena 7 · UCA1IV</span><b>4 步</b></div>
+<div aria-label="动画：两个 flag 同时挂起时，UCA1IV 依次给出 0x02、0x04、0x00" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-iv-t" role="img" viewbox="0 0 800 270">
+<title id="m34-sc-iv-t">UCRXIFG 和 UCTXIFG 同时挂起，经各自的使能和 GIE 请求 46 号向量；ISR 读 UCA1IV 先得到 0x02，再进一次得到 0x04，最后为 0x00</title>
+<rect class="bx r" data-hl="2" height="40" rx="6" width="150" x="20" y="40"></rect>
+<text class="tm xs r" x="34" y="65">UCRXIFG =</text>
+<text class="tm sm r end" data-out="2" x="158" y="66">1</text>
+<text class="tm sm g end" data-step="2" x="158" y="66">0</text>
+<rect class="bx g" height="40" rx="6" width="110" x="190" y="40"></rect>
+<text class="tm xs g mid" x="245" y="65">UCRXIE = 1</text>
+<rect class="bx r" data-hl="3" height="40" rx="6" width="150" x="20" y="100"></rect>
+<text class="tm xs r" x="34" y="125">UCTXIFG =</text>
+<text class="tm sm r end" data-out="3" x="158" y="126">1</text>
+<text class="tm sm g end" data-step="3" x="158" y="126">0</text>
+<rect class="bx g" height="40" rx="6" width="110" x="190" y="100"></rect>
+<text class="tm xs g mid" x="245" y="125">UCTXIE = 1</text>
+<path class="ln thin m" d="M170 60 H190 M170 120 H190 M300 60 H316 V84 H330 M300 120 H316 V96 H330"></path>
+<rect class="bx g" height="40" rx="6" width="70" x="330" y="70"></rect>
+<text class="tm xs g mid" x="365" y="95">GIE = 1</text>
+<path class="ln thin b" d="M400 90 H426" marker-end="url(#m34-ah-b)"></path>
+<rect class="bx b" data-hl="2 3 4" height="68" rx="8" width="150" x="430" y="56"></rect>
+<text class="tm xs b mid" x="505" y="78">UCA1IV</text>
+<text class="tm lg y mid" data-out="3" x="505" y="110">0x02</text>
+<text class="tm lg y mid" data-out="4" data-step="3" x="505" y="110">0x04</text>
+<text class="tm lg m mid" data-step="4" x="505" y="110">0x00</text>
+<path class="ln thin p" d="M580 90 H606" marker-end="url(#m34-ah-p)"></path>
+<rect class="bx p" data-hl="1" height="68" rx="8" width="170" x="610" y="56"></rect>
+<text class="tm sm p mid" x="695" y="84">46 · 0xFFDC</text>
+<text class="tm xs p mid" x="695" y="106">USCI_A1_VECTOR</text>
+<path class="ln thin y" d="M695 124 V156" marker-end="url(#m34-ah-y)"></path>
+<rect class="ln thin y" height="100" rx="8" width="350" x="430" y="160"></rect>
+<text class="tm xs w" x="444" y="182">switch (__even_in_range(UCA1IV, 4))</text>
+<text class="tm xs b" data-hl="2" x="456" y="206">case 0x02: c = UCA1RXBUF;</text>
+<text class="tm xs b" data-hl="3" x="456" y="228">case 0x04: UCA1TXBUF = …;</text>
+<text class="tm xs m" data-hl="4" x="456" y="250">case 0x00: 没有挂起的中断</text>
+<text class="tz sm y" x="20" y="190">优先级：RX 0x02 ＞ TX 0x04</text>
+<text class="tz sm m" x="20" y="216">读（或写）UCAxIV</text>
+<text class="tz sm m" x="20" y="240">→ 清掉优先级最高的挂起 flag</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4400">两个 flag 同时挂着：<span class="c-r">UCRXIFG = 1</span>（收到一个字节）、<span class="c-r">UCTXIFG = 1</span>（TXBUF 空）。使能和 GIE 都开着 → 46 号向量请求中断，CPU 进入 USCI_A1 的 ISR。</li>
+<li data-dur="4200">ISR 读 <code>UCA1IV</code> = <b>0x02</b>：接收优先级最高。这次读取同时清掉了 UCRXIFG。</li>
+<li data-dur="4400">RETI 之后 UCTXIFG 还挂着 → 马上再进一次 ISR，这次 <code>UCA1IV</code> = <b>0x04</b>：发送。读 IV 清掉 UCTXIFG（写 TXBUF 也会清）。</li>
+<li>没有挂起的了：<code>UCA1IV</code> = 0x00。值总是 0、2、4 这样的偶数，所以可以用 <code>__even_in_range(UCA1IV, 4)</code>。</li>
+</ol>
+</figure>
+<p>一个 ISR 骨架（示意）：接收的字节存进一个小缓冲；发送一个字符串，发完就关掉发送中断：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#pragma vector=USCI_A1_VECTOR</span>                 <span class="cm">// 46 号，0xFFDC</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">USCI_A1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">switch</span> (<span class="fn">__even_in_range</span>(<span class="fl">UCA1IV</span>, 4)) {</span><span class="ln-row">    <span class="kw">case</span> 0: <span class="kw">break</span>;                            <span class="cm">// 0x00：没有中断</span></span><span class="ln-row">    <span class="kw">case</span> 2:                                     <span class="cm">// 0x02：UCRXIFG</span></span><span class="ln-row">        rx[n++ &amp; 0x0F] = <span class="rg">UCA1RXBUF</span>;          <span class="cm">// 读出来，存进 16 字节环形缓冲</span></span><span class="ln-row">        <span class="kw">break</span>;</span><span class="ln-row">    <span class="kw">case</span> 4:                                     <span class="cm">// 0x04：UCTXIFG，TXBUF 空</span></span><span class="ln-row">        <span class="kw">if</span> (*p) <span class="rg">UCA1TXBUF</span> = *p++;               <span class="cm">// 还有字符：写下一个</span></span><span class="ln-row">        <span class="kw">else</span>    <span class="fl">UCA1IE</span> &amp;= ~UCTXIE;              <span class="cm">// 发完了：关掉发送中断</span></span><span class="ln-row">        <span class="kw">break</span>;</span><span class="ln-row">    <span class="kw">default</span>: <span class="kw">break</span>;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<div class="grid2">
+<div class="panel">
+<h3>发送：轮询</h3>
+<p>每发一个字节前等 UCTXIFG = 1（§2 的代码）。简单，但 CPU 在等待中什么也做不了：9600 baud 下一个字节要等约 1 ms。</p>
+</div>
+<div class="panel">
+<h3>发送：中断</h3>
+<p>开 UCTXIE，每次 TXBUF 空就进 ISR 写下一个字节，CPU 其余时间可以做别的或睡觉。<b>发完必须关 UCTXIE</b>：TXBUF 一直空，UCTXIFG 一直是 1，不关就会不停地进 ISR（和 <a href="m21.html#s6">M21 §6</a> 忘清 flag 是同一个道理）。</p>
+</div>
+</div>
+<div class="note alert">
+<span class="lbl">注意 · 资料有误</span>
+<p>讲接收中断时，有些资料两处把使能位写成了 <b>UCTXIE</b>，应为 <b>UCRXIE</b>。</p>
+</div>
+<p class="takeaway">USCI_Ax 的中断：一个向量、两个原因。ISR 里读 UCAxIV 分辨（0x02 收、0x04 发），读 IV、读 RXBUF、写 TXBUF 都会清掉对应的 flag。</p>
+
+</section>
+
+<section class="sec" id="m34-s8">
+<h2><span class="n">§8</span>用 driverlib 写出来 <span class="tag">M34.10</span></h2>
+<p class="hook"><span class="zh">同样的初始化，能不能不记那么多位名？</span><span class="es">Programación del MSP430 utilizando una biblioteca de periféricos.</span></p>
+<p>到目前为止我们都直接读写寄存器。实际项目里越来越常用厂商提供的<b class="t">biblioteca de periféricos (ES) / peripheral driver library (EN)</b>——外设驱动库：用函数配置和控制外设，不必在每一步都记住改的是哪个寄存器的哪一位。TI 的这套库叫 <b>driverlib</b>，在 MSPWare 软件包里，以源代码形式提供。</p>
+<figure class="stage" data-scene="" id="m34-sc-layers">
+<div class="stage-title"><span>Escena 8 · componentes del firmware</span><b>4 步</b></div>
+<div aria-label="动画：嵌入式固件的组成层次，driverlib 位于 BSP/Drivers 层" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m34-sc-layers-t" role="img" viewbox="0 0 800 330">
+<title id="m34-sc-layers-t">固件层次：Hardware 之上是 BSP/Drivers，再往上是 HAL、RTOS、OSAL、协议栈，最上面是应用</title>
+<rect class="bx m" height="34" rx="6" width="560" x="120" y="290"></rect>
+<text class="tm sm w mid" x="400" y="312">Hardware · MSP430F5529</text>
+<rect class="bx t" data-hl="1" height="40" rx="6" width="500" x="150" y="240"></rect>
+<text class="tm sm t mid" x="400" y="265">BSP / Drivers</text>
+<path class="ln thin m" d="M400 280 V290"></path>
+<g data-step="1">
+<text class="tz sm y" x="660" y="258">← driverlib</text>
+<text class="tm xs m" x="660" y="276">在这一层</text>
+<text class="tm xs m mid" x="400" y="234">Board Support Package</text>
+</g>
+<g data-step="2">
+<rect class="bx b" height="40" rx="6" width="140" x="150" y="90"></rect>
+<text class="tm sm b mid" x="220" y="115">HAL</text>
+<text class="tm xs m mid" x="220" y="148">Hardware Abstraction</text>
+<path class="ln thin m" d="M220 160 V236" marker-end="url(#m34-ah-m)" marker-start="url(#m34-ah-m)"></path>
+</g>
+<g data-step="3">
+<rect class="bx g" height="40" rx="6" width="320" x="330" y="170"></rect>
+<text class="tm sm g mid" x="490" y="195">RTOS</text>
+<rect class="bx g" height="40" rx="6" width="140" x="510" y="90"></rect>
+<text class="tm sm g mid" x="580" y="115">OSAL</text>
+<text class="tm xs m mid" x="580" y="148">OS Abstraction Layer</text>
+<path class="ln thin m" d="M580 152 V166" marker-end="url(#m34-ah-m)" marker-start="url(#m34-ah-m)"></path>
+<path class="ln thin m" d="M490 212 V236" marker-end="url(#m34-ah-m)" marker-start="url(#m34-ah-m)"></path>
+</g>
+<g data-step="4">
+<rect class="bx o" height="60" rx="6" width="140" x="330" y="80"></rect>
+<text class="tz sm o mid" x="400" y="106">Pilas de</text>
+<text class="tz sm o mid" x="400" y="128">protocolos</text>
+<text class="tm xs m mid" x="400" y="158">middleware · USB, TCP/IP…</text>
+<rect class="bx y" height="40" rx="6" width="500" x="150" y="20"></rect>
+<text class="tx sm y mid" x="400" y="47">Aplicación</text>
+<path class="ln thin m" d="M220 62 V88" marker-end="url(#m34-ah-m)" marker-start="url(#m34-ah-m)"></path>
+<path class="ln thin m" d="M400 62 V78" marker-end="url(#m34-ah-m)" marker-start="url(#m34-ah-m)"></path>
+<path class="ln thin m" d="M580 62 V88" marker-end="url(#m34-ah-m)" marker-start="url(#m34-ah-m)"></path>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">硬件之上第一层是 <b>BSP / Drivers</b>（Board Support Package）：直接读写外设寄存器的代码。TI 的 driverlib 就属于这一层：每个外设一组 C 函数。</li>
+<li><b>HAL</b>（Hardware Abstraction Layer）：再包一层，让上层不必关心具体是哪块芯片、哪块板。</li>
+<li>有操作系统时加上 <b>RTOS</b>；<b>OSAL</b>（OS Abstraction Layer）让应用不绑死在某一个 RTOS 上。</li>
+<li data-dur="4600">中间件（协议栈：USB、TCP/IP…）和<b>应用</b>在最上面。这是一般模型，实际项目只用到其中几块——本课程只用 driverlib，由应用直接调用。</li>
+</ol>
+<p class="stage-note">各层的位置是示意。</p>
+
+</figure>
+<div class="grid2">
+<div class="cell g">
+<span class="k c-g">ventajas</span>
+<h3>好处</h3>
+<p>抽象层次更高：隐藏外设内部细节，不用每次都核对改的是哪一位。由厂商提供、文档齐全。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">desventajas</span>
+<h3>代价</h3>
+<p>代码稍慢、更大（有时重复配置、做多余的事）；为了简单，库会加一些限制，灵活性下降。</p>
+</div>
+</div>
+<h3>把 driverlib 加进 CCS 项目</h3>
+<ol class="steps-l">
+<li><b>找到库</b>：MSPWare 安装在 <code>C:\ti\msp\MSPWare_VV_XX_YY_ZZ</code>，其中 <code>driverlib</code> 文件夹里按家族分好：F5529 用 <code>MSP430F5xx_6xx</code>。课程用的版本是 <b>2.91.13.01</b>；文档在 <code>doc</code> 文件夹（课程页面上也有 PDF）。</li>
+<li><b>复制源文件</b>：在项目里 New → Folder，建一个 <code>driverlib</code> 文件夹；把 <code>MSP430F5xx_6xx</code> 拖进去，选 <b>Copy</b>（本地复制，项目更好移植）。</li>
+<li><b>删掉 deprecated</b>：如果有 <code>deprecated</code> 子文件夹（旧版驱动），从项目里删除。</li>
+<li><b>Include Options</b>：Properties → Include Options，加两条搜索路径：<code>${workspace_loc:/${ProjName}}</code> 和 <code>${workspace_loc:/${ProjName}/driverlib/MSP430F5xx_6xx}</code>。</li>
+<li><b>Predefined Symbols</b>：加 <code>__MSP430F5529__</code>（前后各两个下划线），相当于每个源文件开头都有一行 <code>#define __MSP430F5529__</code>，driverlib 据此按我们的芯片编译。</li>
+<li><b>使用</b>：在要用库的源文件开头写 <code>#include "driverlib.h"</code>。</li>
+</ol>
+<p class="aside">另一条路：在 CCS 的 View → Resource Explorer 里下载 TI 的示例项目，它们已经带好库和配置；其中有一个空项目（写作 EMPTYPROYECT，拼法如此）可以直接当起点。</p>
+<h3>寄存器 ↔ driverlib</h3>
+<p>§5 的每一步都有对应的函数。右列写的是每个函数改动哪些位（Modified bits）：</p>
+<div class="tbl-wrap">
+<table class="map">
+<thead><tr><th>寄存器写法</th><th>driverlib</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>P4SEL |= BIT4 + BIT5</td><td>GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P4, GPIO_PIN4)<br/>GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P4, GPIO_PIN5)</td><td>TXD 是输出，RXD 是输入</td></tr>
+<tr><td>UCSWRST = 1 → CTL0、UCSSELx、BR0/BR1、MCTL</td><td>USCI_A_UART_init(base, &amp;param)</td><td>改 UCAxCTL0 的 UCPEN、UCPAR、UCMSB、UC7BIT、UCSPB、UCMODEx、UCSYNC 和 UCAxCTL1 的 UCSSELx、UCSWRST；返回 STATUS_SUCCESS / STATUS_FAIL。结束时模块仍然禁用</td></tr>
+<tr><td>UCA1CTL1 &amp;= ~UCSWRST</td><td>USCI_A_UART_enable(base)</td><td>清 UCSWRST；disable() 则置 UCSWRST</td></tr>
+<tr><td>UCA1IE |= UCRXIE</td><td>USCI_A_UART_enableInterrupt(base, USCI_A_UART_RECEIVE_INTERRUPT)</td><td>还有 _TRANSMIT_INTERRUPT 等；不清 flag</td></tr>
+<tr><td>UCA1IFG &amp;= ~UCRXIFG</td><td>USCI_A_UART_clearInterrupt(base, USCI_A_UART_RECEIVE_INTERRUPT_FLAG)</td><td>改 UCAxIFG</td></tr>
+<tr><td>UCA1IFG &amp; UCTXIFG</td><td>USCI_A_UART_getInterruptStatus(base, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG)</td><td>轮询用</td></tr>
+<tr><td>UCA1TXBUF = c</td><td>USCI_A_UART_transmitData(base, c)</td><td>写 UCAxTXBUF</td></tr>
+<tr><td>c = UCA1RXBUF</td><td>USCI_A_UART_receiveData(base)</td><td>读 UCAxRXBUF</td></tr>
+<tr><td>UCA1STAT &amp; UCOE</td><td>USCI_A_UART_queryStatusFlags(base, USCI_A_UART_OVERRUN_ERROR)</td><td>还有 _FRAMING_ERROR、_PARITY_ERROR、_BREAK_DETECT、_RECEIVE_ERROR…</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>USCI_A_UART_initParam</code> 结构体的字段，和 §3–§5 的位一一对应：</p>
+<div class="tbl-wrap">
+<table class="map">
+<thead><tr><th>字段</th><th>取值</th><th>对应</th></tr></thead>
+<tbody>
+<tr><td>selectClockSource</td><td>USCI_A_UART_CLOCKSOURCE_SMCLK / _ACLK</td><td>UCSSELx（库里没有外部 UCAxCLK 这一项）</td></tr>
+<tr><td>clockPrescalar</td><td>整数</td><td>UCBRx（库函数拆成 BR0、BR1）</td></tr>
+<tr><td>firstModReg</td><td>0–15</td><td>UCBRFx（UCOS16 = 0 时填 0）</td></tr>
+<tr><td>secondModReg</td><td>0–7</td><td>UCBRSx</td></tr>
+<tr><td>overSampling</td><td>USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION / _LOW_FREQUENCY_BAUDRATE_GENERATION</td><td>UCOS16 = 1 / 0</td></tr>
+<tr><td>parity</td><td>USCI_A_UART_NO_PARITY / _ODD_PARITY / _EVEN_PARITY</td><td>UCPEN、UCPAR</td></tr>
+<tr><td>msborLsbFirst</td><td>USCI_A_UART_LSB_FIRST / _MSB_FIRST</td><td>UCMSB</td></tr>
+<tr><td>numberofStopBits</td><td>USCI_A_UART_ONE_STOP_BIT / _TWO_STOP_BITS</td><td>UCSPB</td></tr>
+<tr><td>uartMode</td><td>USCI_A_UART_MODE、多机模式、自动波特率</td><td>UCMODEx</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">库不会替你算波特率：clockPrescalar、firstModReg、secondModReg、overSampling 都要"预先算好"（pre-computed）再传进去——还是 §3、§4 的方法或 TI 的表格。</p>
+<p>同一个配置（§3 的例子：USCI_A1，ACLK = 32768 Hz，9600 baud，8N1，UCOS16 = 0）的两种写法：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="reg" type="button">寄存器</button>
+<button aria-pressed="false" data-view="dl" type="button">driverlib</button>
+</div>
+<pre class="code" data-pane="reg"><code><span class="ln-row"><span class="pp">#include &lt;msp430.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">uart_init</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="rg">UCA1CTL1</span> |= UCSWRST;              <span class="cm">// ① 复位</span></span><span class="ln-row">    <span class="rg">UCA1CTL0</span>  = 0;                    <span class="cm">// ② 8N1，LSB 先，UART</span></span><span class="ln-row">    <span class="rg">UCA1CTL1</span> |= UCSSEL_1;             <span class="cm">// ② BRCLK = ACLK</span></span><span class="ln-row">    <span class="rg">UCA1BR0</span>   = 3;  <span class="rg">UCA1BR1</span> = 0;      <span class="cm">// ② UCBRx = 3</span></span><span class="ln-row">    <span class="rg">UCA1MCTL</span>  = UCBRS_3 + UCBRF_0;    <span class="cm">// ② UCBRSx = 3，UCOS16 = 0</span></span><span class="ln-row">    <span class="rg">P4SEL</span>    |= BIT4 + BIT5;          <span class="cm">// ③ 引脚</span></span><span class="ln-row">    <span class="rg">UCA1CTL1</span> &amp;= ~UCSWRST;             <span class="cm">// ④ 运行</span></span><span class="ln-row">    <span class="fl">UCA1IFG</span>  &amp;= ~UCRXIFG;</span><span class="ln-row">    <span class="fl">UCA1IE</span>   |= UCRXIE;               <span class="cm">// ⑤ 接收中断</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">uart_puts</span>(<span class="kw">const char</span> *s) {        <span class="cm">// 轮询发送一个字符串</span></span><span class="ln-row">    <span class="kw">while</span> (*s) {</span><span class="ln-row">        <span class="kw">while</span> (!(<span class="fl">UCA1IFG</span> &amp; <span class="fl">UCTXIFG</span>));</span><span class="ln-row">        <span class="rg">UCA1TXBUF</span> = *s++;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="dl" hidden=""><code><span class="ln-row"><span class="pp">#include "driverlib.h"</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">uart_init</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fn">GPIO_setAsPeripheralModuleFunctionOutputPin</span>(GPIO_PORT_P4, GPIO_PIN4);  <span class="cm">// UCA1TXD</span></span><span class="ln-row">    <span class="fn">GPIO_setAsPeripheralModuleFunctionInputPin</span>(GPIO_PORT_P4, GPIO_PIN5);   <span class="cm">// UCA1RXD</span></span><span class="ln-row"> </span><span class="ln-row">    USCI_A_UART_initParam param = {0};</span><span class="ln-row">    param.selectClockSource = USCI_A_UART_CLOCKSOURCE_ACLK;      <span class="cm">// UCSSELx = 01</span></span><span class="ln-row">    param.clockPrescalar    = 3;                                 <span class="cm">// UCBRx</span></span><span class="ln-row">    param.firstModReg       = 0;                                 <span class="cm">// UCBRFx（UCOS16 = 0 不用）</span></span><span class="ln-row">    param.secondModReg      = 3;                                 <span class="cm">// UCBRSx</span></span><span class="ln-row">    param.parity            = USCI_A_UART_NO_PARITY;</span><span class="ln-row">    param.msborLsbFirst     = USCI_A_UART_LSB_FIRST;</span><span class="ln-row">    param.numberofStopBits  = USCI_A_UART_ONE_STOP_BIT;</span><span class="ln-row">    param.uartMode          = USCI_A_UART_MODE;</span><span class="ln-row">    param.overSampling      = USCI_A_UART_LOW_FREQUENCY_BAUDRATE_GENERATION;  <span class="cm">// UCOS16 = 0</span></span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">USCI_A_UART_init</span>(USCI_A1_BASE, &amp;param) == STATUS_FAIL)</span><span class="ln-row">        <span class="kw">while</span> (1);                                            <span class="cm">// 参数不合法</span></span><span class="ln-row"> </span><span class="ln-row">    <span class="fn">USCI_A_UART_enable</span>(USCI_A1_BASE);                            <span class="cm">// UCSWRST = 0</span></span><span class="ln-row">    <span class="fn">USCI_A_UART_clearInterrupt</span>(USCI_A1_BASE, USCI_A_UART_RECEIVE_INTERRUPT_FLAG);</span><span class="ln-row">    <span class="fn">USCI_A_UART_enableInterrupt</span>(USCI_A1_BASE, USCI_A_UART_RECEIVE_INTERRUPT);</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">uart_puts</span>(<span class="kw">const char</span> *s) {</span><span class="ln-row">    <span class="kw">while</span> (*s) {</span><span class="ln-row">        <span class="kw">while</span> (!<span class="fn">USCI_A_UART_getInterruptStatus</span>(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG));</span><span class="ln-row">        <span class="fn">USCI_A_UART_transmitData</span>(USCI_A1_BASE, *s++);</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+</div>
+<div class="note warm">
+<span class="lbl">中断使能放在哪一步</span>
+<p>两种顺序都见得到：init → 开中断 → enable，或者先清 UCSWRST、再开 UCRXIE/UCTXIE。UCSWRST 置位时会把这两个使能位清零，所以本页按后一种写：先 <code>enable()</code>，再 <code>enableInterrupt()</code>。<code>USCI_A1_BASE</code> 这个基地址宏来自器件头文件。</p>
+</div>
+<p class="takeaway">driverlib 只是把 §5 的寄存器操作包成函数：init（复位 + 帧格式 + 时钟 + 波特率）→ enable（清 UCSWRST）→ enableInterrupt。波特率参数仍然要你自己算或查表。</p>
+
+</section>
+
+<section class="sec" id="m34-practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="baud"></div>
+<div class="drill" data-drill="frame"></div>
+</div>
+</section>
+
+<section class="sec" id="m34-quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M34">
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">01</span>MSP430F5529 有几个 USCI_A、几个 USCI_B？哪一种能做 UART？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>2 个 USCI_A、2 个 USCI_B；只有 USCI_A 能做 UART</button>
+<button data-o="b" type="button"><span class="k">B</span>1 个 USCI_A、1 个 USCI_B；两种都能做 UART</button>
+<button data-o="c" type="button"><span class="k">C</span>2 个 USCI_A、2 个 USCI_B；只有 USCI_B 能做 UART</button>
+<button data-o="d" type="button"><span class="k">D</span>4 个 USCI_A，没有 USCI_B</button>
+</div>
+<p class="why"><b>A。</b>USCI_A：UART、IrDA、LIN 自动波特率、SPI；USCI_B：I2C、SPI（§1）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>USCI_A1 的发送引脚 UCA1TXD 是哪一个？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>P4.5</button>
+<button data-o="b" type="button"><span class="k">B</span>P4.4</button>
+<button data-o="c" type="button"><span class="k">C</span>P3.3</button>
+<button data-o="d" type="button"><span class="k">D</span>P1.1</button>
+</div>
+<p class="why"><b>B。</b>P4.4 = UCA1TXD，P4.5 = UCA1RXD；P3.3 是 USCI_A0 的 TXD（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">03</span>CPU 往 UCA1TXBUF 写入一个字节之后，UCTXIFG 会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一直保持 1</button>
+<button data-o="b" type="button"><span class="k">B</span>变成 0，要等整帧（含停止位）发完才回到 1</button>
+<button data-o="c" type="button"><span class="k">C</span>变成 0，数据一搬进发送移位寄存器、TXBUF 再次空出来就回到 1</button>
+<button data-o="d" type="button"><span class="k">D</span>变成 0，必须由软件清回 1</button>
+</div>
+<p class="why"><b>C。</b>UCTXIFG 表示"TXBUF 能接收新数据"。双缓冲：前一个字节还在逐位发出时，就可以写下一个（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>BRCLK = 32768 Hz，9600 baud，UCOS16 = 0。按 §3 的方法，UCBRx 和 UCBRSx 是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UCBRx = 3，UCBRSx = 3</button>
+<button data-o="b" type="button"><span class="k">B</span>UCBRx = 3，UCBRSx = 4</button>
+<button data-o="c" type="button"><span class="k">C</span>UCBRx = 4，UCBRSx = 3</button>
+<button data-o="d" type="button"><span class="k">D</span>UCBRx = 3，UCBRSx = 0</button>
+</div>
+<p class="why"><b>A。</b>N = 3.4133；UCBRx = 3；0.4133 × 8 = 3.31 → 3。实际 9709 baud，误差约 1.1 %（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">05</span><code>UCA1CTL0 = UCPEN + UCPAR + UCSPB;</code> 对应哪种帧格式？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>7O1</button>
+<button data-o="b" type="button"><span class="k">B</span>8O2</button>
+<button data-o="c" type="button"><span class="k">C</span>7E2</button>
+<button data-o="d" type="button"><span class="k">D</span>8E2</button>
+</div>
+<p class="why"><b>D。</b>UC7BIT = 0 → 8 位；UCPEN = 1、UCPAR = 1 → 偶校验；UCSPB = 1 → 2 个停止位（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>UCOS16 = 0（低频模式）时，最大波特率是多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>BRCLK / 16</button>
+<button data-o="b" type="button"><span class="k">B</span>BRCLK / 3</button>
+<button data-o="c" type="button"><span class="k">C</span>BRCLK / 2</button>
+<button data-o="d" type="button"><span class="k">D</span>BRCLK / 8</button>
+</div>
+<p class="why"><b>B。</b>低频模式最大波特率是 BRCLK 的三分之一。BRCLK/16 是 UCOS16 = 1 的上限（§3、§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span>BRCLK = 1048576 Hz，9600 baud，UCOS16 = 1。按 §4 的方法：</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UCBRx = 109，UCBRSx = 2</button>
+<button data-o="b" type="button"><span class="k">B</span>UCBRx = 7，UCBRFx = 13</button>
+<button data-o="c" type="button"><span class="k">C</span>UCBRx = 6，UCBRFx = 13</button>
+<button data-o="d" type="button"><span class="k">D</span>UCBRx = 6，UCBRFx = 3</button>
+</div>
+<p class="why"><b>C。</b>N/16 = 6.8267 → UCBRx = 6；0.8267 × 16 = 13.2 → UCBRFx = 13。A 是 UCOS16 = 0 时的值（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>初始化 USCI 的推荐顺序是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UCSWRST = 1 → 配置寄存器和端口 → UCSWRST = 0 →（可选）开 UCRXIE / UCTXIE</button>
+<button data-o="b" type="button"><span class="k">B</span>开 UCRXIE → UCSWRST = 1 → 配置 → UCSWRST = 0</button>
+<button data-o="c" type="button"><span class="k">C</span>配置寄存器 → UCSWRST = 1 → UCSWRST = 0</button>
+<button data-o="d" type="button"><span class="k">D</span>UCSWRST = 0 → 配置寄存器 → UCSWRST = 1</button>
+</div>
+<p class="why"><b>A。</b>只能在 UCSWRST = 1 时配置；UCSWRST 会清掉中断使能，所以开中断放在最后（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>新字符搬进 UCAxRXBUF 时，上一个字符还没被读。哪一位置 1？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UCFE</button>
+<button data-o="b" type="button"><span class="k">B</span>UCPE</button>
+<button data-o="c" type="button"><span class="k">C</span>UCOE</button>
+<button data-o="d" type="button"><span class="k">D</span>UCBRK</button>
+</div>
+<p class="why"><b>C。</b>overrun（sobreescritura）。UCOE 要靠读 UCAxRXBUF 清除（§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>USCI_A1 的 ISR 里读到 <code>UCA1IV = 0x04</code>，说明什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>收到了一个字节</button>
+<button data-o="b" type="button"><span class="k">B</span>TXBUF 空了，可以写下一个字节</button>
+<button data-o="c" type="button"><span class="k">C</span>出现了帧错误</button>
+<button data-o="d" type="button"><span class="k">D</span>没有挂起的中断</button>
+</div>
+<p class="why"><b>B。</b>0x02 = UCRXIFG（优先级最高），0x04 = UCTXIFG，0x00 = 没有（§7）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span><code>USCI_A_UART_init()</code> 成功返回后，模块处于什么状态？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>已经在收发，接收中断也开了</button>
+<button data-o="b" type="button"><span class="k">B</span>在收发，但中断没开</button>
+<button data-o="c" type="button"><span class="k">C</span>参数已写入，但要先调用 USCI_A_UART_disable() 才能用</button>
+<button data-o="d" type="button"><span class="k">D</span>已初始化但仍禁用（UCSWRST = 1），要调用 USCI_A_UART_enable()</button>
+</div>
+<p class="why"><b>D。</b>init 之后模块仍然禁用（remains disabled），enable() 清 UCSWRST（§8）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>按 §8 的步骤把 driverlib 加进项目时，Predefined Symbols 里要加什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>__MSP430F5529__</button>
+<button data-o="b" type="button"><span class="k">B</span>DRIVERLIB_2_91</button>
+<button data-o="c" type="button"><span class="k">C</span>USCI_A1_BASE</button>
+<button data-o="d" type="button"><span class="k">D</span>__MSP430F5xx_6xx__</button>
+</div>
+<p class="why"><b>A。</b>相当于每个文件开头 <code>#define __MSP430F5529__</code>，driverlib 据此按 F5529 编译（§8）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="m34-terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">USCI<small>Universal Serial Communication Interface</small></span><span class="back"><b>通用串行通信接口</b><br/>5xx 的串口外设；A 型做 UART/SPI，B 型做 I2C/SPI。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UART<small>Universal Asynchronous Receiver/Transmitter</small></span><span class="back"><b>通用异步收发器</b><br/>没有时钟线，双方事先约定波特率和帧格式。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">backchannel UART<small>MSP Application UART1</small></span><span class="back"><b>后通道串口</b><br/>eZ-FET 把 USCI_A1 经 USB 转成 PC 上的 COM 口。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCAxTXBUF · UCAxRXBUF<small>transmit / receive buffer</small></span><span class="back"><b>发送 / 接收缓冲</b><br/>CPU 只读写这两个；移位由移位寄存器完成。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">registro de desplazamiento<small>shift register</small></span><span class="back"><b>移位寄存器</b><br/>按 BITCLK 把字节逐位移出或移入。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCTXIFG<small>transmit interrupt flag</small></span><span class="back"><b>发送标志</b><br/>TXBUF 空时为 1；写 TXBUF 自动清。复位后为 1。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCRXIFG<small>receive interrupt flag</small></span><span class="back"><b>接收标志</b><br/>一个字符进了 RXBUF 时为 1；读 RXBUF 自动清。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BRCLK · BITCLK<small>baud-rate clock · bit clock</small></span><span class="back"><b>输入时钟 · 位时钟</b><br/>BITCLK 的一个周期 = 一个位时间 ≈ N 个 BRCLK。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCSSELx<small>UCAxCTL1 · bits 7–6</small></span><span class="back"><b>时钟源选择</b><br/>00 UCAxCLK · 01 ACLK · 10/11 SMCLK。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCBRx<small>UCAxBR0 + 256·UCAxBR1</small></span><span class="back"><b>分频值</b><br/>UCOS16 = 0：int(N)；UCOS16 = 1：int(N/16)。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modulador · UCBRSx<small>second modulation stage</small></span><span class="back"><b>调制器</b><br/>8 个位里 M 个位多数一个周期：M = round(frac(N)·8)。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCOS16<small>sobremuestreo · oversampling</small></span><span class="back"><b>过采样模式</b><br/>BITCLK16 = 16 × 波特率；需要 N ≥ 16，最快 BRCLK/16。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCBRFx<small>first modulation stage</small></span><span class="back"><b>第一级调制</b><br/>只在 UCOS16 = 1 时用：round(frac(N/16)·16)。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">majority vote<small>votación por mayoría</small></span><span class="back"><b>多数表决</b><br/>每位采三次样，取出现两次以上的值，抗毛刺。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCSWRST<small>software reset · UCAxCTL1.0</small></span><span class="back"><b>软件复位</b><br/>为 1 时才能配置；清 0 模块才工作。PUC 后为 1。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCOE<small>error de sobreescritura · overrun</small></span><span class="back"><b>溢出错误</b><br/>上一个字符没读就被新字符覆盖；读 RXBUF 才清。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UCAxIV<small>interrupt vector register</small></span><span class="back"><b>中断向量寄存器</b><br/>0x02 接收、0x04 发送；访问它会清掉最高优先级的 flag。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">driverlib<small>MSP430 peripheral driver library</small></span><span class="back"><b>外设驱动库</b><br/>TI MSPWare 里的 C 函数库，课程用 2.91.13.01。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M34"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id) { return typeof document !== "undefined" && document.getElementById ? document.getElementById(id) : null; }
+
+  
+  var PAT_S = ["00000000", "01000000", "01000100", "01010100", "01010101", "01110101", "01110111", "01111111"];
+  
+  var PAT_F = [
+    "0000000000000000", "0100000000000000", "0100000000000001", "0110000000000001",
+    "0110000000000011", "0111000000000011", "0111000000000111", "0111100000000111",
+    "0111100000001111", "0111110000001111", "0111110000011111", "0111111000011111",
+    "0111111000111111", "0111111100111111", "0111111101111111", "0111111111111111"
+  ];
+  
+  var TI0 = {
+    "32768/1200": [27, 2], "32768/2400": [13, 6], "32768/4800": [6, 7], "32768/9600": [3, 3],
+    "1000000/9600": [104, 1], "1000000/19200": [52, 0], "1000000/38400": [26, 0], "1000000/57600": [17, 3], "1000000/115200": [8, 6],
+    "1048576/9600": [109, 2], "1048576/19200": [54, 5], "1048576/38400": [27, 2], "1048576/57600": [18, 1], "1048576/115200": [9, 1],
+    "4000000/9600": [416, 6], "4000000/19200": [208, 3], "4000000/38400": [104, 1], "4000000/57600": [69, 4],
+    "8000000/9600": [833, 2], "8000000/19200": [416, 6], "8000000/38400": [208, 3], "8000000/115200": [69, 4],
+    "12000000/9600": [1250, 0], "12000000/19200": [625, 0], "12000000/38400": [312, 4], "12000000/57600": [208, 2], "12000000/115200": [104, 1],
+    "16000000/9600": [1666, 6], "16000000/19200": [833, 2], "16000000/38400": [416, 6], "16000000/57600": [277, 7],
+    "20000000/9600": [2083, 2], "20000000/19200": [1041, 6], "20000000/38400": [520, 7], "20000000/57600": [347, 2], "20000000/115200": [173, 5]
+  };
+  var TI1 = {
+    "1000000/9600": [6, 0, 8], "1000000/19200": [3, 0, 4],
+    "1048576/9600": [6, 0, 13], "1048576/19200": [3, 1, 6],
+    "4000000/9600": [26, 0, 1], "4000000/19200": [13, 0, 0], "4000000/38400": [6, 0, 8], "4000000/57600": [4, 5, 3],
+    "8000000/9600": [52, 0, 1], "8000000/19200": [26, 0, 1], "8000000/38400": [13, 0, 0], "8000000/115200": [4, 5, 3],
+    "12000000/9600": [78, 0, 2], "12000000/19200": [39, 0, 1], "12000000/38400": [19, 0, 8], "12000000/57600": [13, 0, 0], "12000000/115200": [6, 0, 8],
+    "16000000/9600": [104, 0, 3], "16000000/19200": [52, 0, 1], "16000000/38400": [26, 0, 1], "16000000/57600": [17, 0, 6],
+    "20000000/9600": [130, 0, 3], "20000000/19200": [65, 0, 2], "20000000/38400": [32, 0, 9], "20000000/57600": [21, 0, 11], "20000000/115200": [10, 0, 14]
+  };
+  
+  var BLOCK = [16000000 / 115200, 4000000 / 115200];
+
+  function isBlocked(br, bd) {
+    var N = br / bd;
+    for (var i = 0; i < BLOCK.length; i++) if (Math.abs(N - BLOCK[i]) < 1e-6) return true;
+    return false;
+  }
+
+  function compute(br, bd, os) {
+    var r = { br: br, bd: bd, os: os ? 1 : 0, blocked: isBlocked(br, bd), carry: false, bypass: false };
+    if (r.blocked) return r;
+    var N = br / bd, i, acc;
+    r.N = N;
+    r.ok = r.os ? N >= 16 : N >= 3;
+    if (!r.ok) return r;
+    if (!r.os) {
+      var ub = Math.floor(N), m = Math.round((N - ub) * 8);
+      r.raw = (N - ub) * 8;
+      if (m === 8) { ub += 1; m = 0; r.carry = true; }
+      r.ubr = ub; r.s = m; r.f = 0;
+      r.nstar = ub + m / 8;
+      r.cycles = [];
+      for (i = 0; i < 8; i++) r.cycles.push(ub + (PAT_S[m].charAt(i) === "1" ? 1 : 0));
+      r.nomod = Math.floor(N);
+    } else {
+      var q = N / 16, u = Math.floor(q), f = Math.round((q - u) * 16);
+      r.raw = (q - u) * 16;
+      if (f === 16) { u += 1; f = 0; r.carry = true; }
+      r.ubr = u; r.f = f; r.s = 0;
+      r.bypass = u < 2;
+      r.nstar = r.bypass ? 16 : 16 * u + f;
+      r.sub = [];
+      for (i = 0; i < 16; i++) r.sub.push(r.bypass ? 1 : u + (PAT_F[f].charAt(i) === "1" ? 1 : 0));
+      r.cycles = [];
+      for (i = 0; i < 8; i++) r.cycles.push(r.nstar);
+      r.nomod = r.bypass ? 16 : 16 * Math.floor(N / 16);
+    }
+    r.real = br / r.nstar;
+    r.err = (r.real - bd) / bd * 100;
+    r.realNo = br / r.nomod;
+    r.errNo = (r.realNo - bd) / bd * 100;
+    r.br0 = r.ubr & 0xFF;
+    r.br1 = (r.ubr >> 8) & 0xFF;
+    r.mctl = (r.f << 4) | (r.s << 1) | r.os;
+    r.drift = []; r.driftNo = [];
+    acc = 0;
+    for (i = 0; i < 8; i++) {
+      acc += r.cycles[i];
+      r.drift.push((acc - (i + 1) * N) / N * 100);
+      r.driftNo.push((i + 1) * (r.nomod - N) / N * 100);
+    }
+    var t = (r.os ? TI1 : TI0)[br + "/" + bd];
+    if (t) {
+      r.ti = r.os ? { ubr: t[0], s: t[1], f: t[2] } : { ubr: t[0], s: t[1], f: 0 };
+      r.ti.nstar = r.os ? 16 * t[0] + t[2] + t[0] * t[1] / 8 : t[0] + t[1] / 8;
+      r.ti.real = br / r.ti.nstar;
+      r.ti.err = (r.ti.real - bd) / bd * 100;
+      r.ti.same = r.ti.ubr === r.ubr && r.ti.s === r.s && r.ti.f === r.f;
+    }
+    return r;
+  }
+
+  
+  var CH = [[0x41, "A"], [0x4D, "M"], [0x7A, "z"], [0x37, "7"]];
+  function frameOf(st) {
+    var code = CH[st.ci][0], nd = st.c7 ? 7 : 8, data = code & (st.c7 ? 0x7F : 0xFF), bits = [], ones = 0, i;
+    bits.push({ v: 0, lab: "ST", c: "m" });
+    for (i = 0; i < nd; i++) {
+      var k = st.msb ? nd - 1 - i : i, v = (data >> k) & 1;
+      ones += v;
+      bits.push({ v: v, lab: "D" + k, c: "b" });
+    }
+    if (st.pen) bits.push({ v: st.par ? (ones % 2) : (1 - ones % 2), lab: "PA", c: "r" });
+    bits.push({ v: 1, lab: "SP", c: "g" });
+    if (st.spb) bits.push({ v: 1, lab: "SP", c: "g" });
+    return {
+      bits: bits, ones: ones, code: code, ch: CH[st.ci][1], nd: nd,
+      ctl0: (st.pen << 7) | (st.par << 6) | (st.msb << 5) | (st.c7 << 4) | (st.spb << 3),
+      name: nd + (st.pen ? (st.par ? "E" : "O") : "N") + (st.spb ? 2 : 1)
+    };
+  }
+
+  if (typeof window !== "undefined") window.M34Calc = { compute: compute, isBlocked: isBlocked, frameOf: frameOf, PAT_S: PAT_S, PAT_F: PAT_F };
+
+  
+  function f4(x) { var s = x.toFixed(4); return s.indexOf(".") >= 0 ? s.replace(/0+$/, "").replace(/\.$/, "") : s; }
+  function f2(x) { return x.toFixed(2); }
+  function sgn(x, d) { return (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(d); }
+  function hex2(v) { var s = v.toString(16).toUpperCase(); return "0x" + (s.length < 2 ? "0" + s : s); }
+  function el(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = String(text);
+    return e;
+  }
+  function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+
+  
+  var calc = $("m34-calc");
+  if (calc) (function () {
+    var selBr = $("m34-brclk"), selBd = $("m34-baud"), swOs = $("m34-os16"), g = $("m34-calc-g");
+    var res = $("m34-calc-res"), out = $("m34-calc-out");
+    var patRows = Array.prototype.slice.call(document.querySelectorAll("#m34-pat tr"));
+    var token = 0, busy = false;
+
+    function draw(r) {
+      clear(g);
+      var bars = [];
+      function add(tag, a, t) { var e = el(tag, a, t); g.appendChild(e); return e; }
+      if (r.blocked) {
+        add("rect", { "class": "ln r dash", x: 60, y: 86, width: 680, height: 118, rx: 10 });
+        add("text", { "class": "tz r mid", x: 400, y: 134 }, "这个分频比不在本页的计算范围内");
+        add("text", { "class": "tz sm m mid", x: 400, y: 168 }, "按 §3、§4 的步骤自己算，再去 TI 的波特率表核对");
+        return bars;
+      }
+      if (!r.ok) {
+        add("rect", { "class": "ln r dash", x: 60, y: 86, width: 680, height: 118, rx: 10 });
+        add("text", { "class": "tz r mid", x: 400, y: 134 }, "N = " + f4(r.N) + (r.os ? " < 16：UCOS16 = 1 做不到" : " < 3：超过 BRCLK/3 的上限"));
+        add("text", { "class": "tz sm m mid", x: 400, y: 168 }, r.os ? "换 UCOS16 = 0，或者选更快的 BRCLK" : "选更快的 BRCLK 或更低的波特率");
+        return bars;
+      }
+      var x0 = 60, W = 720, i, j, x, w, d, tot = 0;
+      if (!r.os) {
+        add("text", { "class": "tz sm m", x: x0, y: 22 }, "8 个位时间（b0 = 起始位）：每格数 UCBRx 或 UCBRx + 1 个 BRCLK");
+        for (i = 0; i < 8; i++) tot += r.cycles[i];
+        var ppc = W / tot;
+        x = x0;
+        for (i = 0; i < 8; i++) {
+          var c = r.cycles[i], ex = c > r.ubr;
+          w = c * ppc;
+          add("rect", { "class": ex ? "bx y" : "bx b", x: x.toFixed(2), y: 30, width: w.toFixed(2), height: 54, rx: 3 });
+          add("text", { "class": "tm xs w mid", x: (x + w / 2).toFixed(2), y: 48 }, i === 0 ? "b0 ST" : "b" + i);
+          add("text", { "class": "tm sm mid " + (ex ? "y" : "b"), x: (x + w / 2).toFixed(2), y: 70 }, c);
+          if (ppc >= 4 && c > 1) {
+            d = "";
+            for (j = 1; j < c; j++) d += "M" + (x + j * ppc).toFixed(2) + " 76v8";
+            add("path", { "class": "ln thin m", d: d });
+          }
+          x += w;
+        }
+      } else {
+        add("text", { "class": "tz sm m", x: x0, y: 22 }, r.bypass ? "UCBRx ≤ 1：第一级被旁路，BITCLK16 = BRCLK，UCBRFx 不起作用" : "1 个位 = 16 个 BITCLK16：每格数 UCBRx 或 UCBRx + 1 个 BRCLK（按 UCBRFx 图样）");
+        for (i = 0; i < 16; i++) tot += r.sub[i];
+        var pp = W / tot;
+        x = x0;
+        for (i = 0; i < 16; i++) {
+          var c1 = r.sub[i], ex1 = !r.bypass && c1 > r.ubr;
+          w = c1 * pp;
+          add("rect", { "class": ex1 ? "bx y" : "bx b", x: x.toFixed(2), y: 30, width: w.toFixed(2), height: 54, rx: 2 });
+          add("text", { "class": "tm xs m mid", x: (x + w / 2).toFixed(2), y: 48 }, i);
+          add("text", { "class": "tm xs mid " + (ex1 ? "y" : "b"), x: (x + w / 2).toFixed(2), y: 70 }, c1);
+          x += w;
+        }
+      }
+      
+      add("text", { "class": "tz sm m", x: x0, y: 114 }, "每个位末尾的累积偏移（% 位时间，负 = 提前）");
+      add("rect", { "class": "bx r", x: 590, y: 104, width: 10, height: 10, rx: 2 });
+      add("text", { "class": "tm xs r", x: 606, y: 114 }, "无调制");
+      add("rect", { "class": "bx g", x: 680, y: 104, width: 10, height: 10, rx: 2 });
+      add("text", { "class": "tm xs g", x: 696, y: 114 }, "有调制");
+      var y0 = 200, mx = 0.5;
+      for (i = 0; i < 8; i++) mx = Math.max(mx, Math.abs(r.drift[i]), Math.abs(r.driftNo[i]));
+      var sc = 64 / mx;
+      add("path", { "class": "ln thin m", d: "M" + x0 + " " + y0 + " H780" });
+      function bar(bx, v, cls) {
+        var h = Math.max(1, Math.abs(v) * sc);
+        var node = add("rect", { "class": cls, x: bx, y: (v >= 0 ? y0 - h : y0).toFixed(2), width: 13, height: h.toFixed(2), rx: 1.5 });
+        bars.push({ node: node, v: v, h: h });
+      }
+      for (i = 0; i < 8; i++) {
+        var xc = x0 + i * 90 + 45, vm = r.drift[i];
+        bar(xc - 15, r.driftNo[i], "bx r");
+        bar(xc + 2, vm, "bx g");
+        var hm = Math.max(1, Math.abs(vm) * sc);
+        add("text", { "class": "tm xs g mid", x: xc + 8.5, y: (vm >= 0 ? y0 - hm - 6 : y0 + hm + 14).toFixed(1) }, sgn(vm, 1));
+        add("text", { "class": "tm xs m mid", x: xc, y: 294 }, "b" + i + " 末");
+      }
+      return bars;
+    }
+
+    
+    function grow(bars, my) {
+      if (reduce || !bars.length || typeof requestAnimationFrame !== "function") return;
+      var y0 = 200, t0 = null;
+      function frame(ts) {
+        if (my !== token) return;
+        if (t0 == null) t0 = ts;
+        var k = Math.min(1, (ts - t0) / 450), e = 1 - Math.pow(1 - k, 3);
+        bars.forEach(function (b) {
+          var h = Math.max(1, b.h * e);
+          b.node.setAttribute("height", h.toFixed(2));
+          b.node.setAttribute("y", (b.v >= 0 ? y0 - h : y0).toFixed(2));
+        });
+        if (k < 1) requestAnimationFrame(frame);
+      }
+      bars.forEach(function (b) { b.node.setAttribute("height", "1"); b.node.setAttribute("y", b.v >= 0 ? y0 - 1 : y0); });
+      requestAnimationFrame(frame);
+    }
+
+    function table(r) {
+      var h = [];
+      if (r.blocked) {
+        h.push('<div class="wide warn">这一组 BRCLK / baud 的分频比不在本页的计算范围内。换一个组合，或者按 §3、§4 的步骤自己算。</div>');
+        return h.join("");
+      }
+      h.push('<div><span class="k">N = BRCLK / baud = </span>' + r.br + " / " + r.bd + " = <b>" + f4(r.N) + "</b></div>");
+      if (!r.ok) {
+        h.push('<div class="wide warn">' + (r.os ? "UCOS16 = 1 要求 N ≥ 16（最大波特率 BRCLK/16）。" : "UCOS16 = 0 要求 N ≥ 3（最大波特率 BRCLK/3）。") + "这个组合做不到。</div>");
+        return h.join("");
+      }
+      if (!r.os) {
+        h.push('<div><span class="k">UCBRx = int(N) = </span><b>' + r.ubr + "</b> → BR0 = " + hex2(r.br0) + " · BR1 = " + hex2(r.br1) + "</div>");
+        h.push('<div><span class="k">UCBRSx = round(' + f4(r.N - Math.floor(r.N)) + " × 8) = round(" + f4(r.raw) + ") = </span><b>" + (r.carry ? 8 : r.s) + "</b>" + (r.carry ? " → 进位" : "") + "</div>");
+      } else {
+        h.push('<div><span class="k">N / 16 = </span>' + f4(r.N / 16) + '<span class="k"> → UCBRx = </span><b>' + r.ubr + "</b> → BR0 = " + hex2(r.br0) + " · BR1 = " + hex2(r.br1) + "</div>");
+        h.push('<div><span class="k">UCBRFx = round(' + f4(r.raw) + ") = </span><b>" + (r.carry ? 16 : r.f) + "</b>" + (r.carry ? " → 进位" : "") + '<span class="k">（UCBRSx = 0）</span></div>');
+      }
+      h.push('<div><span class="k">UCAxMCTL = </span><b>' + hex2(r.mctl) + '</b><span class="k">（UCBRFx ' + r.f + " · UCBRSx " + r.s + " · UCOS16 " + r.os + "）</span></div>");
+      h.push('<div><span class="k">N* = </span>' + (r.os ? (r.bypass ? "16" : "16 × " + r.ubr + " + " + r.f + " = " + r.nstar) : r.ubr + " + " + r.s + "/8 = " + f4(r.nstar)) +
+        ' → <span class="g">' + f2(r.real) + " baud · " + sgn(r.err, 2) + " %</span></div>");
+      h.push('<div><span class="k">不调制（' + (r.os ? "UCBRFx = 0" : "只用 int N") + '）：</span><span class="r">' + f2(r.realNo) + " baud · " + sgn(r.errNo, 2) + " %</span></div>");
+      h.push('<div><span class="k">8 位后累积偏移：</span><span class="g">' + sgn(r.drift[7], 1) + ' %</span><span class="k"> vs </span><span class="r">' + sgn(r.driftNo[7], 1) + " %</span></div>");
+      if (r.carry) h.push('<div class="wide warn">四舍五入得到 ' + (r.os ? 16 : 8) + "：字段放不下，进位成 UCBRx + 1，" + (r.os ? "UCBRFx" : "UCBRSx") + " = 0。</div>");
+      if (r.bypass) h.push('<div class="wide warn">UCBRx = ' + r.ubr + " ≤ 1：第一级分频和调制被旁路，一位 = 16 个 BRCLK。</div>");
+      if (r.br === 32768 && r.bd === 9600 && !r.os) h.push('<div class="wide bl">有些资料写作 1,13 % 和 13,7 %，是截断后的值；这里四舍五入到两位小数。</div>');
+      if (r.br === 1048576 && r.bd === 9600 && r.os) h.push('<div class="wide bl">实际波特率按 §4 的位时间公式算出（UCBRSx = 0）。</div>');
+      if (r.ti) {
+        h.push('<div class="wide ti" data-tabla="34-' + (r.os ? 5 : 4) + "\">TI 表格：UCBRx = " + r.ti.ubr + " · UCBRSx = " + r.ti.s + " · UCBRFx = " + r.ti.f +
+          " → 平均 " + f2(r.ti.real) + " baud · " + sgn(r.ti.err, 2) + " %" +
+          (r.ti.same ? " · 与本章公式相同" : " · <b>与本章公式不同</b>：TI 让单个位的最大误差最小") + "</div>");
+      } else {
+        h.push('<div class="wide ti">TI 的波特率表里没有这一行（或本页没有收录）。</div>');
+      }
+      return h.join("");
+    }
+
+    function update() {
+      if (busy) return;
+      busy = true;
+      try {
+        var br = +selBr.value, bd = +selBd.value, os = swOs.getAttribute("aria-pressed") === "true" ? 1 : 0;
+        var r = compute(br, bd, os);
+        token++;
+        var bars = draw(r);
+        grow(bars, token);
+        res.innerHTML = table(r);
+        swOs.querySelector(".lab").textContent = "UCOS16 = " + os;
+        patRows.forEach(function (tr) { tr.classList.toggle("on", !r.blocked && r.ok && !os && +tr.getAttribute("data-s") === r.s); });
+        out.innerHTML = r.blocked ? "这个组合不在本页的计算范围内。"
+          : !r.ok ? "N = " + f4(r.N) + "：超出 UCOS16 = " + os + " 的范围。"
+          : "BRCLK = " + br + " Hz → " + bd + " baud，UCOS16 = " + os + "：<b>UCBRx = " + r.ubr + "</b>，" +
+            (os ? "<b>UCBRFx = " + r.f + "</b>" : "<b>UCBRSx = " + r.s + "</b>") + "，实际 " + f2(r.real) + " baud（" + sgn(r.err, 2) + " %）。";
+      } finally {
+        busy = false;
+      }
+    }
+    function setCase(br, bd, os) {
+      selBr.value = String(br); selBd.value = String(bd);
+      swOs.setAttribute("aria-pressed", os ? "true" : "false");
+      update();
+    }
+    selBr.addEventListener("change", update);
+    selBd.addEventListener("change", update);
+    swOs.addEventListener("click", function () {
+      swOs.setAttribute("aria-pressed", swOs.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      update();
+    });
+    $("m34-ex1").addEventListener("click", function () { setCase(32768, 9600, 0); });
+    $("m34-ex2").addEventListener("click", function () { setCase(1048576, 9600, 1); });
+    update();
+  })();
+
+  
+  var fr = $("m34-frame");
+  if (fr) (function () {
+    var st = { c7: 0, pen: 0, par: 0, spb: 0, msb: 0, ci: 0 };
+    var g = $("m34-frame-g"), out = $("m34-f-out");
+    var SW = [
+      { id: "m34-f-7bit", key: "c7", lab: function (v) { return "UC7BIT = " + v + " · " + (v ? "7 位" : "8 位"); } },
+      { id: "m34-f-pen", key: "pen", lab: function (v) { return "UCPEN = " + v + " · " + (v ? "有校验" : "无校验"); } },
+      { id: "m34-f-par", key: "par", lab: function (v) { return "UCPAR = " + v + " · " + (v ? "偶" : "奇"); } },
+      { id: "m34-f-spb", key: "spb", lab: function (v) { return "UCSPB = " + v + " · " + (v ? "2" : "1") + " 个停止位"; } },
+      { id: "m34-f-msb", key: "msb", lab: function (v) { return "UCMSB = " + v + " · " + (v ? "MSB" : "LSB") + " 先"; } }
+    ];
+    var busy = false;
+    function render() {
+      var f = frameOf(st), n = f.bits.length, cw = 56, x0 = 400 - n * cw / 2, i, x, d;
+      clear(g);
+      function add(tag, a, t) { var e = el(tag, a, t); g.appendChild(e); return e; }
+      d = "M20 40 H" + x0;
+      for (i = 0; i < n; i++) {
+        x = x0 + i * cw;
+        d += " V" + (f.bits[i].v ? 40 : 80) + " H" + (x + cw);
+      }
+      d += " V40 H780";
+      var sep = "";
+      for (i = 0; i <= n; i++) sep += "M" + (x0 + i * cw) + " 30 V90 ";
+      add("path", { "class": "ln thin m dash", d: sep });
+      add("path", { "class": "ln y", d: d });
+      for (i = 0; i < n; i++) {
+        x = x0 + i * cw + cw / 2;
+        add("text", { "class": "tm sm mid " + f.bits[i].c, x: x, y: 66 }, f.bits[i].v);
+        add("text", { "class": "tm xs mid " + f.bits[i].c, x: x, y: 108 }, f.bits[i].lab);
+      }
+      add("text", { "class": "tz sm m mid", x: 400, y: 138 }, "'" + f.ch + "' = " + hex2(f.code) + " · 一帧 " + n + " 位 · 空闲时线路为 1");
+      SW.forEach(function (s) {
+        var b = $(s.id);
+        b.setAttribute("aria-pressed", st[s.key] ? "true" : "false");
+        b.querySelector(".lab").textContent = s.lab(st[s.key]);
+      });
+      out.innerHTML = "UCA1CTL0 = <b>" + hex2(f.ctl0) + "</b> → 格式 <b>" + f.name + "</b>" +
+        (st.pen ? "。数据里有 " + f.ones + " 个 1，" + (st.par ? "偶" : "奇") + "校验 → 校验位 = " + f.bits[n - (st.spb ? 3 : 2)].v :
+          (st.par ? "。UCPEN = 0，所以 UCPAR 不起作用" : "")) +
+        (st.c7 && (f.code & 0x80) ? "。注意：7 位模式丢掉了最高位" : "") + "。";
+    }
+    SW.forEach(function (s) {
+      $(s.id).addEventListener("click", function () {
+        if (busy) return;
+        busy = true;
+        try { st[s.key] = st[s.key] ? 0 : 1; render(); } finally { busy = false; }
+      });
+    });
+    $("m34-f-char").addEventListener("click", function () {
+      if (busy) return;
+      busy = true;
+      try { st.ci = (st.ci + 1) % CH.length; render(); } finally { busy = false; }
+    });
+    render();
+  })();
+})();
+</script>
+</body>
+</html>

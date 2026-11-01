@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T4 Sockets · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.code .st { color: var(--st-yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.msg { font: 13px/1.7 var(--f-mono); }
+.msg .rl { color: var(--yellow); }
+.msg .hd { color: var(--blue); }
+.msg .crlf { color: var(--red); font-weight: 700; }
+.msg .bd { color: var(--green); }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t4-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t4-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t4-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t4-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t4-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t4-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 4 章节" class="chain" data-chain="T4"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 4 · Comunicaciones en red · Sockets</div>
+<h1>Comunicaciones: sockets</h1>
+<p class="zh">套接字：让板子上的程序和网络另一端的程序说话</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 25 分钟</span>
+
+
+</div>
+<p class="lede">一块跑 Linux 的 Raspberry Pi 接上网线或 Wi-Fi 之后，程序要怎样把数据交给网络、又怎样从网络上收数据？几乎所有现代操作系统给出的答案都一样：<b class="t">socket (EN) / conector (ES)</b>——套接字。它像一个文件描述符：可以 <code>read</code>、<code>write</code>、<code>close</code>；但在它背后，内核替你完成了分包、编址、重传和排序。这一章先看数据在网络里怎样一层层包装，再把 TCP 服务器、TCP 客户端和 UDP 的系统调用一个一个拆开，最后看一条 HTTP 报文长什么样。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T4.1</span>
+<div class="txt"><span>说出 TCP/IP 的分层，套接字接口位于哪一层；描述发送时数据怎样一层层加上首部（封装）</span><span class="es">Modelo de capas, nivel de transporte y encapsulado.</span><a href="#s1">→ §1 分层与地址</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.2</span>
+<div class="txt"><span>说出一次通信需要的五项信息（协议 + 两端的 IP 和端口），区分固定端口和系统分配的端口，以及客户端/服务器的角色</span><span class="es">Direccionamiento, puertos, cliente-servidor.</span><a href="#s1">→ §1 分层与地址</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.3</span>
+<div class="txt"><span>解释 <code>socket(domain, type, protocol)</code> 三个参数的含义和返回值；区分 AF_INET、AF_INET6、AF_UNIX 与 SOCK_STREAM、SOCK_DGRAM</span><span class="es">socket(): dominio, tipo, protocolo; descriptor.</span><a href="#s2">→ §2 套接字是什么</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.4</span>
+<div class="txt"><span>正确填写 <code>sockaddr_in</code>；用 htons/htonl/ntohs/ntohl 处理字节序，用 inet_pton/inet_ntop 转换地址</span><span class="es">sockaddr_in, formato red / formato máquina.</span><a href="#s3">→ §3 地址与字节序</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.5</span>
+<div class="txt"><span>按顺序写出 TCP 服务器的调用：socket → bind → listen → accept → read/write → close，说出每一步做了什么（含 backlog、INADDR_ANY）</span><span class="es">Servidor orientado a conexión.</span><a href="#s4">→ §4 TCP 服务器</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.6</span>
+<div class="txt"><span>说明三次握手发生在哪两个调用之间，以及 accept 为什么返回一个新的套接字、原来的监听套接字还在做什么</span><span class="es">accept() crea un nuevo conector.</span><a href="#s4">→ §4 TCP 服务器</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.7</span>
+<div class="txt"><span>写出 TCP 客户端（connect 不需要 bind）；解释 read/recv 的三种返回值，以及为什么字节流没有消息边界、读写要循环</span><span class="es">Cliente TCP, read/recv, flujo de bytes.</span><a href="#s5">→ §5 TCP 客户端</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.8</span>
+<div class="txt"><span>用 sendto/recvfrom 收发 UDP；说明报文有边界、读不完的部分会丢、报文可能丢失或乱序；比较 TCP 与 UDP 的适用场合</span><span class="es">Orientado a datagrama; ¿TCP o UDP?</span><a href="#s6">→ §6 UDP</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.9</span>
+<div class="txt"><span>指出哪些调用会阻塞；比较"每个客户一个线程"和 select；用 SO_REUSEADDR、close/shutdown、MSG_NOSIGNAL 处理常见问题</span><span class="es">Bloqueo, multitarea vs select, cierre del canal, SIGPIPE.</span><a href="#s7">→ §7 阻塞与多路复用</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T4.10</span>
+<div class="txt"><span>认出 HTTP 请求和响应的结构：请求行/状态行、头部、空行、正文，以及浏览器怎样知道正文结束</span><span class="es">Formato de mensajes HTTP.</span><a href="#s8">→ §8 HTTP 报文</a></div>
+<button aria-pressed="false" class="chk" data-obj="T4.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T4"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>分层与地址 <span class="tag">T4.1 · T4.2</span></h2>
+<p class="hook"><span class="zh">程序只写了四个字节 "hola"，网线上跑的却是一个几十字节的包。多出来的是什么？</span><span class="es">Cada capa añade su propia cabecera.</span></p>
+<p>网络软件按层组织。OSI 参考模型分 7 层（Físico、Enlace、Red、Transporte、Sesión、Presentación、Aplicación）；实际在用的 TCP/IP 只分 4 层，把 OSI 的上三层合成"应用层"，把下两层合成"链路层"。每层只和相邻的层打交道，并在数据前面加上自己的 <b class="t">cabecera (ES) / header (EN)</b>——首部，这个过程叫 <b class="t">encapsulado (ES) / encapsulation (EN)</b>——封装。</p>
+<figure class="stage" data-scene="" id="sc-capas">
+<div class="stage-title"><span>Escena 1 · encapsulado</span><b>5 步</b></div>
+<div aria-label="动画：数据从应用层往下逐层加首部，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-capas-t" role="img" viewbox="0 0 800 400">
+<title id="sc-capas-t">TCP/IP 四层：应用层的数据往下经过传输层、网络层、链路层，每层在前面加一个首部；应用层和传输层之间是套接字接口</title>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="48"></rect>
+<text class="tx sm w" x="32" y="74">Aplicación</text>
+<text class="tz sm m" x="32" y="96">应用层 · OSI 5–7 · HTTP…</text>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="128"></rect>
+<text class="tx sm w" x="32" y="154">Transporte</text>
+<text class="tz sm m" x="32" y="176">传输层 · OSI 4 · TCP / UDP</text>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="208"></rect>
+<text class="tx sm w" x="32" y="234">Red · Internet</text>
+<text class="tz sm m" x="32" y="256">网络层 · OSI 3 · IP</text>
+<rect class="bx hollow m" height="60" rx="8" width="300" x="16" y="288"></rect>
+<text class="tx sm w" x="32" y="314">Enlace + Físico</text>
+<text class="tz sm m" x="32" y="336">链路层 · OSI 1–2 · Ethernet / Wi-Fi</text>
+<g data-step="1">
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="56"></rect>
+<text class="tm sm b mid" x="665" y="76">datos</text>
+<text class="tm xs w mid" x="665" y="92">"hola"</text>
+</g>
+<g data-step="2">
+<path class="ln thin m" d="M665 104 V124" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx p" data-hl="2" height="44" rx="4" width="76" x="520" y="136"></rect>
+<text class="tm sm p mid" x="558" y="156">TCP</text>
+<text class="tm xs w mid" x="558" y="172">puertos</text>
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="136"></rect>
+<text class="tm sm b mid" x="665" y="163">datos</text>
+<text class="tz sm p" x="340" y="164">segmento</text>
+</g>
+<g data-step="3">
+<path class="ln thin m" d="M665 184 V204" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx p" data-hl="3" height="44" rx="4" width="76" x="440" y="216"></rect>
+<text class="tm sm p mid" x="478" y="236">IP</text>
+<text class="tm xs w mid" x="478" y="252">IPs</text>
+<rect class="bx p" height="44" rx="4" width="76" x="520" y="216"></rect>
+<text class="tm sm p mid" x="558" y="243">TCP</text>
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="216"></rect>
+<text class="tm sm b mid" x="665" y="243">datos</text>
+<text class="tz sm p" x="340" y="244">paquete</text>
+</g>
+<g data-step="4">
+<path class="ln thin m" d="M665 264 V284" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx t" data-hl="4" height="44" rx="4" width="76" x="360" y="296"></rect>
+<text class="tm sm t mid" x="398" y="316">Eth</text>
+<text class="tm xs w mid" x="398" y="332">MAC</text>
+<rect class="bx p" height="44" rx="4" width="76" x="440" y="296"></rect>
+<text class="tm sm p mid" x="478" y="323">IP</text>
+<rect class="bx p" height="44" rx="4" width="76" x="520" y="296"></rect>
+<text class="tm sm p mid" x="558" y="323">TCP</text>
+<rect class="bx b" height="44" rx="4" width="130" x="600" y="296"></rect>
+<text class="tm sm b mid" x="665" y="323">datos</text>
+<rect class="bx t" height="44" rx="4" width="50" x="734" y="296"></rect>
+<text class="tm xs t mid" x="759" y="323">FCS</text>
+<text class="tz sm t" x="340" y="372">trama · 帧，最后从网线 / 无线发出去</text>
+</g>
+<g data-step="5">
+<path class="ln y dash draw" d="M16 118 H784"></path>
+<text class="tm sm y" x="336" y="113">socket API</text>
+<text class="tz sm y" data-hl="5" x="336" y="138">↑ 你的程序　↓ 内核</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>程序要发送的只是应用层的 <span class="c-b">datos</span>——这里是 4 个字节 <code>"hola"</code>。</li>
+<li data-dur="3800">传输层在前面加上 <span class="c-p">TCP 首部</span>：里面最重要的是源端口和目的端口，靠它们找到对方机器上的<b>哪一个程序</b>。加了首部的单位叫 segmento（UDP 的叫 datagrama）。</li>
+<li data-dur="3800">网络层再加 <span class="c-p">IP 首部</span>：源 IP 和目的 IP，靠它们在网络里把包送到<b>哪一台机器</b>。这时叫 paquete。</li>
+<li data-dur="3800">链路层加上 <span class="c-t">Ethernet 首部</span>（MAC 地址，只管到下一跳）和尾部校验 FCS，变成 trama，才真正发到线上。接收端按相反的顺序一层层拆掉首部。</li>
+<li data-dur="4800">套接字接口就在<span class="c-y">应用层和传输层之间</span>：程序只交出 datos，下面三层全由内核和网卡完成。不过地址格式（IPv4 还是 IPv6）和连接类型（数据报还是虚电路）仍要由程序在创建套接字时说清楚——下层没有被完全隐藏。</li>
+</ol>
+<p class="stage-note">首部的宽度没有按比例画；TCP 和 IP 首部通常各 20 字节，Ethernet 首部 14 字节。</p>
+</figure>
+<h3>通信要知道的五件事</h3>
+<p>两个程序之间的一条通信，由五项信息确定：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>协议</th><th>源 IP</th><th>源端口</th><th>目的 IP</th><th>目的端口</th></tr></thead>
+<tbody><tr><td>tcp</td><td>192.168.0.1</td><td>1200</td><td>192.168.0.2</td><td>1500</td></tr></tbody>
+</table>
+</div>
+<p><b class="t">dirección IP (ES) / IP address (EN)</b>——IP 地址标识一台机器（准确地说是机器上的一个网络接口）：IPv4 是 32 位，写成 <code>10.12.110.57</code> 这样的点分十进制；IPv6 是 128 位，写成 <code>2001:db8:63b3:1::3490</code>。<b class="t">puerto (ES) / port (EN)</b>——端口是 16 位的数（0–65535），标识机器里的一个程序或服务。例如 HTTP 服务器按惯例监听 80 端口。</p>
+<div class="grid2">
+<div class="panel">
+<h3>两种拿到端口的方式</h3>
+<ul>
+<li><b>固定端口</b>：程序自己选一个号，用 <code>bind</code> 绑上。服务器必须这样做，否则客户端不知道去哪里找它。注意别和系统已占用的端口冲突。</li>
+<li><b>由系统分配</b>：<code>bind</code> 时端口写 0，或者干脆不调用 <code>bind</code>，内核会从 <b class="t">puertos dinámicos (ES) / ephemeral ports (EN)</b>——临时端口里挑一个空闲的。客户端通常这样做。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>端口号的分区</h3>
+<ul>
+<li>1024 以下是给知名服务保留的（ftp、ssh、http……），在 Linux 上绑定它们需要超级用户权限。</li>
+<li>临时端口的范围由操作系统决定，各系统不同；Linux 上可以查看 <code>/proc/sys/net/ipv4/ip_local_port_range</code>。</li>
+<li>自己写的服务，挑一个 1024 以上、没有被别的程序占用的端口就行。本章的例子用 5005（TCP）、6006（UDP）和 7070（HTTP）。</li>
+</ul>
+</div>
+</div>
+<div class="note">
+<span class="lbl">客户端与服务器</span>
+<p><b class="t">servidor (ES) / server (EN)</b>——服务器：先启动，在一个已知的端口上<b>等待</b>；<b class="t">cliente (ES) / client (EN)</b>——客户端：<b>主动</b>发起通信。TCP 里这两个角色的调用顺序完全不同（§4、§5）；UDP 里两边的调用几乎一样，只是把先开口的一方叫客户端（§6）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>套接字是什么 <span class="tag">T4.3</span></h2>
+<p class="hook"><span class="zh">一个 int，为什么就能代表一条网络连接？</span><span class="es">socket() devuelve un descriptor, como un fichero.</span></p>
+<p>在 Linux 里，套接字和文件一样，用一个<b class="t">descriptor (ES) / file descriptor (EN)</b>——文件描述符来引用：一个小的非负整数，是进程打开文件表里的下标。正因为如此，<code>read</code>、<code>write</code>、<code>close</code> 这些文件调用也能直接用在套接字上。创建它的调用只有一个：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;sys/types.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;sys/socket.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">socket</span>(<span class="kw">int</span> domain, <span class="kw">int</span> type, <span class="kw">int</span> protocol);   <span class="cm">// 成功：描述符 ≥ 0；失败：-1，并设置 errno</span></span></code></pre>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>参数</th><th>常用取值</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>domain</td><td><code>AF_INET</code> · <code>AF_INET6</code> · <code>AF_UNIX</code>（= <code>AF_LOCAL</code>）</td><td>地址族：用 IPv4、IPv6，还是同一台机器上的本地通信。它决定了后面用哪种地址结构。</td></tr>
+<tr><td>type</td><td><code>SOCK_STREAM</code> · <code>SOCK_DGRAM</code></td><td>语义：面向连接的字节流（circuito virtual），还是无连接的数据报（datagrama）。</td></tr>
+<tr><td>protocol</td><td><code>0</code></td><td>写 0 让系统选默认协议：STREAM → TCP，DGRAM → UDP。也可以显式指定，例如 <code>IPPROTO_SCTP</code>。</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid2">
+<div class="panel">
+<h3><span class="c-b">SOCK_STREAM</span> · TCP</h3>
+<p><b class="t">orientado a conexión (ES) / connection-oriented (EN)</b>——面向连接：先建立连接，再传数据。丢包重传、排序、去重都由系统负责，程序看到的是一条可靠、按顺序的字节流。代价是控制权都在协议手里。</p>
+</div>
+<div class="panel">
+<h3><span class="c-o">SOCK_DGRAM</span> · UDP</h3>
+<p><b class="t">no orientado a conexión (ES) / connectionless (EN)</b>——无连接：不需要事先协商，直接发。没有重传、没有排序；需要可靠性的话，要在应用层自己做。每次发送是一个独立的 datagrama。</p>
+</div>
+</div>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> s = <span class="fn">socket</span>(AF_INET, SOCK_STREAM, <span class="nm">0</span>);   <span class="cm">// IPv4 + TCP</span></span><span class="ln-row"><span class="kw">if</span> (s == <span class="nm">-1</span>) {</span><span class="ln-row">    <span class="fn">perror</span>(<span class="st">"socket"</span>);                     <span class="cm">// 打印出错原因</span></span><span class="ln-row">    <span class="fn">exit</span>(EXIT_FAILURE);</span><span class="ln-row">}</span></code></pre>
+<p class="aside"><code>PF_INET</code>（Protocol Family）和 <code>AF_INET</code>（Address Family）在 Linux 上数值相同，很多代码把 PF_ 用在 <code>socket()</code>、把 AF_ 用在地址结构里；写哪个都能工作。</p>
+<div class="note">
+<span class="lbl">别忽视 AF_UNIX</span>
+<p><code>AF_UNIX</code> 套接字只在同一台机器的进程之间通信，地址是文件系统里的一个路径（<code>struct sockaddr_un</code> 的 <code>sun_path</code>）。它常常被忽略，但越来越多的系统服务用它代替传统的进程间通信机制：API 和网络套接字完全一样，换个地址族就行。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>地址与字节序 <span class="tag">T4.4</span></h2>
+<p class="hook"><span class="zh">端口写的是 5005，对方却在 36115 端口上等你。为什么？</span><span class="es">¡¡¡Atención!!! formato red y formato máquina.</span></p>
+<p>所有带地址的调用（<code>bind</code>、<code>connect</code>、<code>accept</code>、<code>sendto</code>、<code>recvfrom</code>）都接受一个<b>通用</b>的地址指针 <code>struct sockaddr *</code>，再根据它的第一个字段（地址族）去解释后面的字节。IPv4 用的具体结构是 <code>sockaddr_in</code>，传参时强制转换成 <code>sockaddr *</code>：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sockaddr {                 <span class="cm">// 通用：只用来传指针</span></span><span class="ln-row">    sa_family_t sa_family;         <span class="cm">// AF_xxx</span></span><span class="ln-row">    <span class="kw">char</span>        sa_data[<span class="nm">14</span>];</span><span class="ln-row">};</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> sockaddr_in {              <span class="cm">// IPv4，&lt;netinet/in.h&gt;</span></span><span class="ln-row">    sa_family_t    <span class="rg">sin_family</span>;     <span class="cm">// AF_INET</span></span><span class="ln-row">    <span class="kw">in_port_t</span>      <span class="rg">sin_port</span>;       <span class="cm">// 端口，网络字节序</span></span><span class="ln-row">    <span class="kw">struct</span> in_addr <span class="rg">sin_addr</span>;       <span class="cm">// { uint32_t s_addr; } IP，网络字节序</span></span><span class="ln-row">    <span class="kw">unsigned char</span>  sin_zero[<span class="nm">8</span>];    <span class="cm">// 填 0，让大小和 sockaddr 一样</span></span><span class="ln-row">};</span></code></pre>
+<p class="aside">IPv6 用 <code>sockaddr_in6</code>（<code>sin6_family = AF_INET6</code>，地址是 16 字节的 <code>in6_addr</code>，另有 flowinfo、scope_id）；要同时容纳两种地址时用足够大的 <code>struct sockaddr_storage</code>。</p>
+<h3>formato red · formato máquina</h3>
+<p>多字节整数在内存里有两种摆法：<b class="t">big endian</b>——大端，高字节放在低地址；<b class="t">little endian</b>——小端，低字节放在低地址。网络协议规定，首部里的端口和地址一律按大端传输，这叫<b>网络字节序</b>（formato red）；而 Intel 和 Raspberry Pi 的 ARM 平时都按小端工作（formato máquina）。看看端口 5005 在内存里是什么样子：</p>
+<figure class="stage" data-scene="" id="sc-endian">
+<div class="stage-title"><span>Escena 2 · htons(5005)</span><b>5 步</b></div>
+<div aria-label="动画：端口 5005 在小端内存、网络字节序和 htons 之后的字节排列" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-endian-t" role="img" viewbox="0 0 800 340">
+<title id="sc-endian-t">端口 5005 等于 0x138D；小端内存里先放 8D 再放 13；网络上要求先发 13；htons 把两个字节对调后，内存里的顺序就和网线上一致</title>
+<text class="tm w" x="24" y="40">5005 = 0x</text>
+<text class="tm y" data-hl="1" x="118" y="40">13</text>
+<text class="tm b" data-hl="1" x="140" y="40">8D</text>
+<g data-step="1">
+<text class="tz sm y" x="200" y="40">高字节 0x13</text>
+<text class="tz sm b" x="312" y="40">低字节 0x8D</text>
+</g>
+<text class="tz sm m" x="24" y="96">内存地址</text>
+<text class="tm xs m mid" x="270" y="96">a</text>
+<text class="tm xs m mid" x="350" y="96">a+1</text>
+<g data-out="4" data-step="2">
+<text class="tz sm w" x="24" y="136">sin_port = 5005</text>
+<text class="tz sm r" x="24" y="156">小端 · 未转换</text>
+<rect class="bx b" height="44" rx="4" width="76" x="232" y="110"></rect>
+<text class="tm b mid" x="270" y="138">8D</text>
+<rect class="bx y" height="44" rx="4" width="76" x="312" y="110"></rect>
+<text class="tm y mid" x="350" y="138">13</text>
+</g>
+<g data-step="4">
+<text class="tz sm w" x="24" y="136">sin_port = htons(5005)</text>
+<text class="tz sm g" x="24" y="156">转换之后</text>
+<rect class="bx y" data-hl="4" height="44" rx="4" width="76" x="232" y="110"></rect>
+<text class="tm y mid" x="270" y="138">13</text>
+<rect class="bx b" data-hl="4" height="44" rx="4" width="76" x="312" y="110"></rect>
+<text class="tm b mid" x="350" y="138">8D</text>
+<text class="tm sm g" x="410" y="138">按主机序读：0x8D13 = 36115</text>
+</g>
+<g data-step="3">
+<text class="tz sm w" x="24" y="236">网线上</text>
+<text class="tz sm m" x="24" y="256">网络字节序 · 大端</text>
+<path class="ln thin m" d="M150 240 H760" marker-end="url(#t4-ah-m)"></path>
+<rect class="bx y" height="44" rx="4" width="76" x="160" y="216"></rect>
+<text class="tm y mid" x="198" y="244">13</text>
+<rect class="bx b" height="44" rx="4" width="76" x="240" y="216"></rect>
+<text class="tm b mid" x="278" y="244">8D</text>
+<text class="tz sm m mid" x="198" y="284">先发</text>
+<text class="tz sm m mid" x="278" y="284">后发</text>
+<text class="tz sm r" data-out="4" x="360" y="232">直接把内存里的 8D 13 发出去，</text>
+<text class="tz sm r" data-out="4" x="360" y="254">对方会读成 0x8D13 = 36115</text>
+</g>
+<g data-step="4">
+<text class="tz sm g" x="360" y="244">内存顺序 = 网线顺序 ✓</text>
+</g>
+<g data-step="5">
+<rect class="bx hollow m" height="34" rx="6" width="752" x="24" y="296"></rect>
+<text class="tz sm w mid" x="400" y="318">在大端机器上 htons 什么也不做——所以写上它，代码在两种机器上都对</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>5005 写成十六进制是 0x138D：<span class="c-y">高字节 0x13</span>，<span class="c-b">低字节 0x8D</span>。</li>
+<li data-dur="3600">如果直接写 <code>sin_port = 5005</code>，小端的 ARM 会把<b>低字节放在前面</b>：内存里是 8D、13。</li>
+<li data-dur="4200">可网络字节序是大端，要求<span class="c-y">先发高字节 13</span>。内核会把 <code>sin_port</code> 的两个字节原样放进首部——于是对方看到的端口是 0x8D13 = 36115，连接不上。</li>
+<li data-dur="4200"><code>htons</code>（host to network short）在小端机器上把两个字节对调：内存里变成 13、8D，和网线上的顺序一致。代价是按主机序去读这个变量，会得到 0x8D13 = 36115——所以要显示它时，先 <code>ntohs</code> 换回来。</li>
+<li data-dur="3800">在大端机器上，这几个函数什么也不做。始终写上它们，就不用关心代码跑在哪种架构上。</li>
+</ol>
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>函数（&lt;arpa/inet.h&gt;）</th><th>方向</th><th>用于</th></tr></thead>
+<tbody>
+<tr><td>uint16_t htons(uint16_t)</td><td>主机 → 网络，16 位</td><td>端口：<code>sin_port = htons(5005)</code></td></tr>
+<tr><td>uint32_t htonl(uint32_t)</td><td>主机 → 网络，32 位</td><td>IPv4 地址常量：<code>sin_addr.s_addr = htonl(INADDR_ANY)</code></td></tr>
+<tr><td>uint16_t ntohs(uint16_t)</td><td>网络 → 主机，16 位</td><td>打印收到的端口：<code>ntohs(cli.sin_port)</code></td></tr>
+<tr><td>uint32_t ntohl(uint32_t)</td><td>网络 → 主机，32 位</td><td>把收到的地址当整数比较、计算</td></tr>
+</tbody>
+</table>
+</div>
+<h3>文本地址 ↔ 二进制地址</h3>
+<p>人写的是 <code>"192.168.1.20"</code>，<code>sin_addr</code> 里要的是 4 个按网络字节序排好的字节。转换用 <code>inet_pton</code>（presentation → network）和反方向的 <code>inet_ntop</code>，两者都支持 IPv4 和 IPv6，都通过<b>指针</b>传结果：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sockaddr_in dst;</span><span class="ln-row"><span class="fn">memset</span>(&amp;dst, <span class="nm">0</span>, <span class="kw">sizeof</span> dst);                  <span class="cm">// sin_zero 也清零</span></span><span class="ln-row"><span class="rg">dst.sin_family</span> = AF_INET;</span><span class="ln-row"><span class="rg">dst.sin_port</span>   = <span class="fn">htons</span>(<span class="nm">5005</span>);</span><span class="ln-row"><span class="kw">if</span> (<span class="fn">inet_pton</span>(AF_INET, <span class="st">"192.168.1.20"</span>, &amp;<span class="rg">dst.sin_addr</span>) != <span class="nm">1</span>)</span><span class="ln-row">    <span class="cm">/* 1 = 成功；0 = 字符串不是合法地址；-1 = 地址族不支持 */</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">char</span> txt[INET_ADDRSTRLEN];                     <span class="cm">// 16 字节，够放 "255.255.255.255"</span></span><span class="ln-row"><span class="fn">inet_ntop</span>(AF_INET, &amp;<span class="rg">dst.sin_addr</span>, txt, <span class="kw">sizeof</span> txt);</span><span class="ln-row"><span class="fn">printf</span>(<span class="st">"%s:%u\n"</span>, txt, <span class="fn">ntohs</span>(<span class="rg">dst.sin_port</span>));   <span class="cm">// 192.168.1.20:5005</span></span></code></pre>
+<ul>
+<li>老式的 <code>inet_addr("192.168.1.20")</code> 直接返回网络字节序的 32 位值，<code>inet_ntoa()</code> 做反向转换。它们只支持 IPv4，而且 <code>inet_addr</code> 的出错值和 <code>"255.255.255.255"</code> 分不开，新代码用 pton/ntop。</li>
+<li><code>INADDR_ANY</code>（值为 0）表示"本机的任何一个地址"：服务器 bind 它，就能收到发往这台机器任何网络接口、目的端口匹配的请求。</li>
+<li><code>getaddrinfo("www.example.com", "http", &amp;hints, &amp;res)</code> 从主机名和服务名查出可以直接交给 <code>socket</code>/<code>connect</code> 的地址链表（IPv4、IPv6 都可能有），用完要 <code>freeaddrinfo</code>；反方向是 <code>getnameinfo</code>。</li>
+</ul>
+<div class="note warm">
+<span class="lbl">注意 · 资料的写法</span>
+<p>有些资料里有一句"<code>inet_addr("192.168.0.1")</code> 之后 <code>s_addr</code> 里是 0xC0A80001"：这是按网络字节序（从左往右）读出的值。在小端的 Raspberry Pi 上直接 <code>printf("%x", s_addr)</code>，看到的是 0x0100A8C0；<code>ntohl(s_addr)</code> 才是 0xC0A80001。</p>
+</div>
+<div class="drills">
+<div class="drill" data-drill="htons"></div>
+<div class="drill" data-drill="ipv4"></div>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>TCP 服务器 <span class="tag">T4.5 · T4.6</span></h2>
+<p class="hook"><span class="zh">服务器在 5005 端口上接了一个客户，第二个客户来了，还能连上吗？</span><span class="es">socket → bind → listen → accept → read / write → close.</span></p>
+<p>面向连接的服务器要经过四个准备步骤，每一步都有自己的意义：<code>socket</code> 打开通道（abrir canal），<code>bind</code> 公布地址（publicar dirección），<code>listen</code> 表示愿意接受连接，<code>accept</code> 等待并取出一个连接请求。下面把服务器和客户端放在同一条时间线上，看每个调用什么时候返回、内核在中间做了什么：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="sc-tcp">
+<div class="stage-title"><span>Escena 3 · servidor TCP y cliente en el tiempo</span><b>核心场景 · 8 步</b></div>
+<div aria-label="动画：TCP 服务器和客户端的系统调用时间线，含三次握手和 accept 返回新套接字" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-tcp-t" role="img" viewbox="0 0 800 640">
+<title id="sc-tcp-t">左边是服务器的调用，右边是客户端的调用，时间向下；中间是两边内核之间的三次握手、数据和 FIN</title>
+<text class="tx w" x="24" y="30">Servidor</text>
+<text class="tm xs m" x="128" y="30">192.168.1.20</text>
+<text class="tx w" x="546" y="30">Cliente</text>
+<text class="tz sm p mid" x="400" y="30">内核 ⇄ 内核</text>
+<path class="ln thin p dash" d="M290 40 V630 M510 40 V630"></path>
+<g data-step="1">
+<rect class="bx p" height="30" rx="5" width="230" x="24" y="48"></rect>
+<text class="tm sm w" x="36" y="68">socket() → 3</text>
+<rect class="bx p" height="30" rx="5" width="230" x="24" y="86"></rect>
+<text class="tm sm w" x="36" y="106">bind(3, *:5005)</text>
+<rect class="bx p" height="30" rx="5" width="230" x="24" y="124"></rect>
+<text class="tm sm w" x="36" y="144">listen(3, 5)</text>
+<rect class="bx hollow p" height="30" rx="5" width="190" x="304" y="124"></rect>
+<path class="ln thin p" d="M352 124 V154 M400 124 V154 M448 124 V154"></path>
+<text class="tz sm p mid" x="400" y="112">cola de listen · backlog</text>
+</g>
+<g data-step="2">
+<rect class="bx y" data-hl="2" height="30" rx="5" width="230" x="24" y="172"></rect>
+<text class="tm sm y" x="36" y="192">accept(3, …)</text>
+<path class="ln y dash" d="M264 204 V366" data-out="5"></path>
+<text class="tz sm y" data-out="5" x="170" y="290">阻塞</text>
+</g>
+<g data-step="3">
+<rect class="bx p" height="30" rx="5" width="230" x="546" y="210"></rect>
+<text class="tm sm w" x="558" y="230">socket() → 3</text>
+<rect class="bx y" height="30" rx="5" width="230" x="546" y="248"></rect>
+<text class="tm sm y" x="558" y="268">connect(3, srv:5005)</text>
+<path class="ln y dash" d="M536 280 V366" data-out="5"></path>
+<path class="ln p draw" d="M510 270 L292 294" marker-end="url(#t4-ah-p)"></path>
+<text class="tm sm p mid" x="400" y="270">SYN</text>
+</g>
+<g data-step="4">
+<path class="ln p draw" d="M290 302 L508 326" marker-end="url(#t4-ah-p)"></path>
+<text class="tm sm p mid" x="400" y="302">SYN + ACK</text>
+<path class="ln p draw" d="M510 334 L292 358" marker-end="url(#t4-ah-p)"></path>
+<text class="tm sm p mid" x="400" y="336">ACK</text>
+<g data-out="5">
+<rect class="bx g" height="22" rx="3" width="40" x="308" y="128"></rect>
+<text class="tm xs g mid" x="328" y="143">conn</text>
+</g>
+</g>
+<g data-step="5">
+<rect class="bx g" data-hl="5" height="30" rx="5" width="230" x="24" y="372"></rect>
+<text class="tm sm g" x="36" y="392">accept → 4</text>
+<text class="tz sm p" x="300" y="182">fd 3 继续监听</text>
+<rect class="bx g" data-hl="5" height="30" rx="5" width="230" x="546" y="372"></rect>
+<text class="tm sm g" x="558" y="392">connect → 0</text>
+</g>
+<g data-step="6">
+<rect class="bx b" height="30" rx="5" width="230" x="546" y="416"></rect>
+<text class="tm sm b" x="558" y="436">write(3, "hola", 4)</text>
+<path class="ln b draw" d="M510 431 L292 455" marker-end="url(#t4-ah-b)"></path>
+<text class="tm sm b mid" x="400" y="432">hola</text>
+<rect class="bx b" height="30" rx="5" width="230" x="24" y="450"></rect>
+<text class="tm sm b" x="36" y="470">read(4, buf, 64) → 4</text>
+</g>
+<g data-step="7">
+<rect class="bx b" height="30" rx="5" width="230" x="24" y="494"></rect>
+<text class="tm sm b" x="36" y="514">write(4, "HOLA", 4)</text>
+<path class="ln b draw" d="M290 509 L508 533" marker-end="url(#t4-ah-b)"></path>
+<text class="tm sm b mid" x="400" y="510">HOLA</text>
+<rect class="bx b" height="30" rx="5" width="230" x="546" y="528"></rect>
+<text class="tm sm b" x="558" y="548">read(3, buf, 64) → 4</text>
+</g>
+<g data-step="8">
+<rect class="bx r" height="30" rx="5" width="230" x="546" y="572"></rect>
+<text class="tm sm r" x="558" y="592">close(3)</text>
+<path class="ln r draw" d="M510 587 L292 607" marker-end="url(#t4-ah-r)"></path>
+<text class="tm sm r mid" x="400" y="590">FIN</text>
+<rect class="bx r" data-hl="8" height="30" rx="5" width="230" x="24" y="596"></rect>
+<text class="tm sm r" x="36" y="616">read(4) → 0 · close(4)</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4600">服务器先做三件事：<code>socket</code> 得到描述符 3；<code>bind</code> 把它和本机任意地址（<code>INADDR_ANY</code>，图里写作 *）的 5005 端口连起来；<code>listen</code> 把它变成<b>监听套接字</b>，并让内核为它准备一个等待队列，长度由 <b class="t">backlog</b> 给出（这里是 5）。</li>
+<li data-dur="3600">然后调用 <code>accept</code>。现在还没有客户，<span class="c-y">accept 阻塞</span>：线程停在这里，什么也不做，直到有连接可取。</li>
+<li data-dur="4200">客户端用 <code>socket</code> 得到自己的描述符（编号是它自己进程里的，碰巧也是 3），再 <code>connect</code> 到 192.168.1.20:5005。客户端没调用 bind，内核自动给它挑一个临时端口。<code>connect</code> 也阻塞，内核发出第一个 <span class="c-p">SYN</span>。</li>
+<li data-dur="5200">服务器的<span class="c-p">内核</span>回 <span class="c-p">SYN + ACK</span>，客户端的内核再回 <span class="c-p">ACK</span>——这就是<b class="t">three-way handshake (EN)</b>——三次握手。全程由两边内核完成，服务器程序一行代码都没执行；建立好的连接先放进监听套接字的队列里。</li>
+<li data-dur="5200"><code>connect</code> 返回 0；<code>accept</code> 从队列里取出这个连接，返回一个<span class="c-g">新的描述符 4</span>。以后和这个客户的数据都走 4；<b>描述符 3 不受影响，继续监听</b>，下一个客户的握手照样能完成并排进队列。</li>
+<li>客户端 <code>write</code> 4 个字节；服务器在<b>新</b>描述符 4 上 <code>read</code>，返回读到的字节数 4。</li>
+<li>服务器处理之后（这里是转成大写）用 <code>write(4, …)</code> 回复，客户端 <code>read</code> 收到。</li>
+<li data-dur="5200">客户端 <code>close</code>，内核发出 <span class="c-r">FIN</span>。服务器的 <code>read</code> 返回 <b>0</b>，意思是"对方已经关闭"——这时服务器 <code>close(4)</code>，回到 <code>accept(3)</code> 等下一个客户。</li>
+</ol>
+<p class="stage-note">描述符编号、IP 和缓冲区大小只作演示。图里只画了 FIN 的第一段；完整的关闭还有 ACK 和服务器一侧的 FIN。</p>
+
+</figure>
+<h3>各步的参数</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>调用</th><th>作用与要点</th></tr></thead>
+<tbody>
+<tr><td>bind(fd, addr, len)</td><td>给套接字一个本地地址和端口。创建套接字时它只有地址族，没有具体地址。<b>服务器必须 bind</b>，否则没有固定端口，客户找不到；面向连接的客户端不需要。</td></tr>
+<tr><td>listen(fd, backlog)</td><td>只用于 TCP。打开连接请求队列；backlog 是排队等 accept 的连接数上限，一般 5–10 就够，只等一个客户时可以写 1。</td></tr>
+<tr><td>accept(fd, addr, &amp;len)</td><td>取出队列里的第一个连接，返回<b>新</b>描述符；没有连接时阻塞。<code>addr</code> 带回客户端的地址；<code>len</code> 是输入输出参数：调用前设成结构的大小，返回后是实际长度。不关心对方地址时两者都可以传 NULL。失败返回 -1。</td></tr>
+<tr><td>read / write</td><td>在 accept 返回的描述符上收发，见 §5。</td></tr>
+<tr><td>close(fd)</td><td>关闭连接并释放系统资源，见 §7。</td></tr>
+</tbody>
+</table>
+</div>
+<p>把这几步写成一个最简单的<b>迭代服务器</b>：一次服务一个客户，服务完再去 accept 下一个。这个例子把收到的文本转成大写送回去：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">int</span> lfd = <span class="fn">socket</span>(AF_INET, SOCK_STREAM, <span class="nm">0</span>);</span><span class="ln-row">    <span class="kw">if</span> (lfd &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"socket"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">int</span> on = <span class="nm">1</span>;</span><span class="ln-row">    <span class="fn">setsockopt</span>(lfd, SOL_SOCKET, SO_REUSEADDR, &amp;on, <span class="kw">sizeof</span> on);   <span class="cm">// 见 §7</span></span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">struct</span> sockaddr_in me;</span><span class="ln-row">    <span class="fn">memset</span>(&amp;me, <span class="nm">0</span>, <span class="kw">sizeof</span> me);</span><span class="ln-row">    <span class="rg">me.sin_family</span>      = AF_INET;</span><span class="ln-row">    <span class="rg">me.sin_addr.s_addr</span> = <span class="fn">htonl</span>(INADDR_ANY);   <span class="cm">// 本机任何地址</span></span><span class="ln-row">    <span class="rg">me.sin_port</span>        = <span class="fn">htons</span>(<span class="nm">5005</span>);</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">bind</span>(lfd, (<span class="kw">struct</span> sockaddr *)&amp;me, <span class="kw">sizeof</span> me) &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"bind"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">listen</span>(lfd, <span class="nm">5</span>) &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"listen"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="kw">struct</span> sockaddr_in peer;</span><span class="ln-row">        socklen_t plen = <span class="kw">sizeof</span> peer;            <span class="cm">// 输入：结构的大小</span></span><span class="ln-row">        <span class="kw">int</span> cfd = <span class="fn">accept</span>(lfd, (<span class="kw">struct</span> sockaddr *)&amp;peer, &amp;plen);   <span class="cm">// 阻塞</span></span><span class="ln-row">        <span class="kw">if</span> (cfd &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"accept"</span>); <span class="kw">continue</span>; }</span><span class="ln-row"> </span><span class="ln-row">        <span class="kw">char</span> buf[<span class="nm">128</span>];</span><span class="ln-row">        ssize_t n;</span><span class="ln-row">        <span class="kw">while</span> ((n = <span class="fn">read</span>(cfd, buf, <span class="kw">sizeof</span> buf)) &gt; <span class="nm">0</span>) {   <span class="cm">// 0 = 客户关闭，-1 = 出错</span></span><span class="ln-row">            <span class="kw">for</span> (ssize_t i = <span class="nm">0</span>; i &lt; n; i++) buf[i] = <span class="fn">toupper</span>((<span class="kw">unsigned char</span>)buf[i]);</span><span class="ln-row">            <span class="fn">write_all</span>(cfd, buf, n);                <span class="cm">// §5 的辅助函数</span></span><span class="ln-row">        }</span><span class="ln-row">        <span class="fn">close</span>(cfd);                                <span class="cm">// 只关这个客户；lfd 继续监听</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<p class="aside">头文件：<code>&lt;sys/socket.h&gt;</code>、<code>&lt;netinet/in.h&gt;</code>、<code>&lt;arpa/inet.h&gt;</code>、<code>&lt;unistd.h&gt;</code>、<code>&lt;string.h&gt;</code>、<code>&lt;ctype.h&gt;</code>、<code>&lt;stdio.h&gt;</code>。这个服务器在服务一个客户时，第二个客户的握手会完成并在队列里等着，但要等第一个客户断开才轮到它——怎样同时服务多个客户见 §7。</p>
+<div class="note warm">
+<span class="lbl">注意 · 新套接字的端口</span>
+<p>有些资料把 accept 返回的新套接字描述为使用一个动态分配的、和监听端口不同的端口，好让原端口空出来接受新连接。严格地说，新套接字的本地端口仍是 5005：内核按<b>四元组</b>（本地 IP、本地端口、远端 IP、远端端口）区分连接，所以同一个端口上可以同时有一个监听套接字和许多已连接的套接字。两种说法的结论相同：<b>accept 返回一个新的套接字，监听套接字保持可用</b>。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>TCP 客户端与字节流 <span class="tag">T4.7</span></h2>
+<p class="hook"><span class="zh">客户端写了两次，服务器一定读两次吗？</span><span class="es">TCP es un flujo de bytes: no conserva los límites de los mensajes.</span></p>
+<p>客户端只需要两步：<code>socket</code>，然后 <code>connect</code> 到服务器的地址。<code>connect</code> 会阻塞到连接建立成功（返回 0）或者失败（返回 -1，例如对方端口上没有程序在监听）。不需要 <code>bind</code>：内核在 connect 时自动分配临时端口，并在整个连接期间保留它。</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> fd = <span class="fn">socket</span>(AF_INET, SOCK_STREAM, <span class="nm">0</span>);</span><span class="ln-row"><span class="kw">struct</span> sockaddr_in srv;</span><span class="ln-row"><span class="fn">memset</span>(&amp;srv, <span class="nm">0</span>, <span class="kw">sizeof</span> srv);</span><span class="ln-row"><span class="rg">srv.sin_family</span> = AF_INET;</span><span class="ln-row"><span class="rg">srv.sin_port</span>   = <span class="fn">htons</span>(<span class="nm">5005</span>);</span><span class="ln-row"><span class="fn">inet_pton</span>(AF_INET, <span class="st">"192.168.1.20"</span>, &amp;<span class="rg">srv.sin_addr</span>);</span><span class="ln-row"><span class="kw">if</span> (<span class="fn">connect</span>(fd, (<span class="kw">struct</span> sockaddr *)&amp;srv, <span class="kw">sizeof</span> srv) &lt; <span class="nm">0</span>) {   <span class="cm">// 阻塞到握手完成</span></span><span class="ln-row">    <span class="fn">perror</span>(<span class="st">"connect"</span>);                       <span class="cm">// 例如 Connection refused</span></span><span class="ln-row">    <span class="kw">return</span> <span class="nm">1</span>;</span><span class="ln-row">}</span><span class="ln-row"><span class="fn">write_all</span>(fd, <span class="st">"hola\n"</span>, <span class="nm">5</span>);</span><span class="ln-row"><span class="kw">char</span> buf[<span class="nm">64</span>];</span><span class="ln-row">ssize_t n = <span class="fn">read</span>(fd, buf, <span class="kw">sizeof</span> buf);</span><span class="ln-row"><span class="fn">close</span>(fd);</span></code></pre>
+<h3>read 和 recv 的三种返回值</h3>
+<div class="grid3">
+<div class="cell g"><span class="k c-g">&gt; 0</span><h3>读到 n 个字节</h3><p>n 可能<b>小于</b>你要的长度：只是"目前已经到达的那些"。</p></div>
+<div class="cell o"><span class="k c-o">= 0</span><h3>对方关闭了连接</h3><p>流结束（EOF）。之后不会再有数据，应该 close 自己这一端。</p></div>
+<div class="cell r"><span class="k c-r">= -1</span><h3>出错</h3><p>看 <code>errno</code>，用 <code>perror()</code> 打印原因。</p></div>
+</div>
+<p><code>recv(fd, buf, len, flags)</code> 和 <code>send(fd, buf, len, flags)</code> 是只能用在套接字上的版本，flags 通常写 0，此时和 <code>read</code>/<code>write</code> 一样。有用的 flags：<code>MSG_PEEK</code>（看一眼数据但不从队列里取走，下次还能读到）、<code>MSG_OOB</code>（带外的"紧急"数据）、<code>MSG_NOSIGNAL</code>（见 §7）。<code>send</code>/<code>write</code> 返回实际交给内核的字节数，也可能少于要求的长度。</p>
+<p>TCP 交给程序的是一条<b class="t">flujo de bytes (ES) / byte stream (EN)</b>——字节流：它保证字节不丢、不重、按顺序到达，但<b>不保留</b>每次 write 的边界：</p>
+<figure class="stage" data-scene="" id="sc-flujo">
+<div class="stage-title"><span>Escena 4 · el flujo no tiene fronteras</span><b>5 步</b></div>
+<div aria-label="动画：客户端两次 write，服务器两次 read 读到的分段不同" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-flujo-t" role="img" viewbox="0 0 800 300">
+<title id="sc-flujo-t">客户端先写 ABC 再写 DEFG，字节在 TCP 流里连成一串；服务器 read 5 个字节得到 ABCDE，下一次 read 得到 FG</title>
+<rect class="bx hollow m" height="72" rx="8" width="150" x="16" y="104"></rect>
+<text class="tx sm w mid" x="91" y="146">cliente</text>
+<rect class="bx hollow m" height="72" rx="8" width="150" x="634" y="104"></rect>
+<text class="tx sm w mid" x="709" y="146">servidor</text>
+<rect class="bx hollow b" height="56" rx="6" width="436" x="182" y="112"></rect>
+<text class="tz sm m mid" x="400" y="96">TCP 连接里的字节流 →</text>
+<g data-step="1">
+<text class="tm sm b" x="16" y="60">write(fd, "ABC", 3)</text>
+<g data-out="3">
+<rect class="bx b" height="40" rx="3" width="38" x="192" y="120"></rect><text class="tm b mid" x="211" y="146">A</text>
+<rect class="bx b" height="40" rx="3" width="38" x="234" y="120"></rect><text class="tm b mid" x="253" y="146">B</text>
+<rect class="bx b" height="40" rx="3" width="38" x="276" y="120"></rect><text class="tm b mid" x="295" y="146">C</text>
+</g>
+</g>
+<g data-step="2">
+<text class="tm sm b" x="16" y="84">write(fd, "DEFG", 4)</text>
+<g data-out="3">
+<rect class="bx b" height="40" rx="3" width="38" x="318" y="120"></rect><text class="tm b mid" x="337" y="146">D</text>
+<rect class="bx b" height="40" rx="3" width="38" x="360" y="120"></rect><text class="tm b mid" x="379" y="146">E</text>
+</g>
+<g data-out="4">
+<rect class="bx b" height="40" rx="3" width="38" x="402" y="120"></rect><text class="tm b mid" x="421" y="146">F</text>
+<rect class="bx b" height="40" rx="3" width="38" x="444" y="120"></rect><text class="tm b mid" x="463" y="146">G</text>
+</g>
+<text class="tz sm r mid" data-out="3" x="316" y="198">C 和 D 之间没有任何分隔</text>
+</g>
+<g data-step="3">
+<text class="tm sm y" x="440" y="222">read(fd, buf, 5) → 5</text>
+<text class="tm y" x="440" y="248">buf = "ABCDE"</text>
+</g>
+<g data-step="4">
+<text class="tm sm y" x="440" y="274">read(fd, buf, 5) → 2 · "FG"</text>
+</g>
+<g data-step="5">
+<rect class="bx hollow g" height="76" rx="6" width="400" x="16" y="210"></rect>
+<text class="tz sm g" x="30" y="236">边界要由应用层自己定：</text>
+<text class="tm sm w" x="30" y="260">· 分隔符："ABC\n" "DEFG\n"</text>
+<text class="tm sm w" x="30" y="280">· 长度前缀：[3]ABC [4]DEFG</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>客户端先 <code>write</code> 3 个字节 "ABC"。</li>
+<li data-dur="3800">紧接着又 <code>write</code> 4 个字节 "DEFG"。在流里它们直接接在 C 后面——<span class="c-r">没有"第一条消息结束"的标记</span>。</li>
+<li data-dur="3800">服务器 <code>read(fd, buf, 5)</code>：它要的是"最多 5 个字节"，得到 "ABCDE"——跨过了客户端两次 write 的边界。</li>
+<li data-dur="3600">再读一次，得到剩下的 "FG"，返回 2。换一种时机（网络慢一点、缓冲区小一点），同样的两次 write 也可能被读成 "AB" + "CDEFG"，或者一次读完 "ABCDEFG"。</li>
+<li data-dur="4600">所以 TCP 上的协议必须自己定义消息边界：用分隔符（例如每条消息以 <code>\n</code> 结尾，HTTP 头部就是这样），或者在每条消息前先发它的长度。读的一方要<b>循环读</b>，直到凑齐一条完整的消息。</li>
+</ol>
+<p class="stage-note">read 的分段方式取决于数据到达的时机，这里只是其中一种可能。</p>
+</figure>
+<p>写的一方也一样：<code>write</code> 可能只写出一部分（尤其是数据量大、对方读得慢时），所以通常包一个循环：</p>
+<pre class="code"><code><span class="ln-row"><span class="cm">/* 把 len 个字节全部写出去；成功返回 0，出错返回 -1 */</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">write_all</span>(<span class="kw">int</span> fd, <span class="kw">const void</span> *p, size_t len) {</span><span class="ln-row">    <span class="kw">const char</span> *c = p;</span><span class="ln-row">    <span class="kw">while</span> (len &gt; <span class="nm">0</span>) {</span><span class="ln-row">        ssize_t n = <span class="fn">write</span>(fd, c, len);</span><span class="ln-row">        <span class="kw">if</span> (n &lt; <span class="nm">0</span>) {</span><span class="ln-row">            <span class="kw">if</span> (errno == EINTR) <span class="kw">continue</span>;   <span class="cm">// 被信号打断：重试</span></span><span class="ln-row">            <span class="kw">return</span> <span class="nm">-1</span>;</span><span class="ln-row">        }</span><span class="ln-row">        c += n; len -= n;                   <span class="cm">// 只写出了一部分：接着写剩下的</span></span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">return</span> <span class="nm">0</span>;</span><span class="ln-row">}</span></code></pre>
+<p class="takeaway">TCP 保证"字节"可靠有序，不保证"消息"。读和写都可能只完成一部分；消息从哪里开始、到哪里结束，是应用层协议的事。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>UDP：一次一个数据报 <span class="tag">T4.8</span></h2>
+<p class="hook"><span class="zh">没有连接，接收方怎么知道是谁发来的、又该回给谁？</span><span class="es">sendto() y recvfrom() llevan la dirección en cada llamada.</span></p>
+<p>UDP 没有 listen、accept、connect 这一套：两边都是 <code>socket(AF_INET, SOCK_DGRAM, 0)</code>，要<b>接收</b>的一方用 <code>bind</code> 绑定一个已知端口，然后直接收发。因为没有连接把双方"绑"在一起，每次发送都要写明目的地址，每次接收都会带回发送者的地址：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">ssize_t</span> <span class="fn">sendto</span>(<span class="kw">int</span> fd, <span class="kw">const void</span> *buf, size_t len, <span class="kw">int</span> flags,</span><span class="ln-row">               <span class="kw">const struct</span> sockaddr *to, socklen_t tolen);      <span class="cm">// 发给 to</span></span><span class="ln-row"><span class="kw">ssize_t</span> <span class="fn">recvfrom</span>(<span class="kw">int</span> fd, <span class="kw">void</span> *buf, size_t len, <span class="kw">int</span> flags,</span><span class="ln-row">                 <span class="kw">struct</span> sockaddr *from, socklen_t *fromlen);      <span class="cm">// from 带回发送者</span></span></code></pre>
+<p><code>fromlen</code> 和 accept 的长度参数一样是输入输出参数。接收方把 <code>from</code> 原样交给 <code>sendto</code>，就能回复对方。两个调用都返回字节数，出错返回 -1；UDP 没有连接，所以返回 0 不代表"关闭"，只是一个空数据报。</p>
+<figure class="stage" data-scene="" id="sc-udp">
+<div class="stage-title"><span>Escena 5 · datagramas</span><b>5 步</b></div>
+<div aria-label="动画：三个 UDP 数据报，一个丢失，接收方逐个收到完整的数据报，缓冲区太小时多余部分被丢弃" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-udp-t" role="img" viewbox="0 0 800 330">
+<title id="sc-udp-t">发送方连续 sendto 三个数据报，第二个在网络中丢失；接收方每次 recvfrom 得到一个完整的数据报和发送者地址；缓冲区小于数据报时，读不下的部分被丢弃</title>
+<rect class="bx hollow m" height="70" rx="8" width="150" x="16" y="56"></rect>
+<text class="tx sm w mid" x="91" y="88">emisor</text>
+<text class="tm xs m mid" x="91" y="110">192.168.1.30:40112</text>
+<rect class="bx hollow m" height="70" rx="8" width="150" x="634" y="56"></rect>
+<text class="tx sm w mid" x="709" y="88">receptor</text>
+<text class="tm xs m mid" x="709" y="110">bind :6006</text>
+<g data-step="1">
+<text class="tm sm b" x="16" y="34">sendto() × 3</text>
+<rect class="bx b" height="46" rx="4" width="96" x="190" y="68"></rect>
+<text class="tm xs m mid" x="238" y="84">#1</text><text class="tm b mid" x="238" y="104">ABC</text>
+<rect class="bx b" height="46" rx="4" width="116" x="306" y="68"></rect>
+<text class="tm xs m mid" x="364" y="84">#2</text><text class="tm b mid" x="364" y="104">DEFG</text>
+<rect class="bx b" height="46" rx="4" width="80" x="442" y="68"></rect>
+<text class="tm xs m mid" x="482" y="84">#3</text><text class="tm b mid" x="482" y="104">HI</text>
+</g>
+<g data-step="2">
+<path class="ln r draw" d="M300 62 L428 120 M428 62 L300 120"></path>
+<text class="tz sm r mid" x="364" y="146">丢失 · 没有重传</text>
+</g>
+<g data-step="3">
+<text class="tm sm y" x="380" y="190">recvfrom(fd, buf, 64, 0, &amp;from, &amp;flen) → 3</text>
+<text class="tm sm w" x="380" y="212">"ABC" · from 192.168.1.30:40112</text>
+</g>
+<g data-step="4">
+<text class="tm sm y" x="380" y="242">recvfrom(…) → 2 · "HI"</text>
+<text class="tz sm r" x="380" y="264">#2 永远不会来；程序自己发现不了</text>
+</g>
+<g data-step="5">
+<rect class="bx b" height="46" rx="4" width="100" x="16" y="196"></rect>
+<text class="tm b mid" x="66" y="225">WXYZ</text>
+<text class="tm sm y" x="16" y="270">recvfrom(fd, buf, 2, …) → 2</text>
+<text class="tm sm w" x="16" y="294">buf = "WX"</text>
+<text class="tz sm r" x="130" y="294">"YZ" 被丢弃</text>
+<path class="ln r" d="M70 200 L112 238"></path>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">发送方连续调用三次 <code>sendto</code>。每一次都是一个独立的 <b class="t">datagrama (ES) / datagram (EN)</b>——数据报，<b>边界被保留</b>：它们不会像 TCP 那样连成一串。</li>
+<li data-dur="3800">网络把第 2 个数据报弄丢了。UDP 不确认、不重传，也不保证顺序——数据报怎么到达，就怎么交给接收方。</li>
+<li data-dur="4200">接收方每次 <code>recvfrom</code> 恰好得到<b>一个完整的</b>数据报，同时在 <code>from</code> 里得到发送者的 IP 和端口——要回复的话，就把它交给 <code>sendto</code>。</li>
+<li data-dur="4200">下一次得到的是 "HI"。数据报 #2 的丢失只能由应用层发现，例如在每个数据报里放一个序号，接收方看到序号跳了就知道丢了。</li>
+<li data-dur="5000">缓冲区一定要够大：如果数据报有 4 个字节，而 <code>recvfrom</code> 的 len 只给 2，就只得到 "WX"，<span class="c-r">剩下的 "YZ" 被丢弃</span>，下一次 recvfrom 读到的是下一个数据报。所以 len 要大于等于对方可能发送的最大数据报；实际收到多少看返回值。</li>
+</ol>
+<p class="stage-note">地址、端口和数据只作演示。</p>
+
+</figure>
+<p>一个接收方：在 6006 端口上收数据报，打印内容和发送者：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> fd = <span class="fn">socket</span>(AF_INET, SOCK_DGRAM, <span class="nm">0</span>);</span><span class="ln-row"><span class="kw">struct</span> sockaddr_in me;</span><span class="ln-row"><span class="fn">memset</span>(&amp;me, <span class="nm">0</span>, <span class="kw">sizeof</span> me);</span><span class="ln-row"><span class="rg">me.sin_family</span> = AF_INET;</span><span class="ln-row"><span class="rg">me.sin_addr.s_addr</span> = <span class="fn">htonl</span>(INADDR_ANY);</span><span class="ln-row"><span class="rg">me.sin_port</span> = <span class="fn">htons</span>(<span class="nm">6006</span>);</span><span class="ln-row"><span class="fn">bind</span>(fd, (<span class="kw">struct</span> sockaddr *)&amp;me, <span class="kw">sizeof</span> me);         <span class="cm">// 要接收，就要有已知端口</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="kw">char</span> buf[<span class="nm">1500</span>];                                   <span class="cm">// ≥ 最大的数据报</span></span><span class="ln-row">    <span class="kw">struct</span> sockaddr_in from;</span><span class="ln-row">    socklen_t flen = <span class="kw">sizeof</span> from;</span><span class="ln-row">    ssize_t n = <span class="fn">recvfrom</span>(fd, buf, <span class="kw">sizeof</span> buf, <span class="nm">0</span>, (<span class="kw">struct</span> sockaddr *)&amp;from, &amp;flen);</span><span class="ln-row">    <span class="kw">if</span> (n &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"recvfrom"</span>); <span class="kw">continue</span>; }</span><span class="ln-row">    <span class="kw">char</span> ip[INET_ADDRSTRLEN];</span><span class="ln-row">    <span class="fn">inet_ntop</span>(AF_INET, &amp;<span class="rg">from.sin_addr</span>, ip, <span class="kw">sizeof</span> ip);</span><span class="ln-row">    <span class="fn">printf</span>(<span class="st">"%zd bytes de %s:%u: %.*s\n"</span>, n, ip, <span class="fn">ntohs</span>(<span class="rg">from.sin_port</span>), (<span class="kw">int</span>)n, buf);</span><span class="ln-row">}</span></code></pre>
+<p class="aside">发送方不需要 bind（只发不收时）；它调用 <code>sendto(fd, msg, len, 0, (struct sockaddr *)&amp;dst, sizeof dst)</code>，内核在第一次发送时自动分配一个临时端口，接收方在 <code>from</code> 里看到的就是它。UDP 套接字也可以调用 <code>connect</code>：这不产生任何协商、立刻返回，只是记下默认的目的地址，之后可以用 <code>send</code>/<code>recv</code>，<code>sendto</code> 的地址参数传 NULL。</p>
+<h3>TCP 还是 UDP？</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>TCP · SOCK_STREAM</th><th>UDP · SOCK_DGRAM</th></tr></thead>
+<tbody>
+<tr><td>连接</td><td>先三次握手</td><td>没有，直接发</td></tr>
+<tr><td>可靠性</td><td>丢了重传、按序、不重复</td><td>可能丢、乱序、重复</td></tr>
+<tr><td>边界</td><td>字节流，没有消息边界</td><td>每个数据报是一个整体；读不完的部分丢掉</td></tr>
+<tr><td>收发调用</td><td>read/write、recv/send 都可以（连接里已有对方地址）</td><td>必须 sendto/recvfrom（或先 connect 记下对方）</td></tr>
+<tr><td>谁来控制</td><td>协议控制，程序几乎插不上手</td><td>程序自己控制：知道每个包什么时候到、丢了哪些</td></tr>
+<tr><td>适合</td><td>数据必须完整到达：文件、网页、命令</td><td>控制和实时应用：迟到的数据不如不要</td></tr>
+</tbody>
+</table>
+</div>
+<p>开发应用时 TCP 通常是首选，但它<b>不适合实时</b>：一个包丢了，后面的数据都要等它重传完才能交给程序，延迟不可预测，而程序对此几乎无从控制。UDP 把控制权交还给应用：程序知道每个包何时到达、哪些丢了，可以自己决定是等待、重发还是直接丢弃旧数据。它对更低层的控制仍然有限；需要的话还可以用 <b class="t">raw socket</b>——原始套接字，直接收发 IP 层的包。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>阻塞、多路复用与关闭 <span class="tag">T4.9</span></h2>
+<p class="hook"><span class="zh">服务器停在 accept 里等客户，可它同时还要照看别的事情。怎么办？</span><span class="es">¿Necesitamos multitarea? select como alternativa.</span></p>
+<p>套接字调用默认是<b class="t">bloqueante (ES) / blocking (EN)</b>——阻塞的：条件不满足，调用就不返回，整个线程停在那里。</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>调用</th><th>在等什么</th></tr></thead>
+<tbody>
+<tr><td>accept</td><td>队列里出现一个已建立的连接</td></tr>
+<tr><td>connect（TCP）</td><td>三次握手完成或失败</td></tr>
+<tr><td>read / recv / recvfrom</td><td>至少有 1 个字节（或一个数据报）到达，或者对方关闭</td></tr>
+<tr><td>write / send（TCP）</td><td>内核的发送缓冲区有空间放下数据；对方读得慢时会等</td></tr>
+</tbody>
+</table>
+</div>
+<p>只要程序除了通信还有别的事要做（看管传感器、用户界面……），或者要同时服务好几个客户，就不能让唯一的线程卡在一个调用里。有三种思路：</p>
+<div class="grid3">
+<div class="cell g">
+<span class="k c-g">multitarea</span>
+<h3>每个客户一个线程</h3>
+<p>主线程只负责 <code>accept</code>；每接到一个连接，就创建一个线程（或 fork 一个进程）专门在那个描述符上读写。每个线程里的代码仍是简单的阻塞写法。最灵活、控制力最强，代价是要处理共享数据的同步（见 Tema 2）。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">multiplexación</span>
+<h3>select / poll</h3>
+<p>一个线程同时等<b>多个</b>描述符：告诉内核"这些里面任何一个能读了就叫醒我"，再只对就绪的那个调用 accept 或 read，这次调用就不会阻塞。可以在一定程度上避免多线程。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">no bloqueante</span>
+<h3>非阻塞模式</h3>
+<p>用 <code>fcntl(fd, F_SETFL, O_NONBLOCK)</code> 把描述符设成非阻塞：调用条件不满足时立刻返回 -1，<code>errno</code> 为 <code>EAGAIN</code>/<code>EWOULDBLOCK</code>。通常和 select/poll 搭配使用。</p>
+</div>
+</div>
+<p class="aside">有些资料里把非阻塞标志写作 O_NODELAY；Linux 头文件里对应的名字是 <code>O_NONBLOCK</code>。</p>
+<h3>每个客户一个线程</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">static void</span> *<span class="fn">atiende</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    <span class="kw">int</span> cfd = (<span class="kw">int</span>)(intptr_t)arg;</span><span class="ln-row">    <span class="cm">/* …在 cfd 上用阻塞的 read/write 服务这个客户… */</span></span><span class="ln-row">    <span class="fn">close</span>(cfd);</span><span class="ln-row">    <span class="kw">return</span> NULL;</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">for</span> (;;) {                                       <span class="cm">// 主线程：只管接客</span></span><span class="ln-row">    <span class="kw">int</span> cfd = <span class="fn">accept</span>(lfd, NULL, NULL);</span><span class="ln-row">    <span class="kw">if</span> (cfd &lt; <span class="nm">0</span>) <span class="kw">continue</span>;</span><span class="ln-row">    pthread_t th;</span><span class="ln-row">    <span class="fn">pthread_create</span>(&amp;th, NULL, atiende, (<span class="kw">void</span> *)(intptr_t)cfd);</span><span class="ln-row">    <span class="fn">pthread_detach</span>(th);                          <span class="cm">// 线程结束后自动回收</span></span><span class="ln-row">}</span></code></pre>
+<h3>select</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">select</span>(<span class="kw">int</span> nfds, fd_set *readfds, fd_set *writefds,</span><span class="ln-row">           fd_set *exceptfds, <span class="kw">struct</span> timeval *timeout);</span></code></pre>
+<ul>
+<li><code>readfds</code>、<code>writefds</code>、<code>exceptfds</code> 是三组要监视的描述符（可读、可写、异常），不关心的传 NULL。用 <code>FD_ZERO</code>（清空）、<code>FD_SET</code>（加入）、<code>FD_CLR</code>（移除）、<code>FD_ISSET</code>（测试）操作。</li>
+<li><code>nfds</code> 是<b>最大的描述符 + 1</b>。</li>
+<li><code>timeout</code>（<code>tv_sec</code> 秒 + <code>tv_usec</code> 微秒）到了也会返回，返回值 0；传 NULL 表示一直等。</li>
+<li>返回时，内核<b>改写</b>了这些集合：只留下已经就绪的描述符。所以每一轮循环都要从一份"总表"重新复制一次。监听套接字"可读"表示有连接可以 accept；已连接的套接字"可读"表示有数据，或者对方关闭（read 返回 0）。</li>
+</ul>
+<pre class="code"><code><span class="ln-row">fd_set all, rd;</span><span class="ln-row"><span class="fn">FD_ZERO</span>(&amp;all);</span><span class="ln-row"><span class="fn">FD_SET</span>(lfd, &amp;all);</span><span class="ln-row"><span class="kw">int</span> maxfd = lfd;</span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    rd = all;                                     <span class="cm">// select 会改写集合：每轮复制</span></span><span class="ln-row">    <span class="kw">struct</span> timeval tv = { <span class="nm">1</span>, <span class="nm">500000</span> };         <span class="cm">// 1.5 s</span></span><span class="ln-row">    <span class="kw">int</span> r = <span class="fn">select</span>(maxfd + <span class="nm">1</span>, &amp;rd, NULL, NULL, &amp;tv);</span><span class="ln-row">    <span class="kw">if</span> (r &lt; <span class="nm">0</span>) { <span class="fn">perror</span>(<span class="st">"select"</span>); <span class="kw">break</span>; }</span><span class="ln-row">    <span class="kw">if</span> (r == <span class="nm">0</span>) { <span class="fn">puts</span>(<span class="st">"sin actividad"</span>); <span class="kw">continue</span>; }   <span class="cm">// 超时</span></span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> fd = <span class="nm">0</span>; fd &lt;= maxfd; fd++) {</span><span class="ln-row">        <span class="kw">if</span> (!<span class="fn">FD_ISSET</span>(fd, &amp;rd)) <span class="kw">continue</span>;</span><span class="ln-row">        <span class="kw">if</span> (fd == lfd) {                          <span class="cm">// 新连接：这次 accept 不会阻塞</span></span><span class="ln-row">            <span class="kw">int</span> c = <span class="fn">accept</span>(lfd, NULL, NULL);</span><span class="ln-row">            <span class="kw">if</span> (c &gt;= <span class="nm">0</span>) { <span class="fn">FD_SET</span>(c, &amp;all); <span class="kw">if</span> (c &gt; maxfd) maxfd = c; }</span><span class="ln-row">        } <span class="kw">else</span> {                                  <span class="cm">// 某个客户有数据或已关闭</span></span><span class="ln-row">            <span class="kw">char</span> buf[<span class="nm">256</span>];</span><span class="ln-row">            ssize_t n = <span class="fn">read</span>(fd, buf, <span class="kw">sizeof</span> buf);</span><span class="ln-row">            <span class="kw">if</span> (n &lt;= <span class="nm">0</span>) { <span class="fn">close</span>(fd); <span class="fn">FD_CLR</span>(fd, &amp;all); }</span><span class="ln-row">            <span class="kw">else</span> <span class="fn">write_all</span>(fd, buf, n);            <span class="cm">// 这里只是原样送回</span></span><span class="ln-row">        }</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<div class="note">
+<span class="lbl">选哪一种</span>
+<p>select 能在一定程度上替代多任务，但线程（或 fork）加定时器的写法灵活得多、控制力也强得多。经验法则：程序还有别的周期性任务、或者每个客户的处理比较复杂时，用线程；只是在几个描述符之间转发少量数据时，select 就够了。<code>poll</code> 做的事和 select 一样，只是用一个 <code>struct pollfd</code> 数组代替三个位集合，没有描述符数目上限（select 受 <code>FD_SETSIZE</code>，通常是 1024，限制）。</p>
+</div>
+<h3>关闭：close 和 shutdown</h3>
+<div class="grid2">
+<div class="panel">
+<h3>close(fd)</h3>
+<p>两个方向一起关闭，并<b>释放</b>描述符和系统资源。用完的套接字一定要 close。</p>
+</div>
+<div class="panel">
+<h3>shutdown(fd, how)</h3>
+<p>只关闭通信的某个方向：<code>SHUT_RD</code>（0，不再接收）、<code>SHUT_WR</code>（1，不再发送，对方的 read 会返回 0）、<code>SHUT_RDWR</code>（2，两个方向）。它<b>不释放</b>描述符，之后仍要 close。</p>
+</div>
+</div>
+<p class="aside">有些资料有一页建议"用 shutdown 代替 close"，另几处又强调只有 close 才释放资源。两者并不冲突的写法是：先 <code>shutdown(fd, SHUT_RDWR)</code> 明确结束通信，再 <code>close(fd)</code> 释放描述符。</p>
+<div class="grid2">
+<div class="panel">
+<h3>bind: Address already in use</h3>
+<p>程序结束后，内核还会让刚关闭的 TCP 连接在 TIME_WAIT 状态里停留一段时间（大约一两分钟），这期间再启动服务器，<code>bind</code> 同一个端口会失败。两种办法：等一会儿，或者在 bind <b>之前</b>设置 <code>SO_REUSEADDR</code>：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> on = <span class="nm">1</span>;</span><span class="ln-row"><span class="fn">setsockopt</span>(lfd, SOL_SOCKET, SO_REUSEADDR, &amp;on, <span class="kw">sizeof</span> on);</span></code></pre>
+<p class="aside">程序运行期间不 close，端口就一直被占着，别的程序用不了。</p>
+</div>
+<div class="panel">
+<h3>SIGPIPE</h3>
+<p>向一个<b>对方已经关闭</b>的 TCP 连接写数据，内核会给进程发送 <span class="c-r">SIGPIPE</span> 信号；它的默认动作是终止进程——服务器会莫名其妙地退出。办法是发送时加上 <code>MSG_NOSIGNAL</code>，这时 send 只返回 -1、<code>errno = EPIPE</code>，由程序自己处理：</p>
+<pre class="code"><code><span class="ln-row"><span class="fn">send</span>(fd, buf, len, MSG_NOSIGNAL);</span><span class="ln-row"><span class="fn">sendto</span>(fd, buf, len, MSG_NOSIGNAL, (<span class="kw">struct</span> sockaddr *)&amp;to, <span class="kw">sizeof</span> to);</span></code></pre>
+<p class="aside">另一种办法是在程序开头忽略这个信号：<code>signal(SIGPIPE, SIG_IGN)</code>，之后 write 也会以 EPIPE 失败而不是终止进程（信号见 Tema 3）。</p>
+</div>
+</div>
+<p>还有几个有用的小工具：<code>getpeername(fd, …)</code> 取得已连接套接字对端的地址（只用于 TCP）；<code>gethostname(buf, size)</code> 取得本机的名字；<code>getifaddrs</code>/<code>freeifaddrs</code> 列出本机所有网络接口（名字如 <code>eth0</code>、<code>wlan0</code>，以及各自的 IP 地址）。</p>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>HTTP 报文 <span class="tag">T4.10</span></h2>
+<p class="hook"><span class="zh">浏览器也只是一个 TCP 客户端。它在连接上写了什么？</span><span class="es">HTTP: texto sobre TCP, líneas terminadas en CRLF.</span></p>
+<p><b class="t">HTTP</b>（HyperText Transfer Protocol）是跑在 TCP 之上的文本协议：浏览器 connect 到服务器（默认 80 端口；地址栏写 <code>http://192.168.1.20:7070/</code> 时用 7070），写一条<b>请求</b>，服务器读完后写回一条<b>响应</b>。两种报文的结构相同：</p>
+<ol>
+<li>第一行：请求行，或状态行；</li>
+<li>若干行头部，每行 <code>Nombre: valor</code>；</li>
+<li>一个<b>空行</b>；</li>
+<li>正文（可以没有）。</li>
+</ol>
+<p>每一行以 <span class="c-r"><b>CRLF</b></span>（<code>\r\n</code>，回车 + 换行）结束。这正是 §5 说的"用分隔符定义边界"：服务器要循环 read，直到读到连续的 <code>\r\n\r\n</code>（空行），才知道请求头结束了。</p>
+<div class="grid2">
+<div class="panel">
+<h3>请求 · petición</h3>
+<pre class="code msg"><code><span class="ln-row"><span class="rl">GET /saludo HTTP/1.1</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Host: 192.168.1.20:7070</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">User-Agent: Mozilla/5.0 …</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Accept: text/html</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="crlf">\r\n</span></span></code></pre>
+<p class="aside"><span class="c-y">请求行</span> = 方法 + 路径 + 版本。最常用的方法是 GET（取资源）和 POST（提交数据，数据放在正文里）。GET 请求通常没有正文。</p>
+</div>
+<div class="panel">
+<h3>响应 · respuesta</h3>
+<pre class="code msg"><code><span class="ln-row"><span class="rl">HTTP/1.1 200 OK</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Content-Type: text/plain; charset=utf-8</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Content-Length: 4</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="hd">Connection: close</span><span class="crlf">\r\n</span></span><span class="ln-row"><span class="crlf">\r\n</span></span><span class="ln-row"><span class="bd">Hola</span></span></code></pre>
+<p class="aside"><span class="c-y">状态行</span> = 版本 + 状态码 + 一句说明。常见状态码：200 OK、301 移走了、400 请求格式错、404 Not Found、500 服务器内部错误。</p>
+</div>
+</div>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>头部</th><th>意思</th></tr></thead>
+<tbody>
+<tr><td>Host</td><td>请求要找的主机名和端口（HTTP/1.1 必须有）</td></tr>
+<tr><td>Content-Type</td><td>正文是什么：<code>text/plain</code>、<code>text/html</code>、<code>application/json</code>……</td></tr>
+<tr><td>Content-Length</td><td>正文有多少<b>字节</b></td></tr>
+<tr><td>Connection: close</td><td>这次响应之后，服务器会关闭连接</td></tr>
+</tbody>
+</table>
+</div>
+<h3>接收方怎么知道正文结束了？</h3>
+<p>头部靠空行结束，正文却可以是任何字节，不能靠分隔符。HTTP 有三种办法：</p>
+<ul>
+<li><b>Content-Length</b>：头部先说正文有几个字节，接收方读够就停。</li>
+<li><b>关闭连接</b>：服务器写完正文就关闭，接收方 read 返回 0 时就知道结束了（<code>Connection: close</code> 明确告诉对方会这样做）。</li>
+<li><b>分块</b>（<code>Transfer-Encoding: chunked</code>）：每块前面写上自己的长度，最后一个长度为 0 的块表示结束。</li>
+</ul>
+<p>在服务器一侧，上面那条响应就是一串要写进已连接描述符的字节。下面的片段假设 <code>cfd</code> 是 accept 得到的描述符，并且请求头已经读完：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">static const char</span> resp[] =</span><span class="ln-row">    <span class="st">"HTTP/1.1 200 OK\r\n"</span></span><span class="ln-row">    <span class="st">"Content-Type: text/plain; charset=utf-8\r\n"</span></span><span class="ln-row">    <span class="st">"Content-Length: 4\r\n"</span>                  <span class="cm">// "Hola" = 4 字节</span></span><span class="ln-row">    <span class="st">"Connection: close\r\n"</span></span><span class="ln-row">    <span class="st">"\r\n"</span>                                    <span class="cm">// 空行：头部结束</span></span><span class="ln-row">    <span class="st">"Hola"</span>;</span><span class="ln-row"><span class="fn">write_all</span>(cfd, resp, <span class="kw">sizeof</span> resp - <span class="nm">1</span>);     <span class="cm">// 不发字符串末尾的 '\0'</span></span><span class="ln-row"><span class="fn">close</span>(cfd);</span></code></pre>
+<p class="aside">Content-Length 数的是字节，不是字符：正文里有 "ñ"、"á" 这类字符时，它们在 UTF-8 里各占 2 个字节。</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的规则随机出数，每次都不一样。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="htons"></div>
+<div class="drill" data-drill="ipv4"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="T4">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>套接字接口把网络的哪一层提供给应用程序？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>链路层：程序直接收发 Ethernet 帧</button>
+<button data-o="b" type="button"><span class="k">B</span>传输层：程序交出数据，TCP/UDP、IP 和链路层由内核和网卡完成</button>
+<button data-o="c" type="button"><span class="k">C</span>应用层：套接字自动实现 HTTP</button>
+<button data-o="d" type="button"><span class="k">D</span>物理层</button>
+</div>
+<p class="why"><b>B。</b>套接字位于应用层和传输层之间；不过地址族和连接类型仍要由程序指定（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>在小端的 Raspberry Pi 上，<code>htons(5005)</code>（5005 = 0x138D）按主机序读出来是多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x138D</button>
+<button data-o="b" type="button"><span class="k">B</span>0x0000138D</button>
+<button data-o="c" type="button"><span class="k">C</span>0x8D13</button>
+<button data-o="d" type="button"><span class="k">D</span>0xD831</button>
+</div>
+<p class="why"><b>C。</b>htons 把两个<b>字节</b>对调（不是把十六进制数字倒过来），这样内存里先是 0x13，和网络字节序一致（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>下面哪一项填写 <code>sockaddr_in</code> 是正确的（服务器监听本机所有地址的 5005 端口）？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>sin_family = AF_INET; sin_port = htons(5005); sin_addr.s_addr = htonl(INADDR_ANY);</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>sin_family = SOCK_STREAM; sin_port = htons(5005); sin_addr.s_addr = INADDR_ANY;</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>sin_family = AF_INET; sin_port = 5005; sin_addr.s_addr = htonl(INADDR_ANY);</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>sin_family = AF_INET; sin_port = ntohl(5005); sin_addr.s_addr = 0;</code></button>
+</div>
+<p class="why"><b>A。</b>sin_family 是地址族而不是套接字类型；端口要用 16 位的 htons 转成网络字节序（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>哪一个调用只用于 TCP 服务器，作用是让内核开始为这个套接字排队保存连接请求？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>bind</button>
+<button data-o="b" type="button"><span class="k">B</span>connect</button>
+<button data-o="c" type="button"><span class="k">C</span>accept</button>
+<button data-o="d" type="button"><span class="k">D</span>listen</button>
+</div>
+<p class="why"><b>D。</b>listen 把套接字变成监听套接字，backlog 是队列长度；accept 才从队列里取连接（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>关于 TCP 的三次握手和 accept，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>握手要等服务器调用 accept 才开始，accept 负责发送 SYN + ACK</button>
+<button data-o="b" type="button"><span class="k">B</span>握手在客户端 connect 期间由两边的内核完成；accept 只是从队列里取出已建立的连接，返回新描述符</button>
+<button data-o="c" type="button"><span class="k">C</span>accept 返回后，监听套接字就被这个客户占用，要 close 之后才能接下一个客户</button>
+<button data-o="d" type="button"><span class="k">D</span>accept 返回的就是传给它的那个描述符</button>
+</div>
+<p class="why"><b>B。</b>监听套接字始终保持可用，以后和这个客户的数据都走 accept 返回的新描述符（§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>TCP 连接上 <code>read(fd, buf, 100)</code> 返回 0，说明什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>出错了，要看 errno</button>
+<button data-o="b" type="button"><span class="k">B</span>暂时没有数据，稍后再读</button>
+<button data-o="c" type="button"><span class="k">C</span>对方已经关闭了连接（流结束）</button>
+<button data-o="d" type="button"><span class="k">D</span>缓冲区太小</button>
+</div>
+<p class="why"><b>C。</b>&gt; 0 是读到的字节数，0 是对方关闭，-1 是出错。阻塞模式下没有数据时 read 不会返回，而是等待（§5、§7）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>客户端先 <code>write(fd, "ABC", 3)</code>，再 <code>write(fd, "DEFG", 4)</code>。服务器调用一次 <code>read(fd, buf, 100)</code>，可能得到什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一定是 "ABC"，因为 TCP 保留每次 write 的边界</button>
+<button data-o="b" type="button"><span class="k">B</span>一定是 "ABCDEFG"</button>
+<button data-o="c" type="button"><span class="k">C</span>可能是 "DEFG"，因为顺序不保证</button>
+<button data-o="d" type="button"><span class="k">D</span>可能是 "ABC"、"ABCDEFG"、"AB" 等，取决于数据到达的时机；但顺序一定是 A 在前</button>
+</div>
+<p class="why"><b>D。</b>TCP 是有序的字节流，没有消息边界；读的一方要循环读，用分隔符或长度前缀切出消息（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>UDP 发送方发出一个 1000 字节的数据报，接收方调用 <code>recvfrom(fd, buf, 500, 0, …)</code>。结果是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>得到前 500 字节，其余 500 字节被丢弃</button>
+<button data-o="b" type="button"><span class="k">B</span>得到前 500 字节，下一次 recvfrom 得到后 500 字节</button>
+<button data-o="c" type="button"><span class="k">C</span>recvfrom 返回 -1，数据报保留在队列里</button>
+<button data-o="d" type="button"><span class="k">D</span>内核自动把数据报拆成两个</button>
+</div>
+<p class="why"><b>A。</b>数据报是一个整体，必须一次读完；len 要大于等于对方可能发送的最大数据报（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>下面哪一方<b>通常不需要</b>调用 bind？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>TCP 服务器</button>
+<button data-o="b" type="button"><span class="k">B</span>要在已知端口上接收数据报的 UDP 程序</button>
+<button data-o="c" type="button"><span class="k">C</span>TCP 客户端</button>
+<button data-o="d" type="button"><span class="k">D</span>三者都必须 bind</button>
+</div>
+<p class="why"><b>C。</b>connect 时内核会自动分配一个临时端口；服务器和要接收的 UDP 程序则需要一个已知的端口（§4、§5、§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>用 select 等待多个套接字时，为什么每一轮都要把描述符集合重新设置一次？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>因为 select 返回后会关闭所有描述符</button>
+<button data-o="b" type="button"><span class="k">B</span>因为 select 返回时改写了集合，只留下已经就绪的描述符</button>
+<button data-o="c" type="button"><span class="k">C</span>因为 FD_SET 的效果只持续 1 秒</button>
+<button data-o="d" type="button"><span class="k">D</span>不需要，集合在多次调用之间保持不变</button>
+</div>
+<p class="why"><b>B。</b>所以常见写法是保存一份"总表"，每轮复制一份交给 select（§7）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>服务器向一个客户写数据时，客户已经断开，服务器进程随即被终止。原因和对策是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>内核发送了 SIGPIPE，默认动作是终止进程；发送时加 MSG_NOSIGNAL（或忽略 SIGPIPE），改为检查返回值 -1</button>
+<button data-o="b" type="button"><span class="k">B</span>bind 的端口被占用；设置 SO_REUSEADDR</button>
+<button data-o="c" type="button"><span class="k">C</span>backlog 太小；把 listen 的参数改大</button>
+<button data-o="d" type="button"><span class="k">D</span>字节序错了；改用 htonl</button>
+</div>
+<p class="why"><b>A。</b>SO_REUSEADDR 解决的是重启后 bind 报 "Address already in use"（§7）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">12</span>一条 HTTP 响应里，什么把头部和正文分开？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Content-Type 这一行</button>
+<button data-o="b" type="button"><span class="k">B</span>字符串结尾的 '\0'</button>
+<button data-o="c" type="button"><span class="k">C</span>TCP 的一次 write</button>
+<button data-o="d" type="button"><span class="k">D</span>一个空行：最后一个头部的 \r\n 之后紧跟一个 \r\n</button>
+</div>
+<p class="why"><b>D。</b>正文本身的结束靠 Content-Length、关闭连接或分块编码来判断（§8）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">socket<small>conector</small></span><span class="back"><b>套接字</b><br/>程序访问网络的端点；用一个文件描述符表示。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">encapsulado<small>encapsulation</small></span><span class="back"><b>封装</b><br/>每一层在数据前面加上自己的首部，接收端再逐层拆掉。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">puerto<small>port</small></span><span class="back"><b>端口</b><br/>16 位的数，标识机器上的一个程序或服务。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">puerto dinámico<small>ephemeral port</small></span><span class="back"><b>临时端口</b><br/>由内核临时分配的端口；客户端通常用它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AF_INET · AF_INET6 · AF_UNIX<small>address family</small></span><span class="back"><b>地址族</b><br/>IPv4、IPv6、同一台机器内的本地通信。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOCK_STREAM<small>orientado a conexión</small></span><span class="back"><b>流套接字</b><br/>面向连接、可靠有序的字节流，默认协议 TCP。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOCK_DGRAM<small>datagrama</small></span><span class="back"><b>数据报套接字</b><br/>无连接，每次发送一个独立的报文，默认协议 UDP。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">formato red<small>network byte order</small></span><span class="back"><b>网络字节序</b><br/>大端；首部里的端口和地址都按它传输。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">htons · ntohs<small>host to network short</small></span><span class="back"><b>16 位字节序转换</b><br/>小端机器上对调两个字节；大端机器上不做事。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">INADDR_ANY<small>dirección comodín</small></span><span class="back"><b>任意本机地址</b><br/>bind 它，就能收到发往本机任何接口的请求。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">backlog<small>listen()</small></span><span class="back"><b>等待队列长度</b><br/>已建立、还没被 accept 取走的连接最多排几个。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">three-way handshake<small>SYN · SYN+ACK · ACK</small></span><span class="back"><b>三次握手</b><br/>connect 期间由两边内核完成，建立 TCP 连接。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">flujo de bytes<small>byte stream</small></span><span class="back"><b>字节流</b><br/>TCP 保证字节有序可靠，但不保留消息边界。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">select<small>multiplexación de E/S</small></span><span class="back"><b>I/O 多路复用</b><br/>一个线程同时等待多个描述符中的任一个就绪。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SIGPIPE<small>MSG_NOSIGNAL</small></span><span class="back"><b>管道破裂信号</b><br/>向已关闭的连接写时产生，默认终止进程。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CRLF<small>\r\n</small></span><span class="back"><b>回车换行</b><br/>HTTP 每行的结尾；单独一个 CRLF 是头部和正文之间的空行。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="T4"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

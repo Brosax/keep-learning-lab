@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M21 Arquitectura · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+  details.see-orig { margin-top: .2rem; }
+  details.see-orig > summary { cursor: pointer; font: 600 12px/1.6 var(--f-mono); color: var(--accent); }
+  details.see-orig[open] > summary { margin-bottom: .5rem; }
+  .hot.on .s-line { stroke: var(--signal); stroke-width: 2.4; }
+  .hot.on .s-ta { fill: var(--signal); }
+  .hot .hit { fill: var(--surface); fill-opacity: 0; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 2 章节" class="chain" data-chain="M21"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Arquitecturas y Tecnologías · M21</div>
+<h1>Arquitectura de un entorno inteligente</h1>
+<p class="zh">智能环境的架构</p>
+<div class="meta">
+
+<span><b>6</b> 个学习目标</span>
+<span>阅读约 20 分钟</span>
+
+
+</div>
+<p class="lede">一个智能环境里有几十种技术、成百上千台设备，随时有设备加入或离开。它们怎么协同工作？这一章先看智能环境的整体结构，再看把这一切粘在一起的 <b class="t">middleware (ES/EN)</b>——中间件。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">2.1.1</span>
+<div class="txt"><span>判断哪种 middleware 适合智能环境（答案：SSOA）</span><span class="es">Identificar el middleware adecuado para entornos inteligentes (SSOA).</span><a href="#s2">→ §2 为什么需要 middleware</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.1.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.1.2</span>
+<div class="txt"><span>定义 descubrimiento de servicios（服务发现）</span><span class="es">Definir el concepto de descubrimiento de servicios.</span><a href="#s3">→ §3 服务发现</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.1.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.1.3</span>
+<div class="txt"><span>区分 servicios web 的三个协议：UDDI、WSDL、SOAP</span><span class="es">Distinguir entre los protocolos de los servicios Web (UDDI, WSDL, SOAP).</span><a href="#s4">→ §4 Servicios web</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.1.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.1.4</span>
+<div class="txt"><span>定义 web semántica（语义网）</span><span class="es">Definir el concepto de web semántica.</span><a href="#s6">→ §6 语义网与本体</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.1.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.1.5</span>
+<div class="txt"><span>定义 ontología（本体）</span><span class="es">Definir el concepto de ontología.</span><a href="#s6">→ §6 语义网与本体</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.1.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.1.6</span>
+<div class="txt"><span>定义 OSGi 的 bundle</span><span class="es">Definir el concepto de bundle de OSGi.</span><a href="#s5">→ §5 OSGi 与 bundle</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.1.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M21"><span class="val">0 / 6 已掌握</span><span class="bar"><i></i></span></div>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>像人一样：感知、思考、行动</h2>
+<p>智能环境的架构可以类比 <b class="t">modelo de proceso humano (ES)</b>——人的信息处理模型。系统与 <b class="t">mundo físico</b>——物理世界（环境和人）互动：通过 entradas——输入采集信息，percepción——感知模块提取最相关的特征并分类，存进 conocimiento——知识模块的记忆；conocimiento 再做决策，要么改变系统自身的状态，要么通过 salidas——输出对物理世界采取行动。它还会从经验中学习，不仅能适应变化，还能<b>预测</b>变化。</p>
+<div class="stack" data-explain="conocimiento">
+<figure>
+<div class="fig">
+<svg aria-label="智能环境的方框图：左边是物理世界，右边是电子系统，内含输入、输出、感知、学习、动作生成和知识六个模块；两者之间一进一出两个箭头" role="img" viewbox="0 0 680 320">
+<defs>
+<marker id="m21a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g aria-label="Mundo físico" class="hot" data-key="mundo" role="button" tabindex="0">
+<ellipse class="s-box" cx="95" cy="165" rx="80" ry="140"></ellipse>
+<text class="s-t" text-anchor="middle" x="95" y="70">Mundo físico</text>
+<text class="s-t2" text-anchor="middle" x="95" y="88">物理世界</text>
+<text class="s-t2" text-anchor="middle" x="95" y="132">天气（云、闪电）</text>
+<text class="s-t2" text-anchor="middle" x="95" y="156">温度（温度计）</text>
+<text class="s-t2" text-anchor="middle" x="95" y="180">物体（1 kg 砝码）</text>
+<text class="s-t2" text-anchor="middle" x="95" y="204">人</text>
+</g>
+<line class="s-line" marker-end="url(#m21a)" x1="180" x2="243" y1="120" y2="120"></line>
+<line class="s-line" marker-end="url(#m21a)" x1="243" x2="180" y1="200" y2="200"></line>
+<rect class="s-line" height="290" rx="4" width="425" x="245" y="20"></rect>
+<text class="s-t" text-anchor="end" x="658" y="40">Sistema electrónico</text>
+<g aria-label="Entradas" class="hot" data-key="entradas" role="button" tabindex="0">
+<rect class="s-box" height="104" rx="4" width="98" x="258" y="50"></rect>
+<text class="s-t" text-anchor="middle" x="307" y="98">Entradas</text>
+<text class="s-t2" text-anchor="middle" x="307" y="116">传感器</text>
+</g>
+<g aria-label="Salidas" class="hot" data-key="salidas" role="button" tabindex="0">
+<rect class="s-box" height="135" rx="4" width="98" x="258" y="163"></rect>
+<text class="s-t" text-anchor="middle" x="307" y="226">Salidas</text>
+<text class="s-t2" text-anchor="middle" x="307" y="244">执行器</text>
+</g>
+<g aria-label="Percepción" class="hot" data-key="percepcion" role="button" tabindex="0">
+<rect class="s-box" height="57" rx="4" width="292" x="367" y="50"></rect>
+<text class="s-t" text-anchor="middle" x="513" y="75">Percepción</text>
+<text class="s-t2" text-anchor="middle" x="513" y="93">提取特征、分类</text>
+</g>
+<g aria-label="Aprendizaje" class="hot" data-key="aprendizaje" role="button" tabindex="0">
+<rect class="s-box" height="84" rx="4" width="135" x="367" y="119"></rect>
+<text class="s-t" text-anchor="middle" x="434" y="157">Aprendizaje</text>
+<text class="s-t2" text-anchor="middle" x="434" y="175">从经验中学习</text>
+</g>
+<g aria-label="Generación de acciones" class="hot" data-key="generacion" role="button" tabindex="0">
+<rect class="s-box" height="86" rx="4" width="135" x="367" y="212"></rect>
+<text class="s-t" text-anchor="middle" x="434" y="245">Generación</text>
+<text class="s-t" text-anchor="middle" x="434" y="261">de acciones</text>
+<text class="s-t2" text-anchor="middle" x="434" y="279">生成动作</text>
+</g>
+<g aria-label="Conocimiento" class="hot" data-key="conocimiento" role="button" tabindex="0">
+<rect class="s-box" height="179" rx="4" width="146" x="513" y="119"></rect>
+<text class="s-t" text-anchor="middle" x="586" y="204">Conocimiento</text>
+<text class="s-t2" text-anchor="middle" x="586" y="222">记忆 · 决策</text>
+</g>
+</svg>
+</div>
+<figcaption>Mundo físico 和 Sistema electrónico 之间只有一进一出两个箭头，系统里有六个模块。模块之间<b>没有画箭头</b>；信息的走向是 Entradas → Percepción → Conocimiento →（改变系统状态，或 Generación de acciones）→ Salidas，Aprendizaje 让系统适应并预测变化。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="mundo" hidden="">
+<h3>Mundo físico · 物理世界</h3>
+<p>由 entorno medioambiental（物理环境）和 personas（人）组成。图里是一个椭圆，里面列着天气（云、闪电）、温度（温度计）、物体（1 kg 砝码）和人。系统的输入都来自这里，系统的动作也都作用在这里。</p>
+</div>
+<div class="panel" data-panel="entradas" hidden="">
+<h3>Entradas · 输入 = sensores</h3>
+<p>可以是简单的 <b class="t">transductor</b>——换能器，也可以是集成了处理或通信能力的 <b class="t">dispositivo inteligente</b>——智能设备。</p>
+</div>
+<div class="panel" data-panel="percepcion" hidden="">
+<h3>Percepción · 感知</h3>
+<p>从采集到的原始数据中提取最相关的 características（特征），并对它们分类，存进 conocimiento 的记忆。</p>
+</div>
+<div class="panel" data-panel="aprendizaje" hidden="">
+<h3>Aprendizaje · 学习</h3>
+<p>系统 <i>aprende de la experiencia</i>——从经验中学习，所以不仅能<b>适应</b>变化，还能<b>预测</b>变化。图里它是一个独立模块，夹在 Percepción 和 Generación de acciones 之间、紧挨着 Conocimiento。</p>
+</div>
+<div class="panel" data-panel="generacion" hidden="">
+<h3>Generación de acciones · 生成动作</h3>
+<p>Conocimiento 的决策有两种结果：改变系统自身的状态，或者<b>生成动作</b>，再通过 salidas 体现在物理世界里。</p>
+</div>
+<div class="panel" data-panel="conocimiento" hidden="">
+<h3>Conocimiento · 知识</h3>
+<p>把分类后的信息存进记忆，据此做决策：改变系统状态，或者交给 Generación de acciones 产生对外的动作。图里它是最大的一块，纵跨 Aprendizaje 和 Generación de acciones 两行。</p>
+</div>
+<div class="panel" data-panel="salidas" hidden="">
+<h3>Salidas · 输出 = actuadores</h3>
+<p>把决策变成对物理世界的动作：开灯、调温、锁门……和输入一样，可以是简单换能器，也可以是智能设备。</p>
+</div>
+
+</div>
+<div class="note">
+<span class="lbl">关键词</span>
+<p>感知并作用于物理世界、计算与物理过程闭环耦合，所以智能环境可以看作一个 <b class="t">sistema ciberfísico (ES) / cyber-physical system, CPS (EN)</b>——信息物理系统。</p>
+</div>
+<p>落到硬件上，就是下面这张图：它在上面的方框图上标出了五样东西。</p>
+
+<div class="grid3">
+<div class="cell"><span class="eyebrow">I/O</span><h3>Sensores y actuadores</h3><p>简单换能器，或带处理、通信能力的智能设备。图中是贴着系统边缘的一排小圆，朝外的小三角表示它们面向物理世界。</p></div>
+<div class="cell"><span class="eyebrow">Interacción</span><h3>与物理世界交互</h3><p>物理世界和系统之间一进一出的两个大箭头。</p></div>
+<div class="cell"><span class="eyebrow">Inteligencia</span><h3>分布式或集中式</h3><p><b>distribuida</b>：分散在 <b>sistemas empotrados</b>（嵌入式系统）里；<b>centralizada</b>：集中在大型服务器上。图中从 “Inteligencia” 引出的点划线箭头，既指向各个节点，也指向一朵云。</p></div>
+<div class="cell"><span class="eyebrow">Sistemas empotrados</span><h3>嵌入式节点</h3><p>带一定处理能力的节点，智能可以分布在它们里面。</p></div>
+<div class="cell"><span class="eyebrow">Redes</span><h3>Redes de comunicaciones</h3><p>cableadas（有线）、inalámbricas（无线）或 híbridas（混合）。图中有实线和虚线两种连线。</p></div>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>为什么需要 middleware <span class="tag">2.1.1</span></h2>
+<p>智能环境的特点，直接决定了它对软件架构的要求：</p>
+<div class="flow">
+<div class="cell">
+<span class="eyebrow">特点</span>
+<ul>
+<li>技术多、差异大</li>
+<li>资源分散在环境各处</li>
+<li>设备和服务动态接入、断开，互相通信，组合成新服务</li>
+<li>有 inteligencia、consciencia del contexto（情境感知）和 autonomía</li>
+</ul>
+</div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell">
+<span class="eyebrow">所以系统是</span>
+<p><b>grandes · complejos · dinámicos · heterogéneos · distribuidos</b></p>
+<p class="aside">大、复杂、动态、异构、分布式</p>
+</div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell">
+<span class="eyebrow">需要</span>
+<p><b>escalables · interoperables · adaptativas</b> 的方案，加上一个强大的 middleware：屏蔽各元素的异构和变化，让大家共用一个模型。</p>
+</div>
+</div>
+<p><b>选一选：</b>下面哪种 middleware 适合智能环境？点开每一种看结论。</p>
+<div class="stack" data-explain="tradicional">
+<div aria-label="middleware 选项" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="tradicional" type="button">Tradicional <small>RPC…</small></button>
+<button aria-pressed="false" class="chip" data-key="reflectivo" type="button">Reflectivo</button>
+<button aria-pressed="false" class="chip" data-key="aop" type="button">AOP</button>
+<button aria-pressed="false" class="chip" data-key="soa" type="button">SOA</button>
+<button aria-pressed="false" class="chip" data-key="ssoa" type="button">SSOA</button>
+</div>
+<div class="panel" data-panel="tradicional" hidden="">
+<span class="verdict no">不太适合</span>
+<p>分布式计算的传统 middleware，例如 RPC (Remote Procedure Calls)、CORBA (Common Object Request Broker Architecture)、Java RMI (Remote Method Invocation)、Microsoft DCOM (Distributed Component Object Model)。问题在于<b>对环境变化的适应能力有限</b>。</p>
+</div>
+<div class="panel" data-panel="reflectivo" hidden="">
+<span class="verdict ok">可选方案</span>
+<p><b class="t">middleware reflectivo</b>——反射式中间件：一般指能在运行时检查并调整自身行为的中间件。</p>
+</div>
+<div class="panel" data-panel="aop" hidden="">
+<span class="verdict ok">可选方案</span>
+<p><b class="t">AOP (Aspect Oriented Programming)</b>——面向切面编程：一般指把日志、安全这类横切关注点从业务代码里分离出来。</p>
+</div>
+<div class="panel" data-panel="soa" hidden="">
+<span class="verdict ok">可选方案</span>
+<p><b class="t">SOA (Services Oriented Architecture)</b>——面向服务的架构。功能以“服务”的形式提供，可以发布、发现、组合。后面讲的 servicios web 和 OSGi 都属于这条路线。</p>
+</div>
+<div class="panel" data-panel="ssoa" hidden="">
+<span class="verdict star">首选 · 目标 2.1.1 的答案</span>
+<p><b class="t">SSOA (Semantic Services Oriented Architecture)</b>——语义化面向服务架构。在 SOA 的基础上加入语义（web semántica + ontología），机器能自己理解服务，从而自动发现、组合服务。上面几种方案里，本章特别强调 SSOA（<i>sobre todo</i>）。</p>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>服务发现与协调 <span class="tag">2.1.2</span></h2>
+<p>middleware 要处理好两件事：服务的<b>发现</b>，以及服务之间的<b>通信与协调</b>。</p>
+<div class="note">
+<span class="lbl">定义 · 2.1.2</span>
+<p><b class="t">descubrimiento de servicios (ES) / service discovery (EN)</b>——服务发现：向“cliente”（客户端）提供环境中<b>所有可用服务</b>的信息。</p>
+</div>
+<p>看一个 Bluetooth 的例子：一台 PDA 想知道周围的设备能做什么，于是发出一条服务查询；只有被问到的那台设备回答。</p>
+
+<p><b>配对：</b>发现协议有很多种。先点左边的协议，再点右边它所属的技术。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="upnp" type="button">SSDP <span class="es">Simple Service Discovery Protocol</span></button>
+<button data-l="sun" type="button">Jini</button>
+<button data-l="bt" type="button">SDP <span class="es">Service Discovery Protocol</span></button>
+<button data-l="ws" type="button">UDDI</button>
+<button data-l="osgi" type="button">DAS <span class="es">Device Access Specification</span></button>
+</div>
+<div class="col">
+<button data-r="ws" type="button">Servicios web</button>
+<button data-r="bt" type="button">Bluetooth</button>
+<button data-r="osgi" type="button">OSGi</button>
+<button data-r="upnp" type="button">UPnP</button>
+<button data-r="sun" type="button">Sun Microsystems</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p>发现服务之后，靠什么<b>通信和协调</b>？举三种机制：</p>
+<div class="grid3">
+<div class="cell"><h3>Servicios web</h3><p>为网络上的 M2M 通信设计的软件组件，接口用标准语言定义。§4 详细讲。</p></div>
+<div class="cell"><h3>Agentes</h3><p><b class="t">agente</b>——智能体：自主的软件实体，具备通信、协商、协调能力。例：JADE (JAVA Agent DEvelopment Framework)。</p></div>
+<div class="cell"><h3>Tuple Spaces</h3><p><b class="t">Tuple Space</b>——元组空间：各组件共享的一块空间，用几个简单原语读写其中的信息。例：Sun 的 JavaSpaces。</p></div>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Servicios web：七步走 <span class="tag">2.1.3</span></h2>
+<p><b class="t">servicio web (ES) / web service (EN)</b>——Web 服务。下面是它的典型工作流程。三个角色：proveedor（service provider，服务提供者）、registro de servicios（service registry，服务注册表，一个存放服务描述的数据库）、cliente（service requestor，服务请求者）。</p>
+<div class="stepper" id="ws">
+<figure>
+<div class="fig">
+<svg aria-label="Web 服务的七步：服务提供者向注册表登记（PUBLISH），请求者与注册表之间四次往返（SEARCH），请求者调用提供者并得到结果（INVOKE）" role="img" viewbox="0 0 640 420">
+<defs>
+<marker id="m21b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<path class="s-box" d="M228,34 V94 A72,12 0 0 0 372,94 V34"></path>
+<ellipse class="s-box" cx="300" cy="34" rx="72" ry="12"></ellipse>
+<text class="s-t" text-anchor="middle" x="300" y="66">Service registry</text>
+<text class="s-t2" text-anchor="middle" x="300" y="84">Registro de servicios</text>
+<rect class="s-box" height="58" rx="10" width="180" x="40" y="350"></rect>
+<text class="s-t" text-anchor="middle" x="130" y="374">Service requestor</text>
+<text class="s-t2" text-anchor="middle" x="130" y="394">Cliente · solicitante</text>
+<rect class="s-box" height="58" rx="10" width="180" x="380" y="310"></rect>
+<text class="s-t" text-anchor="middle" x="470" y="334">Service provider</text>
+<text class="s-t2" text-anchor="middle" x="470" y="354">Proveedor</text>
+<text class="s-tm" x="515" y="262">PUBLISH</text>
+<text class="s-tm" text-anchor="end" x="100" y="292">SEARCH</text>
+<text class="s-tm" text-anchor="middle" x="300" y="322">INVOKE</text>
+<g class="msg" data-step="1"><path class="s-line" d="M490,308 C505,200 470,80 376,62" marker-end="url(#m21b)"></path><text class="s-ta" x="494" y="150">① Registration request</text></g>
+<g class="msg" data-step="2"><line class="s-line" marker-end="url(#m21b)" x1="109" x2="224" y1="323" y2="105"></line><text class="s-ta" text-anchor="end" x="186" y="160">② Query</text></g>
+<g class="msg" data-step="3"><line class="s-line" marker-end="url(#m21b)" x1="238" x2="123" y1="112" y2="330"></line><text class="s-ta" text-anchor="end" x="150" y="230">③ Discovery results</text></g>
+<g class="msg" data-step="4"><line class="s-line" marker-end="url(#m21b)" x1="137" x2="252" y1="338" y2="120"></line><text class="s-ta" x="236" y="200">④ Request service info</text></g>
+<g class="msg" data-step="5"><line class="s-line" marker-end="url(#m21b)" x1="266" x2="151" y1="127" y2="345"></line><text class="s-ta" x="206" y="255">⑤ Service information</text></g>
+<g class="msg" data-step="6"><line class="s-line" marker-end="url(#m21b)" x1="222" x2="378" y1="366" y2="342"></line><text class="s-ta" text-anchor="middle" x="300" y="342">⑥ Invocation request</text></g>
+<g class="msg" data-step="7"><line class="s-line" marker-end="url(#m21b)" x1="378" x2="222" y1="358" y2="390"></line><text class="s-ta" text-anchor="middle" x="300" y="404">⑦ Invocation results</text></g>
+</svg>
+</div>
+<figcaption>注册表在上，请求者在左下，提供者在右下，箭头编号就是下面的七步。注意：图中把 ② 到 ⑤ 统称为 SEARCH；有些资料正文只把第 ⑤ 步叫做 búsqueda，把第 ③ 步叫做 descubre。</figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+
+</div>
+<p>三个协议各回答一个问题。把它们放进同一个场景：客户端想找一个能做 X 的服务。<b>点击图中的箭头</b>，看每个协议负责哪一段：</p>
+<div class="stack" data-explain="uddi">
+<figure>
+<div class="fig">
+<svg aria-label="Web 服务的三个协议：客户端先用 UDDI 向注册表询问服务在哪里，再向 Web Server A 索取 WSDL 了解如何调用，最后用 SOAP 发出请求并收到结果" role="img" viewbox="0 0 650 340">
+<defs>
+<marker id="m21d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="170" rx="6" width="150" x="20" y="150"></rect>
+<text class="s-t" text-anchor="middle" x="95" y="230">Web Server A</text>
+<text class="s-t2" text-anchor="middle" x="95" y="248">服务器 · proveedor</text>
+<rect class="s-box" height="52" rx="6" width="130" x="430" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="495" y="42">UDDI Registry</text>
+<text class="s-t2" text-anchor="middle" x="495" y="60">注册表</text>
+<rect class="s-box" height="80" rx="6" width="130" x="430" y="220"></rect>
+<text class="s-t" text-anchor="middle" x="495" y="256">Client</text>
+<text class="s-t2" text-anchor="middle" x="495" y="274">客户端</text>
+<g aria-label="UDDI：第 1、2 步" class="hot" data-key="uddi" role="button" tabindex="0">
+<rect class="hit" height="110" width="250" x="380" y="74"></rect>
+<path class="s-line" d="M540,218 C590,175 590,115 545,74" marker-end="url(#m21d)"></path>
+<path class="s-line" d="M450,74 C400,110 400,180 450,218" marker-end="url(#m21d)"></path>
+<text class="s-ta" x="588" y="150">① UDDI</text>
+<text class="s-ta" text-anchor="end" x="396" y="150">② UDDI</text>
+</g>
+<g aria-label="WSDL：第 3、4 步" class="hot" data-key="wsdl" role="button" tabindex="0">
+<rect class="hit" height="62" width="256" x="172" y="180"></rect>
+<line class="s-line" marker-end="url(#m21d)" x1="428" x2="172" y1="226" y2="196"></line>
+<line class="s-line" marker-end="url(#m21d)" x1="172" x2="428" y1="232" y2="248"></line>
+<text class="s-ta" text-anchor="middle" x="300" y="196">③ ¿cómo invocarte?</text>
+<text class="s-ta" text-anchor="middle" x="300" y="231">④ WSDL</text>
+</g>
+<g aria-label="SOAP：第 5、6 步" class="hot" data-key="soap" role="button" tabindex="0">
+<rect class="hit" height="76" width="256" x="172" y="250"></rect>
+<line class="s-line" marker-end="url(#m21d)" x1="428" x2="172" y1="268" y2="272"></line>
+<line class="s-line" marker-end="url(#m21d)" x1="172" x2="428" y1="310" y2="292"></line>
+<text class="s-ta" text-anchor="middle" x="300" y="262">⑤ SOAP · request</text>
+<text class="s-ta" text-anchor="middle" x="300" y="320">⑥ SOAP · result</text>
+</g>
+</svg>
+</div>
+<figcaption>服务器在左，注册表在右上，客户端在右下；编号 ① 到 ⑥ 就是先后顺序。<span class="hint">点击箭头看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="uddi" hidden="">
+<h3>UDDI · 找到服务（第 1、2 步）</h3>
+<p>① Client 问 UDDI Registry：哪里有能做 X 的 Web 服务？② Registry 回答：Server A 能做 X。两步都标着 UDDI，也就是 <b><i>descubrir los servicios</i></b>。</p>
+</div>
+<div class="panel" data-panel="wsdl" hidden="">
+<h3>WSDL · 知道怎么调用（第 3、4 步）</h3>
+<p>③ Client 直接问 Server A：具体该怎么调用你？④ Server A 回一份 WSDL：“看这个”。WSDL 是<b>服务器自己提供</b>的服务描述，也就是 <b><i>saber cómo invocarlos</i></b>。图中第 ③ 步没有标协议，只有第 ④ 步标着 WSDL。</p>
+</div>
+<div class="panel" data-panel="soap" hidden="">
+<h3>SOAP · 发出请求（第 5、6 步）</h3>
+<p>⑤ Client 用 SOAP 请求执行操作 X；⑥ Server A 也用 SOAP 返回操作 X 的结果。所以 SOAP 不只是“发请求”，<b>结果也走 SOAP</b>。也就是 <b><i>cómo solicitarlos</i></b>。</p>
+</div>
+
+</div>
+<p>先自己想，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>要回答的问题</th><th>比喻</th><th>协议（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>有哪些服务？在哪里？（descubrir）· 上图第 1–2 步</td><td>黄页</td><td class="ans">UDDI · Universal Description, Discovery and Integration：向注册表查询</td></tr>
+<tr class="reveal"><td>怎么调用它？（saber cómo invocarlos）· 第 3–4 步</td><td>说明书</td><td class="ans">WSDL · Web Services Description Language：服务器提供的服务描述</td></tr>
+<tr class="reveal"><td>怎么发出请求？（cómo solicitarlos）· 第 5–6 步</td><td>信封</td><td class="ans">SOAP · Simple Object Access Protocol：请求和结果都用它传</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">比喻只是帮助记忆。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>OSGi 与 bundle <span class="tag">2.1.6</span></h2>
+<p><b class="t">OSGi (Open Service Gateway Initiative)</b> 是一种更针对智能环境的面向服务架构，用来为复杂、异构的系统构建<b>模块化的 Java 应用</b>。它的模块叫 bundle。</p>
+<div class="note">
+<span class="lbl">定义 · 2.1.6</span>
+<p><b class="t">bundle (OSGi)</b>——OSGi 模块：</p>
+<ul>
+<li><b>componente autocontenido</b>——自包含组件：不需要外部引用就能存在和运行；</li>
+<li>本质是一个 <b>JAR 文件 + 一组 metadatos（元数据）</b>，元数据说明这个 bundle 的特性；</li>
+<li>可以单独开发、测试、部署、管理、更新、删除，<b>对其他 bundle 的影响最小</b>。</li>
+</ul>
+</div>
+<p><b>动手试试：</b>下面是一个模拟的 OSGi 框架。更新、停止或删除任意一个 bundle，看看其他 bundle 会不会受影响。</p>
+<div class="osgi" id="osgi">
+<div class="bundles"></div>
+<div class="stepper-ctl">
+<button class="btn primary" data-do="deploy" type="button">desplegar 新 bundle</button>
+<button class="btn" data-do="reset" type="button">重置</button>
+</div>
+<div aria-live="polite" class="log"></div>
+</div>
+<p class="aside">ACTIVE、RESOLVED 是 OSGi 规范里 bundle 的状态名。Gator smart house（§8）里，每个 sensor platform 通电后会把自己的 OSGi bundle 定义发给服务层完成注册。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>语义网与本体 <span class="tag">2.1.4</span><span class="tag">2.1.5</span></h2>
+<p>servicios web 在 descubrimiento 阶段还不够聪明。一个很适合智能环境的改进，是基于 SSOA 的 <b class="t">web semántica (ES) / Semantic Web (EN)</b>——语义网。</p>
+<div class="note">
+<span class="lbl">定义 · 2.1.4</span>
+<p>语义网里的信息是<b>明确定义</b>的，机器可以直接解读。于是有些事情以前只能在 <i>tiempo de compilación</i>（编译时）完成，现在可以自动完成：</p>
+<ul>
+<li>服务的 composición y ejecución（组合与执行）</li>
+<li>descubrimiento dinámico（动态发现）</li>
+</ul>
+</div>
+<p>把两种 web 并排对比一下。切换看看：先看两张网络图，再看一个灯的小例子。</p>
+<div class="stack" data-seg="">
+<div aria-label="切换 web 类型" class="seg" role="group">
+<button aria-pressed="true" data-view="actual" type="button">Web actual</button>
+<button aria-pressed="false" data-view="sem" type="button">Web semántica</button>
+</div>
+<div class="panel" data-pane="actual">
+<figure>
+<div class="fig">
+<svg aria-label="现在的 web：所有节点都叫 Resource，所有连线都叫 linksTo" role="img" viewbox="0 0 490 310">
+<defs>
+<marker id="m21f" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m21f)" x1="175" x2="84" y1="38" y2="79"></line>
+<text class="s-tm" text-anchor="end" x="126" y="54">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="195" x2="182" y1="40" y2="77"></line>
+<text class="s-tm" x="197" y="65">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="233" x2="393" y1="35" y2="81"></line>
+<text class="s-tm" text-anchor="middle" x="315" y="52">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="86" x2="217" y1="102" y2="148"></line>
+<text class="s-tm" x="154" y="121">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="58" x2="77" y1="106" y2="215"></line>
+<text class="s-tm" text-anchor="end" x="59" y="166">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="290" x2="261" y1="106" y2="145"></line>
+<text class="s-tm" x="283" y="135">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="224" x2="110" y1="171" y2="219"></line>
+<text class="s-tm" x="170" y="208">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="244" x2="226" y1="174" y2="217"></line>
+<text class="s-tm" x="243" y="203">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="269" x2="339" y1="173" y2="218"></line>
+<text class="s-tm" x="309" y="192">linksTo</text>
+<line class="s-line" marker-end="url(#m21f)" x1="374" x2="405" y1="245" y2="276"></line>
+<text class="s-tm" x="396" y="258">linksTo</text>
+<ellipse class="s-box" cx="200" cy="26" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="200" y="30">Resource</text>
+<ellipse class="s-box" cx="56" cy="92" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="56" y="96">Resource</text>
+<ellipse class="s-box" cx="176" cy="92" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="176" y="96">Resource</text>
+<ellipse class="s-box" cx="300" cy="92" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="300" y="96">Resource</text>
+<ellipse class="s-box" cx="430" cy="92" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="430" y="96">Resource</text>
+<ellipse class="s-box" cx="250" cy="160" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="250" y="164">Resource</text>
+<ellipse class="s-box" cx="80" cy="232" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="80" y="236">Resource</text>
+<ellipse class="s-box" cx="220" cy="232" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="220" y="236">Resource</text>
+<ellipse class="s-box" cx="360" cy="232" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="360" y="236">Resource</text>
+<ellipse class="s-box" cx="420" cy="290" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="420" y="294">Resource</text>
+</svg>
+</div>
+<figcaption>Web actual——现在的 web。每个节点都只是一个 Resource，每条连线都只是 linksTo。</figcaption>
+</figure>
+<p>链接是有的，但链接<b>不带含义</b>：机器只知道 A 链到 B，不知道 B 是什么、为什么链过去。</p>
+<p class="aside">小例子：<code>&lt;p&gt;客厅的灯开着，功率 9 W。&lt;/p&gt;</code> 人一看就懂；对机器来说只是一串字符，它不知道“灯”是一种 actuador，也不知道“客厅”是一个房间。</p>
+</div>
+<div class="panel" data-pane="sem" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="语义网：节点有类型（Software、Document、Library、Image、Topic、Person、Place），连线是有名字的关系（hasManual、requires、isBasedOn、inPartOf、subject、hasAuthor、livesAt）" role="img" viewbox="0 0 490 310">
+<defs>
+<marker id="m21g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m21g)" x1="222" x2="111" y1="37" y2="80"></line>
+<text class="s-ta" text-anchor="end" x="163" y="52">hasManual</text>
+<line class="s-line" marker-end="url(#m21g)" x1="244" x2="227" y1="40" y2="77"></line>
+<text class="s-ta" x="243" y="66">requires</text>
+<line class="s-line" marker-end="url(#m21g)" x1="281" x2="417" y1="36" y2="81"></line>
+<text class="s-ta" x="352" y="52">requires</text>
+<line class="s-line" marker-end="url(#m21g)" x1="111" x2="255" y1="102" y2="149"></line>
+<text class="s-ta" x="186" y="121">isBasedOn</text>
+<line class="s-line" marker-end="url(#m21g)" x1="83" x2="106" y1="106" y2="215"></line>
+<text class="s-ta" text-anchor="end" x="86" y="166">subject</text>
+<line class="s-line" marker-end="url(#m21g)" x1="330" x2="301" y1="105" y2="145"></line>
+<text class="s-ta" x="323" y="135">inPartOf</text>
+<line class="s-line" marker-end="url(#m21g)" x1="263" x2="139" y1="171" y2="221"></line>
+<text class="s-ta" text-anchor="end" x="197" y="191">subject</text>
+<line class="s-line" marker-end="url(#m21g)" x1="284" x2="266" y1="174" y2="217"></line>
+<text class="s-ta" x="284" y="203">subject</text>
+<line class="s-line" marker-end="url(#m21g)" x1="309" x2="379" y1="173" y2="219"></line>
+<text class="s-ta" x="349" y="192">hasAuthor</text>
+<line class="s-line" marker-end="url(#m21g)" x1="407" x2="422" y1="246" y2="275"></line>
+<text class="s-ta" x="423" y="260">livesAt</text>
+<ellipse class="s-box" cx="250" cy="26" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="250" y="30">Software</text>
+<ellipse class="s-box" cx="80" cy="92" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="80" y="96">Document</text>
+<ellipse class="s-box" cx="220" cy="92" rx="40" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="220" y="96">Library</text>
+<ellipse class="s-box" cx="340" cy="92" rx="36" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="340" y="96">Image</text>
+<ellipse class="s-box" cx="450" cy="92" rx="40" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="450" y="96">Library</text>
+<ellipse class="s-box" cx="290" cy="160" rx="44" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="290" y="164">Document</text>
+<ellipse class="s-box" cx="110" cy="232" rx="36" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="110" y="236">Topic</text>
+<ellipse class="s-box" cx="260" cy="232" rx="36" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="260" y="236">Topic</text>
+<ellipse class="s-box" cx="400" cy="232" rx="36" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="400" y="236">Person</text>
+<ellipse class="s-box" cx="430" cy="290" rx="36" ry="14"></ellipse><text class="s-t2" text-anchor="middle" x="430" y="294">Place</text>
+</svg>
+</div>
+<figcaption>Web semántica——语义网。节点有类型，连线是有名字的关系。</figcaption>
+</figure>
+<p>同样是一张网，但每个节点知道自己<b>是什么</b>（Software、Document、Person……），每条边说明<b>是什么关系</b>（requires、hasAuthor、livesAt……）。机器可以顺着关系推理，例如“这份 Document 的作者住在哪里”。</p>
+<p class="aside">小例子：同一句“客厅的灯开着，功率 9 W”写成三元组——</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>sujeto</th><th>predicado</th><th>objeto</th></tr></thead>
+<tbody>
+<tr><td class="mono">Lámpara_01</td><td class="mono">esUn</td><td class="mono">Actuador</td></tr>
+<tr><td class="mono">Lámpara_01</td><td class="mono">estáEn</td><td class="mono">Salón</td></tr>
+<tr><td class="mono">Lámpara_01</td><td class="mono">estado</td><td class="mono">encendida</td></tr>
+<tr><td class="mono">Lámpara_01</td><td class="mono">potencia</td><td class="mono">9 W</td></tr>
+</tbody>
+</table>
+</div>
+<p>每个词都指向 ontología 里定义好的概念。机器现在能自己回答：“Salón 里有哪些 Actuador？”答案是 <code>Lámpara_01</code>。</p>
+</div>
+
+</div>
+<p>要做到这一点，语义网需要一个 ontología。</p>
+<div class="note">
+<span class="lbl">定义 · 2.1.5</span>
+<p><b class="t">ontología (ES) / ontology (EN)</b>——本体：对环境中<b>所有概念及其相互关系</b>的形式化表示，目的是让应用“理解”信息。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="智能家居的小本体：温度计是传感器，灯是执行器，二者都是设备且都在客厅，温度计测量温度" role="img" viewbox="0 0 600 305">
+<defs>
+<marker id="m21c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m21c)" x1="200" x2="268" y1="102" y2="59"></line>
+<line class="s-line" marker-end="url(#m21c)" x1="400" x2="332" y1="102" y2="59"></line>
+<line class="s-line" marker-end="url(#m21c)" x1="110" x2="149" y1="187" y2="140"></line>
+<line class="s-line" marker-end="url(#m21c)" x1="490" x2="451" y1="187" y2="140"></line>
+<line class="s-line" marker-end="url(#m21c)" x1="150" x2="238" y1="205" y2="205"></line>
+<line class="s-line" marker-end="url(#m21c)" x1="450" x2="362" y1="205" y2="205"></line>
+<line class="s-line" marker-end="url(#m21c)" x1="90" x2="90" y1="223" y2="255"></line>
+<text class="s-tm" text-anchor="end" x="226" y="76">esUn</text>
+<text class="s-tm" x="374" y="76">esUn</text>
+<text class="s-tm" text-anchor="end" x="122" y="160">esUn</text>
+<text class="s-tm" x="478" y="160">esUn</text>
+<text class="s-tm" text-anchor="middle" x="194" y="197">estáEn</text>
+<text class="s-tm" text-anchor="middle" x="406" y="197">estáEn</text>
+<text class="s-tm" x="98" y="244">mide</text>
+<rect class="s-box" height="36" rx="18" width="120" x="240" y="22"></rect><text class="s-t" text-anchor="middle" x="300" y="45">Dispositivo</text>
+<rect class="s-box" height="36" rx="18" width="120" x="110" y="102"></rect><text class="s-t" text-anchor="middle" x="170" y="125">Sensor</text>
+<rect class="s-box" height="36" rx="18" width="120" x="370" y="102"></rect><text class="s-t" text-anchor="middle" x="430" y="125">Actuador</text>
+<rect class="s-box" height="36" rx="18" width="120" x="30" y="187"></rect><text class="s-t" text-anchor="middle" x="90" y="210">Termómetro</text>
+<rect class="s-soft" height="36" rx="4" width="120" x="240" y="187"></rect><text class="s-t" text-anchor="middle" x="300" y="210">Salón</text>
+<rect class="s-box" height="36" rx="18" width="120" x="450" y="187"></rect><text class="s-t" text-anchor="middle" x="510" y="210">Lámpara</text>
+<rect class="s-soft" height="36" rx="4" width="120" x="30" y="257"></rect><text class="s-t" text-anchor="middle" x="90" y="280">Temperatura</text>
+</svg>
+</div>
+<figcaption>一个智能家居小本体（示例）：概念（圆角框）和它们之间的关系（带标签的箭头）。有了它，系统就能推理出“Termómetro 是一种 Dispositivo”。</figcaption>
+</figure>
+<div class="panel">
+<h3>更严格的定义和词源</h3>
+<p>更严格地说，ontología 是一种形式化的、经过共识的概念规范表示，提供关于某个领域的共享知识；这些知识是机器可处理的语义信息，并且能在 agentes（组织、个人、软件）之间互操作。</p>
+<p>这个词来自哲学：希腊语 <i>onto</i>（存在）+ <i>logos</i>（知识），指研究现实的本质和组织的理论。在计算机领域，它指描述环境中有哪些类型的实体、它们之间如何关联。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Plataformas IoT <span class="tag plain">了解即可</span></h2>
+<p><b class="t">plataforma IoT (ES) / IoT platform (EN)</b>——IoT 平台：一种 middleware，以安全、容错的方式把“cosas”（物）和它们采集的数据，连接到 web 应用并加以管理。它可扩展、灵活，通常基于标准、API 和 SDK，方便接入新的设备、应用和异构服务。</p>
+<p>为什么要用平台？很多看起来完全不同的 IoT 应用，需求其实大同小异：传感器及其管理、安全与隐私、数据分析和处理、存储、用户界面。平台提供抽象层和可定制的通用工具，能缩短 time-to-market（上市时间），往往也能降低成本。</p>
+<div aria-label="平台举例" class="chips">
+<a class="chip" href="https://www.ibm.com/internet-of-things/common/pdf/watson-iot-point-of-view.pdf">Watson IoT</a>
+<a class="chip" href="https://aws.amazon.com/es/iot-core/features/">AWS IoT</a>
+<a class="chip" href="https://azure.microsoft.com/es-es/features/iot-accelerators/">Microsoft Azure IoT Suite</a>
+<a class="chip" href="https://www.kaaproject.org/">Kaa</a>
+<a class="chip" href="https://firebase.google.com/?hl=es">Firebase</a>
+</div>
+<p class="aside">想多了解，可以读 IBM 的 IoT 101 指南（为什么要用 IoT 平台）；这份指南属于拓展内容。</p>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>Gator smart house 的分层</h2>
+<p>University of Florida 的 Gator Tech Smart House（Bloque 1 见过）为任意普适计算空间设计了一套通用的参考架构，分成几个抽象层级：Físico、Plataforma del sensor、Servicio（与 Conocimiento、Gestión del contexto 同级）、Aplicación。<b>点击每一层：</b></p>
+<div class="stack" data-explain="plataforma">
+<figure>
+<div class="fig">
+<svg aria-label="Gator smart house 的分层：顶层应用层；中间一行从左到右是情境管理层、服务层、知识层；下面是传感器平台层；最底层是物理层，分为传感器/执行器子层和物理世界子层" role="img" viewbox="0 0 680 500">
+<defs>
+<marker id="m21e" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g aria-label="Application layer · Aplicación" class="hot" data-key="aplicacion" role="button" tabindex="0">
+<rect class="s-box" height="80" rx="4" width="660" x="10" y="10"></rect>
+<text class="s-t" x="22" y="30">Application layer · Aplicación</text>
+<rect class="s-soft" height="42" rx="4" width="120" x="22" y="40"></rect>
+<text class="s-t2" text-anchor="middle" x="82" y="57">Application</text>
+<text class="s-t2" text-anchor="middle" x="82" y="73">manager</text>
+<rect class="s-dash" height="46" rx="6" width="504" x="156" y="38"></rect>
+<text class="s-tm" x="166" y="58">Integrated</text>
+<text class="s-tm" x="166" y="73">development env.</text>
+<rect class="s-soft" height="34" rx="4" width="90" x="290" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="335" y="58">Service</text>
+<text class="s-t2" text-anchor="middle" x="335" y="72">composer</text>
+<rect class="s-soft" height="34" rx="4" width="90" x="390" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="435" y="58">Context</text>
+<text class="s-t2" text-anchor="middle" x="435" y="72">builder</text>
+<rect class="s-soft" height="34" rx="4" width="78" x="490" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="529" y="65">Debugger</text>
+<rect class="s-soft" height="34" rx="4" width="74" x="578" y="44"></rect>
+<text class="s-t2" text-anchor="middle" x="615" y="65">Simulator</text>
+</g>
+<g aria-label="Context management layer · Gestión del contexto" class="hot" data-key="contexto" role="button" tabindex="0">
+<rect class="s-box" height="190" rx="4" width="160" x="10" y="110"></rect>
+<text class="s-t" x="22" y="130">Context management</text>
+<text class="s-t2" x="22" y="146">Gestión del contexto</text>
+<rect class="s-soft" height="40" rx="4" width="136" x="22" y="156"></rect>
+<text class="s-t2" text-anchor="middle" x="90" y="172">Context detection &amp;</text>
+<text class="s-t2" text-anchor="middle" x="90" y="188">maintenance engine</text>
+<path class="s-line" d="M90,222 L55,246 M90,222 L90,246 M90,222 L125,246 M55,246 L40,270 M55,246 L70,270 M125,246 L110,270 M125,246 L140,270"></path>
+<circle class="s-soft" cx="90" cy="222" r="6"></circle>
+<circle class="s-soft" cx="55" cy="246" r="6"></circle>
+<circle class="s-soft" cx="90" cy="246" r="6"></circle>
+<circle class="s-soft" cx="125" cy="246" r="6"></circle>
+<circle class="s-soft" cx="40" cy="270" r="6"></circle>
+<circle class="s-soft" cx="70" cy="270" r="6"></circle>
+<circle class="s-soft" cx="110" cy="270" r="6"></circle>
+<circle class="s-soft" cx="140" cy="270" r="6"></circle>
+<text class="s-t2" text-anchor="middle" x="90" y="293">Context graphs</text>
+</g>
+<g aria-label="Service layer · Servicio" class="hot" data-key="servicio" role="button" tabindex="0">
+<rect class="s-box" height="190" rx="4" width="310" x="185" y="110"></rect>
+<text class="s-t" x="197" y="130">Service layer · Servicio</text>
+<path class="s-dash" d="M225,211 L270,190 M280,211 L278,191 M335,211 L339,161 M390,211 L402,191 M445,211 L410,190"></path>
+<ellipse class="s-box" cx="340" cy="150" rx="34" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="340" y="154">Service</text>
+<ellipse class="s-box" cx="275" cy="180" rx="34" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="275" y="184">Service</text>
+<ellipse class="s-box" cx="405" cy="180" rx="34" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="405" y="184">Service</text>
+<text class="s-tm" x="382" y="150">composite</text>
+<ellipse class="s-box" cx="225" cy="222" rx="26" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="225" y="226">Service</text>
+<ellipse class="s-box" cx="280" cy="222" rx="26" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="280" y="226">Service</text>
+<ellipse class="s-box" cx="335" cy="222" rx="26" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="335" y="226">Service</text>
+<ellipse class="s-box" cx="390" cy="222" rx="26" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="390" y="226">Service</text>
+<ellipse class="s-box" cx="445" cy="222" rx="26" ry="11"></ellipse><text class="s-t2" text-anchor="middle" x="445" y="226">Service</text>
+<text class="s-tm" text-anchor="middle" x="335" y="250">basic services</text>
+<rect class="s-soft" height="30" rx="4" width="250" x="215" y="258"></rect>
+<text class="s-t" text-anchor="middle" x="278" y="278">OSGi framework</text>
+</g>
+<g aria-label="Knowledge layer · Conocimiento" class="hot" data-key="conocimiento" role="button" tabindex="0">
+<rect class="s-box" height="190" rx="4" width="160" x="510" y="110"></rect>
+<text class="s-t" x="522" y="130">Knowledge layer</text>
+<text class="s-t2" x="522" y="146">Conocimiento</text>
+<text class="s-t2" x="522" y="170">Service registration</text>
+<text class="s-t2" x="522" y="187">Service discovery</text>
+<rect class="s-soft" height="26" rx="4" width="136" x="522" y="198"></rect>
+<text class="s-t2" text-anchor="middle" x="590" y="215">Reasoning engine</text>
+<rect class="s-soft" height="52" rx="4" width="136" x="522" y="234"></rect>
+<text class="s-t2" text-anchor="middle" x="590" y="256">Knowledge and</text>
+<text class="s-t2" text-anchor="middle" x="590" y="273">service semantics</text>
+</g>
+<g aria-label="Sensor platform layer · Plataforma del sensor" class="hot" data-key="plataforma" role="button" tabindex="0">
+<rect class="s-box" height="70" rx="4" width="660" x="10" y="320"></rect>
+<text class="s-t" x="22" y="346">Sensor platform</text>
+<text class="s-t" x="22" y="362">layer</text>
+<text class="s-t2" x="22" y="380">Plataforma del sensor</text>
+<rect class="s-soft" height="54" rx="4" width="78" x="191" y="328"></rect>
+<text class="s-tm" text-anchor="middle" x="230" y="344">OSGi</text>
+<text class="s-t2" text-anchor="middle" x="230" y="359">bundle</text>
+<text class="s-tm" text-anchor="middle" x="230" y="374">firmware</text>
+<rect class="s-soft" height="54" rx="4" width="78" x="281" y="328"></rect>
+<text class="s-tm" text-anchor="middle" x="320" y="344">OSGi</text>
+<text class="s-t2" text-anchor="middle" x="320" y="359">bundle</text>
+<text class="s-tm" text-anchor="middle" x="320" y="374">firmware</text>
+<rect class="s-soft" height="54" rx="4" width="78" x="371" y="328"></rect>
+<text class="s-tm" text-anchor="middle" x="410" y="344">OSGi</text>
+<text class="s-t2" text-anchor="middle" x="410" y="359">bundle</text>
+<text class="s-tm" text-anchor="middle" x="410" y="374">firmware</text>
+<text class="s-tm" text-anchor="middle" x="505" y="359">· · · · ·</text>
+<rect class="s-soft" height="54" rx="4" width="78" x="561" y="328"></rect>
+<text class="s-tm" text-anchor="middle" x="600" y="344">OSGi</text>
+<text class="s-t2" text-anchor="middle" x="600" y="359">bundle</text>
+<text class="s-tm" text-anchor="middle" x="600" y="374">firmware</text>
+</g>
+<g aria-label="Physical layer · Físico" class="hot" data-key="fisico" role="button" tabindex="0">
+<rect class="s-box" height="90" rx="4" width="660" x="10" y="400"></rect>
+<line class="s-life" x1="170" x2="170" y1="400" y2="490"></line>
+<line class="s-life" x1="170" x2="670" y1="445" y2="445"></line>
+<text class="s-t" x="22" y="440">Physical layer</text>
+<text class="s-t2" x="22" y="458">Físico</text>
+<text class="s-t2" text-anchor="middle" x="230" y="424">Sensor</text>
+<text class="s-t2" text-anchor="middle" x="320" y="424">Actuator</text>
+<text class="s-t2" text-anchor="middle" x="600" y="424">Sensor/actuator</text>
+<text class="s-tm" text-anchor="end" x="662" y="440">Sensor/actuator layer</text>
+<rect class="s-soft" height="14" rx="3" width="40" x="360" y="453"></rect>
+<rect class="s-soft" height="14" rx="3" width="40" x="410" y="453"></rect>
+<text class="s-t2" x="462" y="465">Appliances/devices/objects</text>
+<text class="s-tm" text-anchor="end" x="662" y="484">Physical world layer</text>
+</g>
+<line class="s-line" marker-end="url(#m21e)" marker-start="url(#m21e)" x1="90" x2="90" y1="92" y2="108"></line>
+<line class="s-line" marker-end="url(#m21e)" marker-start="url(#m21e)" x1="340" x2="340" y1="92" y2="108"></line>
+<line class="s-line" marker-end="url(#m21e)" marker-start="url(#m21e)" x1="590" x2="590" y1="92" y2="108"></line>
+<line class="s-line" marker-end="url(#m21e)" marker-start="url(#m21e)" x1="171" x2="184" y1="200" y2="200"></line>
+<line class="s-line" marker-end="url(#m21e)" marker-start="url(#m21e)" x1="496" x2="509" y1="200" y2="200"></line>
+<path class="s-dash" d="M230,328 L225,233 M320,328 L335,233 M410,328 L390,233 M600,328 L445,233" pointer-events="none"></path>
+<path class="s-line" d="M230,382 L230,410 M320,382 L320,410 M410,382 L410,452 M600,382 L600,410" pointer-events="none"></path>
+</svg>
+</div>
+<figcaption>中间一行从左到右是 Context management、Service、Knowledge；虚线表示每个 sensor platform 的 OSGi bundle 对应服务层里的一个 basic service。<span class="hint">点击每一层看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="aplicacion" hidden="">
+<h3>Aplicación · 应用层</h3>
+<p>一个 application manager（应用管理器），负责激活、停用服务；再加上一套开发工具，用来创建新的应用和智能空间。图中这套工具是一个 Integrated development environment，包括 service composer、context builder、debugger 和 simulator。应用层和下面三个同级的层都有双向箭头。</p>
+</div>
+<div class="panel" data-panel="servicio" hidden="">
+<h3>Servicio · 服务层</h3>
+<p>应用层和平台层之间的中介，提供<b>发布、定义语义、发现、组合</b>服务的机制。这一层运行 OSGi framework：sensor platform 的 bundle 在这里成为 <b>basic services</b>，basic services 再组合成 <b>composite services</b>（图中 basic 和 composite 之间的虚线）。组合出来的服务，就是这个空间里可用的应用。</p>
+</div>
+<div class="panel" data-panel="conocimiento" hidden="">
+<h3>Conocimiento · 知识层</h3>
+<p>包含所提供服务和所连接设备的 <b>ontología</b>（图中：Knowledge and service semantics），以及一个 <b>motor de razonamiento</b>（Reasoning engine，推理引擎），它借助本体做决策，判断某些 servicios compuestos（组合服务）是否可用。</p>
+<p class="aside">注意：图中把 Service registration 和 Service discovery 也画在知识层里；有些资料正文则把发布、发现服务归给服务层。</p>
+<p class="aside">例子：系统要知道摄氏温度传感器的输出必须先转成华氏度，才能交给另一个服务。</p>
+</div>
+<div class="panel" data-panel="contexto" hidden="">
+<h3>Gestión del contexto · 情境管理层</h3>
+<p>可以定义不同的 contexto（情境）。每个情境是一张<b>图</b>（图中：Context graphs），规定或限制多个应用中服务的激活和状态。motor de contexto（图中：Context detection and maintenance engine）负责检测“没有考虑到的状态”，并从中恢复。</p>
+</div>
+<div class="panel" data-panel="plataforma" hidden="">
+<h3>Plataforma del sensor · 传感器平台层</h3>
+<p>通常是嵌入式系统，汇集并控制环境中某一区域的传感器和执行器，向上提供统一的接口和协议。它的作用是<b>把硬件变成软件服务</b>，可以编程，也可以和其他服务组合。这些服务就是 OSGi bundle：每个平台由 sensor/actuator firmware 和一份 OSGi service bundle definition 组成（图中简写为 OSGi bundle + firmware）。</p>
+<p class="aside">例子：烤面包机应该接入（忘了关可能起火），搅拌机就不必。</p>
+</div>
+<div class="panel" data-panel="fisico" hidden="">
+<h3>Físico · 物理层</h3>
+<p>各种电器和设备的传感器、执行器：灯、电视、机顶盒、收音机、闹钟、门铃、门锁、烟雾和温度探测、空调、报警和安防系统……上层通过 plataforma del sensor 来“发现”并控制它们。图中把这一层再分成两个子层：<b>Sensor/actuator layer</b>（传感器、执行器）和 <b>Physical world layer</b>（appliances/devices/objects，电器、设备、物体）。</p>
+</div>
+
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>读 “The Gator tech smart house: A programmable pervasive space” 这篇文章的 <b>MIDDLEWARE ARCHITECTURE</b> 一节。文件在本模块的 Recursos 里，完整信息见本节末的资料入口。</p>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">10 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M21">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>按本章的说法，智能环境可以看作一种什么系统？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>纯软件系统</button>
+<button data-o="b" type="button"><span class="k">B</span>只采集数据的监测网络</button>
+<button data-o="c" type="button"><span class="k">C</span>sistema ciberfísico</button>
+<button data-o="d" type="button"><span class="k">D</span>集中式数据库</button>
+</div>
+<p class="why"><b>C。</b>它感知物理世界、做决策、再作用回物理世界，是计算和物理过程闭环耦合的 sistema ciberfísico（§1）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>为什么传统的分布式计算 middleware（RPC、CORBA、RMI、DCOM）不太适合智能环境？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它们只能用在有线网络上</button>
+<button data-o="b" type="button"><span class="k">B</span>它们对环境变化的适应能力有限</button>
+<button data-o="c" type="button"><span class="k">C</span>它们不支持远程调用</button>
+<button data-o="d" type="button"><span class="k">D</span>它们必须配合 ontología 使用</button>
+</div>
+<p class="why"><b>B。</b>传统 middleware 在 <i>adaptabilidad a un cambio en el entorno</i> 方面有局限（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>本章认为最适合智能环境的 middleware 是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RPC</button>
+<button data-o="b" type="button"><span class="k">B</span>Tuple Space</button>
+<button data-o="c" type="button"><span class="k">C</span>DCOM</button>
+<button data-o="d" type="button"><span class="k">D</span>SSOA</button>
+</div>
+<p class="why"><b>D。</b>§2 列出 reflectivo、AOP、SOA，并特别强调 SSOA，这就是目标 2.1.1 的答案。Tuple Space 是一种协调机制，不是这里说的 middleware 方案。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>“向 cliente 提供环境中所有可用服务的信息”，这个机制叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>descubrimiento de servicios</button>
+<button data-o="b" type="button"><span class="k">B</span>composición de servicios</button>
+<button data-o="c" type="button"><span class="k">C</span>invocación</button>
+<button data-o="d" type="button"><span class="k">D</span>publicación</button>
+</div>
+<p class="why"><b>A。</b>这是 descubrimiento de servicios 的定义（目标 2.1.2）。publicación 是 proveedor 把描述登记到 registro。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>在 servicios web 的流程里，proveedor 把服务描述登记到 registro de servicios，这一步叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>búsqueda</button>
+<button data-o="b" type="button"><span class="k">B</span>invocación</button>
+<button data-o="c" type="button"><span class="k">C</span>publicación</button>
+<button data-o="d" type="button"><span class="k">D</span>descubrimiento</button>
+</div>
+<p class="why"><b>C。</b>第 ① 步就是 publicación。búsqueda 是第 ⑤ 步：registro 把某个服务的信息发给 cliente。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>哪个协议告诉你“如何调用”一个 web service？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UDDI</button>
+<button data-o="b" type="button"><span class="k">B</span>WSDL</button>
+<button data-o="c" type="button"><span class="k">C</span>SOAP</button>
+<button data-o="d" type="button"><span class="k">D</span>SSDP</button>
+</div>
+<p class="why"><b>B。</b>UDDI 用来发现服务，WSDL 描述如何调用，SOAP 用来发出请求。SSDP 是 UPnP 的发现协议。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">07</span>关于 OSGi 的 bundle，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>它是一种描述概念关系的 XML 本体</button>
+<button data-o="b" type="button"><span class="k">B</span>更新一个 bundle 需要重启整个系统</button>
+<button data-o="c" type="button"><span class="k">C</span>它是带元数据的 JAR 文件，是自包含组件</button>
+<button data-o="d" type="button"><span class="k">D</span>它是 Bluetooth 的服务发现协议</button>
+</div>
+<p class="why"><b>C。</b>bundle = JAR + metadatos，自包含，可以单独更新或删除，对其他 bundle 影响最小（目标 2.1.6）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>语义网要让应用“理解”信息，需要什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>一个 ontología</button>
+<button data-o="b" type="button"><span class="k">B</span>一个 UDDI 注册表</button>
+<button data-o="c" type="button"><span class="k">C</span>更快的网络</button>
+<button data-o="d" type="button"><span class="k">D</span>一个 Tuple Space</button>
+</div>
+<p class="why"><b>A。</b>La web semántica necesita una ontología：对所有概念及其关系的形式化表示（目标 2.1.4、2.1.5）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">09</span>在 Gator smart house 中，把硬件变成可编程、可组合的软件服务的是哪一层？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Físico</button>
+<button data-o="b" type="button"><span class="k">B</span>Conocimiento</button>
+<button data-o="c" type="button"><span class="k">C</span>Aplicación</button>
+<button data-o="d" type="button"><span class="k">D</span>Plataforma del sensor</button>
+</div>
+<p class="why"><b>D。</b>sensor platform 把传感器和执行器变成软件服务（OSGi bundle），向上提供统一接口。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>Gator 中，谁来判断某个 servicio compuesto 是否可用？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>情境管理层的 motor de contexto</button>
+<button data-o="b" type="button"><span class="k">B</span>知识层的 motor de razonamiento</button>
+<button data-o="c" type="button"><span class="k">C</span>应用层的 application manager</button>
+<button data-o="d" type="button"><span class="k">D</span>sensor platform</button>
+</div>
+<p class="why"><b>B。</b>知识层借助 ontología 推理，判断组合服务是否可用。motor de contexto 负责检测并恢复“没有考虑到的状态”。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">middleware</span><span class="back"><b>中间件</b><br/>位于应用和异构设备、网络之间，屏蔽差异，提供共同的模型。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sistema ciberfísico<small>CPS · cyber-physical system</small></span><span class="back"><b>信息物理系统</b><br/>计算与物理世界闭环耦合：感知它，也作用于它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOA<small>Services Oriented Architecture</small></span><span class="back"><b>面向服务的架构</b><br/>功能以服务形式提供，可发布、发现、组合。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SSOA<small>Semantic SOA</small></span><span class="back"><b>语义化面向服务架构</b><br/>SOA 加上语义，本章认为最适合智能环境。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AOP<small>Aspect Oriented Programming</small></span><span class="back"><b>面向切面编程</b><br/>一般指把横切关注点单独抽出来。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">middleware reflectivo</span><span class="back"><b>反射式中间件</b><br/>一般指能在运行时自我检查、自我调整。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">descubrimiento de servicios</span><span class="back"><b>服务发现</b><br/>向 cliente 提供环境中所有可用服务的信息。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">servicio web<small>web service</small></span><span class="back"><b>Web 服务</b><br/>为网络上 M2M 通信设计的软件组件，接口用标准语言定义。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">agente</span><span class="back"><b>智能体</b><br/>自主的软件实体，能通信、协商、协调。例：JADE。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Tuple Space</span><span class="back"><b>元组空间</b><br/>组件共享的空间，用简单原语读写信息。例：JavaSpaces。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UDDI<small>Universal Description, Discovery and Integration</small></span><span class="back"><b>发现服务</b><br/>回答“有哪些服务、在哪里”。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">WSDL<small>Web Services Description Language</small></span><span class="back"><b>描述服务</b><br/>回答“怎么调用它”。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SOAP<small>Simple Object Access Protocol</small></span><span class="back"><b>请求服务</b><br/>回答“怎么发出请求”。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">OSGi<small>Open Service Gateway Initiative</small></span><span class="back"><b>开放服务网关协议</b><br/>为复杂异构系统构建模块化 Java 应用的 SOA。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">bundle</span><span class="back"><b>OSGi 模块</b><br/>自包含组件，JAR + 元数据，可单独更新、删除。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">web semántica<small>Semantic Web</small></span><span class="back"><b>语义网</b><br/>信息定义明确、机器可解读，支持服务自动组合和动态发现。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ontología<small>ontology</small></span><span class="back"><b>本体</b><br/>对环境中所有概念及其关系的形式化表示。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">plataforma IoT<small>IoT platform</small></span><span class="back"><b>IoT 平台</b><br/>安全、容错地连接和管理“cosas”及其数据的 middleware。</span><span class="flipcue"></span></button>
+</div>
+
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M21"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var box = document.getElementById("ws");
+  if (!box) return;
+  var msgs = Array.prototype.slice.call(box.querySelectorAll(".msg"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var T = [
+    "全部 7 步一览，分三个阶段：PUBLISH（①）、SEARCH（②–⑤）、INVOKE（⑥⑦）。点「下一步」逐步播放，当前这一步会高亮。",
+    "<b>Publicación（发布）</b>：proveedor 把自己服务的描述登记到 registro de servicios。英文全称：<i>Registration request for service description</i>。",
+    "Cliente（也叫 solicitante，请求者）去<b>查询</b> registro。英文全称：<i>Query for all matching services in the registry</i>。",
+    "<b>Descubrimiento（发现）</b>：registro 把匹配的服务“告诉”cliente。英文全称：<i>Discovery results</i>。",
+    "Cliente 选中其中一个服务，向 registro 要它的访问信息。英文全称：<i>Request for selected service information</i>。",
+    "<b>Búsqueda（查找）</b>：registro 把这个服务的信息发给 cliente。英文全称：<i>Service information of selected service</i>。",
+    "<b>Invocación（调用）</b>：cliente 直接调用 proveedor 的服务，不再经过 registro。英文全称：<i>Invocation request including possible inputs</i>（可以带输入参数）。",
+    "Proveedor 把服务<b>提供</b>给 cliente。英文全称：<i>Invocation results</i>。流程结束。"
+  ];
+  var i = 0;
+  function render() {
+    msgs.forEach(function (m) {
+      var s = +m.getAttribute("data-step");
+      m.classList.toggle("on", i > 0 && s === i);
+      m.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / 7 步";
+    prev.disabled = i === 0;
+    next.disabled = i === 7;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < 7) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("osgi");
+  if (!root) return;
+  var grid = root.querySelector(".bundles"), log = root.querySelector(".log");
+  var INIT = [
+    { n: "luz.salon", v: [1, 0, 0], a: true },
+    { n: "termostato", v: [2, 1, 0], a: true },
+    { n: "alarma", v: [1, 4, 0], a: true }
+  ];
+  var EXTRA = ["persiana.motor", "sensor.presencia", "riego.jardin"];
+  var B = [];
+  function ver(b) { return b.v.join("."); }
+  function say(s) {
+    var d = document.createElement("div");
+    d.textContent = s;
+    log.insertBefore(d, log.firstChild);
+  }
+  function others(b) { return B.filter(function (x) { return x !== b && x.a; }).length; }
+  function draw(flash) {
+    grid.innerHTML = "";
+    if (!B.length) {
+      grid.innerHTML = '<p class="aside">框架里一个 bundle 都没有了。点「desplegar 新 bundle」部署一个。</p>';
+      return;
+    }
+    B.forEach(function (b) {
+      var c = document.createElement("div");
+      c.className = "bundle" + (flash === b.n ? " flash" : "");
+      c.setAttribute("data-n", b.n);
+      c.innerHTML =
+        '<div class="hd"><span class="name">' + b.n + '.jar</span><span class="ver">v' + ver(b) + "</span></div>" +
+        '<span class="st ' + (b.a ? "active" : "resolved") + '">' + (b.a ? "ACTIVE" : "RESOLVED") + "</span>" +
+        '<div class="acts"><button type="button" data-do="up">actualizar</button>' +
+        '<button type="button" data-do="tog">' + (b.a ? "detener" : "arrancar") + "</button>" +
+        '<button type="button" data-do="rm">eliminar</button></div>';
+      grid.appendChild(c);
+    });
+    if (flash) setTimeout(function () {
+      var f = grid.querySelector(".bundle.flash");
+      if (f) f.classList.remove("flash");
+    }, 900);
+  }
+  grid.addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-do]");
+    if (!btn) return;
+    var card = btn.closest(".bundle");
+    var b = B.filter(function (x) { return x.n === card.getAttribute("data-n"); })[0];
+    if (!b) return;
+    var act = btn.getAttribute("data-do");
+    if (act === "up") {
+      var old = ver(b);
+      b.v[2]++;
+      say("actualizar " + b.n + "：v" + old + " → v" + ver(b) + "。其余 " + others(b) + " 个 ACTIVE bundle 照常运行，不用重启。");
+      draw(b.n);
+    } else if (act === "tog") {
+      b.a = !b.a;
+      say((b.a ? "arrancar " : "detener ") + b.n + "：" + (b.a ? "重新提供服务。" : "停止提供服务。") + "其余 " + others(b) + " 个 ACTIVE bundle 不受影响。");
+      draw(b.n);
+    } else if (act === "rm") {
+      B = B.filter(function (x) { return x !== b; });
+      say("eliminar " + b.n + "：已从框架中卸载。剩下的 " + B.filter(function (x) { return x.a; }).length + " 个 ACTIVE bundle 照常运行。");
+      draw();
+    }
+  });
+  root.querySelector('[data-do="deploy"]').addEventListener("click", function () {
+    var name = EXTRA.concat(INIT.map(function (x) { return x.n; })).filter(function (n) {
+      return !B.some(function (b) { return b.n === n; });
+    })[0];
+    if (!name) { say("示例 bundle 都已部署。先删掉一个再试。"); return; }
+    var nb = { n: name, v: [1, 0, 0], a: true };
+    B.push(nb);
+    say("desplegar " + name + " v1.0.0 并启动。原有的 " + others(nb) + " 个 ACTIVE bundle 照常运行。");
+    draw(name);
+  });
+  root.querySelector('[data-do="reset"]').addEventListener("click", reset);
+  function reset() {
+    B = INIT.map(function (b) { return { n: b.n, v: b.v.slice(), a: b.a }; });
+    log.innerHTML = "";
+    say("框架已启动：3 个 bundle 处于 ACTIVE。");
+    draw();
+  }
+  reset();
+})();
+</script>
+</body>
+</html>

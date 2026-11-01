@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>MICRO 互动笔记</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloques" class="chain" data-chain=""></nav>
+</div>
+</header>
+<main class="wrap wide">
+<section class="home-head">
+<div>
+<div class="eyebrow">OpenSEEI · 开放互动课程</div>
+<h1>Microcontroladores</h1>
+<p class="zh">Técnicas de Diseño de Sistemas Empotrados basados en Microcontroladores 的互动笔记。主线是 TI 的 MSP430F5529，最后一个 bloque 换成 ESP32-S3。22 个 módulos 合成 12 章：每章先提一个问题，再用动画把机制一步一步搭出来，最后是公式、自测和随机数值练习。</p>
+</div>
+
+</section>
+
+
+
+<div class="home-grid">
+
+<div class="panel">
+<span class="eyebrow">我的进度</span>
+<div class="meter" data-meter="ALL"><span class="val">0 / 110 已掌握</span><span class="bar"><i></i></span></div>
+<p class="aside">在每章的「要点」里点“标记掌握”，这里会汇总（只统计已经生成的章节）。默认保存在当前浏览器里；在 OpenSEEI 主页使用 Google 账号登录后可跨设备云端同步。</p>
+</div>
+</div>
+<section aria-label="颜色语言" class="tema">
+<div class="tema-hd">
+<div><span class="eyebrow">每一张动画都用同一套颜色</span><h2>颜色语言</h2></div>
+</div>
+<div class="legend">
+<span><i style="background:var(--blue)"></i>蓝 · 数据、寄存器</span>
+<span><i style="background:var(--yellow)"></i>黄 · 当前焦点</span>
+<span><i style="background:var(--green)"></i>绿 · 使能、运行</span>
+<span><i style="background:var(--red)"></i>红 · 事件、flag、中断</span>
+<span><i style="background:var(--purple)"></i>紫 · 栈、内存</span>
+<span><i style="background:var(--gold)"></i>金 · 时钟</span>
+</div>
+</section>
+
+<section class="tema" id="intro">
+<div class="tema-hd">
+<div><span class="eyebrow">Inicio · Ubicando y definiendo al Microcontrolador</span><h2>微控制器还是微处理器？</h2></div>
+</div>
+<p>物联网里的每个"物"都要在本地处理信息，这件事通常交给一个 <b class="t">sistema empotrado (ES) / embedded system (EN)</b>——嵌入式系统。传感、本地处理、联网三样东西撑起上面的各种应用：</p>
+
+<p>选哪一种（微控制器、微处理器、DSP、FPGA、协处理器……），看四件事：要处理多少种不同的任务（contextos）、工作量多大、功耗限制、成本。</p>
+<figure class="stage">
+<div class="stage-title"><span>Mapa · ¿qué sistema empotrado?</span><b>按任务种类和工作量选</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="intro-map-t" role="img" viewbox="0 0 800 330">
+<title id="intro-map-t">横轴是工作量（能耗成本），纵轴是任务种类；左下是微控制器，右下是 FPGA，中间是 DSC 和 DSP，中上是协处理器，最上面一层是微处理器</title>
+<polygon class="bx p" points="120,40 700,40 700,162 501,84 242,84 120,97"></polygon>
+<polygon class="bx r" points="242,84 501,84 700,162 440,162"></polygon>
+<polygon class="bx g" points="242,84 440,162 318,260"></polygon>
+<polygon class="bx b" points="120,97 242,84 318,260 120,260"></polygon>
+<polygon class="bx o" points="440,162 593,162 532,260 318,260"></polygon>
+<polygon class="bx t" points="593,162 700,162 700,260 532,260"></polygon>
+<text class="tz sm p mid" x="410" y="66">microprocesadores · 微处理器</text>
+<text class="tz sm r mid" x="500" y="128">coprocesadores</text>
+<text class="tm sm g mid" x="318" y="160">DSC</text>
+<text class="tz sm b mid" x="190" y="176">micro-</text>
+<text class="tz sm b mid" x="190" y="198">controladores</text>
+<text class="tm sm o mid" x="470" y="220">DSP</text>
+<text class="tm sm t mid" x="634" y="220">FPGA</text>
+<path class="ln thin w" d="M110 270 V30 M110 270 H720"></path>
+<text class="tz sm w end" x="102" y="52">muchos</text>
+<text class="tz sm w end" x="102" y="72">contextos</text>
+<text class="tz sm w end" x="102" y="244">pocos</text>
+<text class="tz sm w end" x="102" y="264">contextos</text>
+<text class="tz sm w" x="120" y="296">menos carga</text>
+<text class="tz sm w mid" x="410" y="296">coste energético / carga →</text>
+<text class="tz sm w end" x="700" y="296">más carga</text>
+<text class="tz sm y" x="120" y="322">任务少、负载低、要省电又便宜 → 微控制器</text>
+</svg>
+</div>
+<p class="stage-note">区域边界是示意。</p>
+
+</figure>
+<p>同一张图换成按 CPU 位数来分：4、8、16 位在左下，32 位在中间，32/64 位以上在右上。MSP430 是 16 位，Bloque 4 的 ESP32-S3 是 32 位。</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>微控制器 MCU</th><th>微处理器 MPU</th></tr></thead>
+<tbody>
+<tr><td>方框图</td><td colspan="2">都有 CPU、存储、外设和总线；MPU 的每一块都复杂得多</td></tr>
+<tr><td>总线</td><td>一套地址 / 数据总线（F5529：MAB、MDB）</td><td>分层的总线和互连网络，传输更高效</td></tr>
+<tr><td>MMU</td><td>没有</td><td>有 MMU（memory management unit）：虚拟内存，每个任务有自己的逻辑地址空间，能跑完整的操作系统（Linux、Windows）</td></tr>
+<tr><td>外设</td><td>定时器、ADC、比较器</td><td>视频、网络、完整的 USB、外部存储器接口</td></tr>
+<tr><td>功耗 · 成本</td><td>低</td><td>高</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">两者之间没有一刀切的边界，也有一个物体里同时装着 MCU 和 MPU 的情况。判断标准：能支撑完整的操作系统（关键是 MMU），就是微处理器。</p>
+
+</section>
+<section class="tema" id="bloque1">
+<div class="tema-hd">
+<div><span class="eyebrow">Bloque 1 · M11–M16</span><h2>Aspectos básicos del MSP430F5529 y E/S por sondeo</h2></div>
+<div class="meter tema-meter" data-meter="B1"><span class="val"></span><span class="bar"><i></i></span></div>
+</div>
+<div class="chapters" data-chapters="1"></div>
+
+</section>
+<section class="tema" id="bloque2">
+<div class="tema-hd">
+<div><span class="eyebrow">Bloque 2 · M21–M28</span><h2>Interrupciones, reloj y bajo consumo</h2></div>
+<div class="meter tema-meter" data-meter="B2"><span class="val"></span><span class="bar"><i></i></span></div>
+</div>
+<div class="chapters" data-chapters="2"></div>
+
+</section>
+<section class="tema" id="bloque3">
+<div class="tema-hd">
+<div><span class="eyebrow">Bloque 3 · M31–M34</span><h2>Temporizadores y comunicaciones serie</h2></div>
+<div class="meter tema-meter" data-meter="B3"><span class="val"></span><span class="bar"><i></i></span></div>
+</div>
+<div class="chapters" data-chapters="3"></div>
+
+</section>
+<section class="tema" id="bloque4">
+<div class="tema-hd">
+<div><span class="eyebrow">Bloque 4 · M41–M44</span><h2>Otras arquitecturas: ESP32-S3</h2></div>
+<div class="meter tema-meter" data-meter="B4"><span class="val"></span><span class="bar"><i></i></span></div>
+</div>
+<div class="chapters" data-chapters="4"></div>
+
+</section>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+</head></html>

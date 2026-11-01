@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M11 El mapa del tesoro · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+  .grid3.g4 { grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); }
+  .calc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .9rem 1.1rem; display: flex; flex-direction: column; gap: .7rem; }
+  .calc-row { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr) 3.4rem; gap: 6px 12px; align-items: center; font-size: 14px; }
+  .calc-row input[type="range"] { width: 100%; margin: 0; accent-color: var(--accent); }
+  .calc-row output { font: 600 13px/1 var(--f-mono); text-align: right; color: var(--ink); }
+  .calc-out { font: 600 13.5px/1.6 var(--f-mono); background: var(--sunk); border-radius: var(--r); padding: .6rem .8rem; overflow-wrap: anywhere; }
+  .calc-out b { color: var(--signal); font-size: 1.1rem; }
+  @media (max-width: 520px) {
+    .calc-row { grid-template-columns: minmax(0, 1fr) 3.4rem; }
+    .calc-row label { grid-column: 1 / -1; }
+  }
+  pre.code { margin: 0; max-width: 100%; overflow-x: auto; background: var(--sunk); border-radius: var(--r); padding: .6rem .8rem; font: 400 13px/1.55 var(--f-mono); color: var(--ink); white-space: pre; }
+  .vmf { stroke-dasharray: 6 4; }
+  .zone { cursor: pointer; }
+  .zone.on .s-dash { stroke: var(--signal); stroke-width: 2.2; }
+  .zone.on .s-tm { fill: var(--signal); }
+  .stage { transition: opacity .25s; }
+  .stage .s-box { transition: fill .25s, stroke .25s; }
+  .stage.on .s-box { fill: var(--signal-soft); stroke: var(--signal); stroke-width: 2; }
+  .stage.on .s-line { stroke: var(--signal); stroke-width: 2.2; }
+  .stage.on .s-ta { fill: var(--signal); }
+  .stage.dim { opacity: .25; }
+  details.m11-orig { margin-block: 10px; }
+  details.m11-orig > summary { cursor: pointer; font: 600 12px/1.6 var(--f-mono); color: var(--accent); }
+  details.m11-orig > summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  details.m11-orig[open] > summary { margin-bottom: 8px; }
+  .s-dashbox { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; stroke-dasharray: 5 4; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="章节" class="chain" data-chain="M11"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 1 · Introducción · M11</div>
+<h1>El mapa del tesoro</h1>
+<p class="zh">藏宝图——智能环境技术总览</p>
+<div class="meta">
+
+<span><b>11</b> 个学习目标</span>
+<span>阅读约 35 分钟</span>
+
+
+</div>
+<p class="lede">智能环境用到的技术多得惊人。这一章是整门课的“藏宝图”：把相关技术从微电子一路排到设计方法，顺带复习这些基础概念，并标出硕士 SEEI 的哪门课负责哪一块。11 个学习目标大多是“区分 A 和 B”，所以本页用了很多对比表和配对练习。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">1.1.1</span>
+<div class="txt"><span>区分 DSP、GPU、GPP 和 uC</span><span class="es">Distinguir entre DSP, GPU, GPP y uC.</span><a href="#s3">→ §3 四种可编程处理器</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.2</span>
+<div class="txt"><span>区分 middleware、SO、máquina virtual 和 virtualización</span><span class="es">Distinguir entre middleware, SO, máquina virtual y virtualización.</span><a href="#s6">→ §6 四种软件抽象层</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.3</span>
+<div class="txt"><span>定义 SoC（片上系统）</span><span class="es">Definir el concepto de SoC.</span><a href="#s4">→ §4 SoC 与 sistema empotrado</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.4</span>
+<div class="txt"><span>定义 sistema empotrado（嵌入式系统）</span><span class="es">Definir el concepto de sistema empotrado.</span><a href="#s4">→ §4 SoC 与 sistema empotrado</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.5</span>
+<div class="txt"><span>区分 usabilidad 和 accesibilidad</span><span class="es">Distinguir entre usabilidad y accesibilidad.</span><a href="#s11">→ §11 Interacción</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.6</span>
+<div class="txt"><span>区分不同的编程层次（C、C++、WSDL）</span><span class="es">Distinguir entre diferentes niveles de programación (C, C++, WSDL).</span><a href="#s5">→ §5 编程的抽象层次</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.7</span>
+<div class="txt"><span>区分不同类型的通信网络（WLAN、WPAN、BAN、4G、PLC）</span><span class="es">Distinguir entre diferentes tipos de redes de comunicaciones (WLAN, WPAN, BAN, 4G y PLC).</span><a href="#s9">→ §9 Conectividad</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.8</span>
+<div class="txt"><span>区分人工智能的基本技术（预测算法、自动决策算法、machine learning、智能体）</span><span class="es">Distinguir entre técnicas básicas de inteligencia artificial (algoritmo predictivo, de toma de decisión automático, machine learning y agente inteligente).</span><a href="#s10">→ §10 Inteligencia</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.9</span>
+<div class="txt"><span>区分不同的供电方式（电网、燃料电池、电池、超级电容、能量收集）</span><span class="es">Distinguir entre diferentes sistemas de alimentación (red eléctrica, pilas de combustible, baterías, supercondensadores y tecnologías de energy harvesting).</span><a href="#s8">→ §8 Energía</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.10</span>
+<div class="txt"><span>定义 sensor inteligente（智能传感器）</span><span class="es">Definir el concepto de sensor inteligente.</span><a href="#s7">→ §7 Sensorización</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.1.11</span>
+<div class="txt"><span>识别软硬件协同设计（codiseño hardware/software）的各个阶段</span><span class="es">Identificar las etapas de un codiseño hardware/software.</span><a href="#s12">→ §12 Codiseño hardware/software</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.1.11" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M11"><span class="val">0 / 11 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>藏宝图：九把钥匙和对应的课程 <span class="tag plain">总览</span></h2>
+<p>信息社会建立在三根主柱上：<b>microelectrónica</b>（微电子）、<b>informática</b>（计算机）和 <b>telecomunicaciones</b>（电信）。把这些技术的演进画出来，就是一张真正的“藏宝图”：</p>
+
+<p>读图要点：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>领地（图边缘）</th><th>沿路的关键词（从边缘走向中央）</th></tr></thead>
+<tbody>
+<tr><td><b>Microelectrónica</b></td><td>ASIC、DRAM、FPGA、CPU、DSP、GPU、uC → 小路 <i>Miniaturización</i>（SSD、Flash、Multicore、MEMS）和 <i>Integración</i>（Sistemas empotrados）→ SOC</td></tr>
+<tr><td><b>El entorno</b></td><td>Sensores、Displays、Actuadores → 小路 <i>Sensorización</i>：Sensores inteligentes → Motas</td></tr>
+<tr><td><b>Energía</b></td><td>小路 <i>Eficiencia energética</i>：LPS、SMPS、pilas、baterías、Harvesting Energy、SuperCap</td></tr>
+<tr><td><b>Telecomunicaciones</b></td><td>小路 <i>Conectividad</i>：LAN、WLAN、WAN、RDSI、ADSL、FTTH、WPAN、WSN；小路 <i>Movilidad</i>：1G → 2G → 3G → 4G → 5G；中间一条 <i>Ubicuidad</i></td></tr>
+<tr><td><b>Inteligencia</b></td><td>AI、Sistemas expertos、BN、FL、ANN、HMM → Agentes inteligentes、Asistentes → DL</td></tr>
+<tr><td><b>El factor humano</b></td><td>小路 <i>Usabilidad</i> 和 <i>Accesibilidad</i>：GUI、3D → NUI</td></tr>
+<tr><td><b>Informática</b></td><td>ASM、C、OOP、COP、Sistemas Operativos、VM、Middleware、SOA、Clouding（小路 <i>Abstracción</i>，旁注 Interoperabilidad、Reutilizabilidad、Portabilidad）；Mainframe → PC → Notebooks → Tablet（小路 <i>Portabilidad</i>）；Web → Web2.0 → Web3.0（小路 <i>Red social</i>）</td></tr>
+<tr><td><b>中央</b></td><td>IoT、5G、Cloud、Big Data、Metaverso、Wearables、SOC</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">图中的缩写 BN、FL、HMM、LPS、COP 没有展开，一般理解为 Bayesian Networks（贝叶斯网络）、Fuzzy Logic（模糊逻辑）、Hidden Markov Models（隐马尔可夫模型）、Linear Power Supply（线性电源，与 SMPS 相对）、Component-Oriented Programming（面向组件编程）。</p>
+<p>下面这张可点击的图把同样的内容按本页的章节（§2–§12）重新排成一张学习地图。<b>点击每一块</b>，看它讲什么、对应本页哪一节、硕士里哪门课负责。</p>
+<div class="stack" data-explain="ei">
+<figure>
+<div class="fig">
+<svg aria-label="智能环境技术地图：底部是三根主柱，中间九块是技术关键词，顶部是智能环境，每块标出对应的硕士课程" role="img" viewbox="0 0 680 430">
+<g aria-label="Entornos inteligentes" class="hot" data-key="ei" role="button" tabindex="0">
+<rect class="s-box" height="56" rx="8" width="660" x="10" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="340" y="34">Entornos inteligentes</text>
+<text class="s-t2" text-anchor="middle" x="340" y="53">computación y comunicación ubicua · la nube · Internet de las Cosas</text>
+<text class="s-tm" text-anchor="end" x="656" y="34">EI · CIUD</text>
+</g>
+<text class="s-tm" x="10" y="88">CLAVES TECNOLÓGICAS · 点击看说明和课程</text>
+<g aria-label="Miniaturización" class="hot" data-key="mini" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="10" y="98"></rect>
+<text class="s-t" x="22" y="122">Miniaturización</text>
+<text class="s-t2" x="22" y="141">微型化 · §2</text>
+<text class="s-tm" x="22" y="160">↳ sistemas empotrados</text>
+</g>
+<g aria-label="Integración" class="hot" data-key="integ" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="236" y="98"></rect>
+<text class="s-t" x="248" y="122">Integración</text>
+<text class="s-ta" text-anchor="end" x="432" y="122">núcleo</text>
+<text class="s-t2" x="248" y="141">集成 · §3–§4</text>
+<text class="s-tm" x="248" y="160">MICRO · EMP · FPGA · DPCI…</text>
+</g>
+<g aria-label="Abstracción" class="hot" data-key="abs" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="462" y="98"></rect>
+<text class="s-t" x="474" y="122">Abstracción</text>
+<text class="s-t2" x="474" y="141">抽象层次 · §5–§6</text>
+<text class="s-tm" x="474" y="160">sólo lo imprescindible</text>
+</g>
+<g aria-label="Sensorización" class="hot" data-key="sens" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="10" y="184"></rect>
+<text class="s-t" x="22" y="208">Sensorización</text>
+<text class="s-ta" text-anchor="end" x="206" y="208">núcleo</text>
+<text class="s-t2" x="22" y="227">传感 · §7</text>
+<text class="s-tm" x="22" y="246">SENSOR</text>
+</g>
+<g aria-label="Energía" class="hot" data-key="ener" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="236" y="184"></rect>
+<text class="s-t" x="248" y="208">Energía</text>
+<text class="s-t2" x="248" y="227">能源 · §8</text>
+<text class="s-tm" x="248" y="246">未单列课程 · M26</text>
+</g>
+<g aria-label="Conectividad" class="hot" data-key="con" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="462" y="184"></rect>
+<text class="s-t" x="474" y="208">Conectividad</text>
+<text class="s-t2" x="474" y="227">连接与移动性 · §9</text>
+<text class="s-tm" x="474" y="246">REDES1 · REDES2</text>
+</g>
+<g aria-label="Inteligencia" class="hot" data-key="intel" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="10" y="270"></rect>
+<text class="s-t" x="22" y="294">Inteligencia</text>
+<text class="s-t2" x="22" y="313">智能 · §10</text>
+<text class="s-tm" x="22" y="332">TAPI</text>
+</g>
+<g aria-label="Interacción" class="hot" data-key="inter" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="236" y="270"></rect>
+<text class="s-t" x="248" y="294">Interacción</text>
+<text class="s-t2" x="248" y="313">交互 · §11</text>
+<text class="s-tm" x="248" y="332">IUS · IPM · VISION · TECA</text>
+</g>
+<g aria-label="Metodología de diseño" class="hot" data-key="met" role="button" tabindex="0">
+<rect class="s-box" height="74" rx="6" width="208" x="462" y="270"></rect>
+<text class="s-t" x="474" y="294">Metodología de diseño</text>
+<text class="s-t2" x="474" y="313">设计方法 · §12</text>
+<text class="s-tm" x="474" y="332">MET</text>
+</g>
+<g aria-label="Pilares de la sociedad de la información" class="hot" data-key="pilares" role="button" tabindex="0">
+<rect class="s-box" height="66" rx="8" width="660" x="10" y="356"></rect>
+<rect class="s-soft" height="28" rx="4" width="200" x="22" y="366"></rect>
+<rect class="s-soft" height="28" rx="4" width="200" x="240" y="366"></rect>
+<rect class="s-soft" height="28" rx="4" width="200" x="458" y="366"></rect>
+<text class="s-t" text-anchor="middle" x="122" y="385">Microelectrónica</text>
+<text class="s-t" text-anchor="middle" x="340" y="385">Informática</text>
+<text class="s-t" text-anchor="middle" x="558" y="385">Telecomunicaciones</text>
+<text class="s-t2" text-anchor="middle" x="340" y="412">+ entorno y factor humano · alimentación y eficiencia energética · inteligencia</text>
+</g>
+</svg>
+</div>
+<figcaption>学习地图：底部是支柱，中间九块按本页的章节排列，每块最下一行小字是硕士里负责这一块的课程。“núcleo”标出硕士的重心。<span class="hint">点击方块看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="ei" hidden="">
+<h3>Entornos inteligentes · 地图的终点</h3>
+<p>今天 <b class="t">computación y comunicación ubicua (ES) / ubiquitous computing and communication (EN)</b>——泛在计算与通信已经实现。一个包含全部知识和信息的全局智能系统（la nube，云）与物理世界互动；物理世界由用户和几乎任何“cosa”（物）组成，这就是 <b class="t">Internet de las Cosas (ES) / Internet of Things, IoT (EN)</b>——物联网。</p>
+<p class="aside">历史背景：90 年代 Xerox 提倡 computación ubicua，即系统“溶解”在环境里、变得不可见。这需要元件微型化、无线传感器网络、超低功耗和新的交互方式，这些条件今天都已满足。</p>
+<p><b>对应课程：</b>EI（Entornos Inteligentes，就是本课）、CIUD（Ciudades inteligentes）。</p>
+</div>
+<div class="panel" data-panel="pilares" hidden="">
+<h3>Pilares · 信息社会的支柱</h3>
+<p>三根主柱：microelectrónica、informática、telecomunicaciones。其他重要支柱：系统与<b>entorno</b>（环境）以及与人的连接（<b>factor humano</b>，人的因素）、新的供电方式和 <b>eficiencia energética</b>（能效）、赋予系统计算<b>inteligencia</b>。</p>
+<p>这场革命的几个关键：元件的<b>微型化和集成</b>（带来便携设备和海量传感器，即 sensorización）；<b>抽象层次</b>的设计思想（带来资源复用和互操作）；用科学方法设计和评估界面（<b>usabilidad</b>）；新网络带来的全球<b>连接和移动性</b>。</p>
+</div>
+<div class="panel" data-panel="mini" hidden="">
+<h3>Miniaturización · 微型化</h3>
+<p>晶体管越做越小（ley de Moore），芯片上的功能越来越多，限制它的是功耗。由此有了 ASIC、FPGA、各种处理器和存储器。<a href="#s2">→ §2</a>　<a href="#s3">→ §3 四种处理器（1.1.1）</a></p>
+<p class="aside">硕士没有专门对应这一块的课程，可以把它看作 sistemas empotrados 的硬件基础。</p>
+</div>
+<div class="panel" data-panel="integ" hidden="">
+<h3>Integración · 集成 <span class="verdict star">硕士重心</span></h3>
+<p>把 CPU、存储器、E/S 端口，乃至模拟电路、MEMS 和通信模块做进一块芯片：microcontrolador、SoC。由此诞生了 sistemas empotrados 和 microcomputadores。<a href="#s4">→ §4（1.1.3、1.1.4）</a></p>
+<p><b>对应课程（Sistemas empotrados 一行）：</b>MICRO（Técnicas de diseño de sistemas empotrados basados en microcontroladores）、MICROK（Microkernels）、IMICRO（Intensificación en microcontroladores）、FPGA（Diseño de Sistemas Empotrados basados en FPGAs）、EMP（Microprocesadores empotrados）、DPCI（Diseño de placas de circuito impreso）。</p>
+<p class="aside">sistemas empotrados 是在 §4 Integración 里定义的，所以对应它的这组课程放在这块。</p>
+</div>
+<div class="panel" data-panel="abs" hidden="">
+<h3>Abstracción · 抽象层次</h3>
+<p>把复杂系统分成若干层，每层只用下一层提供的服务，不必知道它怎么实现。软件里就是从 código máquina 到 SOA 的编程层次，以及 SO、máquina virtual、virtualización、middleware。<a href="#s5">→ §5（1.1.6）</a>　<a href="#s6">→ §6（1.1.2）</a></p>
+<p><b>硕士覆盖多少：</b>硕士不深入系统的高层编程（middleware 和应用），只讲“lo imprescindible”（必需的部分）。</p>
+</div>
+<div class="panel" data-panel="sens" hidden="">
+<h3>Sensorización · 传感 <span class="verdict star">硕士重心</span></h3>
+<p>传感器和执行器是电子系统与环境之间的接口。本章的重点是 sensor inteligente。<a href="#s7">→ §7（1.1.10）</a></p>
+<p><b>对应课程：</b>SENSOR（Del mundo físico al controlador: sensores, interfaces y comunicaciones）。BUSES（Laboratorio de Diseño de Aplicaciones de Transductores y su Interconexión con Buses de Campo）目前不开设（no se oferta）。</p>
+</div>
+<div class="panel" data-panel="ener" hidden="">
+<h3>Energía · 能源</h3>
+<p>电网、电池、超级电容、燃料电池、能量收集。电池的发展没有跟上 ley de Moore，常常决定设备的成本和体积。<a href="#s8">→ §8（1.1.9）</a></p>
+<p><b>对应课程：</b>硕士没有专门对应这一块的课程。不过下面“硕士踏足范围”图的阴影把 Energía 一带（pilas、baterías、SuperCap、Harvesting Energy）也圈进了硕士范围。本课 Tema 2 的 M26 Consumo energético 会细讲。</p>
+</div>
+<div class="panel" data-panel="con" hidden="">
+<h3>Conectividad · 连接与移动性</h3>
+<p>从 BAN 到 WAN 的各种网络，有线和无线，以及所有网络向 Internet 技术的融合。<a href="#s9">→ §9（1.1.7）</a></p>
+<p><b>对应课程：</b>REDES1、REDES2（Tecnologías de redes de sensores I / II）。IREDES（Intensificación en redes de sensores）不开设。</p>
+</div>
+<div class="panel" data-panel="intel" hidden="">
+<h3>Inteligencia · 智能</h3>
+<p>适应、学习、预测、按情境决策。从 sistemas expertos 到 machine learning、deep learning、IA generativa，以及 agente inteligente。<a href="#s10">→ §10（1.1.8）</a></p>
+<p><b>对应课程：</b>TAPI（Técnicas Avanzadas de Procesado de Información）。</p>
+</div>
+<div class="panel" data-panel="inter" hidden="">
+<h3>Interacción · 交互</h3>
+<p>从命令行到 GUI 再到 NUI。好的界面要有 usabilidad，也要有 accesibilidad。<a href="#s11">→ §11（1.1.5）</a></p>
+<p><b>对应课程：</b>IUS（Interfaces de Usuario）、IPM（Interacción persona Máquina）、VISION（Visión Artificial）、TECA（Tecnologías Accesibles）。</p>
+</div>
+<div class="panel" data-panel="met" hidden="">
+<h3>Metodología de diseño · 设计方法</h3>
+<p>硬件和软件能实现的东西没有本质区别，codiseño hardware/software 就是在两者之间权衡。<a href="#s12">→ §12（1.1.11）</a></p>
+<p><b>对应课程：</b>MET（Planificación, gestión y desarrollo de proyectos）。IPN（Intensificación en planes de proyectos tecnológicos de negocio）不开设。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">Incursión del máster SEEI</span>
+<p>硕士的重心是智能环境中的<b>电子系统</b>，即 sistemas empotrados 和 sensorización（图中标“núcleo”）。因为这门学科是交叉的，硕士也覆盖 conectividad、inteligencia、interacción 和 metodología de diseño 的重要内容，但不深入高层编程（middleware 和应用），只讲必需的部分。</p>
+</div>
+
+<p><b>配对：</b>先点左边的课程，再点右边它负责的方向（按各块里的“对应课程”）。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="sensor" type="button">SENSOR <span class="es">Del mundo físico al controlador</span></button>
+<button data-l="redes" type="button">REDES2 <span class="es">Tecnologías de redes de sensores II</span></button>
+<button data-l="tapi" type="button">TAPI <span class="es">Técnicas Avanzadas de Procesado de Información</span></button>
+<button data-l="teca" type="button">TECA <span class="es">Tecnologías Accesibles</span></button>
+<button data-l="emp" type="button">EMP <span class="es">Microprocesadores empotrados</span></button>
+<button data-l="met" type="button">MET <span class="es">Planificación, gestión y desarrollo de proyectos</span></button>
+<button data-l="ciud" type="button">CIUD <span class="es">Ciudades inteligentes</span></button>
+</div>
+<div class="col">
+<button data-r="teca" type="button">Interacción</button>
+<button data-r="met" type="button">Metodología</button>
+<button data-r="emp" type="button">Sistemas empotrados</button>
+<button data-r="ciud" type="button">Entornos inteligentes</button>
+<button data-r="sensor" type="button">Sensorización</button>
+<button data-r="tapi" type="button">Inteligencia</button>
+<button data-r="redes" type="button">Conectividad</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Miniaturización：从晶体管到处理器 <span class="tag plain">背景</span></h2>
+<p>晶体管 1947 年发明。60 年代，Intel 的工程师 Gordon Moore 观察到：集成电路上的晶体管数每 18 个月翻一番。这个趋势长期成立，于是成了著名的 <b class="t">ley de Moore (ES) / Moore's law (EN)</b>——摩尔定律。</p>
+<div class="note warm">
+<span class="lbl">易错点</span>
+<p>“18 个月”这个数字要修正：实际趋势是<b>每 2 年</b>翻一番；2015 年以后周期拉长到 <b>2.5–3 年</b>。</p>
+</div>
+
+<p>晶体管数为什么能暴涨？靠 <b class="t">fotolitografía (ES) / photolithography (EN)</b>——光刻：在硅衬底上一层层沉积金属或掺杂硅的 patrones（图形），这些图形构成晶体管。然后一层层往上搭：</p>
+<div class="flow">
+<div class="cell"><span class="eyebrow">第 1 层</span><h3>Transistores</h3><p>由光刻出的图形构成。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">第 2 层</span><h3>Puertas lógicas + memoria</h3><p>逻辑门（基本二进制运算）和二进制存储单元。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">第 3 层</span><h3>CPU / procesador</h3><p>运算逻辑单元、寄存器、位矩阵（存储器的基础）和控制电路，组合成中央处理器。</p></div>
+</div>
+<p>要精确刻出图形，光的波长至少要和线条一样小，所以光刻用的波长越来越短；材料和结构的变化也在延续摩尔定律。CPU 的 <b class="t">feature size (EN)</b>——特征尺寸（栅长）已小于 3 nm（IBM 2021 年宣布了 2 nm 技术）。代价是制造设备的成本飙升，但销量越来越大，厂商并没有停下。</p>
+<p>由此有了很多种数字芯片（chip 是集成电路的同义词）：</p>
+<div class="grid3 g4">
+<div class="cell"><span class="eyebrow">专用</span><h3>ASIC</h3><p>Application Specific Integrated Circuit：为一个很具体的用途设计。</p></div>
+<div class="cell"><span class="eyebrow">可重构</span><h3>FPGA</h3><p>Field Programmable Gate Array：芯片内的逻辑可以重新配置。</p></div>
+<div class="cell"><span class="eyebrow">可编程</span><h3>执行指令序列</h3><p>通用处理器（microprocesador）、DSP、GPU 等。<a href="#s3">→ §3</a></p></div>
+<div class="cell"><span class="eyebrow">存储</span><h3>Memorias</h3><p>SRAM、DDR、Flash 等，存放程序代码和数据。</p></div>
+</div>
+<p><b>极限是功耗。</b>晶体管变小，本可以集成更多功能、跑得更快（栅长变小，电容效应也变小，时钟可以更快）。但功耗挡住了这条路：</p>
+
+<div class="note">
+<span class="lbl">CMOS 芯片的功耗</span>
+<p>功耗正比于芯片的电容效应、时钟频率和电源电压平方的乘积：<code>P ∝ C · f · V²</code></p>
+<p>降功耗的办法：散热器、降低电源电压、新材料，以及 <b>gestión energética inteligente</b>（智能能耗管理）。处理器厂商在主频达到约 4 GHz 时放弃继续提频，转而在一块芯片里集成多个核：<b class="t">multicore (EN)</b>——多核。</p>
+</div>
+
+
+<p class="aside">还有一个问题：晶体管太小时开关性能变差，不该导通时也会耗电（这通常叫漏电流 leakage）。</p>
+<p><b>算一算：</b>以一块参考芯片为 1，拖动滑块改变 C、f、V，看相对功耗怎么变。</p>
+<div class="calc" id="cmos">
+<div class="calc-row"><label for="m11-c">C · 电容效应</label><input id="m11-c" max="2" min="0.5" step="0.1" type="range" value="1"/><output data-out="c">1.0×</output></div>
+<div class="calc-row"><label for="m11-f">f · 时钟频率</label><input id="m11-f" max="2" min="0.5" step="0.1" type="range" value="1"/><output data-out="f">1.0×</output></div>
+<div class="calc-row"><label for="m11-v">V · 电源电压</label><input id="m11-v" max="1.5" min="0.5" step="0.05" type="range" value="1"/><output data-out="v">1.00×</output></div>
+<div aria-live="polite" class="calc-out"><span class="calc-f">P ∝ C · f · V² = 1.0 × 1.0 × 1.00² = </span><b class="calc-r">1.00 ×</b></div>
+<p class="aside calc-tip"></p>
+<div class="stepper-ctl">
+<button class="btn" data-pre="v" type="button">V 降低 20%</button>
+<button class="btn" data-pre="f" type="button">f 翻倍</button>
+<button class="btn" data-pre="r" type="button">重置</button>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>四种可编程处理器 <span class="tag">1.1.1</span></h2>
+<p>四个缩写里，三个属于 §2 讲的“可编程芯片”，uC 则属于 §4 的集成。先看定义：</p>
+<ul>
+<li><b class="t">GPP (General Purpose Processor)</b>——通用处理器：“procesadores de propósito general, también llamados microprocesadores”，也就是 <b>microprocesador</b>（微处理器）。本课里 procesador 和 microprocesador 两个词混用。</li>
+<li><b class="t">DSP (Digital Signal Processor)</b>——数字信号处理器：专门做 proceso de señal（信号处理）。</li>
+<li><b class="t">GPU (Graphics Processing Unit)</b>——图形处理器：专门处理 gráficos（图形）。有些资料这一章把 GPU 写作 Graphics Processor Unit；也有资料写作 Graphics Processing Unit。</li>
+<li><b class="t">uC / microcontrolador (ES) / microcontroller (EN)</b>——微控制器：一块芯片里集成 CPU、存程序的存储器和一组 E/S（输入/输出）端口，构成一个小型可编程系统。通常很简单，但也可以带强大的事件管理、定时和通信模块。</li>
+</ul>
+<p>四者都可编程，都执行指令序列（代码），区别在于<b>为什么而优化</b>。下表“细节”一列在 Tema 2 的 <a href="m25.html">M25 Nodos</a> 里会细讲：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>处理器</th><th>专长</th><th>细节（M25）</th></tr></thead>
+<tbody>
+<tr><td><b>GPP</b><br/><span class="es">microprocesador</span></td><td>什么程序都能跑</td><td>PC 等应用平台的核心；指令集通用、寻址能力大；靠提频、缓存、多核等提速；灵活，但能效低</td></tr>
+<tr><td><b>DSP</b></td><td>信号处理</td><td>为<b>实时</b>、密集的数据流计算优化；通常不用操作系统，把代码效率压到极致</td></tr>
+<tr><td><b>GPU</b></td><td>图形</td><td><b>大规模并行</b>：数千个 cores 以 SIMD（一条指令同时处理多个数据）方式工作，运行叫 shader 的小程序；tensor cores 用于 deep learning</td></tr>
+<tr><td><b>uC</b><br/><span class="es">microcontrolador</span></td><td>单芯片的小型控制系统</td><td>专用、面向控制；实时，响应<b>确定</b>，几个时钟周期内就能对外部事件作出反应；常直接访问硬件、不用 SO；集成定时器、ADC、PWM、串口等外设</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>配对：</b>左边是使用情景，右边是处理器。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="gpp" type="button">笔记本电脑里那颗什么程序都能跑的主处理器</button>
+<button data-l="gpu" type="button">同一条指令同时作用在成千上万个像素上</button>
+<button data-l="dsp" type="button">实时处理音频信号流，通常不跑操作系统</button>
+<button data-l="uc" type="button">洗衣机控制板：一块芯片上就有 CPU、程序存储和 E/S，读按键、驱动电机</button>
+</div>
+<div class="col">
+<button data-r="dsp" type="button">DSP</button>
+<button data-r="uc" type="button">uC · microcontrolador</button>
+<button data-r="gpp" type="button">GPP · microprocesador</button>
+<button data-r="gpu" type="button">GPU</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Integración：SoC 与 sistema empotrado <span class="tag">1.1.3</span><span class="tag">1.1.4</span></h2>
+<p>一块芯片上只要集成 CPU、存程序的存储器和 E/S 端口，就是一个小型可编程系统，典型例子就是 microcontrolador（§3）。微电子还把越来越多“别的东西”做进了芯片：</p>
+<ul>
+<li>模拟部件：<b class="t">ADC (Analog Digital Converter)</b>——模数转换器，以及比较器；</li>
+<li><b class="t">mixed signal IC (EN)</b>——混合信号芯片：还集成放大器、滤波器和调制器；</li>
+<li><b class="t">MCP (Multilayer Multichip Package)</b>——多芯片封装：把几块芯片装进同一个封装；</li>
+<li><b class="t">MEMS (MicroElectroMechanical Systems)</b>——微机电系统：同样基于微电子工艺，集成机械、化学、光学甚至生物技术的微传感器和微执行器。</li>
+</ul>
+<div class="note">
+<span class="lbl">定义 · 1.1.3</span>
+<p><b class="t">SoC (System On Chip)</b>——片上系统：一块<b>超高集成度、高性能</b>的芯片，可以包含多个 CPU（cores）、GPU、DSP、先进的通信模块（USB、Ethernet、Bluetooth、Wi-Fi……）、模拟部件、传感器等。今天很多电子设备（比如智能手机和平板）都基于 SoC。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="SoC 示意：一块芯片内集成多核 CPU、GPU、DSP、通信模块、模拟部件和传感器" role="img" viewbox="0 0 600 236">
+<rect class="s-box" height="216" rx="10" width="580" x="10" y="10"></rect>
+<text class="s-tm" x="26" y="32">SoC · System On Chip · 一块芯片</text>
+<rect class="s-soft" height="72" rx="5" width="200" x="30" y="46"></rect>
+<text class="s-t" text-anchor="middle" x="130" y="77">CPU</text>
+<text class="s-t2" text-anchor="middle" x="130" y="96">varios cores</text>
+<rect class="s-soft" height="72" rx="5" width="155" x="245" y="46"></rect>
+<text class="s-t" text-anchor="middle" x="322" y="77">GPU</text>
+<text class="s-t2" text-anchor="middle" x="322" y="96">gráficos</text>
+<rect class="s-soft" height="72" rx="5" width="155" x="415" y="46"></rect>
+<text class="s-t" text-anchor="middle" x="492" y="77">DSP</text>
+<text class="s-t2" text-anchor="middle" x="492" y="96">señal</text>
+<rect class="s-soft" height="72" rx="5" width="300" x="30" y="134"></rect>
+<text class="s-t" text-anchor="middle" x="180" y="165">Comunicaciones</text>
+<text class="s-t2" text-anchor="middle" x="180" y="184">USB · Ethernet · Bluetooth · Wi-Fi</text>
+<rect class="s-soft" height="72" rx="5" width="110" x="345" y="134"></rect>
+<text class="s-t" text-anchor="middle" x="400" y="165">Analógico</text>
+<text class="s-t2" text-anchor="middle" x="400" y="184">p. ej. ADC</text>
+<rect class="s-soft" height="72" rx="5" width="100" x="470" y="134"></rect>
+<text class="s-t" text-anchor="middle" x="520" y="165">Sensores</text>
+</svg>
+</div>
+<figcaption>SoC 示意：只画定义里列出的模块。</figcaption>
+</figure>
+<p class="aside">和 microcontrolador 比：两者都是“一块芯片上的系统”。microcontrolador 通常很简单；SoC 的集成度和性能高得多，可以有多个、不同种类的处理器。</p>
+<div class="note">
+<span class="lbl">定义 · 1.1.4</span>
+<p><b class="t">sistema empotrado (ES) / embedded system (EN)</b>——嵌入式系统：<b>专用</b>（propósito específico）的电子系统，通常（但不一定）嵌在一个更大的系统里；因为只为一个目的服务，通常在<b>成本、功耗和尺寸</b>上做了优化。microcontroladores 和 SoC 是这类系统的典型技术。</p>
+</div>
+
+<p>集成技术造就了两类系统。切换看它们的区别：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换系统类型" class="seg" role="group">
+<button aria-pressed="true" data-view="emp" type="button">Sistema empotrado</button>
+<button aria-pressed="false" data-view="mic" type="button">Microcomputador</button>
+</div>
+<div class="panel" data-pane="emp">
+<p><b>专用，而且到处都是：</b>家电、报警系统、音视频播放器、数码相机、手机、手表、电子体温计、游戏机……汽车里可能有<b>上百个</b>专用处理器，控制发动机、刹车、稳定性、仪表盘、安全带；城市里有红绿灯、银行 ATM、地铁售票机和饮料机；办公室里有电话、打印机、复印机、存在检测器、门禁和监控。工业早就靠它们实现自动化。</p>
+<p class="aside">关键词：propósito específico · inserto en otro sistema · optimizado en coste, consumo y tamaño。</p>
+</div>
+<div class="panel" data-pane="mic" hidden="">
+<p><b class="t">microcomputador (ES)</b>——微型计算机：基于 microprocesador 的<b>通用</b>计算机。特点：处理能力和寻址能力强（处理器的地址空间决定系统能用多少内存）；有内存管理（多任务、虚拟内存、数据保护）；有标准用户界面（显示器、键盘、鼠标）。分三类：</p>
+<ul>
+<li><b>Servidores</b>（服务器）：大存储、联网能力强、高性能、可扩展、可靠、容错；为网络上的客户端提供文件和程序。</li>
+<li><b>PC</b>：有面向专业用途的高性能平台（如图形工作站），但多数面向消费市场，性能和价格较低，越来越便携、小型化。</li>
+<li><b>Dispositivos móviles</b>（移动设备）：平板和智能手机。性能有限，靠高速连接云端弥补存储和计算的不足；交互方式新（触控、手势、触觉）。和它们配合的还有 wearables，比如 smartwatch 和增强现实眼镜。</li>
+</ul>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>编程的抽象层次 <span class="tag">1.1.6</span></h2>
+<p><b class="t">niveles de abstracción (ES) / abstraction levels (EN)</b>——抽象层次：把复杂系统的结构和运行分成若干层。每层的设计者只使用紧邻下层提供的服务，不必知道它内部怎么工作；同时为上一层提供服务，也不让上一层卷入自己的细节。抽象层次适用于任何领域，看三个例子：</p>
+<figure>
+<div class="fig">
+<svg aria-label="三个领域的抽象层次。Comunicaciones：Físico、Enlace、Red、Transporte、Aplicación；Microelectrónica：Silicio、Transistores、Puertas、ALU、CPU；Informática：Código máquina、Microcódigo、Bajo nivel、Medio nivel、Alto nivel，右侧括号标出 Aplicaciones 对应高层，Middleware 跨高层和中层，Sistema operativo 跨中层和低层" role="img" viewbox="0 0 700 300">
+<rect class="s-box" height="40" rx="5" width="150" x="10" y="20"></rect><text class="s-t" text-anchor="middle" x="85" y="45">Aplicación</text>
+<rect class="s-box" height="40" rx="5" width="150" x="10" y="72"></rect><text class="s-t" text-anchor="middle" x="85" y="97">Transporte</text>
+<rect class="s-box" height="40" rx="5" width="150" x="10" y="124"></rect><text class="s-t" text-anchor="middle" x="85" y="149">Red</text>
+<rect class="s-box" height="40" rx="5" width="150" x="10" y="176"></rect><text class="s-t" text-anchor="middle" x="85" y="201">Enlace</text>
+<rect class="s-soft" height="40" rx="5" width="150" x="10" y="228"></rect><text class="s-t" text-anchor="middle" x="85" y="253">Físico</text>
+<text class="s-tm" text-anchor="middle" x="85" y="290">Comunicaciones</text>
+<rect class="s-box" height="40" rx="5" width="150" x="180" y="20"></rect><text class="s-t" text-anchor="middle" x="255" y="45">CPU</text>
+<rect class="s-box" height="40" rx="5" width="150" x="180" y="72"></rect><text class="s-t" text-anchor="middle" x="255" y="97">ALU</text>
+<rect class="s-box" height="40" rx="5" width="150" x="180" y="124"></rect><text class="s-t" text-anchor="middle" x="255" y="149">Puertas</text>
+<rect class="s-box" height="40" rx="5" width="150" x="180" y="176"></rect><text class="s-t" text-anchor="middle" x="255" y="201">Transistores</text>
+<rect class="s-soft" height="40" rx="5" width="150" x="180" y="228"></rect><text class="s-t" text-anchor="middle" x="255" y="253">Silicio</text>
+<text class="s-tm" text-anchor="middle" x="255" y="290">Microelectrónica</text>
+<rect class="s-box" height="40" rx="5" width="160" x="350" y="20"></rect><text class="s-t" text-anchor="middle" x="430" y="45">Alto nivel</text>
+<rect class="s-box" height="40" rx="5" width="160" x="350" y="72"></rect><text class="s-t" text-anchor="middle" x="430" y="97">Medio nivel</text>
+<rect class="s-box" height="40" rx="5" width="160" x="350" y="124"></rect><text class="s-t" text-anchor="middle" x="430" y="149">Bajo nivel</text>
+<rect class="s-box" height="40" rx="5" width="160" x="350" y="176"></rect><text class="s-t" text-anchor="middle" x="430" y="201">Microcódigo</text>
+<rect class="s-soft" height="40" rx="5" width="160" x="350" y="228"></rect><text class="s-t" text-anchor="middle" x="430" y="253">Código máquina</text>
+<text class="s-tm" text-anchor="middle" x="430" y="290">Informática</text>
+<path class="s-line" d="M520,22 h8 V40 h-8"></path>
+<text class="s-ta" x="538" y="36">Aplicaciones</text>
+<path class="s-line" d="M520,46 h8 V94 h-8"></path>
+<text class="s-ta" x="538" y="74">Middleware</text>
+<path class="s-line" d="M520,100 h8 V154 h-8"></path>
+<text class="s-ta" x="538" y="131">Sistema operativo</text>
+<text class="s-tm" x="538" y="200">abajo: el nivel</text>
+<text class="s-tm" x="538" y="215">más cercano al HW</text>
+</svg>
+</div>
+<figcaption>三个领域各五层，下层为上层服务。Informática 一栏右边的括号：<b>Aplicaciones</b> 在高层，<b>Middleware</b> 跨在高层和中层之间，<b>Sistema operativo</b> 跨中层和低层（SO 是“bajo y medio nivel”的代码，见 §6）。注意 Informática 栏里在 Bajo nivel（汇编）和 Código máquina 之间还有一层 <b>Microcódigo</b>（微码），本章没有展开。</figcaption>
+</figure>
+
+<p>下面细看 Informática。从代码到 CPU 要经过翻译：</p>
+
+<p>软件的编程层次从低到高排成台阶。<b>点击每一级台阶：</b></p>
+<div class="stack" data-explain="c">
+<div aria-label="编程层次" class="layers" role="group">
+<button aria-pressed="false" class="layer full" data-key="visual" type="button"><span class="es">Visual · sin código · asistida por IA</span><span class="zh">更进一步：方框图、配置界面、自然语言</span></button>
+<button aria-pressed="false" class="layer full" data-key="wsdl" type="button"><span class="es">Orientada a servicios · SOA · WSDL</span><span class="zh">与平台和程序无关 → 互操作</span></button>
+<button aria-pressed="false" class="layer full" data-key="cpp" type="button"><span class="es">Orientada a objetos · OOP · C++</span><span class="zh">代码复用、分布式应用</span></button>
+<button aria-pressed="false" class="layer full" data-key="c" type="button"><span class="es">Nivel medio · lenguaje C</span><span class="zh">与 CPU 无关 → 可移植</span></button>
+<button aria-pressed="false" class="layer full" data-key="asm" type="button"><span class="es">Nivel bajo · ensamblador</span><span class="zh">助记符，每种 CPU 都不同</span></button>
+<button aria-pressed="false" class="layer full l1" data-key="maq" type="button"><span class="es">Código máquina</span><span class="zh">0 和 1，CPU 直接执行</span></button>
+</div>
+<div class="panel" data-panel="maq" hidden="">
+<h3>Código máquina · 机器码</h3>
+<p>一长串 0 和 1，CPU 能懂，程序员却没法直接用。所有更高层的程序最后都要翻译成它。</p>
+<pre class="code">00101101</pre>
+<p class="aside">例子：老的 Intel 386 处理器里，减法指令 SUB 的二进制码是 00101101。</p>
+</div>
+<div class="panel" data-panel="asm" hidden="">
+<h3>Ensamblador · 汇编（低层）</h3>
+<p>用 mnemónicos（助记符）代替二进制码，直接对应处理器的指令集。缺点：写起来繁琐，而且<b>每种 CPU 都不一样</b>。</p>
+<pre class="code">SUB AX, 5</pre>
+<p class="aside">示例：助记符 SUB 就是上一级那串二进制的“可读版”。</p>
+</div>
+<div class="panel" data-panel="c" hidden="">
+<h3>Lenguaje C · 中层</h3>
+<p>代码<b>与 CPU 无关</b>，同一份代码适用于任何 CPU，这叫 <b class="t">portabilidad (ES) / portability (EN)</b>——可移植性。结构化、模块化的编程便于开发函数库，提高可维护性和生产率（指开发时间）。翻译它的程序叫 <b class="t">compilador (ES) / compiler (EN)</b>——编译器。</p>
+<pre class="code">int restar(int a, int b) {
+  return a - b;
+}</pre>
+<p class="aside">traductor（翻译器，如编译器）先把整个程序转成机器码再执行；intérprete（解释器）逐条转换、逐条执行。</p>
+</div>
+<div class="panel" data-panel="cpp" hidden="">
+<h3>C++ · 面向对象</h3>
+<p>C 这类语言的演进：<b class="t">OOP (Object-Oriented Programming)</b>——面向对象编程，以及面向组件的编程。它方便<b>代码复用</b>（对象）和开发<b>分布式应用</b>。</p>
+<pre class="code">class Termostato {
+public:
+  void ajustar(float grados);
+  float leer() const;
+};</pre>
+<p class="aside">示例：一个“恒温器”对象，别的程序可以直接复用它。</p>
+</div>
+<div class="panel" data-panel="wsdl" hidden="">
+<h3>WSDL · 面向服务</h3>
+<p>再高一层是 <b class="t">programación orientada a servicios (ES)</b>——面向服务的编程（<b>SOA</b>, Service-Oriented Architecture）：<b>与平台和程序都无关</b>，让不同的系统之间能交换信息，即 <b class="t">interoperabilidad (ES) / interoperability (EN)</b>——互操作性。典型例子是 <b class="t">WSDL (Web Services Description Language)</b>——Web 服务描述语言。</p>
+<pre class="code">&lt;operation name="leerTemperatura"&gt;
+  &lt;input message="tns:Peticion"/&gt;
+  &lt;output message="tns:Respuesta"/&gt;
+&lt;/operation&gt;</pre>
+<p class="aside">这段 WSDL 片段只描述“有一个读温度的操作，输入什么、输出什么”，不关心对方用什么语言、跑在什么平台上。WSDL 在 Tema 2 的 <a href="m21.html#s4">M21 §4</a> 里还会出现。</p>
+</div>
+<div class="panel" data-panel="visual" hidden="">
+<h3>更高层：可视化、无代码、AI 辅助</h3>
+<p>更进一步：programación visual（用方框图）、sin código（用配置界面）、asistida por IA（AI 辅助），以及 intuitiva（vibe coding）。</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">记住三句话</span>
+<ul>
+<li><b>C</b>：中层，与 CPU 无关（可移植），用编译器翻译。</li>
+<li><b>C++</b>：面向对象，便于代码复用和分布式应用。</li>
+<li><b>WSDL</b>：面向服务（SOA），与平台和程序都无关，实现互操作。</li>
+</ul>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>四种软件抽象层 <span class="tag">1.1.2</span></h2>
+<p>SO、máquina virtual、virtualización、middleware 都是“抽象层”，但位置和作用各不相同。§5 的三列图只标出了 SO、middleware、aplicaciones 在编程层次里的位置；下图把四者画在同一台机器上。<b>点击方块：</b></p>
+<div class="stack" data-explain="mw">
+<figure>
+<div class="fig">
+<svg aria-label="软件分层示意：硬件之上是虚拟化层 VMM，其上有两台虚拟机，各自运行操作系统，虚拟机 1 里在操作系统和应用之间还有中间件" role="img" viewbox="0 0 640 330">
+<g aria-label="Máquina virtual" class="hot" data-key="vm" role="button" tabindex="0">
+<rect class="s-box vmf" height="196" rx="8" width="290" x="20" y="14"></rect>
+<text class="s-tm" x="34" y="34">Máquina virtual 1</text>
+<rect class="s-box vmf" height="196" rx="8" width="290" x="330" y="14"></rect>
+<text class="s-tm" x="344" y="34">Máquina virtual 2</text>
+</g>
+<g aria-label="Aplicaciones de la máquina virtual 1" class="hot" data-key="app" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="5" width="258" x="36" y="46"></rect>
+<text class="s-t" text-anchor="middle" x="165" y="66">Aplicaciones</text>
+<text class="s-t2" text-anchor="middle" x="165" y="82">programas de usuario</text>
+</g>
+<g aria-label="Middleware" class="hot" data-key="mw" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="5" width="258" x="36" y="100"></rect>
+<text class="s-t" text-anchor="middle" x="165" y="120">Middleware</text>
+<text class="s-t2" text-anchor="middle" x="165" y="136">entre SO y aplicaciones</text>
+</g>
+<g aria-label="Sistema operativo A" class="hot" data-key="so" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="5" width="258" x="36" y="154"></rect>
+<text class="s-t" text-anchor="middle" x="165" y="174">SO invitado A</text>
+<text class="s-t2" text-anchor="middle" x="165" y="190">abstrae el hardware</text>
+</g>
+<g aria-label="Aplicaciones de la máquina virtual 2" class="hot" data-key="app" role="button" tabindex="0">
+<rect class="s-box" height="98" rx="5" width="258" x="346" y="46"></rect>
+<text class="s-t" text-anchor="middle" x="475" y="90">Aplicaciones</text>
+<text class="s-t2" text-anchor="middle" x="475" y="108">(sin middleware)</text>
+</g>
+<g aria-label="Sistema operativo B" class="hot" data-key="so" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="5" width="258" x="346" y="154"></rect>
+<text class="s-t" text-anchor="middle" x="475" y="174">SO invitado B</text>
+<text class="s-t2" text-anchor="middle" x="475" y="190">puede ser distinto de A</text>
+</g>
+<g aria-label="Virtualización, VMM" class="hot" data-key="virt" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="5" width="600" x="20" y="222"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="242">VMM · virtualización</text>
+<text class="s-t2" text-anchor="middle" x="320" y="258">reparte CPU, memoria y E/S entre las máquinas virtuales</text>
+</g>
+<g aria-label="Hardware real" class="hot" data-key="hw" role="button" tabindex="0">
+<rect class="s-box" height="44" rx="5" width="600" x="20" y="276"></rect>
+<text class="s-t" text-anchor="middle" x="320" y="296">Hardware real</text>
+<text class="s-t2" text-anchor="middle" x="320" y="312">un único sistema físico</text>
+</g>
+</svg>
+</div>
+<figcaption>四种软件抽象层在同一台机器上的位置。虚线框是虚拟机。<span class="hint">点击方块看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="app" hidden="">
+<h3>Aplicaciones · 应用程序</h3>
+<p>用户真正要用的程序。它们调用下层提供的服务，不需要直接面对硬件。</p>
+</div>
+<div class="panel" data-panel="mw" hidden="">
+<h3>Middleware · 中间件</h3>
+<p>位于 <b>SO 和应用程序之间</b>，便于开发<b>分布式、异构、复杂</b>的系统，比如智能环境。Tema 2 的 <a href="m21.html">M21</a> 专门讲它。</p>
+<p class="aside">右边的虚拟机 2 没有 middleware：它不是每个系统都必须有的一层。</p>
+</div>
+<div class="panel" data-panel="so" hidden="">
+<h3>SO · Sistema operativo · 操作系统</h3>
+<p>一段<b>低层和中层</b>的代码，让应用程序<b>不必关心硬件</b>（abstraerse del hardware）。它提供系统的各种例行功能，比如读键盘字符、在屏幕上显示数据、打印文件，应用程序员不用自己写。</p>
+</div>
+<div class="panel" data-panel="vm" hidden="">
+<h3>Máquina virtual · 虚拟机</h3>
+<p>一个<b>程序</b>：在<b>一台真实系统</b>上模拟一个或多个系统，这些系统的 SO 可以相同，也可以不同（图中的 A 和 B）。</p>
+</div>
+<div class="panel" data-panel="virt" hidden="">
+<h3>Virtualización · 虚拟化</h3>
+<p>在<b>硬件</b>和<b>虚拟机的 SO</b> 之间建立一个抽象层 <b class="t">VMM (Virtual Machine Monitor)</b>——虚拟机监视器，用来在各台虚拟机之间<b>动态分配</b>硬件资源。</p>
+<p class="aside">VMM 也常被称为 hypervisor / hipervisor。</p>
+</div>
+<div class="panel" data-panel="hw" hidden="">
+<h3>Hardware · 真实系统</h3>
+<p>只有一套物理的 CPU、内存和 E/S。没有虚拟化时，SO 直接运行在它上面。</p>
+</div>
+</div>
+<p><b>我是谁？</b>先自己想，再点击右列揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>描述</th><th>概念（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>位于 SO 和应用之间，让分布式、异构的复杂系统更容易开发</td><td class="ans">Middleware</td></tr>
+<tr class="reveal"><td>一段低层、中层代码，让应用不必面对硬件，替程序员完成读键盘、显示、打印等例行任务</td><td class="ans">SO</td></tr>
+<tr class="reveal"><td>一个程序：在一台真实机器上模拟一个或多个系统，它们的 SO 可以相同也可以不同</td><td class="ans">Máquina virtual</td></tr>
+<tr class="reveal"><td>在硬件和虚拟机的 SO 之间加一层 VMM，动态分配硬件资源</td><td class="ans">Virtualización</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note warm">
+<span class="lbl">易混点</span>
+<p>máquina virtual 是被模拟出来的那个<b>系统</b>（一个程序）；virtualización 是在硬件和虚拟机 SO 之间建立 VMM、分配资源的那<b>一层</b>。middleware 则在 SO 之上、应用之下，和有没有虚拟化无关。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Sensorización：sensor inteligente <span class="tag">1.1.10</span></h2>
+<p>智能环境的电子系统通过 sensores（传感器）和 actuadores（执行器）与环境互动。<b class="t">sensor (ES/EN)</b>——传感器：把<b>物理量或化学量</b>转换成<b>电量</b>的器件。种类很多（压力、温度、湿度、振动、光……），结构和工作原理差别很大。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">按能量来源</span><h3>Sensores pasivos</h3><p>需要供电；被测量改变传感器的某个电参数（电阻、电容等）。</p></div>
+<div class="cell"><span class="eyebrow">按能量来源</span><h3>Sensores activos</h3><p>压电、光电、射频等；被测量本身提供产生输出所需的能量。</p></div>
+</div>
+<p class="aside">有些资料按能量来源这样分：需要供电的叫 pasivos，被测量本身提供能量的叫 activos；也有资料把 active / passive 反过来用。</p>
+
+<p>按结构，传感器分为 discretos、integrados 和 inteligentes 三种，后一种包含前一种。点按钮或图中的虚线框：</p>
+<div class="stack" data-explain="inteligente">
+<div aria-label="传感器结构" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="discreto" type="button">Discreto</button>
+<button aria-pressed="false" class="chip" data-key="integrado" type="button">Integrado</button>
+<button aria-pressed="false" class="chip" data-key="inteligente" type="button">Inteligente</button>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="传感器结构：上行 Sensor → Acondicionamiento（放大、滤波、线性化、调制、消抖）→ Conversión AD（虚线）→ Procesador（虚线）→ Sistema；Sensor integrado 覆盖到 Conversión AD，Sensor inteligente 覆盖到 Procesador。下行是执行器通道：Sistema → Procesador → Conversión DA → Acondicionamiento → Actuador" role="img" viewbox="0 0 690 260">
+<defs>
+<marker id="m11a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g class="zone" data-key="inteligente">
+<rect class="s-dash" height="146" rx="10" width="498" x="24" y="24"></rect>
+<text class="s-tm" x="32" y="38">SENSOR INTELIGENTE</text>
+</g>
+<g class="zone" data-key="integrado">
+<rect class="s-dash" height="118" rx="8" width="362" x="32" y="46"></rect>
+<text class="s-tm" x="40" y="60">SENSOR INTEGRADO</text>
+</g>
+<g class="zone" data-key="discreto">
+<rect class="s-dash" height="84" rx="6" width="64" x="38" y="72"></rect>
+<text class="s-tm" text-anchor="middle" x="70" y="85">discreto</text>
+</g>
+<circle class="s-box" cx="70" cy="120" r="24"></circle>
+<text class="s-t" text-anchor="middle" x="70" y="124">Sensor</text>
+<line class="s-line" marker-end="url(#m11a)" x1="94" x2="128" y1="120" y2="120"></line>
+<rect class="s-box" height="82" rx="5" width="164" x="130" y="76"></rect>
+<text class="s-t" text-anchor="middle" x="212" y="96">Acondicionamiento</text>
+<text class="s-t2" text-anchor="middle" x="212" y="114">amplificación · filtrado</text>
+<text class="s-t2" text-anchor="middle" x="212" y="130">linealización · modulación</text>
+<text class="s-t2" text-anchor="middle" x="212" y="146">antirrebote</text>
+<line class="s-line" marker-end="url(#m11a)" x1="294" x2="304" y1="120" y2="120"></line>
+<rect class="s-dashbox" height="48" rx="5" width="80" x="306" y="96"></rect>
+<text class="s-t" text-anchor="middle" x="346" y="116">Conversión</text>
+<text class="s-t" text-anchor="middle" x="346" y="133">AD</text>
+<line class="s-line" marker-end="url(#m11a)" x1="386" x2="402" y1="120" y2="120"></line>
+<rect class="s-dashbox" height="48" rx="5" width="100" x="404" y="96"></rect>
+<text class="s-t" text-anchor="middle" x="454" y="125">Procesador</text>
+<line class="s-line" marker-end="url(#m11a)" x1="504" x2="558" y1="120" y2="120"></line>
+<rect class="s-box" height="212" rx="5" width="110" x="560" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="615" y="150">Sistema</text>
+<line class="s-line" marker-end="url(#m11a)" x1="560" x2="522" y1="214" y2="214"></line>
+<rect class="s-box" height="44" rx="5" width="100" x="420" y="192"></rect>
+<text class="s-t" text-anchor="middle" x="470" y="218">Procesador</text>
+<line class="s-line" marker-end="url(#m11a)" x1="420" x2="392" y1="214" y2="214"></line>
+<rect class="s-box" height="48" rx="5" width="90" x="300" y="190"></rect>
+<text class="s-t" text-anchor="middle" x="345" y="210">Conversión</text>
+<text class="s-t" text-anchor="middle" x="345" y="227">DA</text>
+<line class="s-line" marker-end="url(#m11a)" x1="300" x2="286" y1="214" y2="214"></line>
+<rect class="s-box" height="44" rx="5" width="140" x="144" y="192"></rect>
+<text class="s-t" text-anchor="middle" x="215" y="218">Acondicionamiento</text>
+<line class="s-line" marker-end="url(#m11a)" x1="144" x2="114" y1="214" y2="214"></line>
+<path class="s-box" d="M20,186 L20,242 L112,214 Z"></path>
+<text class="s-t" text-anchor="middle" x="52" y="218">Actuador</text>
+</svg>
+</div>
+<figcaption>上行是传感通道：sensor integrado 覆盖到 Conversión AD，sensor inteligente 再包含 Procesador；虚线框（AD、Procesador）表示“不一定有”。下行是执行器通道：Sistema → Procesador → Conversión DA → Acondicionamiento → Actuador。最内的“discreto”框只圈住传感元件本身；通信和标准接口见下面的定义。<span class="hint">点击虚线框</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="discreto" hidden="">
+<h3>Sensor discreto · 分立式传感器</h3>
+<p>结构图里对应最左边单独的 “Sensor” 圆圈。一般指只有敏感/换能元件本身，输出原始的电信号，调理和模数转换都在外部电路里完成。</p>
+</div>
+<div class="panel" data-panel="integrado" hidden="">
+<h3>Sensor integrado · 集成式传感器</h3>
+<p>除了换能元件，还集成了把信号送进系统之前的<b>调理</b>级（acondicionamiento），<b>有时</b>还包括模数转换（图中 Conversión AD 是虚线框）。结构图列出的调理功能有五项：amplificación（放大）、filtrado（滤波）、linealización（线性化）、modulación（调制）、antirrebote（消抖，去掉开关触点的抖动）。</p>
+</div>
+<div class="panel" data-panel="inteligente" hidden="">
+<h3>Sensor inteligente · 智能传感器</h3>
+<p>在集成式传感器的基础上，再加上<b>处理能力和通信能力</b>，通常向系统提供<b>标准接口</b>（例如 I2C、SPI 或 USB）。结构图里它的范围一直延伸到 Procesador，然后才接到 Sistema。</p>
+<p class="aside">图的下半部分是反方向的<b>执行器通道</b>：系统的命令经 Procesador、Conversión DA（数模转换）和 Acondicionamiento 驱动 Actuador。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">定义 · 1.1.10</span>
+<p><b class="t">sensor inteligente (ES) / smart sensor (EN)</b>——智能传感器：在信号调理（和 A/D 转换）之上，增加了<b>处理</b>和<b>通信</b>能力的传感器，通常通过 I2C、SPI、USB 等标准接口接入系统。</p>
+<p>一个很有意思的例子是 <b class="t">smartdust (EN)</b>——智能尘埃：“motas” inteligentes，基于 MEMS 的微小传感器，通过无线网络<b>自发地</b>相互连接。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>Energía：五种供电方式 <span class="tag">1.1.9</span></h2>
+<p>智能环境中电子系统的电可以来自：red eléctrica（电网）、pilas 和 baterías（电池）、supercondensadores（超级电容）、pilas de combustible（燃料电池），甚至从环境中提取能量（energy harvesting）。点按钮，或点下面图里的椭圆：</p>
+<div class="stack" data-explain="red">
+<div aria-label="供电方式" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="red" type="button">Red eléctrica</button>
+<button aria-pressed="false" class="chip" data-key="baterias" type="button">Pilas y baterías</button>
+<button aria-pressed="false" class="chip" data-key="supercap" type="button">Supercondensadores</button>
+<button aria-pressed="false" class="chip" data-key="pila" type="button">Pilas de combustible</button>
+<button aria-pressed="false" class="chip" data-key="harvest" type="button">Energy harvesting</button>
+</div>
+<div class="panel" data-panel="red" hidden="">
+<h3>Red eléctrica · 电网</h3>
+<span class="verdict ok">供电质量好</span>
+<p>接电网时要用电源，通常是开关电源 <b class="t">SMPS (Switching-Mode Power Supply)</b>：把交流变成直流并稳压，保证系统得到良好的供电；往往还带软件控制，用来实现节能。微电子让这类电源大大缩小、效率更高。</p>
+<p><b>局限：</b>智能环境里很多设备接不上电网，要么因为会移动，要么因为附近没有电源。</p>
+</div>
+<div class="panel" data-panel="baterias" hidden="">
+<h3>Pilas y baterías · 电池</h3>
+<span class="verdict no">没跟上 ley de Moore</span>
+<p>接不上电网时的常规方案。电池能量密度的发展<b>没有遵循摩尔定律</b>（见本节末的能量密度图），所以常常决定系统的成本和体积。为了延长续航，要用超低功耗的电子器件和节能技术（例如设定占空比 ciclos de trabajo，把暂时不用的部件关掉或休眠）。</p>
+<p class="aside">pila 一般指一次性电池，batería 指可充电电池（batería recargable）。</p>
+</div>
+<div class="panel" data-panel="supercap" hidden="">
+<h3>Supercondensadores · SuperCap · 超级电容</h3>
+<span class="verdict star">新兴技术</span>
+<p>和燃料电池一样，能降低电池的维护成本（更换和充电）。它的<b>电荷密度小</b>，但能承受<b>几十万次</b>充放电，寿命长得多。</p>
+<p class="aside">另外，它的功率密度（W/kg）高、放电很快，但能量密度（Wh/kg）低（<a href="m26.html">M26</a> 细讲）。</p>
+</div>
+<div class="panel" data-panel="pila" hidden="">
+<h3>Pilas de combustible · 燃料电池</h3>
+<span class="verdict star">新兴技术</span>
+<p>它和超级电容并列为新兴技术，作用同样是降低电池的维护成本（更换和充电）。</p>
+<p class="aside">另外，它的能量密度高，但功率密度低、放电慢（<a href="m26.html">M26</a> 细讲）。</p>
+<p class="aside">燃料电池是什么：一般指通过电化学反应，把燃料（如氢、甲醇）的化学能直接变成电能，只要持续供应燃料就能发电，补充的是燃料而不是电。</p>
+</div>
+<div class="panel" data-panel="harvest" hidden="">
+<h3>Energy harvesting · 能量收集</h3>
+<span class="verdict ok">只适合极低功耗</span>
+<p>如果功耗<b>非常小</b>（很多智能环境的传感器网络就是这样），可以从环境中提取能量：光、热、振动、电磁波等，其中很多基于 MEMS 器件。</p>
+<p class="aside">这类能量很少、多变、难以预测，最后通常要和电池或超级电容这样的储能器件配合使用（<a href="m26.html">M26</a> 细讲）。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="便携电源的定性比较：超级电容功率密度高、能量密度低；燃料电池能量密度高、功率密度低；电池在中间" role="img" viewbox="0 0 560 290">
+<defs>
+<marker id="m11b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m11b)" x1="70" x2="540" y1="250" y2="250"></line>
+<line class="s-line" marker-end="url(#m11b)" x1="70" x2="70" y1="250" y2="24"></line>
+<text class="s-tm" x="80" y="28">densidad de potencia (W/kg)</text>
+<text class="s-tm" text-anchor="end" x="540" y="274">densidad de energía (Wh/kg)</text>
+<g aria-label="Supercondensadores" class="hot" data-key="supercap" role="button" tabindex="0">
+<ellipse class="s-box" cx="175" cy="82" rx="80" ry="36"></ellipse>
+<text class="s-t" text-anchor="middle" x="175" y="78">Supercondensadores</text>
+<text class="s-t2" text-anchor="middle" x="175" y="97">potencia ↑ · energía ↓</text>
+</g>
+<g aria-label="Baterías" class="hot" data-key="baterias" role="button" tabindex="0">
+<ellipse class="s-box" cx="300" cy="150" rx="78" ry="34"></ellipse>
+<text class="s-t" text-anchor="middle" x="300" y="146">Baterías</text>
+<text class="s-t2" text-anchor="middle" x="300" y="164">posición intermedia</text>
+</g>
+<g aria-label="Pilas de combustible" class="hot" data-key="pila" role="button" tabindex="0">
+<ellipse class="s-box" cx="430" cy="212" rx="88" ry="30"></ellipse>
+<text class="s-t" text-anchor="middle" x="430" y="208">Pilas de combustible</text>
+<text class="s-t2" text-anchor="middle" x="430" y="226">energía ↑ · potencia ↓</text>
+</g>
+</svg>
+</div>
+<figcaption>便携电源的定性示意：只表示相对位置，不是实测数据。电网和能量收集不是储能器件，不在图上。<span class="hint">点击椭圆</span></figcaption>
+</figure>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>方式</th><th>什么时候用</th><th>一句话区分</th></tr></thead>
+<tbody>
+<tr><td><b>Red eléctrica</b></td><td>设备固定、能接到电源</td><td>SMPS 交流转直流并稳压，可软件节能</td></tr>
+<tr><td><b>Pilas y baterías</b></td><td>移动设备，或接不上电网</td><td>没跟上摩尔定律，常决定成本和体积；靠低功耗和占空比延长续航</td></tr>
+<tr><td><b>Supercondensadores</b></td><td>想减少电池的更换和充电维护</td><td>电荷密度小，但能充放电几十万次，寿命长</td></tr>
+<tr><td><b>Pilas de combustible</b></td><td>同上（新兴技术）</td><td>能量密度高、功率密度低（见 <a href="m26.html">M26</a>）</td></tr>
+<tr><td><b>Energy harvesting</b></td><td>功耗非常小，例如传感器网络</td><td>从光、热、振动、电磁波取能，常基于 MEMS；通常要配储能（见 <a href="m26.html">M26</a>）</td></tr>
+</tbody>
+</table>
+</div>
+
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>Conectividad：五种网络 <span class="tag">1.1.7</span></h2>
+<p>通信网络为电子设备的互连提供手段。典型的数据网是办公室的计算机网络，即 <b class="t">LAN (Local Area Network)</b>——局域网。覆盖范围更大的有 MAN (Metropolitan Area Network) 和 WAN (Wide Area Network)，更小的有 <b class="t">PAN (Personal Area Network)</b>——个人区域网和 <b class="t">BAN (Body Area Network)</b>——人体区域网。<b>点击下图的各个区域：</b></p>
+<div class="stack" data-explain="ban">
+<figure>
+<div class="fig">
+<svg aria-label="网络覆盖范围：同底的嵌套椭圆，由外到内 WAN 100–1000 km（国家、大陆），MAN 10 km（城市），LAN 10 m 到 1 km（房间、建筑、校园），PAN 约 1 平方米（人周围），最内是 BAN 1–2 m" role="img" viewbox="0 0 640 330">
+<g aria-label="WAN" class="hot" data-key="wan" role="button" tabindex="0">
+<ellipse class="s-box" cx="320" cy="170" rx="310" ry="150"></ellipse>
+<text class="s-t" text-anchor="middle" x="320" y="42">WAN</text>
+<text class="s-t2" text-anchor="middle" x="320" y="58">100 km · 1000 km (país, continente)</text>
+</g>
+<g aria-label="MAN" class="hot" data-key="man" role="button" tabindex="0">
+<ellipse class="s-box" cx="320" cy="200" rx="250" ry="120"></ellipse>
+<text class="s-t" text-anchor="middle" x="320" y="102">MAN</text>
+<text class="s-t2" text-anchor="middle" x="320" y="118">10 km (ciudad)</text>
+</g>
+<g aria-label="LAN y WLAN" class="hot" data-key="lan" role="button" tabindex="0">
+<ellipse class="s-box" cx="320" cy="232" rx="185" ry="88"></ellipse>
+<text class="s-t" text-anchor="middle" x="320" y="166">LAN · WLAN</text>
+<text class="s-t2" text-anchor="middle" x="320" y="182">10 m · 100 m · 1 km (sala, edificio, campus)</text>
+<text class="s-ta" text-anchor="middle" x="320" y="198">WLAN = Wi-Fi</text>
+</g>
+<g aria-label="PAN y WPAN" class="hot" data-key="pan" role="button" tabindex="0">
+<ellipse class="s-box" cx="320" cy="264" rx="115" ry="56"></ellipse>
+<text class="s-t" text-anchor="middle" x="320" y="228">PAN · WPAN</text>
+<text class="s-t2" text-anchor="middle" x="320" y="244">≈ 1 m² · alrededor de la persona</text>
+<text class="s-ta" text-anchor="middle" x="320" y="262">WPAN = Bluetooth</text>
+</g>
+<g aria-label="BAN" class="hot" data-key="ban" role="button" tabindex="0">
+<ellipse class="s-box" cx="320" cy="296" rx="50" ry="24"></ellipse>
+<text class="s-t" text-anchor="middle" x="320" y="298">BAN</text>
+<text class="s-t2" text-anchor="middle" x="320" y="313">1–2 m</text>
+</g>
+</svg>
+</div>
+<figcaption>同底的嵌套椭圆：范围越大的网络在越外层，每层标出典型覆盖范围。最内的 BAN 比 PAN 还小。<span class="hint">点击各区域</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="ban" hidden="">
+<h3>BAN · Body Area Network · 人体区域网</h3>
+<p>覆盖范围比 PAN 还小：连接各种<b>穿戴式设备</b>（dispositivos llevables）的网络就是 BAN；设备之间一般不需要超过 <b>1–2 m</b>。例子：贴在身上的小传感器测量生命体征，用 Bluetooth 之类的无线方式发给接收终端，终端再经 Internet、GPRS、UMTS 或 WLAN 发给医疗中心。</p>
+</div>
+<div class="panel" data-panel="pan" hidden="">
+<h3>PAN / WPAN · 个人区域网</h3>
+<p>无线的个人区域网叫 <b class="t">WPAN (Wireless Personal Area Network)</b>——无线个人区域网，典型例子是 <b>Bluetooth</b>。</p>
+<p class="aside">有些资料把 PAN 的范围标为人身周围约一平方米；也有资料给出的 PAN 量级约为 10 m。</p>
+</div>
+<div class="panel" data-panel="lan" hidden="">
+<h3>LAN / WLAN · 局域网</h3>
+<p>典型例子：一间办公室的计算机网络。无线的叫 <b class="t">WLAN (Wireless Local Area Network)</b>——无线局域网，典型例子是 <b>Wi-Fi</b>。LAN 覆盖 10 m、100 m 到 1 km，即房间（room）、建筑（building）、校园（campus）。</p>
+</div>
+<div class="panel" data-panel="man" hidden="">
+<h3>MAN · 城域网</h3>
+<p>覆盖范围比 LAN 大：约 <b>10 km</b>，一座城市（city）。</p>
+</div>
+<div class="panel" data-panel="wan" hidden="">
+<h3>WAN · 广域网</h3>
+<p>覆盖范围最大：<b>100 km 到 1000 km</b>，一个国家乃至一个大陆（country, continent）。</p>
+<p class="aside">Internet 是最大的 WAN；4G、5G 这类蜂窝移动网也提供大范围覆盖。</p>
+</div>
+</div>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">按介质</span><h3>Cableadas · 有线</h3><p>líneas de datos（数据线）、líneas telefónicas（电话线）、fibra óptica（光纤），以及 <b class="t">PLC (Power Line Communications)</b>——电力线通信：借用电力线传数据。</p></div>
+<div class="cell"><span class="eyebrow">按介质</span><h3>Inalámbricas · 无线</h3><p>radio terrestre（地面无线电）、satélite（卫星）、infrarrojos（红外）。WLAN = Wi-Fi，WPAN = Bluetooth。<b>WSN</b> (Wireless Sensor Network，无线传感器网络) 用专门的拓扑和协议优化性能和功耗，例如 Zigbee。</p></div>
+<div class="cell"><span class="eyebrow">拓扑</span><h3>Topologías</h3><p>bus（共享同一传输介质）、estrella / star（集中式、点对点应用）、árbol / tree（数据收集）、malla / mesh（能容忍链路和节点失效）；此外还有 ring（环形）和 hybrid（混合）。</p></div>
+</div>
+
+<p>有的网络带 <b class="t">QoS (Quality of Service)</b>——服务质量机制，能保证带宽（速度）、误码率、延迟等通信参数；交互式服务离不开它。</p>
+<p><b>网络的融合：</b>几乎所有通信网络都在向一个基于 Internet 技术的全球系统融合（融合图见表下）：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>网络</th><th>演进</th></tr></thead>
+<tbody>
+<tr><td>电话网</td><td>RTC（交换电话网，只传语音）→ RDSI（综合业务数字网）→ 用 ADSL、FTTH（光纤到户）接入 Internet</td></tr>
+<tr><td>蜂窝移动网</td><td>1G 模拟 → 2G 数字，有低速数据业务 → 3G 更快、多媒体，让人人都有移动性 → <b>4G 基于 IP、有 QoS、速度很高</b> → 5G 连接容量大增、带宽远超 4G、延迟很低、能效高</td></tr>
+<tr><td>数据网</td><td>无线的 Aloha、有线的 ethernet → 带 QoS 的网络，如 Bluetooth、VoIP</td></tr>
+<tr><td>WSN</td><td>也转向 Internet 的 IP 协议，例如 6LoWPAN</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><b>这是哪种网络？</b>先自己想，再点击右列揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>线索</th><th>类型（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>无线的局域网，覆盖一个家或办公室，典型技术是 Wi-Fi</td><td class="ans">WLAN</td></tr>
+<tr class="reveal"><td>无线的个人范围网络，典型技术是 Bluetooth</td><td class="ans">WPAN</td></tr>
+<tr class="reveal"><td>连接身上的穿戴设备，彼此一般不超过 1–2 m</td><td class="ans">BAN</td></tr>
+<tr class="reveal"><td>第四代蜂窝移动网：基于 IP，有 QoS，速度很高</td><td class="ans">4G</td></tr>
+<tr class="reveal"><td>有线网络：借用电力线传输数据</td><td class="ans">PLC</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s10">
+<h2><span class="n">§10</span>Inteligencia：四种 IA 技术 <span class="tag">1.1.8</span></h2>
+<p>智能环境能<b>适应</b>环境、<b>学习</b>、<b>预测</b>事件，并根据情境<b>做决策</b>，即 <b class="t">context awareness (EN)</b>——情境感知。为此要用到人工智能（IA）技术，例如 RNA（Redes Neuronales Artificiales，人工神经网络）、lógica difusa（模糊逻辑）、algoritmos genéticos（遗传算法）。这些属于 <b>Inteligencia Computacional</b>（计算智能），是 IA 的一个分支。</p>
+<div class="grid3 g4">
+<div class="cell"><span class="eyebrow">1950–60 年代</span><h3>Sistemas expertos</h3><p>IA 的终极目标是模仿人的行为。当时讲专家系统，能像人一样推理。</p></div>
+<div class="cell"><span class="eyebrow">1980 年代</span><h3>Machine learning</h3><p>目标没那么宏大：先用自动学习解决分类、预测和聚类。RNA 是其中一种技术，但当时算力不够。</p></div>
+<div class="cell"><span class="eyebrow">2010 年代</span><h3>Deep learning</h3><p>云计算的大规模并行数据中心、先进的 RNA 架构和算法、专用芯片：语音和图像识别、自然语言处理、驾驶辅助终于好用了。</p></div>
+<div class="cell"><span class="eyebrow">2020 年代</span><h3>IA generativa</h3><p>基于 deep learning 和基础模型，按需生成长文本、图像、视频、音频。例：GAN、LLM（如 GPT）。</p></div>
+</div>
+
+<p>目标 1.1.8 要区分四种技术：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>技术</th><th>回答的问题</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><b>Algoritmo predictivo</b><br/><span class="es">预测算法</span></td><td>接下来会发生什么？</td><td>智能环境能“predecir eventos”（预测事件）。预测本质上是一种统计推断：用住户过去的移动记录估计他将来的位置和活动；预测有助于设备自动化和资源（能耗）的高效管理。</td></tr>
+<tr><td><b>Algoritmo de toma de decisión automático</b><br/><span class="es">自动决策算法</span></td><td>现在该做什么？</td><td>智能环境能“tomar decisiones en función del contexto”（根据情境做决策）。例如：用 AI 规划提醒住户下一项活动，必要时代为完成；用带时间推理的规则系统识别危险情况，让环境回到安全状态并联系住户；Mozer 的 Adaptive Home 用神经网络和强化学习（reinforcement learner）决定灯和风扇的最佳设置。</td></tr>
+<tr><td><b>Machine learning</b><br/><span class="es">机器学习</span></td><td>怎样从数据里学会？</td><td>80 年代出现的 IA 研究方向，用 aprendizaje automático（自动学习）解决分类、预测和聚类问题。换个说法（M31 会细讲）：机器从数据中学习、随经验改进，不需要显式编程。</td></tr>
+<tr><td><b>Agente inteligente</b><br/><span class="es">智能体</span></td><td>谁来感知、决策、行动？</td><td>一个程序或系统，感知环境、处理信息、作出理性决定并据此行动。种类很多，从恒温器这样简单的，到基于 IA generativa 的复杂智能体。</td></tr>
+</tbody>
+</table>
+</div>
+<div class="flow">
+<div class="cell"><span class="eyebrow">agente · 1</span><h3>Percibe</h3><p>感知环境</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">agente · 2</span><h3>Procesa y decide</h3><p>处理信息，作出理性决定</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">agente · 3</span><h3>Actúa</h3><p>据此行动，然后再感知……</p></div>
+</div>
+<p>看一个更完整的智能体：</p>
+<figure>
+<div class="fig">
+<svg aria-label="基于效用的智能体：环境经 Sensors 进入 Agent；Agent 内部依次判断 What the world is like now、What it will be like if I do action A、How happy I will be in such a state、What action I should do now，左侧的 State、How the world evolves、What my actions do、Utility 作为输入；最后经 Effectors 作用回 Environment" role="img" viewbox="0 0 640 360">
+<defs>
+<marker id="m11d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-soft" height="340" rx="16" width="490" x="10" y="10"></rect>
+<rect class="s-box" height="340" rx="16" width="100" x="530" y="10"></rect>
+<text class="s-t" text-anchor="middle" transform="rotate(90 580 180)" x="580" y="180">Environment</text>
+<text class="s-t" x="24" y="336">Agent</text>
+<text class="s-t" text-anchor="middle" x="390" y="40">Sensors</text>
+<line class="s-line" marker-end="url(#m11d)" x1="528" x2="434" y1="36" y2="36"></line>
+<line class="s-line" marker-end="url(#m11d)" x1="390" x2="390" y1="46" y2="58"></line>
+<rect class="s-box" height="42" rx="3" width="180" x="300" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="78">What the world</text>
+<text class="s-t" text-anchor="middle" x="390" y="95">is like now</text>
+<line class="s-line" marker-end="url(#m11d)" x1="390" x2="390" y1="102" y2="118"></line>
+<rect class="s-box" height="42" rx="3" width="180" x="300" y="120"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="138">What it will be like</text>
+<text class="s-t" text-anchor="middle" x="390" y="155">if I do action A</text>
+<line class="s-line" marker-end="url(#m11d)" x1="390" x2="390" y1="162" y2="178"></line>
+<rect class="s-box" height="42" rx="3" width="180" x="300" y="180"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="198">How happy I will be</text>
+<text class="s-t" text-anchor="middle" x="390" y="215">in such a state</text>
+<line class="s-line" marker-end="url(#m11d)" x1="390" x2="390" y1="222" y2="238"></line>
+<rect class="s-box" height="42" rx="3" width="180" x="300" y="240"></rect>
+<text class="s-t" text-anchor="middle" x="390" y="258">What action I</text>
+<text class="s-t" text-anchor="middle" x="390" y="275">should do now</text>
+<line class="s-line" marker-end="url(#m11d)" x1="390" x2="390" y1="282" y2="300"></line>
+<text class="s-t" text-anchor="middle" x="390" y="318">Effectors</text>
+<line class="s-line" marker-end="url(#m11d)" x1="430" x2="528" y1="314" y2="314"></line>
+<rect class="s-box" height="28" rx="14" width="200" x="30" y="70"></rect>
+<text class="s-t2" text-anchor="middle" x="130" y="88">State</text>
+<rect class="s-box" height="28" rx="14" width="200" x="30" y="118"></rect>
+<text class="s-t2" text-anchor="middle" x="130" y="136">How the world evolves</text>
+<rect class="s-box" height="28" rx="14" width="200" x="30" y="166"></rect>
+<text class="s-t2" text-anchor="middle" x="130" y="184">What my actions do</text>
+<rect class="s-box" height="28" rx="14" width="200" x="30" y="214"></rect>
+<text class="s-t2" text-anchor="middle" x="130" y="232">Utility</text>
+<line class="s-line" marker-end="url(#m11d)" x1="230" x2="298" y1="84" y2="78"></line>
+<line class="s-line" marker-end="url(#m11d)" x1="230" x2="298" y1="128" y2="86"></line>
+<line class="s-line" marker-end="url(#m11d)" x1="230" x2="298" y1="136" y2="136"></line>
+<line class="s-line" marker-end="url(#m11d)" x1="230" x2="298" y1="176" y2="94"></line>
+<line class="s-line" marker-end="url(#m11d)" x1="230" x2="298" y1="182" y2="146"></line>
+<line class="s-line" marker-end="url(#m11d)" x1="230" x2="298" y1="228" y2="200"></line>
+</svg>
+</div>
+<figcaption>环境经 <b>Sensors</b>（传感器）进入智能体；智能体依次判断“世界现在是什么样”→“如果我做动作 A，世界会变成什么样”→“到那个状态我会有多满意”→“我现在该做什么”，最后由 <b>Effectors</b>（执行器）作用回 <b>Environment</b>。左边四个椭圆是它的内部知识：State（当前状态）、How the world evolves（世界如何演变）、What my actions do（我的动作有什么效果）、Utility（效用，衡量“满意”）。这类智能体通常叫 utility-based agent（基于效用的智能体）。</figcaption>
+</figure>
+
+<div class="note warm">
+<span class="lbl">怎么区分</span>
+<p>predictivo 和 toma de decisión 说的是算法<b>输出什么</b>：一个对未来的估计，或一个要执行的动作。machine learning 说的是模型<b>怎么得到</b>：从数据中学出来，它既可以用来预测，也可以用来决策。agente inteligente 是一个<b>完整的系统</b>，把感知、决策、行动连成闭环，内部可以用到前面几种。</p>
+</div>
+<p><b>配对：</b>左边是情景，右边是技术。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="pred" type="button">根据过去几周的作息记录，估计住户今天大约 18:30 到家</button>
+<button data-l="dec" type="button">燃气浓度超过阈值：系统判断情况危险，自动关阀、开窗并通知住户</button>
+<button data-l="ml" type="button">用大量标好“人 / 狗 / 猫”的照片训练一个网络，让它学会给新照片分类</button>
+<button data-l="ag" type="button">一个持续运行的程序：读温度、和设定值比较、决定开关暖气，周而复始</button>
+</div>
+<div class="col">
+<button data-r="ml" type="button">Machine learning</button>
+<button data-r="ag" type="button">Agente inteligente</button>
+<button data-r="pred" type="button">Algoritmo predictivo</button>
+<button data-r="dec" type="button">Toma de decisión automática</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+
+</section>
+
+<section class="sec" id="s11">
+<h2><span class="n">§11</span>Interacción：usabilidad 与 accesibilidad <span class="tag">1.1.5</span></h2>
+<p>随着电子和软件的进步，人和系统的交互方式一直在变：</p>
+<div class="flow">
+<div class="cell"><span class="eyebrow">最早</span><h3>命令行 · 菜单</h3><p>línea de comandos、selección por menú</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">图形</span><h3>GUI</h3><p>Graphical User Interface，基于 WIMP 范式（Window, Icon, Menu, Pointing device），以及 3D 和多点触控版本</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">自然</span><h3>NUI</h3><p>Natural User Interaction：语音、触觉和手势界面</p></div>
+</div>
+
+<p>好的界面要满足两个<b>不同</b>的标准。切换看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换标准" class="seg" role="group">
+<button aria-pressed="true" data-view="usab" type="button">Usabilidad</button>
+<button aria-pressed="false" data-view="acces" type="button">Accesibilidad</button>
+</div>
+<div class="panel" data-pane="usab">
+<div class="note">
+<span class="lbl">定义 · 1.1.5 · usabilidad</span>
+<p><b class="t">usabilidad (ES) / usability (EN)</b>——可用性：界面对用户来说<b>有效（eficaz）、高效（eficiente）、令人满意（satisfactoria）</b>。它问的是：<b>好不好用？</b></p>
+</div>
+<p>举个例子：智能家居 app 里调温度。能调成功，是有效；两步就能完成，是高效；用起来不烦，是满意。</p>
+</div>
+<div class="panel" data-pane="acces" hidden="">
+<div class="note">
+<span class="lbl">定义 · 1.1.5 · accesibilidad</span>
+<p><b class="t">accesibilidad (ES) / accessibility (EN)</b>——无障碍（可及性）：界面能被<b>任何人</b>使用，不论其技术、认知或身体能力如何。它问的是：<b>谁都能用吗？</b></p>
+</div>
+<p>举个例子：同一个 app 支持读屏、语音控制、大字号，不熟悉手机的老人和视障用户也能调温度。</p>
+</div>
+</div>
+<p>今天，界面的设计和评估有专门的方法，可以分成三部分来看：</p>
+
+<div class="grid3">
+<div class="cell"><span class="eyebrow">左 · 谁在用</span><h3>Interfaz de usuario</h3><p>普通用户直接通过界面使用 producto o servicio（产品或服务）；残障用户可能还要经过一个 <b>ayuda técnica</b>（辅助技术）。这正是 accesibilidad 要考虑的。</p></div>
+<div class="cell"><span class="eyebrow">中 · 好设计</span><h3>Criterios de buen diseño</h3><p>utilidad（有用）、eficiencia（高效）、seguridad（安全）、durabilidad（耐用）、estética adecuada（外观得当）、precio realista（价格合理），再加上 otros aspectos：entorno（环境）、actividad（活动）、perfil de usuario（用户画像）。做到了用户满意；做不到就会 abandono（弃用）或 infrautilización（用得不充分）。</p></div>
+<div class="cell"><span class="eyebrow">右 · 过程</span><h3>Ingeniería de la usabilidad y la accesibilidad</h3><p>过程模型：análisis de requisitos（需求分析）→ diseño → implementación → lanzamiento（发布），并行有 prototipado（原型）和 evaluación（评估）；<b>usuarios</b> 在中心，每一步都回到用户。</p></div>
+</div>
+<p><b>这属于哪一个？</b>点击右列揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>情景</th><th>标准（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>把调温操作从 5 次点击减到 2 次</td><td class="ans">Usabilidad · 高效</td></tr>
+<tr class="reveal"><td>视障用户能用读屏软件控制灯光</td><td class="ans">Accesibilidad</td></tr>
+<tr class="reveal"><td>用户调查：大多数人觉得界面令人满意</td><td class="ans">Usabilidad · 满意</td></tr>
+<tr class="reveal"><td>不会用智能手机的老人也能用语音开门</td><td class="ans">Accesibilidad · 技术能力</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>趋势：</b></p>
+<ul>
+<li><b class="t">interfaces multimodales (ES)</b>——多模态界面：组合人的多种感觉和运动通道，让交互更稳健、更自适应、更容错。运动通道是语音、面部和身体手势、目光；感觉通道是视觉、听觉、触觉（触压和动觉）、嗅觉、味觉和前庭觉。由此有了提升 <b>experiencia del usuario</b>（用户体验）的自然界面，以及改善无障碍的通用或自适应界面（interfaces universales o adaptativos）。</li>
+<li>与 IA 的新分支 <b class="t">computación afectiva (ES) / affective computing (EN)</b>——情感计算结合，产生 avatares，即 <b class="t">ECA (Embodied Conversational Agent)</b>——具身对话代理：人形的虚拟实体，能和用户进行自然、智能、带情感的对话。</li>
+<li>基于生理信号的界面，例如 <b class="t">BCI (Brain Computer Interaction)</b>——脑机接口。</li>
+<li>泛在计算让人随时随地都能连接，因此需要换一种交互范式：自然交互和 interfaces tangibles（可触摸界面，即日常物品充当“隐形机器”的控件和显示器）。</li>
+</ul>
+
+</section>
+
+<section class="sec" id="s12">
+<h2><span class="n">§12</span>Codiseño hardware/software <span class="tag">1.1.11</span></h2>
+<p>今天设计电子系统时，硬件能实现的和软件能实现的<b>没有本质区别</b>。一个功能用硬连线逻辑（lógica cableada）还是用代码来做，大多只是在几项设计指标之间权衡：prestaciones（性能）、consumo（功耗）、tamaño（尺寸），尤其是 <b>flexibilidad</b>（灵活性）。软硬件一起设计的方法叫 <b class="t">codiseño hardware/software (ES) / hardware/software co-design (EN)</b>——软硬件协同设计。下面一步一步走一遍典型流程：</p>
+<div class="stepper" id="codis">
+<figure>
+<div class="fig">
+<svg aria-label="软硬件协同设计流程：Especificación formal 与 Modelado 双向相连，Modelado 与 Librería de modelos 双向相连；Modelado → Simulación y verificación → Evaluación del diseño → Modificaciones y refinamientos → 回到 Modelado 的循环；Evaluación 输出 Diseño verificado → Mapeado del modelo → Síntesis software（Código C）和 Síntesis hardware（Código VHDL），两者之间 Interfacing → Implementación y prototipo" role="img" viewbox="0 0 660 470">
+<defs>
+<marker id="m11c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g class="stage" data-step="1">
+<rect class="s-box" height="46" rx="6" width="150" x="255" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="330" y="30">① Especificación</text>
+<text class="s-t" text-anchor="middle" x="330" y="46">formal</text>
+<line class="s-line" marker-end="url(#m11c)" marker-start="url(#m11c)" x1="330" x2="330" y1="58" y2="94"></line>
+</g>
+<g class="stage" data-step="2">
+<rect class="s-box" height="58" rx="14" width="140" x="40" y="20"></rect>
+<text class="s-tm" text-anchor="middle" x="110" y="40">Librería</text>
+<text class="s-t" text-anchor="middle" x="110" y="62">Modelos</text>
+<line class="s-line" marker-end="url(#m11c)" marker-start="url(#m11c)" x1="182" x2="253" y1="64" y2="108"></line>
+<rect class="s-box" height="46" rx="6" width="150" x="255" y="96"></rect>
+<text class="s-t" text-anchor="middle" x="330" y="124">② Modelado</text>
+</g>
+<g class="stage" data-step="3">
+<path class="s-line" d="M407,119 H555 V146" marker-end="url(#m11c)"></path>
+<rect class="s-box" height="46" rx="6" width="170" x="470" y="148"></rect>
+<text class="s-t" text-anchor="middle" x="555" y="168">③ Simulación y</text>
+<text class="s-t" text-anchor="middle" x="555" y="184">verificación</text>
+</g>
+<g class="stage" data-step="4">
+<path class="s-line" d="M555,194 V233 H407" marker-end="url(#m11c)"></path>
+<rect class="s-box" height="46" rx="6" width="150" x="255" y="210"></rect>
+<text class="s-t" text-anchor="middle" x="330" y="230">④ Evaluación</text>
+<text class="s-t" text-anchor="middle" x="330" y="246">del diseño</text>
+</g>
+<g class="stage" data-step="5">
+<path class="s-line" d="M255,233 H115 V196" marker-end="url(#m11c)"></path>
+<rect class="s-box" height="46" rx="6" width="170" x="30" y="148"></rect>
+<text class="s-t" text-anchor="middle" x="115" y="168">⑤ Modificaciones</text>
+<text class="s-t" text-anchor="middle" x="115" y="184">y refinamientos</text>
+<path class="s-line" d="M170,148 V119 H253" marker-end="url(#m11c)"></path>
+<line class="s-line" marker-end="url(#m11c)" marker-start="url(#m11c)" x1="80" x2="80" y1="80" y2="146"></line>
+</g>
+<g class="stage" data-step="6">
+<line class="s-line" marker-end="url(#m11c)" x1="330" x2="330" y1="256" y2="298"></line>
+<text class="s-ta" x="340" y="282">Diseño verificado</text>
+<rect class="s-box" height="46" rx="6" width="150" x="255" y="300"></rect>
+<text class="s-t" text-anchor="middle" x="330" y="328">⑥ Mapeado del modelo</text>
+</g>
+<g class="stage" data-step="7">
+<path class="s-line" d="M255,323 H105 V356" marker-end="url(#m11c)"></path>
+<path class="s-line" d="M405,323 H555 V356" marker-end="url(#m11c)"></path>
+<rect class="s-box" height="46" rx="6" width="150" x="30" y="358"></rect>
+<text class="s-t" text-anchor="middle" x="105" y="386">⑦ Síntesis software</text>
+<rect class="s-box" height="46" rx="6" width="150" x="480" y="358"></rect>
+<text class="s-t" text-anchor="middle" x="555" y="386">⑦ Síntesis hardware</text>
+<line class="s-line" marker-end="url(#m11c)" marker-start="url(#m11c)" x1="230" x2="430" y1="372" y2="372"></line>
+<text class="s-ta" text-anchor="middle" x="330" y="364">Interfacing</text>
+<text class="s-tm" x="20" y="458">Código C</text>
+<text class="s-tm" text-anchor="end" x="640" y="458">Código VHDL</text>
+</g>
+<g class="stage" data-step="8">
+<path class="s-line" d="M105,404 V433 H253" marker-end="url(#m11c)"></path>
+<path class="s-line" d="M555,404 V433 H407" marker-end="url(#m11c)"></path>
+<rect class="s-box" height="46" rx="6" width="150" x="255" y="412"></rect>
+<text class="s-t" text-anchor="middle" x="330" y="432">⑧ Implementación</text>
+<text class="s-t" text-anchor="middle" x="330" y="448">y prototipo</text>
+</g>
+</svg>
+</div>
+<figcaption>核心是 ②→③→④→⑤→② 的<b>建模—仿真—评估—修改</b>循环；评估通过（“Diseño verificado”）后才进入映射，再分成软件综合（C 代码）和硬件综合（VHDL 代码），两者之间要做接口（interfacing），最后合到实现与原型。“划分”和“制造”没有单独的方框，见步进说明。</figcaption>
+</figure>
+
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">记住顺序</span>
+<p>Especificación formal → Modelado ⇄ librería → [Simulación y verificación → Evaluación → Modificaciones y refinamientos → Modelado]（循环，划分和选处理器在这里做）→ Diseño verificado → Mapeado → Síntesis SW (C) ∥ Síntesis HW (VHDL) + interfacing → Implementación y prototipo（→ fabricación）。规格总在最前；验证通过之后才映射。</p>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M11">
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">01</span>按 §3 的说法，“procesadores de propósito general”（GPP）又叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>microprocesadores</button>
+<button data-o="b" type="button"><span class="k">B</span>microcontroladores</button>
+<button data-o="c" type="button"><span class="k">C</span>DSP</button>
+<button data-o="d" type="button"><span class="k">D</span>GPU</button>
+</div>
+<p class="why"><b>A。</b>§3 的定义就是“también llamados microprocesadores”。microcontrolador 是 CPU + 存储 + E/S 的单芯片小系统，不是同义词（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>一块芯片上集成 CPU、程序存储器和 E/S 端口，常用于专用控制，能在几个时钟周期内响应外部事件。这是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>GPU</button>
+<button data-o="b" type="button"><span class="k">B</span>GPP</button>
+<button data-o="c" type="button"><span class="k">C</span>DSP</button>
+<button data-o="d" type="button"><span class="k">D</span>uC（microcontrolador）</button>
+</div>
+<p class="why"><b>D。</b>结构见 §4，实时、响应确定的特点见 §3 的表。GPU 擅长大规模并行，DSP 擅长实时信号处理，GPP 什么程序都能跑。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">03</span>在硬件和虚拟机的 SO 之间建立 VMM 抽象层、动态分配硬件资源的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>middleware</button>
+<button data-o="b" type="button"><span class="k">B</span>SO</button>
+<button data-o="c" type="button"><span class="k">C</span>virtualización</button>
+<button data-o="d" type="button"><span class="k">D</span>máquina virtual</button>
+</div>
+<p class="why"><b>C。</b>virtualización 建立 VMM；máquina virtual 是在真实系统上模拟出来的系统本身；middleware 在 SO 和应用之间（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>关于 SoC，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只能集成一个 CPU 核</button>
+<button data-o="b" type="button"><span class="k">B</span>是一种可以重新配置逻辑的器件</button>
+<button data-o="c" type="button"><span class="k">C</span>超高集成度、高性能的芯片，可集成多个 CPU 核、GPU、DSP、通信模块、模拟部件和传感器</button>
+<button data-o="d" type="button"><span class="k">D</span>把几块芯片装进同一个封装</button>
+</div>
+<p class="why"><b>C。</b>这是 SoC 的定义（§4，目标 1.1.3）。B 说的是 FPGA，D 说的是 MCP (Multilayer Multichip Package)。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>哪一项最符合 sistema empotrado 的定义？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>基于微处理器的通用计算机，有标准的用户界面</button>
+<button data-o="b" type="button"><span class="k">B</span>专用的电子系统，通常嵌在更大的系统里，在成本、功耗和尺寸上做了优化</button>
+<button data-o="c" type="button"><span class="k">C</span>必须运行完整的操作系统和虚拟内存</button>
+<button data-o="d" type="button"><span class="k">D</span>只指汽车里控制发动机的处理器</button>
+</div>
+<p class="why"><b>B。</b>§4，目标 1.1.4。A 描述的是 microcomputador；汽车只是嵌入式系统的一个例子。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>“界面能被任何人使用，不论其技术、认知或身体能力如何”，这是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>usabilidad</button>
+<button data-o="b" type="button"><span class="k">B</span>experiencia del usuario</button>
+<button data-o="c" type="button"><span class="k">C</span>interfaz multimodal</button>
+<button data-o="d" type="button"><span class="k">D</span>accesibilidad</button>
+</div>
+<p class="why"><b>D。</b>§11，目标 1.1.5。usabilidad 是有效、高效、令人满意，问的是“好不好用”。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>哪一个属于面向服务的编程层次：与平台和程序都无关，用于不同系统之间的互操作？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>WSDL</button>
+<button data-o="b" type="button"><span class="k">B</span>C</button>
+<button data-o="c" type="button"><span class="k">C</span>C++</button>
+<button data-o="d" type="button"><span class="k">D</span>ensamblador</button>
+</div>
+<p class="why"><b>A。</b>§5，目标 1.1.6。C 是中层、与 CPU 无关（可移植）；C++ 是面向对象，便于复用；ensamblador 是低层、每种 CPU 不同。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>借用电力线传输数据的有线通信网络是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>WLAN</button>
+<button data-o="b" type="button"><span class="k">B</span>PLC</button>
+<button data-o="c" type="button"><span class="k">C</span>4G</button>
+<button data-o="d" type="button"><span class="k">D</span>BAN</button>
+</div>
+<p class="why"><b>B。</b>PLC = Power Line Communications（§9，目标 1.1.7）。WLAN（Wi-Fi）和 BAN 是无线网络，4G 是蜂窝移动网。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>“一个程序或系统：感知环境、处理信息、作出理性决定并据此行动；最简单的例子是恒温器。”这是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>agente inteligente</button>
+<button data-o="b" type="button"><span class="k">B</span>algoritmo predictivo</button>
+<button data-o="c" type="button"><span class="k">C</span>machine learning</button>
+<button data-o="d" type="button"><span class="k">D</span>algoritmo de toma de decisión automático</button>
+</div>
+<p class="why"><b>A。</b>§10，目标 1.1.8。自动决策算法只负责“选动作”；agente inteligente 是把感知、决策、行动连成闭环的完整系统。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>哪种供电方式电荷密度小，但能承受几十万次充放电、寿命长得多？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>pila de combustible</button>
+<button data-o="b" type="button"><span class="k">B</span>batería</button>
+<button data-o="c" type="button"><span class="k">C</span>supercondensador</button>
+<button data-o="d" type="button"><span class="k">D</span>energy harvesting</button>
+</div>
+<p class="why"><b>C。</b>这是对 supercondensadores 的描述（§8，目标 1.1.9）。燃料电池正相反，能量密度高、功率密度低（§8）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>sensor inteligente 比 sensor integrado 多了什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>换能元件</button>
+<button data-o="b" type="button"><span class="k">B</span>信号调理（放大、滤波、线性化）</button>
+<button data-o="c" type="button"><span class="k">C</span>模数转换</button>
+<button data-o="d" type="button"><span class="k">D</span>处理和通信能力，通常带 I2C、SPI、USB 等标准接口</button>
+</div>
+<p class="why"><b>D。</b>§7，目标 1.1.10。调理（以及有时的 A/D 转换）是 sensor integrado 就已经有的。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>codiseño hardware/software 的阶段顺序，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>mapeado → especificación → simulación → prototipo</button>
+<button data-o="b" type="button"><span class="k">B</span>especificación formal → modelo → partición y simulación → mapeado → prototipo</button>
+<button data-o="c" type="button"><span class="k">C</span>prototipo → partición → especificación → mapeado</button>
+<button data-o="d" type="button"><span class="k">D</span>modelo → fabricación → partición → especificación</button>
+</div>
+<p class="why"><b>B。</b>§12，目标 1.1.11。仿真之后可以回到划分重新做，但规格总在最前，原型和制造在最后。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">20 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">SoC<small>System On Chip</small></span><span class="back"><b>片上系统</b><br/>超高集成度、高性能的芯片：多核 CPU、GPU、DSP、通信、模拟部件、传感器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sistema empotrado<small>embedded system</small></span><span class="back"><b>嵌入式系统</b><br/>专用电子系统，常嵌在更大的系统里，成本、功耗、尺寸都做了优化。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">uC<small>microcontrolador</small></span><span class="back"><b>微控制器</b><br/>单芯片小系统：CPU + 程序存储 + E/S 端口，面向控制。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GPP<small>General Purpose Processor · microprocesador</small></span><span class="back"><b>通用处理器</b><br/>什么程序都能跑；灵活，但能效低。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DSP<small>Digital Signal Processor</small></span><span class="back"><b>数字信号处理器</b><br/>专做信号处理，面向实时数据流。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GPU<small>Graphics Processing Unit</small></span><span class="back"><b>图形处理器</b><br/>专做图形，大规模并行（SIMD）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SO<small>sistema operativo</small></span><span class="back"><b>操作系统</b><br/>低层、中层代码，让应用不必关心硬件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">middleware</span><span class="back"><b>中间件</b><br/>在 SO 和应用之间，便于开发分布式、异构的复杂系统。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">máquina virtual</span><span class="back"><b>虚拟机</b><br/>在一台真实系统上模拟一个或多个系统（SO 可同可异）的程序。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">virtualización<small>VMM · Virtual Machine Monitor</small></span><span class="back"><b>虚拟化</b><br/>硬件与虚拟机 SO 之间的抽象层，动态分配硬件资源。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sensor inteligente<small>smart sensor</small></span><span class="back"><b>智能传感器</b><br/>在调理和 A/D 之上加处理和通信，用 I2C、SPI、USB 等标准接口。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">energy harvesting</span><span class="back"><b>能量收集</b><br/>从光、热、振动、电磁波中取能，只适合功耗非常小的设备。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">supercondensador<small>SuperCap</small></span><span class="back"><b>超级电容</b><br/>电荷密度小，但能充放电几十万次，寿命长。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PLC<small>Power Line Communications</small></span><span class="back"><b>电力线通信</b><br/>借用电力线传数据的有线网络。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BAN<small>Body Area Network</small></span><span class="back"><b>人体区域网</b><br/>连接穿戴设备，彼此一般在 1–2 m 以内。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">machine learning</span><span class="back"><b>机器学习</b><br/>从数据中学习、随经验改进，用于分类、预测、聚类。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">agente inteligente</span><span class="back"><b>智能体</b><br/>感知环境、处理信息、作出理性决定并行动的程序或系统。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">usabilidad<small>usability</small></span><span class="back"><b>可用性</b><br/>界面有效、高效、令人满意：好不好用。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">accesibilidad<small>accessibility</small></span><span class="back"><b>无障碍</b><br/>不论技术、认知、身体能力，任何人都能用。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">codiseño hardware/software<small>HW/SW co-design</small></span><span class="back"><b>软硬件协同设计</b><br/>规格 → 建模 ⇄ 仿真/评估/修改（循环）→ 映射 → 软硬件综合 → 原型。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M11"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var root = document.getElementById("cmos");
+  if (!root) return;
+  var c = document.getElementById("m11-c"), f = document.getElementById("m11-f"), v = document.getElementById("m11-v");
+  var oc = root.querySelector('[data-out="c"]'), of = root.querySelector('[data-out="f"]'), ov = root.querySelector('[data-out="v"]');
+  var fm = root.querySelector(".calc-f"), res = root.querySelector(".calc-r"), tip = root.querySelector(".calc-tip");
+  function n(x, d) { return Number(x).toFixed(d); }
+  function render() {
+    var C = +c.value, F = +f.value, V = +v.value, P = C * F * V * V;
+    oc.textContent = n(C, 1) + "×";
+    of.textContent = n(F, 1) + "×";
+    ov.textContent = n(V, 2) + "×";
+    fm.textContent = "P ∝ C · f · V² = " + n(C, 1) + " × " + n(F, 1) + " × " + n(V, 2) + "² = ";
+    res.textContent = n(P, 2) + " ×";
+    var t;
+    if (Math.abs(P - 1) < 0.005) t = "和参考芯片一样。";
+    else if (P < 1) t = "功耗降到参考芯片的 " + Math.round(P * 100) + "%。";
+    else t = "功耗是参考芯片的 " + n(P, 2) + " 倍。";
+    if (Math.abs(V - 1) > 0.001) t += "电压是平方项：V × " + n(V, 2) + " 单独就让功耗 × " + n(V * V, 2) + "。";
+    else t += "试试只调 V：它对功耗的影响是平方关系。";
+    tip.textContent = t;
+  }
+  [c, f, v].forEach(function (x) { x.addEventListener("input", render); });
+  Array.prototype.slice.call(root.querySelectorAll("[data-pre]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-pre");
+      c.value = 1;
+      f.value = p === "f" ? 2 : 1;
+      v.value = p === "v" ? 0.8 : 1;
+      render();
+    });
+  });
+  render();
+})();
+
+
+(function () {
+  var box = document.getElementById("codis");
+  if (!box) return;
+  var st = Array.prototype.slice.call(box.querySelectorAll(".stage"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var N = 8;
+  var T = [
+    "全部 8 个阶段一览。点「下一步」逐个看，当前阶段会高亮；②→⑤ 是一个可以反复走的循环。",
+    "<b>Especificación formal</b>（形式化规格）：同时写下 requisitos funcionales（功能需求：行为、与环境的接口……）和 no funcionales（非功能需求：功耗、尺寸、成本、开发时间……）。图中它和建模之间是<b>双向</b>箭头。",
+    "<b>Modelado</b>（建模）：用高级语言（例如 SystemC、SpecC、DEVS、VHDL、Verilog）建立可以仿真的模型，定义系统的结构、功能和行为。可以借助 <b>librería de modelos</b>（模型库），作为候选设计或知识库（图中双向箭头）。",
+    "<b>Simulación y verificación</b>（仿真与验证）：为了仿真要先<b>划分</b>（partición：决定哪些功能用 hardware、哪些用 software 实现）并<b>选择处理器</b>。仿真器重现多个 casos de uso（用例）并记录结果，分析并验证功能。",
+    "<b>Evaluación del diseño</b>（设计评估）：用仿真结果评估各种设计方案，看是否满足 especificación formal。通过了就是 <b>diseño verificado</b>，进入 ⑥；没通过走 ⑤。",
+    "<b>Modificaciones y refinamientos</b>（修改与细化）：决定新的软硬件划分，以更好地贴合规格。改完回到 ② 重新建模，可以再用模型库；于是 ②→③→④→⑤ 形成循环。",
+    "<b>Mapeado del modelo</b>（模型映射）：只有验证过的设计才映射成具体组件：hardware、software 和 interfaz（接口）组件。",
+    "<b>Síntesis software / hardware</b>（软件综合 / 硬件综合）：软件部分生成 <b>C 代码</b>，硬件部分生成 <b>VHDL</b>（或 Verilog）代码；两边之间要做 <b>interfacing</b>（接口）。",
+    "<b>Implementación y prototipo</b>（实现与原型）：通常选用基于商用处理器、FPGA 和/或 SoC 的架构，再加上通信用的软硬件组件。此后物理组件可以用商用综合工具<b>制造</b>出来（图中没有这一框）。"
+  ];
+  var i = 0;
+  function render() {
+    st.forEach(function (g) {
+      var s = +g.getAttribute("data-step");
+      g.classList.toggle("on", i > 0 && s === i);
+      g.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 阶段";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+</script>
+</body>
+</html>

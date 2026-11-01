@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M31 Temporizadores · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .glow-r { filter: drop-shadow(0 0 8px rgb(252 98 85 / .85)); }
+.stage .glow-y { filter: drop-shadow(0 0 10px rgb(244 211 69 / .9)); }
+.mini {
+  border: 1px solid var(--st-line); background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini[aria-pressed="true"] { border-color: var(--st-yellow); color: var(--st-yellow); background: rgb(244 211 69 / .12); }
+.press:disabled, .mini:disabled { opacity: .35; cursor: default; }
+.press[aria-pressed="true"] { background: rgb(252 98 85 / .32); color: var(--st-ink); }
+.sim-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; flex-basis: 100%; }
+.sim-f { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1.4 var(--f-mono); color: var(--st-muted); }
+.sim-f select, .sim-f input[type="number"] {
+  background: var(--st-bg); color: var(--st-ink); border: 1px solid var(--st-line); border-radius: 6px;
+  font: 600 13px/1.3 var(--f-mono); padding: 3px 6px;
+}
+.sim-f input[type="number"] { width: 6.4em; }
+.sim-f input[type="range"] { width: 9rem; max-width: 40vw; accent-color: var(--st-yellow); }
+.sim-f b { color: var(--st-ink); font-weight: 600; }
+.fchip {
+  font: 600 12px/1 var(--f-mono); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--st-line);
+  color: var(--st-muted); transition: background .15s, color .15s;
+}
+.fchip.r { border-color: var(--st-red); } .fchip.t { border-color: var(--st-teal); } .fchip.o { border-color: var(--st-gold); }
+.fchip.hit.r { background: rgb(252 98 85 / .35); color: var(--st-ink); }
+.fchip.hit.t { background: rgb(92 208 179 / .35); color: var(--st-ink); }
+.fchip.hit.o { background: rgb(240 172 95 / .35); color: var(--st-ink); }
+.ivt td:first-child, .modes td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m31-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m31-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m31-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m31-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m31-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m31-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 3 章节" class="chain" data-chain="M31"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 3 · Temporizadores y comunicaciones serie · M31</div>
+<h1>Temporizadores</h1>
+<p class="zh">定时器 Timer_A：让硬件替 CPU 数时间</p>
+<div class="meta">
+
+
+<span><b>9</b> 个要点</span>
+<span>阅读约 18 分钟</span>
+
+
+</div>
+<p class="lede">"每 0.5 秒闪一次灯"——用 <code>__delay_cycles</code> 也能做，但 CPU 在这段时间里什么也干不了。<b class="t">temporizador (ES) / timer (EN)</b>——定时器是一个自己会数数的外设：给它一个时钟，它就在后台一拍一拍地加；数到你设的值，就举起一个 flag，必要时用中断叫醒 CPU。这一章把 MSP430F5529 的 <b>Timer_A</b> 拆开：时钟怎么来，三种计数模式怎么走，flag 在哪一拍置位，两个中断向量怎么分工。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M31.1</span>
+<div class="txt"><span>说出定时器的三种用途；区分 Timer_A、Timer_B 和 Watchdog（本模块只学 Timer_A）</span><span class="es">Generar eventos, generar señales (PWM), medir intervalos.</span><a href="#s0">→ §0 让硬件去数</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.2</span>
+<div class="txt"><span>画出 Timer_A 的结构：TAxR 计数器 + CCRn 捕获/比较块 + 输出单元；TA0 有 5 个 CCR，TA1、TA2 各 3 个</span><span class="es">Contador, bloques de captura/comparación, unidad de salida.</span><a href="#s1">→ §1 结构</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.3</span>
+<div class="txt"><span>用 TASSEL、ID、TAIDEX 配出计数时钟，算 f<sub>timer</sub> = f<sub>源</sub> / (ID · IDEX)</span><span class="es">Señal de reloj, divisor y divisor extendido (TAxEX0).</span><a href="#s2">→ §2 时钟</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.4</span>
+<div class="txt"><span>说出 MC 的四个取值；up、continuous、up/down 的计数范围和周期（CCR0+1、65536、2·CCR0）</span><span class="es">Modos de operación: ascendente, continuo, ascendente/descendente.</span><a href="#s3">→ §3 四种模式</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.5</span>
+<div class="txt"><span>说明 TACLR 清掉什么；计数器启动和停止的条件；运行中改 MC 或 CCR0 的后果</span><span class="es">Inicialización, activación/desactivación, cambio de configuración.</span><a href="#s4">→ §4 清零与启停</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.6</span>
+<div class="txt"><span>比较模式（CAP = 0）：TAxR 数到 TAxCCRn 时 EQUn、CCIFG 置位；三种模式下 CCIFG0、TAIFG 在哪一拍置位</span><span class="es">Modo comparación; flags CCIFG y TAIFG.</span><a href="#s5">→ §5 flag 在哪一拍</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.7</span>
+<div class="txt"><span>区分两个中断：TAxCCR0（单源，自动清 flag）和 TAxIV（多源）；用 CCIE、TAIE 使能</span><span class="es">Interrupciones TAxCCR0 y TAxIV; habilitación.</span><a href="#s6">→ §6 两个向量</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.8</span>
+<div class="txt"><span>读懂 TAxIV 的取值和优先级（02 … 0E），用 switch + __even_in_range 识别中断源</span><span class="es">Registro TAxIV.</span><a href="#s6b">→ §6 TAxIV</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M31.9</span>
+<div class="txt"><span>用 up 模式产生一个周期事件；用 continuous 模式和 CCRn += N 产生多个独立间隔（按 65536 取模）</span><span class="es">Generación de eventos temporizados.</span><a href="#s7">→ §7 一个计数器，多个节拍</a></div>
+<button aria-pressed="false" class="chk" data-obj="M31.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M31"><span class="val">0 / 9 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>让硬件去数 <span class="tag">M31.1</span></h2>
+<p class="hook"><span class="zh">"等 0.5 秒"这件事，一定要 CPU 亲自去等吗？</span><span class="es">¿Quién cuenta el tiempo: la CPU o un periférico?</span></p>
+<figure class="stage" data-scene="" id="m31-sc-intro">
+<div class="stage-title"><span>Escena 0 · retardo software vs Timer_A</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：软件延时与硬件定时器，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-intro-t" role="img" viewbox="0 0 800 320">
+<title id="m31-sc-intro-t">左边是软件延时：CPU 一直在循环计数；右边是 Timer_A：计数器在后台加一，CPU 睡眠，计到设定值时用 CCIFG 中断叫醒它</title>
+<rect class="ln thin m" height="296" rx="12" width="378" x="12" y="12"></rect>
+<text class="tx w" x="32" y="50">Retardo software</text>
+<text class="tz sm m" x="32" y="76">__delay_cycles · CPU 自己数</text>
+<rect class="bx y" height="70" rx="10" width="120" x="44" y="104"></rect>
+<text class="tx y mid" x="104" y="147">CPU</text>
+<g data-step="1">
+<path class="ln y draw" d="M168 120 C 236 92, 300 110, 300 139 C 300 168, 236 186, 168 158" marker-end="url(#m31-ah-y)"></path>
+<text class="tm sm y" x="306" y="144">i-- ≠ 0 ?</text>
+</g>
+<g data-step="2">
+<text class="tz sm m" x="32" y="262">CPU 时间</text>
+<rect class="bx y" height="26" rx="4" width="262" x="110" y="244"></rect>
+<text class="tz sm y mid" x="241" y="296">全部用来等 · 不能睡觉</text>
+</g>
+<rect class="ln thin m" height="296" rx="12" width="378" x="410" y="12"></rect>
+<text class="tx w" x="430" y="50">Timer_A</text>
+<text class="tz sm m" x="430" y="76">硬件定时器 · 外设自己数</text>
+<g data-step="3">
+<rect class="bx g" data-hl="4" height="70" rx="10" width="112" x="430" y="104"></rect>
+<text class="tx g mid" x="486" y="140">CPU</text>
+<text class="tm xs m mid" x="486" y="162">LPM · zZ</text>
+<rect class="bx b" height="40" rx="6" width="150" x="620" y="96"></rect>
+<text class="tm sm b mid" x="695" y="121">TAxR + 1</text>
+<text class="tm xs b end" x="612" y="190">TAxR</text>
+<path class="ln b draw" d="M620 210 L668 160 L670 210 L718 160 L720 210 L768 160 L770 210"></path>
+</g>
+<g data-step="4">
+<path class="ln r draw" d="M664 158 C 624 150, 590 148, 548 146" marker-end="url(#m31-ah-r)"></path>
+<text class="tm xs r mid" x="604" y="140">CCIFG</text>
+<text class="tz sm m" x="430" y="262">CPU 时间</text>
+<path class="ln thin m" d="M610 257 H774"></path>
+<rect class="bx r" height="26" rx="2" width="10" x="664" y="244"></rect>
+<rect class="bx r" height="26" rx="2" width="10" x="714" y="244"></rect>
+<rect class="bx r" height="26" rx="2" width="10" x="764" y="244"></rect>
+<text class="tz sm m mid" x="600" y="296">大部分时间睡眠 · 只在 flag 时醒来</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>左边是软件延时：<code>__delay_cycles(n)</code> 或一个空循环。时间是 CPU 自己"数"出来的。</li>
+<li data-dur="3400">数的这段时间，CPU 被完全占住：不能做别的事，也不能进低功耗模式。数多久，还和时钟频率、编译器优化有关。</li>
+<li data-dur="3600">右边是 <b>Timer_A</b>：一个 16 位计数器 <code>TAxR</code>，每来一个时钟沿就自己加 1。CPU 配好它以后就可以去睡觉（LPM）。</li>
+<li data-dur="4200">计数到设定值时，硬件置位一个 <span class="c-r">flag（CCIFG）</span>；如果使能了中断，CPU 被叫醒，执行一小段 ISR 又回去睡。时间精度由硬件时钟决定，与 CPU 在做什么无关。</li>
+</ol>
+</figure>
+<p>定时器有三种用途：</p>
+<div class="grid3">
+<div class="cell r">
+<span class="k c-r">本章</span>
+<h3>产生事件</h3>
+<p><i>Generar eventos</i>：每隔一段时间产生一次中断，可以周期重复。用来安排任务、做时间基准。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">M32</span>
+<h3>产生信号</h3>
+<p><i>Generar señales digitales</i>：在引脚上直接输出 PWM（占空比、频率可调），驱动蜂鸣器、电机等。见 <a href="m32.html">M32 PWM</a>。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">不学</span>
+<h3>测量间隔</h3>
+<p><i>Medir intervalos</i>：用<b>捕获模式</b>记录两个事件之间的时间。捕获模式本课不讲。</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">范围</span>
+<p>F5529 有两类定时器。<b>Timer_A / Timer_B</b> 几乎一样，Timer_B 多一点功能；本课只学 Timer_A，结论可以直接搬到 Timer_B。<b>Watchdog</b> 是专用定时器（超时产生 PUC 复位，或作间隔定时器），在芯片框图的 SYS 块里（框图见 <a href="#s1">§1</a>），<b>本模块不学</b>。</p>
+</div>
+<p class="takeaway">定时器是一个在后台按时钟计数的外设。时间由硬件决定，CPU 只需配置一次，然后等 flag 或中断。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Timer_A 的结构 <span class="tag">M31.2</span></h2>
+<p class="hook"><span class="zh">一个计数器，怎么同时管好几个不同的时间点？</span><span class="es">Un contador y varios bloques de captura/comparación.</span></p>
+<p>每个 Timer_A（TAx，x = 0、1、2）由三类零件组成：一个<b class="t">contador (ES) / counter (EN)</b>——计数器 <span class="reg">TAxR</span>；几个 <b class="t">bloque de captura/comparación (ES) / capture/compare block (EN)</b>——捕获/比较块 <span class="reg">TAxCCRn</span>；每个块里还有一个<b>输出单元</b>。跟着信号走一遍：</p>
+<figure class="stage" data-ms="3400" data-scene="" id="m31-sc-block">
+<div class="stage-title"><span>Escena 1 · diagrama de bloques</span><b>5 步</b></div>
+<div aria-label="动画：Timer_A 的结构框图，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-block-t" role="img" viewbox="0 0 800 410">
+<title id="m31-sc-block-t">Timer_A 框图：TASSEL 选时钟源，经 ID 和 TAIDEX 分频后驱动 16 位计数器 TAxR；TAxR 回到 0 时置 TAIFG；每个 CCRn 块把 TAxR 和 TAxCCRn 比较，相等时产生 EQUn、置位 CCIFG，并驱动输出单元</title>
+<g data-step="1">
+<text class="tm sm o" x="24" y="58">TAxCLK</text>
+<text class="tm sm o" x="24" y="88">ACLK</text>
+<text class="tm sm o" x="24" y="118">SMCLK</text>
+<text class="tm sm o" x="24" y="148">INCLK</text>
+<text class="tm xs m" x="104" y="58">00</text>
+<text class="tm xs m" x="104" y="88">01</text>
+<text class="tm xs m" x="104" y="118">10</text>
+<text class="tm xs m" x="104" y="148">11</text>
+<path class="ln thin o" d="M126 54 H150 M126 84 H150 M126 114 H150 M126 144 H150"></path>
+<path class="bx o" d="M150 36 L188 52 L188 150 L150 166 Z" data-hl="1"></path>
+<text class="tm xs o mid" x="169" y="28">TASSEL</text>
+</g>
+<g data-step="2">
+<path class="ln o" d="M188 101 H212" marker-end="url(#m31-ah-o)"></path>
+<rect class="bx o" data-hl="2" height="54" rx="6" width="112" x="216" y="74"></rect>
+<text class="tm o mid" x="272" y="97">ID</text>
+<text class="tm xs m mid" x="272" y="117">/1 /2 /4 /8</text>
+<path class="ln o" d="M328 101 H350" marker-end="url(#m31-ah-o)"></path>
+<rect class="bx o" data-hl="2" height="54" rx="6" width="118" x="354" y="74"></rect>
+<text class="tm o mid" x="413" y="97">TAIDEX</text>
+<text class="tm xs m mid" x="413" y="117">/1 … /8</text>
+<text class="tm xs m mid" x="413" y="146">TAxEX0</text>
+<text class="tm xs m mid" x="272" y="146">TAxCTL</text>
+</g>
+<g data-step="3">
+<path class="ln o" d="M472 101 H510" marker-end="url(#m31-ah-o)"></path>
+<rect class="bx b" data-hl="3" height="74" rx="8" width="150" x="514" y="64"></rect>
+<text class="tm lg b mid" x="589" y="98">TAxR</text>
+<text class="tm xs m mid" x="589" y="122">16 bit · 0 … 0xFFFF</text>
+<text class="tm xs y mid" x="589" y="54">MC: stop / up / cont / up-down</text>
+<path class="ln r" d="M664 101 H714" marker-end="url(#m31-ah-r)"></path>
+<rect class="bx r" height="38" rx="6" width="70" x="718" y="82"></rect>
+<text class="tm xs r mid" x="753" y="106">TAIFG</text>
+<text class="tm sm y" x="24" y="236">TACLR = 1 →</text>
+<text class="tz sm w" x="24" y="262">TAxR ← 0</text>
+<text class="tz sm w" x="24" y="286">分频器复位</text>
+<text class="tz sm w" x="24" y="310">up/down 方向 ← 向上</text>
+<text class="tz sm m" x="24" y="336">然后 TACLR 自动回到 0</text>
+</g>
+<g data-step="4">
+<rect class="ln thin m dash" height="196" rx="10" width="412" x="376" y="186"></rect>
+<rect class="ln thin m dash" height="196" rx="10" width="412" x="368" y="193"></rect>
+<rect class="bx hollow m" height="196" rx="10" width="412" x="360" y="200"></rect>
+<text class="tz sm w" x="376" y="226">Bloque CCRn</text>
+<path class="ln b" d="M589 138 V244" marker-end="url(#m31-ah-b)"></path>
+<rect class="bx b" data-hl="4" height="44" rx="6" width="130" x="380" y="246"></rect>
+<text class="tm sm b mid" x="445" y="273">TAxCCRn</text>
+<path class="ln b" d="M510 268 H566"></path>
+<circle class="bx y" cx="589" cy="268" data-hl="4" r="22"></circle>
+<text class="tm lg y mid" x="589" y="275">=</text>
+<path class="ln y" d="M611 268 H646" marker-end="url(#m31-ah-y)"></path>
+<text class="tm xs y mid" x="630" y="258">EQUn</text>
+<rect class="bx r" height="40" rx="6" width="114" x="650" y="248"></rect>
+<text class="tm sm r mid" x="707" y="273">CCIFG</text>
+<text class="tm xs m mid" x="707" y="304">TAxCCTLn</text>
+<text class="tm xs w" x="380" y="320">CAP = 0 → comparación</text>
+<text class="tm xs m" x="380" y="340">CAP = 1 → captura（不学）</text>
+<text class="tm xs b" x="380" y="366">TA0: CCR0 – CCR4</text>
+<text class="tm xs b" x="380" y="384">TA1, TA2: CCR0 – CCR2</text>
+</g>
+<g data-step="5">
+<path class="ln g" d="M630 272 V326" marker-end="url(#m31-ah-g)"></path>
+<rect class="bx g" data-hl="5" height="50" rx="6" width="164" x="600" y="330"></rect>
+<text class="tz sm g mid" x="682" y="352">Unidad de salida</text>
+<text class="tm xs g mid" x="682" y="371">OUTMOD → TAx.n</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><b>TASSEL</b>（TAxCTL 的两位）在四个时钟源里选一个：TAxCLK、INCLK 来自外部引脚，ACLK、SMCLK 是内部时钟。本课用的是 ACLK 和 SMCLK。</li>
+<li data-dur="3600">选出的时钟先经过 <b>ID</b>（/1、/2、/4、/8，在 TAxCTL 里），再经过扩展分频 <b>TAIDEX</b>（/1 … /8，在另一个寄存器 TAxEX0 里），得到计数用的 timer clock。</li>
+<li data-dur="4800">16 位计数器 <b>TAxR</b> 在 timer clock 的每个上升沿加 1（up/down 模式下行时减 1），怎么数由 <b>MC</b> 经 Count Mode 逻辑决定；up 和 up/down 模式靠 EQU0（TAxR = CCR0）回头，所以这两种模式占用 CCR0。数回 0 的那一拍，置位 <span class="c-r">TAIFG</span>。<b>TACLR</b> 用来清零。</li>
+<li data-dur="4400">每个 <b>CCRn 块</b>把 TAxR 和自己的 TAxCCRn 比较。比较模式（<code>CAP = 0</code>）下，TAxR 数到 TAxCCRn 时，内部信号 EQUn = 1，并置位这个块的 <span class="c-r">CCIFG</span>。块的数量因定时器而异：TA0 有 5 个，TA1、TA2 各 3 个。</li>
+<li>EQUn 还驱动每个块的<b>输出单元</b>，按 OUTMOD 直接改变引脚 TAx.n——这就是 PWM，留到 M32。</li>
+</ol>
+
+</figure>
+<p>F5529 上有三个 Timer_A，CCR 的数量不一样。在芯片框图里找到它们：</p>
+
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">Timer0_A5</span>
+<h3>TA0</h3>
+<p>5 个 CCR：<code>TA0CCR0</code> – <code>TA0CCR4</code>。中断向量 53（CCR0）和 52（其余）。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">Timer1_A3</span>
+<h3>TA1</h3>
+<p>3 个 CCR：<code>TA1CCR0</code> – <code>TA1CCR2</code>。中断向量 49 和 48。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">Timer2_A3</span>
+<h3>TA2</h3>
+<p>3 个 CCR：<code>TA2CCR0</code> – <code>TA2CCR2</code>。中断向量 44 和 43。</p>
+</div>
+</div>
+<p class="aside">另有 Timer_B TB0，7 个 CCR，本课不展开。（每个定时器的 CCR 编号：TA0 是 0–4，TA1、TA2 是 0–2；有些资料正文写的 0–5、0–3 各多算了一个。）</p>
+<p class="takeaway">一个计数器 TAxR 负责"数"，多个 CCRn 负责"在哪个数上做事"。所有 CCRn 共用同一个 TAxR，所以一个定时器能同时给出好几个时间点。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>时钟从哪里来 <span class="tag">M31.3</span></h2>
+<p class="hook"><span class="zh">TAxR 一秒钟加多少次？由谁决定？</span><span class="es">TASSEL → ID → TAIDEX → reloj del timer.</span></p>
+<p>TAxR 在 timer clock 的每个<b>上升沿</b>变一次。所以"一拍"有多长，完全由时钟路径决定。下面用 ACLK = 32768 Hz、ID = /2、TAIDEX = /3 演示：</p>
+<figure class="stage" data-scene="" id="m31-sc-clk">
+<div class="stage-title"><span>Escena 2 · divisores de reloj</span><b>4 步</b></div>
+<div aria-label="动画：时钟经过两级分频后驱动计数器" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-clk-t" role="img" viewbox="0 0 800 310">
+<title id="m31-sc-clk-t">四行波形：ACLK；除以 2 之后；再除以 3 之后；TAxR 在最后一行时钟的每个上升沿加 1</title>
+<g data-step="1">
+<text class="tm sm o" x="20" y="70">ACLK</text>
+<text class="tm xs m" x="20" y="88">32768 Hz</text>
+<path class="ln thin o draw" d="M150 78 H750" id="m31-w1"></path>
+</g>
+<g data-step="2">
+<text class="tm sm o" x="20" y="130">÷ ID = 2</text>
+<text class="tm xs m" x="20" y="148">16384 Hz</text>
+<path class="ln o draw" d="M150 138 H750" id="m31-w2"></path>
+</g>
+<g data-step="3">
+<text class="tm sm o" x="20" y="190">÷ IDEX = 3</text>
+<text class="tm xs m" x="20" y="208">≈ 5461 Hz</text>
+<path class="ln o draw" d="M150 198 H750" id="m31-w3"></path>
+</g>
+<g data-step="4">
+<path class="ln thin y dash" d="M300 166 V266 M450 166 V266 M600 166 V266"></path>
+<text class="tm sm b" x="20" y="254">TAxR</text>
+<rect class="bx b" height="34" rx="4" width="150" x="150" y="232"></rect>
+<rect class="bx b" height="34" rx="4" width="150" x="300" y="232"></rect>
+<rect class="bx b" height="34" rx="4" width="150" x="450" y="232"></rect>
+<rect class="bx b" height="34" rx="4" width="150" x="600" y="232"></rect>
+<text class="tm sm b mid" x="225" y="254">n</text>
+<text class="tm sm b mid" x="375" y="254">n + 1</text>
+<text class="tm sm b mid" x="525" y="254">n + 2</text>
+<text class="tm sm b mid" x="675" y="254">n + 3</text>
+<text class="tm sm y mid" data-hl="4" x="450" y="296">f_timer = 32768 / (2 · 3) ≈ 5461.3 Hz</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>源时钟：这里用 TASSEL 选了 <b>ACLK</b>，32768 Hz。</li>
+<li>第一级分频 <b>ID = /2</b>：每两个上升沿留一个，16384 Hz。</li>
+<li>第二级扩展分频 <b>TAIDEX = /3</b>：再每三个留一个，约 5461 Hz。两级是串联的，总分频 = 2 × 3 = 6。</li>
+<li data-dur="4200">TAxR 只在最后这个 timer clock 的上升沿加 1。所以 TAxR 数 N 下，用时 N / f<sub>timer</sub>。</li>
+</ol>
+<p class="stage-note">分频比只作演示。</p>
+
+</figure>
+<div class="formula" data-tex="f_{\text{timer}} = \frac{\class{c-o}{f_{\text{TASSEL}}}}{\class{c-o}{\mathrm{ID}}\cdot\class{c-o}{\mathrm{IDEX}}} \qquad \mathrm{ID}\in\{1,2,4,8\},\;\; \mathrm{IDEX}\in\{1,\dots,8\}">f_timer = f_TASSEL / (ID · IDEX)，ID ∈ {1, 2, 4, 8}，IDEX ∈ {1 … 8}</div>
+<p>这些位在哪里？把三个配置寄存器的位图合在一起看：</p>
+<figure class="stage" data-ms="4200" data-scene="" id="m31-sc-regs">
+<div class="stage-title"><span>Escena 2b · TAxCTL · TAxCCTLn · TAxEX0</span><b>3 步</b></div>
+<div aria-label="动画：Timer_A 三个配置寄存器的位图，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-regs-t" role="img" viewbox="0 0 800 330">
+<title id="m31-sc-regs-t">三个 16 位寄存器的位图：TAxCTL 有 TASSEL、ID、MC、TACLR、TAIE、TAIFG；TAxCCTLn 有 CM、CCIS、SCS、SCCI、CAP、OUTMOD、CCIE、CCI、OUT、COV、CCIFG；TAxEX0 只有 bit 2–0 的 TAIDEX</title>
+<g data-step="1">
+<text class="tm sm b" x="20" y="76">TAxCTL</text>
+<text class="tm xs m mid" x="150.5" y="48">15</text>
+<text class="tm xs m mid" x="355.5" y="48">10</text>
+<text class="tm xs m mid" x="396.5" y="48">9</text>
+<text class="tm xs m mid" x="437.5" y="48">8</text>
+<text class="tm xs m mid" x="478.5" y="48">7</text>
+<text class="tm xs m mid" x="519.5" y="48">6</text>
+<text class="tm xs m mid" x="560.5" y="48">5</text>
+<text class="tm xs m mid" x="601.5" y="48">4</text>
+<text class="tm xs m mid" x="642.5" y="48">3</text>
+<text class="tm xs m mid" x="683.5" y="48">2</text>
+<text class="tm xs m mid" x="724.5" y="48">1</text>
+<text class="tm xs m mid" x="765.5" y="48">0</text>
+<rect class="bx hollow m" height="34" width="246" x="130" y="54"></rect>
+<text class="tm xs m mid" x="253" y="75">Reserved</text>
+<rect class="bx o" height="34" width="82" x="376" y="54"></rect>
+<text class="tm xs o mid" x="417" y="75">TASSEL</text>
+<rect class="bx o" height="34" width="82" x="458" y="54"></rect>
+<text class="tm xs o mid" x="499" y="75">ID</text>
+<rect class="bx b" height="34" width="82" x="540" y="54"></rect>
+<text class="tm xs b mid" x="581" y="75">MC</text>
+<rect class="bx hollow m" height="34" width="41" x="622" y="54"></rect>
+<text class="tm xs m mid" x="642.5" y="75">—</text>
+<rect class="bx y" height="34" width="41" x="663" y="54"></rect>
+<text class="tm xs y mid" x="683.5" y="75">TACLR</text>
+<rect class="bx g" height="34" width="41" x="704" y="54"></rect>
+<text class="tm xs g mid" x="724.5" y="75">TAIE</text>
+<rect class="bx r" height="34" width="41" x="745" y="54"></rect>
+<text class="tm xs r mid" x="765.5" y="75">TAIFG</text>
+<text class="tm xs o mid" x="417" y="104">时钟源</text>
+<text class="tm xs o mid" x="499" y="104">÷1/2/4/8</text>
+<text class="tm xs b mid" x="581" y="104">模式</text>
+<text class="tm xs y mid" x="683.5" y="104">w</text>
+<text class="tm xs g mid" x="724.5" y="104">使能</text>
+<text class="tm xs r mid" x="765.5" y="104">flag</text>
+</g>
+<g data-step="2">
+<text class="tm sm b" x="20" y="176">TAxCCTLn</text>
+<text class="tm xs m mid" x="150.5" y="148">15</text>
+<text class="tm xs m mid" x="437.5" y="148">8</text>
+<text class="tm xs m mid" x="478.5" y="148">7</text>
+<text class="tm xs m mid" x="601.5" y="148">4</text>
+<text class="tm xs m mid" x="765.5" y="148">0</text>
+<rect class="bx hollow m" height="34" width="82" x="130" y="154"></rect>
+<text class="tm xs m mid" x="171" y="175">CM</text>
+<rect class="bx hollow m" height="34" width="82" x="212" y="154"></rect>
+<text class="tm xs m mid" x="253" y="175">CCIS</text>
+<rect class="bx hollow m" height="34" width="41" x="294" y="154"></rect>
+<text class="tm xs m mid" x="314.5" y="175">SCS</text>
+<rect class="bx hollow m" height="34" width="41" x="335" y="154"></rect>
+<text class="tm xs m mid" x="355.5" y="175">SCCI</text>
+<rect class="bx hollow m" height="34" width="41" x="376" y="154"></rect>
+<text class="tm xs m mid" x="396.5" y="175">—</text>
+<rect class="bx b" data-hl="2" height="34" width="41" x="417" y="154"></rect>
+<text class="tm xs b mid" x="437.5" y="175">CAP</text>
+<rect class="bx t" height="34" width="123" x="458" y="154"></rect>
+<text class="tm xs t mid" x="519.5" y="175">OUTMOD</text>
+<rect class="bx g" data-hl="2" height="34" width="41" x="581" y="154"></rect>
+<text class="tm xs g mid" x="601.5" y="175">CCIE</text>
+<rect class="bx hollow m" height="34" width="41" x="622" y="154"></rect>
+<text class="tm xs m mid" x="642.5" y="175">CCI</text>
+<rect class="bx t" height="34" width="41" x="663" y="154"></rect>
+<text class="tm xs t mid" x="683.5" y="175">OUT</text>
+<rect class="bx hollow m" height="34" width="41" x="704" y="154"></rect>
+<text class="tm xs m mid" x="724.5" y="175">COV</text>
+<rect class="bx r" data-hl="2" height="34" width="41" x="745" y="154"></rect>
+<text class="tm xs r mid" x="765.5" y="175">CCIFG</text>
+<path class="ln thin m" d="M132 196 H374"></path>
+<text class="tm xs m mid" x="253" y="210">捕获用（不学）</text>
+<text class="tm xs b mid" x="437.5" y="210">0 比较</text>
+<text class="tm xs t mid" x="519.5" y="210">输出 → M32</text>
+<text class="tm xs g mid" x="601.5" y="210">使能</text>
+<text class="tm xs r mid" x="765.5" y="210">flag</text>
+</g>
+<g data-step="3">
+<text class="tm sm b" x="20" y="276">TAxEX0</text>
+<text class="tm xs m mid" x="150.5" y="248">15</text>
+<text class="tm xs m mid" x="683.5" y="248">2</text>
+<text class="tm xs m mid" x="765.5" y="248">0</text>
+<rect class="bx hollow m" height="34" width="533" x="130" y="254"></rect>
+<text class="tm xs m mid" x="396.5" y="275">Reserved（读出 0）</text>
+<rect class="bx o" data-hl="3" height="34" width="123" x="663" y="254"></rect>
+<text class="tm xs o mid" x="724.5" y="275">TAIDEX</text>
+<text class="tm xs o end" x="786" y="306">000 → /1 … 111 → /8</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="5200"><b>TAxCTL</b>：bit 9–8 <b>TASSEL</b>（00 TAxCLK、01 ACLK、10 SMCLK、11 INCLK）、bit 7–6 <b>ID</b>、bit 5–4 <b>MC</b>、bit 2 <b>TACLR</b>（只写，读出总是 0）、bit 1 <span class="c-g">TAIE</span>（TAIFG 的中断使能）、bit 0 <span class="c-r">TAIFG</span>。复位后全是 0，也就是 MC = 00：定时器停着。</li>
+<li data-dur="5200"><b>TAxCCTLn</b>：每个 CCRn 块一个。本课只用三位——bit 8 <b>CAP</b>（0 比较、1 捕获）、bit 4 <span class="c-g">CCIE</span>（这个块的中断使能）、bit 0 <span class="c-r">CCIFG</span>。CM、CCIS、SCS、SCCI、CCI、COV 属于捕获；OUTMOD、OUT 属于输出单元（M32）。</li>
+<li data-dur="4400"><b>TAxEX0</b>：只有 bit 2–0 <b>TAIDEX</b>，编码值 + 1 = 除数。它不在 TAxCTL 里，要单独写一次。</li>
+</ol>
+<p class="stage-note">不学的字段画成灰色。</p>
+
+</figure>
+<div class="tbl-wrap">
+<table class="modes">
+<thead><tr><th>头文件标签</th><th>意思</th><th>写在</th></tr></thead>
+<tbody>
+<tr><td>TASSEL_1 / TASSEL_2</td><td>ACLK / SMCLK</td><td>TAxCTL</td></tr>
+<tr><td>ID_0 … ID_3</td><td>/1、/2、/4、/8</td><td>TAxCTL</td></tr>
+<tr><td>TAIDEX_0 … TAIDEX_7</td><td>/1 … /8</td><td>TAxEX0</td></tr>
+<tr><td>MC_0 … MC_3</td><td>stop、up、continuous、up/down</td><td>TAxCTL</td></tr>
+<tr><td>TACLR · TAIE</td><td>清零 · TAIFG 中断使能</td><td>TAxCTL</td></tr>
+<tr><td>CCIE（CAP 默认 0）</td><td>CCRn 比较中断使能</td><td>TAxCCTLn</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note">
+<span class="lbl">改分频之后</span>
+<p>分频器内部是递减计数器。改了 ID 或 TAIDEX 之后，要把 <span class="reg y">TACLR</span> 置 1，让 TAxR 和分频逻辑都回到确定的初始状态。</p>
+</div>
+<p class="takeaway">分频越大，一拍越长：同样 16 位（最多 65536 拍），能数的总时间越长，但分辨率越粗。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>四种计数模式 <span class="tag">M31.4</span></h2>
+<p class="hook"><span class="zh">同一个 TAxR，数到哪里就回头？</span><span class="es">MC = 00 stop · 01 up · 10 continuous · 11 up/down.</span></p>
+<p>TAxCTL 里的两位 <span class="reg">MC</span> 决定计数方式：</p>
+<div class="tbl-wrap">
+<table class="modes">
+<thead><tr><th>MC</th><th>模式</th><th>TAxR 怎么走</th><th>一个周期</th><th>CCR0 还能自由用吗</th></tr></thead>
+<tbody>
+<tr><td>00</td><td>stop</td><td>停住，保持当前值；不用定时器时设 00 可以省电</td><td>—</td><td>—</td></tr>
+<tr><td>01</td><td><b class="t">ascendente (ES) / up (EN)</b>——向上</td><td>0 → TAxCCR0，再回 0</td><td>CCR0 + 1 拍</td><td class="c-r">不能，它是周期寄存器</td></tr>
+<tr><td>10</td><td><b class="t">continuo (ES) / continuous (EN)</b>——连续</td><td>0 → 0xFFFF，再回 0</td><td>65536 拍</td><td class="c-g">能，和其他 CCRn 一样</td></tr>
+<tr><td>11</td><td><b class="t">ascendente/descendente (ES) / up/down (EN)</b>——上下</td><td>0 → TAxCCR0 → 0</td><td>2 · CCR0 拍</td><td class="c-r">不能</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>下面的模拟器按这些规则画出 TAxR 随时间的曲线和三个 flag 的置位时刻。改模式、时钟和寄存器，看周期和 flag 怎么变；按"下一个事件"逐个查看，或按"运行"让游标扫过去。</p>
+<figure class="stage" id="m31-sim">
+<div class="stage-title"><span>Simulador · Timer_A</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m31-sim-t" role="img" viewbox="0 0 800 322">
+<title id="m31-sim-t">TAxR 随时间变化的曲线；下面三行是 CCIFG0、CCIFG1、TAIFG 的置位时刻</title>
+<g id="m31-plot"></g>
+<text class="tm xs r end" x="80" y="270">CCIFG0</text>
+<text class="tm xs t end" x="80" y="292">CCIFG1</text>
+<text class="tm xs o end" x="80" y="314">TAIFG</text>
+<g id="m31-cur" style="opacity:0">
+<line class="ln thin y" id="m31-curl" x1="86" x2="86" y1="30" y2="316"></line>
+<circle class="sl y" cx="86" cy="236" id="m31-curd" r="6"></circle>
+<text class="tm xs y" id="m31-curv" x="92" y="14">TAxR = 0</text>
+</g>
+</svg>
+</div>
+<div class="stage-ctl">
+<div aria-label="MC 模式" class="sim-row" role="group">
+<button aria-pressed="false" class="mini" data-mc="0" type="button">00 stop</button>
+<button aria-pressed="true" class="mini" data-mc="1" type="button">01 up</button>
+<button aria-pressed="false" class="mini" data-mc="2" type="button">10 continuous</button>
+<button aria-pressed="false" class="mini" data-mc="3" type="button">11 up/down</button>
+</div>
+<div class="sim-row">
+<label class="sim-f">TASSEL <select id="m31-src"><option selected="" value="32768">ACLK 32768 Hz</option><option value="1048576">SMCLK 1048576 Hz</option></select></label>
+<label class="sim-f">ID <select id="m31-id"><option selected="" value="1">/1</option><option value="2">/2</option><option value="4">/4</option><option value="8">/8</option></select></label>
+<label class="sim-f">TAIDEX <select id="m31-idex"><option selected="" value="1">/1</option><option value="2">/2</option><option value="3">/3</option><option value="4">/4</option><option value="5">/5</option><option value="6">/6</option><option value="7">/7</option><option value="8">/8</option></select></label>
+</div>
+<div class="sim-row">
+<label class="sim-f"><b>CCR0</b> <input aria-label="TAxCCR0 滑块" id="m31-c0r" max="65535" min="0" type="range" value="32767"/> <input aria-label="TAxCCR0" id="m31-c0" max="65535" min="0" type="number" value="32767"/></label>
+<label class="sim-f"><b>CCR1</b> <input aria-label="TAxCCR1 滑块" id="m31-c1r" max="65535" min="0" type="range" value="12000"/> <input aria-label="TAxCCR1" id="m31-c1" max="65535" min="0" type="number" value="12000"/></label>
+</div>
+<div class="sim-row">
+<button aria-pressed="true" class="sw" id="m31-inc" type="button"><span class="knob"></span><span class="lab">continuous：ISR 里 CCR1 += N</span></button>
+<label class="sim-f"><b>N</b> <input aria-label="增量 N 滑块" id="m31-nr" max="65535" min="100" type="range" value="20000"/> <input aria-label="增量 N" id="m31-n" max="65535" min="100" type="number" value="20000"/></label>
+</div>
+<div class="sim-row">
+<button class="mini" id="m31-run" type="button">▶ 运行</button>
+<button class="mini" id="m31-next" type="button">→ 下一个事件</button>
+<button class="mini" id="m31-clr" type="button">TACLR</button>
+<span class="fchip r" id="m31-k0">CCIFG0 × 0</span>
+<span class="fchip t" id="m31-k1">CCIFG1 × 0</span>
+<span class="fchip o" id="m31-kt">TAIFG × 0</span>
+</div>
+<p aria-live="polite" class="out" id="m31-out">f_timer = 32768 Hz · up：周期 = CCR0 + 1 = 32768 拍 = 1000 ms。</p>
+</div>
+
+</figure>
+<div class="note">
+<span class="lbl">试试看</span>
+<p>① up 模式下把 CCR1 拖到比 CCR0 还大：CCIFG1 一次也不出现，因为 TAxR 永远到不了它。② 换成 up/down：CCIFG1 每个周期出现<b>两次</b>（上坡一次、下坡一次）。③ 把 CCR0 设成 0：up 和 up/down 模式下计数器停住。④ continuous 下打开 "CCR1 += N"，看蓝绿色的阶梯：寄存器值回绕了，但间隔始终是 N。</p>
+</div>
+<p>三种模式的周期，换算成时间：</p>
+<div class="formula" data-tex="T_{\text{up}} = \frac{\class{c-b}{\mathtt{CCR0}} + 1}{f_{\text{timer}}} \qquad T_{\text{cont}} = \frac{65536}{f_{\text{timer}}} \qquad T_{\text{up/down}} = \frac{2\cdot\class{c-b}{\mathtt{CCR0}}}{f_{\text{timer}}}">T_up = (CCR0 + 1) / f_timer　T_cont = 65536 / f_timer　T_up/down = 2·CCR0 / f_timer</div>
+<p class="aside">式子里的时钟是分频之后的 f<sub>timer</sub>，时间单位是秒；continuous 模式用增量 N 代替 65536 时，间隔就是 N / f<sub>timer</sub>（见 §7）。三个典型例子都是 10 拍一周期：up 模式 TACCR0 = 9，up/down 模式 TACCR0 = 5，continuous 模式 N = 10（§5 的动画就用这组数）。反过来求 CCR0：up 模式 CCR0 = T · f − 1；up/down 模式 CCR0 = T · f / 2。</p>
+<div class="panel">
+<h3>例：反过来求 CCR0</h3>
+<p>SMCLK = 1048576 Hz，ID = /8，TAIDEX = /4 → f<sub>timer</sub> = 1048576 / 32 = 32768 Hz。想要 up 模式每 0.25 s 一次 CCR0 中断：</p>
+<p class="mono">CCR0 = 0.25 · 32768 − 1 = 8191</p>
+<p>同样的时钟用 up/down 模式：CCR0 = 0.25 · 32768 / 2 = 4096。注意 up 模式的"− 1"：周期是 CCR0 + 1 拍，因为 0 也算一拍。</p>
+</div>
+<div class="drill" data-drill="timer"></div>
+<p class="takeaway">up：周期由 CCR0 定，CCR0 + 1 拍；continuous：固定 65536 拍，CCR0 解放出来；up/down：2 · CCR0 拍，波形对称。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>清零、启动、停止 <span class="tag">M31.5</span></h2>
+<p class="hook"><span class="zh">计数器正在跑，这时候改 CCR0，会发生什么？</span><span class="es">Inicialización, activación y cambio de configuración.</span></p>
+<div class="grid2">
+<div class="panel">
+<h3>TACLR = 1 时</h3>
+<ul>
+<li>TAxR ← 0x0000</li>
+<li>分频器（ID、TAIDEX）的计数复位</li>
+<li>up/down 模式的方向 ← 向上</li>
+<li>TACLR 自己自动回 0（读出来总是 0）</li>
+</ul>
+<p class="aside">只想改计数值，也可以直接写 TAxR。TACLR 不改 MC，也就是说它不会让计数器停下来。</p>
+</div>
+<div class="panel">
+<h3>计数器在跑，当且仅当</h3>
+<ul>
+<li>时钟源是活的</li>
+<li><span class="reg">MC ≠ 00</span></li>
+<li>up 和 up/down 模式下 <span class="reg">TAxCCR0 ≠ 0</span></li>
+</ul>
+<p class="aside">任何一条不满足就停住，并<b>保持</b>当前状态（计数值、方向、分频）。恢复后从停住的地方继续。例外：up/down 模式下靠写 CCR0 = 0 停住、再写非 0 值重启时，方向被初始化为向上。</p>
+</div>
+</div>
+
+<p>运行中修改的后果：</p>
+<figure class="stage" data-scene="" id="m31-sc-chg">
+<div class="stage-title"><span>Escena 4 · cambiar TAxCCR0 en marcha</span><b>4 步</b></div>
+<div aria-label="动画：up 模式下运行中修改 CCR0 的两种情况" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-chg-t" role="img" viewbox="0 0 800 300">
+<title id="m31-sc-chg-t">左：新 CCR0 大于当前 TAxR，计数器继续数到新值；右：新 CCR0 小于当前 TAxR，计数器立刻回到 0</title>
+<text class="tz sm w" x="40" y="30">新 CCR0 &gt; TAxR</text>
+<text class="tz sm w" x="420" y="30">新 CCR0 ≤ TAxR</text>
+<path class="ln thin m" d="M40 50 V230 H390 M420 50 V230 H770"></path>
+<g data-step="1">
+<path class="ln thin r dash" d="M40 150 H200"></path>
+<text class="tm xs r" x="46" y="144">CCR0 旧</text>
+<path class="ln b draw" d="M40 230 L140 150 L140 230 L200 182"></path>
+<path class="ln thin r dash" d="M420 80 H560"></path>
+<text class="tm xs r" x="426" y="74">CCR0 旧</text>
+<path class="ln b draw" d="M420 230 L560 118"></path>
+</g>
+<g data-step="2">
+<path class="ln thin y dash" d="M200 46 V236"></path>
+<text class="tm xs y mid" x="200" y="42">写 CCR0</text>
+<path class="ln thin r dash" d="M200 80 H390"></path>
+<text class="tm xs r" x="250" y="74">CCR0 新</text>
+<path class="ln b draw" d="M200 182 L327.5 80 L327.5 230 L390 180"></path>
+<text class="tz sm g mid" x="215" y="262">继续数到新值</text>
+</g>
+<g data-step="3">
+<path class="ln thin y dash" d="M560 46 V236"></path>
+<text class="tm xs y mid" x="560" y="42">写 CCR0</text>
+<path class="ln thin r dash" d="M560 170 H770"></path>
+<text class="tm xs r" x="700" y="164">CCR0 新</text>
+<path class="ln b draw" d="M560 118 L562 116.4 L562 230 L637 170 L637 230 L712 170 L712 230 L770 183.6"></path>
+<text class="tz sm r" x="572" y="108">立刻回 0（可能多数 1 拍）</text>
+</g>
+<g data-step="4">
+<text class="tz sm y mid" data-hl="4" x="400" y="288">稳妥做法：先 MC = 00 停住，改完配置再启动</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>up 模式，计数器正在数。两种情况，写新 CCR0 的时刻 TAxR 的位置不同。</li>
+<li data-dur="3600">左：新 CCR0 比当前 TAxR 大 → TAxR 继续向上，数到<b>新</b>的 CCR0 才回 0。这一周期被拉长了。</li>
+<li data-dur="3800">右：新 CCR0 小于或等于当前 TAxR → TAxR 立刻回 0（可能还会多数 1 拍），之后按新周期走。这一周期被截短了。</li>
+<li data-dur="3800">两种情况都会让"当前这一周期"不规则。所以修改配置前应先停住定时器（使能位、flag 和 TACLR 除外）。</li>
+</ol>
+</figure>
+<div class="tbl-wrap">
+<table class="modes">
+<thead><tr><th>运行中改</th><th>模式</th><th>情况</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>MC</td><td>→ up</td><td>TAxR &gt; CCR0</td><td>TAxR 回 0</td></tr>
+<tr><td>MC</td><td>→ up/down</td><td>向上，且 CCR0 &gt; TAxR</td><td>继续向上到 CCR0</td></tr>
+<tr><td>MC</td><td>→ up/down</td><td>向下，且 CCR0 ≤ TAxR</td><td>继续向下到 0</td></tr>
+<tr><td>CCR0</td><td>up</td><td>新 CCR0 &gt; TAxR / ≤ TAxR</td><td>数到新值 / 回 0</td></tr>
+<tr><td>CCR0</td><td>up/down</td><td>向上，新 CCR0 &gt; TAxR</td><td>向上数到新值</td></tr>
+<tr><td>CCR0</td><td>up/down</td><td>向上，新 CCR0 ≤ TAxR</td><td>掉头向下到 0</td></tr>
+<tr><td>CCR0</td><td>up/down</td><td>正在向下</td><td>继续向下到 0，新周期从下一轮生效</td></tr>
+</tbody>
+</table>
+</div>
+<p class="takeaway">TACLR 清计数值、分频器和方向，但不停计数；真正的停止是 MC = 00（或 up、up/down 下 CCR0 = 0）。改配置前先停。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>比较：flag 在哪一拍置位 <span class="tag">M31.6</span></h2>
+<p class="hook"><span class="zh">TAxR 等于 CCR0 的那一拍，和它回到 0 的那一拍，是同一拍吗？</span><span class="es">CCIFG y TAIFG: ¿cuándo se activan?</span></p>
+<p>本课只用<b class="t">modo comparación (ES) / compare mode (EN)</b>——比较模式：<span class="reg">TAxCCTLn</span> 的 <span class="reg">CAP</span> = 0（复位值就是 0）。当 TAxR <b>数到</b> TAxCCRn 时，硬件同时做三件事：</p>
+<ul>
+<li>EQUn = 1（内部信号，给输出单元用）</li>
+<li><span class="reg r">CCIFG</span> = 1（TAxCCTLn 的 bit 0）</li>
+<li>把所选输入信号锁存到 SCCI（捕获相关，本课不用）</li>
+</ul>
+
+<p>"数到"很重要：只有计数过程中到达才算；用软件直接把某个值写进 TAxR，不会触发对应的动作。下面一拍一拍地看三种模式，数值用 §3 的三个例子（都是 10 拍一周期），另加一个 CCR1 = 3：</p>
+<figure class="stage" data-ms="3400" data-scene="" id="m31-sc-flags">
+<div class="stage-title"><span>Escena 5 · flags, ciclo a ciclo</span><b>5 步</b></div>
+<div aria-label="动画：三种模式下每个时钟周期的 TAxR 值和 flag 置位时刻" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-flags-t" role="img" viewbox="0 0 800 346">
+<title id="m31-sc-flags-t">逐拍时序：up 模式 CCR0 等于 9，up/down 模式 CCR0 等于 5，continuous 模式 CCR0 每次加 10 并在 65536 处回绕；圆点标出 CCIFG0、CCIFG1、TAIFG 置位的那一拍</title>
+<g data-step="1">
+<text class="tz sm y" x="20" y="34">up · CCR0 = 9 · CCR1 = 3 · 周期 = CCR0 + 1 = 10 拍</text>
+<text class="tm sm b" x="20" y="62">TAxR</text>
+<g id="m31-fAv"></g>
+</g>
+<g data-step="2">
+<text class="tm xs r" x="20" y="84">CCIFG0</text>
+<text class="tm xs t" x="20" y="102">CCIFG1</text>
+<text class="tm xs o" x="20" y="120">TAIFG</text>
+<g id="m31-fAf"></g>
+</g>
+<g data-step="3">
+<text class="tz sm y" x="20" y="150">up/down · CCR0 = 5 · CCR1 = 3 · 周期 = 2 · CCR0 = 10 拍</text>
+<text class="tm sm b" x="20" y="178">TAxR</text>
+<g id="m31-fBv"></g>
+</g>
+<g data-step="4">
+<text class="tm xs r" x="20" y="200">CCIFG0</text>
+<text class="tm xs t" x="20" y="218">CCIFG1</text>
+<text class="tm xs o" x="20" y="236">TAIFG</text>
+<g id="m31-fBf"></g>
+</g>
+<g data-step="5">
+<text class="tz sm y" x="20" y="266">continuous · ISR 里 CCR0 += 10</text>
+<text class="tm xs r end" x="786" y="266">CCR0：65530 → 65540 − 65536 = 4</text>
+<text class="tm sm b" x="20" y="292">TAxR</text>
+<text class="tm xs r" x="20" y="314">CCIFG0</text>
+<text class="tm xs o" x="20" y="336">TAIFG</text>
+<g id="m31-fC"></g>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>up 模式，例子 TACCR0 = 9：TAxR 依次是 0 1 … 9 0 1 …，每 10 拍（CCR0 + 1）一个周期。</li>
+<li data-dur="4600">TAxR 变成 9（= CCR0）的那一拍，置位 <span class="c-r">CCIFG0</span>；<b>下一拍</b> 9 → 0 时置位 <span class="c-o">TAIFG</span>：两者只差 1 拍。CCR1 = 3 在每个周期匹配一次，置位 <span class="c-b">CCIFG1</span>。</li>
+<li>up/down 模式，例子 TACCR0 = 5：0 1 2 3 4 5 4 3 2 1 0 …，周期 2 · CCR0 = 10 拍。</li>
+<li data-dur="4800">CCIFG0 在 4 → 5（顶点）置位，TAIFG 在 1 → 0（谷底）置位，每个周期各一次，相隔<b>半个周期</b>。CCR1 = 3 上坡、下坡各匹配一次，所以 CCIFG1 每周期置位<b>两次</b>。</li>
+<li data-dur="5600">continuous 模式，例子（N = 10）的最后一段：TAxR 数到 65530 时置位 <span class="c-r">CCIFG0</span>，ISR 把 CCR0 加 10，16 位里只剩 65540 − 65536 = 4。TAxR 从 65535（0xFFFF）回到 0 时置位 <span class="c-o">TAIFG</span>，再数到 4 又是 CCIFG0——间隔仍然正好 10 拍。</li>
+</ol>
+
+</figure>
+<div class="note warm">
+<span class="lbl">两个推论</span>
+<p>① up 模式下 CCRn &gt; CCR0 的块永远不会匹配：TAxR 到不了那里。② flag 由硬件置位，与使能位无关；没有使能中断时，flag 照样置 1，可以用轮询去查（这一点和 <a href="m21.html#s1">M21 §1</a> 的端口 flag 一样）。</p>
+</div>
+<p class="takeaway">CCIFG = "数到了 CCRn"；TAIFG = "数回了 0"。up 模式两者差 1 拍，up/down 模式差半个周期，continuous 模式 TAIFG 每 65536 拍一次。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>两个中断向量 <span class="tag">M31.7 · M31.8</span></h2>
+<p class="hook"><span class="zh">TA0 有 5 个 CCIFG 和 1 个 TAIFG，却只有 2 个中断向量。怎么分？</span><span class="es">Interrupción TAxCCR0 (fuente única) e interrupción TAxIV (fuentes múltiples).</span></p>
+<p>先回忆 <a href="m21.html#s4">M21 §4</a>：可屏蔽中断要 flag、单独使能、GIE 三者同时为 1。定时器的单独使能位有两种：<span class="reg g">CCIE</span>（TAxCCTLn 的 bit 4，管这个块的 CCIFG）和 <span class="reg g">TAIE</span>（TAxCTL 的 bit 1，管 TAIFG）。</p>
+<figure class="stage" data-scene="" id="m31-sc-vec">
+<div class="stage-title"><span>Escena 6 · TAxCCR0 vs TAxIV</span><b>5 步</b></div>
+<div aria-label="动画：定时器的 flag 怎样分到两个中断向量" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-vec-t" role="img" viewbox="0 0 800 340">
+<title id="m31-sc-vec-t">CCR0 的 CCIFG 单独走 TIMERx_A0 向量；CCR1 到 CCR4 的 CCIFG 和 TAIFG 经过优先级编码器 TAxIV，共用 TIMERx_A1 向量</title>
+<g data-step="1">
+<rect class="bx r" data-hl="2" height="40" rx="6" width="210" x="24" y="28"></rect>
+<text class="tm sm r" x="36" y="53">TAxCCR0 · CCIFG</text>
+<text class="tm xs g end" x="226" y="53">&amp; CCIE</text>
+<rect class="bx r" height="34" rx="6" width="210" x="24" y="100"></rect>
+<text class="tm sm r" x="36" y="122">TAxCCR1 · CCIFG</text>
+<text class="tm xs g end" x="226" y="122">&amp; CCIE</text>
+<rect class="bx r" height="34" rx="6" width="210" x="24" y="142"></rect>
+<text class="tm sm r" x="36" y="164">TAxCCR2 · CCIFG</text>
+<text class="tm xs g end" x="226" y="164">&amp; CCIE</text>
+<rect class="ln thin r dash" height="34" rx="6" width="210" x="24" y="184"></rect>
+<text class="tm sm m" x="36" y="206">CCR3–4 · 只有 TA0</text>
+<rect class="bx r" height="34" rx="6" width="210" x="24" y="226"></rect>
+<text class="tm sm r" x="36" y="248">TAxCTL · TAIFG</text>
+<text class="tm xs g end" x="226" y="248">&amp; TAIE</text>
+</g>
+<g data-step="2">
+<path class="ln r draw" d="M234 48 H516" id="m31-p-a0" marker-end="url(#m31-ah-r)"></path>
+<rect class="bx p" height="62" rx="8" width="264" x="520" y="22"></rect>
+<text class="tm sm p" x="532" y="44">TIMERx_A0_VECTOR</text>
+<text class="tm xs m" x="532" y="62">TA0 53 · TA1 49 · TA2 44</text>
+<text class="tm xs g" x="532" y="78">单源 · 进入 ISR 时自动清 CCIFG</text>
+</g>
+<circle class="sl r" data-move="#m31-p-a0" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<path class="ln thin r" d="M234 117 H288 M234 159 H288 M234 201 H288 M234 243 H288"></path>
+<rect class="bx b" data-hl="3" height="172" rx="8" width="160" x="290" y="96"></rect>
+<text class="tm b" x="306" y="122">TAxIV</text>
+<text class="tm xs w" x="306" y="148">02 · CCR1</text>
+<text class="tm xs w" x="306" y="168">04 · CCR2</text>
+<text class="tm xs m" x="306" y="188">06 · CCR3 *</text>
+<text class="tm xs m" x="306" y="208">08 · CCR4 *</text>
+<text class="tm xs w" x="306" y="228">0E · TAIFG</text>
+<text class="tm xs m" x="306" y="254">* 只有 TA0</text>
+</g>
+<g data-step="4">
+<path class="ln b draw" d="M450 182 H516" marker-end="url(#m31-ah-b)"></path>
+<rect class="bx p" data-hl="4" height="62" rx="8" width="264" x="520" y="152"></rect>
+<text class="tm sm p" x="532" y="174">TIMERx_A1_VECTOR</text>
+<text class="tm xs m" x="532" y="192">TA0 52 · TA1 48 · TA2 43</text>
+<text class="tm xs r" x="532" y="208">多源 · 读 TAxIV 才清 flag</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" data-hl="5" x="400" y="306">Timer_A 内部优先级：CCR0 &gt; CCR1 &gt; CCR2 &gt; … &gt; TAIFG</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>一个 Timer_A 的中断源：每个 CCRn 块的 CCIFG（各自用 CCIE 使能），加上计数器的 TAIFG（用 TAIE 使能）。</li>
+<li data-dur="4200"><b>TAxCCR0 的 CCIFG 独占一个向量</b>（TIMERx_A0_VECTOR）。单源，所以进入 ISR 时硬件自动把它清零，ISR 里不用管。它在 Timer_A 里优先级最高。</li>
+<li data-dur="4200">其余的 CCIFG 和 TAIFG 先进入优先级编码器 <b>TAxIV</b>：它给出当前<b>已使能</b>、优先级最高的那个源的编号，偶数，CCR1 = 02 最高，TAIFG = 0E 最低。</li>
+<li data-dur="4400">它们共用另一个向量 TIMERx_A1_VECTOR（多源）。flag 不会因为进入 ISR 而自动清：<b>读（或写）一次 TAxIV</b> 会清掉它报出的那个 flag；不用 TAxIV 的话，就要自己逐个查、逐个清。</li>
+<li>所以 Timer_A 内部的优先级是 CCR0 最高，然后 CCR1、CCR2……，TAIFG 最低。</li>
+</ol>
+
+</figure>
+<h3 id="s6b">TAxIV 的取值 <span class="tag">M31.8</span></h3>
+<div class="tbl-wrap">
+<table class="ivt">
+<thead><tr><th>TAxIV</th><th>中断源</th><th>flag 位置</th><th>TA0</th><th>TA1 / TA2</th></tr></thead>
+<tbody>
+<tr><td>0x00</td><td>没有挂起的中断</td><td>—</td><td>✓</td><td>✓</td></tr>
+<tr><td>0x02</td><td>CCR1（最高）</td><td>TAxCCTL1 CCIFG</td><td>✓</td><td>✓</td></tr>
+<tr><td>0x04</td><td>CCR2</td><td>TAxCCTL2 CCIFG</td><td>✓</td><td>✓</td></tr>
+<tr><td>0x06</td><td>CCR3</td><td>TAxCCTL3 CCIFG</td><td>✓</td><td>—</td></tr>
+<tr><td>0x08</td><td>CCR4</td><td>TAxCCTL4 CCIFG</td><td>✓</td><td>—</td></tr>
+<tr><td>0x0E</td><td>TAIFG（最低）</td><td>TAxCTL TAIFG</td><td>✓</td><td>✓</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">TAIV 寄存器的定义一直列到 CCR6，所以还有 0x0A、0x0C（CCR5、CCR6）；F5529 的 Timer_A 没有这两个块。TAxIV 只有 bit 3–1 可能为 1，所以读出来总是 0–14 之间的偶数，这就是下面 <code>__even_in_range(…, 14)</code> 的依据。被禁止的中断不影响 TAxIV 的值。</p>
+<p>动手看 TAxIV 怎么"报数"。下面是 TA0（CCR1–CCR4 + TAIFG）：点按钮置位 flag、开关使能，然后读 TA0IV。</p>
+<figure class="stage" id="m31-ivsim">
+<div class="stage-title"><span>Simulador · TA0IV</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m31-ivsim-t" role="img" viewbox="0 0 800 210">
+<title id="m31-ivsim-t">TA0 的五个多源 flag 和它们的使能位；下面是读 TA0IV 得到的值</title>
+<path class="ln thin m" d="M92 112 L250 140 M246 112 L320 140 M400 112 L400 140 M554 112 L480 140 M708 112 L550 140"></path>
+<rect class="bx hollow m" height="88" id="m31-ivb0" rx="8" width="136" x="24" y="24"></rect>
+<rect class="bx hollow m" height="88" id="m31-ivb1" rx="8" width="136" x="178" y="24"></rect>
+<rect class="bx hollow m" height="88" id="m31-ivb2" rx="8" width="136" x="332" y="24"></rect>
+<rect class="bx hollow m" height="88" id="m31-ivb3" rx="8" width="136" x="486" y="24"></rect>
+<rect class="bx hollow m" height="88" id="m31-ivb4" rx="8" width="136" x="640" y="24"></rect>
+<text class="tm sm r mid" x="92" y="48">CCIFG1</text>
+<text class="tm sm r mid" x="246" y="48">CCIFG2</text>
+<text class="tm sm r mid" x="400" y="48">CCIFG3</text>
+<text class="tm sm r mid" x="554" y="48">CCIFG4</text>
+<text class="tm sm r mid" x="708" y="48">TAIFG</text>
+<text class="tm lg m mid" id="m31-ivv0" x="92" y="80">0</text>
+<text class="tm lg m mid" id="m31-ivv1" x="246" y="80">0</text>
+<text class="tm lg m mid" id="m31-ivv2" x="400" y="80">0</text>
+<text class="tm lg m mid" id="m31-ivv3" x="554" y="80">0</text>
+<text class="tm lg m mid" id="m31-ivv4" x="708" y="80">0</text>
+<text class="tm xs g mid" id="m31-ivt0" x="92" y="102">CCIE = 1</text>
+<text class="tm xs g mid" id="m31-ivt1" x="246" y="102">CCIE = 1</text>
+<text class="tm xs g mid" id="m31-ivt2" x="400" y="102">CCIE = 1</text>
+<text class="tm xs g mid" id="m31-ivt3" x="554" y="102">CCIE = 1</text>
+<text class="tm xs g mid" id="m31-ivt4" x="708" y="102">TAIE = 1</text>
+<rect class="bx b" height="50" id="m31-ivbox" rx="8" width="440" x="180" y="142"></rect>
+<text class="tm b mid" id="m31-ivr" x="400" y="173">TA0IV = 0x00</text>
+</svg>
+</div>
+<div class="stage-ctl">
+<div aria-label="置位或清除 flag" class="sim-row" role="group">
+<button aria-pressed="false" class="press" data-ivf="0" type="button">CCIFG1</button>
+<button aria-pressed="false" class="press" data-ivf="1" type="button">CCIFG2</button>
+<button aria-pressed="false" class="press" data-ivf="2" type="button">CCIFG3</button>
+<button aria-pressed="false" class="press" data-ivf="3" type="button">CCIFG4</button>
+<button aria-pressed="false" class="press" data-ivf="4" type="button">TAIFG</button>
+</div>
+<div aria-label="使能位" class="sim-row" role="group">
+<button aria-pressed="true" class="sw" data-ive="0" type="button"><span class="knob"></span><span class="lab">CCIE1</span></button>
+<button aria-pressed="true" class="sw" data-ive="1" type="button"><span class="knob"></span><span class="lab">CCIE2</span></button>
+<button aria-pressed="true" class="sw" data-ive="2" type="button"><span class="knob"></span><span class="lab">CCIE3</span></button>
+<button aria-pressed="true" class="sw" data-ive="3" type="button"><span class="knob"></span><span class="lab">CCIE4</span></button>
+<button aria-pressed="true" class="sw" data-ive="4" type="button"><span class="knob"></span><span class="lab">TAIE</span></button>
+</div>
+<div class="sim-row">
+<button class="mini" id="m31-ivread" type="button">读 TA0IV</button>
+<button class="mini" id="m31-ivreset" type="button">重置</button>
+</div>
+<p aria-live="polite" class="out" id="m31-ivout">CCIFG3 和 TAIFG 已经挂起。读一次 TA0IV 看看。</p>
+</div>
+</figure>
+<p>ISR 里识别中断源有两种写法，和 <a href="m21.html#s7">M21 §7</a> 的 P1IFG / P1IV 完全对应：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="iv" type="button">② 读 TA0IV（推荐）</button>
+<button aria-pressed="false" data-view="dir" type="button">① 直接查 flag</button>
+</div>
+<pre class="code" data-pane="iv"><code><span class="ln-row"><span class="pp">#pragma vector=TIMER0_A1_VECTOR</span>           <span class="cm">// 52 号：CCR1–4 + TAIFG</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">TA0_A1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">switch</span> (<span class="fn">__even_in_range</span>(<span class="fl">TA0IV</span>, 14)) { <span class="cm">// 读 TA0IV：清掉它报出的 flag</span></span><span class="ln-row">    <span class="kw">case</span>  2: … <span class="kw">break</span>;                     <span class="cm">// CCR1</span></span><span class="ln-row">    <span class="kw">case</span>  6: … <span class="kw">break</span>;                     <span class="cm">// CCR3</span></span><span class="ln-row">    <span class="kw">case</span> 14: … <span class="kw">break</span>;                     <span class="cm">// TAIFG (0x0E)</span></span><span class="ln-row">    <span class="kw">default</span>: <span class="kw">break</span>;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="dir" hidden=""><code><span class="ln-row"><span class="pp">#pragma vector=TIMER0_A1_VECTOR</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">TA0_A1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">if</span> (<span class="rg">TA0CCTL1</span> &amp; <span class="fl">CCIFG</span>) { <span class="rg">TA0CCTL1</span> &amp;= ~<span class="fl">CCIFG</span>; … }  <span class="cm">// 要自己清</span></span><span class="ln-row">    <span class="kw">if</span> (<span class="rg">TA0CCTL3</span> &amp; <span class="fl">CCIFG</span>) { <span class="rg">TA0CCTL3</span> &amp;= ~<span class="fl">CCIFG</span>; … }</span><span class="ln-row">    <span class="kw">if</span> (<span class="rg">TA0CTL</span> &amp; <span class="fl">TAIFG</span>)    { <span class="rg">TA0CTL</span> &amp;= ~<span class="fl">TAIFG</span>; … }</span><span class="ln-row">}</span></code></pre>
+</div>
+
+<p class="aside"><code>__even_in_range(TA0IV, 14)</code> 告诉编译器 TA0IV 只会是 0 到 14 之间的偶数，可以生成跳转表。用直接查 flag 的写法时，最好再与上对应的使能位（CCIE / TAIE），理由同 M21 §7。CCR0 的 ISR 单独写在 <code>TIMER0_A0_VECTOR</code> 下，不进这个 switch。</p>
+<p class="takeaway">CCR0 → 自己的向量，flag 自动清；其他所有 → TAxIV 向量，读一次 TAxIV 清一个、报一个，剩下的在 RETI 后再触发一次中断。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>一个计数器，多个节拍 <span class="tag">M31.9</span></h2>
+<p class="hook"><span class="zh">两盏灯，一盏每 125 ms 翻一次，一盏每 750 ms 翻一次。只用一个定时器，可以吗？</span><span class="es">Modo continuo: TAxCCRn(i+1) = TAxCCRn(i) + N.</span></p>
+<p>up 模式只有一个周期（由 CCR0 定），只能给出一种节拍。continuous 模式让 TAxR 不受任何 CCR 约束地一直数，每个 CCRn 各自"追着"TAxR 走：每次匹配后，在 ISR 里把它往前推 N 拍：</p>
+<div class="formula" data-tex="\class{c-b}{\mathtt{TAxCCRn}}_{(1)} = \mathtt{TAxR} + N, \qquad \class{c-b}{\mathtt{TAxCCRn}}_{(i+1)} = \bigl(\class{c-b}{\mathtt{TAxCCRn}}_{(i)} + N\bigr) \bmod 65536, \qquad N = t \cdot f_{\text{timer}}">TAxCCRn(1) = TAxR + N；TAxCCRn(i+1) = (TAxCCRn(i) + N) mod 65536；N = t · f_timer</div>
+<figure class="stage" data-ms="3600" data-scene="" id="m31-sc-multi">
+<div class="stage-title"><span>Escena 7 · intervalos múltiples</span><b>5 步</b></div>
+<div aria-label="动画：continuous 模式下两个 CCR 各自按固定增量追赶计数器" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m31-sc-multi-t" role="img" viewbox="0 0 800 320">
+<title id="m31-sc-multi-t">两个 continuous 周期的锯齿；CCR1 每次加 20000，CCR2 每次加 50000，阶梯线表示寄存器的值，按 65536 取模回绕</title>
+<path class="ln thin m" d="M80 40 V260 H770"></path>
+<text class="tm xs m end" x="74" y="264">0</text>
+<text class="tm xs m end" x="74" y="54">FFFF</text>
+<g data-step="1">
+<path class="ln b draw" d="M80 260 L420 50 L420 260 L760 50 L760 260"></path>
+<circle class="sl o" cx="420" cy="276" r="6"></circle>
+<circle class="sl o" cx="760" cy="276" r="6"></circle>
+<text class="tm xs o mid" x="420" y="298">TAIFG</text>
+<text class="tm xs o mid" x="760" y="298">TAIFG</text>
+</g>
+<g data-step="2">
+<path class="ln thin t dash" d="M80 195.91 H183.76 V131.82 H287.52 V67.74 H391.28 V213.65 H495.04 V149.56 H598.8 V85.48 H702.56 V231.39 H770"></path>
+<circle class="sl t" cx="183.76" cy="195.91" r="6"></circle>
+<circle class="sl t" cx="287.52" cy="131.82" r="6"></circle>
+<circle class="sl t" cx="391.28" cy="67.74" r="6"></circle>
+<circle class="sl t" cx="495.04" cy="213.65" r="6"></circle>
+<circle class="sl t" cx="598.8" cy="149.56" r="6"></circle>
+<circle class="sl t" cx="702.56" cy="85.48" r="6"></circle>
+<text class="tm xs t" x="88" y="188">CCR1 · N = 20000</text>
+</g>
+<g data-step="3">
+<path class="ln thin y" d="M391.28 67.74 C 420 30, 470 30, 486 196" marker-end="url(#m31-ah-y)"></path>
+<text class="tm xs y" x="480" y="30">60000 + 20000 = 80000</text>
+<text class="tm xs y" x="508" y="226">80000 − 65536 = 14464</text>
+</g>
+<g data-step="4">
+<path class="ln thin p dash" d="M80 99.78 H339.4 V149.56 H598.8 V199.35 H770"></path>
+<circle class="bx p" cx="339.4" cy="99.78" r="7"></circle>
+<circle class="bx p" cx="598.8" cy="149.56" r="9"></circle>
+<text class="tm xs p" x="200" y="92">CCR2 · N = 50000</text>
+</g>
+<g data-step="5">
+<rect class="ln y" data-hl="5" height="42" rx="6" width="42" x="578" y="128"></rect>
+<text class="tm xs y mid" x="598.8" y="120">t = 100000</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>continuous 模式：TAxR 从 0 数到 0xFFFF，回 0 时置位 <span class="c-o">TAIFG</span>。图里是两个这样的周期，横轴单位是 timer clock 的拍数。</li>
+<li data-dur="4400">CCR1 初值 20000，每次匹配后在 ISR 里 <code>TAxCCR1 += 20000</code>。蓝绿色阶梯是 CCR1 寄存器的值，圆点是匹配时刻：每 20000 拍一次，间隔均匀，与 TAxR 在哪里无关。</li>
+<li data-dur="4800">60000 + 20000 = 80000 超过了 16 位。寄存器只留下 80000 mod 65536 = 14464——正好是 TAxR 回绕后要数到的位置。<b>寄存器的回绕和计数器的回绕互相抵消</b>，所以 ISR 里直接加，不用管溢出。</li>
+<li data-dur="4200">CCR2 用另一个增量 50000，独立地产生第二种节拍。最多有几个 CCR，就能有几种独立节拍（TA0 是 5 个，包括 CCR0）。</li>
+<li data-dur="4800">t = 100000 时 CCR1 和 CCR2 同时匹配（两者都等于 34464）：两个 flag 同时挂起。TAxIV 先报 CCR1（0x02），RETI 之后立刻再进一次 ISR，报 CCR2（0x04）。</li>
+</ol>
+<p class="stage-note">数值只作演示（N = 20000、50000 拍），没有对应具体时钟。很重要：CCR 是 16 位，写入大于 65535 的值时实际得到的是 值 mod 65536（§5 的例子：65530 + 10 → 4）。</p>
+
+</figure>
+<p>把它写成代码。两个例子都用 TA0：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="a" type="button">例 A · up，一种节拍</button>
+<button aria-pressed="false" data-view="b" type="button">例 B · continuous，三种节拍</button>
+</div>
+<pre class="code" data-pane="a"><code><span class="ln-row"><span class="cm">// ACLK = 32768 Hz，ID = /2 → f_timer = 16384 Hz；每 0.5 s 翻转 LED1</span></span><span class="ln-row"><span class="rg">WDTCTL</span>   = WDTPW + WDTHOLD;</span><span class="ln-row"><span class="rg">P1DIR</span>   |= BIT0;</span><span class="ln-row"><span class="rg">TA0CCR0</span>  = 8192 - 1;                       <span class="cm">// 0.5 s · 16384 Hz − 1 = 8191</span></span><span class="ln-row"><span class="rg">TA0CCTL0</span> = <span class="fl">CCIE</span>;                           <span class="cm">// 使能 CCR0 中断（CAP = 0：比较）</span></span><span class="ln-row"><span class="rg">TA0CTL</span>   = TASSEL_1 + ID_1 + MC_1 + TACLR; <span class="cm">// ACLK, /2, up, 清零</span></span><span class="ln-row"><span class="fn">__bis_SR_register</span>(LPM3_bits + GIE);      <span class="cm">// LPM3 下 ACLK 仍在跑</span></span><span class="ln-row"> </span><span class="ln-row"><span class="pp">#pragma vector=TIMER0_A0_VECTOR</span>             <span class="cm">// 53 号，单源</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">TA0_A0_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="rg">P1OUT</span> ^= BIT0;                          <span class="cm">// CCIFG0 已被硬件自动清</span></span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="b" hidden=""><code><span class="ln-row"><span class="cm">// ACLK = 32768 Hz，/1：CCR1 每 125 ms（N1 = 4096），CCR3 每 750 ms（N3 = 24576），</span></span><span class="ln-row"><span class="cm">// TAIFG 每 65536 / 32768 = 2 s</span></span><span class="ln-row"><span class="pp">#define</span> N1  4096</span><span class="ln-row"><span class="pp">#define</span> N3  24576</span><span class="ln-row"><span class="rg">TA0CCR1</span>  = N1;   <span class="rg">TA0CCTL1</span> = <span class="fl">CCIE</span>;        <span class="cm">// 初值 = TA0R(0) + N</span></span><span class="ln-row"><span class="rg">TA0CCR3</span>  = N3;   <span class="rg">TA0CCTL3</span> = <span class="fl">CCIE</span>;</span><span class="ln-row"><span class="rg">TA0CTL</span>   = TASSEL_1 + ID_0 + MC_2 + TACLR + <span class="fl">TAIE</span>;  <span class="cm">// ACLK, /1, continuous</span></span><span class="ln-row"><span class="fn">__bis_SR_register</span>(LPM3_bits + GIE);</span><span class="ln-row"> </span><span class="ln-row"><span class="pp">#pragma vector=TIMER0_A1_VECTOR</span>             <span class="cm">// 52 号，多源</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">TA0_A1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">switch</span> (<span class="fn">__even_in_range</span>(<span class="fl">TA0IV</span>, 14)) {</span><span class="ln-row">    <span class="kw">case</span>  2: <span class="rg">TA0CCR1</span> += N1; <span class="rg">P1OUT</span> ^= BIT0; <span class="kw">break</span>;  <span class="cm">// 自动 mod 65536</span></span><span class="ln-row">    <span class="kw">case</span>  6: <span class="rg">TA0CCR3</span> += N3; <span class="rg">P4OUT</span> ^= BIT7; <span class="kw">break</span>;</span><span class="ln-row">    <span class="kw">case</span> 14: <span class="cm">/* 每 2 s：例如数秒 */</span>      <span class="kw">break</span>;</span><span class="ln-row">    <span class="kw">default</span>: <span class="kw">break</span>;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+</div>
+<p class="aside">LED 引脚的方向配置（P1DIR、P4DIR）在例 B 里省略了。CCR0 在 continuous 模式下也能这样用，只是它走自己的 TIMER0_A0 向量。低功耗模式见 M26。</p>
+<div class="note alert">
+<span class="lbl">间隔太长怎么办</span>
+<p>N 必须小于等于 65536。需要的间隔超过 65536 拍时，有两条路：加大分频（ID、TAIDEX）让每拍更长；或者保留一个较短的<b>时间基准</b>（base de tiempos），在 ISR 里用软件计数器数够若干次再行动。选哪个取决于需要的精度。</p>
+</div>
+<div class="grid3">
+<div class="cell y">
+<span class="k c-y">up</span>
+<h3>一个周期事件</h3>
+<p>周期 = CCR0 + 1。最简单。也用来做 PWM（M32）。CCR0 被占用。</p>
+</div>
+<div class="cell b">
+<span class="k c-b">continuous</span>
+<h3>多个独立节拍</h3>
+<p>每个 CCRn 一个节拍，ISR 里 += N。也是捕获测时用的模式（本课不学）。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">up/down</span>
+<h3>对称波形</h3>
+<p>周期 = 2 · CCR0。适合产生不重叠的方波（H 桥驱动电机时的死区）。</p>
+</div>
+</div>
+<p class="takeaway">continuous + "CCRn += N"：一个计数器给出最多 n 种独立节拍，间隔由硬件保证，不受中断延迟影响；16 位回绕不需要特别处理。</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。答完会显示步骤。第二题复习定时器的中断向量地址（M21）。</p>
+<div class="drills">
+<div class="drill" data-drill="timer"></div>
+<div class="drill" data-drill="vec"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M31">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>TAxCTL 的 MC = 10 表示什么模式？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>停止</button>
+<button data-o="b" type="button"><span class="k">B</span>up：0 → TAxCCR0</button>
+<button data-o="c" type="button"><span class="k">C</span>continuous：0 → 0xFFFF</button>
+<button data-o="d" type="button"><span class="k">D</span>up/down：0 → TAxCCR0 → 0</button>
+</div>
+<p class="why"><b>C。</b>00 stop、01 up、10 continuous、11 up/down（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">02</span>SMCLK = 1048576 Hz，ID = /4，TAIDEX = /1，up 模式，TA0CCR0 = 0xFFFF。CCR0 中断的周期是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>65535 / 262144 s</button>
+<button data-o="b" type="button"><span class="k">B</span>0.25 s</button>
+<button data-o="c" type="button"><span class="k">C</span>0.0625 s</button>
+<button data-o="d" type="button"><span class="k">D</span>0.5 s</button>
+</div>
+<p class="why"><b>B。</b>f = 1048576 / 4 = 262144 Hz；up 周期 = (CCR0 + 1) / f = 65536 / 262144 = 0.25 s。A 忘了 +1；D 是 up/down 的算法（§2、§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>f<sub>timer</sub> = 32768 Hz，up/down 模式，TAxCCR0 = 8192。TAIFG 多久置位一次？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0.25 s</button>
+<button data-o="b" type="button"><span class="k">B</span>8193 / 32768 s</button>
+<button data-o="c" type="button"><span class="k">C</span>2 s</button>
+<button data-o="d" type="button"><span class="k">D</span>0.5 s</button>
+</div>
+<p class="why"><b>D。</b>up/down 周期 = 2 · CCR0 = 16384 拍 = 0.5 s；TAIFG 每周期一次（1 → 0）（§3、§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>continuous 模式，TA0CCR2 = 60000，ISR 里执行 <code>TA0CCR2 += 10000;</code> 之后，TA0CCR2 = ?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>4464</button>
+<button data-o="b" type="button"><span class="k">B</span>70000</button>
+<button data-o="c" type="button"><span class="k">C</span>65535</button>
+<button data-o="d" type="button"><span class="k">D</span>10000</button>
+</div>
+<p class="why"><b>A。</b>16 位寄存器按 65536 取模：70000 − 65536 = 4464。TAxR 回绕后正好在 10000 拍后数到 4464（§7）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>up 模式，TAxCCR0 = 2000，TAxCCR1 = 3000，CCIE1 = 1。CCIFG1 会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>每周期置位一次</button>
+<button data-o="b" type="button"><span class="k">B</span>每周期置位两次</button>
+<button data-o="c" type="button"><span class="k">C</span>永远不置位</button>
+<button data-o="d" type="button"><span class="k">D</span>TAxR 回 0 时置位</button>
+</div>
+<p class="why"><b>C。</b>up 模式 TAxR 最多数到 CCR0 = 2000，永远到不了 3000（§3、§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>up/down 模式，0 &lt; TAxCCR1 &lt; TAxCCR0。每个周期 CCIFG1 置位几次？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0 次</button>
+<button data-o="b" type="button"><span class="k">B</span>2 次</button>
+<button data-o="c" type="button"><span class="k">C</span>1 次</button>
+<button data-o="d" type="button"><span class="k">D</span>每拍一次</button>
+</div>
+<p class="why"><b>B。</b>上坡数到 CCR1 一次，下坡又数到 CCR1 一次（§5）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>哪个 flag 在进入 ISR 时由硬件自动清零？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>TAIFG</button>
+<button data-o="b" type="button"><span class="k">B</span>TAxCCR1 的 CCIFG</button>
+<button data-o="c" type="button"><span class="k">C</span>TAxCCR2 的 CCIFG</button>
+<button data-o="d" type="button"><span class="k">D</span>TAxCCR0 的 CCIFG</button>
+</div>
+<p class="why"><b>D。</b>TAxCCR0 是单源向量，进入 ISR 时自动清；其余共用 TAxIV 向量，要读 TAxIV 或手动清（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>TA0 的 CCR3 CCIFG 和 TAIFG 同时挂起，都已使能。ISR 第一次读 TA0IV 得到？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x0E</button>
+<button data-o="b" type="button"><span class="k">B</span>0x03</button>
+<button data-o="c" type="button"><span class="k">C</span>0x06</button>
+<button data-o="d" type="button"><span class="k">D</span>0x00</button>
+</div>
+<p class="why"><b>C。</b>CCR3 → 0x06，优先级高于 TAIFG（0x0E，最低）。读完清掉 CCIFG3；RETI 后 TAIFG 再触发一次（§6）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>把 TACLR 置 1，<b>不会</b>发生的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>计数器停止（MC 变成 00）</button>
+<button data-o="b" type="button"><span class="k">B</span>TAxR 变成 0</button>
+<button data-o="c" type="button"><span class="k">C</span>分频器逻辑复位</button>
+<button data-o="d" type="button"><span class="k">D</span>up/down 模式的方向回到向上</button>
+</div>
+<p class="why"><b>A。</b>TACLR 清 TAxR、分频器和方向，然后自己回 0；它不改 MC（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>up 模式下给 TAxCCR0 写 0，会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>每拍都置位 CCIFG0</button>
+<button data-o="b" type="button"><span class="k">B</span>计数器停止</button>
+<button data-o="c" type="button"><span class="k">C</span>自动切换到 continuous 模式</button>
+<button data-o="d" type="button"><span class="k">D</span>芯片复位</button>
+</div>
+<p class="why"><b>B。</b>up 和 up/down 模式下 CCR0 = 0 是停止条件之一；再写非 0 值就从 0 向上重新数（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>SMCLK = 1048576 Hz，ID = /8，TAIDEX = /4。f<sub>timer</sub> = ?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>131072 Hz</button>
+<button data-o="b" type="button"><span class="k">B</span>262144 Hz</button>
+<button data-o="c" type="button"><span class="k">C</span>8192 Hz</button>
+<button data-o="d" type="button"><span class="k">D</span>32768 Hz</button>
+</div>
+<p class="why"><b>D。</b>两级分频相乘：1048576 / (8 · 4) = 32768 Hz（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>要让 CCRn 块工作在比较模式，应该怎样设置？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>TAxCCTLn 的 CAP = 0</button>
+<button data-o="b" type="button"><span class="k">B</span>TAxCCTLn 的 CAP = 1</button>
+<button data-o="c" type="button"><span class="k">C</span>TAxCTL 的 TAIE = 1</button>
+<button data-o="d" type="button"><span class="k">D</span>TAxCTL 的 MC = 00</button>
+</div>
+<p class="why"><b>A。</b>CAP = 0 比较、CAP = 1 捕获（本课不学）；复位值为 0（§5）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">temporizador<small>timer · Timer_A</small></span><span class="back"><b>定时器</b><br/>按时钟在后台计数的外设：产生事件、PWM、测量间隔。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TAxR<small>contador · counter</small></span><span class="back"><b>计数寄存器</b><br/>16 位，每个 timer clock 上升沿加 1（或减 1）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TAxCCRn<small>captura/comparación</small></span><span class="back"><b>捕获/比较寄存器</b><br/>比较模式下存放"在哪个数上做事"。TA0 有 5 个，TA1/TA2 各 3 个。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TASSEL<small>TAxCTL bit 9–8</small></span><span class="back"><b>时钟源选择</b><br/>00 TAxCLK · 01 ACLK · 10 SMCLK · 11 INCLK。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ID · TAIDEX<small>divisor · divisor extendido</small></span><span class="back"><b>两级分频</b><br/>ID /1/2/4/8（TAxCTL），TAIDEX /1…/8（TAxEX0），相乘。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MC<small>mode control</small></span><span class="back"><b>计数模式</b><br/>00 stop · 01 up · 10 continuous · 11 up/down。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modo ascendente<small>up mode</small></span><span class="back"><b>向上模式</b><br/>0 → CCR0 → 0，周期 CCR0 + 1 拍；CCR0 被占用。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modo continuo<small>continuous mode</small></span><span class="back"><b>连续模式</b><br/>0 → 0xFFFF → 0，周期 65536 拍；所有 CCR 都自由。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modo ascendente/descendente<small>up/down mode</small></span><span class="back"><b>上下模式</b><br/>0 → CCR0 → 0，周期 2 · CCR0 拍；波形对称。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TACLR<small>Timer_A clear</small></span><span class="back"><b>清零位</b><br/>TAxR ← 0，分频器复位，方向 ← 向上；自动回 0，不停计数。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CAP<small>TAxCCTLn bit 8</small></span><span class="back"><b>捕获 / 比较选择</b><br/>0 = 比较（本课用）；1 = 捕获（本课不学）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">EQUn<small>señal interna</small></span><span class="back"><b>相等信号</b><br/>TAxR = TAxCCRn 时为 1，驱动输出单元（M32）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CCIFG<small>capture/compare interrupt flag</small></span><span class="back"><b>比较中断标志</b><br/>TAxR 数到 TAxCCRn 时置位；用 CCIE 使能中断。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TAIFG<small>Timer_A interrupt flag</small></span><span class="back"><b>回零标志</b><br/>TAxR 数回 0 时置位（TAxCTL bit 0）；用 TAIE 使能。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TAxIV<small>interrupt vector register</small></span><span class="back"><b>中断向量寄存器</b><br/>02 CCR1 … 0E TAIFG；读一次清掉报出的 flag。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">base de tiempos<small>time base</small></span><span class="back"><b>时间基准</b><br/>固定的短周期中断，配合软件计数器得到更长的间隔。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M31"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id) { return document.getElementById(id); }
+  function svg(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function fmt(x, d) {
+    var s = (+x).toFixed(d == null ? 2 : d);
+    if (s.indexOf(".") >= 0) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s;
+  }
+  function hex(v, w) { var s = v.toString(16).toUpperCase(); while (s.length < (w || 4)) s = "0" + s; return "0x" + s; }
+
+  
+  function sq(id, x0, x1, p, yH, yL) {
+    var el = $(id);
+    if (!el) return;
+    var d = "M" + x0 + " " + yL, x = x0;
+    while (x + p <= x1 + 0.01) { d += " V" + yH + " h" + (p / 2) + " V" + yL + " h" + (p / 2); x += p; }
+    el.setAttribute("d", d);
+  }
+  sq("m31-w1", 150, 750, 25, 50, 78);
+  sq("m31-w2", 150, 750, 50, 110, 138);
+  sq("m31-w3", 150, 750, 150, 170, 198);
+
+  
+  (function () {
+    var A = [], B = [], seqB = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], C1 = 3, i;
+    for (i = 0; i < 22; i++) { A.push(i % 10); B.push(seqB[i % 10]); }
+    function row(gid, vals, y, top) {
+      var g = $(gid);
+      if (!g) return;
+      vals.forEach(function (v, k) {
+        var cls = v === top ? "r" : v === C1 ? "t" : "w";
+        svg("text", { "class": "tm sm mid " + cls, x: 135 + 30 * k, y: y }, g, String(v));
+      });
+      svg("path", { "class": "ln thin m", d: "M120 " + (y + 7) + " H780" }, g);
+    }
+    function flags(gid, vals, top, yC0, yC1, yT) {
+      var g = $(gid);
+      if (!g) return;
+      vals.forEach(function (v, k) {
+        var x = 135 + 30 * k;
+        if (v === top) svg("circle", { "class": "sl r", cx: x, cy: yC0 - 4, r: 5 }, g);
+        if (v === C1) svg("circle", { "class": "sl t", cx: x, cy: yC1 - 4, r: 5 }, g);
+        if (v === 0 && k > 0) svg("circle", { "class": "sl o", cx: x, cy: yT - 4, r: 5 }, g);
+      });
+    }
+    row("m31-fAv", A, 62, 9);
+    flags("m31-fAf", A, 9, 84, 102, 120);
+    row("m31-fBv", B, 178, 5);
+    flags("m31-fBf", B, 5, 200, 218, 236);
+    var gC = $("m31-fC");
+    if (gC) {
+      
+      var C = [65529, 65530, 65531, 65532, 65533, 65534, 65535, 0, 1, 2, 3, 4, 5];
+      C.forEach(function (v, k) {
+        var x = 140 + 52 * k, hit = v === 65530 || v === 4;
+        svg("text", { "class": "tm sm mid " + (hit ? "r" : v === 0 ? "o" : "w"), x: x, y: 292 }, gC, String(v));
+        if (hit) svg("circle", { "class": "sl r", cx: x, cy: 310, r: 5 }, gC);
+        if (v === 0) svg("circle", { "class": "sl o", cx: x, cy: 332, r: 5 }, gC);
+      });
+      svg("path", { "class": "ln thin m", d: "M110 299 H780" }, gC);
+    }
+  })();
+
+  
+  (function () {
+    var plot = $("m31-plot");
+    if (!plot) return;
+    var X0 = 86, X1 = 780, Y0 = 34, Y1 = 236, ROW = { c0: 266, c1: 288, t: 310 }, CAP = 300, SWEEP = 6000;
+    var st = { mc: 1, src: 32768, id: 1, idex: 1, c0: 32767, c1: 12000, n: 20000, inc: true };
+    var M = null, curT = 0, cnt = { c0: 0, c1: 0, t: 0 }, running = false, raf = 0, lastTs = 0;
+    var chips = { c0: $("m31-k0"), c1: $("m31-k1"), t: $("m31-kt") };
+    var chipName = { c0: "CCIFG0", c1: "CCIFG1", t: "TAIFG" };
+    var hitAt = { c0: 0, c1: 0, t: 0 }, hitTimer = { c0: 0, c1: 0, t: 0 };
+
+    function model() {
+      var f = st.src / (st.id * st.idex);
+      var m = { f: f, stopped: false, why: "", P: 0, W: 131072, ymax: 65535, ev: { c0: [], c1: [], t: [] }, more: { c0: false, c1: false, t: false }, pts: [], stair: null };
+      var C = st.c0, c1 = st.c1, k, t;
+      function push(key, tt) { if (tt > m.W) return false; if (m.ev[key].length >= CAP) { m.more[key] = true; return false; } m.ev[key].push(tt); return true; }
+      function series(key, first, step) { for (t = first; t <= m.W; t += step) if (!push(key, t)) break; }
+      if (st.mc === 0) { m.stopped = true; m.why = "MC = 00"; m.ymax = 65535; m.pts = [[0, 0], [m.W, 0]]; return m; }
+      if ((st.mc === 1 || st.mc === 3) && C === 0) { m.stopped = true; m.why = "CCR0 = 0"; m.ymax = 1; m.pts = [[0, 0], [m.W, 0]]; return m; }
+      if (st.mc === 1) {
+        m.P = C + 1; m.W = Math.max(2 * m.P, Math.min(131072, 12 * m.P)); m.ymax = C;
+        for (k = 0; k * m.P < m.W; k++) { m.pts.push([k * m.P, 0], [k * m.P + C, C]); }
+        m.pts.push([Math.ceil(m.W / m.P) * m.P, 0]);
+        series("c0", C, m.P);
+        series("t", m.P, m.P);
+        if (c1 <= C) series("c1", c1 === 0 ? m.P : c1, m.P);
+      } else if (st.mc === 3) {
+        m.P = 2 * C; m.W = Math.max(2 * m.P, Math.min(131072, 12 * m.P)); m.ymax = C;
+        for (k = 0; k * m.P < m.W; k++) { m.pts.push([k * m.P, 0], [k * m.P + C, C]); }
+        m.pts.push([Math.ceil(m.W / m.P) * m.P, 0]);
+        series("c0", C, m.P);
+        series("t", m.P, m.P);
+        if (c1 === 0) series("c1", m.P, m.P);
+        else if (c1 === C) series("c1", C, m.P);
+        else if (c1 < C) {
+          var both = [];
+          for (k = 0; k * m.P < m.W; k++) { both.push(k * m.P + c1, k * m.P + m.P - c1); }
+          for (k = 0; k < both.length; k++) if (!push("c1", both[k])) break;
+        }
+      } else {
+        m.P = 65536; m.W = 131072; m.ymax = 65535;
+        for (k = 0; k * 65536 < m.W; k++) { m.pts.push([k * 65536, 0], [k * 65536 + 65535, 65535]); }
+        m.pts.push([m.W, 0]);
+        series("t", 65536, 65536);
+        series("c0", C === 0 ? 65536 : C, 65536);
+        var first = c1 === 0 ? 65536 : c1;
+        if (st.inc) {
+          series("c1", first, st.n);
+          var s = [[0, c1]], reg = c1;
+          for (k = 0; k < m.ev.c1.length; k++) { reg = (reg + st.n) % 65536; s.push([m.ev.c1[k], reg]); }
+          m.stair = s;
+        } else series("c1", first, 65536);
+      }
+      return m;
+    }
+    function X(t) { return X0 + (t / M.W) * (X1 - X0); }
+    function Y(v) { return Y1 - (v / (M.ymax || 1)) * (Y1 - Y0); }
+    function tar(t) {
+      if (M.stopped) return 0;
+      if (st.mc === 1) return t % M.P;
+      if (st.mc === 3) { var m = t % M.P; return m <= st.c0 ? m : M.P - m; }
+      return t % 65536;
+    }
+    function ms(t) { var v = t / M.f * 1000; return fmt(v, v < 1 ? 4 : v < 100 ? 3 : 1) + " ms"; }
+
+    function draw() {
+      M = model();
+      while (plot.firstChild) plot.removeChild(plot.firstChild);
+      svg("path", { "class": "ln thin m", d: "M" + X0 + " " + Y0 + " V" + Y1 + " H" + X1 }, plot);
+      svg("text", { "class": "tm xs m end", x: X0 - 6, y: Y1 + 4 }, plot, "0");
+      if (!M.stopped || M.why === "MC = 00") svg("text", { "class": "tm xs m end", x: X0 - 6, y: Y0 + 4 }, plot, M.ymax === 65535 ? "FFFF" : String(M.ymax));
+      svg("text", { "class": "tm xs m", x: X0, y: Y1 + 16 }, plot, "0");
+      svg("text", { "class": "tm xs m mid", x: (X0 + X1) / 2, y: Y1 + 16 }, plot, ms(M.W / 2));
+      svg("text", { "class": "tm xs m end", x: X1, y: Y1 + 16 }, plot, ms(M.W));
+      if (!M.stopped && st.mc !== 2) {
+        svg("path", { "class": "ln thin r dash", d: "M" + X0 + " " + Y(st.c0) + " H" + X1 }, plot);
+        svg("text", { "class": "tm xs r", x: X0 + 4, y: Y(st.c0) - 4 }, plot, "CCR0 = " + st.c0);
+        if (st.c1 <= st.c0) svg("path", { "class": "ln thin t dash", d: "M" + X0 + " " + Y(st.c1) + " H" + X1 }, plot);
+      }
+      if (!M.stopped && st.mc === 2) {
+        svg("path", { "class": "ln thin r dash", d: "M" + X0 + " " + Y(st.c0) + " H" + X1 }, plot);
+        if (M.stair) {
+          var d = "M" + X0 + " " + Y(M.stair[0][1]);
+          for (var i = 1; i < M.stair.length; i++) d += " H" + X(M.stair[i][0]).toFixed(1) + " V" + Y(M.stair[i][1]).toFixed(1);
+          d += " H" + X1;
+          svg("path", { "class": "ln thin t dash", d: d }, plot);
+        } else svg("path", { "class": "ln thin t dash", d: "M" + X0 + " " + Y(st.c1) + " H" + X1 }, plot);
+      }
+      var pd = "";
+      M.pts.forEach(function (p, idx) {
+        var t = p[0], v = p[1];
+        if (t > M.W && idx > 0) {
+          var q = M.pts[idx - 1];
+          if (q[0] >= M.W) return;
+          v = q[1] + (v - q[1]) * (M.W - q[0]) / (t - q[0]); t = M.W;
+        }
+        if (t > M.W) return;
+        pd += (pd ? " L" : "M") + X(t).toFixed(1) + " " + Y(v).toFixed(1);
+      });
+      svg("path", { "class": "ln b", d: pd }, plot);
+      if (M.stopped) svg("text", { "class": "tz sm y mid", x: (X0 + X1) / 2, y: (Y0 + Y1) / 2 }, plot, "计数器停止（" + M.why + "）");
+      ["c0", "c1", "t"].forEach(function (key) {
+        var cls = key === "c0" ? "r" : key === "c1" ? "t" : "o";
+        M.ev[key].forEach(function (t) {
+          svg("path", { "class": "ln thin " + cls, d: "M" + X(t).toFixed(1) + " " + (ROW[key] - 10) + " V" + (ROW[key] + 2) }, plot);
+        });
+        if (M.more[key]) svg("text", { "class": "tm xs m end", x: X1, y: ROW[key] - 12 }, plot, "只画前 " + CAP + " 个");
+      });
+      if (curT > M.W) curT = 0;
+      cursor();
+      explain();
+      $("m31-run").disabled = M.stopped || reduce;
+      $("m31-next").disabled = M.stopped;
+      if (M.stopped) stop();
+    }
+    function cursor() {
+      var g = $("m31-cur");
+      if (!M || M.stopped) { g.style.opacity = 0; return; }
+      var x = X(curT), v = tar(Math.floor(curT));
+      $("m31-curl").setAttribute("x1", x.toFixed(1)); $("m31-curl").setAttribute("x2", x.toFixed(1));
+      $("m31-curd").setAttribute("cx", x.toFixed(1)); $("m31-curd").setAttribute("cy", Y(v).toFixed(1));
+      var lab = $("m31-curv");
+      lab.textContent = "TAxR = " + v + " · " + ms(curT);
+      lab.setAttribute("x", Math.min(x + 6, X1 - 150).toFixed(1));
+      g.style.opacity = (running || curT > 0) ? 1 : 0;
+    }
+    function explain() {
+      var f = M.f, s = "f_timer = " + st.src + " / (" + st.id + " · " + st.idex + ") = " + fmt(f, 2) + " Hz · ";
+      if (M.stopped) {
+        s += M.why === "MC = 00" ? "MC = 00：计数器停住，保持当前值。" : "CCR0 = 0：up 和 up/down 模式下计数器停止；写入非 0 值后从 0 向上重新开始。";
+      } else if (st.mc === 1) {
+        s += "<b>up</b>：周期 = CCR0 + 1 = " + M.P + " 拍 = " + ms(M.P) + "。CCIFG0 在 TAxR 到达 CCR0 时置位，TAIFG 在下一拍 CCR0 → 0 时置位。";
+        s += st.c1 > st.c0 ? " <b>CCR1 &gt; CCR0：TAxR 到不了，CCIFG1 永远不置位。</b>" : " CCR1 每周期匹配一次。";
+      } else if (st.mc === 3) {
+        s += "<b>up/down</b>：周期 = 2 · CCR0 = " + M.P + " 拍 = " + ms(M.P) + "。CCIFG0 在顶点，TAIFG 在 1 → 0，相隔半个周期。";
+        s += st.c1 > st.c0 ? " <b>CCR1 &gt; CCR0：CCIFG1 永远不置位。</b>" : (st.c1 > 0 && st.c1 < st.c0 ? " CCR1 上坡、下坡各匹配一次。" : " CCR1 每周期匹配一次。");
+      } else {
+        s += "<b>continuous</b>：周期 = 65536 拍 = " + ms(65536) + "，TAIFG 在 0xFFFF → 0。CCR0 在这里只是普通比较寄存器。";
+        s += st.inc ? " ISR 里 CCR1 += " + st.n + "：每 " + ms(st.n) + " 一次 CCIFG1；阶梯是 CCR1 的值，按 65536 回绕，间隔不变。" : " CCR1 不加增量：每 65536 拍匹配一次。";
+      }
+      $("m31-out").innerHTML = s;
+    }
+    function setChip(key) { chips[key].textContent = chipName[key] + " × " + cnt[key]; }
+    function flash(key, viaLoop) {
+      chips[key].classList.add("hit");
+      if (viaLoop) { hitAt[key] = Date.now(); return; }
+      clearTimeout(hitTimer[key]);
+      hitTimer[key] = setTimeout(function () { chips[key].classList.remove("hit"); }, 450);
+    }
+    function hit(key, viaLoop) { cnt[key]++; setChip(key); flash(key, viaLoop); }
+    function passEvents(a, b, viaLoop) {
+      ["c0", "c1", "t"].forEach(function (key) {
+        M.ev[key].forEach(function (t) { if (t > a && t <= b) hit(key, viaLoop); });
+      });
+    }
+    function frame(ts) {
+      if (!running) { raf = 0; return; }
+      if (!lastTs) lastTs = ts;
+      var dt = Math.min(100, ts - lastTs); lastTs = ts;
+      var nt = curT + M.W * dt / SWEEP;
+      if (nt >= M.W) { passEvents(curT, M.W, true); nt -= M.W; passEvents(-1, nt, true); }
+      else passEvents(curT, nt, true);
+      curT = nt;
+      var now = Date.now();
+      ["c0", "c1", "t"].forEach(function (key) { if (hitAt[key] && now - hitAt[key] > 220) { chips[key].classList.remove("hit"); hitAt[key] = 0; } });
+      cursor();
+      raf = requestAnimationFrame(frame);
+    }
+    function start() {
+      if (running || reduce || !M || M.stopped) return;
+      running = true; lastTs = 0;
+      $("m31-run").textContent = "❚❚ 暂停";
+      raf = requestAnimationFrame(frame);
+    }
+    function stop() {
+      running = false;
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      $("m31-run").textContent = "▶ 运行";
+      ["c0", "c1", "t"].forEach(function (key) { chips[key].classList.remove("hit"); hitAt[key] = 0; });
+    }
+    function resetCounts() { cnt = { c0: 0, c1: 0, t: 0 }; setChip("c0"); setChip("c1"); setChip("t"); }
+
+    $("m31-run").addEventListener("click", function () { if (running) stop(); else start(); });
+    $("m31-next").addEventListener("click", function () {
+      if (!M || M.stopped) return;
+      stop();
+      var best = Infinity, keys = [];
+      ["c0", "c1", "t"].forEach(function (key) {
+        M.ev[key].forEach(function (t) {
+          if (t > curT && t < best) { best = t; keys = [key]; }
+          else if (t === best && keys.indexOf(key) < 0) keys.push(key);
+        });
+      });
+      if (best === Infinity) { curT = 0; resetCounts(); cursor(); $("m31-out").innerHTML = "窗口结束，游标回到 0（计数清零）。再按一次继续。"; return; }
+      curT = best;
+      keys.forEach(function (key) { hit(key, false); });
+      cursor();
+      $("m31-out").innerHTML = "t = " + ms(curT) + "（第 " + curT + " 拍），TAxR = " + tar(curT) + " → 置位 <b>" + keys.map(function (k) { return chipName[k]; }).join(" + ") + "</b>。";
+    });
+    $("m31-clr").addEventListener("click", function () {
+      curT = 0; resetCounts(); lastTs = 0; cursor();
+      $("m31-out").innerHTML = "TACLR：TAxR ← 0，分频器复位，up/down 方向 ← 向上。TACLR 本身不改 MC。";
+    });
+    Array.prototype.slice.call(document.querySelectorAll("#m31-sim [data-mc]")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        st.mc = +b.getAttribute("data-mc");
+        Array.prototype.slice.call(document.querySelectorAll("#m31-sim [data-mc]")).forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        curT = 0; resetCounts(); draw();
+      });
+    });
+    function sel(id, key) { $(id).addEventListener("change", function () { st[key] = +$(id).value; draw(); }); }
+    sel("m31-src", "src"); sel("m31-id", "id"); sel("m31-idex", "idex");
+    function pair(rid, nid, key, lo) {
+      var r = $(rid), n = $(nid);
+      r.addEventListener("input", function () { st[key] = +r.value; n.value = r.value; draw(); });
+      n.addEventListener("change", function () {
+        var v = Math.round(+n.value);
+        if (!isFinite(v)) v = st[key];
+        v = Math.max(lo, Math.min(65535, v));
+        n.value = v; r.value = v; st[key] = v; draw();
+      });
+    }
+    pair("m31-c0r", "m31-c0", "c0", 0);
+    pair("m31-c1r", "m31-c1", "c1", 0);
+    pair("m31-nr", "m31-n", "n", 100);
+    $("m31-inc").addEventListener("click", function () {
+      st.inc = !st.inc;
+      $("m31-inc").setAttribute("aria-pressed", st.inc ? "true" : "false");
+      draw();
+    });
+    if (reduce) $("m31-run").title = "系统设置了减少动画；请用“下一个事件”逐步查看";
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (e) { if (!e.isIntersecting) stop(); }); }).observe($("m31-sim"));
+    }
+    document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); });
+    draw();
+  })();
+
+  
+  (function () {
+    if (!$("m31-ivread")) return;
+    var NAME = ["CCR1", "CCR2", "CCR3", "CCR4", "TAIFG"], FLAG = ["CCIFG1", "CCIFG2", "CCIFG3", "CCIFG4", "TAIFG"];
+    var EN = ["CCIE1", "CCIE2", "CCIE3", "CCIE4", "TAIE"];
+    var iv = { f: [0, 0, 1, 0, 1], e: [1, 1, 1, 1, 1] };
+    var fbtn = Array.prototype.slice.call(document.querySelectorAll("#m31-ivsim [data-ivf]"));
+    var ebtn = Array.prototype.slice.call(document.querySelectorAll("#m31-ivsim [data-ive]"));
+    function value() {
+      for (var i = 0; i < 4; i++) if (iv.f[i] && iv.e[i]) return { v: 2 * (i + 1), i: i };
+      if (iv.f[4] && iv.e[4]) return { v: 14, i: 4 };
+      return { v: 0, i: -1 };
+    }
+    function render() {
+      var cur = value();
+      for (var i = 0; i < 5; i++) {
+        var pend = iv.f[i] && iv.e[i];
+        $("m31-ivb" + i).setAttribute("class", "bx " + (pend ? "r" : "hollow m") + (i === cur.i ? " glow-r" : ""));
+        var vt = $("m31-ivv" + i);
+        vt.textContent = iv.f[i]; vt.setAttribute("class", "tm lg mid " + (iv.f[i] ? "r" : "m"));
+        var et = $("m31-ivt" + i);
+        et.textContent = (i === 4 ? "TAIE" : "CCIE") + " = " + iv.e[i]; et.setAttribute("class", "tm xs mid " + (iv.e[i] ? "g" : "m"));
+        fbtn[i].setAttribute("aria-pressed", iv.f[i] ? "true" : "false");
+        ebtn[i].setAttribute("aria-pressed", iv.e[i] ? "true" : "false");
+      }
+      $("m31-ivr").textContent = "TA0IV = " + hex(cur.v, 2) + (cur.i >= 0 ? " → " + NAME[cur.i] : " → 没有已使能的挂起中断");
+    }
+    function say(s) { $("m31-ivout").innerHTML = s; }
+    fbtn.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var i = +b.getAttribute("data-ivf");
+        iv.f[i] = iv.f[i] ? 0 : 1; render();
+        say(FLAG[i] + " = " + iv.f[i] + "。" + (iv.f[i] && !iv.e[i] ? " " + EN[i] + " = 0：flag 挂着，但不影响 TA0IV。" : ""));
+      });
+    });
+    ebtn.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var i = +b.getAttribute("data-ive");
+        iv.e[i] = iv.e[i] ? 0 : 1; render();
+        say(EN[i] + " = " + iv.e[i] + "。被禁止的中断不参与 TA0IV 的优先级判断。");
+      });
+    });
+    $("m31-ivread").addEventListener("click", function () {
+      var cur = value();
+      if (cur.i < 0) {
+        var any = iv.f.some(function (x) { return x; });
+        say("读到 <b>0x00</b>：没有已使能的挂起中断。" + (any ? " 还有 flag 是 1，但它们的使能位是 0。" : ""));
+        return;
+      }
+      iv.f[cur.i] = 0;
+      render();
+      var nxt = value();
+      say("读到 <b>" + hex(cur.v, 2) + "</b> → " + NAME[cur.i] + "；读操作同时清掉了 " + FLAG[cur.i] + "。" +
+        (nxt.i >= 0 ? " 还有 " + FLAG[nxt.i] + " 挂着 → RETI 之后立刻再次进入 TIMER0_A1 的 ISR，下次读到 " + hex(nxt.v, 2) + "。" : " 没有别的挂起中断了，RETI 后回到主程序。"));
+    });
+    $("m31-ivreset").addEventListener("click", function () {
+      iv.f = [0, 0, 1, 0, 1]; iv.e = [1, 1, 1, 1, 1]; render();
+      say("CCIFG3 和 TAIFG 已经挂起。读一次 TA0IV 看看。");
+    });
+    render();
+  })();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T2 Multitarea · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp td code { white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t2-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t2-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t2-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t2-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t2-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t2-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>互动笔记</a></span>
+<nav aria-label="Temas" class="chain" data-chain="T2"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Multitarea: procesos y threads</div>
+<h1>Procesos y threads</h1>
+<p class="zh">多任务：进程、线程，以及让它们不打架</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 25 分钟</span>
+
+
+
+</div>
+<p class="lede">物理世界里的事情是同时发生的：数据在网口上到达，用户在按键，时间在流逝。一个只有一条执行线的程序，很难同时照顾好它们。Linux 给了两种办法：开几个独立的 <b class="t">proceso (ES) / process (EN)</b>——进程，或者在一个进程里开几条 <b class="t">hilo (ES) / thread (EN)</b>——线程。这一章先看怎样创建、等待、结束它们，再看调度器怎样分配 CPU，最后处理多个线程共用数据时出现的三个问题：竞争条件、同步和死锁。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T2.1</span>
+<div class="txt"><span>说明为什么控制程序需要多任务；区分并发与并行、粗粒度与细粒度多任务</span><span class="es">Multitarea de grano grueso y de grano fino; concurrencia frente a paralelismo.</span><a href="#s1">→ §1 为什么需要多任务</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.2</span>
+<div class="txt"><span>在命令行里后台运行、脱离终端运行、查看、改优先级、结束进程（&amp;、nohup、ps、renice、kill）</span><span class="es">Ejecución desde la línea de comandos.</span><a href="#s2">→ §2 进程</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.3</span>
+<div class="txt"><span>说明 exec 族为什么"不返回"，以及 posix_spawn 和它的区别</span><span class="es">Ejecución destructiva (exec) y no destructiva (posix_spawn).</span><a href="#s2b">→ §2 从程序里启动程序</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.4</span>
+<div class="txt"><span>根据 fork 的返回值区分父子进程；用 exit、wait/waitpid 收尾，说明僵尸进程</span><span class="es">Bifurcación: fork, exit, wait, waitpid.</span><a href="#s2c">→ §2 fork</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.5</span>
+<div class="txt"><span>说出同一进程的线程共享什么、各自私有什么，以及线程相对进程的优点</span><span class="es">¿Qué es un thread? Recursos compartidos y datos particulares.</span><a href="#s3">→ §3 线程</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.6</span>
+<div class="txt"><span>用 pthread_create、pthread_exit、pthread_join 创建和回收线程，正确传参、取返回值，并用 -lpthread 编译</span><span class="es">Creación, finalización y espera de threads.</span><a href="#s3b">→ §3 创建与回收</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.7</span>
+<div class="txt"><span>说明线程状态和时间片；区分 SCHED_FIFO、SCHED_RR、SCHED_OTHER，并用属性设置策略和优先级</span><span class="es">Scheduling: políticas, prioridad, atributos, sched_yield.</span><a href="#s4">→ §4 调度</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.8</span>
+<div class="txt"><span>解释竞争条件和临界区；用 pthread_mutex 保护共享数据，分清 lock 与 trylock、四种互斥量类型</span><span class="es">Sincronización: mutex.</span><a href="#s5">→ §5 竞争条件与互斥量</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.9</span>
+<div class="txt"><span>用条件变量和信号量让线程等待条件，写出生产者–消费者的结构</span><span class="es">Variables condicionales y semáforos.</span><a href="#s6">→ §6 同步</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.10</span>
+<div class="txt"><span>识别死锁的成因和避免办法，以及多线程程序的常见错误</span><span class="es">Bloqueo mutuo (deadlock) y errores habituales.</span><a href="#s7">→ §7 死锁与常见错误</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T2"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>为什么需要多任务 <span class="tag">T2.1</span></h2>
+<p class="hook"><span class="zh">一个 while(1) 循环，能同时等网络、等按键、还准时做计算吗？</span><span class="es">El mundo físico es concurrente.</span></p>
+<p>单片机上常见的写法是一个大循环：轮流检查每件事，有事就处理。它的极限很明显：只要其中一件事处理得久一点（等一个网络包、写一个文件），其他事就全都被耽误；而且每件事的"等待"都得改写成"查一下就走"，程序会越来越难读。</p>
+<p>运行 Linux 的板子是一台通用计算机，操作系统提供了 <b class="t">multitarea (ES) / multitasking (EN)</b>——多任务：每件事写成一段自己的、按顺序执行的代码，需要等就直接等（阻塞），由操作系统决定此刻让谁用 CPU。有两种粒度：</p>
+<div class="grid2">
+<div class="cell b">
+<span class="k c-b">grano grueso · 粗粒度</span>
+<h3>多个进程</h3>
+<p>每个任务运行在自己的"虚拟机"里：它看到的内存从地址 0 开始、只属于自己，由操作系统把这些虚拟地址翻译成真实的物理地址。好处是隔离：一个进程做了非法操作被终止，不会拖垮别的进程。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">grano fino · 细粒度</span>
+<h3>一个进程里的多个线程</h3>
+<p>几个任务运行在同一个"虚拟机"里，共用地址空间和资源。创建、切换、通信都更便宜，代价是一个线程出错（比如写坏了共享内存），会影响同一进程里的其他线程。</p>
+</div>
+</div>
+<p>实际系统里两种通常混着用：几个进程，每个进程里又有几个线程。</p>
+<p>还有一个常见的误解：开了两个线程，它们就"真的同时"在跑。不一定。只有一个核时，操作系统把时间切成小片轮流分给它们：这叫 <b class="t">concurrencia (ES) / concurrency (EN)</b>——并发。有多个核时，两个线程才可能在同一时刻各占一个核：这叫 <b class="t">paralelismo (ES) / parallelism (EN)</b>——并行。</p>
+<figure class="stage" data-scene="" id="sc-conc">
+<div class="stage-title"><span>Escena 1 · concurrencia vs paralelismo</span><b>3 步</b></div>
+<div aria-label="动画：一个核上的并发和两个核上的并行，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-conc-t" role="img" viewbox="0 0 800 280">
+<title id="sc-conc-t">上面一行是单核：任务 A、B 的时间片交替；下面两行是双核：A、B 各占一个核同时推进</title>
+<text class="tz sm w" x="20" y="58">1 个核</text>
+<text class="tm xs m" x="20" y="78">CPU0</text>
+<g data-step="1">
+<rect class="bx g" height="34" rx="4" width="80" x="110" y="44"></rect><text class="tm sm g mid" x="150" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="190" y="44"></rect><text class="tm sm t mid" x="230" y="66">B</text>
+<rect class="bx g" height="34" rx="4" width="80" x="270" y="44"></rect><text class="tm sm g mid" x="310" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="350" y="44"></rect><text class="tm sm t mid" x="390" y="66">B</text>
+<rect class="bx g" height="34" rx="4" width="80" x="430" y="44"></rect><text class="tm sm g mid" x="470" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="510" y="44"></rect><text class="tm sm t mid" x="550" y="66">B</text>
+<rect class="bx g" height="34" rx="4" width="80" x="590" y="44"></rect><text class="tm sm g mid" x="630" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="670" y="44"></rect><text class="tm sm t mid" x="710" y="66">B</text>
+</g>
+<text class="tz sm w" x="20" y="146">2 个核</text>
+<text class="tm xs m" x="20" y="166">CPU0</text>
+<text class="tm xs m" x="20" y="206">CPU1</text>
+<g data-step="2">
+<rect class="bx g" height="30" rx="4" width="320" x="110" y="140"></rect><text class="tm sm g mid" x="270" y="160">A</text>
+<rect class="bx t" height="30" rx="4" width="320" x="110" y="184"></rect><text class="tm sm t mid" x="270" y="204">B</text>
+<text class="tz sm m" x="450" y="182">同样的工作量，用一半的时间</text>
+</g>
+<g data-step="3">
+<path class="ln thin o" d="M110 238 H750"></path>
+<path class="ln thin o" d="M110 232v12M190 232v12M270 232v12M350 232v12M430 232v12M510 232v12M590 232v12M670 232v12M750 232v12"></path>
+<text class="tz sm o" x="110" y="268">时间片 · rodaja de tiempo</text>
+<text class="tz sm y end" x="750" y="268">并发 ≠ 并行</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">只有 1 个核：调度器把时间切成片，A、B 轮流用。任何一个瞬间只有一个在跑，但在人看来两件事都在推进：这是<b>并发</b>。</li>
+<li>有 2 个核：A、B 可以各占一个核，真正<b>同时</b>执行：这是<b>并行</b>。</li>
+<li data-dur="4200">切换的节拍由时钟决定（<span class="c-o">金色</span>的刻度）。不管哪种情况，程序都不能假设"另一个线程此刻一定在跑"或"一定没在跑"：先后顺序由调度器决定。</li>
+</ol>
+<p class="stage-note">时间片长度只作演示。</p>
+</figure>
+<div class="note">
+<span class="lbl">一个后果</span>
+<p>创建线程的那段代码，常常在新线程真正开始执行之前就跑完了。如果 <code>main</code> 创建完线程就 <code>return</code>，整个进程结束，新线程可能一行都还没执行。§3 讲怎样用 <code>pthread_join</code> 等它。</p>
+</div>
+<p class="takeaway">多任务把"同时照顾几件事"交给操作系统：粗粒度用进程（隔离好、开销大），细粒度用线程（共享内存、开销小）。单核上是并发，多核上才可能并行；执行顺序永远由调度器决定。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>进程：启动、复制、等待 <span class="tag">T2.2 · T2.3 · T2.4</span></h2>
+<p class="hook"><span class="zh">每运行一次程序，就多了一个进程。在程序里，怎样再造一个？</span><span class="es">Multitarea de grano grueso.</span></p>
+<p>一个 <b>proceso</b> 就是一个正在运行的程序：它有自己的地址空间（代码、全局变量、堆、栈）、打开的文件、一个编号 <b class="t">PID (process identifier)</b>——进程号，以及至少一个线程。</p>
+<h3 id="s2a">在命令行里 <span class="tag">T2.2</span></h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>命令</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>./prueba</td><td>运行当前目录下的 <code>prueba</code>。文件必须有执行权限（<code>ls -l</code> 里看到 <code>x</code>）。命令行会一直被占住，直到程序结束。</td></tr>
+<tr><td>./prueba &amp;</td><td>在<b>后台</b>运行，命令行马上可以继续用。但程序仍是这个终端的子进程：终端窗口一关，它也被结束。</td></tr>
+<tr><td>nohup ./prueba &amp;</td><td>脱离终端运行：窗口关了，程序照样跑。</td></tr>
+<tr><td>ps aux</td><td>列出正在运行的进程和它们的属性（PID、用户、CPU、内存……）。</td></tr>
+<tr><td>renice -10 -p 123</td><td>把 PID 123 的 nice 值改成 −10（数值越小，优先级越高；调成负数需要 root）。</td></tr>
+<tr><td>kill 123</td><td>请 PID 123 结束（发 SIGTERM）。不理会时用 <code>kill -9 123</code> 强制结束（SIGKILL）。</td></tr>
+<tr><td>pkill nombre</td><td>结束<b>所有</b>名字是 <code>nombre</code> 的进程，小心误杀。</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="s2b">从程序里启动另一个程序 <span class="tag">T2.3</span></h3>
+<p><b class="t">exec</b> 族函数（<code>execl</code>、<code>execv</code>、<code>execle</code>、<code>execve</code>、<code>execlp</code>、<code>execvp</code>）把<b>当前进程</b>的代码换成另一个程序：PID 不变，但原来的程序被整个替换掉。所以 exec 是一种"破坏性"的执行：成功时它<b>不返回</b>，因为已经没有可以返回的程序了；只有失败时才返回 −1。</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="fn">execl</span>(<span class="nm">"/bin/ls"</span>, <span class="nm">"ls"</span>, <span class="nm">"-l"</span>, (<span class="kw">char</span> *)0);   <span class="cm">// 参数表以空指针结尾</span></span><span class="ln-row"><span class="fn">perror</span>(<span class="nm">"execl"</span>);                               <span class="cm">// 能执行到这里，说明 exec 失败了</span></span></code></pre>
+<p>名字里的字母有规律：<code>l</code> = 参数一个个列出（list），<code>v</code> = 参数放在数组里（vector），<code>e</code> = 额外传一份环境变量，<code>p</code> = 在 <code>PATH</code> 里找程序。</p>
+<p>想启动另一个程序、自己又继续运行，用 <code>posix_spawn</code> / <code>posix_spawnp</code>（<code>&lt;spawn.h&gt;</code>）。它是"非破坏性"的：调用者继续执行，新程序的 PID 通过第一个参数返回。内部做的事，相当于先 <code>fork()</code> 再在子进程里 <code>exec()</code>。</p>
+<h3 id="s2c">fork：把自己复制一份 <span class="tag">T2.4</span></h3>
+<p><code>pid_t fork(void);</code> 让调用它的进程一分为二。调用者是 <b class="t">proceso padre (ES) / parent (EN)</b>——父进程，新的是 <b class="t">proceso hijo (ES) / child (EN)</b>——子进程。子进程得到父进程用户空间的<b>一份副本</b>：同样的代码、同样的变量和值、同样的打开文件。两者从 <code>fork()</code> 返回的地方开始各自继续执行。唯一的区别是返回值：</p>
+<figure class="stage" data-scene="" id="sc-fork">
+<div class="stage-title"><span>Escena 2 · fork → exit → wait</span><b>7 步</b></div>
+<div aria-label="动画：fork 复制进程、子进程退出变成僵尸、父进程 wait 回收，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-fork-t" role="img" viewbox="0 0 800 400">
+<title id="sc-fork-t">父进程 PID 100 调用 fork，内核复制出子进程 PID 101；两边 fork 的返回值不同；子进程改 x 不影响父进程；子进程 exit 后成为僵尸，父进程 wait 后回收</title>
+
+<rect class="bx hollow w" data-hl="7" height="250" rx="12" width="320" x="20" y="40"></rect>
+<text class="tx sm w" x="40" y="76">padre</text>
+<text class="tm sm m end" x="320" y="76">PID 100</text>
+<text class="tm sm w" x="40" y="112">pid = fork();</text>
+<rect class="bx b" height="120" rx="8" width="280" x="40" y="132"></rect>
+<text class="tz sm b" x="54" y="156">memoria</text>
+<text class="tm b" data-hl="5" x="60" y="192">x   = 5</text>
+<text class="tm b" x="60" y="232">pid =</text>
+<text class="tm b" data-out="4" x="128" y="232">?</text>
+<text class="tm y" data-step="4" x="128" y="232">101</text>
+<g data-step="7">
+<text class="tm sm g" x="40" y="278">wait(&amp;st) → 101 · estado 3</text>
+</g>
+
+<g data-step="2">
+<rect class="bx p" height="44" rx="8" width="96" x="352" y="150"></rect>
+<text class="tm sm p mid" x="400" y="177">fork()</text>
+<path class="ln p draw" d="M340 222 C 380 262, 420 262, 460 222" id="t2-p-fork" marker-end="url(#t2-ah-p)"></path>
+<text class="tz sm p mid" x="400" y="280">内核复制</text>
+</g>
+<circle class="sl p" data-move="#t2-p-fork" data-out="3" data-step="2" r="7"></circle>
+
+<g data-out="7" data-step="3">
+<rect class="bx hollow w" height="250" rx="12" width="320" x="460" y="40"></rect>
+<text class="tx sm w" x="480" y="76">hijo</text>
+<text class="tm sm m end" x="760" y="76">PID 101</text>
+<text class="tm sm w" x="480" y="112">pid = fork();</text>
+<rect class="bx b draw" height="120" rx="8" width="280" x="480" y="132"></rect>
+<text class="tz sm b" x="494" y="156">memoria（副本）</text>
+<text class="tm b" data-out="5" x="500" y="192">x   = 5</text>
+<text class="tm y" data-step="5" x="500" y="192">x   = 6</text>
+<text class="tm b" x="500" y="232">pid =</text>
+<text class="tm b" data-out="4" x="568" y="232">?</text>
+<text class="tm y" data-step="4" x="568" y="232">0</text>
+</g>
+<g data-out="7" data-step="6">
+<rect class="ln r dash" height="266" rx="14" width="336" x="452" y="32"></rect>
+<text class="tm sm r" x="480" y="278">exit(3) → zombie</text>
+</g>
+<g data-step="7">
+<rect class="ln thin m dash" height="250" rx="12" width="320" x="460" y="40"></rect>
+<text class="tz sm m mid" x="620" y="170">子进程已被回收</text>
+</g>
+
+<text class="tz sm y mid" data-out="5" data-step="4" x="400" y="340">父进程拿到子进程的 PID，子进程拿到 0</text>
+<text class="tz sm y mid" data-out="6" data-step="5" x="400" y="340">两份内存互相独立：子进程改 x，父进程看不到</text>
+<text class="tz sm r mid" data-out="7" data-step="6" x="400" y="340">进程已结束，但退出状态还没人取：僵尸</text>
+<text class="tz sm g mid" data-step="7" x="400" y="340">wait 取走退出状态，内核释放最后的记录</text>
+</svg>
+</div>
+<ol class="captions">
+<li>父进程（PID 100）的内存里有 <code>x = 5</code>，正要执行 <code>pid = fork();</code>。</li>
+<li><code>fork()</code> 是一个<span class="c-p">系统调用</span>：内核接手，准备复制这个进程。</li>
+<li data-dur="4000">内核造出子进程（PID 101）：用户空间是父进程的<b>副本</b>，变量、值、打开的文件都一样，也同样停在 <code>fork()</code> 返回的地方。</li>
+<li data-dur="4200"><code>fork()</code> 在两边各返回一次：父进程得到<b>子进程的 PID</b>（101，&gt; 0），子进程得到 <b>0</b>。失败时只在父进程返回 −1，不会有子进程。</li>
+<li data-dur="4000">从这里开始两个进程各走各的。子进程执行 <code>x++</code>，它的 x 变成 6；父进程的 x 还是 5：两份地址空间是分开的。</li>
+<li data-dur="4600">子进程调用 <code>exit(3)</code> 结束。它的内存已经释放，但内核还留着 PID 和退出状态 3，等父进程来取。这种"死了还没被收尸"的进程叫 <b>zombie</b>（僵尸进程）。</li>
+<li data-dur="4600">父进程调用 <code>wait(&amp;st)</code>：返回结束的子进程的 PID（101），状态放进 <code>st</code>。内核这才删掉子进程的最后记录。</li>
+</ol>
+<p class="stage-note">PID 数值只作演示。</p>
+</figure>
+<p>写成代码，就是靠一个 <code>if</code> 让父子走不同的分支：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdlib.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;sys/wait.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">int</span> x = 5;</span><span class="ln-row">    <span class="kw">pid_t</span> pid = <span class="fn">fork</span>();</span><span class="ln-row">    <span class="kw">if</span> (pid == -1) {                      <span class="cm">// 失败：没有子进程</span></span><span class="ln-row">        <span class="fn">perror</span>(<span class="nm">"fork"</span>);</span><span class="ln-row">        <span class="kw">return</span> 1;</span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">if</span> (pid == 0) {                       <span class="cm">// 子进程</span></span><span class="ln-row">        x++;</span><span class="ln-row">        <span class="fn">printf</span>(<span class="nm">"hijo  %d: x = %d\n"</span>, (<span class="kw">int</span>)<span class="fn">getpid</span>(), x);</span><span class="ln-row">        <span class="fn">exit</span>(3);                          <span class="cm">// 退出状态 3</span></span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">int</span> st;                               <span class="cm">// 父进程：pid 是子进程的 PID</span></span><span class="ln-row">    <span class="kw">pid_t</span> h = <span class="fn">wait</span>(&amp;st);</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">WIFEXITED</span>(st))</span><span class="ln-row">        <span class="fn">printf</span>(<span class="nm">"padre %d: hijo %d salió con %d, x = %d\n"</span>,</span><span class="ln-row">               (<span class="kw">int</span>)<span class="fn">getpid</span>(), (<span class="kw">int</span>)h, <span class="fn">WEXITSTATUS</span>(st), x);   <span class="cm">// x 仍是 5</span></span><span class="ln-row">    <span class="kw">return</span> 0;</span><span class="ln-row">}</span></code></pre>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">void exit(int status)</span>
+<h3>结束自己</h3>
+<p>结束调用它的进程，把 <code>status</code> 交给系统，父进程可以通过 wait 取到。<code>main</code> 里 <code>return n</code> 效果相同。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">pid_t wait(int *st)</span>
+<h3>等任意一个子进程</h3>
+<p>阻塞，直到某个子进程结束；返回它的 PID。<code>st</code> 里不是退出值本身，而是编码过的状态：先用 <code>WIFEXITED(st)</code> 判断是不是正常退出，再用 <code>WEXITSTATUS(st)</code> 取出 exit 的值。</p>
+</div>
+<div class="cell y">
+<span class="k c-y">waitpid(pid, &amp;st, opts)</span>
+<h3>等指定的子进程</h3>
+<p>只等 PID 为 <code>pid</code> 的那个（<code>pid = -1</code> 时等任意一个）。<code>opts</code> 写 <code>WNOHANG</code> 时不阻塞：没有子进程结束就立刻返回 0。</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">僵尸和孤儿</span>
+<p>子进程结束后、父进程 wait 之前，它是 <b class="t">proceso zombi (ES) / zombie process (EN)</b>——僵尸进程：只占进程表里的一行，但不 wait 的父进程会让它们越积越多。反过来，父进程先结束，子进程就成了孤儿，由系统的 init 进程（PID 1）收养并替它 wait。长期运行的服务程序要么 wait 每个子进程，要么定期用 <code>waitpid(-1, &amp;st, WNOHANG)</code> 收尸。</p>
+</div>
+<p>父进程里打开的文件，子进程也继承：两边拿到的是同一个打开的文件（共享读写位置）。这在两边都往同一个文件写时要注意。</p>
+<p>循环里连续调用 <code>fork()</code> 时，<b>每一个</b>已经存在的进程都会再复制一次，进程数按 2 的幂增长。下面的练习按这个规则出题：</p>
+<div class="drill" data-drill="fork"></div>
+<p class="takeaway">fork 复制整个进程，返回值区分父子：父进程得到子进程 PID，子进程得到 0，失败得到 −1。复制之后两边的内存互不影响。子进程用 exit 结束，父进程用 wait/waitpid 回收，否则留下僵尸。exec 替换当前程序、成功时不返回；posix_spawn 启动新程序并保留调用者。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>线程：一个进程里的几条执行线 <span class="tag">T2.5 · T2.6</span></h2>
+<p class="hook"><span class="zh">不想把整个进程复制一遍，只想多一条执行线，怎么办？</span><span class="es">Threads: líneas de ejecución concurrente dentro de un proceso.</span></p>
+<p><b>thread</b>（hilo，线程）是操作系统能调度的最小执行单位：一条在进程内部并发执行的指令流。每个进程至少有一个线程，即 <b class="t">hilo principal (ES) / main thread (EN)</b>——主线程，也就是执行 <code>main</code> 的那条。</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>同一进程的线程</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>共享</td><td>代码、<b>全局变量</b>、函数里的 <code>static</code> 变量、堆（<code>malloc</code> 来的内存）、打开的文件、PID、信号处理方式</td></tr>
+<tr><td>各自私有</td><td>程序计数器 PC 和其他 CPU 寄存器、<b>栈</b>（所以局部变量是私有的）、线程号 <code>pthread_t</code>、调度优先级、<code>errno</code>、线程专有数据（TSD）</td></tr>
+</tbody>
+</table>
+</div>
+<p>两个线程执行同一个函数时，函数里的局部变量各有一份（在各自的栈上）；但如果局部变量声明成 <code>static</code>，它就只有一份，两个线程共用。</p>
+<p>和进程相比，线程的好处是"轻"：</p>
+<ul>
+<li>创建一个线程比创建一个进程快得多（常见的估计是一个数量级），结束也快：只需要删掉线程的上下文和栈，不用删整个进程的控制块。</li>
+<li>同一进程的两个线程之间切换更快：要换的只是 PC、几个寄存器和栈指针，不用换地址空间。它仍然是一次上下文切换，只是便宜得多。</li>
+<li>线程之间通信直接读写共享内存，不用每次都请内核帮忙。</li>
+</ul>
+<p>代价也来自共享：没有隔离，一个线程写坏了内存或者崩溃，整个进程一起完蛋；共享的数据要自己保护（§5）。</p>
+<p>线程可以由内核实现（内核知道每个线程，直接调度它们，能用上多核），也可以只在用户空间实现（一个进程在内部自己切换几条执行线，内核只看到一个进程：不用改操作系统，但用不上多核，一个线程阻塞在系统调用里，整个进程都会停）。Linux 现在的线程库是内核级的：每个 pthread 对应一个内核调度实体。</p>
+<h3 id="s3b">创建、结束和回收 <span class="tag">T2.6</span></h3>
+<p>为什么要线程？想同时做另一件事，又不想把正在做的事扔下。普通的函数调用会让调用者停下来，等函数执行完才继续；<code>pthread_create</code> 让函数在一条新的执行线上开始运行，调用者自己马上往下走：</p>
+
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span>  <span class="fn">pthread_create</span>(<span class="kw">pthread_t</span> *tid, <span class="kw">const pthread_attr_t</span> *attr,</span><span class="ln-row">                     <span class="kw">void</span> *(*funcion)(<span class="kw">void</span> *), <span class="kw">void</span> *arg);</span><span class="ln-row"><span class="kw">void</span> <span class="fn">pthread_exit</span>(<span class="kw">void</span> *valor);</span><span class="ln-row"><span class="kw">int</span>  <span class="fn">pthread_join</span>(<span class="kw">pthread_t</span> tid, <span class="kw">void</span> **valor);</span><span class="ln-row"><span class="kw">pthread_t</span> <span class="fn">pthread_self</span>(<span class="kw">void</span>);</span><span class="ln-row"><span class="kw">int</span>  <span class="fn">pthread_equal</span>(<span class="kw">pthread_t</span> t1, <span class="kw">pthread_t</span> t2);</span></code></pre>
+<ul>
+<li><code>tid</code>：输出参数，存新线程的 <b class="t">identificador (ES) / thread ID (EN)</b>——线程号。</li>
+<li><code>attr</code>：创建属性（优先级、调度策略、栈大小……），<code>NULL</code> 表示全部用默认值（§4）。</li>
+<li><code>funcion</code>：新线程要执行的函数，必须是 <code>void *f(void *)</code> 这个形状：一个 <code>void *</code> 参数，返回一个 <code>void *</code>。</li>
+<li><code>arg</code>：传给 <code>funcion</code> 的那个参数。要传多个值，就把它们放进一个结构体，传结构体的地址。</li>
+<li>返回值：成功 0，失败返回错误码（不是 −1，也不设 <code>errno</code>），用 <code>strerror(err)</code> 打印。</li>
+</ul>
+<p>线程在三种情况下结束：从 <code>funcion</code> <code>return</code>；自己调用 <code>pthread_exit(valor)</code>；被同一进程的另一个线程取消（<code>pthread_cancel</code>）。前两种情况下，那个 <code>void *</code> 就是线程的"返回值"。另一个线程调用 <code>pthread_join(tid, &amp;r)</code> 会<b>阻塞</b>，直到 tid 结束，然后把这个返回值放进 <code>r</code>。</p>
+<p>例子：两个线程各算一半数组的和，主线程等它们算完再相加。参数和结果都放在各自的结构体里：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;string.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">typedef struct</span> { <span class="kw">const int</span> *v; <span class="kw">int</span> n; <span class="kw">long</span> suma; } <span class="kw">tarea_t</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> *<span class="fn">sumar</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    <span class="kw">tarea_t</span> *t = arg;                      <span class="cm">// void * → 真正的类型</span></span><span class="ln-row">    t-&gt;suma = 0;</span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; t-&gt;n; i++)</span><span class="ln-row">        t-&gt;suma += t-&gt;v[i];</span><span class="ln-row">    <span class="kw">return</span> t;                              <span class="cm">// 等价于 pthread_exit(t)</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">static int</span> datos[1000];</span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 1000; i++) datos[i] = i;</span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">tarea_t</span> a = { datos, 500, 0 }, b = { datos + 500, 500, 0 };</span><span class="ln-row">    <span class="kw">pthread_t</span> ha, hb;</span><span class="ln-row">    <span class="kw">int</span> err = <span class="fn">pthread_create</span>(&amp;ha, NULL, sumar, &amp;a);</span><span class="ln-row">    <span class="kw">if</span> (err) { <span class="fn">fprintf</span>(stderr, <span class="nm">"create: %s\n"</span>, <span class="fn">strerror</span>(err)); <span class="kw">return</span> 1; }</span><span class="ln-row">    err = <span class="fn">pthread_create</span>(&amp;hb, NULL, sumar, &amp;b);</span><span class="ln-row">    <span class="kw">if</span> (err) { <span class="fn">fprintf</span>(stderr, <span class="nm">"create: %s\n"</span>, <span class="fn">strerror</span>(err)); <span class="kw">return</span> 1; }</span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">void</span> *r;</span><span class="ln-row">    <span class="fn">pthread_join</span>(ha, &amp;r);                   <span class="cm">// 阻塞到 ha 结束；r == &amp;a</span></span><span class="ln-row">    <span class="fn">pthread_join</span>(hb, NULL);                 <span class="cm">// 不要返回值时传 NULL</span></span><span class="ln-row">    <span class="fn">printf</span>(<span class="nm">"total = %ld\n"</span>, ((<span class="kw">tarea_t</span> *)r)-&gt;suma + b.suma);   <span class="cm">// 499500</span></span><span class="ln-row">    <span class="kw">return</span> 0;</span><span class="ln-row">}</span></code></pre>
+<p>编译时要链接线程库：<code>gcc -o suma suma.c -lpthread</code>（或者用 <code>-pthread</code>，同时设置编译和链接选项）。交叉编译给 Raspberry Pi 时，把 <code>gcc</code> 换成工具链的编译器，选项不变。</p>
+<div class="note alert">
+<span class="lbl">三个容易犯的错</span>
+<p><b>main 先走了</b>：<code>main</code> 返回（或任何线程调用 <code>exit</code>）会结束整个进程，所有线程一起消失。要么 <code>pthread_join</code> 等它们，要么让 <code>main</code> 调用 <code>pthread_exit(NULL)</code>：只结束主线程，进程等其他线程结束后才退出。用 <code>sleep</code> 等是碰运气。</p>
+<p><b>传了会变的地址</b>：<code>for (i = 0; i &lt; 4; i++) pthread_create(&amp;h[i], NULL, f, &amp;i);</code> 四个线程拿到的是同一个 <code>i</code> 的地址，读到的值取决于它们什么时候开始跑。每个线程要有自己的一份参数（数组元素、结构体）。</p>
+<p><b>返回了栈上的地址</b>：线程函数返回自己局部变量的地址，线程一结束栈就没了，join 拿到的指针指向无效内存。结果要放在调用者给的结构体里，或者用 <code>malloc</code>。</p>
+</div>
+<p><code>pthread_self()</code> 返回调用者自己的线程号；比较两个线程号要用 <code>pthread_equal(t1, t2)</code>（相同返回非 0，不同返回 0），不要用 <code>==</code>，因为 <code>pthread_t</code> 不保证是整数。</p>
+<p>有时需要"每个线程各一份的全局变量"，叫 <b class="t">thread-specific data (TSD)</b>——线程专有数据：用 <code>pthread_key_create(&amp;key, destructor)</code> 建一把全进程共用的 key，每个线程用 <code>pthread_setspecific(key, ptr)</code> 挂上自己的数据、用 <code>pthread_getspecific(key)</code> 取回；线程结束时 destructor 负责释放。只建一次 key 的惯用法是 <code>pthread_once</code>。</p>
+<p class="takeaway">线程共享全局数据和堆，各有自己的栈和寄存器。pthread_create 启动一个 <code>void *f(void *)</code> 函数，参数用结构体打包传地址；线程 return 或 pthread_exit 结束，pthread_join 阻塞等待并取回返回值。编译加 -lpthread；main 返回会带走所有线程。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>调度：谁先用 CPU <span class="tag">T2.7</span></h2>
+<p class="hook"><span class="zh">十个线程都想跑，CPU 只有几个核。谁来决定，按什么规则？</span><span class="es">Scheduling: SCHED_FIFO, SCHED_RR, SCHED_OTHER.</span></p>
+<p>内核里的 <b class="t">planificador (ES) / scheduler (EN)</b>——调度器负责分配 CPU。从它的角度看，每个线程在任一时刻处于三种状态之一：</p>
+<div class="grid3">
+<div class="cell g">
+<span class="k c-g">en ejecución · running</span>
+<h3>运行</h3>
+<p>正占着一个核执行。单核上同一时刻只有一个。</p>
+</div>
+<div class="cell y">
+<span class="k c-y">listo · ready</span>
+<h3>就绪</h3>
+<p>万事俱备，只差 CPU，在就绪队列里排队。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">bloqueado · blocked</span>
+<h3>阻塞</h3>
+<p>在等某件事：<code>sleep</code> 到期、<code>read</code> 有数据、<code>pthread_join</code>、<code>pthread_mutex_lock</code>……事情发生后回到就绪，不占 CPU。</p>
+</div>
+</div>
+<p>运行中的线程会因为三种原因让出 CPU：自己阻塞；被更高优先级的就绪线程<b>抢占</b>（preemption）；或者它的 <b class="t">quantum / time slice</b>——时间片用完了。POSIX 定义了三种调度策略：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>策略</th><th>规则</th></tr></thead>
+<tbody>
+<tr><td>SCHED_FIFO</td><td>每个优先级一条队列；总是运行<b>最高优先级</b>队列里排得最久的那个。它一直运行，直到阻塞、主动让出（<code>sched_yield</code>）或被更高优先级抢占；同优先级的其他线程只能等。</td></tr>
+<tr><td>SCHED_RR</td><td>和 FIFO 一样按优先级，但多了一个<b>时间限制</b>：同优先级的线程每次最多用一个时间片，用完排到本优先级队尾，轮流执行（round-robin）。</td></tr>
+<tr><td>SCHED_OTHER</td><td>默认策略，具体做法由操作系统决定。Linux 上是分时调度：所有线程的静态优先级都是 0，按 nice 值和已经用掉的 CPU 时间公平分配。</td></tr>
+</tbody>
+</table>
+</div>
+<p>FIFO 和 RR 是实时策略：在 Linux 上优先级取 1–99（数值越大越优先，可以用 <code>sched_get_priority_min/max</code> 查），而且<b>任何</b>就绪的实时线程都比 SCHED_OTHER 线程先运行。正因为实时线程能把普通线程饿死，设置它们需要超级用户权限。</p>
+<p>下面看 SCHED_RR 下三个同优先级线程怎样分时间。规则只有一条：轮到谁，谁最多用一个时间片；没做完就排到队尾；剩下的工作不足一片，做完就让出。</p>
+<figure class="stage" data-scene="" id="sc-rr">
+<div class="stage-title"><span>Escena 4 · round-robin · quantum 20 ms</span><b>7 步</b></div>
+<div aria-label="动画：三个线程在 SCHED_RR 下轮流使用 CPU，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-rr-t" role="img" viewbox="0 0 800 380">
+<title id="sc-rr-t">甘特图：T1 需 50 ms、T2 需 20 ms、T3 需 30 ms，时间片 20 ms；T2 在 40 ms 结束，T3 在 90 ms，T1 在 100 ms</title>
+<text class="tm sm w" x="24" y="76">T1</text><text class="tm xs m" x="58" y="76">50 ms</text>
+<text class="tm sm w" x="24" y="126">T2</text><text class="tm xs m" x="58" y="126">20 ms</text>
+<text class="tm sm w" x="24" y="176">T3</text><text class="tm xs m" x="58" y="176">30 ms</text>
+<path class="ln thin m dash" d="M120 72 H760 M120 122 H760 M120 172 H760"></path>
+
+<path class="ln thin o" d="M120 220 H760"></path>
+<path class="ln thin o" d="M120 214v12M248 214v12M376 214v12M504 214v12M632 214v12M760 214v12"></path>
+<text class="tm xs o mid" x="120" y="244">0</text>
+<text class="tm xs o mid" x="248" y="244">20</text>
+<text class="tm xs o mid" x="376" y="244">40</text>
+<text class="tm xs o mid" x="504" y="244">60</text>
+<text class="tm xs o mid" x="632" y="244">80</text>
+<text class="tm xs o mid" x="760" y="244">100 ms</text>
+
+<rect class="bx g" data-hl="2" data-step="2" height="28" rx="3" width="128" x="120" y="58"></rect>
+<rect class="bx g" data-hl="3" data-step="3" height="28" rx="3" width="128" x="248" y="108"></rect>
+<text class="tm sm g" data-step="3" x="384" y="128">✓ 40</text>
+<rect class="bx g" data-hl="4" data-step="4" height="28" rx="3" width="128" x="376" y="158"></rect>
+<rect class="bx g" data-hl="5" data-step="5" height="28" rx="3" width="128" x="504" y="58"></rect>
+<rect class="bx g" data-hl="6" data-step="6" height="28" rx="3" width="64" x="632" y="158"></rect>
+<text class="tm sm g" data-step="6" x="702" y="178">✓ 90</text>
+<rect class="bx g" data-hl="7" data-step="7" height="28" rx="3" width="64" x="696" y="58"></rect>
+<text class="tm sm g end" data-step="7" x="690" y="48">✓ 100</text>
+
+<text class="tz sm y" x="24" y="300">cola de listos</text>
+<text class="tm y" data-out="2" x="160" y="300">T1 · T2 · T3</text>
+<text class="tm y" data-out="3" data-step="2" x="160" y="300">T2 · T3 · T1</text>
+<text class="tm y" data-out="4" data-step="3" x="160" y="300">T3 · T1</text>
+<text class="tm y" data-out="5" data-step="4" x="160" y="300">T1 · T3</text>
+<text class="tm y" data-out="6" data-step="5" x="160" y="300">T3 · T1</text>
+<text class="tm y" data-out="7" data-step="6" x="160" y="300">T1</text>
+<text class="tm m" data-step="7" x="160" y="300">（空）</text>
+<text class="tz sm m" data-out="7" x="24" y="340">剩余：</text>
+<text class="tm sm m" data-out="2" x="90" y="340">T1 50 · T2 20 · T3 30</text>
+<text class="tm sm m" data-out="3" data-step="2" x="90" y="340">T1 30 · T2 20 · T3 30</text>
+<text class="tm sm m" data-out="4" data-step="3" x="90" y="340">T1 30 · T2 0 · T3 30</text>
+<text class="tm sm m" data-out="5" data-step="4" x="90" y="340">T1 30 · T2 0 · T3 10</text>
+<text class="tm sm m" data-out="6" data-step="5" x="90" y="340">T1 10 · T2 0 · T3 10</text>
+<text class="tm sm m" data-out="7" data-step="6" x="90" y="340">T1 10 · T2 0 · T3 0</text>
+<text class="tz sm g" data-step="7" x="24" y="340">结束时刻：T2 = 40 ms，T3 = 90 ms，T1 = 100 ms</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">三个线程同优先级、同时就绪，排队顺序 T1、T2、T3，各需要 CPU 50、20、30 ms。单核、SCHED_RR、时间片 <span class="c-o">20 ms</span>。</li>
+<li>T1 先跑满一个时间片（0–20 ms），还剩 30 ms，排到队尾。</li>
+<li>T2 跑 20–40 ms，正好做完，在 <b>40 ms</b> 结束，离开队列。</li>
+<li>T3 跑 40–60 ms，还剩 10 ms，排到队尾。</li>
+<li>又轮到 T1：60–80 ms，还剩 10 ms，再排到队尾。</li>
+<li data-dur="4200">T3 只剩 10 ms，不足一个时间片：80–90 ms 做完就让出，<b>90 ms</b> 结束。时间片是上限，不是必须用满。</li>
+<li data-dur="4200">最后 T1 用 90–100 ms，<b>100 ms</b> 结束。如果换成 SCHED_FIFO，T1 会一口气跑到 50 ms，T2 在 70 ms、T3 在 100 ms 结束。</li>
+</ol>
+<p class="stage-note">忽略切换开销。数值只作演示。</p>
+</figure>
+<div class="drill" data-drill="rr"></div>
+<h3 id="s4b">在程序里设置策略和优先级</h3>
+<p>策略和优先级通过创建属性 <code>pthread_attr_t</code> 交给 <code>pthread_create</code>：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;sched.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">pthread_attr_t</span> attr;</span><span class="ln-row"><span class="kw">struct sched_param</span> sp = { .sched_priority = 20 };</span><span class="ln-row"> </span><span class="ln-row"><span class="fn">pthread_attr_init</span>(&amp;attr);                                  <span class="cm">// 先全部设为默认值</span></span><span class="ln-row"><span class="fn">pthread_attr_setinheritsched</span>(&amp;attr, PTHREAD_EXPLICIT_SCHED); <span class="cm">// 不继承创建者的策略</span></span><span class="ln-row"><span class="fn">pthread_attr_setschedpolicy</span>(&amp;attr, SCHED_RR);</span><span class="ln-row"><span class="fn">pthread_attr_setschedparam</span>(&amp;attr, &amp;sp);                    <span class="cm">// 注意传的是地址</span></span><span class="ln-row"><span class="kw">int</span> err = <span class="fn">pthread_create</span>(&amp;tid, &amp;attr, trabajo, NULL);    <span class="cm">// 没有权限时返回 EPERM</span></span><span class="ln-row"><span class="fn">pthread_attr_destroy</span>(&amp;attr);</span></code></pre>
+<ul>
+<li>Linux 默认让新线程<b>继承</b>创建者的调度设置，会忽略属性里的策略和优先级；所以要先用 <code>PTHREAD_EXPLICIT_SCHED</code> 关掉继承。</li>
+<li>运行中也可以改：<code>pthread_setschedparam(tid, SCHED_FIFO, &amp;sp)</code>，读出用 <code>pthread_getschedparam(tid, &amp;pol, &amp;sp)</code>。</li>
+<li><code>sched_yield()</code>：调用者主动让出 CPU，调度器马上运行下一个<b>同优先级</b>的就绪线程；没有这样的线程，它就立刻返回、继续运行。更低优先级的线程不会因此得到 CPU。配合 SCHED_FIFO，可以写出线程之间互相礼让的<b>协作式</b>调度。</li>
+</ul>
+<p class="takeaway">线程在运行、就绪、阻塞之间切换。SCHED_FIFO：按优先级，同级先来先跑、跑到阻塞或让出为止；SCHED_RR：再加一个时间片，同级轮转；SCHED_OTHER：默认的分时策略。实时策略要 root，并要关掉属性继承才生效；sched_yield 只让给同优先级。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>竞争条件与互斥量 <span class="tag">T2.8</span></h2>
+<p class="hook"><span class="zh">两个线程各执行一次 count = count + 1，count 一定多 2 吗？</span><span class="es">Condición de carrera y sección crítica.</span></p>
+<p>C 里的一行 <code>count = count + 1;</code>，到了 CPU 上是三条指令：从内存读进寄存器、寄存器加 1、写回内存。调度器可能在任意两条指令之间切换线程（多核上两个线程甚至真的同时在执行）。看两个线程撞在一起会发生什么：</p>
+<figure class="stage" data-scene="" id="sc-race">
+<div class="stage-title"><span>Escena 5 · actualización perdida</span><b>6 步</b></div>
+<div aria-label="动画：两个线程交错执行读-改-写，丢失一次更新，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-race-t" role="img" viewbox="0 0 800 400">
+<title id="sc-race-t">共享变量 count 初值 5；线程 A 读到 5 后被切换，线程 B 读 5、加 1、写回 6；A 恢复后也写回 6，结果是 6 而不是 7</title>
+<rect class="bx b" data-hl="4 5" height="78" rx="10" width="160" x="320" y="24"></rect>
+<text class="tm sm b mid" x="400" y="50">count</text>
+<text class="tm lg b mid" data-out="4" x="400" y="86">5</text>
+<text class="tm lg b mid" data-out="5" data-step="4" x="400" y="86">6</text>
+<text class="tm lg r mid" data-step="5" x="400" y="86">6</text>
+<text class="tz sm r" data-step="5" x="492" y="70">应为 7</text>
+
+<text class="tx sm g" x="40" y="140">hilo A</text>
+<text class="tm sm w" x="64" y="182">LDR r, [count]</text>
+<text class="tm sm w" x="64" y="217">ADD r, r, #1</text>
+<text class="tm sm w" x="64" y="252">STR r, [count]</text>
+<path class="sl y" d="M42 170 l12 6 l-12 6 z" data-out="3" data-step="2"></path>
+<path class="sl y" d="M42 240 l12 6 l-12 6 z" data-out="6" data-step="5"></path>
+<rect class="bx hollow b" height="40" rx="6" width="200" x="64" y="276"></rect>
+<text class="tm sm b" x="80" y="302">r =</text>
+<text class="tm b" data-out="2" x="130" y="303">?</text>
+<text class="tm b" data-out="5" data-step="2" x="130" y="303">5</text>
+<text class="tm y" data-step="5" x="130" y="303">6</text>
+
+<text class="tx sm t" x="520" y="140">hilo B</text>
+<text class="tm sm w" x="544" y="182">LDR r, [count]</text>
+<text class="tm sm w" x="544" y="217">ADD r, r, #1</text>
+<text class="tm sm w" x="544" y="252">STR r, [count]</text>
+<path class="sl y" d="M522 170 l12 6 l-12 6 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M522 240 l12 6 l-12 6 z" data-out="5" data-step="4"></path>
+<rect class="bx hollow b" height="40" rx="6" width="200" x="544" y="276"></rect>
+<text class="tm sm b" x="560" y="302">r =</text>
+<text class="tm b" data-out="3" x="610" y="303">?</text>
+<text class="tm b" data-out="4" data-step="3" x="610" y="303">5</text>
+<text class="tm y" data-step="4" x="610" y="303">6</text>
+
+<text class="tz sm m" x="40" y="366">CPU</text>
+<rect class="bx g" data-step="2" height="28" rx="3" width="140" x="100" y="348"></rect>
+<text class="tm xs g mid" data-step="2" x="170" y="367">A</text>
+<rect class="bx t" data-step="3" height="28" rx="3" width="200" x="240" y="348"></rect>
+<text class="tm xs t mid" data-step="3" x="340" y="367">B</text>
+<rect class="bx g" data-step="5" height="28" rx="3" width="140" x="440" y="348"></rect>
+<text class="tm xs g mid" data-step="5" x="510" y="367">A</text>
+<path class="ln thin r dash" d="M240 336 V388" data-step="3"></path>
+<path class="ln thin r dash" d="M440 336 V388" data-step="5"></path>
+<text class="tz sm y" data-step="6" x="600" y="367">读-改-写不是原子的</text>
+</svg>
+</div>
+<ol class="captions">
+<li>共享的全局变量 <code>count = 5</code>。两个线程都要执行 <code>count = count + 1</code>，编译成三条指令：读（LDR）、加（ADD）、写（STR）。每个线程有自己的寄存器 <code>r</code>。</li>
+<li>A 执行 LDR：把 5 读进自己的 r。</li>
+<li data-dur="4000">就在这时 A 的时间片用完了（或者被抢占），调度器切到 B。B 执行 LDR：也读到 <b>5</b>。</li>
+<li>B 一口气执行完 ADD、STR：count 变成 6。</li>
+<li data-dur="4200">A 恢复运行，接着它自己的寄存器往下做：r = 5 + 1 = 6，写回 count。B 的那次加 1 被覆盖掉了，结果是 <span class="c-r">6 而不是 7</span>：一次<b>更新丢失</b>。</li>
+<li data-dur="4400">结果取决于线程交错的时机，这就是 <b>condición de carrera</b>（竞争条件）。它不是每次都出现，所以很难调试。</li>
+</ol>
+<p class="stage-note">指令写成 ARM 汇编的形式，只为说明三步分开执行。</p>
+</figure>
+<p><b class="t">condición de carrera (ES) / race condition (EN)</b>——竞争条件：程序结果取决于几个线程执行的先后时机。访问共享数据、必须一口气做完不能被别人插进来的那段代码叫 <b class="t">sección crítica (ES) / critical section (EN)</b>——临界区。解决办法是保证同一时刻最多只有一个线程在临界区里：<b class="t">exclusión mutua (ES) / mutual exclusion (EN)</b>——互斥。POSIX 线程为此提供了 <b class="t">mutex</b>——互斥量。</p>
+<h3 id="s5b">pthread_mutex：一把锁</h3>
+<p>互斥量是一个由系统管理的变量，表示"这份资源现在被某个线程占着"。用法永远是三步：<code>lock</code> → 临界区 → <code>unlock</code>。</p>
+<figure class="stage" data-scene="" id="sc-mutex">
+<div class="stage-title"><span>Escena 5b · mutex lock / unlock</span><b>5 步</b></div>
+<div aria-label="动画：两个线程用互斥量排队进入临界区，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-mutex-t" role="img" viewbox="0 0 800 340">
+<title id="sc-mutex-t">A 先锁住互斥量进入临界区；B 请求同一个互斥量被阻塞并进入等待队列；A 解锁后 B 被唤醒、拿到锁；最后 count 正确地从 5 变成 7</title>
+<rect class="bx p" data-hl="2 4 5" height="76" rx="10" width="180" x="310" y="20"></rect>
+<text class="tm sm p mid" x="400" y="46">mutex m</text>
+<text class="tm m mid" data-out="2" x="400" y="80">libre</text>
+<text class="tm y mid" data-out="4" data-step="2" x="400" y="80">dueño: A</text>
+<text class="tm y mid" data-out="5" data-step="4" x="400" y="80">dueño: B</text>
+<text class="tm m mid" data-step="5" x="400" y="80">libre</text>
+<text class="tz sm p" x="510" y="46">cola de espera</text>
+<text class="tm sm r" data-out="4" data-step="3" x="510" y="80">B</text>
+
+<text class="tx sm g" x="24" y="190">A</text>
+<text class="tx sm t" x="24" y="270">B</text>
+<path class="ln thin m dash" d="M80 184 H770 M80 264 H770"></path>
+<rect class="bx g" height="28" rx="3" width="100" x="80" y="170"></rect>
+<rect class="bx g" height="28" rx="3" width="180" x="80" y="250"></rect>
+<g data-step="2">
+<path class="ln thin y" d="M180 160 V208"></path>
+<text class="tm xs y mid" x="180" y="152">lock</text>
+<rect class="bx y" height="28" rx="3" width="240" x="180" y="170"></rect>
+<text class="tm xs y mid" x="300" y="189">SC · count: 5 → 6</text>
+</g>
+<g data-step="3">
+<path class="ln thin r" d="M260 240 V288"></path>
+<text class="tm xs r mid" x="260" y="306">lock</text>
+<rect class="ln r dash" height="28" rx="3" width="160" x="260" y="250"></rect>
+<text class="tz sm r mid" x="340" y="270">bloqueado</text>
+</g>
+<g data-step="4">
+<path class="ln thin y" d="M420 160 V208"></path>
+<text class="tm xs y mid" x="420" y="152">unlock</text>
+<rect class="bx g" height="28" rx="3" width="350" x="420" y="170"></rect>
+<path class="ln g draw" d="M420 204 V244" marker-end="url(#t2-ah-g)"></path>
+<rect class="bx y" height="28" rx="3" width="180" x="420" y="250"></rect>
+<text class="tm xs y mid" x="510" y="269">SC · count: 6 → 7</text>
+</g>
+<g data-step="5">
+<path class="ln thin y" d="M600 240 V288"></path>
+<text class="tm xs y mid" x="600" y="306">unlock</text>
+<rect class="bx g" height="28" rx="3" width="170" x="600" y="250"></rect>
+<text class="tz sm g mid" x="400" y="128">两次加 1 都保住了：count = 7</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>互斥量 <code>m</code> 现在是空闲的。A、B 两个线程各自在运行，都要对 count 加 1。</li>
+<li>A 先调用 <code>pthread_mutex_lock(&amp;m)</code>：锁是空的，A 拿到它，进入临界区。</li>
+<li data-dur="4200">B 也调用 <code>pthread_mutex_lock(&amp;m)</code>：锁被 A 占着，B 被<span class="c-r">阻塞</span>，挂在 m 的等待队列里，不占 CPU。</li>
+<li data-dur="4200">A 做完，调用 <code>pthread_mutex_unlock(&amp;m)</code>。内核唤醒 B，B 的 lock 这才返回：锁现在归 B，B 进入临界区。</li>
+<li>B 解锁，m 又空了。两个线程的临界区没有重叠，两次加 1 都算数。</li>
+</ol>
+
+</figure>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">long</span> contador = 0;                                   <span class="cm">// 全局：所有线程共享</span></span><span class="ln-row"><span class="kw">pthread_mutex_t</span> m = PTHREAD_MUTEX_INITIALIZER;        <span class="cm">// 静态初始化，默认属性</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> *<span class="fn">sumar_mucho</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 1000000; i++) {</span><span class="ln-row">        <span class="fn">pthread_mutex_lock</span>(&amp;m);                     <span class="cm">// 进入临界区</span></span><span class="ln-row">        contador++;</span><span class="ln-row">        <span class="fn">pthread_mutex_unlock</span>(&amp;m);                   <span class="cm">// 离开临界区</span></span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">return</span> NULL;</span><span class="ln-row">}</span><span class="ln-row"><span class="cm">// 两个线程都执行 sumar_mucho，join 之后 contador == 2000000。</span></span><span class="ln-row"><span class="cm">// 去掉 lock/unlock 两行再试：结果通常小于 2000000，而且每次不一样。</span></span></code></pre>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>函数</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>PTHREAD_MUTEX_INITIALIZER</td><td>声明时静态初始化，属性全用默认值。简单，能用就用它。</td></tr>
+<tr><td>pthread_mutex_init(&amp;m, &amp;attr)</td><td>在代码里动态初始化，可以给非默认属性；<code>attr</code> 为 NULL 时等同于默认。</td></tr>
+<tr><td>pthread_mutex_lock(&amp;m)</td><td>拿锁；锁被别人占着就<b>阻塞</b>（线程睡眠），直到锁可用。成功返回 0。</td></tr>
+<tr><td>pthread_mutex_trylock(&amp;m)</td><td>试着拿锁；锁空着就拿到并返回 0；被占着就<b>立刻</b>返回非 0（EBUSY），不阻塞。</td></tr>
+<tr><td>pthread_mutex_unlock(&amp;m)</td><td>释放锁，唤醒一个等待者。成功返回 0。</td></tr>
+<tr><td>pthread_mutex_destroy(&amp;m)</td><td>不再使用时销毁，释放资源。</td></tr>
+</tbody>
+</table>
+</div>
+<p>互斥量的类型用 <code>pthread_mutexattr_settype(&amp;attr, tipo)</code> 设置，区别在于"用错了"时的反应：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>类型</th><th>同一线程再次 lock</th><th>解锁别人的锁 / 解锁未锁的锁</th></tr></thead>
+<tbody>
+<tr><td>PTHREAD_MUTEX_NORMAL</td><td>死锁（自己等自己）</td><td>行为未定义</td></tr>
+<tr><td>PTHREAD_MUTEX_ERRORCHECK</td><td>返回错误</td><td>返回错误</td></tr>
+<tr><td>PTHREAD_MUTEX_RECURSIVE</td><td>允许；锁几次就要解几次</td><td>返回错误</td></tr>
+<tr><td>PTHREAD_MUTEX_DEFAULT</td><td>未定义</td><td>未定义（通常等同 NORMAL）</td></tr>
+</tbody>
+</table>
+</div>
+<p>默认的互斥量只在同一进程的线程之间用（<code>PTHREAD_PROCESS_PRIVATE</code>）。设成 <code>PTHREAD_PROCESS_SHARED</code>（<code>pthread_mutexattr_setpshared</code>）可以在进程之间用，但互斥量本身必须放在几个进程都能访问的共享内存里（<code>mmap</code> 或 <code>shmat</code> 得到的内存）。</p>
+<div class="note warm">
+<span class="lbl">锁只是约定</span>
+<p>互斥量是<b>建议性</b>的，像交通信号灯：红灯提醒你停下，但路上没有栏杆。一个线程不调用 lock 就直接去改共享变量，没有任何东西能拦住它。所以规则要由程序员自己守住：<b>每一处</b>访问这份数据的代码，都要先拿同一把锁。</p>
+</div>
+<p class="takeaway">竞争条件来自"读-改-写"被其他线程插进来。把访问共享数据的代码放进临界区，用同一个 pthread_mutex 包住：lock 拿不到就睡，trylock 拿不到就返回，unlock 唤醒等待者。临界区要短，锁只是约定。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>同步：等到条件成立 <span class="tag">T2.9</span></h2>
+<p class="hook"><span class="zh">缓冲区空了，消费者该怎么等？一直 lock、检查、unlock 地转圈吗？</span><span class="es">Variables condicionales, semáforos y productor–consumidor.</span></p>
+<p>互斥量解决的是"别同时进来"。还有另一类问题："等某件事发生再继续"，比如消费者要等缓冲区里有数据。用互斥量反复检查（忙等）会白白烧 CPU。<b class="t">variable condicional (ES) / condition variable (EN)</b>——条件变量让线程<b>睡着等</b>，直到别的线程告诉它"条件可能成立了"。</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>函数</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>PTHREAD_COND_INITIALIZER</td><td>静态初始化；也可以用 <code>pthread_cond_init(&amp;c, NULL)</code>，用完 <code>pthread_cond_destroy</code>。</td></tr>
+<tr><td>pthread_cond_wait(&amp;c, &amp;m)</td><td>调用前必须已经锁住 <code>m</code>。它<b>原子地</b>释放 m 并让线程睡在 c 上；被唤醒后重新拿到 m 才返回。进、出这个函数时，线程都持有 m。</td></tr>
+<tr><td>pthread_cond_signal(&amp;c)</td><td>唤醒<b>至少一个</b>睡在 c 上的线程；没人在等就什么也不做（不会"记住"这次通知）。</td></tr>
+<tr><td>pthread_cond_broadcast(&amp;c)</td><td>唤醒<b>所有</b>睡在 c 上的线程，让它们各自重新检查条件。</td></tr>
+<tr><td>pthread_cond_timedwait(&amp;c, &amp;m, &amp;t)</td><td>和 wait 一样，但到了<b>绝对时刻</b> <code>t</code>（<code>struct timespec</code>）还没被唤醒，就返回 <code>ETIMEDOUT</code>。</td></tr>
+</tbody>
+</table>
+</div>
+<figure class="stage" data-scene="" id="sc-cond">
+<div class="stage-title"><span>Escena 6 · pthread_cond_wait / signal</span><b>5 步</b></div>
+<div aria-label="动画：消费者在条件变量上等待，生产者放入数据后唤醒它，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-cond-t" role="img" viewbox="0 0 800 360">
+<title id="sc-cond-t">消费者锁住 m，发现缓冲区为空，cond_wait 释放 m 并睡在 no_vacio 上；生产者锁住 m 放入一个数据并 signal；消费者被唤醒、重新拿到 m、取走数据</title>
+
+<text class="tx sm t" x="24" y="40">consumidor</text>
+<text class="tm xs w" x="44" y="80">lock(&amp;m);</text>
+<text class="tm xs w" x="44" y="108">while (n == 0)</text>
+<text class="tm xs w" x="44" y="136">  cond_wait(&amp;no_vacio, &amp;m);</text>
+<text class="tm xs w" x="44" y="164">x = tomar();</text>
+<text class="tm xs w" x="44" y="192">unlock(&amp;m);</text>
+<path class="sl y" d="M26 70 l11 6 l-11 6 z" data-out="2" data-step="1"></path>
+<path class="sl y" d="M26 126 l11 6 l-11 6 z" data-out="5" data-step="2"></path>
+<path class="sl y" d="M26 154 l11 6 l-11 6 z" data-step="5"></path>
+<text class="tz sm r" data-out="4" data-step="2" x="44" y="230">durmiendo · 不占 CPU</text>
+<text class="tz sm y" data-out="5" data-step="4" x="44" y="230">被唤醒 · 重新拿到 m</text>
+
+<text class="tx sm o" x="560" y="40">productor</text>
+<text class="tm xs w" x="580" y="80">lock(&amp;m);</text>
+<text class="tm xs w" x="580" y="108">poner(x);</text>
+<text class="tm xs w" x="580" y="136">cond_signal(&amp;no_vacio);</text>
+<text class="tm xs w" x="580" y="164">unlock(&amp;m);</text>
+<path class="sl y" d="M562 98 l11 6 l-11 6 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M562 154 l11 6 l-11 6 z" data-out="5" data-step="4"></path>
+
+<text class="tz sm b mid" x="400" y="40">buffer</text>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="320" y="56"></rect>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="360" y="56"></rect>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="400" y="56"></rect>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="440" y="56"></rect>
+<rect class="bx b" data-out="5" data-step="3" height="32" rx="3" width="32" x="324" y="60"></rect>
+<text class="tm sm b mid" data-out="3" x="400" y="120">n = 0</text>
+<text class="tm sm b mid" data-out="5" data-step="3" x="400" y="120">n = 1</text>
+<text class="tm sm b mid" data-step="5" x="400" y="120">n = 0</text>
+
+<rect class="bx hollow p" data-hl="2 3 4 5" height="44" rx="8" width="140" x="330" y="150"></rect>
+<text class="tm sm y mid" data-out="2" data-step="1" x="400" y="177">m: consumidor</text>
+<text class="tm sm m mid" data-out="3" data-step="2" x="400" y="177">m: libre</text>
+<text class="tm sm y mid" data-out="4" data-step="3" x="400" y="177">m: productor</text>
+<text class="tm sm y mid" data-out="5" data-step="4" x="400" y="177">m: consumidor</text>
+<text class="tm sm m mid" data-step="5" x="400" y="177">m: libre</text>
+
+<rect class="bx p" data-hl="2 4" height="56" rx="8" width="180" x="310" y="240"></rect>
+<text class="tm sm p mid" x="400" y="262">no_vacio</text>
+<text class="tm xs r mid" data-out="4" data-step="2" x="400" y="284">consumidor esperando</text>
+<text class="tm xs m mid" data-out="2" x="400" y="284">（无人等待）</text>
+<text class="tm xs m mid" data-step="4" x="400" y="284">（无人等待）</text>
+<path class="ln r draw" d="M250 132 C 280 170, 280 250, 306 262" data-out="4" data-step="2" marker-end="url(#t2-ah-r)"></path>
+<path class="ln g draw" d="M576 140 C 540 200, 520 250, 494 262" data-out="5" data-step="4" marker-end="url(#t2-ah-g)"></path>
+<text class="tz sm g" data-out="5" data-step="4" x="510" y="320">signal</text>
+<text class="tz sm y mid" data-step="5" x="400" y="340">醒来后再检查一次条件，才去取数据</text>
+</svg>
+</div>
+<ol class="captions">
+<li>缓冲区是空的（n = 0）。消费者先 <code>lock(&amp;m)</code>，在锁的保护下检查条件。</li>
+<li data-dur="4600"><code>n == 0</code>，于是调用 <code>pthread_cond_wait(&amp;no_vacio, &amp;m)</code>：<b>同时</b>做两件事——释放 m，并让自己睡在条件变量 no_vacio 上。如果不释放 m，生产者就永远进不来。</li>
+<li>生产者拿到空出来的 m，放入一个数据，n = 1。</li>
+<li data-dur="4600">生产者 <code>pthread_cond_signal(&amp;no_vacio)</code> 叫醒消费者，再 <code>unlock</code>。消费者醒来后要<b>先重新拿到 m</b>，cond_wait 才返回。</li>
+<li data-dur="4400">回到 <code>while</code>：再检查一次 <code>n == 0</code>，这次不成立，取走数据，n = 0，解锁。用 <code>while</code> 而不是 <code>if</code>，是因为醒来时条件不一定还成立。</li>
+</ol>
+</figure>
+<div class="note alert">
+<span class="lbl">为什么一定是 while</span>
+<p>被唤醒不等于条件成立：可能有另一个消费者抢先一步把数据取走了；被 broadcast 叫醒的线程只有一个能如愿；系统也允许 <b class="t">despertar espurio (ES) / spurious wakeup (EN)</b>——虚假唤醒，即没人 signal 也醒了。所以条件变量的标准写法是 <code>while (!条件) pthread_cond_wait(...)</code>：醒来就重新检查，不成立就接着睡。</p>
+</div>
+<h3 id="s6b">生产者–消费者</h3>
+<p>经典问题：一个或多个 <b class="t">productor (ES) / producer (EN)</b>——生产者往一个大小为 N 的环形缓冲区里放数据，一个或多个 <b class="t">consumidor (ES) / consumer (EN)</b>——消费者往外取。满了生产者要等，空了消费者要等。用一个互斥量加两个条件变量：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#define N 8</span></span><span class="ln-row"><span class="kw">int</span> buf[N], ini = 0, fin = 0, n = 0;</span><span class="ln-row"><span class="kw">pthread_mutex_t</span> m        = PTHREAD_MUTEX_INITIALIZER;</span><span class="ln-row"><span class="kw">pthread_cond_t</span>  no_vacio = PTHREAD_COND_INITIALIZER;   <span class="cm">// "有数据了"</span></span><span class="ln-row"><span class="kw">pthread_cond_t</span>  no_lleno = PTHREAD_COND_INITIALIZER;   <span class="cm">// "有空位了"</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">poner</span>(<span class="kw">int</span> x) {                              <span class="cm">// 生产者调用</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">while</span> (n == N)</span><span class="ln-row">        <span class="fn">pthread_cond_wait</span>(&amp;no_lleno, &amp;m);</span><span class="ln-row">    buf[fin] = x;  fin = (fin + 1) % N;  n++;</span><span class="ln-row">    <span class="fn">pthread_cond_signal</span>(&amp;no_vacio);</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">tomar</span>(<span class="kw">void</span>) {                                <span class="cm">// 消费者调用</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">while</span> (n == 0)</span><span class="ln-row">        <span class="fn">pthread_cond_wait</span>(&amp;no_vacio, &amp;m);</span><span class="ln-row">    <span class="kw">int</span> x = buf[ini];  ini = (ini + 1) % N;  n--;</span><span class="ln-row">    <span class="fn">pthread_cond_signal</span>(&amp;no_lleno);</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">return</span> x;</span><span class="ln-row">}</span></code></pre>
+<p>顺序是：先在锁里<b>改状态</b>（n++），再 signal。等待的一方总是用 while 检查状态，所以 signal 和改状态谁先谁后（只要都在锁里）不影响正确性。几个线程在等不同的条件、或者一次放进很多数据时，用 broadcast 更稳妥。</p>
+<p>带超时的等待要给<b>绝对时间</b>：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct timespec</span> t;</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_REALTIME, &amp;t);</span><span class="ln-row">t.tv_sec += 2;                                     <span class="cm">// 最多等 2 秒</span></span><span class="ln-row"><span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row"><span class="kw">while</span> (n == 0) {</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">pthread_cond_timedwait</span>(&amp;no_vacio, &amp;m, &amp;t) == ETIMEDOUT)</span><span class="ln-row">        <span class="kw">break</span>;                                     <span class="cm">// 超时：n 可能仍是 0</span></span><span class="ln-row">}</span><span class="ln-row"><span class="fn">pthread_mutex_unlock</span>(&amp;m);</span></code></pre>
+<h3 id="s6c">信号量 sem_t</h3>
+<p><b class="t">semáforo (ES) / semaphore (EN)</b>——信号量是一个不会小于 0 的计数器，有两个原子操作：<code>sem_wait</code>（P 操作）把它减 1，已经是 0 就阻塞到别人加上来；<code>sem_post</code>（V 操作）把它加 1，唤醒一个等待者。初值为 1、只在 0 和 1 之间变化时，它就是一把锁；初值为 N 时，它数的是"还剩几份资源"。和条件变量不同，信号量<b>记得</b>每一次 post，即使当时没人在等。</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>函数（&lt;semaphore.h&gt;）</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>sem_init(&amp;s, pshared, valor)</td><td>初始化为 <code>valor</code>。<code>pshared = 0</code>：只在本进程的线程间用；非 0：进程间共享（要放在共享内存里）。</td></tr>
+<tr><td>sem_wait(&amp;s)</td><td>s &gt; 0 就减 1 返回；s = 0 就阻塞。<code>sem_trywait</code> 不阻塞，<code>sem_timedwait</code> 带绝对超时。</td></tr>
+<tr><td>sem_post(&amp;s)</td><td>加 1，有线程在等就唤醒一个。</td></tr>
+<tr><td>sem_destroy(&amp;s)</td><td>销毁。</td></tr>
+</tbody>
+</table>
+</div>
+<p>用信号量写同一个生产者–消费者：一个信号量数空位，一个数数据，互斥量只保护下标：</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;semaphore.h&gt;</span></span><span class="ln-row"><span class="kw">sem_t</span> huecos, datos;</span><span class="ln-row"><span class="fn">sem_init</span>(&amp;huecos, 0, N);                         <span class="cm">// 一开始有 N 个空位</span></span><span class="ln-row"><span class="fn">sem_init</span>(&amp;datos,  0, 0);                         <span class="cm">// 一开始没有数据</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">poner</span>(<span class="kw">int</span> x) {</span><span class="ln-row">    <span class="fn">sem_wait</span>(&amp;huecos);                            <span class="cm">// 等一个空位</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    buf[fin] = x;  fin = (fin + 1) % N;</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">    <span class="fn">sem_post</span>(&amp;datos);                             <span class="cm">// 多了一个数据</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">tomar</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fn">sem_wait</span>(&amp;datos);                             <span class="cm">// 等一个数据</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">int</span> x = buf[ini];  ini = (ini + 1) % N;</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">    <span class="fn">sem_post</span>(&amp;huecos);                            <span class="cm">// 多了一个空位</span></span><span class="ln-row">    <span class="kw">return</span> x;</span><span class="ln-row">}</span></code></pre>
+<p>注意 sem_wait 放在 lock <b>外面</b>：如果先拿锁再在 sem_wait 上睡着，另一方就拿不到锁去 post，两边都卡住（这就是 §7 的死锁）。</p>
+<p class="takeaway">条件变量：锁住、while 检查、不成立就 cond_wait（原子地放锁睡觉，醒来重新拿锁）；另一方改完状态 signal 或 broadcast。信号量：一个计数器，sem_wait 减、sem_post 加，适合数资源。生产者–消费者 = 互斥量保护缓冲区 + 两个"等待条件"（有空位、有数据）。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>死锁与常见错误 <span class="tag">T2.10</span></h2>
+<p class="hook"><span class="zh">两个线程都在等对方先放手。谁会先放？</span><span class="es">Bloqueo mutuo (deadlock).</span></p>
+<p>一个线程需要同时拿两把锁时，问题就来了。线程 1 先锁 A 再锁 B，线程 2 先锁 B 再锁 A：</p>
+<figure class="stage" data-scene="" id="sc-deadlock">
+<div class="stage-title"><span>Escena 7 · deadlock</span><b>5 步</b></div>
+<div aria-label="动画：两个线程按相反顺序加锁形成死锁，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-deadlock-t" role="img" viewbox="0 0 800 340">
+<title id="sc-deadlock-t">T1 持有 A 等待 B，T2 持有 B 等待 A，形成环；改成两个线程都先锁 A 再锁 B 就不会成环</title>
+<rect class="bx p" data-hl="4" height="56" rx="8" width="120" x="340" y="40"></rect>
+<text class="tm p mid" x="400" y="75">mutex A</text>
+<rect class="bx p" data-hl="3" height="56" rx="8" width="120" x="340" y="244"></rect>
+<text class="tm p mid" x="400" y="279">mutex B</text>
+<circle class="bx g" cx="150" cy="170" data-hl="3" r="44"></circle>
+<text class="tm g mid" x="150" y="176">T1</text>
+<circle class="bx t" cx="650" cy="170" data-hl="4" r="44"></circle>
+<text class="tm t mid" x="650" y="176">T2</text>
+<g data-step="1">
+<path class="ln g draw" d="M338 70 C 260 74, 210 100, 180 132" marker-end="url(#t2-ah-g)"></path>
+<text class="tz sm g" x="200" y="88">tiene</text>
+</g>
+<g data-step="2">
+<path class="ln g draw" d="M462 272 C 540 266, 592 240, 620 208" marker-end="url(#t2-ah-g)"></path>
+<text class="tz sm g" x="556" y="274">tiene</text>
+</g>
+<g data-out="5" data-step="3">
+<path class="ln r dash draw" d="M180 208 C 210 240, 270 266, 336 270" marker-end="url(#t2-ah-r)"></path>
+<text class="tz sm r" x="168" y="262">espera B</text>
+</g>
+<g data-out="5" data-step="4">
+<path class="ln r dash draw" d="M620 132 C 590 100, 540 74, 464 70" marker-end="url(#t2-ah-r)"></path>
+<text class="tz sm r" x="566" y="80">espera A</text>
+<text class="tz sm r mid" x="400" y="176">环：谁也走不动</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" x="400" y="160">两个线程都按 A → B 的顺序加锁：</text>
+<text class="tz sm y mid" x="400" y="190">先拿到 A 的那个一定能再拿到 B</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>T1 执行 <code>lock(&amp;A)</code>，拿到 A，开始改 A 保护的数据。</li>
+<li>同时 T2 执行 <code>lock(&amp;B)</code>，拿到 B。</li>
+<li>T1 接着要 B：<code>lock(&amp;B)</code>。B 在 T2 手里，T1 阻塞。</li>
+<li data-dur="4600">T2 接着要 A：<code>lock(&amp;A)</code>。A 在 T1 手里，T2 也阻塞。两个线程互相等待对方的 unlock，而 unlock 永远执行不到：<b>deadlock</b>（死锁）。</li>
+<li data-dur="4600">最简单的预防：给所有锁定一个顺序，每个线程都按这个顺序加锁（这里都先 A 后 B）。这样等待关系不可能成环。</li>
+</ol>
+
+</figure>
+<p>另一种办法是"拿不到就退"：先拿一把锁，第二把用 <code>pthread_mutex_trylock</code>；拿不到就把手里那把也放掉，从头再来：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;B);</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">pthread_mutex_trylock</span>(&amp;A) == 0)</span><span class="ln-row">        <span class="kw">break</span>;                          <span class="cm">// 两把都拿到了</span></span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;B);          <span class="cm">// 没拿到 A：放掉 B，让对方先走</span></span><span class="ln-row">}</span><span class="ln-row"><span class="cm">/* 使用两份资源 */</span></span><span class="ln-row"><span class="fn">pthread_mutex_unlock</span>(&amp;A);</span><span class="ln-row"><span class="fn">pthread_mutex_unlock</span>(&amp;B);</span></code></pre>
+<p>这样不会死锁，但两个线程可能一直互相礼让、谁也做不成事，所以加锁顺序仍然是首选。</p>
+<h3 id="s7b">常见错误一览</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>现象</th><th>原因与改法</th></tr></thead>
+<tbody>
+<tr><td>线程没执行就结束了</td><td><code>main</code> 返回或调用了 <code>exit</code>，整个进程结束。用 <code>pthread_join</code>，或让 main 调用 <code>pthread_exit</code>（§3）。</td></tr>
+<tr><td>链接错误 undefined reference to pthread_create</td><td>编译时少了 <code>-lpthread</code> / <code>-pthread</code>（§3）。</td></tr>
+<tr><td>几个线程拿到同一个参数</td><td>传了循环变量的地址 <code>&amp;i</code>。每个线程给一份自己的参数（§3）。</td></tr>
+<tr><td>结果偶尔不对、每次不一样</td><td>共享数据没加锁，或者有一处访问忘了加锁（§5）。</td></tr>
+<tr><td>程序卡住不动</td><td>死锁：加锁顺序不一致；或者在持有锁时阻塞在别的等待上；或者 NORMAL 型互斥量被同一线程 lock 了两次。</td></tr>
+<tr><td>忘了 unlock</td><td>临界区里提前 <code>return</code> 或 <code>break</code>，锁没放。每条离开临界区的路径都要 unlock。</td></tr>
+<tr><td>消费者醒来却没数据</td><td>用了 <code>if</code> 而不是 <code>while</code> 包 <code>pthread_cond_wait</code>（§6）。</td></tr>
+<tr><td>通知丢了，线程一直睡</td><td>先 signal、后才有人 wait：条件变量不记账。等待前先在锁里检查状态（§6）。</td></tr>
+<tr><td>CPU 占用 100%</td><td>用循环反复检查一个标志（忙等）。改用条件变量、信号量或阻塞调用。</td></tr>
+<tr><td>其他线程很久得不到 CPU</td><td>SCHED_FIFO 的高优先级线程从不阻塞、从不让出（§4）。</td></tr>
+</tbody>
+</table>
+</div>
+<p class="takeaway">死锁 = 几个线程各持有一份资源、又在等别人手里的那份，形成环。预防：所有线程按同一顺序加锁；或者用 trylock 拿不到就全部放掉重来。持锁时间要短，持锁时不要去等别的事。</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">2 种题型</span></h2>
+<p class="aside">按本章的规则随机出数，每次都不一样，重点是方法。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="fork"></div>
+<div class="drill" data-drill="rr"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="T2">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>父进程里 <code>int x = 5;</code>，然后 <code>fork()</code>。子进程执行 <code>x = 9;</code> 后退出，父进程 <code>wait</code> 之后打印 x。打印的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>9，因为父子共享全局和局部变量</button>
+<button data-o="b" type="button"><span class="k">B</span>5，因为子进程改的是自己的副本</button>
+<button data-o="c" type="button"><span class="k">C</span>不确定，取决于调度顺序</button>
+<button data-o="d" type="button"><span class="k">D</span>0，fork 会把子进程的变量清零</button>
+</div>
+<p class="why"><b>B。</b>fork 复制整个用户空间，之后两份内存互相独立（§2）。线程才共享变量。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>在子进程里，<code>fork()</code> 的返回值是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>子进程自己的 PID</button>
+<button data-o="b" type="button"><span class="k">B</span>父进程的 PID</button>
+<button data-o="c" type="button"><span class="k">C</span>0</button>
+<button data-o="d" type="button"><span class="k">D</span>−1</button>
+</div>
+<p class="why"><b>C。</b>父进程得到子进程的 PID（&gt; 0），子进程得到 0；−1 表示失败，只在父进程出现（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span><code>execl("/bin/date", "date", (char *)0);</code> 之后紧跟着一行 <code>printf("listo\n");</code>。什么时候会打印 listo？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>总是打印，在 date 的输出之后</button>
+<button data-o="b" type="button"><span class="k">B</span>总是打印，在 date 的输出之前</button>
+<button data-o="c" type="button"><span class="k">C</span>只有 date 正常结束时才打印</button>
+<button data-o="d" type="button"><span class="k">D</span>只有 execl 失败时才打印</button>
+</div>
+<p class="why"><b>D。</b>exec 成功时当前程序被替换，不再返回；能执行到下一行说明 exec 失败了。想保留调用者，用 posix_spawn 或 fork + exec（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>同一进程的两个线程执行同一个函数。哪一种变量<b>不是</b>两个线程共享的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>函数里的普通局部变量</button>
+<button data-o="b" type="button"><span class="k">B</span>全局变量</button>
+<button data-o="c" type="button"><span class="k">C</span>函数里声明为 static 的局部变量</button>
+<button data-o="d" type="button"><span class="k">D</span>malloc 得到、地址传给两个线程的内存</button>
+</div>
+<p class="why"><b>A。</b>普通局部变量在各自的栈上；static 局部变量只有一份，全局变量和堆也是共享的（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span><code>main</code> 调用 <code>pthread_create</code> 创建一个线程后，紧接着 <code>return 0;</code>。会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>主线程结束，新线程继续运行到自己结束</button>
+<button data-o="b" type="button"><span class="k">B</span>整个进程结束，新线程可能一行都没执行</button>
+<button data-o="c" type="button"><span class="k">C</span>return 会阻塞，直到新线程结束</button>
+<button data-o="d" type="button"><span class="k">D</span>编译器报错，必须先 join</button>
+</div>
+<p class="why"><b>B。</b>main 返回相当于 exit，进程连同所有线程一起结束。要等就 join，或让 main 调用 pthread_exit（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>线程函数最后执行 <code>pthread_exit(p);</code>。另一个线程怎样拿到 p？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>p = pthread_join(tid, NULL);</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>pthread_create</code> 的返回值</button>
+<button data-o="c" type="button"><span class="k">C</span><code>void *r; pthread_join(tid, &amp;r);</code>，r 就是 p</button>
+<button data-o="d" type="button"><span class="k">D</span><code>pthread_self()</code></button>
+</div>
+<p class="why"><b>C。</b>pthread_join 的第二个参数是 <code>void **</code>，用来接收线程返回或传给 pthread_exit 的指针；函数本身返回 0 或错误码（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>SCHED_FIFO 和 SCHED_RR 的区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>FIFO 不看优先级，RR 看优先级</button>
+<button data-o="b" type="button"><span class="k">B</span>FIFO 是默认策略，RR 需要 root</button>
+<button data-o="c" type="button"><span class="k">C</span>RR 的优先级会随运行时间自动变化</button>
+<button data-o="d" type="button"><span class="k">D</span>RR 给同优先级的线程加了时间片，用完排到队尾；FIFO 一直运行到阻塞或让出</button>
+</div>
+<p class="why"><b>D。</b>两者都按固定优先级选线程；RR 只多了一个时间限制。默认策略是 SCHED_OTHER（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>两个线程各对全局变量 <code>c</code>（初值 0）执行 1000 次 <code>c++</code>，没有加锁。join 之后 c 的值是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>不超过 2000，可能小于 2000，每次运行可能不同</button>
+<button data-o="b" type="button"><span class="k">B</span>一定是 2000</button>
+<button data-o="c" type="button"><span class="k">C</span>一定是 1000</button>
+<button data-o="d" type="button"><span class="k">D</span>可能大于 2000</button>
+</div>
+<p class="why"><b>A。</b>c++ 是读-改-写三步，交错时一次加法会被另一次覆盖（丢失更新），不会凭空多加（§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>互斥量已经被另一个线程锁住，此时调用 <code>pthread_mutex_trylock(&amp;m)</code>，会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>阻塞，直到锁被释放</button>
+<button data-o="b" type="button"><span class="k">B</span>立刻返回非 0 值，调用者继续执行，没有拿到锁</button>
+<button data-o="c" type="button"><span class="k">C</span>强行抢走锁</button>
+<button data-o="d" type="button"><span class="k">D</span>返回 0，并在锁释放时自动拿到它</button>
+</div>
+<p class="why"><b>B。</b>trylock 是不阻塞的 lock：拿到返回 0，拿不到马上返回非 0（EBUSY）（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>调用 <code>pthread_cond_wait(&amp;c, &amp;m)</code> 时发生了什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>线程拿着 m 睡在 c 上，别的线程进不了临界区</button>
+<button data-o="b" type="button"><span class="k">B</span>先检查条件，不成立才睡</button>
+<button data-o="c" type="button"><span class="k">C</span>原子地释放 m 并睡在 c 上；被唤醒后重新拿到 m 才返回</button>
+<button data-o="d" type="button"><span class="k">D</span>释放 m 并睡在 c 上；返回时不持有 m，要自己再 lock</button>
+</div>
+<p class="why"><b>C。</b>进、出 cond_wait 时线程都持有 m；睡着期间 m 是放开的，另一方才能进来改状态（§6）。条件要由调用者自己用 while 检查。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>为什么 <code>pthread_cond_wait</code> 要写在 <code>while (n == 0)</code> 里，而不是 <code>if (n == 0)</code>？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>while 更快</button>
+<button data-o="b" type="button"><span class="k">B</span>if 会让 cond_wait 无法释放锁</button>
+<button data-o="c" type="button"><span class="k">C</span>这只是风格问题，两种写法等价</button>
+<button data-o="d" type="button"><span class="k">D</span>醒来时条件不一定成立：别的线程可能先取走了数据，也可能是虚假唤醒</button>
+</div>
+<p class="why"><b>D。</b>醒来就重新检查，不成立就接着睡（§6）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>T1 依次 lock(A)、lock(B)，T2 依次 lock(B)、lock(A)，程序偶尔卡死。最直接的改法是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>让两个线程都按 A、B 的顺序加锁</button>
+<button data-o="b" type="button"><span class="k">B</span>把两个互斥量都改成 RECURSIVE 类型</button>
+<button data-o="c" type="button"><span class="k">C</span>在两次 lock 之间加 sched_yield()</button>
+<button data-o="d" type="button"><span class="k">D</span>把 T1 的优先级调高</button>
+</div>
+<p class="why"><b>A。</b>统一加锁顺序，等待关系就不会成环。RECURSIVE 只允许同一线程重复加锁，yield 和优先级只改变出现的概率（§7）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">proceso<small>process · PID</small></span><span class="back"><b>进程</b><br/>运行中的程序：独立的地址空间、资源和至少一个线程。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hilo<small>thread</small></span><span class="back"><b>线程</b><br/>进程里的一条执行线；共享地址空间，私有栈和寄存器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">grano grueso / fino<small>coarse / fine-grained multitasking</small></span><span class="back"><b>粗 / 细粒度多任务</b><br/>多个进程（隔离）/ 一个进程里的多个线程（共享）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">concurrencia<small>concurrency vs parallelism</small></span><span class="back"><b>并发</b><br/>几件事交替推进；多核上同时执行才是并行。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fork()<small>bifurcación</small></span><span class="back"><b>复制进程</b><br/>父进程得到子进程 PID，子进程得到 0，失败 −1。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">exec*()<small>execl · execv · execvp…</small></span><span class="back"><b>替换程序</b><br/>用另一个程序替换当前进程；成功时不返回。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">wait / waitpid<small>+ exit(status)</small></span><span class="back"><b>等待子进程</b><br/>阻塞到子进程结束，取回它的退出状态。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">proceso zombi<small>zombie process</small></span><span class="back"><b>僵尸进程</b><br/>已经结束、但父进程还没 wait 的子进程。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_create<small>pthread_t · void *(*)(void *)</small></span><span class="back"><b>创建线程</b><br/>在新线程里执行 f(arg)；成功返回 0。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_join<small>pthread_exit</small></span><span class="back"><b>等待线程</b><br/>阻塞到线程结束，并取回它返回的 void *。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">planificador<small>scheduler · SCHED_FIFO / RR / OTHER</small></span><span class="back"><b>调度器</b><br/>决定哪个就绪线程用 CPU；RR 有时间片，OTHER 是默认。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">rodaja de tiempo<small>quantum · time slice</small></span><span class="back"><b>时间片</b><br/>线程一次最多连续运行的时间，用完让给下一个。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">condición de carrera<small>race condition</small></span><span class="back"><b>竞争条件</b><br/>结果取决于线程交错的时机，例如丢失更新。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mutex<small>sección crítica · critical section</small></span><span class="back"><b>互斥量</b><br/>lock / unlock 包住临界区，同一时刻只放一个线程进去。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">variable condicional<small>condition variable</small></span><span class="back"><b>条件变量</b><br/>cond_wait 放锁睡觉、等 signal / broadcast；外面套 while。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">interbloqueo<small>deadlock · bloqueo mutuo</small></span><span class="back"><b>死锁</b><br/>线程互相等待对方手里的资源，形成环；统一加锁顺序可避免。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="T2"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

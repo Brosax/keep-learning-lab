@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T3 Signals and POSIX Timers · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp td.num { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp .bad { color: var(--red); }
+.code .st { color: var(--st-teal); }
+.cell.m { border-top: 3px solid var(--muted); }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t3-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t3-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t3-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t3-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="Back to OpenSEEI Portal">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>Interactive Notes</a></span>
+<nav aria-label="Temas" class="chain" data-chain="T3"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Señales y temporización POSIX</div>
+<h1>Señales y temporización POSIX</h1>
+<p class="zh">Signals and timers: enabling processes to act at the right moment</p>
+<div class="meta">
+
+
+
+<span><b>10</b> Key Points</span>
+<span>Approx. 30 min read</span>
+
+
+</div>
+<p class="lede">On microcontrollers, timer overflows directly interrupt the CPU. On boards running Linux, hardware interrupts are owned strictly by the kernel and inaccessible to user space. The kernel transforms events such as "time expired", "another process wants your attention", or "invalid memory access" into <b class="t">signals (EN) / señales (ES)</b> sent to processes. This chapter examines how signals are generated, delivered, handled, and masked; how POSIX reads system clocks, sleeps, and creates timers; and why periodic tasks suffer from drift and how absolute timing eliminates it.</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>Key Takeaways <span class="tag">Chapter Objectives</span></h2>
+<p>Here are the core concepts to master in this chapter. After reading each section, self-assess your understanding and click the button on the right to track your progress.</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T3.1</span>
+<div class="txt"><span>State what a signal is and contrast it with hardware interrupts; list signal sources (kernel, other processes via kill, terminal, timers)</span><span class="es">Señal: evento software asíncrono; fuentes de señal.</span><a href="#s1">→ §1 What Signals Are</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.1" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.2</span>
+<div class="txt"><span>Identify the three dispositions upon receiving a signal and default actions of common signals; name the two signals that cannot be caught, blocked, or ignored</span><span class="es">Acción por defecto, ignorar, capturar; SIGKILL y SIGSTOP.</span><a href="#s1">→ §1 What Signals Are</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.2" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.3</span>
+<div class="txt"><span>Install handlers using signal(), restore defaults or ignore with SIG_DFL / SIG_IGN; send signals via kill and raise, and wait with pause</span><span class="es">signal, kill, raise, pause.</span><a href="#s2">→ §2 Catching Signals</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.3" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.4</span>
+<div class="txt"><span>Install handlers using sigaction: sa_handler vs. sa_sigaction, SA_SIGINFO, sa_mask, and key sa_flags; explain why handlers must only call async-signal-safe functions</span><span class="es">sigaction, siginfo_t, sa_flags; funciones async-signal-safe.</span><a href="#s2">→ §2 Catching Signals</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.4" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.5</span>
+<div class="txt"><span>Distinguish blocking from ignoring; protect critical sections using sigset_t functions and sigprocmask (SIG_BLOCK / SIG_UNBLOCK / SIG_SETMASK); explain sigpending and sigsuspend</span><span class="es">Máscara de señales: sigprocmask, señales pendientes.</span><a href="#s3">→ §3 Masking and Blocking</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.5" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.6</span>
+<div class="txt"><span>In multithreaded programs, block signals with pthread_sigmask and wait synchronously in a dedicated thread using sigwait / sigwaitinfo</span><span class="es">pthread_sigmask, sigwait, sigwaitinfo.</span><a href="#s3b">→ §3 Signals in Threads</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.6" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.7</span>
+<div class="txt"><span>State the three differences between real-time and standard signals (queuing, order preservation, payload data); format SIGRTMIN + n numbers; pass data using sigqueue and si_value</span><span class="es">Señales de tiempo real: SIGRTMIN…SIGRTMAX, sigqueue, si_value.</span><a href="#s4">→ §4 Real-Time Signals</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.7" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.8</span>
+<div class="txt"><span>Distinguish CLOCK_REALTIME vs. CLOCK_MONOTONIC; measure elapsed time with clock_gettime and perform timespec addition with carry; compare sleep, usleep, nanosleep, clock_nanosleep</span><span class="es">Relojes POSIX, struct timespec, retardos.</span><a href="#s5">→ §5 Clocks and Sleeping</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.8" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.9</span>
+<div class="txt"><span>Create single-shot and periodic timers using timer_create (struct sigevent: SIGEV_SIGNAL / SIGEV_THREAD / SIGEV_NONE) and timer_settime (struct itimerspec: it_value / it_interval); explain overrun and compare with alarm / setitimer</span><span class="es">Temporizadores POSIX: timer_create, timer_settime, timer_getoverrun.</span><a href="#s6">→ §6 POSIX Timers</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.9" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T3.10</span>
+<div class="txt"><span>Distinguish local drift vs. cumulative drift; explain why relative sleeping accumulates timing errors, and how absolute timing (TIMER_ABSTIME) eliminates cumulative drift</span><span class="es">Deriva local y deriva acumulativa; temporización absoluta.</span><a href="#s7">→ §7 Drift</a></div>
+<button aria-pressed="false" class="chk" data-obj="T3.10" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T3"><span class="val">0 / 10 Mastered</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>What Signals Are <span class="tag">T3.1 · T3.2</span></h2>
+<p class="hook"><span class="zh">Hardware interrupts belong to the kernel. How does a user process know when "time is up"?</span><span class="es">Una señal es una interrupción software que el kernel envía a un proceso.</span></p>
+<p>A signal is an asynchronous software notification delivered to a process: while the process executes normal instructions, arrival of a signal causes control flow to jump to a predefined function, returning to the interrupted location upon completion. While conceptually similar to hardware interrupts, the fundamental distinction lies in <b>who generates the event and who receives it</b>:</p>
+<div class="grid2">
+<div class="cell r">
+<span class="k c-r">hardware</span>
+<h3>Interrupt · interrupción</h3>
+<p>Generated by <b>physical hardware</b> and delivered to the <b>CPU</b>. On Linux, only kernel device drivers can handle physical interrupts directly.</p>
+</div>
+<div class="cell p">
+<span class="k c-p">software</span>
+<h3>Signal · señal</h3>
+<p>Generated by the <b>kernel or another process</b> and delivered to a specific <b>process</b>. When a hardware timer expires, the kernel handles the interrupt and generates a signal on behalf of the clock.</p>
+</div>
+</div>
+<p>Why this layer of indirection? The physical board has only a single hardware timer generating one type of interrupt. The kernel intercepts this interrupt and distributes appropriate signals to multiple processes as requested. If a user process directly seized control of the physical timer interrupt, no other process could utilize timing services.</p>
+<p>Signal origins and delivery lifecycle:</p>
+
+<p>Below we trace SIGUSR1 from initial generation through completion of its handler:</p>
+<figure class="stage" data-scene="" id="sc-life">
+<div class="stage-title"><span>Scene 1 · Generation → Delivery → Handler</span><b>6 steps</b></div>
+<div aria-label="Interactive animation: Signal lifecycle from generation, pending, delivery, to handler return. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-life-t" role="img" viewbox="0 0 800 400">
+<title id="sc-life-t">Left shows three signal sources; center shows kernel pending bits, mask, and disposition for Process A; right shows Process A execution timeline interrupted by handler then returning via sigreturn</title>
+
+<rect class="bx b" data-hl="1" height="60" rx="8" width="170" x="20" y="48"></rect>
+<text class="tz sm b mid" x="105" y="74">Proceso B</text>
+<text class="tm xs w mid" x="105" y="96">kill(pidA, SIGUSR1)</text>
+<rect class="bx o" height="60" rx="8" width="170" x="20" y="168"></rect>
+<text class="tz sm o mid" x="105" y="194">timer · timer</text>
+<text class="tm xs m mid" x="105" y="216">Expiration → signal</text>
+<rect class="bx m" height="60" rx="8" width="170" x="20" y="288"></rect>
+<text class="tz sm m mid" x="105" y="314">terminal</text>
+<text class="tm xs m mid" x="105" y="336">Ctrl+C → SIGINT</text>
+
+<rect class="ln p" height="332" rx="12" width="310" x="222" y="28"></rect>
+<text class="tz sm p" x="238" y="54">Kernel · Process A signal state</text>
+<text class="tm xs m mid" x="337" y="96">INT</text>
+<text class="tm xs m mid" x="377" y="96">USR1</text>
+<text class="tm xs m mid" x="417" y="96">USR2</text>
+<text class="tm xs m mid" x="457" y="96">ALRM</text>
+<text class="tm xs m mid" x="497" y="96">TERM</text>
+<text class="tz sm w" x="238" y="131">pendiente</text>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="320" y="108"></rect>
+<rect class="bx hollow r" data-hl="2" height="34" rx="4" width="34" x="360" y="108"></rect>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="400" y="108"></rect>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="440" y="108"></rect>
+<rect class="bx hollow r" height="34" rx="4" width="34" x="480" y="108"></rect>
+<text class="tm sm m mid" x="337" y="130">0</text>
+<text class="tm sm m mid" data-out="2" x="377" y="130">0</text>
+<text class="tm sm r mid" data-out="4" data-step="2" x="377" y="130">1</text>
+<text class="tm sm m mid" data-step="4" x="377" y="130">0</text>
+<text class="tm sm m mid" x="417" y="130">0</text>
+<text class="tm sm m mid" x="457" y="130">0</text>
+<text class="tm sm m mid" x="497" y="130">0</text>
+<text class="tz sm w" x="238" y="191">bloqueada</text>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="320" y="168"></rect>
+<rect class="bx hollow m" data-hl="3" height="34" rx="4" width="34" x="360" y="168"></rect>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="400" y="168"></rect>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="440" y="168"></rect>
+<rect class="bx hollow m" height="34" rx="4" width="34" x="480" y="168"></rect>
+<text class="tm sm m mid" x="337" y="190">0</text>
+<text class="tm sm m mid" x="377" y="190">0</text>
+<text class="tm sm m mid" x="417" y="190">0</text>
+<text class="tm sm m mid" x="457" y="190">0</text>
+<text class="tm sm m mid" x="497" y="190">0</text>
+<text class="tz sm w" x="238" y="251">disposición</text>
+<text class="tm xs m mid" x="337" y="250">DFL</text>
+<text class="tm xs y mid" data-hl="4" x="377" y="250">hdl</text>
+<text class="tm xs m mid" x="417" y="250">DFL</text>
+<text class="tm xs m mid" x="457" y="250">DFL</text>
+<text class="tm xs m mid" x="497" y="250">DFL</text>
+<text class="tz sm r" data-out="3" data-step="2" x="238" y="300">Generated, not yet delivered: pending</text>
+<text class="tz sm g" data-step="3" x="238" y="300">USR1 not blocked → deliverable</text>
+<text class="tz sm m" data-step="3" x="238" y="330">(remains pending if blocked)</text>
+<path class="ln r draw" d="M190 70 C 260 66, 320 64, 377 106" data-step="1" id="t3-p-kill" marker-end="url(#t3-ah-r)"></path>
+<circle class="sl r" data-move="#t3-p-kill" data-out="2" data-step="1" r="7"></circle>
+
+<text class="tz sm g" x="560" y="54">Proceso A</text>
+<text class="tm xs m" x="560" y="96">main</text>
+<text class="tm xs m" x="560" y="176">manejador</text>
+<rect class="bx g" height="24" rx="4" width="100" x="560" y="104"></rect>
+<g data-step="4">
+<path class="ln r draw" d="M532 160 C 590 160, 620 196, 656 196" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin y dash" d="M660 128 V184"></path>
+<rect class="bx y" height="24" rx="4" width="80" x="660" y="184"></rect>
+<text class="tm xs y mid" x="700" y="230">sig_usr(10)</text>
+<text class="tz sm y" x="664" y="150">interrupted</text>
+</g>
+<g data-step="5">
+<path class="ln p draw" d="M740 184 C 752 160, 752 140, 742 130" marker-end="url(#t3-ah-p)"></path>
+<rect class="bx g" height="24" rx="4" width="48" x="742" y="104"></rect>
+<text class="tm xs p mid" x="700" y="262">sigreturn</text>
+<text class="tz sm g mid" x="690" y="290">Resumes from original site</text>
+</g>
+<text class="tz sm y mid" data-hl="6" data-step="6" x="400" y="388">Generation ≠ Delivery: between them, signal remains pending (pendiente)</text>
+</svg>
+</div>
+<ol class="captions">
+<li>Process B invokes <code>kill(pidA, SIGUSR1)</code>. This moment is called <b class="t">generation (EN) / generación (ES)</b>. Sources also include timers (kernel-generated) or terminal inputs (Ctrl+C).</li>
+<li data-dur="3800">The kernel does not immediately interrupt Process A; instead, it sets the USR1 bit to 1 in A's <b>pending set</b>. Between generation and delivery, the signal is in the <b class="t">pending (EN) / pendiente (ES)</b> state.</li>
+<li data-dur="3800">The kernel inspects A's <b>mask</b> (blocked set): the USR1 bit is 0 (unblocked), so it can be delivered. If set to 1, the signal remains pending until A unblocks it (§3).</li>
+<li data-dur="4400">The next time A returns from kernel mode to user space, the kernel sees the pending bit, clears it, and executes the designated disposition: here handler <code>hdl</code> is registered, so A's main is interrupted to execute <code>sig_usr(10)</code>—passing the signal number as argument. This is <b class="t">delivery (EN) / recepción (ES)</b>.</li>
+<li data-dur="3800">When the handler returns, it issues a <code>sigreturn</code> system call to the kernel; the kernel restores A's saved CPU registers, and main resumes execution as if nothing happened.</li>
+<li data-dur="4200">Key takeaway: Generation and delivery occur at distinct moments. In between, the signal is simply a pending bit in the kernel; receiving the same standard signal again while pending still sets that same bit (§4 contrasts real-time signals).</li>
+</ol>
+</figure>
+<p>Upon receiving a signal, a process executes one of three dispositions, configured per signal:</p>
+<div class="grid3">
+<div class="cell m">
+<span class="k">SIG_DFL</span>
+<h3>Default Action</h3>
+<p>Executed by the kernel. The default action for most signals is <b>terminating the process</b>, sometimes writing a core dump file, or pausing, continuing, or ignoring (see table below).</p>
+</div>
+<div class="cell o">
+<span class="k c-o">SIG_IGN</span>
+<h3>Ignore</h3>
+<p>The signal is discarded upon arrival. Note: Ignoring is fundamentally distinct from blocking. A blocked signal waits as pending; an ignored signal is permanently discarded (§3).</p>
+</div>
+<div class="cell y">
+<span class="k c-y">handler</span>
+<h3>Catch</h3>
+<p>Executes a programmer-defined <b class="t">signal handler (EN) / manejador (ES)</b>. The program will not terminate unless the handler explicitly calls exit.</p>
+</div>
+</div>
+<p>Common signals and their default actions (numbers reflect Linux values; application code should always reference signals by mnemonic constants):</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Signal</th><th>Linux Number</th><th>Generated When</th><th>Default Action</th></tr></thead>
+<tbody>
+<tr><td>SIGHUP</td><td class="num">1</td><td>Controlling terminal hangup</td><td>Terminate</td></tr>
+<tr><td>SIGINT</td><td class="num">2</td><td>Ctrl+C pressed in terminal</td><td>Terminate</td></tr>
+<tr><td>SIGQUIT</td><td class="num">3</td><td>Ctrl+\ pressed in terminal</td><td>Terminate + core</td></tr>
+<tr><td>SIGILL</td><td class="num">4</td><td>Illegal instruction executed</td><td>Terminate + core</td></tr>
+<tr><td>SIGABRT</td><td class="num">6</td><td>abort() invoked</td><td>Terminate + core</td></tr>
+<tr><td>SIGFPE</td><td class="num">8</td><td>Arithmetic exception (e.g. integer division by zero)</td><td>Terminate + core</td></tr>
+<tr><td class="bad">SIGKILL</td><td class="num">9</td><td>Forced kill (<code>kill -9</code>)</td><td>Terminate · <b>Cannot be caught, blocked, or ignored</b></td></tr>
+<tr><td>SIGUSR1 · SIGUSR2</td><td class="num">10 · 12</td><td>User-defined application signals</td><td>Terminate</td></tr>
+<tr><td>SIGSEGV</td><td class="num">11</td><td>Invalid memory access (segmentation fault)</td><td>Terminate + core</td></tr>
+<tr><td>SIGPIPE</td><td class="num">13</td><td>Write to pipe / socket with no reader</td><td>Terminate</td></tr>
+<tr><td>SIGALRM</td><td class="num">14</td><td>alarm / setitimer timer expiration</td><td>Terminate</td></tr>
+<tr><td>SIGTERM</td><td class="num">15</td><td>Graceful termination request (default for <code>kill</code>)</td><td>Terminate</td></tr>
+<tr><td>SIGCHLD</td><td class="num">17</td><td>Child process terminated (sent to parent)</td><td>Ignore</td></tr>
+<tr><td>SIGCONT</td><td class="num">18</td><td>Resume a stopped process</td><td>Continue · resumes regardless of disposition</td></tr>
+<tr><td class="bad">SIGSTOP</td><td class="num">19</td><td>Pause process execution</td><td>Stop · <b>Cannot be caught, blocked, or ignored</b></td></tr>
+<tr><td>SIGTSTP</td><td class="num">20</td><td>Ctrl+Z pressed in terminal</td><td>Stop</td></tr>
+<tr><td>SIGTTIN · SIGTTOU</td><td class="num">21 · 22</td><td>Background process reads / writes controlling terminal</td><td>Stop</td></tr>
+<tr><td>SIGRTMIN … SIGRTMAX</td><td class="num">34 … 64</td><td>Application-defined real-time signals (§4)</td><td>Terminate</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="takeaway">Signals are asynchronous software notifications delivered by the kernel to processes. Each signal possesses a disposition: default action, ignore, or custom handler. SIGKILL and SIGSTOP are critical exceptions: the kernel guarantees it can always terminate or pause any process, so they can never be caught, blocked, or ignored.</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Catching Signals: signal and sigaction <span class="tag">T3.3 · T3.4</span></h2>
+<p class="hook"><span class="zh">Installing a signal handler takes just one line. The tricky question: what are you actually allowed to do inside it?</span><span class="es">Armado de la función de tratamiento de señal.</span></p>
+<h3>The Simple signal() API</h3>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="kw">void</span> (*<span class="fn">signal</span>(<span class="kw">int</span> signum, <span class="kw">void</span> (*handler)(<span class="kw">int</span>)))(<span class="kw">int</span>);</span></code></pre>
+<p>While the C declaration appears complex, it simply means: signal takes a signal number and a pointer to a function returning void that accepts an int, returning the <b>previous</b> handler function pointer (or <code>SIG_ERR</code> on failure). The second argument can also be the constant <code>SIG_DFL</code> (restore default) or <code>SIG_IGN</code> (ignore). The integer received by the handler is the signal number, enabling a single handler to process multiple signal types.</p>
+<p>Example: The first two Ctrl+C presses print warnings; the third restores default disposition, so the fourth Ctrl+C terminates the program:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static volatile sig_atomic_t</span> veces = <span class="nm">0</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static void</span> <span class="fn">on_int</span>(<span class="kw">int</span> sig) {</span><span class="ln-row">    veces++;</span><span class="ln-row">    <span class="kw">if</span> (veces == <span class="nm">3</span>)</span><span class="ln-row">        <span class="fn">signal</span>(<span class="fl">SIGINT</span>, SIG_DFL);           <span class="cm">// Next Ctrl+C invokes default action: terminate</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">signal</span>(<span class="fl">SIGINT</span>, on_int) == SIG_ERR) { <span class="fn">perror</span>(<span class="st">"signal"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">pause</span>();                              <span class="cm">// Sleep until any caught signal arrives</span></span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"Ctrl+C count: %d\n"</span>, (<span class="kw">int</span>)veces);  <span class="cm">// printf is in main, never inside signal handler</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<ul>
+<li><code>pause()</code> puts the calling process to sleep until a signal is <b>handled</b>, then returns −1 with <code>errno = EINTR</code>. Here −1 does not signify an error condition; it is the normal return contract.</li>
+<li>Sending signals: <code>kill(pid, sig)</code> sends to another process (pid &gt; 0 targets that process; pid = −1 broadcasts to all authorized processes except init; pid &lt; −1 targets process group −pid); <code>raise(sig)</code> sends to the caller itself, equivalent to <code>kill(getpid(), sig)</code>. From the command line, use <code>kill -USR1 &lt;pid&gt;</code>.</li>
+<li>Handlers can be swapped dynamically at any time: a subsequent call to signal overwrites the disposition with the newest registration.</li>
+</ul>
+<h3 id="s2b">The Complete sigaction() API</h3>
+<p>The behavior of <code>signal()</code> historically differed across Unix flavors (such as whether handlers auto-reset to default or whether interrupted system calls restart automatically) and cannot provide metadata regarding sender identity. POSIX strongly standardizes on <code>sigaction</code>:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">sigaction</span>(<span class="kw">int</span> signum, <span class="kw">const struct</span> sigaction *act, <span class="kw">struct</span> sigaction *oldact);</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> sigaction {</span><span class="ln-row">    <span class="kw">void</span>     (*sa_handler)(<span class="kw">int</span>);                       <span class="cm">// Basic handler: identical to signal</span></span><span class="ln-row">    <span class="kw">void</span>     (*sa_sigaction)(<span class="kw">int</span>, siginfo_t *, <span class="kw">void</span> *);  <span class="cm">// Extended handler: receives extra metadata</span></span><span class="ln-row">    sigset_t   sa_mask;                                  <span class="cm">// Additional signals masked while handler executes</span></span><span class="ln-row">    <span class="kw">int</span>        sa_flags;                                 <span class="cm">// Behavior flags, bitwise OR-ed</span></span><span class="ln-row">};</span></code></pre>
+<p><code>sa_handler</code> and <code>sa_sigaction</code> are mutually exclusive—<b>only one can be used</b>. To use the extended signature, set <b>SA_SIGINFO</b> in <code>sa_flags</code>; the handler then receives three parameters: the signal number, a <code>siginfo_t *</code> pointer (identifying sender PID, generation cause, and accompanying payload), and an execution context pointer. When <code>oldact</code> is non-NULL, it receives the previous configuration for subsequent restoration.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>sa_flags</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>SA_SIGINFO</td><td>Enables sa_sigaction extended handler, passing full siginfo_t metadata</td></tr>
+<tr><td>SA_RESTART</td><td>System calls interrupted by this signal (read, write, wait...) restart automatically rather than failing with −1 / EINTR</td></tr>
+<tr><td>SA_RESETHAND</td><td>Resets disposition to SIG_DFL upon entering the handler ("one-shot catch")</td></tr>
+<tr><td>SA_NODEFER</td><td>Does <b>not</b> automatically mask the signal during its own handler execution, allowing nested recursion</td></tr>
+<tr><td>SA_NOCLDSTOP</td><td>(Used with SIGCHLD) Do not generate SIGCHLD when child processes stop or resume</td></tr>
+<tr><td>SA_NOCLDWAIT</td><td>(Used with SIGCHLD) Prevent child processes from transforming into zombies upon exit</td></tr>
+<tr><td>SA_ONSTACK</td><td>Executes handler on an alternate signal stack configured via sigaltstack</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">By default, the signal currently being handled is automatically blocked for the duration of its execution (unless SA_NODEFER is specified), in addition to any signals specified in sa_mask. Upon handler return, the previous mask is automatically restored.</p>
+<p>Common fields in <code>siginfo_t</code>: <code>si_signo</code> (signal number), <code>si_code</code> (origin: <code>SI_USER</code> for kill, <code>SI_QUEUE</code> for sigqueue, <code>SI_TIMER</code> for POSIX timers), <code>si_pid</code> / <code>si_uid</code> (sender PID/UID), and <code>si_value</code> (accompanying payload value, §4).</p>
+<p>Example: Using the extended form to record who sent SIGUSR1, while blocking SIGUSR2 during handler execution:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">static volatile sig_atomic_t</span> quien = <span class="nm">0</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static void</span> <span class="fn">on_usr1</span>(<span class="kw">int</span> sig, siginfo_t *si, <span class="kw">void</span> *ctx) {</span><span class="ln-row">    (<span class="kw">void</span>)sig; (<span class="kw">void</span>)ctx;</span><span class="ln-row">    quien = si-&gt;si_pid;                          <span class="cm">// Record sender PID safely</span></span><span class="ln-row">    <span class="fn">write</span>(STDOUT_FILENO, <span class="st">"USR1\n"</span>, <span class="nm">5</span>);           <span class="cm">// write is async-signal-safe</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">struct</span> sigaction sa;</span><span class="ln-row">    <span class="fn">memset</span>(&amp;sa, <span class="nm">0</span>, <span class="kw">sizeof</span> sa);</span><span class="ln-row">    sa.sa_sigaction = on_usr1;                   <span class="cm">// Extended form handler</span></span><span class="ln-row">    sa.sa_flags = SA_SIGINFO | SA_RESTART;       <span class="cm">// Requires SA_SIGINFO</span></span><span class="ln-row">    <span class="fn">sigemptyset</span>(&amp;sa.sa_mask);</span><span class="ln-row">    <span class="fn">sigaddset</span>(&amp;sa.sa_mask, <span class="fl">SIGUSR2</span>);             <span class="cm">// Mask SIGUSR2 during execution</span></span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">sigaction</span>(<span class="fl">SIGUSR1</span>, &amp;sa, NULL) == -<span class="nm">1</span>) { <span class="fn">perror</span>(<span class="st">"sigaction"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">pause</span>();</span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"SIGUSR1 received from PID %d\n"</span>, (<span class="kw">int</span>)quien);</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<h3>What Can Run Safely Inside a Signal Handler</h3>
+<p>A signal handler can interrupt the main program after <b>any</b> single machine instruction, including in the middle of a <code>printf</code> or <code>malloc</code> call. If the handler itself invokes printf, both contexts simultaneously mutate internal stdio buffers, leading to memory corruption or deadlock (main holds the lock, handler blocks waiting for it, while main waits for handler completion to release it).</p>
+<p>Consequently, signal handlers must only call <b class="t">async-signal-safe</b> functions: functions guaranteed to be reentrant or to mask signals internally during execution.</p>
+<div class="grid2">
+<div class="cell g">
+<span class="k c-g">Allowed</span>
+<p><code>write</code>, <code>read</code>, <code>_exit</code>, <code>kill</code>, <code>raise</code>, <code>sigaction</code>, <code>sigprocmask</code>, <code>clock_gettime</code>, <code>timer_getoverrun</code>, <code>sem_post</code>, and reading/writing <code>volatile sig_atomic_t</code> variables.</p>
+</div>
+<div class="cell r">
+<span class="k c-r">Disallowed</span>
+<p><code>printf</code> family, <code>malloc</code> / <code>free</code>, <code>exit</code> (flushes stdio buffers), <code>pthread_mutex_lock</code>, and the vast majority of standard library functions.</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">Best Practice</span>
+<p>This follows the embedded microcontroller principle that "interrupt service routines must be minimal": the handler merely sets a <code>volatile sig_atomic_t</code> flag (or calls sem_post), deferring substantive processing to the main program. <code>volatile</code> forces the compiler to re-read the variable from memory; <code>sig_atomic_t</code> guarantees atomic read/write operations that cannot be torn by a signal. An even cleaner architecture avoids signal handlers entirely, using §3's synchronous sigwait. (Many classroom examples use printf inside handlers for quick demonstration, but production code must never do so).</p>
+</div>
+<div class="panel">
+<h3>Jumping Out of Handlers: sigsetjmp / siglongjmp</h3>
+<p>Signal handlers normally return to the interrupted instruction. When returning is inappropriate (e.g. after a fatal error or when main is blocked in an unwanted call), non-local jumps can unwind directly to a preset restore point:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;setjmp.h&gt;</span></span><span class="ln-row"><span class="kw">int</span>  <span class="fn">sigsetjmp</span>(sigjmp_buf env, <span class="kw">int</span> savesigs);   <span class="cm">// Sets jump point: returns 0 on initial execution</span></span><span class="ln-row"><span class="kw">void</span> <span class="fn">siglongjmp</span>(sigjmp_buf env, <span class="kw">int</span> val);      <span class="cm">// Jumps back: sigsetjmp then returns val (cannot be 0)</span></span></code></pre>
+<p class="aside">The return value of sigsetjmp distinguishes initial registration (0) from jump resumption (val). When savesigs is non-zero, jumping back restores the saved signal mask, which is why signal unwinding must use the sig-variant rather than standard setjmp / longjmp. Always guard jumps with a <code>volatile sig_atomic_t</code> flag to confirm the jump environment is fully initialized.</p>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Signal Mask and Blocking <span class="tag">T3.5 · T3.6</span></h2>
+<p class="hook"><span class="zh">A critical code block must never be interrupted. How do you make incoming signals wait?</span><span class="es">Enmascarado de señales: bloquear no es ignorar.</span></p>
+<p>Each thread possesses a <b class="t">signal mask (EN) / máscara de señales (ES)</b>: a set of signals that are currently <b>blocked</b>. A blocked signal is still generated normally, but its delivery is deferred—it is held in the pending set until unblocked. This is fundamentally distinct from SIG_IGN:</p>
+<div class="grid2">
+<div class="cell b">
+<span class="k c-b">bloquear · sigprocmask</span>
+<h3>Blocking: Hold Pending</h3>
+<p>The signal is retained in the pending set and delivered immediately once unblocked. It is not discarded (though duplicate standard signals merge into one).</p>
+</div>
+<div class="cell o">
+<span class="k c-o">ignorar · SIG_IGN</span>
+<h3>Ignoring: Discard Immediately</h3>
+<p>The signal is discarded upon arrival without trace. Restoring a handler later cannot retrieve discarded signals.</p>
+</div>
+</div>
+<h3>Signal Sets: sigset_t</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">sigemptyset</span>(sigset_t *set);              <span class="cm">// Clear all signals</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigfillset</span>(sigset_t *set);               <span class="cm">// Include all signals</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigaddset</span>(sigset_t *set, <span class="kw">int</span> signo);     <span class="cm">// Add one signal</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigdelset</span>(sigset_t *set, <span class="kw">int</span> signo);     <span class="cm">// Remove one signal</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigismember</span>(<span class="kw">const</span> sigset_t *set, <span class="kw">int</span> signo);  <span class="cm">// Query membership: 1 / 0</span></span></code></pre>
+<p class="aside">sigset_t is an opaque type; always initialize it with sigemptyset or sigfillset before manipulation. Early Unix used an integer bitmask (sigblock, sigsetmask), limited to 32 signals; POSIX sigset_t accommodates all system signals, including real-time extensions.</p>
+<h3>sigprocmask</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">sigprocmask</span>(<span class="kw">int</span> how, <span class="kw">const</span> sigset_t *set, sigset_t *oldset);</span></code></pre>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>how</th><th>Resulting Mask</th></tr></thead>
+<tbody>
+<tr><td>SIG_BLOCK</td><td>Current mask ∪ set (adds specified signals to mask)</td></tr>
+<tr><td>SIG_UNBLOCK</td><td>Current mask − set (unblocks specified signals)</td></tr>
+<tr><td>SIG_SETMASK</td><td>Exact copy of set (replaces entire mask)</td></tr>
+</tbody>
+</table>
+</div>
+<p>When <code>oldset</code> is non-NULL, it receives the previous mask; passing NULL for set queries the mask without modification. Standard pattern for critical sections: invoke SIG_BLOCK while saving oldset, then restore the original mask with SIG_SETMASK (rather than SIG_UNBLOCK, preserving signals that were already blocked prior to entry):</p>
+<pre class="code"><code><span class="ln-row">sigset_t set, old;</span><span class="ln-row"><span class="fn">sigemptyset</span>(&amp;set);</span><span class="ln-row"><span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGINT</span>);</span><span class="ln-row"><span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGUSR1</span>);</span><span class="ln-row"><span class="fn">sigprocmask</span>(SIG_BLOCK, &amp;set, &amp;old);     <span class="cm">// Enter critical section: mask both signals</span></span><span class="ln-row"><span class="fn">actualizar_tabla</span>();                     <span class="cm">// Signal handlers also access this table</span></span><span class="ln-row"><span class="fn">sigprocmask</span>(SIG_SETMASK, &amp;old, NULL);   <span class="cm">// Restore: signals pending from critical section deliver here</span></span></code></pre>
+<ul>
+<li><code>sigpending(&amp;set)</code>: Populates set with currently <b>pending</b> signals (generated but blocked from delivery).</li>
+<li><code>sigsuspend(&amp;mask)</code>: <b>Atomically</b> swaps the active mask with mask and suspends the thread until an unblocked signal is handled, restoring the previous mask upon return. Splitting "unblock then pause" into two steps introduces a race window: if a signal arrives between unblock and pause, it is handled immediately, causing pause to hang indefinitely. sigsuspend fuses both steps atomically.</li>
+</ul>
+<p>The interactive simulator below visualizes pending sets. Toggle "bloquear" on, emit several signals, and unblock to observe handler invocations:</p>
+<figure class="stage" id="sc-mask">
+<div class="stage-title"><span>Simulador · máscara y señales pendientes</span><b>Interactive Simulator</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="sc-mask-t" role="img" viewbox="0 0 800 250">
+<title id="sc-mask-t">Simulator: top shows SIGUSR1 pending bit; middle shows SIGRTMIN+2 queue slots; bottom shows handler log</title>
+<text class="tz sm w" x="24" y="66">SIGUSR1 · pendiente</text>
+<rect class="bx hollow m" height="40" id="t3-pu" rx="6" width="60" x="210" y="40"></rect>
+<text class="tm r mid" id="t3-puv" x="240" y="66">0</text>
+<text class="tm sm b" id="t3-mk" x="320" y="66">bloqueadas: USR1, RTMIN+2</text>
+<text class="tz sm w" x="24" y="132">SIGRTMIN+2 · cola</text>
+<rect class="bx hollow m" height="40" id="t3-qb0" rx="6" width="96" x="210" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb1" rx="6" width="96" x="316" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb2" rx="6" width="96" x="422" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb3" rx="6" width="96" x="528" y="106"></rect>
+<rect class="bx hollow m" height="40" id="t3-qb4" rx="6" width="96" x="634" y="106"></rect>
+<text class="tm xs r mid" id="t3-q0" x="258" y="131"></text>
+<text class="tm xs r mid" id="t3-q1" x="364" y="131"></text>
+<text class="tm xs r mid" id="t3-q2" x="470" y="131"></text>
+<text class="tm xs r mid" id="t3-q3" x="576" y="131"></text>
+<text class="tm xs r mid" id="t3-q4" x="682" y="131"></text>
+<path class="ln thin m" d="M24 180 H776"></path>
+<text class="tz sm y" x="24" y="212">manejador</text>
+<text class="tm sm y" id="t3-log" x="130" y="212">—</text>
+</svg>
+</div>
+<div class="stage-ctl">
+<button class="press" id="t3-kill" type="button">kill SIGUSR1</button>
+<button class="press" id="t3-queue" type="button">sigqueue SIGRTMIN+2</button>
+<button aria-pressed="true" class="sw" id="t3-blk" type="button"><span class="knob"></span><span class="lab">bloquear</span></button>
+<button class="mini" id="t3-reset" type="button">Reset</button>
+<p aria-live="polite" class="out" id="t3-out">Both signals are currently blocked. Click "kill SIGUSR1" and "sigqueue" a few times, then toggle "bloquear" off.</p>
+</div>
+</figure>
+<div class="note">
+<span class="lbl">Try It Yourself</span>
+<p>While blocked, click kill SIGUSR1 three times: the pending bit remains 1, merging the second and third transmissions. Click sigqueue three times: three distinct slots queue up, each retaining its payload. Unblock: SIGUSR1 executes once, while real-time signals execute three times in arrival sequence. §4 explores why they behave differently.</p>
+</div>
+<h3 id="s3b">Signals in Threads: pthread_sigmask + sigwait</h3>
+<p>In multithreaded applications, signal masks are <b>per-thread</b> (new threads inherit the creator's mask), whereas signal dispositions (handlers) are shared process-wide. A signal sent to the process (via kill or timer) is delivered to <b>any arbitrary thread that has not blocked it</b>.</p>
+<p>To modify masks in threads, call <code>pthread_sigmask</code> (sigprocmask is undefined in multithreaded code). A widely adopted design pattern completely avoids asynchronous signal handlers:</p>
+<ol>
+<li>In <code>main</code>, <b>before</b> spawning any threads, block all target signals using pthread_sigmask. All subsequent threads inherit this blocked mask, preventing any thread from being asynchronously interrupted.</li>
+<li>Spawn a dedicated signal-handling thread running a loop around <code>sigwait(&amp;set, &amp;sig)</code>: it sleeps until one of the specified signals becomes pending, consumes it synchronously without invoking a handler, and returns the signal number in sig.</li>
+</ol>
+<pre class="code"><code><span class="ln-row"><span class="kw">static void</span> *<span class="fn">hilo_senales</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    sigset_t *set = arg;</span><span class="ln-row">    <span class="kw">int</span> sig;</span><span class="ln-row">    <span class="kw">for</span> (;;) {</span><span class="ln-row">        <span class="fn">sigwait</span>(set, &amp;sig);                 <span class="cm">// Wait synchronously: regular context, any function can be called</span></span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"Received signal %d\n"</span>, sig);</span><span class="ln-row">        <span class="kw">if</span> (sig == <span class="fl">SIGTERM</span>) <span class="fn">exit</span>(<span class="nm">0</span>);</span><span class="ln-row">    }</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">static</span> sigset_t set;</span><span class="ln-row">    <span class="fn">sigemptyset</span>(&amp;set);</span><span class="ln-row">    <span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGUSR1</span>);</span><span class="ln-row">    <span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGTERM</span>);</span><span class="ln-row">    <span class="fn">pthread_sigmask</span>(SIG_BLOCK, &amp;set, NULL);       <span class="cm">// 1. Block first: all child threads inherit this mask</span></span><span class="ln-row">    pthread_t th;</span><span class="ln-row">    <span class="fn">pthread_create</span>(&amp;th, NULL, hilo_senales, &amp;set);  <span class="cm">// 2. Dedicated signal listener thread</span></span><span class="ln-row">    <span class="cm">/* 3. Worker threads proceed unhindered by these signals */</span></span><span class="ln-row">    <span class="fn">pthread_join</span>(th, NULL);</span><span class="ln-row">}</span></code></pre>
+<ul>
+<li><code>sigwaitinfo(&amp;set, &amp;info)</code>: Similar to sigwait, but returns the complete <code>siginfo_t</code> structure (sender PID, si_value), returning the signal number directly.</li>
+<li><code>sigtimedwait(&amp;set, &amp;info, &amp;timeout)</code>: Same with timeout; returns −1 with <code>errno = EAGAIN</code> on timeout.</li>
+<li>Signals monitored via sigwait <b>must be blocked beforehand</b>: if unblocked, the signal may be dispatched to a default handler (terminating the process) before sigwait can retrieve it.</li>
+</ul>
+<p class="takeaway">Asynchronous signal handlers face strict async-signal-safe limitations. Blocking signals and consuming them synchronously via sigwait in a dedicated thread converts signals into standard sequential events where arbitrary code and library functions can run safely.</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Real-Time Signals <span class="tag">T3.7</span></h2>
+<p class="hook"><span class="zh">Standard signals have only one pending bit; three signals merge into one. What if every single notification is critical?</span><span class="es">Señales de tiempo real: SIGRTMIN…SIGRTMAX.</span></p>
+<p>POSIX.1b introduced a range of signal numbers known as <b class="t">real-time signals (EN) / señales de tiempo real (ES)</b> (<code>SIGRTMIN … SIGRTMAX</code>). They carry no pre-allocated operating system semantics, leaving them entirely to application software. Their default action is process termination. Compared to standard signals, they introduce three critical enhancements:</p>
+<figure class="stage" data-scene="" id="sc-rt">
+<div class="stage-title"><span>Scene 4 · Standard vs. Real-Time Signals</span><b>5 steps</b></div>
+<div aria-label="Interactive animation: Under blocking, standard signals merge into one while real-time signals queue with distinct payload values. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-rt-t" role="img" viewbox="0 0 800 360">
+<title id="sc-rt-t">Left: blocked SIGUSR1 sent 3 times merges into 1 pending bit, handled once; Right: blocked SIGRTMIN+2 sent 3 times via sigqueue queues 3 items with values 7, 8, 9, handled 3 times in FIFO order</title>
+<rect class="ln thin m" height="300" rx="12" width="380" x="12" y="12"></rect>
+<text class="tx sm w" x="30" y="46">Estándar · SIGUSR1</text>
+<text class="tz sm b" x="30" y="72">bloqueada</text>
+<circle class="sl r" cx="60" cy="110" r="6"></circle><text class="tm xs m" x="74" y="114">kill #1</text>
+<circle class="sl r" cx="60" cy="150" r="6"></circle><text class="tm xs m" x="74" y="154">kill #2</text>
+<circle class="sl r" cx="60" cy="190" r="6"></circle><text class="tm xs m" x="74" y="194">kill #3</text>
+<text class="tz sm m mid" x="290" y="118">pendiente</text>
+<rect class="bx hollow r" height="44" rx="6" width="70" x="255" y="128"></rect>
+<g data-step="1">
+<path class="ln thin r draw" d="M136 110 L252 142" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M136 150 L252 150" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M136 190 L252 158" marker-end="url(#t3-ah-r)"></path>
+<text class="tm lg r mid" x="290" y="158">1</text>
+</g>
+<text class="tz sm y" data-step="2" x="30" y="232">Three signals pending, merged into single bit</text>
+<g data-step="4">
+<rect class="bx y" height="30" rx="4" width="80" x="30" y="256"></rect>
+<text class="tm xs y mid" x="70" y="276">hdl ×1</text>
+<text class="tz sm m" x="122" y="276">Handled only once upon unblocking</text>
+</g>
+<rect class="ln thin m" height="300" rx="12" width="380" x="408" y="12"></rect>
+<text class="tx sm w" x="426" y="46">Tiempo real · SIGRTMIN+2</text>
+<text class="tz sm b" x="426" y="72">bloqueada</text>
+<circle class="sl r" cx="446" cy="110" r="6"></circle><text class="tm xs m" x="460" y="114">sigqueue(7)</text>
+<circle class="sl r" cx="446" cy="150" r="6"></circle><text class="tm xs m" x="460" y="154">sigqueue(8)</text>
+<circle class="sl r" cx="446" cy="190" r="6"></circle><text class="tm xs m" x="460" y="194">sigqueue(9)</text>
+<g data-step="3">
+<path class="ln thin r draw" d="M552 110 L620 110" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M552 150 L620 156" marker-end="url(#t3-ah-r)"></path>
+<path class="ln thin r draw" d="M552 190 L620 202" marker-end="url(#t3-ah-r)"></path>
+<rect class="bx r" height="36" rx="4" width="150" x="622" y="92"></rect>
+<rect class="bx r" height="36" rx="4" width="150" x="622" y="138"></rect>
+<rect class="bx r" height="36" rx="4" width="150" x="622" y="184"></rect>
+<text class="tm xs r mid" x="697" y="115">si_value = 7</text>
+<text class="tm xs r mid" x="697" y="161">si_value = 8</text>
+<text class="tm xs r mid" x="697" y="207">si_value = 9</text>
+<text class="tz sm y" x="426" y="242">Queued in 3 slots, each with distinct payload</text>
+</g>
+<g data-step="4">
+<rect class="bx y" height="30" rx="4" width="72" x="426" y="256"></rect>
+<rect class="bx y" height="30" rx="4" width="72" x="506" y="256"></rect>
+<rect class="bx y" height="30" rx="4" width="72" x="586" y="256"></rect>
+<text class="tm xs y mid" x="462" y="276">hdl(7)</text>
+<text class="tm xs y mid" x="542" y="276">hdl(8)</text>
+<text class="tm xs y mid" x="622" y="276">hdl(9)</text>
+<text class="tz sm m" x="668" y="276">In arrival sequence</text>
+</g>
+<text class="tz sm y mid" data-hl="5" data-step="5" x="400" y="342">Real-time signals: Queue · Preserve order · Transmit data · Lower numbers deliver first</text>
+</svg>
+</div>
+<ol class="captions">
+<li>Signals on both sides are blocked. On the left, another process sends SIGUSR1 three times via kill: the pending bit for USR1 in the pending set is set to 1.</li>
+<li data-dur="3600">When the second and third signals arrive, the bit is already 1, remaining 1. Standard signals <b>do not queue</b>: regardless of arrival count while pending, only one is recorded.</li>
+<li data-dur="4400">On the right, `sigqueue` sends SIGRTMIN+2 three times, each carrying a payload value (7, 8, 9). Real-time signals <b>queue</b>: the kernel allocates a slot for each, along with its <code>si_value</code>.</li>
+<li data-dur="4400">Unblocking: on the left, the handler executes only once; on the right, it executes three times, <b>in arrival order</b>, retrieving respective values from <code>siginfo_t</code>.</li>
+<li data-dur="4200">Summary: Real-time signals queue, preserve FIFO order for identical signals, and transmit an int or pointer payload. When different real-time signals are pending, lower signal numbers deliver first.</li>
+</ol>
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>Standard Signals</th><th>Real-Time Signals</th></tr></thead>
+<tbody>
+<tr><td>Semantics</td><td>Predefined by OS (SIGINT, SIGALRM…), only SIGUSR1/2 user-defined</td><td>Entirely allocated for application use</td></tr>
+<tr><td>Arrival While Pending</td><td>Merged into a single bit</td><td>Queued individually in FIFO order</td></tr>
+<tr><td>Delivery Priority</td><td>Unspecified order</td><td>Lower signal numbers deliver first; identical signals deliver FIFO</td></tr>
+<tr><td>Payload Data</td><td>None</td><td>si_value (sival_int or sival_ptr)</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Numbering</h3>
+<p>On Linux, SIGRTMIN and SIGRTMAX are <b>not compile-time constants</b>, but runtime values determined dynamically: the kernel reserves signals 32 through 64, while the glibc threading implementation internally reserves the first two, resulting in typical user values of SIGRTMIN = <b>34</b> and SIGRTMAX = <b>64</b>. Therefore:</p>
+<div class="formula">SIGRTMIN + n = 34 + n　　SIGRTMAX − n = 64 − n</div>
+<p class="aside">Always reference signals in code as <code>SIGRTMIN + n</code> rather than hardcoded integers, verifying <code>SIGRTMIN + n &lt;= SIGRTMAX</code>. The system-wide queued real-time signal capacity can be queried via <code>sysconf(_SC_RTSIG_MAX)</code>.</p>
+<div class="drill" data-drill="rtsig"></div>
+<h3>Passing Data: sigqueue and si_value</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">union</span> sigval { <span class="kw">int</span> sival_int; <span class="kw">void</span> *sival_ptr; };</span><span class="ln-row"><span class="kw">int</span> <span class="fn">sigqueue</span>(pid_t pid, <span class="kw">int</span> sig, <span class="kw">const union</span> sigval value);</span></code></pre>
+<p>sigqueue functions similarly to kill, with the addition of a <code>union sigval</code> payload. The receiver extracts this value from <code>si-&gt;si_value</code> in an SA_SIGINFO handler or via sigwaitinfo, where <code>si_code</code> equals <code>SI_QUEUE</code>. Across process boundaries, only <code>sival_int</code> is meaningful (pointers in another process address space are invalid); within the same process (such as POSIX timers in §6), passing pointers is standard practice.</p>
+<pre class="code"><code><span class="ln-row"><span class="cm">/* Sender */</span></span><span class="ln-row"><span class="kw">union</span> sigval v = { .sival_int = <span class="nm">42</span> };</span><span class="ln-row"><span class="fn">sigqueue</span>(pid_receptor, <span class="fl">SIGRTMIN</span> + <span class="nm">3</span>, v);</span><span class="ln-row"> </span><span class="ln-row"><span class="cm">/* Receiver: block and retrieve synchronously via sigwaitinfo */</span></span><span class="ln-row">sigset_t set;  siginfo_t si;</span><span class="ln-row"><span class="fn">sigemptyset</span>(&amp;set);</span><span class="ln-row"><span class="fn">sigaddset</span>(&amp;set, <span class="fl">SIGRTMIN</span> + <span class="nm">3</span>);</span><span class="ln-row"><span class="fn">sigprocmask</span>(SIG_BLOCK, &amp;set, NULL);</span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">sigwaitinfo</span>(&amp;set, &amp;si);</span><span class="ln-row">    <span class="fn">printf</span>(<span class="st">"Value %d from PID %d\n"</span>, si.si_value.sival_int, (<span class="kw">int</span>)si.si_pid);</span><span class="ln-row">}</span></code></pre>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>POSIX Clocks and Sleeping <span class="tag">T3.8</span></h2>
+<p class="hook"><span class="zh">"What time is it now?" and "How much time has elapsed?" are two entirely different questions.</span><span class="es">Relojes: CLOCK_REALTIME y CLOCK_MONOTONIC.</span></p>
+<p>A real-time embedded system requires three core timing mechanisms: a <b class="t">clock (EN) / reloj (ES)</b> to measure elapsed intervals, an execution suspension mechanism to awaken tasks at planned times, and a <b class="t">timeout</b> mechanism to detect timing violations.</p>
+<h3>Clocks are Counters</h3>
+<p>A clock consists of a hardware oscillator generating periodic ticks coupled with a counter tracking tick counts; software converts counts to engineering units. Two fundamental metrics: <b>resolution</b> (granularidad, the time span of a single tick) and <b>range</b> (the duration before the counter overflows). They trade off against each other: for a 32-bit counter, finer resolution causes faster overflow.</p>
+<div class="formula">Range = 2³² × Resolution ≈ 4.29 × 10⁹ × Resolution</div>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Resolution</th><th>32-bit Counter Range</th></tr></thead>
+<tbody>
+<tr><td>100 ns</td><td>Approx. 429 s (7.2 min)</td></tr>
+<tr><td>1 µs</td><td>Approx. 4295 s (72 min)</td></tr>
+<tr><td>100 µs</td><td>Approx. 119 h</td></tr>
+<tr><td>1 ms</td><td>Approx. 50 days</td></tr>
+<tr><td>1 s</td><td>Approx. 136 years</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">Note: Some literature erroneously lists 4.3 s for 100 ns resolution; 2³² × 100 ns equals ~429 s (4.29 s corresponds to 1 ns resolution).</p>
+
+<h3>Time Representation in POSIX</h3>
+<p>Unix represents absolute wall-clock time as seconds elapsed since the <b>Epoch (1970-01-01 00:00:00 UTC)</b> using <code>time_t</code> (64-bit on 64-bit Linux). Sub-second resolution uses structured types:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timeval  { time_t tv_sec; suseconds_t tv_usec; };  <span class="cm">// Microseconds: 0 … 999 999</span></span><span class="ln-row"><span class="kw">struct</span> timespec { time_t tv_sec; <span class="kw">long</span>        tv_nsec; };  <span class="cm">// Nanoseconds: 0 … 999 999 999 (standard in POSIX)</span></span></code></pre>
+<p class="aside">Legacy interfaces: <code>time()</code> (seconds), <code>gettimeofday()</code> / <code>settimeofday()</code> (timeval, microseconds), <code>difftime()</code> (difference between two time_t values), <code>struct tm</code> (broken-down time: tm_year starts from 1900, tm_mon is 0–11), and <code>mktime</code> (tm → time_t). Adjusting system time requires administrative privileges.</p>
+<h3>POSIX Clock Types</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">int</span> <span class="fn">clock_gettime</span>(clockid_t clk, <span class="kw">struct</span> timespec *tp);        <span class="cm">// Read time</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">clock_getres</span>(clockid_t clk, <span class="kw">struct</span> timespec *res);       <span class="cm">// Query resolution</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">clock_settime</span>(clockid_t clk, <span class="kw">const struct</span> timespec *tp);  <span class="cm">// Set time (CLOCK_REALTIME only, requires root)</span></span></code></pre>
+<div class="grid2">
+<div class="cell o">
+<span class="k c-o">CLOCK_REALTIME</span>
+<h3>Wall-Clock Time</h3>
+<p>"What time is it now": Seconds elapsed since the Epoch. Subject to discontinuous <b>jumps</b>: manual adjustments by administrators or NTP stepping can cause time to shift forward or backward. Suitable for wall-clock timestamps and calendar-based actions.</p>
+</div>
+<div class="cell g">
+<span class="k c-g">CLOCK_MONOTONIC</span>
+<h3>Monotonic Clock</h3>
+<p>"How much time has elapsed": Monotonically increasing from an arbitrary baseline (typically system boot), never jumping backwards or forwards regardless of NTP adjustments. Always use for measuring intervals and scheduling periodic tasks.</p>
+</div>
+</div>
+<p>Benchmarking execution duration:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timespec t0, t1;</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;t0);</span><span class="ln-row"><span class="fn">trabajo</span>();</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;t1);</span><span class="ln-row"><span class="kw">long long</span> ns = (t1.tv_sec - t0.tv_sec) * <span class="nm">1000000000LL</span> + (t1.tv_nsec - t0.tv_nsec);</span></code></pre>
+<p>When performing addition on timespec, <code>tv_nsec</code> must strictly remain between 0 and 999 999 999; values exceeding this boundary must <b>carry over</b> into <code>tv_sec</code>. Kernel functions (nanosleep, timer_settime) immediately fail with EINVAL if tv_nsec ≥ 10⁹. Standard normalization helper:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#define NS_POR_S 1000000000L</span></span><span class="ln-row"><span class="kw">static void</span> <span class="fn">ts_add_ns</span>(<span class="kw">struct</span> timespec *t, <span class="kw">long</span> ns) {</span><span class="ln-row">    t-&gt;tv_nsec += ns;</span><span class="ln-row">    <span class="kw">while</span> (t-&gt;tv_nsec &gt;= NS_POR_S) {          <span class="cm">// Carry over when >= 10^9</span></span><span class="ln-row">        t-&gt;tv_nsec -= NS_POR_S;</span><span class="ln-row">        t-&gt;tv_sec++;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<div class="drill" data-drill="ts"></div>
+<h3>Suspending Execution: Sleep Functions</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Function</th><th>Resolution</th><th>Characteristics</th></tr></thead>
+<tbody>
+<tr><td>sleep(s)</td><td>Seconds</td><td>Returns unslept seconds if interrupted by a signal</td></tr>
+<tr><td>usleep(us)</td><td>Microseconds</td><td>Obsolete; removed in modern POSIX, use nanosleep instead</td></tr>
+<tr><td>nanosleep(&amp;req, &amp;rem)</td><td>timespec</td><td>Relative duration. If interrupted by a signal handler, returns −1 with errno = EINTR and writes remaining duration to rem</td></tr>
+<tr><td>clock_nanosleep(clk, flags, &amp;req, &amp;rem)</td><td>timespec</td><td>Selectable clock. When flags = <b>TIMER_ABSTIME</b>, req represents an <b>absolute timestamp</b>: "sleep until that point in time". Returns error code directly (not −1)</td></tr>
+</tbody>
+</table>
+</div>
+<p>nanosleep returns under three conditions: requested duration elapsed; a signal handler was invoked; or the process was killed. Standard pattern to resume remaining sleep after an interruption:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timespec req = { .tv_sec = <span class="nm">0</span>, .tv_nsec = <span class="nm">200</span> * <span class="nm">1000000L</span> }, rem;   <span class="cm">// 200 ms</span></span><span class="ln-row"><span class="kw">while</span> (<span class="fn">nanosleep</span>(&amp;req, &amp;rem) == -<span class="nm">1</span> &amp;&amp; errno == EINTR)</span><span class="ln-row">    req = rem;                                <span class="cm">// Resume remaining duration</span></span></code></pre>
+<div class="note">
+<span class="lbl">Actual Sleep Duration</span>
+<p>Actual sleep duration will only ever be <b>longer than requested</b>, never shorter: requests are rounded up to system clock granularity, and upon expiration the task must wait for the OS scheduler to reschedule it. Query clock resolution with <code>clock_getres</code>. Crucially, the retry loop above accumulates additional latency each time it is interrupted; eliminating this error requires absolute time (§7).</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>POSIX Timers <span class="tag">T3.9</span></h2>
+<p class="hook"><span class="zh">Sleeping halts task execution completely. Can the kernel notify the process upon expiration while it continues working?</span><span class="es">timer_create, timer_settime, struct sigevent, struct itimerspec.</span></p>
+<h3>Legacy Approaches: alarm and setitimer</h3>
+<ul>
+<li><code>unsigned alarm(unsigned s)</code>: Sends a <b>SIGALRM</b> signal to the process after s seconds. Calling again resets the timer (returning remaining seconds); <code>alarm(0)</code> cancels it. Coarse second-level resolution only.</li>
+<li><code>setitimer(ITIMER_REAL, &amp;it, &amp;old)</code>: Uses <code>struct itimerval</code> (two timeval fields: it_value initial delay, it_interval periodic reload) for microsecond periodic timers, also delivering SIGALRM.</li>
+<li>Default action for SIGALRM is process termination: <b>always register the handler before arming the timer</b>, or the program will terminate on first expiration.</li>
+</ul>
+<p>Their drawbacks: strictly one timer per process; all tied to SIGALRM; relative durations only. POSIX timers resolve all three limitations:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;time.h&gt;</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_create</span>(clockid_t clk, <span class="kw">struct</span> sigevent *evp, timer_t *timerid);</span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_settime</span>(timer_t timerid, <span class="kw">int</span> flags, <span class="kw">const struct</span> itimerspec *nuevo, <span class="kw">struct</span> itimerspec *viejo);</span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_gettime</span>(timer_t timerid, <span class="kw">struct</span> itimerspec *actual);   <span class="cm">// Query remaining duration</span></span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_getoverrun</span>(timer_t timerid);</span><span class="ln-row"><span class="kw">int</span> <span class="fn">timer_delete</span>(timer_t timerid);</span></code></pre>
+<p class="aside">Older glibc versions require linking with <code>-lrt</code>; modern Linux glibc includes these directly in libc.</p>
+<div class="grid2">
+<div class="panel">
+<h3>Expiration Action: struct sigevent</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sigevent {</span><span class="ln-row">  <span class="kw">int</span>          sigev_notify;   <span class="cm">// Notification method</span></span><span class="ln-row">  <span class="kw">int</span>          sigev_signo;    <span class="cm">// Signal to deliver</span></span><span class="ln-row">  <span class="kw">union</span> sigval sigev_value;    <span class="cm">// Payload passed to recipient</span></span><span class="ln-row">  <span class="kw">void</span> (*sigev_notify_function)(<span class="kw">union</span> sigval);</span><span class="ln-row">  pthread_attr_t *sigev_notify_attributes;</span><span class="ln-row">};</span></code></pre>
+<ul>
+<li><b>SIGEV_SIGNAL</b>: Delivers the signal designated by sigev_signo, with si_value = sigev_value and si_code = SI_TIMER.</li>
+<li><b>SIGEV_THREAD</b>: Spawns a new thread executing sigev_notify_function(sigev_value). Because it runs in a standard thread context, async-signal-safe rules do not apply.</li>
+<li><b>SIGEV_NONE</b>: No asynchronous notification; caller polls status manually via timer_gettime.</li>
+<li><code>evp = NULL</code>: Defaults to SIGEV_SIGNAL delivering SIGALRM, with sigev_value set to the timer's ID.</li>
+</ul>
+</div>
+<div class="panel">
+<h3>Expiration Timing: struct itimerspec</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> itimerspec {</span><span class="ln-row">  <span class="kw">struct</span> timespec it_interval; <span class="cm">// Subsequent periodic interval</span></span><span class="ln-row">  <span class="kw">struct</span> timespec it_value;    <span class="cm">// First expiration delay or timestamp</span></span><span class="ln-row">};</span></code></pre>
+<ul>
+<li><b>it_value ≠ 0</b>: Arms the timer. When flags = 0, represents relative delay from now; when flags = <b>TIMER_ABSTIME</b>, represents an <b>absolute timestamp</b> (timestamps already in the past expire immediately).</li>
+<li><b>it_value = 0</b>: Disarms (stops) the timer, regardless of it_interval.</li>
+<li><b>it_interval ≠ 0</b>: Periodic timer; automatically reloaded upon every expiration.</li>
+<li><b>it_interval = 0</b>: One-shot timer; expires exactly once.</li>
+</ul>
+</div>
+</div>
+<p>Timeline of a periodic POSIX timer (it_value = 300 ms, it_interval = 200 ms):</p>
+<figure class="stage" data-scene="" id="sc-timer">
+<div class="stage-title"><span>Scene 6 · A Periodic Timer</span><b>6 steps</b></div>
+<div aria-label="Interactive animation: Timeline of a periodic timer showing initial delay, interval reload, handler executions, and overrun counting. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-timer-t" role="img" viewbox="0 0 800 340">
+<title id="sc-timer-t">Timeline 0 to 1300 ms: first expiration at 300 ms, followed by periodic reload every 200 ms; each sends a signal; when process is busy, 2 expirations yield 1 delivered signal and overrun = 1</title>
+<path class="ln thin m" d="M60 200 H770"></path>
+<text class="tm xs m mid" x="60" y="222">0</text>
+<text class="tm xs m mid" x="210" y="222">300</text>
+<text class="tm xs m mid" x="310" y="222">500</text>
+<text class="tm xs m mid" x="410" y="222">700</text>
+<text class="tm xs m mid" x="510" y="222">900</text>
+<text class="tm xs m mid" x="610" y="222">1100</text>
+<text class="tm xs m mid" x="710" y="222">1300</text>
+<text class="tm xs m" x="760" y="222">ms</text>
+<text class="tm xs y" x="14" y="266">hdl</text>
+<g data-step="1">
+<rect class="bx p" height="40" rx="6" width="250" x="60" y="30"></rect>
+<text class="tm sm p" x="74" y="56">timer_create() → tid</text>
+</g>
+<text class="tz sm m" data-out="6" data-step="1" x="330" y="56">Created, not yet armed (desarmado)</text>
+<text class="tz sm y" data-hl="6" data-step="6" x="330" y="56">it_interval = 0 → one-shot; it_value = 0 → disarmed</text>
+<g data-step="2">
+<text class="tm xs p" x="60" y="100">timer_settime(tid, 0, &amp;its, NULL)</text>
+<path class="ln o draw" d="M60 152 V142 H210 V152"></path>
+<text class="tm xs o mid" x="135" y="134">it_value = 300 ms</text>
+<path class="ln r" d="M210 160 V200"></path>
+<circle class="sl r" cx="210" cy="200" r="5"></circle>
+</g>
+<g data-step="3">
+<path class="ln o draw" d="M210 152 V142 H310 V152"></path>
+<text class="tm xs o mid" x="290" y="118">it_interval = 200 ms</text>
+<path class="ln r" d="M310 160 V200 M410 160 V200 M510 160 V200 M610 160 V200 M710 160 V200"></path>
+<circle class="sl r" cx="310" cy="200" r="5"></circle>
+<circle class="sl r" cx="410" cy="200" r="5"></circle>
+<circle class="sl r" cx="510" cy="200" r="5"></circle>
+<circle class="sl r" cx="610" cy="200" r="5"></circle>
+<circle class="sl r" cx="710" cy="200" r="5"></circle>
+</g>
+<g data-step="4">
+<path class="ln thin r dash" d="M210 205 V252 M310 205 V252 M410 205 V252 M710 205 V252"></path>
+<rect class="bx y" height="24" rx="3" width="26" x="212" y="252"></rect>
+<rect class="bx y" height="24" rx="3" width="26" x="312" y="252"></rect>
+<rect class="bx y" height="24" rx="3" width="26" x="412" y="252"></rect>
+<path class="ln thin r dash" d="M510 205 V252 M610 205 V252" data-out="5"></path>
+<rect class="bx y" data-out="5" height="24" rx="3" width="26" x="512" y="252"></rect>
+<rect class="bx y" data-out="5" height="24" rx="3" width="26" x="612" y="252"></rect>
+<rect class="bx y" height="24" rx="3" width="26" x="712" y="252"></rect>
+</g>
+<g data-step="5">
+<rect class="bx m" height="44" rx="4" width="170" x="470" y="240"></rect>
+<text class="tz sm m mid" x="555" y="304">Process busy / signal blocked</text>
+<rect class="bx y" data-hl="5" height="24" rx="3" width="26" x="642" y="252"></rect>
+<text class="tm sm r mid" x="600" y="118">2 expirations → 1 signal · overrun = 1</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><code>timer_create</code> initializes the timer, returning a <code>timer_t</code> identifier, configuring notification semantics via sigevent. The timer remains disarmed.</li>
+<li data-dur="3800"><code>timer_settime</code> with flags = 0 (relative delay) arms the timer: <code>it_value</code> = 300 ms dictates first expiration 300 ms from now.</li>
+<li data-dur="3800">Because <code>it_interval</code> = 200 ms is non-zero, the kernel automatically reloads it, expiring at 500, 700, 900 ms...</li>
+<li data-dur="3600">Upon each expiration, the kernel delivers the configured signal (or thread). The process receives the signal and executes its handler.</li>
+<li data-dur="5200">If the process cannot handle expirations at 900 ms and 1100 ms (e.g. signal masked or thread un-scheduled), only one signal is held pending: the second expiration does not duplicate the signal, but increments the <b class="t">overrun</b> counter. Upon delivery, <code>timer_getoverrun(tid)</code> returns 1: total expirations represented = 1 + 1.</li>
+<li data-dur="4200">One-shot timers: setting <code>it_interval</code> to 0 fires exactly once (ideal for timeouts). A timer can be disarmed at any moment by passing <code>it_value</code> = 0; release resources via <code>timer_delete</code>.</li>
+</ol>
+</figure>
+<div class="drill" data-drill="itspec"></div>
+<h3>Example: Periodic Timer via SIGEV_SIGNAL</h3>
+<p>Emits SIGRTMIN every 250 ms until the main loop counts 20 ticks. Initialization sequence: register handler first, create timer, then arm:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;signal.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;time.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static volatile sig_atomic_t</span> ticks = <span class="nm">0</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">static void</span> <span class="fn">on_tick</span>(<span class="kw">int</span> sig, siginfo_t *si, <span class="kw">void</span> *uc) {</span><span class="ln-row">    (<span class="kw">void</span>)sig; (<span class="kw">void</span>)si; (<span class="kw">void</span>)uc;</span><span class="ln-row">    ticks++;                                     <span class="cm">// Minimal action; si->si_value.sival_ptr points to tid</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">struct</span> sigaction sa = {<span class="nm">0</span>};</span><span class="ln-row">    sa.sa_sigaction = on_tick;</span><span class="ln-row">    sa.sa_flags = SA_SIGINFO;</span><span class="ln-row">    <span class="fn">sigemptyset</span>(&amp;sa.sa_mask);</span><span class="ln-row">    <span class="fn">sigaction</span>(<span class="fl">SIGRTMIN</span>, &amp;sa, NULL);             <span class="cm">// 1. Register handler first</span></span><span class="ln-row"> </span><span class="ln-row">    timer_t tid;</span><span class="ln-row">    <span class="kw">struct</span> sigevent sev = {<span class="nm">0</span>};</span><span class="ln-row">    sev.sigev_notify = SIGEV_SIGNAL;             <span class="cm">// 2. Signal notification</span></span><span class="ln-row">    sev.sigev_signo  = <span class="fl">SIGRTMIN</span>;</span><span class="ln-row">    sev.sigev_value.sival_ptr = &amp;tid;</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">timer_create</span>(CLOCK_MONOTONIC, &amp;sev, &amp;tid) == -<span class="nm">1</span>) { <span class="fn">perror</span>(<span class="st">"timer_create"</span>); <span class="kw">return</span> <span class="nm">1</span>; }</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> itimerspec its = {<span class="nm">0</span>};</span><span class="ln-row">    its.it_value.tv_nsec    = <span class="nm">250</span> * <span class="nm">1000000L</span>;   <span class="cm">// 3. Initial delay: 250 ms</span></span><span class="ln-row">    its.it_interval.tv_nsec = <span class="nm">250</span> * <span class="nm">1000000L</span>;   <span class="cm">//    Reload: every 250 ms</span></span><span class="ln-row">    <span class="fn">timer_settime</span>(tid, <span class="nm">0</span>, &amp;its, NULL);           <span class="cm">//    flags = 0: relative duration</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">while</span> (ticks &lt; <span class="nm">20</span>) {</span><span class="ln-row">        <span class="fn">pause</span>();</span><span class="ln-row">        <span class="fn">printf</span>(<span class="st">"tick %d\n"</span>, (<span class="kw">int</span>)ticks);</span><span class="ln-row">    }</span><span class="ln-row">    <span class="fn">timer_delete</span>(tid);</span><span class="ln-row">    <span class="kw">return</span> <span class="nm">0</span>;</span><span class="ln-row">}</span></code></pre>
+<h3>Example: One-Shot Timeout via SIGEV_THREAD</h3>
+<pre class="code"><code><span class="ln-row"><span class="kw">static void</span> <span class="fn">timeout</span>(<span class="kw">union</span> sigval v) {             <span class="cm">// Runs in a newly spawned thread</span></span><span class="ln-row">    <span class="fn">printf</span>(<span class="st">"Timed out: %s\n"</span>, (<span class="kw">char</span> *)v.sival_ptr);    <span class="cm">// Standard thread: printf is legal</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> sigevent sev = {<span class="nm">0</span>};</span><span class="ln-row">sev.sigev_notify = SIGEV_THREAD;</span><span class="ln-row">sev.sigev_notify_function = timeout;</span><span class="ln-row">sev.sigev_value.sival_ptr = <span class="st">"waiting for response"</span>;</span><span class="ln-row">timer_t tid;</span><span class="ln-row"><span class="fn">timer_create</span>(CLOCK_MONOTONIC, &amp;sev, &amp;tid);</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">struct</span> itimerspec once = {<span class="nm">0</span>};</span><span class="ln-row">once.it_value.tv_sec = <span class="nm">3</span>;                         <span class="cm">// 3 seconds from now; it_interval = 0 -> fires once</span></span><span class="ln-row"><span class="fn">timer_settime</span>(tid, <span class="nm">0</span>, &amp;once, NULL);</span></code></pre>
+<div class="note">
+<span class="lbl">Alternative Timeout Mechanisms</span>
+<p><b>Timeouts</b>: To bound blocking waits on events, developers can use a one-shot timer or pass a timeout parameter to <code>select()</code>, which monitors descriptor readiness up to a timeout threshold (returning 0 on expiration). <b>timerfd</b> (Linux-specific): <code>timerfd_create</code> + <code>timerfd_settime</code> yields a file descriptor where standard <code>read()</code> blocks until timer expiration, reading an 8-byte integer tracking expirations—operating completely free of signals. Asynchronous I/O completions (<code>aio_read</code>) utilize the exact same struct sigevent mechanism.</p>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Drift: Relative vs. Absolute Time <span class="tag">T3.10</span></h2>
+<p class="hook"><span class="zh">Sleeping 50 ms each loop for 100 iterations: why does total execution exceed 5 seconds?</span><span class="es">Deriva local y deriva acumulativa.</span></p>
+<p>The most intuitive structure for a periodic task is "execute once, then sleep for one period":</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">tarea_periodica</span>();</span><span class="ln-row">    <span class="fn">nanosleep</span>(&amp;periodo, NULL);     <span class="cm">// Relative sleep: sleeps one period starting from "now"</span></span><span class="ln-row">}</span></code></pre>
+<p>This formulation suffers from two major flaws: it fails to deduct the execution time of the task itself, and wakeup is delayed by scheduling latency and timer granularity. The delay experienced in any individual cycle is <b class="t">local drift (EN) / deriva local (ES)</b>; because each subsequent cycle recalculates relative sleep from the delayed current moment, these errors compound into <b class="t">cumulative drift (EN) / deriva acumulativa (ES)</b>.</p>
+<figure class="stage" data-scene="" id="sc-drift">
+<div class="stage-title"><span>Scene 7 · Relative vs. Absolute Timing</span><b>5 steps</b></div>
+<div aria-label="Interactive animation: Relative sleep periodic task drifting increasingly late vs. absolute timing adhering strictly to scheduled points. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-drift-t" role="img" viewbox="0 0 800 340">
+<title id="sc-drift-t">Gold dashed lines mark ideal 50 ms period boundaries; top row using relative sleep slips 14 ms per cycle accumulating 56 ms by cycle 5; bottom row using absolute timestamps slips only 4 ms non-cumulatively</title>
+<g data-step="1">
+<path class="ln thin o dash" d="M60 60 V300 M190 60 V300 M320 60 V300 M450 60 V300 M580 60 V300 M710 60 V300"></path>
+<text class="tm xs o mid" x="60" y="48">0</text>
+<text class="tm xs o mid" x="190" y="48">50</text>
+<text class="tm xs o mid" x="320" y="48">100</text>
+<text class="tm xs o mid" x="450" y="48">150</text>
+<text class="tm xs o mid" x="580" y="48">200</text>
+<text class="tm xs o mid" x="710" y="48">250 ms</text>
+</g>
+<text class="tz sm w" x="66" y="92">relativo · nanosleep(50 ms)</text>
+<path class="ln thin m" d="M60 120 H790"></path>
+<g data-step="2">
+<rect class="bx g" height="24" rx="3" width="26" x="60" y="108"></rect>
+<path class="ln thin o" d="M86 120 H216"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="226.4" y="108"></rect>
+</g>
+<g data-step="3">
+<path class="ln thin o" d="M252.4 120 H382.4"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="392.8" y="108"></rect>
+<path class="ln thin o" d="M418.8 120 H548.8"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="559.2" y="108"></rect>
+<path class="ln thin o" d="M585.2 120 H715.2"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="725.6" y="108"></rect>
+<path class="ln r draw" d="M580 146 V154 H725.6 V146"></path>
+<text class="tm xs r mid" x="652" y="172">Cumulative +56 ms</text>
+</g>
+<text class="tz sm w" x="66" y="212">absoluto · clock_nanosleep(TIMER_ABSTIME)</text>
+<path class="ln thin m" d="M60 240 H790"></path>
+<g data-step="4">
+<rect class="bx g" height="24" rx="3" width="26" x="70.4" y="228"></rect>
+<path class="ln thin o" d="M96.4 240 H190"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="200.4" y="228"></rect>
+<path class="ln thin o" d="M226.4 240 H320"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="330.4" y="228"></rect>
+<path class="ln thin o" d="M356.4 240 H450"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="460.4" y="228"></rect>
+<path class="ln thin o" d="M486.4 240 H580"></path>
+<rect class="bx g" height="24" rx="3" width="26" x="590.4" y="228"></rect>
+<path class="ln thin o" d="M616.4 240 H710"></path>
+</g>
+<g data-step="5">
+<path class="ln r" d="M580 262 V270 H590.4 V262"></path>
+<text class="tm xs r" x="596" y="276">+4 ms</text>
+<text class="tz sm y mid" data-hl="5" x="400" y="326">Absolute timing: local drift only, zero cumulative error</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>Gold dashed lines mark ideal period starting deadlines: 0, 50, 100... ms. The workload consumes 10 ms, and wakeup involves roughly 4 ms of scheduler latency.</li>
+<li data-dur="3800">Relative sleep: Task begins at 0 ms, completes work at 10 ms, and sleeps for 50 ms until 60 ms; with 4 ms latency, cycle 2 starts at 64 ms—slipping 10 + 4 = 14 ms late.</li>
+<li data-dur="4200">The next cycle sleeps 50 ms starting from the delayed current time: errors compound linearly. Cycle 5 starts at 256 ms instead of 200 ms, running 4 × 14 = 56 ms behind schedule.</li>
+<li data-dur="4400">Absolute timing: Each iteration calculates target timestamp = previous target + 50 ms, sleeping until that precise timestamp. Task execution duration automatically shortens sleep time.</li>
+<li data-dur="4200">Each cycle still exhibits roughly 4 ms of local wakeup latency (unavoidable local drift), but errors never propagate to subsequent cycles: cycle 5 starts at 204 ms. Cumulative drift is eliminated.</li>
+</ol>
+<p class="stage-note">Period 50 ms, execution 10 ms, latency 4 ms (illustrative values).</p>
+</figure>
+<div class="formula">Relative Sleep Cumulative Drift ≈ n × (Execution Time + Wakeup Latency)　　Absolute Timing: ~Wakeup Latency per cycle (non-cumulative)</div>
+<div class="drill" data-drill="drift"></div>
+<h3>Constructing Periodic Loops with Absolute Time</h3>
+<p>The core concept is variable sleep: sleep only as long as needed to reach the next scheduled target. The cleanest implementation calculates deadlines against <code>CLOCK_MONOTONIC</code> using <code>clock_nanosleep(…, TIMER_ABSTIME, …)</code>:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> timespec next;</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;next);              <span class="cm">// Baseline reference point</span></span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">ts_add_ns</span>(&amp;next, <span class="nm">50</span> * <span class="nm">1000000L</span>);                <span class="cm">// Next target = previous target + period (helper from §5)</span></span><span class="ln-row">    <span class="kw">while</span> (<span class="fn">clock_nanosleep</span>(CLOCK_MONOTONIC, TIMER_ABSTIME, &amp;next, NULL) == EINTR)</span><span class="ln-row">        ;                                             <span class="cm">// Interrupted by signal: target remains identical, resume sleeping</span></span><span class="ln-row">    <span class="fn">tarea_periodica</span>();</span><span class="ln-row">}</span></code></pre>
+<ul>
+<li>Crucially, <code>next</code> is incremented by adding the period to the <b>previous target timestamp</b>, not to "current time". The clock is sampled only once at initialization.</li>
+<li>Upon signal interruption, the loop simply retries against the unchanged target timestamp without accumulating extra error.</li>
+<li>If task workload occasionally exceeds a period, the target timestamp is already in the past, causing clock_nanosleep to return immediately: the task executes catch-up cycles without delay (analogous to timer overrun).</li>
+</ul>
+<p>The identical principle applies to POSIX timers: pass <code>TIMER_ABSTIME</code> in timer_settime flags, specifying <code>it_value</code> as an absolute timestamp, advancing it by one period on each iteration (period 500 ms):</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct</span> itimerspec its = {<span class="nm">0</span>};                        <span class="cm">// it_interval = 0: manually schedule each target</span></span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_MONOTONIC, &amp;its.it_value);</span><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">ts_add_ns</span>(&amp;its.it_value, <span class="nm">500</span> * <span class="nm">1000000L</span>);       <span class="cm">// Next absolute target</span></span><span class="ln-row"><span class="fn">timer_settime</span>(tid, TIMER_ABSTIME, &amp;its, NULL);</span><span class="ln-row">    <span class="fn">pause</span>();                                         <span class="cm">// Wait for expiration signal</span></span><span class="ln-row">    <span class="cm">/* …execute cycle workload… */</span></span><span class="ln-row">}</span></code></pre>
+<div class="note warm">
+<span class="lbl">Does it_interval Drift?</span>
+<p>For periodic timers (it_interval ≠ 0), the kernel schedules subsequent expirations by adding it_interval to the <b>previous scheduled expiration timestamp</b>, completely decoupled from when the user handler actually runs. Hence, POSIX periodic timers inherently avoid cumulative drift from task runtime. The genuine culprit behind cumulative drift is relative sleeping ("work then sleep").</p>
+</div>
+<p class="takeaway">Cumulative drift occurs when delays are computed relatively from "now". Defining future deadlines as "previous target + period" and waiting via absolute time (TIMER_ABSTIME) bounds timing errors to unavoidable local latency without compounding over time.</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>Randomized Numeric Drills <span class="tag plain">4 Drill Types</span></h2>
+<p class="aside">Randomized numeric drills generated according to chapter formulas. Step-by-step solutions are revealed after submitting answers.</p>
+<div class="drills">
+<div class="drill" data-drill="ts"></div>
+<div class="drill" data-drill="itspec"></div>
+<div class="drill" data-drill="rtsig"></div>
+<div class="drill" data-drill="drift"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>Self-Assessment <span class="tag plain">12 Questions</span></h2>
+<p class="aside">Review questions based on chapter concepts. Single attempt per question; explanations display immediately upon selection.</p>
+<div class="quiz" data-quiz="T3">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>What is the fundamental difference between signals and hardware interrupts?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Signals are synchronous, whereas hardware interrupts are asynchronous</button>
+<button data-o="b" type="button"><span class="k">B</span>Signals are generated by the kernel or processes and delivered to a process; interrupts are generated by hardware and delivered to the CPU</button>
+<button data-o="c" type="button"><span class="k">C</span>Signals do not return to the interrupted instruction upon completion, whereas interrupts do</button>
+<button data-o="d" type="button"><span class="k">D</span>Signals can only originate from timers</button>
+</div>
+<p class="why"><b>B.</b> Both are asynchronous events that return to the interrupted execution stream; they differ in source and destination entities (§1).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>Which pair of signals cannot be caught, blocked, or ignored?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>SIGINT and SIGTERM</button>
+<button data-o="b" type="button"><span class="k">B</span>SIGALRM and SIGCHLD</button>
+<button data-o="c" type="button"><span class="k">C</span>SIGSEGV and SIGFPE</button>
+<button data-o="d" type="button"><span class="k">D</span>SIGKILL and SIGSTOP</button>
+</div>
+<p class="why"><b>D.</b> The operating system must always retain the authority to terminate or stop any running process (§1).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>To register a 3-argument handler <code>void h(int, siginfo_t *, void *)</code> using sigaction, how must it be configured?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Assign to sa_sigaction, and set SA_SIGINFO in sa_flags</button>
+<button data-o="b" type="button"><span class="k">B</span>Assign to sa_handler, and set SA_RESTART in sa_flags</button>
+<button data-o="c" type="button"><span class="k">C</span>Assign the same function to both sa_handler and sa_sigaction</button>
+<button data-o="d" type="button"><span class="k">D</span>Assign to sa_sigaction with sa_flags set to 0</button>
+</div>
+<p class="why"><b>A.</b> sa_handler and sa_sigaction are mutually exclusive; the extended signature requires SA_SIGINFO (§2).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>Which of the following functions is safe to call inside a signal handler?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>printf("ok\n")</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>malloc(64)</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>write(STDOUT_FILENO, "ok\n", 3)</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>pthread_mutex_lock(&amp;m)</code></button>
+</div>
+<p class="why"><b>C.</b> write is async-signal-safe; printf, malloc, and mutex locking contend with the interrupted program state and risk deadlock (§2).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>SIGUSR1 has a registered handler and is currently blocked. Another process sends SIGUSR1 4 times via kill. When unblocked, how many times does the handler execute?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0 times: signals sent during blocking are lost</button>
+<button data-o="b" type="button"><span class="k">B</span>1 time</button>
+<button data-o="c" type="button"><span class="k">C</span>4 times</button>
+<button data-o="d" type="button"><span class="k">D</span>Indeterminate between 1 and 4 depending on scheduling</button>
+</div>
+<p class="why"><b>B.</b> Blocking holds signals pending, but standard signals do not queue: multiple arrivals merge into a single pending bit (§3, §4).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>In the same scenario, if SIGRTMIN+3 is sent 4 times via sigqueue with distinct payload values, what happens upon unblocking?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Handler executes once, receiving the last payload value</button>
+<button data-o="b" type="button"><span class="k">B</span>Handler executes once, receiving the first payload value</button>
+<button data-o="c" type="button"><span class="k">C</span>Handler executes 4 times in transmission order, each receiving its respective payload</button>
+<button data-o="d" type="button"><span class="k">D</span>Handler executes 4 times in arbitrary order</button>
+</div>
+<p class="why"><b>C.</b> Real-time signals queue in FIFO order for identical signal numbers, with each instance carrying its si_value (§4).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>What is the distinction between "signal X is ignored (SIG_IGN)" and "signal X is blocked"?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Ignored: discarded upon arrival; Blocked: held pending and delivered upon unblocking</button>
+<button data-o="b" type="button"><span class="k">B</span>Identical behavior, differing only in API terminology</button>
+<button data-o="c" type="button"><span class="k">C</span>Ignored: held pending; Blocked: discarded immediately</button>
+<button data-o="d" type="button"><span class="k">D</span>Blocking applies exclusively to real-time signals</button>
+</div>
+<p class="why"><b>A.</b> Masking (bloquear) defers delivery; ignoring (SIG_IGN) permanently drops the signal (§3).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">08</span>In a multithreaded program handling SIGTERM via sigwait in a dedicated thread, what is the correct setup?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Block SIGTERM exclusively in the dedicated listener thread</button>
+<button data-o="b" type="button"><span class="k">B</span>Install a signal handler for SIGTERM before calling sigwait</button>
+<button data-o="c" type="button"><span class="k">C</span>Leave SIGTERM unblocked; sigwait intercepts it automatically</button>
+<button data-o="d" type="button"><span class="k">D</span>Block SIGTERM in main via pthread_sigmask prior to thread creation so all threads inherit the mask, then consume via sigwait</button>
+</div>
+<p class="why"><b>D.</b> Process-directed signals can target any thread that does not block them; all threads must block the signal for sigwait to reliably consume it (§3).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>Calling <code>timer_settime(tid, 0, &amp;its, NULL)</code> with <code>its.it_value = {0, 0}</code> and <code>its.it_interval = {0, 200000000}</code> results in:</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Immediate expiration followed by periodic 200 ms intervals</button>
+<button data-o="b" type="button"><span class="k">B</span>The timer is disarmed (stopped) and will never expire</button>
+<button data-o="c" type="button"><span class="k">C</span>Single expiration after 200 ms with no subsequent reload</button>
+<button data-o="d" type="button"><span class="k">D</span>Returns EINVAL error</button>
+</div>
+<p class="why"><b>B.</b> Setting it_value to zero disarms the timer regardless of it_interval (§6).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>A periodic timer's signal was blocked; upon unblocking, <code>timer_getoverrun()</code> returns 2. What does this indicate?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The timer expired exactly 2 times in total</button>
+<button data-o="b" type="button"><span class="k">B</span>Two additional signals remain queued and will trigger 2 more handler executions</button>
+<button data-o="c" type="button"><span class="k">C</span>The delivered signal accounts for 3 expirations: 1 signal delivered plus 2 unrepresented expirations</button>
+<button data-o="d" type="button"><span class="k">D</span>The timer encountered 2 runtime errors</button>
+</div>
+<p class="why"><b>C.</b> A timer maintains only one pending signal; additional expirations while pending increment the overrun counter (§6).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>Why is CLOCK_MONOTONIC preferred over CLOCK_REALTIME for scheduling periodic tasks?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>It is strictly monotonic and unaffected by NTP steps or manual system time adjustments</button>
+<button data-o="b" type="button"><span class="k">B</span>It provides inherently finer hardware resolution</button>
+<button data-o="c" type="button"><span class="k">C</span>It is the only clock compatible with TIMER_ABSTIME</button>
+<button data-o="d" type="button"><span class="k">D</span>It measures time from 1970-01-01</button>
+</div>
+<p class="why"><b>A.</b> CLOCK_REALTIME is wall-clock time and can jump; monotonic time guarantees consistent elapsed intervals (§5).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>A loop performs 3 ms of work followed by a relative <code>nanosleep</code> of 20 ms (ignoring wakeup latency). After 100 iterations, how late is it compared to ideal 100 × 20 ms, and how is it resolved?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>3 ms late; no action needed</button>
+<button data-o="b" type="button"><span class="k">B</span>300 ms late; eliminate by calculating absolute target timestamps ("previous target + period") and sleeping with TIMER_ABSTIME</button>
+<button data-o="c" type="button"><span class="k">C</span>300 ms late; subtract 3 ms from relative sleep duration</button>
+<button data-o="d" type="button"><span class="k">D</span>2300 ms late; replace with usleep</button>
+</div>
+<p class="why"><b>B.</b> Cumulative drift = 100 × 3 ms. Static subtraction only works under perfect invariance; absolute timestamps eliminate accumulation (§7).</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">Restart</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>Glossary Cards <span class="tag plain">16 Cards</span></h2>
+<p class="aside">Spanish or English terms on the front; click to reveal English definitions and key takeaways.</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">señal<small>signal</small></span><span class="back"><b>Signal</b><br/>An asynchronous software notification delivered by the kernel or processes to a target process.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">manejador<small>signal handler</small></span><span class="back"><b>Signal Handler</b><br/>A function invoked upon signal delivery, receiving the signal number as argument.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SIG_DFL · SIG_IGN</span><span class="back"><b>Default · Ignore</b><br/>Predefined dispositions: execute kernel default action, or discard immediately.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigaction<small>SA_SIGINFO · sa_mask · sa_flags</small></span><span class="back"><b>Comprehensive Signal Configuration</b><br/>Enables siginfo_t inspection, custom execution masks, and behavior flags.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">async-signal-safe</span><span class="back"><b>Async-Signal-Safe</b><br/>Functions that can be called safely within handlers (write, _exit, sem_post...).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pendiente<small>pending</small></span><span class="back"><b>Pending State</b><br/>The state of a signal that has been generated but not yet delivered. Standard signals merge to one bit.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">máscara de señales<small>signal mask · sigprocmask</small></span><span class="back"><b>Signal Mask</b><br/>The set of blocked signals; blocked signals remain pending without loss.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigsuspend</span><span class="back"><b>Atomic Mask Swap and Wait</b><br/>Atomically sets a new mask and suspends, preventing race windows.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigwait<small>sigwaitinfo · pthread_sigmask</small></span><span class="back"><b>Synchronous Signal Reception</b><br/>Blocks signals and consumes them synchronously in a dedicated thread without handlers.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">señales de tiempo real<small>SIGRTMIN … SIGRTMAX</small></span><span class="back"><b>Real-Time Signals</b><br/>Signals that queue, preserve FIFO order, and carry payload data (34–64 on Linux).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sigqueue<small>si_value · union sigval</small></span><span class="back"><b>Signal Delivery with Payload</b><br/>Transmits an integer or pointer payload received via siginfo_t.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CLOCK_MONOTONIC<small>vs CLOCK_REALTIME</small></span><span class="back"><b>Monotonic Clock</b><br/>Strictly increasing clock unaffected by time steps; CLOCK_REALTIME is wall-clock time.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct timespec<small>tv_sec · tv_nsec</small></span><span class="back"><b>Seconds + Nanoseconds</b><br/>tv_nsec must stay within 0 to 999 999 999, carrying over to tv_sec on overflow.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct sigevent<small>SIGEV_SIGNAL · SIGEV_THREAD · SIGEV_NONE</small></span><span class="back"><b>Expiration Notification Configuration</b><br/>Defines whether timer/AIO expiration triggers a signal, spawns a thread, or neither.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">struct itimerspec<small>it_value · it_interval</small></span><span class="back"><b>Timer Specification</b><br/>Initial expiration delay plus periodic reload; it_value = 0 stops, it_interval = 0 is one-shot.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">deriva acumulativa<small>cumulative drift · TIMER_ABSTIME</small></span><span class="back"><b>Cumulative Drift</b><br/>Errors compounded by relative sleep loops; eliminated using absolute target deadlines.</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="Chapter navigation" class="pager" data-pager="T3"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · Open Systems &amp; Electronics Courseware</strong> · Community-authored interactive study notes created by learners, not official university or institutional courseware. All animations and interactive exercises are original work.</p>
+<p><a href="../../index.html">← Back to OpenSEEI Portal</a> · <a href="../../index.html#sync">Google Account Progress Sync</a> · Shared under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+  if (!$("t3-kill")) return;
+  var SLOTS = 5;
+  var st = { blk: true, pu: 0, q: [], n: 6, log: [] };
+
+  function render() {
+    $("t3-puv").textContent = st.pu;
+    $("t3-pu").setAttribute("class", st.pu ? "bx r" : "bx hollow m");
+    for (var i = 0; i < SLOTS; i++) {
+      var v = st.q[i];
+      $("t3-q" + i).textContent = v == null ? "" : "si_value = " + v;
+      $("t3-qb" + i).setAttribute("class", v == null ? "bx hollow m" : "bx r");
+    }
+    $("t3-mk").textContent = st.blk ? "bloqueadas: USR1, RTMIN+2" : "bloqueadas: —";
+    $("t3-log").textContent = st.log.length ? st.log.slice(-6).join("  ") : "—";
+    $("t3-blk").setAttribute("aria-pressed", st.blk ? "true" : "false");
+  }
+  function say(s) { $("t3-out").innerHTML = s; }
+
+  $("t3-kill").addEventListener("click", function () {
+    if (!st.blk) { st.log.push("USR1"); say("Not blocked: delivered immediately, handler executes once."); }
+    else if (st.pu) { say("Pending bit already 1: standard signals have only this single bit, so <b>this transmission is merged</b>."); }
+    else { st.pu = 1; say("Blocked: pending bit set to 1, waiting to be unblocked."); }
+    render();
+  });
+  $("t3-queue").addEventListener("click", function () {
+    var v = st.n + 1;
+    if (!st.blk) { st.n = v; st.log.push("RT(" + v + ")"); say("Not blocked: delivered immediately, handler receives " + v + " from si_value."); }
+    else if (st.q.length >= SLOTS) { say("The demo displays only " + SLOTS + " slots. Real systems queue many more; when full, sigqueue returns −1 with errno = EAGAIN."); }
+    else { st.n = v; st.q.push(v); say("Blocked: queued with si_value = " + v + "."); }
+    render();
+  });
+  $("t3-blk").addEventListener("click", function () {
+    st.blk = !st.blk;
+    if (st.blk) { say("Blocking both signals: incoming signals are held pending."); render(); return; }
+    var out = [];
+    if (st.pu) { st.pu = 0; st.log.push("USR1"); out.push("SIGUSR1 ×1"); }
+    while (st.q.length) { var v = st.q.shift(); st.log.push("RT(" + v + ")"); out.push("SIGRTMIN+2 (" + v + ")"); }
+    say(out.length ? "Unblocked: pending signals delivered in sequence: " + out.join(" → ") + ". Lower signal numbers delivered first: SIGUSR1 (10) precedes SIGRTMIN+2 (36)." : "Unblocked: no signals were pending.");
+    render();
+  });
+  $("t3-reset").addEventListener("click", function () {
+    st = { blk: true, pu: 0, q: [], n: 6, log: [] };
+    say("Reset: both signals are blocked.");
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

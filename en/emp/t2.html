@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>T2 Multitasking: Processes and Threads · EMP</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.cmp td code { white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="t2-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="t2-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="t2-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="t2-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="t2-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="t2-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="Back to OpenSEEI Portal">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EMP<span> · </span>Interactive Notes</a></span>
+<nav aria-label="Temas" class="chain" data-chain="T2"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Multitarea: procesos y threads</div>
+<h1>Procesos y threads</h1>
+<p class="zh">Multitasking: processes, threads, and keeping them from clashing</p>
+<div class="meta">
+
+
+
+<span><b>10</b> Key Points</span>
+<span>Approx. 25 min read</span>
+
+
+
+</div>
+<p class="lede">Things in the physical world happen concurrently: data arrives on the network port, the user presses a button, time ticks away. A program with only a single thread of execution struggles to handle all of them at once. Linux provides two approaches: spawn several independent <b class="t">processes (EN) / procesos (ES)</b>, or launch several <b class="t">threads (EN) / hilos (ES)</b> within a single process. This chapter first examines how to create, wait for, and terminate them; next, how the scheduler allocates CPU time; and finally, how to handle the three classic problems that arise when multiple threads share data: race conditions, synchronization, and deadlock.</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>Key Takeaways <span class="tag">Chapter Objectives</span></h2>
+<p>Here are the core concepts to master in this chapter. After reading each section, self-assess your understanding and click the button on the right to track your progress.</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">T2.1</span>
+<div class="txt"><span>Explain why control programs need multitasking; distinguish concurrency vs. parallelism, coarse-grained vs. fine-grained multitasking</span><span class="es">Multitarea de grano grueso y de grano fino; concurrencia frente a paralelismo.</span><a href="#s1">→ §1 Why Multitasking is Needed</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.1" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.2</span>
+<div class="txt"><span>Run in the background, detach from the terminal, inspect, renice, and terminate processes from the command line (&amp;, nohup, ps, renice, kill)</span><span class="es">Ejecución desde la línea de comandos.</span><a href="#s2">→ §2 Processes</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.2" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.3</span>
+<div class="txt"><span>Explain why the exec family "does not return", and the difference between exec and posix_spawn</span><span class="es">Ejecución destructiva (exec) y no destructiva (posix_spawn).</span><a href="#s2b">→ §2 Launching Programs from Code</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.3" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.4</span>
+<div class="txt"><span>Distinguish parent and child processes using the return value of fork; clean up with exit, wait/waitpid, and explain zombie processes</span><span class="es">Bifurcación: fork, exit, wait, waitpid.</span><a href="#s2c">→ §2 fork</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.4" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.5</span>
+<div class="txt"><span>Identify what threads in the same process share vs. hold privately, and the advantages of threads over processes</span><span class="es">¿Qué es un thread? Recursos compartidos y datos particulares.</span><a href="#s3">→ §3 Threads</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.5" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.6</span>
+<div class="txt"><span>Create and join threads using pthread_create, pthread_exit, and pthread_join; pass arguments and retrieve return values safely, and compile with -lpthread</span><span class="es">Creación, finalización y espera de threads.</span><a href="#s3b">→ §3 Thread Creation and Joining</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.6" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.7</span>
+<div class="txt"><span>Describe thread states and time slicing; distinguish SCHED_FIFO, SCHED_RR, SCHED_OTHER, and configure policies and priorities using attributes</span><span class="es">Scheduling: políticas, prioridad, atributos, sched_yield.</span><a href="#s4">→ §4 Scheduling</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.7" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.8</span>
+<div class="txt"><span>Explain race conditions and critical sections; protect shared data using pthread_mutex, distinguishing lock vs. trylock and the four mutex types</span><span class="es">Sincronización: mutex.</span><a href="#s5">→ §5 Race Conditions and Mutexes</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.8" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.9</span>
+<div class="txt"><span>Use condition variables and semaphores to wait for conditions, and construct the producer-consumer pattern</span><span class="es">Variables condicionales y semáforos.</span><a href="#s6">→ §6 Synchronization</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.9" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+<li class="obj">
+<span class="code">T2.10</span>
+<div class="txt"><span>Identify causes of deadlock and prevention strategies, along with common pitfalls in multithreaded programming</span><span class="es">Bloqueo mutuo (deadlock) y errores habituales.</span><a href="#s7">→ §7 Deadlock and Common Pitfalls</a></div>
+<button aria-pressed="false" class="chk" data-obj="T2.10" type="button"><span class="box"></span><span class="lab">Mark mastered</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="T2"><span class="val">0 / 10 Mastered</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Why Multitasking is Needed <span class="tag">T2.1</span></h2>
+<p class="hook"><span class="zh">Can a single while(1) loop wait for network packets, poll keystrokes, and still perform calculations on time?</span><span class="es">El mundo físico es concurrente.</span></p>
+<p>A common idiom on bare-metal microcontrollers is a single large loop: checking each event in turn, processing whatever is ready. Its limitation is clear: if any single task takes even a little longer (waiting on a network packet, writing to a file), everything else is stalled; worse, every wait has to be restructured into a state machine ("poll and move on"), making code difficult to read.</p>
+<p>A board running Linux is a general-purpose computer. The operating system provides <b class="t">multitasking (EN) / multitarea (ES)</b>: each task is written as sequential code that simply blocks when it needs to wait, while the OS decides which task gets the CPU at any given moment. Multitasking comes in two granularities:</p>
+<div class="grid2">
+<div class="cell b">
+<span class="k c-b">grano grueso · coarse-grained</span>
+<h3>Multiple Processes</h3>
+<p>Each task executes inside its own "virtual machine": the memory it observes starts at virtual address 0 and belongs strictly to itself, with the operating system translating these virtual addresses into physical RAM addresses. The key advantage is isolation: if a process crashes or performs an illegal operation, no other process is dragged down with it.</p>
+</div>
+<div class="cell g">
+<span class="k c-g">grano fino · fine-grained</span>
+<h3>Multiple Threads in a Process</h3>
+<p>Multiple tasks run inside the same "virtual machine", sharing address space and system resources. Creation, context switching, and communication are much cheaper, at the cost of zero memory isolation: if one thread corrupts memory, every thread in that process is affected.</p>
+</div>
+</div>
+<p>In production systems, the two approaches are commonly combined: several processes, each hosting multiple threads.</p>
+<p>There is also a widespread misconception: spawning two threads means they are "truly running at the exact same physical instant". Not necessarily. With only one core, the operating system divides time into tiny slices and alternates between them: this is <b class="t">concurrency (EN) / concurrencia (ES)</b>. Only with multiple physical cores can two threads truly execute simultaneously on distinct cores: this is <b class="t">parallelism (EN) / paralelismo (ES)</b>.</p>
+<figure class="stage" data-scene="" id="sc-conc">
+<div class="stage-title"><span>Scene 1 · Concurrency vs. Parallelism</span><b>3 steps</b></div>
+<div aria-label="Interactive animation: Concurrency on a single core vs. parallelism on dual cores. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-conc-t" role="img" viewbox="0 0 800 280">
+<title id="sc-conc-t">Top row: single-core alternating time slices for tasks A and B; bottom two rows: dual-core where A and B advance concurrently on separate cores</title>
+<text class="tz sm w" x="20" y="58">1 core</text>
+<text class="tm xs m" x="20" y="78">CPU0</text>
+<g data-step="1">
+<rect class="bx g" height="34" rx="4" width="80" x="110" y="44"></rect><text class="tm sm g mid" x="150" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="190" y="44"></rect><text class="tm sm t mid" x="230" y="66">B</text>
+<rect class="bx g" height="34" rx="4" width="80" x="270" y="44"></rect><text class="tm sm g mid" x="310" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="350" y="44"></rect><text class="tm sm t mid" x="390" y="66">B</text>
+<rect class="bx g" height="34" rx="4" width="80" x="430" y="44"></rect><text class="tm sm g mid" x="470" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="510" y="44"></rect><text class="tm sm t mid" x="550" y="66">B</text>
+<rect class="bx g" height="34" rx="4" width="80" x="590" y="44"></rect><text class="tm sm g mid" x="630" y="66">A</text>
+<rect class="bx t" height="34" rx="4" width="80" x="670" y="44"></rect><text class="tm sm t mid" x="710" y="66">B</text>
+</g>
+<text class="tz sm w" x="20" y="146">2 cores</text>
+<text class="tm xs m" x="20" y="166">CPU0</text>
+<text class="tm xs m" x="20" y="206">CPU1</text>
+<g data-step="2">
+<rect class="bx g" height="30" rx="4" width="320" x="110" y="140"></rect><text class="tm sm g mid" x="270" y="160">A</text>
+<rect class="bx t" height="30" rx="4" width="320" x="110" y="184"></rect><text class="tm sm t mid" x="270" y="204">B</text>
+<text class="tz sm m" x="450" y="182">Same workload finished in half the time</text>
+</g>
+<g data-step="3">
+<path class="ln thin o" d="M110 238 H750"></path>
+<path class="ln thin o" d="M110 232v12M190 232v12M270 232v12M350 232v12M430 232v12M510 232v12M590 232v12M670 232v12M750 232v12"></path>
+<text class="tz sm o" x="110" y="268">Time slice · rodaja de tiempo</text>
+<text class="tz sm y end" x="750" y="268">Concurrency ≠ Parallelism</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">With only 1 core: the scheduler divides time into slices, alternating between A and B. At any given instant, only one is running, but to the user both tasks appear to make steady progress: this is <b>concurrency</b>.</li>
+<li>With 2 cores: A and B can each occupy their own core, executing truly at the <b>same instant</b>: this is <b>parallelism</b>.</li>
+<li data-dur="4200">The cadence of context switches is governed by the system clock (<span class="c-o">gold</span> tick marks). In either scenario, code must never assume "the other thread is definitely running" or "definitely idle" right now: execution order is entirely up to the scheduler.</li>
+</ol>
+<p class="stage-note">Time slice durations are for illustration only.</p>
+</figure>
+<div class="note">
+<span class="lbl">A Consequence</span>
+<p>The code that creates a thread often finishes before the new thread even begins executing. If <code>main</code> returns immediately after creating a thread, the entire process terminates and the new thread may never execute a single line. §3 explains how to use <code>pthread_join</code> to wait for it.</p>
+</div>
+<p class="takeaway">Multitasking delegates juggling multiple duties to the OS: coarse-grained via processes (strong isolation, higher overhead), fine-grained via threads (shared memory, lower overhead). On a single core you have concurrency; true parallelism requires multiple cores. Execution ordering is always dictated by the scheduler.</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>Processes: Spawning, Duplicating, and Waiting <span class="tag">T2.2 · T2.3 · T2.4</span></h2>
+<p class="hook"><span class="zh">Every time you run a program, a new process is created. Inside code, how do you spawn another?</span><span class="es">Multitarea de grano grueso.</span></p>
+<p>A <b>proceso</b> (process) is an executing program instance: it possesses its own address space (text, global variables, heap, stack), open file descriptors, a unique <b class="t">process ID (PID) / identificador de proceso (PID)</b>, and at least one thread.</p>
+<h3 id="s2a">On the Command Line <span class="tag">T2.2</span></h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>./prueba</td><td>Runs <code>prueba</code> in the current directory. The file must have execute permissions (visible as <code>x</code> in <code>ls -l</code>). Blocks the command line until the program finishes.</td></tr>
+<tr><td>./prueba &amp;</td><td>Runs in the <b>background</b>, freeing the terminal prompt immediately. However, the program remains a child of this terminal session: closing the terminal window terminates it.</td></tr>
+<tr><td>nohup ./prueba &amp;</td><td>Runs detached from the terminal: closing the window allows the program to continue running.</td></tr>
+<tr><td>ps aux</td><td>Lists currently running processes and their attributes (PID, user, CPU %, memory %, etc.).</td></tr>
+<tr><td>renice -10 -p 123</td><td>Changes the nice value of PID 123 to −10 (lower value = higher priority; negative values require root privileges).</td></tr>
+<tr><td>kill 123</td><td>Requests PID 123 to terminate gracefully (sends SIGTERM). If ignored, force termination with <code>kill -9 123</code> (SIGKILL).</td></tr>
+<tr><td>pkill nombre</td><td>Terminates <b>all</b> processes whose name matches <code>nombre</code>. Use with caution to avoid terminating unintended processes.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="s2b">Launching Another Program from Code <span class="tag">T2.3</span></h3>
+<p>The <b class="t">exec</b> family of functions (<code>execl</code>, <code>execv</code>, <code>execle</code>, <code>execve</code>, <code>execlp</code>, <code>execvp</code>) replaces the <b>current process's</b> image with another program: the PID remains unchanged, but the previous program text and memory are completely replaced. Because exec is "destructive", on success it <b>does not return</b>—there is no longer any code to return to. It returns −1 only on failure.</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="fn">execl</span>(<span class="nm">"/bin/ls"</span>, <span class="nm">"ls"</span>, <span class="nm">"-l"</span>, (<span class="kw">char</span> *)0);   <span class="cm">// Argument list ends with a null pointer</span></span><span class="ln-row"><span class="fn">perror</span>(<span class="nm">"execl"</span>);                               <span class="cm">// Reaching here indicates exec has failed</span></span></code></pre>
+<p>Letters in function names follow conventions: <code>l</code> = arguments passed as a list, <code>v</code> = arguments passed in an array (vector), <code>e</code> = custom environment variables passed, <code>p</code> = search for executable in <code>PATH</code>.</p>
+<p>To launch another program while continuing caller execution, use <code>posix_spawn</code> / <code>posix_spawnp</code> (<code>&lt;spawn.h&gt;</code>). It is "non-destructive": the caller keeps running, and the new program's PID is returned via the first argument. Internally, this is equivalent to calling <code>fork()</code> and then <code>exec()</code> inside the child process.</p>
+<h3 id="s2c">fork: Duplicating Yourself <span class="tag">T2.4</span></h3>
+<p><code>pid_t fork(void);</code> splits the calling process into two. The caller is the <b class="t">parent process (EN) / proceso padre (ES)</b>, and the new instance is the <b class="t">child process (EN) / proceso hijo (ES)</b>. The child receives an <b>exact duplicate</b> of the parent's user space: identical code, identical variable copies and values, and identical open file descriptors. Both resume execution from the point where <code>fork()</code> returns. The only difference is the return value:</p>
+<figure class="stage" data-scene="" id="sc-fork">
+<div class="stage-title"><span>Scene 2 · fork → exit → wait</span><b>7 steps</b></div>
+<div aria-label="Interactive animation: fork duplicates a process, child terminates becoming a zombie, parent wait reaps it. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-fork-t" role="img" viewbox="0 0 800 400">
+<title id="sc-fork-t">Parent process PID 100 calls fork; kernel clones child PID 101; fork returns different values to each; child modifying x does not alter parent's x; child exit turns it into a zombie; parent wait reaps it</title>
+
+<rect class="bx hollow w" data-hl="7" height="250" rx="12" width="320" x="20" y="40"></rect>
+<text class="tx sm w" x="40" y="76">padre</text>
+<text class="tm sm m end" x="320" y="76">PID 100</text>
+<text class="tm sm w" x="40" y="112">pid = fork();</text>
+<rect class="bx b" height="120" rx="8" width="280" x="40" y="132"></rect>
+<text class="tz sm b" x="54" y="156">memoria</text>
+<text class="tm b" data-hl="5" x="60" y="192">x   = 5</text>
+<text class="tm b" x="60" y="232">pid =</text>
+<text class="tm b" data-out="4" x="128" y="232">?</text>
+<text class="tm y" data-step="4" x="128" y="232">101</text>
+<g data-step="7">
+<text class="tm sm g" x="40" y="278">wait(&amp;st) → 101 · estado 3</text>
+</g>
+
+<g data-step="2">
+<rect class="bx p" height="44" rx="8" width="96" x="352" y="150"></rect>
+<text class="tm sm p mid" x="400" y="177">fork()</text>
+<path class="ln p draw" d="M340 222 C 380 262, 420 262, 460 222" id="t2-p-fork" marker-end="url(#t2-ah-p)"></path>
+<text class="tz sm p mid" x="400" y="280">Kernel clone</text>
+</g>
+<circle class="sl p" data-move="#t2-p-fork" data-out="3" data-step="2" r="7"></circle>
+
+<g data-out="7" data-step="3">
+<rect class="bx hollow w" height="250" rx="12" width="320" x="460" y="40"></rect>
+<text class="tx sm w" x="480" y="76">hijo</text>
+<text class="tm sm m end" x="760" y="76">PID 101</text>
+<text class="tm sm w" x="480" y="112">pid = fork();</text>
+<rect class="bx b draw" height="120" rx="8" width="280" x="480" y="132"></rect>
+<text class="tz sm b" x="494" y="156">memoria (duplicate)</text>
+<text class="tm b" data-out="5" x="500" y="192">x   = 5</text>
+<text class="tm y" data-step="5" x="500" y="192">x   = 6</text>
+<text class="tm b" x="500" y="232">pid =</text>
+<text class="tm b" data-out="4" x="568" y="232">?</text>
+<text class="tm y" data-step="4" x="568" y="232">0</text>
+</g>
+<g data-out="7" data-step="6">
+<rect class="ln r dash" height="266" rx="14" width="336" x="452" y="32"></rect>
+<text class="tm sm r" x="480" y="278">exit(3) → zombie</text>
+</g>
+<g data-step="7">
+<rect class="ln thin m dash" height="250" rx="12" width="320" x="460" y="40"></rect>
+<text class="tz sm m mid" x="620" y="170">Child process reaped</text>
+</g>
+
+<text class="tz sm y mid" data-out="5" data-step="4" x="400" y="340">Parent receives child's PID; child receives 0</text>
+<text class="tz sm y mid" data-out="6" data-step="5" x="400" y="340">Two independent memory spaces: child modifies x, unseen by parent</text>
+<text class="tz sm r mid" data-out="7" data-step="6" x="400" y="340">Process terminated, but exit status uncollected: zombie</text>
+<text class="tz sm g mid" data-step="7" x="400" y="340">wait reaps exit status; kernel frees final bookkeeping</text>
+</svg>
+</div>
+<ol class="captions">
+<li>Parent process (PID 100) has <code>x = 5</code> in memory and is about to execute <code>pid = fork();</code>.</li>
+<li><code>fork()</code> is a <span class="c-p">system call</span>: the kernel takes over to duplicate the process.</li>
+<li data-dur="4000">The kernel spawns the child process (PID 101): its user space is an exact <b>duplicate</b> of the parent's, with identical variables, values, and open files, resuming at the <code>fork()</code> return point.</li>
+<li data-dur="4200"><code>fork()</code> returns once in each process: the parent receives the <b>child's PID</b> (101, &gt; 0), while the child receives <b>0</b>. On failure, it returns −1 only in the parent without creating a child.</li>
+<li data-dur="4000">From here on, each process follows its own path. The child executes <code>x++</code>, incrementing its x to 6; the parent's x remains 5: the two address spaces are completely separate.</li>
+<li data-dur="4600">The child calls <code>exit(3)</code> to terminate. Its memory is freed, but the kernel retains its PID and exit status 3, waiting for the parent to retrieve them. A terminated process that has not yet been reaped is called a <b>zombie</b> process.</li>
+<li data-dur="4600">The parent calls <code>wait(&amp;st)</code>: it returns the terminated child's PID (101) and places the status into <code>st</code>. The kernel now deletes the child's final bookkeeping record.</li>
+</ol>
+<p class="stage-note">PID values are for demonstration only.</p>
+</figure>
+<p>In code, a single <code>if</code> branches parent and child execution:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdlib.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;unistd.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;sys/wait.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">int</span> x = 5;</span><span class="ln-row">    <span class="kw">pid_t</span> pid = <span class="fn">fork</span>();</span><span class="ln-row">    <span class="kw">if</span> (pid == -1) {                      <span class="cm">// Failure: no child process</span></span><span class="ln-row">        <span class="fn">perror</span>(<span class="nm">"fork"</span>);</span><span class="ln-row">        <span class="kw">return</span> 1;</span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">if</span> (pid == 0) {                       <span class="cm">// Child process</span></span><span class="ln-row">        x++;</span><span class="ln-row">        <span class="fn">printf</span>(<span class="nm">"hijo  %d: x = %d\n"</span>, (<span class="kw">int</span>)<span class="fn">getpid</span>(), x);</span><span class="ln-row">        <span class="fn">exit</span>(3);                          <span class="cm">// Exit status 3</span></span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">int</span> st;                               <span class="cm">// Parent process: pid is child's PID</span></span><span class="ln-row">    <span class="kw">pid_t</span> h = <span class="fn">wait</span>(&amp;st);</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">WIFEXITED</span>(st))</span><span class="ln-row">        <span class="fn">printf</span>(<span class="nm">"padre %d: hijo %d salió con %d, x = %d\n"</span>,</span><span class="ln-row">               (<span class="kw">int</span>)<span class="fn">getpid</span>(), (<span class="kw">int</span>)h, <span class="fn">WEXITSTATUS</span>(st), x);   <span class="cm">// x is still 5</span></span><span class="ln-row">    <span class="kw">return</span> 0;</span><span class="ln-row">}</span></code></pre>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">void exit(int status)</span>
+<h3>Terminating Itself</h3>
+<p>Terminates the calling process, delivering <code>status</code> to the system for the parent to retrieve via wait. Returning <code>return n</code> from <code>main</code> has the identical effect.</p>
+</div>
+<div class="cell g">
+<span class="k c-g">pid_t wait(int *st)</span>
+<h3>Waiting for Any Child</h3>
+<p>Blocks until any child process terminates; returns its PID. <code>st</code> receives an encoded status integer rather than the raw exit code: check <code>WIFEXITED(st)</code> for normal exit first, then use <code>WEXITSTATUS(st)</code> to extract the exit code.</p>
+</div>
+<div class="cell y">
+<span class="k c-y">waitpid(pid, &amp;st, opts)</span>
+<h3>Waiting for a Specific Child</h3>
+<p>Waits specifically for the process with PID <code>pid</code> (or any child if <code>pid = -1</code>). Passing <code>WNOHANG</code> in <code>opts</code> prevents blocking: returns 0 immediately if no child has exited.</p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">Zombies and Orphans</span>
+<p>Between the moment a child exits and the parent calls wait, it remains a <b class="t">zombie process (EN) / proceso zombi (ES)</b>: holding only a single entry in the system process table. Neglecting to wait causes zombies to accumulate. Conversely, if the parent exits first, the child becomes an orphan and is adopted by the system's init process (PID 1), which reaps it automatically. Long-running daemons must either wait for every child or periodically clean up using <code>waitpid(-1, &amp;st, WNOHANG)</code>.</p>
+</div>
+<p>Open files in the parent are inherited by the child: both refer to the same open file description (sharing the read/write offset). Be cautious when both processes write to the same file.</p>
+<p>When calling <code>fork()</code> repeatedly inside a loop, <b>every</b> existing process duplicates itself, causing the process count to grow as powers of 2. The practice drill below generates questions based on this rule:</p>
+<div class="drill" data-drill="fork"></div>
+<p class="takeaway">fork duplicates the entire process, distinguishing parent and child by its return value: parent gets the child's PID, child gets 0, and failure returns −1. Memory spaces remain independent after duplicating. Children terminate with exit, and parents reap them with wait/waitpid to avoid zombies. exec replaces the active program and never returns on success; posix_spawn starts a new binary while preserving the caller.</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Threads: Multiple Lines of Execution Within a Process <span class="tag">T2.5 · T2.6</span></h2>
+<p class="hook"><span class="zh">When you don't want to duplicate the entire process, but simply need an additional thread of execution, what do you do?</span><span class="es">Threads: líneas de ejecución concurrente dentro de un proceso.</span></p>
+<p>A <b>thread</b> (hilo) is the smallest execution unit that an operating system can schedule: an instruction stream executing concurrently within a process. Every process starts with at least one thread, the <b class="t">main thread (EN) / hilo principal (ES)</b>, which is the thread executing <code>main</code>.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Threads in the Same Process</th><th>Contents</th></tr></thead>
+<tbody>
+<tr><td>Shared</td><td>Code (text), <b>global variables</b>, <code>static</code> variables inside functions, heap memory (allocated via <code>malloc</code>), open file descriptors, PID, and signal disposition</td></tr>
+<tr><td>Private to Each Thread</td><td>Program counter (PC) and CPU registers, <b>stack</b> (meaning local variables are private to each thread), thread ID <code>pthread_t</code>, scheduling priority, <code>errno</code>, and thread-specific data (TSD)</td></tr>
+</tbody>
+</table>
+</div>
+<p>When two threads execute the same function, each thread maintains its own copy of the function's local variables (on its own stack); however, if a local variable is declared <code>static</code>, only one shared copy exists across both threads.</p>
+<p>Compared to processes, the primary advantage of threads is being lightweight:</p>
+<ul>
+<li>Creating a thread is significantly faster than creating a process (commonly estimated at an order of magnitude faster), and termination is similarly cheaper: the kernel only needs to reclaim the thread context and stack, without tearing down an entire process control block.</li>
+<li>Context switches between threads within the same process are much faster: the CPU only switches the PC, registers, and stack pointer, without switching the memory address space. It remains a context switch, but a vastly cheaper one.</li>
+<li>Inter-thread communication takes place directly through reading and writing shared memory, avoiding round-trips through the kernel.</li>
+</ul>
+<p>The cost also stems from sharing: there is zero fault isolation. If one thread corrupts memory or crashes, the entire process terminates; and shared mutable data must be protected manually (§5).</p>
+<p>Threads can be implemented at kernel level (the kernel is aware of each thread, schedules them directly, and can utilize multiple CPU cores) or in user space (a user-level library handles thread switching within a single process, while the kernel sees only one process: no OS modifications needed, but incapable of multi-core parallelism, and a blocking system call by one thread halts the entire process). Modern Linux uses kernel-level threads (NPTL): each pthread corresponds to a distinct kernel scheduling entity.</p>
+<h3 id="s3b">Creation, Termination, and Joining <span class="tag">T2.6</span></h3>
+<p>Why use threads? When you need to perform another task simultaneously without abandoning the current work. A regular function call forces the caller to pause until the function completes; <code>pthread_create</code> launches the function on a new execution path while the caller proceeds immediately:</p>
+
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span>  <span class="fn">pthread_create</span>(<span class="kw">pthread_t</span> *tid, <span class="kw">const pthread_attr_t</span> *attr,</span><span class="ln-row">                     <span class="kw">void</span> *(*funcion)(<span class="kw">void</span> *), <span class="kw">void</span> *arg);</span><span class="ln-row"><span class="kw">void</span> <span class="fn">pthread_exit</span>(<span class="kw">void</span> *valor);</span><span class="ln-row"><span class="kw">int</span>  <span class="fn">pthread_join</span>(<span class="kw">pthread_t</span> tid, <span class="kw">void</span> **valor);</span><span class="ln-row"><span class="kw">pthread_t</span> <span class="fn">pthread_self</span>(<span class="kw">void</span>);</span><span class="ln-row"><span class="kw">int</span>  <span class="fn">pthread_equal</span>(<span class="kw">pthread_t</span> t1, <span class="kw">pthread_t</span> t2);</span></code></pre>
+<ul>
+<li><code>tid</code>: Output argument storing the new thread's <b class="t">thread ID (EN) / identificador (ES)</b>.</li>
+<li><code>attr</code>: Creation attributes (priority, scheduling policy, stack size, etc.); pass <code>NULL</code> to use all defaults (§4).</li>
+<li><code>funcion</code>: The entry-point function for the new thread, which must conform to the signature <code>void *f(void *)</code>: taking one <code>void *</code> argument and returning a <code>void *</code>.</li>
+<li><code>arg</code>: The argument passed to <code>funcion</code>. To pass multiple values, pack them into a struct and pass the struct's address.</li>
+<li>Return value: Returns 0 on success, or an error number on failure (not −1, and does not set <code>errno</code>); print using <code>strerror(err)</code>.</li>
+</ul>
+<p>A thread terminates under three conditions: returning from its entry function <code>funcion</code>; calling <code>pthread_exit(valor)</code>; or being canceled by another thread in the same process (<code>pthread_cancel</code>). In the first two cases, the <code>void *</code> acts as the thread's return value. Another thread calling <code>pthread_join(tid, &amp;r)</code> <b>blocks</b> until tid terminates, storing that return pointer into <code>r</code>.</p>
+<p>Example: Two threads each compute the sum of half an array; the main thread waits for both and computes the total. Parameters and results are organized in separate structs:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;stdio.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;string.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">typedef struct</span> { <span class="kw">const int</span> *v; <span class="kw">int</span> n; <span class="kw">long</span> suma; } <span class="kw">tarea_t</span>;</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> *<span class="fn">sumar</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    <span class="kw">tarea_t</span> *t = arg;                      <span class="cm">// void * → concrete type</span></span><span class="ln-row">    t-&gt;suma = 0;</span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; t-&gt;n; i++)</span><span class="ln-row">        t-&gt;suma += t-&gt;v[i];</span><span class="ln-row">    <span class="kw">return</span> t;                              <span class="cm">// Equivalent to pthread_exit(t)</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">static int</span> datos[1000];</span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 1000; i++) datos[i] = i;</span><span class="ln-row"> </span><span class="ln-row">    <span class="kw">tarea_t</span> a = { datos, 500, 0 }, b = { datos + 500, 500, 0 };</span><span class="ln-row">    <span class="kw">pthread_t</span> ha, hb;</span><span class="ln-row">    <span class="kw">int</span> err = <span class="fn">pthread_create</span>(&amp;ha, NULL, sumar, &amp;a);</span><span class="ln-row">    <span class="kw">if</span> (err) { <span class="fn">fprintf</span>(stderr, <span class="nm">"create: %s\n"</span>, <span class="fn">strerror</span>(err)); <span class="kw">return</span> 1; }</span><span class="ln-row">    err = <span class="fn">pthread_create</span>(&amp;hb, NULL, sumar, &amp;b);</span><span class="ln-row">    <span class="kw">if</span> (err) { <span class="fn">fprintf</span>(stderr, <span class="nm">"create: %s\n"</span>, <span class="fn">strerror</span>(err)); <span class="kw">return</span> 1; }</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> *r;</span><span class="ln-row">    <span class="fn">pthread_join</span>(ha, &amp;r);                   <span class="cm">// Blocks until ha terminates; r == &amp;a</span></span><span class="ln-row">    <span class="fn">pthread_join</span>(hb, NULL);                 <span class="cm">// Pass NULL when return value is not needed</span></span><span class="ln-row">    <span class="fn">printf</span>(<span class="nm">"total = %ld\n"</span>, ((<span class="kw">tarea_t</span> *)r)-&gt;suma + b.suma);   <span class="cm">// 499500</span></span><span class="ln-row">    <span class="kw">return</span> 0;</span><span class="ln-row">}</span></code></pre>
+<p>When compiling, link against the POSIX threads library: <code>gcc -o suma suma.c -lpthread</code> (or use <code>-pthread</code> to set both compiler and linker flags). When cross-compiling for Raspberry Pi, replace <code>gcc</code> with the toolchain compiler; flags remain unchanged.</p>
+<div class="note alert">
+<span class="lbl">Three Common Mistakes</span>
+<p><b>Main Exits Early</b>: When <code>main</code> returns (or any thread calls <code>exit</code>), the entire process terminates and all sibling threads vanish immediately. Either call <code>pthread_join</code> to wait for them, or have <code>main</code> call <code>pthread_exit(NULL)</code>: this terminates only the main thread while keeping the process alive until all remaining threads finish. Using <code>sleep</code> to wait is sheer guesswork.</p>
+<p><b>Passing a Mutating Address</b>: In <code>for (i = 0; i &lt; 4; i++) pthread_create(&amp;h[i], NULL, f, &amp;i);</code>, all four threads receive the same address <code>&amp;i</code>, and the value they read depends on arbitrary scheduling. Each thread must receive its own distinct storage (an array element or dedicated struct).</p>
+<p><b>Returning a Stack-Allocated Address</b>: If a thread function returns a pointer to its own local stack variable, that stack frame is destroyed upon return, leaving join with a dangling pointer to invalid memory. Store results in caller-provided structures or dynamic heap memory allocated via <code>malloc</code>.</p>
+</div>
+<p><code>pthread_self()</code> returns the calling thread's own thread ID; compare two thread IDs with <code>pthread_equal(t1, t2)</code> (returns non-zero if equal, 0 if different) rather than <code>==</code>, as <code>pthread_t</code> is not guaranteed to be an integer.</p>
+<p>When each thread requires its own private copy of a global variable, use <b class="t">thread-specific data (TSD)</b>: call <code>pthread_key_create(&amp;key, destructor)</code> to create a process-wide key, then use <code>pthread_setspecific(key, ptr)</code> to attach private data and <code>pthread_getspecific(key)</code> to retrieve it; the destructor reclaims the memory upon thread exit. A common idiom to initialize the key exactly once across all threads is <code>pthread_once</code>.</p>
+<p class="takeaway">Threads share global data and the heap, while maintaining their own private stacks and registers. pthread_create starts a <code>void *f(void *)</code> function with struct parameters passed by address; threads terminate via return or pthread_exit, and pthread_join blocks synchronously to retrieve return values. Always link with -lpthread; returning from main terminates all sibling threads.</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>Scheduling: Who Gets the CPU First <span class="tag">T2.7</span></h2>
+<p class="hook"><span class="zh">Ten threads are ready to run, but the CPU has only a few cores. Who decides, and by what rules?</span><span class="es">Scheduling: SCHED_FIFO, SCHED_RR, SCHED_OTHER.</span></p>
+<p>The kernel's <b class="t">scheduler (EN) / planificador (ES)</b> is responsible for allocating CPU execution time. From its perspective, every thread exists in one of three states at any given moment:</p>
+<div class="grid3">
+<div class="cell g">
+<span class="k c-g">en ejecución · running</span>
+<h3>Running</h3>
+<p>Actively occupying a CPU core and executing instructions. On a single core, only one thread can be in this state at any instant.</p>
+</div>
+<div class="cell y">
+<span class="k c-y">listo · ready</span>
+<h3>Ready</h3>
+<p>Everything is prepared and waiting only for CPU allocation; queued in the ready queue.</p>
+</div>
+<div class="cell r">
+<span class="k c-r">bloqueado · blocked</span>
+<h3>Blocked</h3>
+<p>Waiting for an external event: timer expiration, incoming data on <code>read</code>, <code>pthread_join</code>, <code>pthread_mutex_lock</code>... Transitions to ready once the event occurs; consumes zero CPU while blocked.</p>
+</div>
+</div>
+<p>A running thread yields the CPU for one of three reasons: it blocks voluntarily; it is <b>preempted</b> by a higher-priority ready thread; or its <b class="t">quantum / time slice (EN) / rodaja de tiempo (ES)</b> expires. POSIX defines three primary scheduling policies:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Policy</th><th>Rules</th></tr></thead>
+<tbody>
+<tr><td>SCHED_FIFO</td><td>Maintains one queue per priority level; always executes the thread queued the longest in the <b>highest-priority</b> non-empty queue. It runs continuously until it blocks, voluntarily yields (<code>sched_yield</code>), or is preempted by a higher priority; peer threads of identical priority must wait.</td></tr>
+<tr><td>SCHED_RR</td><td>Prioritized like FIFO, but adds a <b>time limit</b>: threads of identical priority run for at most one time slice before being moved to the tail of their priority queue, alternating execution in round-robin fashion.</td></tr>
+<tr><td>SCHED_OTHER</td><td>Default policy; specific behavior is OS-dependent. On Linux, this is completely fair time-sharing: all threads hold static priority 0, with CPU time distributed dynamically based on nice values and consumed runtime.</td></tr>
+</tbody>
+</table>
+</div>
+<p>FIFO and RR are real-time policies: on Linux, real-time priorities span 1–99 (higher numbers indicate higher urgency, queryable via <code>sched_get_priority_min/max</code>), and <b>any</b> ready real-time thread preempts all SCHED_OTHER threads. Because real-time threads can easily starve standard processes, configuring them requires superuser privileges.</p>
+<p>Below we observe how three threads of equal priority share CPU time under SCHED_RR. The rule is simple: whichever thread is scheduled runs for up to one time slice; if incomplete, it moves to the tail of the queue; if its remaining workload is less than a slice, it yields immediately upon completion.</p>
+<figure class="stage" data-scene="" id="sc-rr">
+<div class="stage-title"><span>Scene 4 · Round-Robin · Quantum 20 ms</span><b>7 steps</b></div>
+<div aria-label="Interactive animation: Three threads sharing CPU time under SCHED_RR. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-rr-t" role="img" viewbox="0 0 800 380">
+<title id="sc-rr-t">Gantt chart: T1 needs 50 ms, T2 20 ms, T3 30 ms with 20 ms time slice. T2 finishes at 40 ms, T3 at 90 ms, T1 at 100 ms</title>
+<text class="tm sm w" x="24" y="76">T1</text><text class="tm xs m" x="58" y="76">50 ms</text>
+<text class="tm sm w" x="24" y="126">T2</text><text class="tm xs m" x="58" y="126">20 ms</text>
+<text class="tm sm w" x="24" y="176">T3</text><text class="tm xs m" x="58" y="176">30 ms</text>
+<path class="ln thin m dash" d="M120 72 H760 M120 122 H760 M120 172 H760"></path>
+
+<path class="ln thin o" d="M120 220 H760"></path>
+<path class="ln thin o" d="M120 214v12M248 214v12M376 214v12M504 214v12M632 214v12M760 214v12"></path>
+<text class="tm xs o mid" x="120" y="244">0</text>
+<text class="tm xs o mid" x="248" y="244">20</text>
+<text class="tm xs o mid" x="376" y="244">40</text>
+<text class="tm xs o mid" x="504" y="244">60</text>
+<text class="tm xs o mid" x="632" y="244">80</text>
+<text class="tm xs o mid" x="760" y="244">100 ms</text>
+
+<rect class="bx g" data-hl="2" data-step="2" height="28" rx="3" width="128" x="120" y="58"></rect>
+<rect class="bx g" data-hl="3" data-step="3" height="28" rx="3" width="128" x="248" y="108"></rect>
+<text class="tm sm g" data-step="3" x="384" y="128">✓ 40</text>
+<rect class="bx g" data-hl="4" data-step="4" height="28" rx="3" width="128" x="376" y="158"></rect>
+<rect class="bx g" data-hl="5" data-step="5" height="28" rx="3" width="128" x="504" y="58"></rect>
+<rect class="bx g" data-hl="6" data-step="6" height="28" rx="3" width="64" x="632" y="158"></rect>
+<text class="tm sm g" data-step="6" x="702" y="178">✓ 90</text>
+<rect class="bx g" data-hl="7" data-step="7" height="28" rx="3" width="64" x="696" y="58"></rect>
+<text class="tm sm g end" data-step="7" x="690" y="48">✓ 100</text>
+
+<text class="tz sm y" x="24" y="300">ready queue</text>
+<text class="tm y" data-out="2" x="160" y="300">T1 · T2 · T3</text>
+<text class="tm y" data-out="3" data-step="2" x="160" y="300">T2 · T3 · T1</text>
+<text class="tm y" data-out="4" data-step="3" x="160" y="300">T3 · T1</text>
+<text class="tm y" data-out="5" data-step="4" x="160" y="300">T1 · T3</text>
+<text class="tm y" data-out="6" data-step="5" x="160" y="300">T3 · T1</text>
+<text class="tm y" data-out="7" data-step="6" x="160" y="300">T1</text>
+<text class="tm m" data-step="7" x="160" y="300">(empty)</text>
+<text class="tz sm m" data-out="7" x="24" y="340">Remaining:</text>
+<text class="tm sm m" data-out="2" x="110" y="340">T1 50 · T2 20 · T3 30</text>
+<text class="tm sm m" data-out="3" data-step="2" x="110" y="340">T1 30 · T2 20 · T3 30</text>
+<text class="tm sm m" data-out="4" data-step="3" x="110" y="340">T1 30 · T2 0 · T3 30</text>
+<text class="tm sm m" data-out="5" data-step="4" x="110" y="340">T1 30 · T2 0 · T3 10</text>
+<text class="tm sm m" data-out="6" data-step="5" x="110" y="340">T1 10 · T2 0 · T3 10</text>
+<text class="tm sm m" data-out="7" data-step="6" x="110" y="340">T1 10 · T2 0 · T3 0</text>
+<text class="tz sm g" data-step="7" x="24" y="340">Completion times: T2 = 40 ms, T3 = 90 ms, T1 = 100 ms</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">Three threads with identical priority arrive simultaneously in ready queue order T1, T2, T3, requiring 50, 20, and 30 ms of CPU time. Single core, SCHED_RR, time slice <span class="c-o">20 ms</span>.</li>
+<li>T1 runs for its full 20 ms slice (0–20 ms), has 30 ms remaining, and moves to the queue tail.</li>
+<li>T2 runs from 20–40 ms, completing its work exactly at <b>40 ms</b> and leaving the queue.</li>
+<li>T3 runs from 40–60 ms, leaves 10 ms remaining, and moves to the queue tail.</li>
+<li>T1's turn arrives again: runs 60–80 ms, leaves 10 ms, and moves to the tail.</li>
+<li data-dur="4200">T3 requires only 10 ms, less than a full slice: finishes between 80–90 ms and yields immediately upon completion at <b>90 ms</b>. A quantum is a ceiling, not a mandatory duration.</li>
+<li data-dur="4200">Finally, T1 runs 90–100 ms, finishing at <b>100 ms</b>. Under SCHED_FIFO instead, T1 would run continuously to 50 ms, T2 would finish at 70 ms, and T3 at 100 ms.</li>
+</ol>
+<p class="stage-note">Context switch overhead ignored for simplicity. Values illustrative.</p>
+</figure>
+<div class="drill" data-drill="rr"></div>
+<h3 id="s4b">Setting Policy and Priority Programmatically</h3>
+<p>Policies and priorities are passed to <code>pthread_create</code> using creation attributes <code>pthread_attr_t</code>:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"><span class="pp">#include &lt;sched.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">pthread_attr_t</span> attr;</span><span class="ln-row"><span class="kw">struct sched_param</span> sp = { .sched_priority = 20 };</span><span class="ln-row"> </span><span class="ln-row"><span class="fn">pthread_attr_init</span>(&amp;attr);                                  <span class="cm">// Initialize to default values</span></span><span class="ln-row"><span class="fn">pthread_attr_setinheritsched</span>(&amp;attr, PTHREAD_EXPLICIT_SCHED); <span class="cm">// Do not inherit creator's policy</span></span><span class="ln-row"><span class="fn">pthread_attr_setschedpolicy</span>(&amp;attr, SCHED_RR);</span><span class="ln-row"><span class="fn">pthread_attr_setschedparam</span>(&amp;attr, &amp;sp);                    <span class="cm">// Note pointer argument</span></span><span class="ln-row"><span class="kw">int</span> err = <span class="fn">pthread_create</span>(&amp;tid, &amp;attr, trabajo, NULL);    <span class="cm">// Returns EPERM without privileges</span></span><span class="ln-row"><span class="fn">pthread_attr_destroy</span>(&amp;attr);</span></code></pre>
+<ul>
+<li>Linux by default configures threads to <b>inherit</b> the creator's scheduling settings, ignoring policies and priorities specified in attributes; call <code>PTHREAD_EXPLICIT_SCHED</code> to disable inheritance.</li>
+<li>Scheduling can also be modified dynamically during execution: <code>pthread_setschedparam(tid, SCHED_FIFO, &amp;sp)</code>, and queried via <code>pthread_getschedparam(tid, &amp;pol, &amp;sp)</code>.</li>
+<li><code>sched_yield()</code>: The caller voluntarily relinquishes the CPU, prompting the scheduler to run the next ready thread of the <b>same priority</b>; if no such thread exists, it returns immediately and continues execution. Lower-priority threads are not granted CPU time by this call. Combined with SCHED_FIFO, this enables <b>cooperative</b> multitasking.</li>
+</ul>
+<p class="takeaway">Threads transition between running, ready, and blocked. SCHED_FIFO runs highest-priority tasks to completion or block; SCHED_RR adds time slices for round-robin among equal priority; SCHED_OTHER is the default fair time-share scheduler. Real-time policies require elevated privileges and explicit attribute inheritance disabling; sched_yield yields only to equal-priority peers.</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Race Conditions and Mutexes <span class="tag">T2.8</span></h2>
+<p class="hook"><span class="zh">If two threads each execute count = count + 1 once, is count guaranteed to increase by 2?</span><span class="es">Condición de carrera y sección crítica.</span></p>
+<p>In C, the line <code>count = count + 1;</code> compiles down to three assembly instructions: load from memory into register (LDR), increment register (ADD), and store back to memory (STR). The scheduler may switch threads between any two instructions (and on multi-core systems, both threads may execute simultaneously). Observe what happens when two threads collide:</p>
+<figure class="stage" data-scene="" id="sc-race">
+<div class="stage-title"><span>Scene 5 · Lost Update</span><b>6 steps</b></div>
+<div aria-label="Interactive animation: Two threads interleaving read-modify-write resulting in a lost update. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-race-t" role="img" viewbox="0 0 800 400">
+<title id="sc-race-t">Shared variable count initially 5; Thread A reads 5 and gets preempted; Thread B reads 5, increments, writes 6; Thread A resumes, writes 6; result is 6 instead of 7</title>
+<rect class="bx b" data-hl="4 5" height="78" rx="10" width="160" x="320" y="24"></rect>
+<text class="tm sm b mid" x="400" y="50">count</text>
+<text class="tm lg b mid" data-out="4" x="400" y="86">5</text>
+<text class="tm lg b mid" data-out="5" data-step="4" x="400" y="86">6</text>
+<text class="tm lg r mid" data-step="5" x="400" y="86">6</text>
+<text class="tz sm r" data-step="5" x="492" y="70">Expected: 7</text>
+
+<text class="tx sm g" x="40" y="140">hilo A</text>
+<text class="tm sm w" x="64" y="182">LDR r, [count]</text>
+<text class="tm sm w" x="64" y="217">ADD r, r, #1</text>
+<text class="tm sm w" x="64" y="252">STR r, [count]</text>
+<path class="sl y" d="M42 170 l12 6 l-12 6 z" data-out="3" data-step="2"></path>
+<path class="sl y" d="M42 240 l12 6 l-12 6 z" data-out="6" data-step="5"></path>
+<rect class="bx hollow b" height="40" rx="6" width="200" x="64" y="276"></rect>
+<text class="tm sm b" x="80" y="302">r =</text>
+<text class="tm b" data-out="2" x="130" y="303">?</text>
+<text class="tm b" data-out="5" data-step="2" x="130" y="303">5</text>
+<text class="tm y" data-step="5" x="130" y="303">6</text>
+
+<text class="tx sm t" x="520" y="140">hilo B</text>
+<text class="tm sm w" x="544" y="182">LDR r, [count]</text>
+<text class="tm sm w" x="544" y="217">ADD r, r, #1</text>
+<text class="tm sm w" x="544" y="252">STR r, [count]</text>
+<path class="sl y" d="M522 170 l12 6 l-12 6 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M522 240 l12 6 l-12 6 z" data-out="5" data-step="4"></path>
+<rect class="bx hollow b" height="40" rx="6" width="200" x="544" y="276"></rect>
+<text class="tm sm b" x="560" y="302">r =</text>
+<text class="tm b" data-out="3" x="610" y="303">?</text>
+<text class="tm b" data-out="4" data-step="3" x="610" y="303">5</text>
+<text class="tm y" data-step="4" x="610" y="303">6</text>
+
+<text class="tz sm m" x="40" y="366">CPU</text>
+<rect class="bx g" data-step="2" height="28" rx="3" width="140" x="100" y="348"></rect>
+<text class="tm xs g mid" data-step="2" x="170" y="367">A</text>
+<rect class="bx t" data-step="3" height="28" rx="3" width="200" x="240" y="348"></rect>
+<text class="tm xs t mid" data-step="3" x="340" y="367">B</text>
+<rect class="bx g" data-step="5" height="28" rx="3" width="140" x="440" y="348"></rect>
+<text class="tm xs g mid" data-step="5" x="510" y="367">A</text>
+<path class="ln thin r dash" d="M240 336 V388" data-step="3"></path>
+<path class="ln thin r dash" d="M440 336 V388" data-step="5"></path>
+<text class="tz sm y" data-step="6" x="600" y="367">Read-modify-write is not atomic</text>
+</svg>
+</div>
+<ol class="captions">
+<li>Shared global variable <code>count = 5</code>. Both threads intend to execute <code>count = count + 1</code>, compiled into three instructions: load (LDR), add (ADD), and store (STR). Each thread maintains its own register <code>r</code>.</li>
+<li>Thread A executes LDR, reading 5 into its register r.</li>
+<li data-dur="4000">Right at this moment, A's time slice expires (or it gets preempted), switching to B. Thread B executes LDR, also reading <b>5</b>.</li>
+<li>Thread B finishes ADD and STR in one go: count in memory updates to 6.</li>
+<li data-dur="4200">Thread A resumes where it left off using its stale register value: r = 5 + 1 = 6, writing back to count. Thread B's increment is overwritten, leaving count at <span class="c-r">6 instead of 7</span>: a <b>lost update</b>.</li>
+<li data-dur="4400">The outcome depends entirely on the timing of thread interleaving: this is a <b>condición de carrera</b> (race condition). Because it occurs intermittently, it is notoriously hard to debug.</li>
+</ol>
+<p class="stage-note">Instructions shown in ARM assembly style to highlight the three discrete steps.</p>
+</figure>
+<p><b class="t">race condition (EN) / condición de carrera (ES)</b>: A situation where program output depends on the precise timing of thread execution. The code segment that accesses shared data and must complete without interruption is called a <b class="t">critical section (EN) / sección crítica (ES)</b>. The requirement that at most one thread enters the critical section simultaneously is <b class="t">mutual exclusion (EN) / exclusión mutua (ES)</b>. POSIX threads provide a <b class="t">mutex</b> for this purpose.</p>
+<h3 id="s5b">pthread_mutex: A Lock</h3>
+<p>A mutex is a system-managed synchronization variable indicating "this resource is currently held by a specific thread". Its usage pattern is always three steps: <code>lock</code> → critical section → <code>unlock</code>.</p>
+<figure class="stage" data-scene="" id="sc-mutex">
+<div class="stage-title"><span>Scene 5b · Mutex Lock / Unlock</span><b>5 steps</b></div>
+<div aria-label="Interactive animation: Two threads queuing for a critical section using a mutex. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-mutex-t" role="img" viewbox="0 0 800 340">
+<title id="sc-mutex-t">A locks mutex and enters critical section; B requests same mutex, blocks and enters wait queue; A unlocks, B is unblocked and acquires mutex; count correctly increments from 5 to 7</title>
+<rect class="bx p" data-hl="2 4 5" height="76" rx="10" width="180" x="310" y="20"></rect>
+<text class="tm sm p mid" x="400" y="46">mutex m</text>
+<text class="tm m mid" data-out="2" x="400" y="80">unlocked</text>
+<text class="tm y mid" data-out="4" data-step="2" x="400" y="80">owner: A</text>
+<text class="tm y mid" data-out="5" data-step="4" x="400" y="80">owner: B</text>
+<text class="tm m mid" data-step="5" x="400" y="80">unlocked</text>
+<text class="tz sm p" x="510" y="46">wait queue</text>
+<text class="tm sm r" data-out="4" data-step="3" x="510" y="80">B</text>
+
+<text class="tx sm g" x="24" y="190">A</text>
+<text class="tx sm t" x="24" y="270">B</text>
+<path class="ln thin m dash" d="M80 184 H770 M80 264 H770"></path>
+<rect class="bx g" height="28" rx="3" width="100" x="80" y="170"></rect>
+<rect class="bx g" height="28" rx="3" width="180" x="80" y="250"></rect>
+<g data-step="2">
+<path class="ln thin y" d="M180 160 V208"></path>
+<text class="tm xs y mid" x="180" y="152">lock</text>
+<rect class="bx y" height="28" rx="3" width="240" x="180" y="170"></rect>
+<text class="tm xs y mid" x="300" y="189">SC · count: 5 → 6</text>
+</g>
+<g data-step="3">
+<path class="ln thin r" d="M260 240 V288"></path>
+<text class="tm xs r mid" x="260" y="306">lock</text>
+<rect class="ln r dash" height="28" rx="3" width="160" x="260" y="250"></rect>
+<text class="tz sm r mid" x="340" y="270">blocked</text>
+</g>
+<g data-step="4">
+<path class="ln thin y" d="M420 160 V208"></path>
+<text class="tm xs y mid" x="420" y="152">unlock</text>
+<rect class="bx g" height="28" rx="3" width="350" x="420" y="170"></rect>
+<path class="ln g draw" d="M420 204 V244" marker-end="url(#t2-ah-g)"></path>
+<rect class="bx y" height="28" rx="3" width="180" x="420" y="250"></rect>
+<text class="tm xs y mid" x="510" y="269">SC · count: 6 → 7</text>
+</g>
+<g data-step="5">
+<path class="ln thin y" d="M600 240 V288"></path>
+<text class="tm xs y mid" x="600" y="306">unlock</text>
+<rect class="bx g" height="28" rx="3" width="170" x="600" y="250"></rect>
+<text class="tz sm g mid" x="400" y="128">Both increments preserved: count = 7</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>Mutex <code>m</code> is currently unlocked. Threads A and B are running concurrently, both seeking to increment count.</li>
+<li>Thread A calls <code>pthread_mutex_lock(&amp;m)</code> first: the lock is free, so A acquires it and enters the critical section.</li>
+<li data-dur="4200">Thread B calls <code>pthread_mutex_lock(&amp;m)</code>: the lock is held by A, so B is <span class="c-r">blocked</span> and placed on m's wait queue, consuming zero CPU.</li>
+<li data-dur="4200">Thread A finishes and calls <code>pthread_mutex_unlock(&amp;m)</code>. The kernel unblocks B, allowing B's lock call to return: ownership transfers to B, which enters the critical section.</li>
+<li>Thread B unlocks; m returns to the free state. Because the critical sections did not overlap, both increments succeeded.</li>
+</ol>
+
+</figure>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;pthread.h&gt;</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">long</span> contador = 0;                                   <span class="cm">// Global: shared across all threads</span></span><span class="ln-row"><span class="kw">pthread_mutex_t</span> m = PTHREAD_MUTEX_INITIALIZER;        <span class="cm">// Static initialization with default attributes</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> *<span class="fn">sumar_mucho</span>(<span class="kw">void</span> *arg) {</span><span class="ln-row">    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 1000000; i++) {</span><span class="ln-row">        <span class="fn">pthread_mutex_lock</span>(&amp;m);                     <span class="cm">// Enter critical section</span></span><span class="ln-row">        contador++;</span><span class="ln-row">        <span class="fn">pthread_mutex_unlock</span>(&amp;m);                   <span class="cm">// Exit critical section</span></span><span class="ln-row">    }</span><span class="ln-row">    <span class="kw">return</span> NULL;</span><span class="ln-row">}</span><span class="ln-row"><span class="cm">// Both threads run sumar_mucho; joining yields contador == 2000000.</span></span><span class="ln-row"><span class="cm">// Remove lock/unlock lines: result is typically less than 2000000 and varies every run.</span></span></code></pre>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Function</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>PTHREAD_MUTEX_INITIALIZER</td><td>Static initialization with default attributes. Simple and preferred whenever applicable.</td></tr>
+<tr><td>pthread_mutex_init(&amp;m, &amp;attr)</td><td>Dynamic initialization, allowing non-default attributes; passing NULL in <code>attr</code> uses defaults.</td></tr>
+<tr><td>pthread_mutex_lock(&amp;m)</td><td>Acquires the lock; blocks (thread sleeps) if already held by another thread until available. Returns 0 on success.</td></tr>
+<tr><td>pthread_mutex_trylock(&amp;m)</td><td>Attempts to acquire the lock; returns 0 if acquired; returns non-zero (EBUSY) <b>immediately</b> without blocking if held.</td></tr>
+<tr><td>pthread_mutex_unlock(&amp;m)</td><td>Releases the lock, unblocking one waiting thread. Returns 0 on success.</td></tr>
+<tr><td>pthread_mutex_destroy(&amp;m)</td><td>Destroys the mutex when no longer needed, freeing internal resources.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The mutex type is configured via <code>pthread_mutexattr_settype(&amp;attr, tipo)</code>, differing in how misuse is handled:</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Type</th><th>Relocking by Same Thread</th><th>Unlocking Unowned / Unlocked Mutex</th></tr></thead>
+<tbody>
+<tr><td>PTHREAD_MUTEX_NORMAL</td><td>Deadlock (thread waits on itself)</td><td>Undefined behavior</td></tr>
+<tr><td>PTHREAD_MUTEX_ERRORCHECK</td><td>Returns error</td><td>Returns error</td></tr>
+<tr><td>PTHREAD_MUTEX_RECURSIVE</td><td>Allowed; must unlock equal number of times</td><td>Returns error</td></tr>
+<tr><td>PTHREAD_MUTEX_DEFAULT</td><td>Undefined</td><td>Undefined (typically maps to NORMAL)</td></tr>
+</tbody>
+</table>
+</div>
+<p>By default, mutexes operate strictly between threads of the same process (<code>PTHREAD_PROCESS_PRIVATE</code>). Setting <code>PTHREAD_PROCESS_SHARED</code> (via <code>pthread_mutexattr_setpshared</code>) allows inter-process synchronization, provided the mutex itself resides in shared memory accessible by all participating processes (via <code>mmap</code> or <code>shmat</code>).</p>
+<div class="note warm">
+<span class="lbl">Locks are Purely Advisory</span>
+<p>Mutexes are <b>advisory</b>, resembling traffic lights: a red light requests you to stop, but there is no physical barrier. If a thread modifies shared memory without calling lock, nothing prevents it. The protocol must be strictly observed by programmers: <b>every single access</b> to that shared data must acquire the identical lock.</p>
+</div>
+<p class="takeaway">Race conditions stem from non-atomic read-modify-write sequences interrupted by concurrency. Guard shared data inside critical sections enclosed by a single pthread_mutex: lock blocks on contention, trylock returns immediately, and unlock awakens waiting threads. Keep critical sections brief; locking is purely advisory.</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Synchronization: Waiting Until a Condition Holds <span class="tag">T2.9</span></h2>
+<p class="hook"><span class="zh">When the buffer is empty, how should a consumer wait? Spin in a continuous loop of lock, check, and unlock?</span><span class="es">Variables condicionales, semáforos y productor–consumidor.</span></p>
+<p>Mutexes solve the problem of "preventing simultaneous access". Another fundamental challenge is "waiting for a specific event before proceeding"—for example, a consumer waiting for items to appear in a buffer. Polling repeatedly under a mutex (busy-waiting) wastes CPU cycles. A <b class="t">condition variable (EN) / variable condicional (ES)</b> enables a thread to <b>sleep</b> until notified by another thread that the condition may now hold.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Function</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>PTHREAD_COND_INITIALIZER</td><td>Static initialization; dynamic via <code>pthread_cond_init(&amp;c, NULL)</code>; destroyed via <code>pthread_cond_destroy</code>.</td></tr>
+<tr><td>pthread_cond_wait(&amp;c, &amp;m)</td><td>Must be invoked with <code>m</code> already held. It <b>atomically</b> releases m and puts the thread to sleep on c; upon waking, it reacquires m before returning. The caller holds m both entering and exiting this function.</td></tr>
+<tr><td>pthread_cond_signal(&amp;c)</td><td>Wakes <b>at least one</b> thread sleeping on c; does nothing if no thread is waiting (does not buffer notifications).</td></tr>
+<tr><td>pthread_cond_broadcast(&amp;c)</td><td>Wakes <b>all</b> threads sleeping on c, prompting each to re-evaluate its condition.</td></tr>
+<tr><td>pthread_cond_timedwait(&amp;c, &amp;m, &amp;t)</td><td>Identical to wait, but returns <code>ETIMEDOUT</code> if the specified <b>absolute time</b> <code>t</code> (<code>struct timespec</code>) arrives before being signaled.</td></tr>
+</tbody>
+</table>
+</div>
+<figure class="stage" data-scene="" id="sc-cond">
+<div class="stage-title"><span>Scene 6 · pthread_cond_wait / signal</span><b>5 steps</b></div>
+<div aria-label="Interactive animation: Consumer waiting on condition variable, woken by producer after inserting data. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-cond-t" role="img" viewbox="0 0 800 360">
+<title id="sc-cond-t">Consumer locks m, finds buffer empty, cond_wait releases m and sleeps on no_vacio; Producer locks m, puts item, signals; Consumer wakes up, re-locks m, retrieves item</title>
+
+<text class="tx sm t" x="24" y="40">consumidor</text>
+<text class="tm xs w" x="44" y="80">lock(&amp;m);</text>
+<text class="tm xs w" x="44" y="108">while (n == 0)</text>
+<text class="tm xs w" x="44" y="136">  cond_wait(&amp;no_vacio, &amp;m);</text>
+<text class="tm xs w" x="44" y="164">x = tomar();</text>
+<text class="tm xs w" x="44" y="192">unlock(&amp;m);</text>
+<path class="sl y" d="M26 70 l11 6 l-11 6 z" data-out="2" data-step="1"></path>
+<path class="sl y" d="M26 126 l11 6 l-11 6 z" data-out="5" data-step="2"></path>
+<path class="sl y" d="M26 154 l11 6 l-11 6 z" data-step="5"></path>
+<text class="tz sm r" data-out="4" data-step="2" x="44" y="230">sleeping · 0% CPU</text>
+<text class="tz sm y" data-out="5" data-step="4" x="44" y="230">woken up · reacquired m</text>
+
+<text class="tx sm o" x="560" y="40">productor</text>
+<text class="tm xs w" x="580" y="80">lock(&amp;m);</text>
+<text class="tm xs w" x="580" y="108">poner(x);</text>
+<text class="tm xs w" x="580" y="136">cond_signal(&amp;no_vacio);</text>
+<text class="tm xs w" x="580" y="164">unlock(&amp;m);</text>
+<path class="sl y" d="M562 98 l11 6 l-11 6 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M562 154 l11 6 l-11 6 z" data-out="5" data-step="4"></path>
+
+<text class="tz sm b mid" x="400" y="40">buffer</text>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="320" y="56"></rect>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="360" y="56"></rect>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="400" y="56"></rect>
+<rect class="bx hollow b" height="40" rx="4" width="40" x="440" y="56"></rect>
+<rect class="bx b" data-out="5" data-step="3" height="32" rx="3" width="32" x="324" y="60"></rect>
+<text class="tm sm b mid" data-out="3" x="400" y="120">n = 0</text>
+<text class="tm sm b mid" data-out="5" data-step="3" x="400" y="120">n = 1</text>
+<text class="tm sm b mid" data-step="5" x="400" y="120">n = 0</text>
+
+<rect class="bx hollow p" data-hl="2 3 4 5" height="44" rx="8" width="140" x="330" y="150"></rect>
+<text class="tm sm y mid" data-out="2" data-step="1" x="400" y="177">m: consumidor</text>
+<text class="tm sm m mid" data-out="3" data-step="2" x="400" y="177">m: unlocked</text>
+<text class="tm sm y mid" data-out="4" data-step="3" x="400" y="177">m: productor</text>
+<text class="tm sm y mid" data-out="5" data-step="4" x="400" y="177">m: consumidor</text>
+<text class="tm sm m mid" data-step="5" x="400" y="177">m: unlocked</text>
+
+<rect class="bx p" data-hl="2 4" height="56" rx="8" width="180" x="310" y="240"></rect>
+<text class="tm sm p mid" x="400" y="262">no_vacio</text>
+<text class="tm xs r mid" data-out="4" data-step="2" x="400" y="284">consumer waiting</text>
+<text class="tm xs m mid" data-out="2" x="400" y="284">(no one waiting)</text>
+<text class="tm xs m mid" data-step="4" x="400" y="284">(no one waiting)</text>
+<path class="ln r draw" d="M250 132 C 280 170, 280 250, 306 262" data-out="4" data-step="2" marker-end="url(#t2-ah-r)"></path>
+<path class="ln g draw" d="M576 140 C 540 200, 520 250, 494 262" data-out="5" data-step="4" marker-end="url(#t2-ah-g)"></path>
+<text class="tz sm g" data-out="5" data-step="4" x="510" y="320">signal</text>
+<text class="tz sm y mid" data-step="5" x="400" y="340">Re-check condition upon waking before taking data</text>
+</svg>
+</div>
+<ol class="captions">
+<li>The buffer is empty (n = 0). The consumer first executes <code>lock(&amp;m)</code> to inspect the condition under mutual exclusion.</li>
+<li data-dur="4600">Since <code>n == 0</code>, it calls <code>pthread_cond_wait(&amp;no_vacio, &amp;m)</code>: performing two actions <b>atomically</b>—releasing m and going to sleep on condition variable no_vacio. If m were not released, the producer could never enter.</li>
+<li>The producer acquires the released m, inserts an item, setting n = 1.</li>
+<li data-dur="4600">The producer calls <code>pthread_cond_signal(&amp;no_vacio)</code> to awaken the consumer, then calls <code>unlock</code>. Upon waking, the consumer must <b>first reacquire m</b> before cond_wait returns.</li>
+<li data-dur="4400">Execution loops back to the <code>while</code>: re-checking <code>n == 0</code>, which is now false. The consumer extracts the item, sets n = 0, and unlocks. A <code>while</code> loop rather than an <code>if</code> is mandatory because the condition might no longer hold upon waking.</li>
+</ol>
+</figure>
+<div class="note alert">
+<span class="lbl">Why while is Mandatory</span>
+<p>Waking up does not guarantee that the condition is met: another consumer thread may have snatched the item first; multiple threads woken by broadcast contend for the same item; and the POSIX standard explicitly permits <b class="t">spurious wakeups (EN) / despertares espurios (ES)</b> where a thread wakes without any signal. Therefore, the canonical pattern is always <code>while (!condition) pthread_cond_wait(...)</code>: re-evaluate upon waking, and resume sleeping if the condition is false.</p>
+</div>
+<h3 id="s6b">The Producer–Consumer Pattern</h3>
+<p>A classic concurrency problem: one or more <b class="t">producers (EN) / productores (ES)</b> place data into a ring buffer of capacity N, while one or more <b class="t">consumers (EN) / consumidores (ES)</b> retrieve items. If full, producers must wait; if empty, consumers must wait. This is implemented using one mutex and two condition variables:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#define N 8</span></span><span class="ln-row"><span class="kw">int</span> buf[N], ini = 0, fin = 0, n = 0;</span><span class="ln-row"><span class="kw">pthread_mutex_t</span> m        = PTHREAD_MUTEX_INITIALIZER;</span><span class="ln-row"><span class="kw">pthread_cond_t</span>  no_vacio = PTHREAD_COND_INITIALIZER;   <span class="cm">// "Data available"</span></span><span class="ln-row"><span class="kw">pthread_cond_t</span>  no_lleno = PTHREAD_COND_INITIALIZER;   <span class="cm">// "Space available"</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">poner</span>(<span class="kw">int</span> x) {                              <span class="cm">// Producer call</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">while</span> (n == N)</span><span class="ln-row">        <span class="fn">pthread_cond_wait</span>(&amp;no_lleno, &amp;m);</span><span class="ln-row">    buf[fin] = x;  fin = (fin + 1) % N;  n++;</span><span class="ln-row">    <span class="fn">pthread_cond_signal</span>(&amp;no_vacio);</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">tomar</span>(<span class="kw">void</span>) {                                <span class="cm">// Consumer call</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">while</span> (n == 0)</span><span class="ln-row">        <span class="fn">pthread_cond_wait</span>(&amp;no_vacio, &amp;m);</span><span class="ln-row">    <span class="kw">int</span> x = buf[ini];  ini = (ini + 1) % N;  n--;</span><span class="ln-row">    <span class="fn">pthread_cond_signal</span>(&amp;no_lleno);</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">return</span> x;</span><span class="ln-row">}</span></code></pre>
+<p>The sequence is: <b>update state</b> (n++) inside the lock, then signal. Because waiting threads always check state in a while loop, the relative order of state mutation and signaling (so long as both are protected) does not compromise correctness. When multiple threads wait on varying conditions or multiple items are inserted, <code>broadcast</code> is safer.</p>
+<p>Waiting with a timeout requires an <b>absolute timestamp</b>:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">struct timespec</span> t;</span><span class="ln-row"><span class="fn">clock_gettime</span>(CLOCK_REALTIME, &amp;t);</span><span class="ln-row">t.tv_sec += 2;                                     <span class="cm">// Wait at most 2 seconds</span></span><span class="ln-row"><span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row"><span class="kw">while</span> (n == 0) {</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">pthread_cond_timedwait</span>(&amp;no_vacio, &amp;m, &amp;t) == ETIMEDOUT)</span><span class="ln-row">        <span class="kw">break</span>;                                     <span class="cm">// Timed out: n may still be 0</span></span><span class="ln-row">}</span><span class="ln-row"><span class="fn">pthread_mutex_unlock</span>(&amp;m);</span></code></pre>
+<h3 id="s6c">Semaphores: sem_t</h3>
+<p>A <b class="t">semaphore (EN) / semáforo (ES)</b> is a non-negative counter supporting two atomic operations: <code>sem_wait</code> (P operation), which decrements the counter by 1 and blocks if the counter is already 0 until someone increments it; and <code>sem_post</code> (V operation), which increments it by 1, waking a waiting thread. Initialized to 1, it functions as a lock; initialized to N, it counts available resource slots. Unlike condition variables, semaphores <b>remember</b> every post, even if no thread is waiting at that instant.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Function (&lt;semaphore.h&gt;)</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>sem_init(&amp;s, pshared, valor)</td><td>Initializes semaphore with value <code>valor</code>. <code>pshared = 0</code>: thread-local; non-zero: shared across processes (must reside in shared memory).</td></tr>
+<tr><td>sem_wait(&amp;s)</td><td>Decrements and returns if s &gt; 0; blocks if s = 0. <code>sem_trywait</code> is non-blocking; <code>sem_timedwait</code> supports absolute timeout.</td></tr>
+<tr><td>sem_post(&amp;s)</td><td>Increments by 1, awakening a waiting thread if present.</td></tr>
+<tr><td>sem_destroy(&amp;s)</td><td>Destroys the semaphore.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Writing producer–consumer with semaphores: one semaphore counts empty slots, one counts items, and a mutex protects buffer index manipulation:</p>
+<pre class="code"><code><span class="ln-row"><span class="pp">#include &lt;semaphore.h&gt;</span></span><span class="ln-row"><span class="kw">sem_t</span> huecos, datos;</span><span class="ln-row"><span class="fn">sem_init</span>(&amp;huecos, 0, N);                         <span class="cm">// Initially N empty slots</span></span><span class="ln-row"><span class="fn">sem_init</span>(&amp;datos,  0, 0);                         <span class="cm">// Initially 0 items</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">poner</span>(<span class="kw">int</span> x) {</span><span class="ln-row">    <span class="fn">sem_wait</span>(&amp;huecos);                            <span class="cm">// Wait for an empty slot</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    buf[fin] = x;  fin = (fin + 1) % N;</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">    <span class="fn">sem_post</span>(&amp;datos);                             <span class="cm">// One more item available</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">tomar</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fn">sem_wait</span>(&amp;datos);                             <span class="cm">// Wait for an item</span></span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;m);</span><span class="ln-row">    <span class="kw">int</span> x = buf[ini];  ini = (ini + 1) % N;</span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;m);</span><span class="ln-row">    <span class="fn">sem_post</span>(&amp;huecos);                            <span class="cm">// One more empty slot available</span></span><span class="ln-row">    <span class="kw">return</span> x;</span><span class="ln-row">}</span></code></pre>
+<p>Notice that <code>sem_wait</code> is placed <b>outside</b> the mutex lock: if a thread acquired the lock before blocking on sem_wait, the other side could never acquire the lock to call sem_post, deadlocking both sides (covered in §7).</p>
+<p class="takeaway">Condition variables: acquire lock, check condition in while loop, sleep via cond_wait (atomically releases lock and sleeps, re-locking upon wakeup); signaling thread mutates state then signals or broadcasts. Semaphores: counters where sem_wait decrements and sem_post increments, ideal for tracking discrete resource quotas. Producer-consumer combines a mutex guarding buffer indices with two condition triggers (slots available, items available).</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Deadlock and Common Pitfalls <span class="tag">T2.10</span></h2>
+<p class="hook"><span class="zh">Two threads are each waiting for the other to let go. Who releases first?</span><span class="es">Bloqueo mutuo (deadlock).</span></p>
+<p>When a thread needs to acquire multiple locks simultaneously, deadlock risks emerge. Suppose Thread 1 locks A then B, while Thread 2 locks B then A:</p>
+<figure class="stage" data-scene="" id="sc-deadlock">
+<div class="stage-title"><span>Scene 7 · Deadlock</span><b>5 steps</b></div>
+<div aria-label="Interactive animation: Two threads acquiring locks in reverse order causing deadlock. Use left/right arrow keys to step through." class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-deadlock-t" role="img" viewbox="0 0 800 340">
+<title id="sc-deadlock-t">T1 holds A waiting for B; T2 holds B waiting for A, forming a cycle; ordering lock acquisition A then B eliminates cycles</title>
+<rect class="bx p" data-hl="4" height="56" rx="8" width="120" x="340" y="40"></rect>
+<text class="tm p mid" x="400" y="75">mutex A</text>
+<rect class="bx p" data-hl="3" height="56" rx="8" width="120" x="340" y="244"></rect>
+<text class="tm p mid" x="400" y="279">mutex B</text>
+<circle class="bx g" cx="150" cy="170" data-hl="3" r="44"></circle>
+<text class="tm g mid" x="150" y="176">T1</text>
+<circle class="bx t" cx="650" cy="170" data-hl="4" r="44"></circle>
+<text class="tm t mid" x="650" y="176">T2</text>
+<g data-step="1">
+<path class="ln g draw" d="M338 70 C 260 74, 210 100, 180 132" marker-end="url(#t2-ah-g)"></path>
+<text class="tz sm g" x="200" y="88">holds</text>
+</g>
+<g data-step="2">
+<path class="ln g draw" d="M462 272 C 540 266, 592 240, 620 208" marker-end="url(#t2-ah-g)"></path>
+<text class="tz sm g" x="556" y="274">holds</text>
+</g>
+<g data-out="5" data-step="3">
+<path class="ln r dash draw" d="M180 208 C 210 240, 270 266, 336 270" marker-end="url(#t2-ah-r)"></path>
+<text class="tz sm r" x="168" y="262">waiting for B</text>
+</g>
+<g data-out="5" data-step="4">
+<path class="ln r dash draw" d="M620 132 C 590 100, 540 74, 464 70" marker-end="url(#t2-ah-r)"></path>
+<text class="tz sm r" x="566" y="80">waiting for A</text>
+<text class="tz sm r mid" x="400" y="176">Cycle: deadlock</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" x="400" y="160">Both threads acquire locks in A → B order:</text>
+<text class="tz sm y mid" x="400" y="190">whichever acquires A is guaranteed to acquire B</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>T1 executes <code>lock(&amp;A)</code>, acquires A, and starts modifying data protected by A.</li>
+<li>Simultaneously, T2 executes <code>lock(&amp;B)</code> and acquires B.</li>
+<li>T1 next requests B: <code>lock(&amp;B)</code>. Since B is held by T2, T1 blocks.</li>
+<li data-dur="4600">T2 next requests A: <code>lock(&amp;A)</code>. Since A is held by T1, T2 also blocks. Both threads wait on the other's unlock, which can never run: <b>deadlock</b> (interbloqueo / bloqueo mutuo).</li>
+<li data-dur="4600">The most straightforward prevention: establish a strict lock acquisition order across all threads (e.g. always lock A before B). This makes cyclic wait dependencies impossible.</li>
+</ol>
+
+</figure>
+<p>Another prevention strategy is "back off on contention": acquire the first lock, then attempt the second via <code>pthread_mutex_trylock</code>; if acquisition fails, release the first lock and retry from the beginning:</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">for</span> (;;) {</span><span class="ln-row">    <span class="fn">pthread_mutex_lock</span>(&amp;B);</span><span class="ln-row">    <span class="kw">if</span> (<span class="fn">pthread_mutex_trylock</span>(&amp;A) == 0)</span><span class="ln-row">        <span class="kw">break</span>;                          <span class="cm">// Both locks acquired successfully</span></span><span class="ln-row">    <span class="fn">pthread_mutex_unlock</span>(&amp;B);          <span class="cm">// Failed to acquire A: release B to allow peer to progress</span></span><span class="ln-row">}</span><span class="ln-row"><span class="cm">/* Access both resources */</span></span><span class="ln-row"><span class="fn">pthread_mutex_unlock</span>(&amp;A);</span><span class="ln-row"><span class="fn">pthread_mutex_unlock</span>(&amp;B);</span></code></pre>
+<p>While this prevents deadlock, threads may repeatedly yield to one another without making progress (livelock), making consistent global lock ordering the superior approach.</p>
+<h3 id="s7b">Common Pitfalls at a Glance</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Symptom</th><th>Root Cause and Fix</th></tr></thead>
+<tbody>
+<tr><td>Thread terminates before running</td><td><code>main</code> returned or called <code>exit</code>, destroying the whole process. Call <code>pthread_join</code> or have main call <code>pthread_exit</code> (§3).</td></tr>
+<tr><td>Linker error: undefined reference to pthread_create</td><td>Missing <code>-lpthread</code> / <code>-pthread</code> flag during compilation/linking (§3).</td></tr>
+<tr><td>Multiple threads receive the identical argument value</td><td>Passed pointer to loop variable <code>&amp;i</code>. Allocate separate parameter storage per thread (§3).</td></tr>
+<tr><td>Results intermittently wrong and vary across runs</td><td>Shared data accessed without locking, or one access path omitted synchronization (§5).</td></tr>
+<tr><td>Application hangs completely</td><td>Deadlock: inconsistent lock acquisition hierarchy; or blocking on external I/O while holding a mutex; or calling lock twice on a NORMAL mutex.</td></tr>
+<tr><td>Forgot to unlock</td><td>Early <code>return</code> or <code>break</code> inside a critical section bypassed unlock. Ensure every exit path unlocks.</td></tr>
+<tr><td>Consumer wakes up but finds buffer empty</td><td>Enclosed <code>pthread_cond_wait</code> with <code>if</code> instead of <code>while</code> (§6).</td></tr>
+<tr><td>Notification lost; thread sleeps indefinitely</td><td>Signaled before anyone was waiting: condition variables do not buffer signals. Inspect state under lock before waiting (§6).</td></tr>
+<tr><td>100% CPU utilization</td><td>Busy-waiting loop polling a flag. Replace with condition variables, semaphores, or blocking calls.</td></tr>
+<tr><td>Starvation: other threads never get CPU</td><td>A high-priority SCHED_FIFO thread runs in a continuous loop without blocking or yielding (§4).</td></tr>
+</tbody>
+</table>
+</div>
+<p class="takeaway">Deadlock occurs when threads hold resources while waiting on others in a cyclic dependency. Prevention: enforce a universal lock ordering across all threads, or release held locks on trylock failure. Keep lock holding times minimal, and never initiate blocking operations while holding a mutex.</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>Randomized Numeric Drills <span class="tag plain">2 Drill Types</span></h2>
+<p class="aside">Randomized numeric drills generated according to chapter concepts. Step-by-step solutions are revealed after submitting answers.</p>
+<div class="drills">
+<div class="drill" data-drill="fork"></div>
+<div class="drill" data-drill="rr"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>Self-Assessment <span class="tag plain">12 Questions</span></h2>
+<p class="aside">Review questions based on chapter concepts. Single attempt per question; explanations display immediately upon selection.</p>
+<div class="quiz" data-quiz="T2">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>In the parent process, <code>int x = 5;</code> is declared, followed by <code>fork()</code>. The child process executes <code>x = 9;</code> and exits. The parent calls <code>wait</code> and prints x. What is printed?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>9, because parent and child share global and local memory</button>
+<button data-o="b" type="button"><span class="k">B</span>5, because the child modifies its own private copy</button>
+<button data-o="c" type="button"><span class="k">C</span>Indeterminate, depending on scheduler timing</button>
+<button data-o="d" type="button"><span class="k">D</span>0, because fork zeroes all variables in the child</button>
+</div>
+<p class="why"><b>B.</b> fork clones the entire user address space; thereafter, both memory spaces are completely independent (§2). Threads share memory, not processes.</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>Inside the child process, what is the return value of <code>fork()</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The child's own PID</button>
+<button data-o="b" type="button"><span class="k">B</span>The parent's PID</button>
+<button data-o="c" type="button"><span class="k">C</span>0</button>
+<button data-o="d" type="button"><span class="k">D</span>−1</button>
+</div>
+<p class="why"><b>C.</b> The parent receives the child's PID (&gt; 0), while the child receives 0; −1 indicates failure and is returned only to the parent (§2).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>After <code>execl("/bin/date", "date", (char *)0);</code>, there is an immediate line <code>printf("listo\n");</code>. Under what condition is "listo" printed?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Always printed, after date finishes outputting</button>
+<button data-o="b" type="button"><span class="k">B</span>Always printed, before date starts outputting</button>
+<button data-o="c" type="button"><span class="k">C</span>Only when date terminates successfully</button>
+<button data-o="d" type="button"><span class="k">D</span>Only when execl fails</button>
+</div>
+<p class="why"><b>D.</b> On success, exec replaces the active process image completely and never returns; reaching the next line indicates exec failed. To retain the caller, use posix_spawn or fork + exec (§2).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>Two threads within the same process execute the same function. Which variable is <b>not</b> shared between the two threads?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Regular automatic local variables inside the function</button>
+<button data-o="b" type="button"><span class="k">B</span>Global variables</button>
+<button data-o="c" type="button"><span class="k">C</span>Local variables declared static inside the function</button>
+<button data-o="d" type="button"><span class="k">D</span>Heap memory allocated via malloc whose pointer was passed to both threads</button>
+</div>
+<p class="why"><b>A.</b> Automatic local variables reside on each thread's private stack; static local variables, globals, and heap memory are shared (§3).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>In <code>main</code>, immediately after calling <code>pthread_create</code> to spawn a thread, it executes <code>return 0;</code>. What happens?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The main thread exits while the new thread continues executing until finished</button>
+<button data-o="b" type="button"><span class="k">B</span>The entire process terminates, and the new thread may never execute a single line</button>
+<button data-o="c" type="button"><span class="k">C</span>return blocks automatically until the new thread terminates</button>
+<button data-o="d" type="button"><span class="k">D</span>Compiler error: join is mandatory</button>
+</div>
+<p class="why"><b>B.</b> Returning from main is equivalent to exit, terminating the process and all sibling threads immediately. Use pthread_join or call pthread_exit from main (§3).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>A thread function finishes by calling <code>pthread_exit(p);</code>. How does another thread retrieve pointer p?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>p = pthread_join(tid, NULL);</code></button>
+<button data-o="b" type="button"><span class="k">B</span>Via the return value of <code>pthread_create</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>void *r; pthread_join(tid, &amp;r);</code>, where r equals p</button>
+<button data-o="d" type="button"><span class="k">D</span><code>pthread_self()</code></button>
+</div>
+<p class="why"><b>C.</b> The second argument of pthread_join is <code>void **</code>, used to store the pointer passed to pthread_exit or returned from the entry function; pthread_join itself returns an integer status code (§3).</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>What is the key difference between SCHED_FIFO and SCHED_RR?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>FIFO ignores priority, whereas RR considers priority</button>
+<button data-o="b" type="button"><span class="k">B</span>FIFO is default, while RR requires root privileges</button>
+<button data-o="c" type="button"><span class="k">C</span>RR dynamically adjusts priority over runtime</button>
+<button data-o="d" type="button"><span class="k">D</span>RR enforces time slices among equal-priority threads, cycling them to the queue tail; FIFO runs to completion or block</button>
+</div>
+<p class="why"><b>D.</b> Both select threads based on fixed static priority; RR simply adds a time slice limit for equal-priority peers. The default policy is SCHED_OTHER (§4).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>Two threads each perform <code>c++</code> 1000 times on an unsynchronized global counter <code>c</code> (initial value 0). After joining both threads, what is the value of c?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>At most 2000, likely less than 2000, and potentially different across runs</button>
+<button data-o="b" type="button"><span class="k">B</span>Exactly 2000</button>
+<button data-o="c" type="button"><span class="k">C</span>Exactly 1000</button>
+<button data-o="d" type="button"><span class="k">D</span>Could exceed 2000</button>
+</div>
+<p class="why"><b>A.</b> Incrementing is a 3-step read-modify-write; overlapping execution causes lost updates, so the total will be at most 2000 and cannot spontaneously exceed 2000 (§5).</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>A mutex is currently held by another thread. If a thread calls <code>pthread_mutex_trylock(&amp;m)</code>, what happens?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Blocks until the lock is released</button>
+<button data-o="b" type="button"><span class="k">B</span>Immediately returns a non-zero error (EBUSY); caller continues without holding the lock</button>
+<button data-o="c" type="button"><span class="k">C</span>Forcibly strips ownership from the holding thread</button>
+<button data-o="d" type="button"><span class="k">D</span>Returns 0 and acquires ownership automatically when released</button>
+</div>
+<p class="why"><b>B.</b> trylock is a non-blocking lock request: returns 0 if acquired, and immediately returns non-zero (EBUSY) without blocking if contested (§5).</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>What occurs when calling <code>pthread_cond_wait(&amp;c, &amp;m)</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>The thread sleeps on c while continuing to hold m, blocking other threads from entering</button>
+<button data-o="b" type="button"><span class="k">B</span>Inspects the condition first, sleeping only if false</button>
+<button data-o="c" type="button"><span class="k">C</span>Atomically releases m and sleeps on c; upon waking, reacquires m before returning</button>
+<button data-o="d" type="button"><span class="k">D</span>Releases m and sleeps on c; returns without m, requiring the caller to explicitly lock m</button>
+</div>
+<p class="why"><b>C.</b> The caller holds m upon entering and exiting cond_wait; while asleep, m is released so peer threads can enter to update state (§6). Condition verification is the caller's duty via while.</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>Why must <code>pthread_cond_wait</code> be enclosed in <code>while (n == 0)</code> rather than <code>if (n == 0)</code>?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>while provides better execution speed</button>
+<button data-o="b" type="button"><span class="k">B</span>if prevents cond_wait from releasing the lock</button>
+<button data-o="c" type="button"><span class="k">C</span>Purely a stylistic preference; both forms are equivalent</button>
+<button data-o="d" type="button"><span class="k">D</span>Upon waking, the condition is not guaranteed: another thread may have consumed the item, or a spurious wakeup may have occurred</button>
+</div>
+<p class="why"><b>D.</b> Re-evaluating upon waking ensures that if the condition is not met, the thread immediately resumes sleeping (§6).</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>T1 locks mutex A then B; T2 locks mutex B then A. The program occasionally deadlocks. What is the most direct fix?</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Enforce identical acquisition order (A then B) across both threads</button>
+<button data-o="b" type="button"><span class="k">B</span>Convert both mutexes to RECURSIVE type</button>
+<button data-o="c" type="button"><span class="k">C</span>Insert sched_yield() between the two lock calls</button>
+<button data-o="d" type="button"><span class="k">D</span>Elevate T1's scheduling priority</button>
+</div>
+<p class="why"><b>A.</b> Universal lock hierarchy prevents cyclic wait dependencies. RECURSIVE only allows recursive relocking by the same thread; yield and priorities merely shift occurrence probabilities (§7).</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">Restart</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>Glossary Cards <span class="tag plain">16 Cards</span></h2>
+<p class="aside">Spanish or English terms on the front; click to reveal English definitions and key takeaways.</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">proceso<small>process · PID</small></span><span class="back"><b>Process</b><br/>An executing program: private address space, system resources, and at least one thread.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hilo<small>thread</small></span><span class="back"><b>Thread</b><br/>A line of execution within a process; shares address space, holds private stack and registers.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">grano grueso / fino<small>coarse / fine-grained multitasking</small></span><span class="back"><b>Coarse / Fine-Grained Multitasking</b><br/>Multiple processes (strong isolation) vs. multiple threads in one process (shared memory).</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">concurrencia<small>concurrency vs parallelism</small></span><span class="back"><b>Concurrency</b><br/>Multiple tasks advancing alternately; true simultaneous physical execution across multiple cores is parallelism.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fork()<small>bifurcación</small></span><span class="back"><b>Process Duplication</b><br/>Parent receives child PID, child receives 0, returns −1 on failure.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">exec*()<small>execl · execv · execvp…</small></span><span class="back"><b>Process Image Replacement</b><br/>Replaces the current process with a new binary; does not return on success.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">wait / waitpid<small>+ exit(status)</small></span><span class="back"><b>Waiting for Child Processes</b><br/>Blocks until a child process terminates, retrieving its encoded exit status.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">proceso zombi<small>zombie process</small></span><span class="back"><b>Zombie Process</b><br/>A terminated process whose exit status has not yet been collected by its parent via wait.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_create<small>pthread_t · void *(*)(void *)</small></span><span class="back"><b>Thread Creation</b><br/>Launches f(arg) in a new thread of execution; returns 0 on success.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pthread_join<small>pthread_exit</small></span><span class="back"><b>Waiting for Threads</b><br/>Blocks until the target thread terminates and collects its returned void * pointer.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">planificador<small>scheduler · SCHED_FIFO / RR / OTHER</small></span><span class="back"><b>Scheduler</b><br/>Determines which ready thread receives CPU time; RR enforces time slices, OTHER is default time-share.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">rodaja de tiempo<small>quantum · time slice</small></span><span class="back"><b>Time Slice</b><br/>The maximum uninterrupted execution duration granted to a thread before yielding to peers.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">condición de carrera<small>race condition</small></span><span class="back"><b>Race Condition</b><br/>Execution outcome depends on arbitrary thread interleaving timing, such as lost updates.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mutex<small>sección crítica · critical section</small></span><span class="back"><b>Mutex</b><br/>Encloses critical sections with lock / unlock, ensuring at most one thread enters at a time.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">variable condicional<small>condition variable</small></span><span class="back"><b>Condition Variable</b><br/>cond_wait releases mutex and sleeps until signal / broadcast; always wrapped in a while loop.</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">interbloqueo<small>deadlock · bloqueo mutuo</small></span><span class="back"><b>Deadlock</b><br/>Threads circular-waiting for resources held by one another; prevented by consistent lock ordering.</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="Chapter navigation" class="pager" data-pager="T2"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · Open Systems &amp; Electronics Courseware</strong> · Community-authored interactive study notes created by learners, not official university or institutional courseware. All animations and interactive exercises are original work.</p>
+<p><a href="../../index.html">← Back to OpenSEEI Portal</a> · <a href="../../index.html#sync">Google Account Progress Sync</a> · Shared under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

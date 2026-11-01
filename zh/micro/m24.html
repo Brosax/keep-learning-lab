@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M24 Sistema de reloj (UCS) · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .m24-glow { filter: drop-shadow(0 0 8px rgb(131 193 103 / .9)); }
+.stage .m24-dim { opacity: .35; }
+.stage svg .m24-path { transition: d .35s ease; }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini:disabled { opacity: .35; cursor: default; }
+.m24-ctl label { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1.4 var(--f-mono); color: var(--st-muted); }
+.m24-ctl select, .m24-ctl input[type="number"] {
+  background: var(--st-bg); color: var(--st-ink); border: 1px solid #2B3340; border-radius: 6px;
+  padding: 3px 6px; font: 600 13px/1.4 var(--f-mono); max-width: 100%;
+}
+.m24-ctl input[type="number"] { width: 5.2rem; }
+.m24-ctl input[type="range"] { accent-color: var(--st-yellow); width: 9rem; max-width: 100%; }
+.m24-ctl select:focus, .m24-ctl input:focus { outline: 2px solid var(--st-yellow); outline-offset: 1px; }
+.m24-ctl .grp { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; flex-basis: 100%; }
+.m24-ctl .grp .k { font: 700 12px/1.4 var(--f-mono); color: var(--st-gold); min-width: 3.4rem; }
+.stage-ctl .out .warn { color: var(--st-red); }
+.stage-ctl .out .ok { color: var(--st-green); }
+.stage-ctl .out .hx { color: var(--st-blue); }
+.enc td:first-child, .rst td:first-child, .rst td:nth-child(2) { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.enc td:nth-child(3) { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.enc tr.rsv td { color: var(--muted); }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m24-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+<marker id="m24-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m24-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m24-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m24-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 2 章节" class="chain" data-chain="M24"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 2 · Interrupciones, reloj y bajo consumo · M24–M25</div>
+<h1>Sistema de reloj (UCS)</h1>
+<p class="zh">时钟系统：从振荡器到 ACLK / MCLK / SMCLK</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 20 分钟</span>
+
+
+</div>
+<p class="lede">CPU 和每个外设都踩着时钟的节拍工作。节拍越快，算得越快，也越费电；时钟越稳，越贵。MSP430F5529 的 <b class="t">UCS (Unified Clock System)</b>——统一时钟系统，把这道选择题交给程序员：5 个振荡器产生 6 个 <b class="t">fuente de reloj (ES) / clock source (EN)</b>——时钟源，再经过选择器和分频器，变成几路 <b class="t">señal de reloj (ES) / clock signal (EN)</b>——时钟信号。这一章从"上电默认为什么是 1048576 Hz"讲起，一直讲到晶体坏了会发生什么，最后读一遍示例程序 UCS1_XT2.c。</p>
+</section>
+
+<section class="sec" id="m24-objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M24.1</span>
+<div class="txt"><span>说明为什么需要多个时钟；分清 oscilador → fuente → señal 三层，列出 5 个振荡器、6 个时钟源和 ACLK、MCLK、SMCLK、MODCLK</span><span class="es">Osciladores, fuentes y señales de reloj del UCS.</span><a href="#m24-s0">→ §0 一棵时钟树</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.2</span>
+<div class="txt"><span>比较 VLO、REFO、XT1、XT2 的频率、精度和功耗，说出它们什么时候被打开</span><span class="es">Osciladores VLO, REFO, XT1 y XT2.</span><a href="#m24-s1">→ §1 四个振荡器</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.3</span>
+<div class="txt"><span>说出 XT1/XT2 的控制位（XTS、XT1BYPASS、XCAP、XT1DRIVE、XT1OFF、XT2OFF）和引脚：XT1 = P5.4/P5.5，XT2 = P5.2/P5.3，都要先设 P5SEL</span><span class="es">Programación de XT1 y XT2: UCSCTL6 y PxSEL.</span><a href="#m24-s1">→ §1 四个振荡器</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.4</span>
+<div class="txt"><span>用 DCORSEL、DCO、MOD 解释 DCO 的频率：8 个范围 × 32 个 tap，调制器在 32 个周期里混合 f<sub>DCO</sub> 和 f<sub>DCO+1</sub></span><span class="es">DCO: DCORSEL (UCSCTL1), DCO y MOD (UCSCTL0).</span><a href="#m24-s2">→ §2 DCO</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.5</span>
+<div class="txt"><span>画出 FLL 的反馈环，写出 f<sub>DCOCLK</sub> = D·(N+1)·f<sub>FLLREFCLK</sub>/n；说出 FLLD、FLLN、FLLREFDIV、SELREF 在哪个寄存器，以及 SCG0/SCG1 会关掉 FLL</span><span class="es">Frequency Locked Loop: UCSCTL2 y UCSCTL3.</span><a href="#m24-s3">→ §3 FLL</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.6</span>
+<div class="txt"><span>用 SELA/SELS/SELM（UCSCTL4）和 DIVA/DIVS/DIVM（UCSCTL5）配置三路时钟，并写出寄存器的值</span><span class="es">Señales de reloj ACLK, MCLK y SMCLK.</span><a href="#m24-s4">→ §4 选源与分频</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.7</span>
+<div class="txt"><span>复述 PUC 之后的默认配置，并算出 MCLK = SMCLK = 1048576 Hz</span><span class="es">Configuración de arranque del módulo UCS.</span><a href="#m24-s5">→ §5 上电默认</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.8</span>
+<div class="txt"><span>说明振荡器故障检测：UCSCTL7 的四个 flag → OFIFG → UNMI；flag 要软件清；fail-safe (EN)——故障安全切换：自动换源的规则</span><span class="es">Módulo de detección de fallo de oscilador.</span><a href="#m24-s6">→ §6 振荡器故障</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.9</span>
+<div class="txt"><span>读懂 UCS1_XT2.c：XT2 引脚、XT2OFF、故障循环、SELM/SELS；指出用 |= 改多位字段的陷阱</span><span class="es">Configuración de XT2 como fuente de MCLK.</span><a href="#m24-s7">→ §7 在 CCS 里</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M24.10</span>
+<div class="txt"><span>用 t = 周期数 / f<sub>MCLK</sub> 估算 __delay_cycles 的延时，并说明换时钟后它为什么会变</span><span class="es">Temporización por software y frecuencia de MCLK.</span><a href="#m24-s7b">→ §7 软件延时</a></div>
+<button aria-pressed="false" class="chk" data-obj="M24.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M24"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="m24-s0">
+<h2><span class="n">§0</span>一棵时钟树 <span class="tag">M24.1</span></h2>
+<p class="hook"><span class="zh">CPU 和每一个外设，需要以同一个频率工作吗？它们需要一直开着吗？</span><span class="es">¿Necesitan la CPU y los periféricos la misma frecuencia, y estar siempre activos?</span></p>
+<p>两个问题的答案都是"不需要"。频率越高，处理越快，耗电也越多；而且很多时候 CPU 和外设只是在等事件。所以 UCS 提供多个时钟源、多路时钟信号，每一路都可以单独选源、分频、关闭。整棵树分三层：</p>
+<figure class="stage" data-scene="" id="m24-sc-tree">
+<div class="stage-title"><span>Escena 0 · osciladores → fuentes → señales</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：UCS 的三层结构，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m24-sc-tree-t" role="img" viewbox="0 0 800 420">
+<title id="m24-sc-tree-t">时钟树：左边 6 个振荡器，中间 6 个时钟源汇成总线，经过 SELA/SELM/SELS 选择器和分频器，右边输出 ACLK、MCLK、SMCLK，另有 MODOSC 直接给出 MODCLK</title>
+<text class="tz sm m mid" x="95" y="24">osciladores · 振荡器</text>
+<text class="tz sm m mid" x="305" y="24">fuentes · 时钟源</text>
+<text class="tz sm m mid" x="520" y="24">SEL + DIV</text>
+<text class="tz sm m mid" x="704" y="24">señales · 时钟信号</text>
+<g data-step="1">
+<rect class="bx o" height="44" rx="8" width="150" x="20" y="44"></rect>
+<text class="tm o mid" x="95" y="64">XT1</text>
+<text class="tz sm m mid" x="95" y="81">晶体 32768 Hz</text>
+<rect class="bx o" height="44" rx="8" width="150" x="20" y="100"></rect>
+<text class="tm o mid" x="95" y="120">VLO</text>
+<text class="tz sm m mid" x="95" y="137">片内 ≈10 kHz</text>
+<rect class="bx o" height="44" rx="8" width="150" x="20" y="156"></rect>
+<text class="tm o mid" x="95" y="176">REFO</text>
+<text class="tz sm m mid" x="95" y="193">片内 32768 Hz</text>
+<rect class="bx o" height="66" rx="8" width="150" x="20" y="212"></rect>
+<text class="tm o mid" x="95" y="238">DCO + FLL</text>
+<text class="tz sm m mid" x="95" y="260">片内 RC · 可调</text>
+<rect class="bx o" height="44" rx="8" width="150" x="20" y="290"></rect>
+<text class="tm o mid" x="95" y="310">XT2</text>
+<text class="tz sm m mid" x="95" y="327">晶体 4–32 MHz</text>
+<rect class="bx m" height="44" rx="8" width="150" x="20" y="358"></rect>
+<text class="tm sm m mid" x="95" y="378">MODOSC</text>
+<text class="tz sm m mid" x="95" y="395">模块振荡器</text>
+</g>
+<g data-step="2">
+<path class="ln o draw" d="M170 66 H440"></path>
+<path class="ln o draw" d="M170 122 H440"></path>
+<path class="ln o draw" d="M170 178 H440"></path>
+<path class="ln o draw" d="M170 230 H440"></path>
+<path class="ln o draw" d="M170 262 H440"></path>
+<path class="ln o draw" d="M170 312 H440"></path>
+<text class="tm sm o mid" x="305" y="59">XT1CLK</text>
+<text class="tm sm o mid" x="305" y="115">VLOCLK</text>
+<text class="tm sm o mid" x="305" y="171">REFOCLK</text>
+<text class="tm sm o mid" x="305" y="223">DCOCLK</text>
+<text class="tm sm o mid" x="305" y="255">DCOCLKDIV</text>
+<text class="tm sm o mid" x="305" y="305">XT2CLK</text>
+</g>
+<g data-step="3">
+<path class="ln o" d="M440 58 V320" style="stroke-width:5"></path>
+<path class="ln o draw" d="M440 95 H468" marker-end="url(#m24-ah-o)"></path>
+<path class="ln o draw" d="M440 200 H468" marker-end="url(#m24-ah-o)"></path>
+<path class="ln o draw" d="M440 305 H468" marker-end="url(#m24-ah-o)"></path>
+<path class="bx o" d="M472 65 L500 77 L500 113 L472 125 z"></path>
+<path class="bx o" d="M472 170 L500 182 L500 218 L472 230 z"></path>
+<path class="bx o" d="M472 275 L500 287 L500 323 L472 335 z"></path>
+<text class="tm xs o mid" x="486" y="58">SELA</text>
+<text class="tm xs o mid" x="486" y="163">SELM</text>
+<text class="tm xs o mid" x="486" y="268">SELS</text>
+<path class="ln o" d="M500 95 H518 M500 200 H518 M500 305 H518"></path>
+<rect class="bx o" height="32" rx="5" width="56" x="518" y="79"></rect>
+<rect class="bx o" height="32" rx="5" width="56" x="518" y="184"></rect>
+<rect class="bx o" height="32" rx="5" width="56" x="518" y="289"></rect>
+<text class="tm xs o mid" x="546" y="99">÷DIVA</text>
+<text class="tm xs o mid" x="546" y="204">÷DIVM</text>
+<text class="tm xs o mid" x="546" y="309">÷DIVS</text>
+</g>
+<g data-step="4">
+<path class="ln o draw" d="M574 95 H624" marker-end="url(#m24-ah-o)"></path>
+<path class="ln o draw" d="M574 200 H624" marker-end="url(#m24-ah-o)"></path>
+<path class="ln o draw" d="M574 305 H624" marker-end="url(#m24-ah-o)"></path>
+<rect class="bx o" data-hl="4" height="46" rx="8" width="152" x="628" y="72"></rect>
+<text class="tm o mid" x="704" y="92">ACLK</text>
+<text class="tz sm m mid" x="704" y="110">辅助 · 外设</text>
+<rect class="bx o" data-hl="4" height="46" rx="8" width="152" x="628" y="177"></rect>
+<text class="tm o mid" x="704" y="197">MCLK</text>
+<text class="tz sm m mid" x="704" y="215">主时钟 · CPU</text>
+<rect class="bx o" data-hl="4" height="46" rx="8" width="152" x="628" y="282"></rect>
+<text class="tm o mid" x="704" y="302">SMCLK</text>
+<text class="tz sm m mid" x="704" y="320">子主时钟 · 外设</text>
+<path class="ln m draw" d="M170 380 H624" marker-end="url(#m24-ah-o)"></path>
+<rect class="bx m" height="44" rx="8" width="152" x="628" y="358"></rect>
+<text class="tm sm m mid" x="704" y="378">MODCLK</text>
+<text class="tz sm m mid" x="704" y="395">Flash 控制器</text>
+</g>
+<g data-step="5">
+<path class="ln y" d="M170 66 H440"></path>
+<path class="ln y" d="M170 262 H440"></path>
+<text class="tm xs y mid" x="704" y="136">PUC：← XT1CLK</text>
+<text class="tm xs y mid" x="704" y="241">PUC：← DCOCLKDIV</text>
+<text class="tm xs y mid" x="704" y="346">PUC：← DCOCLKDIV</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>第一层：<b>osciladores</b>——振荡器。两个外接晶体的（XT1、XT2），三个片内的（VLO、REFO、DCO），外加 Flash 控制器专用的 MODOSC。</li>
+<li data-dur="3800">第二层：振荡器给出 6 个 <b>fuentes</b>：XT1CLK、VLOCLK、REFOCLK、DCOCLK、DCOCLKDIV、XT2CLK。DCOCLKDIV 是 DCOCLK 在 FLL 里 ÷1/2/4/8/16/32 之后的版本（§3）。</li>
+<li data-dur="4200">每一路信号有自己的选择器（<code>SELA</code>、<code>SELM</code>、<code>SELS</code>，各 3 位）和分频器（<code>DIVA</code>、<code>DIVM</code>、<code>DIVS</code>，÷1 到 ÷32）。6 个时钟源里任何一个都能接到任何一路。</li>
+<li data-dur="4200">第三层：<b>señales</b>。<span class="c-o">ACLK</span> 通常是低频的定时基准；<span class="c-o">MCLK</span> 驱动 CPU；<span class="c-o">SMCLK</span> 通常是高频，给外设；<span class="c-o">MODCLK</span> 由 MODOSC 直接给出，供 Flash 控制器写、擦时使用。</li>
+<li>PUC 之后的默认接法（§5 细讲）：<span class="c-y">ACLK ← XT1CLK</span>，<span class="c-y">MCLK、SMCLK ← DCOCLKDIV</span>。</li>
+</ol>
+<p class="stage-note">场景省略了每路信号前的 <i>Enable Logic</i> (EN)——使能逻辑：ACLK 受 SR 的 OSCOFF、MCLK 受 CPUOFF、SMCLK 受 UCSCTL6 的 SMCLKOFF 控制，外设的 xCLK_REQ 可以把它重新打开（§4 末尾）。</p>
+
+</figure>
+<div class="grid3">
+<div class="cell o">
+<span class="k c-o">Auxiliary Clock</span>
+<h3>ACLK</h3>
+<p>常作 Timer、UART 等外设的低频同步时钟。SR 的 <b>OSCOFF</b> = 1 可以关掉它。分频：DIVA；另有 DIVPA 把 ACLK/n 送到引脚。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">Master Clock</span>
+<h3>MCLK</h3>
+<p>CPU 的时钟（也可以给外设）。SR 的 <b>CPUOFF</b> = 1 关掉它——CPU 就停了。分频：DIVM。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">SubMain Clock</span>
+<h3>SMCLK</h3>
+<p>多数外设可选的高频时钟。UCSCTL6 的 <b>SMCLKOFF</b> = 1 关掉它。分频：DIVS。</p>
+</div>
+</div>
+<p class="takeaway">UCS = 5 个振荡器（+ MODOSC）→ 6 个时钟源 → 3 路可选源、可分频、可单独关闭的时钟信号（+ MODCLK）。用谁、多快、什么时候关，由软件决定。</p>
+<p class="aside">UCS 的控制寄存器叫 UCSCTLx（16 位，也能按字节访问 UCSCTLx_L / UCSCTLx_H），偏移从 00h 起每个加 2，族里最多有 UCSCTL0–UCSCTL9。F5529 没有 UCSCTL9，所以只用 UCSCTL0–UCSCTL8（全部复位值和位域见 §5 的表）。关 ACLK、MCLK 的 OSCOFF、CPUOFF 位在 SR 里，和低功耗模式直接相关，见 M26。</p>
+
+</section>
+
+<section class="sec" id="m24-s1">
+<h2><span class="n">§1</span>四个"定频"振荡器 <span class="tag">M24.2 · M24.3</span></h2>
+<p class="hook"><span class="zh">要精确，还是要省电？要便宜，还是要快？</span><span class="es">VLO, REFO, XT1 y XT2: precisión, consumo y coste.</span></p>
+<p>DCO 留到 §2。其余四个振荡器的频率基本是固定的，区别在精度、功耗和要不要外接元件：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>振荡器</th><th>频率</th><th>精度</th><th>特点</th></tr></thead>
+<tbody>
+<tr><td class="mono">VLO</td><td>≈ 10 kHz（典型 9.4，范围 6–14 kHz）</td><td>差：0.5 %/°C、4 %/V</td><td>片内、最省电、最便宜；只用于不需要准确时间基准的场合</td></tr>
+<tr><td class="mono">REFO</td><td>32768 Hz（片内校准）</td><td>25 °C、3 V 时 ±1.5 %；全温度范围 ±3.5 %</td><td>片内；不用时不耗电，工作时约 3 µA，比 XT1 费电；起振约 25 µs；可作 FLL 参考；XT1 不稳定时由它顶上</td></tr>
+<tr><td class="mono">XT1</td><td>32768 Hz 手表晶体（LF）；旁路输入 10–50 kHz</td><td>晶体级</td><td>外接晶体，负载电容在片内（XCAP）；起振慢：XT1DRIVE = 3、12 pF 时典型 0.5 s，XT1DRIVE = 0、6 pF 时 1 s；F5529 只支持 LF 模式</td></tr>
+<tr><td class="mono">XT2</td><td>4–32 MHz 晶体；旁路输入 0.7–32 MHz</td><td>晶体级</td><td>特性和 XT1 的 HF 模式一样；<b>片内没有负载电容，要在两脚外接</b>；4 MHz 时约 200 µA，比 XT1 费电得多；LaunchPad 上接的是 4 MHz（见 UCS1_XT2.c 的注释）</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>这些振荡器都是<b>按需打开</b>的：某路时钟（ACLK、MCLK、SMCLK）选了它，或者它作 FLL 参考而 DCO 又在驱动某路时钟，而且那路时钟在当前模式下是开着的，它才运行。</p>
+<h3>XT1、XT2 的控制位（UCSCTL6）</h3>
+<p>把 UCS 方块图里 XT1、XT2 的部分单独拿出来看，图上标出的控制位全在 UCSCTL6 里：</p>
+
+<p>再看 UCSCTL6 的位图，复位值 C1CDh 逐位拆开：</p>
+<figure class="stage" id="m24-ctl6">
+<div class="stage-title"><span>Registro UCSCTL6 · offset 0Ch</span><b>复位值 C1CDh</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m24-ctl6-t" role="img" viewbox="0 0 800 214">
+<title id="m24-ctl6-t">UCSCTL6 的 16 位：高字节 XT2DRIVE、保留、XT2BYPASS、保留、XT2OFF；低字节 XT1DRIVE、XTS、XT1BYPASS、XCAP、SMCLKOFF、XT1OFF；每一位下面是复位值</title>
+<g>
+<text class="tm xs m mid" x="65" y="40">15</text><text class="tm xs m mid" x="155" y="40">14</text><text class="tm xs m mid" x="245" y="40">13</text><text class="tm xs m mid" x="335" y="40">12</text>
+<text class="tm xs m mid" x="425" y="40">11</text><text class="tm xs m mid" x="515" y="40">10</text><text class="tm xs m mid" x="605" y="40">9</text><text class="tm xs m mid" x="695" y="40">8</text>
+<text class="tm xs m mid" x="65" y="124">7</text><text class="tm xs m mid" x="155" y="124">6</text><text class="tm xs m mid" x="245" y="124">5</text><text class="tm xs m mid" x="335" y="124">4</text>
+<text class="tm xs m mid" x="425" y="124">3</text><text class="tm xs m mid" x="515" y="124">2</text><text class="tm xs m mid" x="605" y="124">1</text><text class="tm xs m mid" x="695" y="124">0</text>
+</g>
+<rect class="bx b" height="48" rx="5" width="176" x="22" y="48"></rect>
+<rect class="bx hollow m" height="48" rx="5" width="86" x="202" y="48"></rect>
+<rect class="bx b" height="48" rx="5" width="86" x="292" y="48"></rect>
+<rect class="bx hollow m" height="48" rx="5" width="266" x="382" y="48"></rect>
+<rect class="bx b" height="48" rx="5" width="86" x="652" y="48"></rect>
+<text class="tm sm b mid" x="110" y="68">XT2DRIVE</text>
+<text class="tm xs m mid" x="245" y="68">—</text>
+<text class="tm sm b mid" x="335" y="68">XT2BYPASS</text>
+<text class="tm xs m mid" x="515" y="68">Reserved</text>
+<text class="tm sm b mid" x="695" y="68">XT2OFF</text>
+<text class="tm sm y mid" x="65" y="88">1</text><text class="tm sm y mid" x="155" y="88">1</text><text class="tm sm m mid" x="245" y="88">0</text><text class="tm sm m mid" x="335" y="88">0</text>
+<text class="tm sm m mid" x="425" y="88">0</text><text class="tm sm m mid" x="515" y="88">0</text><text class="tm sm m mid" x="605" y="88">0</text><text class="tm sm y mid" x="695" y="88">1</text>
+<rect class="bx b" height="48" rx="5" width="176" x="22" y="132"></rect>
+<rect class="bx b" height="48" rx="5" width="86" x="202" y="132"></rect>
+<rect class="bx b" height="48" rx="5" width="86" x="292" y="132"></rect>
+<rect class="bx b" height="48" rx="5" width="176" x="382" y="132"></rect>
+<rect class="bx g" height="48" rx="5" width="86" x="562" y="132"></rect>
+<rect class="bx b" height="48" rx="5" width="86" x="652" y="132"></rect>
+<text class="tm sm b mid" x="110" y="152">XT1DRIVE</text>
+<text class="tm sm b mid" x="245" y="152">XTS</text>
+<text class="tm sm b mid" x="335" y="152">XT1BYPASS</text>
+<text class="tm sm b mid" x="470" y="152">XCAP</text>
+<text class="tm sm g mid" x="605" y="152">SMCLKOFF</text>
+<text class="tm sm b mid" x="695" y="152">XT1OFF</text>
+<text class="tm sm y mid" x="65" y="172">1</text><text class="tm sm y mid" x="155" y="172">1</text><text class="tm sm m mid" x="245" y="172">0</text><text class="tm sm m mid" x="335" y="172">0</text>
+<text class="tm sm y mid" x="425" y="172">1</text><text class="tm sm y mid" x="515" y="172">1</text><text class="tm sm m mid" x="605" y="172">0</text><text class="tm sm y mid" x="695" y="172">1</text>
+<text class="tm y mid" x="772" y="80">C1h</text>
+<text class="tm y mid" x="772" y="164">CDh</text>
+<text class="tz sm m" x="22" y="206">黄色 = 复位后为 1 · 灰框 = 保留位，读出总是 0 · 绿色 SMCLKOFF 是 SMCLK 的开关，不属于振荡器</text>
+</svg>
+</div>
+<p class="stage-note">复位后：XT2DRIVE = XT1DRIVE = 3（最大电流）、XT2OFF = XT1OFF = 1、XCAP = 3、XTS = 0。</p>
+
+</figure>
+<div class="grid2">
+<div class="panel">
+<ul>
+<li><span class="reg o">XTS</span>（bit 5）：0 = LF（10–50 kHz），1 = HF（4–32 MHz）。<b>F5529 没有 XT1 高频模式的硬件，XTS 必须保持 0。</b></li>
+<li><span class="reg o">XT1BYPASS</span>（bit 4）：0 = 用晶体；1 = XIN 直接输入外部时钟，晶体振荡电路关掉省电，XOUT 当普通 I/O 用。</li>
+<li><span class="reg o">XCAP</span>（bits 3–2）：3 档片内电容，或者外接。有效负载电容：XCAP = 1、2、3 → 约 5.5、8.5、12 pF；<b>XCAP = 0 只剩约 2 pF 寄生电容，要在 XIN、XOUT 外接电容</b>。复位值 3（12 pF）。</li>
+</ul>
+</div>
+<div class="panel">
+<ul>
+<li><span class="reg o">XT1DRIVE</span>（bits 7–6）：驱动电流。复位时是最大值 3，起振快而可靠；稳定后可以调小省电。LF 模式下 XT1DRIVE = 1、2、3 比最低档多耗约 0.075、0.17、0.29 µA。</li>
+<li><span class="reg o">XT1OFF</span>（bit 0）：复位值 1 = 没有时钟或 FLL 用它就关；写 0 = 只要引脚已经交给 XT1（PSEL）而且不是旁路模式，就一直开着。</li>
+<li><span class="reg o">XT2OFF</span>（bit 8）、<span class="reg o">XT2BYPASS</span>（bit 12）、<span class="reg o">XT2DRIVE</span>（bits 15–14）：XT2 的同类位。XT2DRIVE 选频率段：00 = 4–8 MHz（电流最小）、01 = 8–16、10 = 16–24、11 = 24–32 MHz。</li>
+</ul>
+</div>
+</div>
+<div class="note alert">
+<span class="lbl">复位后引脚不是时钟脚</span>
+<p>XT1 的 XIN/XOUT 是 <span class="reg">P5.4</span>/<span class="reg">P5.5</span>（80 脚 PN 封装的 12、13 脚），XT2 的 XT2IN/XT2OUT 是 <span class="reg">P5.2</span>/<span class="reg">P5.3</span>（69、70 脚）。复位后它们都是普通 I/O，必须先把对应的 <span class="reg">P5SEL</span> 位置 1，晶体才会起振。旁路模式下只需要设 XIN（或 XT2IN）那一位。§5 和 §7 的故事都从这里开始。</p>
+</div>
+
+
+</section>
+
+<section class="sec" id="m24-s2">
+<h2><span class="n">§2</span>DCO：范围、tap 和调制器 <span class="tag">M24.4</span></h2>
+<p class="hook"><span class="zh">一个片内的 RC 振荡器，怎样调到想要的频率？</span><span class="es">DCO: DCORSEL, DCO y MOD.</span></p>
+<p><b class="t">DCO (Digitally Controlled Oscillator)</b>——数控振荡器，是片内的 RC 振荡器。它起振极快（PUC 后不到 5 µs CPU 就能开始执行代码），但不精确：频率随温度、电源电压变化，芯片和芯片之间也不一样。频率由三组位决定：</p>
+<ul>
+<li><span class="reg o">DCORSEL</span>（UCSCTL1 bits 6–4，3 位）：选 8 个标称频率范围中的一个，改变 DC 发生器的电阻、也就是注入电流。复位值 <b>2</b>。</li>
+<li><span class="reg o">DCO</span>（UCSCTL0 bits 12–8，5 位）：把选中的范围分成 32 个 <b class="t">tap</b>——档位，每一档比前一档高约 8 %。复位值 0。</li>
+<li><span class="reg o">MOD</span>（UCSCTL0 bits 7–3，5 位）：调制器，在 tap DCO 和 tap DCO+1 之间切换，得到中间频率。UCSCTL1 的 <span class="reg o">DISMOD</span> = 1 关掉调制器。</li>
+</ul>
+
+<figure class="stage" data-scene="" id="m24-sc-dco">
+<div class="stage-title"><span>Escena 2 · DCORSEL × 32 taps</span><b>4 步</b></div>
+<div aria-label="动画：DCO 的 8 个频率范围和 32 个 tap" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m24-sc-dco-t" role="img" viewbox="0 0 800 405">
+<title id="m24-sc-dco-t">对数频率轴上 DCORSEL 0 到 7 的 8 个范围；默认范围 2 和 2.097 MHz 的位置；右上角是 32 个 tap 的阶梯</title>
+<text class="tz sm m" x="20" y="34">DCORSEL</text>
+<text class="tz sm m mid" x="430" y="34">f<tspan dy="4" style="font-size:11px">DCO</tspan><tspan dy="-4">（对数刻度）</tspan></text>
+<path class="ln thin m dash" d="M146.8 56 V348 M335.6 56 V348 M524.4 56 V348 M713.2 56 V348"></path>
+<text class="tm xs m mid" x="146.8" y="368">0.1 MHz</text>
+<text class="tm xs m mid" x="335.6" y="368">1 MHz</text>
+<text class="tm xs m mid" x="524.4" y="368">10 MHz</text>
+<text class="tm xs m mid" x="713.2" y="368">100 MHz</text>
+<g data-step="1">
+<text class="tm sm o mid" x="60" y="83">0</text>
+<rect class="ln thin m" height="16" rx="3" width="261.5" x="117.6" y="70"></rect>
+<rect class="sl o" height="10" rx="2" width="102.7" x="203.7" y="73"></rect>
+<text class="tm sm o mid" x="60" y="119">1</text>
+<rect class="ln thin m" height="16" rx="3" width="257.1" x="180.1" y="106"></rect>
+<rect class="sl o" height="10" rx="2" width="115.3" x="251.9" y="109"></rect>
+<text class="tm sm o mid" x="60" y="155">2</text>
+<rect class="ln thin m" height="16" rx="3" width="257.3" x="242.2" y="142"></rect>
+<rect class="sl o" height="10" rx="2" width="118.2" x="312.0" y="145"></rect>
+<text class="tm sm o mid" x="60" y="191">3</text>
+<rect class="ln thin m" height="16" rx="3" width="253.0" x="299.0" y="178"></rect>
+<rect class="sl o" height="10" rx="2" width="114.1" x="369.4" y="181"></rect>
+<text class="tm sm o mid" x="60" y="227">4</text>
+<rect class="ln thin m" height="16" rx="3" width="252.3" x="357.1" y="214"></rect>
+<rect class="sl o" height="10" rx="2" width="110.4" x="431.0" y="217"></rect>
+<text class="tm sm o mid" x="60" y="263">5</text>
+<rect class="ln thin m" height="16" rx="3" width="252.1" x="410.8" y="250"></rect>
+<rect class="sl o" height="10" rx="2" width="112.6" x="482.6" y="253"></rect>
+<text class="tm sm o mid" x="60" y="299">6</text>
+<rect class="ln thin m" height="16" rx="3" width="242.0" x="460.8" y="286"></rect>
+<rect class="sl o" height="10" rx="2" width="106.0" x="530.0" y="289"></rect>
+<text class="tm sm o mid" x="60" y="335">7</text>
+<rect class="ln thin m" height="16" rx="3" width="226.7" x="511.1" y="322"></rect>
+<rect class="sl o" height="10" rx="2" width="91.8" x="579.6" y="325"></rect>
+</g>
+<g data-step="2">
+<rect class="ln y" data-hl="2" height="28" rx="6" width="270" x="236" y="136"></rect>
+<circle class="sl y" cx="396.4" cy="150" r="6"></circle>
+<text class="tm xs y" x="512" y="154">← PUC · 2.097 MHz</text>
+</g>
+<g data-step="3">
+<rect class="bx hollow m" height="100" rx="6" width="234" x="556" y="34"></rect>
+<text class="tm xs o" x="566" y="50">DCO = 0 … 31 · 每档 ≈ ×1.08</text>
+<g id="m24-taps"></g>
+</g>
+<g data-step="4">
+<rect class="ln y" height="26" rx="2" width="18" x="646" y="102"></rect>
+<text class="tm xs y mid" x="673" y="176">DCO ↔ DCO+1 · MOD</text>
+</g>
+<text class="tz sm m mid" x="400" y="394">空心框：tap 0 最小值 → tap 31 最大值 · 实心：建议的目标区间</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">DCO 有 8 个范围（DCORSEL = 0…7）。空心框从 tap 0 的最小值画到 tap 31 的最大值，整体覆盖约 70 kHz 到 135 MHz。相邻范围大量重叠。</li>
+<li data-dur="4200">复位后 DCORSEL = 2：这个范围的 tap 0 在 0.32–0.75 MHz 之间，tap 31 在 3.17–7.38 MHz 之间。FLL 默认把 DCOCLK 锁在 <span class="c-y">2.097 MHz</span>，正好落在实心区间里。</li>
+<li data-dur="4000">在一个范围之内，5 位的 DCO 值从 32 个 tap 中选一个，每一档比前一档高约 8 %（相邻档之比在 1.02–1.12 之间）。</li>
+<li data-dur="4000">想要的频率夹在两档之间怎么办？<b>调制器</b>让 DCO 在 tap DCO 和 tap DCO+1 之间来回切换——下面的模拟器自己试。</li>
+</ol>
+<p class="stage-note">下面的 DCORSEL 表只给每个范围 tap 0 和 tap 31 的最小、最大值；实心段 = f<sub>DCO</sub>(n,0)<sub>max</sub> … f<sub>DCO</sub>(n,31)<sub>min</sub>，即建议的目标区间。tap 阶梯按每档 ×1.08 示意，不是实测值。</p>
+
+</figure>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>DCORSEL</th><th>DCO = 0（MOD = 0）</th><th>DCO = 31（MOD = 0）</th><th>建议目标区间</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0.07–0.20 MHz</td><td>0.70–1.70 MHz</td><td>0.20–0.70 MHz</td></tr>
+<tr><td>1</td><td>0.15–0.36 MHz</td><td>1.47–3.45 MHz</td><td>0.36–1.47 MHz</td></tr>
+<tr><td>2 · 复位值</td><td><b>0.32–0.75 MHz</b></td><td>3.17–7.38 MHz</td><td>0.75–3.17 MHz</td></tr>
+<tr><td>3</td><td>0.64–1.51 MHz</td><td>6.07–14.0 MHz</td><td>1.51–6.07 MHz</td></tr>
+<tr><td>4</td><td>1.3–3.2 MHz</td><td>12.3–28.2 MHz</td><td>3.2–12.3 MHz</td></tr>
+<tr><td>5</td><td>2.5–6.0 MHz</td><td>23.7–54.1 MHz</td><td>6.0–23.7 MHz</td></tr>
+<tr><td>6</td><td>4.6–10.7 MHz</td><td>39.0–88.0 MHz</td><td>10.7–39.0 MHz</td></tr>
+<tr><td>7</td><td>8.5–19.6 MHz</td><td>60–135 MHz</td><td>19.6–60 MHz</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">表中每格是 min–max。复位后 DCORSEL = 2、DCO = MOD = 0：<b>如果 FLL 关着</b>，上电时 DCO 就在 0.32–0.75 MHz 之间某处。同一 tap 下，相邻两个范围差 1.2–2.3 倍；1 MHz 附近的漂移约 0.1 %/°C、1.9 %/V。</p>
+<div class="note warm">
+<span class="lbl">为什么不直接查表设频率？</span>
+<p>举个例子：想要 6 MHz，查表可以设 DCORSEL = 5、DCO = MOD = 0——可这时只能保证频率在 2.5–6.0 MHz 之间。范围这么宽，手动设 tap 根本不知道实际频率是多少。tap 和 MOD 的精细调节，只有在有一个<b>稳定参考</b>时才有意义。这就是 FLL（§3）。</p>
+</div>
+<p>调制器的规则：一个调制周期是 32 个 DCOCLK 周期，其中 <span class="reg o">MOD</span> 个周期用 f<sub>DCO+1</sub>，其余 32 − MOD 个用 f<sub>DCO</sub>。MOD = 0 时调制器不起作用。拖动滑块看图样；"积分器 ±1"按钮模拟 FLL 每次改一个计数：MOD 从 31 再加 1 会回到 0，同时 DCO 进一档。</p>
+<figure class="stage" id="m24-mod">
+<div class="stage-title"><span>Simulador · modulador del DCO</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m24-mod-tt" role="img" viewbox="0 0 800 196">
+<title id="m24-mod-tt">32 个格子代表一个调制周期，黄色格子用 tap DCO+1，金色格子用 tap DCO</title>
+<text class="tz sm m" x="24" y="26">一个调制周期 = 32 个 DCOCLK 周期（编号 0–31）</text>
+<g id="m24-cells">
+<rect class="bx o" height="50" rx="3" width="20" x="24" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="47.6" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="71.2" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="94.8" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="118.4" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="142" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="165.6" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="189.2" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="212.8" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="236.4" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="260" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="283.6" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="307.2" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="330.8" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="354.4" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="378" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="401.6" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="425.2" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="448.8" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="472.4" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="496" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="519.6" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="543.2" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="566.8" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="590.4" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="614" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="637.6" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="661.2" y="40"></rect>
+<rect class="bx o" height="50" rx="3" width="20" x="684.8" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="708.4" y="40"></rect><rect class="bx y" height="50" rx="3" width="20" x="732" y="40"></rect><rect class="bx o" height="50" rx="3" width="20" x="755.6" y="40"></rect>
+</g>
+<text class="tm xs m mid" x="34" y="106">0</text>
+<text class="tm xs m mid" x="222.8" y="106">8</text>
+<text class="tm xs m mid" x="411.6" y="106">16</text>
+<text class="tm xs m mid" x="600.4" y="106">24</text>
+<text class="tm xs m mid" x="765.6" y="106">31</text>
+<rect class="bx o" height="16" rx="2" width="16" x="24" y="122"></rect>
+<text class="tz sm m" x="46" y="135">f_DCO（tap = DCO）</text>
+<rect class="bx y" height="16" rx="2" width="16" x="250" y="122"></rect>
+<text class="tz sm m" x="272" y="135">f_DCO+1（tap = DCO + 1）</text>
+<text class="tm sm w" id="m24-mod-t" x="24" y="176">DCO = 12 · MOD = 8 → 24 × t_DCO + 8 × t_DCO+1</text>
+</svg>
+</div>
+<div class="stage-ctl m24-ctl">
+<label>DCO <input id="m24-dco" max="31" min="0" step="1" type="range" value="12"/><span id="m24-dco-v">12</span></label>
+<label>MOD <input id="m24-modr" max="31" min="0" step="1" type="range" value="8"/><span id="m24-mod-v">8</span></label>
+<button class="mini" id="m24-int-dn" type="button">积分器 −1</button>
+<button class="mini" id="m24-int-up" type="button">积分器 +1</button>
+<p aria-live="polite" class="out" id="m24-mod-out">UCSCTL0 = <span class="hx">0x0C40</span> · 有效频率 ≈ f<sub>DCO</sub> × 1.019（按每档 +8 % 估算，示意）</p>
+</div>
+
+</figure>
+<div class="formula" data-tex="\bar{t} = \frac{(32-\class{c-y}{\mathrm{MOD}})\cdot t_{\mathrm{DCO}} + \class{c-y}{\mathrm{MOD}}\cdot t_{\mathrm{DCO+1}}}{32}">t̄ = [(32 − MOD)·t_DCO + MOD·t_DCO+1] / 32</div>
+<p class="aside">上式是平均周期 t̄（除以 32）；也可以写成不除以 32 的整段时间 t₃₂ = 32·t̄，两者是同一件事。黄色格子的位置：MOD 的每一位管一组均匀分开的周期——bit 0 管第 16 个，bit 1 管第 8、24 个，bit 2 管 4、12、20、28，bit 3 管 2、6、10…30，bit 4 管全部奇数周期；所以 MOD = 1 时唯一的 DCO+1 周期在正中间，MOD = 16 时两种周期交替，MOD = 31 时只有第 0 个周期用 f<sub>DCO</sub>。DCO = 31 时 MOD 不再起作用（已经是最高档）。把能量分散到两个频率上，还能减小电磁干扰（EMI）。FLL 工作时，DCO 和 MOD 都由硬件自动改写。</p>
+
+</section>
+
+<section class="sec" id="m24-s3">
+<h2><span class="n">§3</span>FLL：把 DCO 锁在参考上 <span class="tag">M24.5</span></h2>
+<p class="hook"><span class="zh">RC 振荡器会漂，晶体很稳。能不能让 DCO 借晶体的稳？</span><span class="es">Frequency Locked Loop: enganchar el DCOCLK a una fuente de referencia.</span></p>
+<p><b class="t">FLL (Frequency Locked Loop)</b>——锁频环，核心是一个 10 位的 <b class="t">integrador (ES) / frequency integrator (EN)</b>——积分器（其实是一个加减计数器）。它的值直接就是 UCSCTL0 里的 DCO（高 5 位）和 MOD（低 5 位）。DCOCLK 因此和参考时钟一样稳定。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m24-sc-fll">
+<div class="stage-title"><span>Escena 3 · el bucle FLL</span><b>核心场景</b></div>
+<div aria-label="动画：FLL 的参考支路和反馈支路，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m24-sc-fll-t" role="img" viewbox="0 0 800 340">
+<title id="m24-sc-fll-t">FLL：SELREF 选参考，除以 n 后让积分器加 1；DCOCLK 除以 D 得 DCOCLKDIV，再除以 N+1 让积分器减 1；积分器输出 DCO 和 MOD</title>
+<g data-step="1">
+<path class="ln o draw" d="M660 135 H782" marker-end="url(#m24-ah-o)"></path>
+<rect class="bx o" data-hl="1" height="70" rx="8" width="120" x="540" y="100"></rect>
+<text class="tm o mid" x="600" y="130">DCO</text>
+<text class="tz sm m mid" x="600" y="152">RC · 会漂移</text>
+<text class="tm xs m mid" x="600" y="92">DCORSEL · DISMOD</text>
+<text class="tm xs m mid" x="600" y="188">DC generator: off ← SCG1</text>
+<text class="tm sm o mid" x="736" y="126">DCOCLK</text>
+</g>
+<g data-step="2">
+<rect class="bx b" data-hl="2 5" height="150" rx="8" width="130" x="346" y="60"></rect>
+<text class="tm sm b mid" x="411" y="122">integrador</text>
+<text class="tm xs m mid" x="411" y="142">10 bits</text>
+<text class="tm xs r mid" x="411" y="168">off ← SCG0</text>
+<text class="tm xs m mid" x="411" y="186">reset ← PUC</text>
+<path class="ln b draw" d="M476 135 H536" marker-end="url(#m24-ah-b)"></path>
+<text class="tm xs b mid" x="506" y="126">DCO·MOD</text>
+</g>
+<g data-step="3">
+<text class="tm xs m end" x="100" y="64">XT1CLK</text>
+<text class="tm xs m end" x="100" y="92">REFOCLK</text>
+<text class="tm xs m end" x="100" y="120">XT2CLK</text>
+<path class="ln thin m" d="M104 60 H128 M104 88 H128 M104 116 H128"></path>
+<path class="ln o draw" d="M156 88 H342" id="m24-p-ref" marker-end="url(#m24-ah-o)"></path>
+<path class="bx o" d="M128 44 L156 56 L156 120 L128 132 z"></path>
+<text class="tm xs o mid" x="142" y="36">SELREF</text>
+<text class="tm xs o mid" x="142" y="150">FLLREFCLK</text>
+<rect class="bx o" height="40" rx="6" width="100" x="190" y="68"></rect>
+<text class="tm sm o mid" x="240" y="93">÷n</text>
+<text class="tm xs m mid" x="240" y="124">FLLREFDIV</text>
+<text class="tm sm y" x="354" y="84">+</text>
+</g>
+<g data-step="4">
+<path class="ln o draw" d="M720 135 V250 H400 V214" id="m24-p-fb" marker-end="url(#m24-ah-o)"></path>
+<circle class="sl o" cx="720" cy="135" r="4"></circle>
+<rect class="bx o" height="40" rx="6" width="100" x="604" y="230"></rect>
+<text class="tm sm o mid" x="654" y="255">÷D</text>
+<text class="tm xs m mid" x="654" y="286">FLLD</text>
+<rect class="bx o" height="40" rx="6" width="100" x="420" y="230"></rect>
+<text class="tm sm o mid" x="470" y="255">÷(N+1)</text>
+<text class="tm xs m mid" x="470" y="286">FLLN</text>
+<circle class="sl o" cx="560" cy="250" r="4"></circle>
+<path class="ln o draw" d="M560 250 V312 H782" marker-end="url(#m24-ah-o)"></path>
+<text class="tm sm o mid" x="744" y="304">DCOCLKDIV</text>
+<text class="tm sm y" x="410" y="204">−</text>
+</g>
+<circle class="sl y" data-move="#m24-p-ref" data-move-dur="1500" data-out="6" data-step="5" r="7"></circle>
+<circle class="sl y" data-move="#m24-p-fb" data-move-dur="1900" data-out="6" data-step="5" r="7"></circle>
+<text class="tz sm y mid" data-out="6" data-step="5" x="411" y="30">参考脉冲 → +1　·　反馈脉冲 → −1</text>
+<g data-step="6">
+<text class="tz sm y mid" x="411" y="30">锁定：f_DCOCLK / (D·(N+1)) = f_FLLREFCLK / n</text>
+<text class="tm xs y mid" x="240" y="146">n = 1</text>
+<text class="tm xs y mid" x="654" y="302">D = 2</text>
+<text class="tm xs y mid" x="470" y="302">N+1 = 32</text>
+<text class="tm xs y" x="726" y="156">2097152 Hz</text>
+<text class="tm xs y mid" x="744" y="330">1048576 Hz</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>起点：DCO 自己就能振荡，但它是 RC 振荡器，频率随温度和电压漂移。它其实分两块：DC generator (EN)——直流发生器（DCORSEL 选电流；SCG1 = 1 可以把它关掉）和 DCO + Modulator（DISMOD = 1 关调制器）。</li>
+<li>FLL 的核心是一个 10 位积分器。它的输出直接写进 DCO 的 tap 和 MOD：计数变大，DCO 就变快；计数变小，DCO 就变慢。SR 的 SCG0 = 1 让积分器停下（off），PUC 把它清零（reset）。</li>
+<li data-dur="4400"><span class="c-o">参考支路</span>（+）：<code>SELREF</code> 从 XT1CLK、REFOCLK、XT2CLK 中选出 FLLREFCLK，再 ÷n（<code>FLLREFDIV</code>：1、2、4、8、12、16）。每来一个脉冲，积分器 +1。</li>
+<li data-dur="4600"><span class="c-o">反馈支路</span>（−）：DCOCLK ÷D（<code>FLLD</code>）得到 DCOCLKDIV，再 ÷(N+1)（<code>FLLN</code>）。每来一个脉冲，积分器 −1。DCOCLKDIV 同时作为时钟源输出给 ACLK/MCLK/SMCLK。</li>
+<li data-dur="4200">两路脉冲"赛跑"：参考快 → 计数上升 → DCO 加速；DCO 快 → 计数下降 → DCO 减速。这是一个负反馈。</li>
+<li data-dur="5000">两边频率相等时，计数只在一个值附近来回，DCO 被"锁"住，和参考一样稳。默认 n = 1、N + 1 = 32、D = 2：32768 × 32 = <span class="c-y">1048576 Hz</span>（DCOCLKDIV），再 × 2 = <span class="c-y">2097152 Hz</span>（DCOCLK）。</li>
+</ol>
+
+</figure>
+<div class="formula" data-tex="f_{\mathrm{DCOCLK}} = \class{c-o}{D}\cdot(\class{c-o}{N}+1)\cdot\frac{f_{\mathrm{FLLREFCLK}}}{\class{c-o}{n}} \qquad\qquad f_{\mathrm{DCOCLKDIV}} = (\class{c-o}{N}+1)\cdot\frac{f_{\mathrm{FLLREFCLK}}}{\class{c-o}{n}}">f_DCOCLK = D·(N+1)·f_FLLREFCLK/n　　f_DCOCLKDIV = (N+1)·f_FLLREFCLK/n</div>
+<p class="aside">这就是锁定条件 f<sub>DCOCLK</sub> / (D·(N+1)) = f<sub>FLLREFCLK</sub> / n 的另一种写法。N + 1 最小是 2：FLLN 写 0 会被当成 1。四个字段的位置和编码：</p>
+<div class="tbl-wrap">
+<table class="enc">
+<thead><tr><th>字段</th><th>位置</th><th>编码</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>FLLD</td><td>UCSCTL2 · bits 14–12</td><td>000…101</td><td>D = 1, 2, 4, 8, 16, 32（110、111 保留，按 32）。复位 001 → D = 2</td></tr>
+<tr><td>FLLN</td><td>UCSCTL2 · bits 9–0</td><td>10 位</td><td>N（必须 &gt; 0）。复位 0x1F → N = 31</td></tr>
+<tr><td>SELREF</td><td>UCSCTL3 · bits 6–4</td><td>000 / 010 / 101</td><td>XT1CLK / REFOCLK / XT2CLK（其余编码保留：001 → XT1CLK，011、100 → REFOCLK，110、111 → XT2CLK）。复位 000</td></tr>
+<tr><td>FLLREFDIV</td><td>UCSCTL3 · bits 2–0</td><td>000…101</td><td>n = 1, 2, 4, 8, <b>12</b>, 16（110、111 保留，按 16）。复位 000 → n = 1</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note warm">
+<span class="lbl">注意 · 资料有误</span>
+<p>有些资料正文说 FLLN 在 UCSCTL3，但它自己的寄存器图和 TI 手册都把 FLLN 放在 UCSCTL2（和 FLLD 一起）。按寄存器图记。UCSCTL2 的复位值是 101Fh；UCSCTL3 里是 SELREF 和 FLLREFDIV。</p>
+</div>
+<p>下面的计算器把公式串起来：改参考、n、N、D，看 DCOCLK 落在哪个 DCORSEL 范围的建议区间里。</p>
+<figure class="stage" id="m24-fllcalc">
+<div class="stage-title"><span>Calculadora · FLL</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m24-fllcalc-t" role="img" viewbox="0 0 800 210">
+<title id="m24-fllcalc-t">FLL 计算链：FLLREFCLK 除以 n，乘以 N+1 得 DCOCLKDIV，再乘以 D 得 DCOCLK；下排 8 格标出 DCOCLK 落在哪些 DCORSEL 范围的建议区间内</title>
+<rect class="bx o" height="58" rx="8" width="168" x="10" y="28"></rect>
+<text class="tm xs m mid" x="94" y="48">FLLREFCLK</text>
+<text class="tm sm o mid" id="m24-fv0" x="94" y="72">32768 Hz</text>
+<path class="ln o" d="M178 57 H210" marker-end="url(#m24-ah-o)"></path>
+<text class="tm xs y mid" id="m24-op1" x="196" y="104">÷1</text>
+<rect class="bx o" height="58" rx="8" width="168" x="214" y="28"></rect>
+<text class="tm xs m mid" x="298" y="48">f_FLLREF / n</text>
+<text class="tm sm o mid" id="m24-fv1" x="298" y="72">32768 Hz</text>
+<path class="ln o" d="M382 57 H414" marker-end="url(#m24-ah-o)"></path>
+<text class="tm xs y mid" id="m24-op2" x="400" y="104">×32</text>
+<rect class="bx o" height="58" rx="8" width="168" x="418" y="28"></rect>
+<text class="tm xs m mid" x="502" y="48">DCOCLKDIV</text>
+<text class="tm sm o mid" id="m24-fv2" x="502" y="72">1048576 Hz</text>
+<path class="ln o" d="M586 57 H618" marker-end="url(#m24-ah-o)"></path>
+<text class="tm xs y mid" id="m24-op3" x="604" y="104">×2</text>
+<rect class="bx o" height="58" rx="8" width="168" x="622" y="28"></rect>
+<text class="tm xs m mid" x="706" y="48">DCOCLK</text>
+<text class="tm sm o mid" id="m24-fv3" x="706" y="72">2097152 Hz</text>
+<g id="m24-rg">
+<rect class="bx hollow m" height="44" rx="5" width="90" x="10" y="122"></rect><rect class="bx hollow m" height="44" rx="5" width="90" x="108" y="122"></rect>
+<rect class="bx y" height="44" rx="5" width="90" x="206" y="122"></rect><rect class="bx g" height="44" rx="5" width="90" x="304" y="122"></rect>
+<rect class="bx hollow m" height="44" rx="5" width="90" x="402" y="122"></rect><rect class="bx hollow m" height="44" rx="5" width="90" x="500" y="122"></rect>
+<rect class="bx hollow m" height="44" rx="5" width="90" x="598" y="122"></rect><rect class="bx hollow m" height="44" rx="5" width="90" x="696" y="122"></rect>
+</g>
+<text class="tm xs w mid" x="55" y="140">DCORSEL 0</text><text class="tm xs m mid" x="55" y="158">0.20–0.70</text>
+<text class="tm xs w mid" x="153" y="140">DCORSEL 1</text><text class="tm xs m mid" x="153" y="158">0.36–1.47</text>
+<text class="tm xs w mid" x="251" y="140">DCORSEL 2</text><text class="tm xs m mid" x="251" y="158">0.75–3.17</text>
+<text class="tm xs w mid" x="349" y="140">DCORSEL 3</text><text class="tm xs m mid" x="349" y="158">1.51–6.07</text>
+<text class="tm xs w mid" x="447" y="140">DCORSEL 4</text><text class="tm xs m mid" x="447" y="158">3.2–12.3</text>
+<text class="tm xs w mid" x="545" y="140">DCORSEL 5</text><text class="tm xs m mid" x="545" y="158">6.0–23.7</text>
+<text class="tm xs w mid" x="643" y="140">DCORSEL 6</text><text class="tm xs m mid" x="643" y="158">10.7–39.0</text>
+<text class="tm xs w mid" x="741" y="140">DCORSEL 7</text><text class="tm xs m mid" x="741" y="158">19.6–60</text>
+<text class="tz sm w" id="m24-fv-t" x="10" y="194">2.097152 MHz 落在 DCORSEL 2、3 的建议区间里；当前 DCORSEL = 2 合适。</text>
+</svg>
+</div>
+<div class="stage-ctl m24-ctl">
+<div class="grp">
+<label>SELREF <select id="m24-selref">
+<option selected="" value="0">000 · XT1CLK（32768 Hz）</option>
+<option value="2">010 · REFOCLK（32768 Hz）</option>
+<option value="5">101 · XT2CLK（4 MHz）</option>
+</select></label>
+<label>FLLREFDIV <select id="m24-refdiv">
+<option selected="" value="0">000 · ÷1</option><option value="1">001 · ÷2</option><option value="2">010 · ÷4</option>
+<option value="3">011 · ÷8</option><option value="4">100 · ÷12</option><option value="5">101 · ÷16</option>
+</select></label>
+</div>
+<div class="grp">
+<label>FLLN <input id="m24-flln" max="1023" min="0" step="1" type="number" value="31"/></label>
+<label>FLLD <select id="m24-flld">
+<option value="0">000 · ÷1</option><option selected="" value="1">001 · ÷2</option><option value="2">010 · ÷4</option>
+<option value="3">011 · ÷8</option><option value="4">100 · ÷16</option><option value="5">101 · ÷32</option>
+</select></label>
+<label>DCORSEL <select id="m24-dcorsel">
+<option value="0">0</option><option value="1">1</option><option selected="" value="2">2</option><option value="3">3</option>
+<option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option>
+</select></label>
+<button class="mini" id="m24-fll-reset" type="button">复位默认</button>
+</div>
+<p aria-live="polite" class="out" id="m24-fll-out">UCSCTL1 = <span class="hx">0x0020</span> · UCSCTL2 = <span class="hx">0x101F</span> · UCSCTL3 = <span class="hx">0x0000</span> · 最坏稳定时间 n·32·32 / f<sub>FLLREF</sub> ≈ 31.25 ms</p>
+</div>
+<p class="stage-note">黄色格 = 当前选的 DCORSEL（装不下时变红），绿色格 = 其他也能用的范围：DCOCLK 落在该范围的 f<sub>DCO</sub>(n,0)<sub>max</sub> … f<sub>DCO</sub>(n,31)<sub>min</sub> 之间。在这个区间之外，FLL 可能把 tap 推到 0 或 31，于是 DCOFFG 置位（§6）。§4 的选择器会用这里算出的 DCOCLK 和 DCOCLKDIV。</p>
+</figure>
+<div class="note">
+<span class="lbl">关掉 FLL</span>
+<p>SR 里的 <span class="reg">SCG0</span> 或 <span class="reg">SCG1</span> 置 1，FLL 就停了：DCO 停在当时的 DCO、MOD 值上继续跑，不再被校正，温度和电压的变化又会直接影响频率。中断响应会自动清掉 SCG1、CPUOFF、OSCOFF，但<b>不清 SCG0</b>——这一点在 M26 的低功耗模式里会用到。</p>
+</div>
+<p class="aside">换档要时间：每跨一个 tap 需要 n·32 个 FLLREFCLK 周期，最坏 n·32·32 个。n = 1、参考 32768 Hz 时，最坏约 31 ms。所以改完 FLL 设置不要立刻依赖新频率。</p>
+<div class="drill" data-drill="fll"></div>
+
+</section>
+
+<section class="sec" id="m24-s4">
+<h2><span class="n">§4</span>三路时钟：选源与分频 <span class="tag">M24.6</span></h2>
+<p class="hook"><span class="zh">6 个时钟源、3 路信号，各接哪一个？各跑多快？</span><span class="es">SELA, SELS, SELM (UCSCTL4) y DIVA, DIVS, DIVM (UCSCTL5).</span></p>
+<p>UCS 的输出一共四路：ACLK/n、ACLK、MCLK、SMCLK，外加 MODCLK。ACLK、MCLK、SMCLK 的通路都是 <i>Enable Logic</i> → 8 选 1 选择器 → 分频器 → 输出，三路结构完全一样，只是开关位不同（OSCOFF、CPUOFF、SMCLKOFF）。以 ACLK 为例：</p>
+
+<p>两个寄存器管全部。UCSCTL4：<span class="reg o">SELA</span> 在 bits 10–8，<span class="reg o">SELS</span> 在 bits 6–4，<span class="reg o">SELM</span> 在 bits 2–0。UCSCTL5：<span class="reg o">DIVPA</span> 14–12、<span class="reg o">DIVA</span> 10–8、<span class="reg o">DIVS</span> 6–4、<span class="reg o">DIVM</span> 2–0。三个 SEL 用同一张编码表，四个 DIV 也一样：</p>
+<div class="tbl-wrap">
+<table class="enc">
+<thead><tr><th>编码</th><th>SELA / SELS / SELM</th><th>DIVx</th></tr></thead>
+<tbody>
+<tr><td>000</td><td>XT1CLK</td><td>÷1</td></tr>
+<tr><td>001</td><td>VLOCLK</td><td>÷2</td></tr>
+<tr><td>010</td><td>REFOCLK</td><td>÷4</td></tr>
+<tr><td>011</td><td>DCOCLK</td><td>÷8</td></tr>
+<tr><td>100</td><td>DCOCLKDIV</td><td>÷16</td></tr>
+<tr><td>101</td><td>XT2CLK（没有 XT2 的型号：DCOCLKDIV）</td><td>÷32</td></tr>
+<tr class="rsv"><td>110</td><td>保留 → 同 101（F5529 有 XT2，即 XT2CLK）</td><td>保留 → ÷32</td></tr>
+<tr class="rsv"><td>111</td><td>保留 → 同 101</td><td>保留 → ÷32</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>复位值：UCSCTL4 = <span class="reg">0x0044</span>（SELA = 000、SELS = 100、SELM = 100），UCSCTL5 = <span class="reg">0x0000</span>（全部 ÷1）。下面的选择器把编码、频率和寄存器值放在一起：</p>
+<figure class="stage" id="m24-sel">
+<div class="stage-title"><span>Selector · ACLK / MCLK / SMCLK</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m24-sel-t" role="img" viewbox="0 0 800 340">
+<title id="m24-sel-t">左边 6 个时钟源，黄线表示每路信号当前选中的源，经过分频器后得到 ACLK、MCLK、SMCLK 的频率</title>
+<g id="m24-src0"><text class="tm sm o" x="20" y="52">XT1CLK</text><text class="tm xs m" x="20" y="68">000 · 32768 Hz</text><circle class="sl o" cx="206" cy="48" r="4"></circle></g>
+<g class="m24-dim" id="m24-src1"><text class="tm sm o" x="20" y="98">VLOCLK</text><text class="tm xs m" x="20" y="114">001 · ≈ 9.4 kHz</text><circle class="sl o" cx="206" cy="94" r="4"></circle></g>
+<g class="m24-dim" id="m24-src2"><text class="tm sm o" x="20" y="144">REFOCLK</text><text class="tm xs m" x="20" y="160">010 · 32768 Hz</text><circle class="sl o" cx="206" cy="140" r="4"></circle></g>
+<g class="m24-dim" id="m24-src3"><text class="tm sm o" x="20" y="190">DCOCLK</text><text class="tm xs m" id="m24-sf3" x="20" y="206">011 · 2.097152 MHz</text><circle class="sl o" cx="206" cy="186" r="4"></circle></g>
+<g id="m24-src4"><text class="tm sm o" x="20" y="236">DCOCLKDIV</text><text class="tm xs m" id="m24-sf4" x="20" y="252">100 · 1.048576 MHz</text><circle class="sl o" cx="206" cy="232" r="4"></circle></g>
+<g class="m24-dim" id="m24-src5"><text class="tm sm o" x="20" y="282">XT2CLK</text><text class="tm xs m" x="20" y="298">101 · 4 MHz</text><circle class="sl o" cx="206" cy="278" r="4"></circle></g>
+<path class="ln y" d="M210 48 C 270 48, 270 80, 330 80" id="m24-wa"></path>
+<path class="ln y" d="M210 232 C 270 232, 270 170, 330 170" id="m24-wm"></path>
+<path class="ln y" d="M210 232 C 270 232, 270 260, 330 260" id="m24-ws"></path>
+<path class="bx o" d="M330 40 L360 54 L360 106 L330 120 z"></path>
+<path class="bx o" d="M330 130 L360 144 L360 196 L330 210 z"></path>
+<path class="bx o" d="M330 220 L360 234 L360 286 L330 300 z"></path>
+<path class="ln o" d="M360 80 H400 M360 170 H400 M360 260 H400"></path>
+<text class="tm xs o mid" x="380" y="72">SELA</text>
+<text class="tm xs o mid" x="380" y="162">SELM</text>
+<text class="tm xs o mid" x="380" y="252">SELS</text>
+<rect class="bx o" height="36" rx="5" width="80" x="400" y="62"></rect>
+<rect class="bx o" height="36" rx="5" width="80" x="400" y="152"></rect>
+<rect class="bx o" height="36" rx="5" width="80" x="400" y="242"></rect>
+<text class="tm sm o mid" id="m24-dva" x="440" y="85">÷1</text>
+<text class="tm sm o mid" id="m24-dvm" x="440" y="175">÷1</text>
+<text class="tm sm o mid" id="m24-dvs" x="440" y="265">÷1</text>
+<path class="ln o" d="M480 80 H538 M480 170 H538 M480 260 H538"></path>
+<rect class="bx o" height="56" rx="8" width="244" x="542" y="52"></rect>
+<rect class="bx o" height="56" rx="8" width="244" x="542" y="142"></rect>
+<rect class="bx o" height="56" rx="8" width="244" x="542" y="232"></rect>
+<text class="tm sm o" x="556" y="74">ACLK</text>
+<text class="tm sm o" x="556" y="164">MCLK</text>
+<text class="tm sm o" x="556" y="254">SMCLK</text>
+<text class="tm sm w end" id="m24-fa" x="774" y="74">32768 Hz</text>
+<text class="tm sm w end" id="m24-fm" x="774" y="164">1.048576 MHz</text>
+<text class="tm sm w end" id="m24-fs" x="774" y="254">1.048576 MHz</text>
+<text class="tz sm m" id="m24-na" x="556" y="96">XT1CLK ÷ 1</text>
+<text class="tz sm m" id="m24-nm" x="556" y="186">DCOCLKDIV ÷ 1</text>
+<text class="tz sm m" id="m24-ns" x="556" y="276">DCOCLKDIV ÷ 1</text>
+<text class="tz sm m" x="20" y="330">VLO 取典型值 9.4 kHz；XT2 按 LaunchPad 的 4 MHz；两项 DCO 取 §3 计算器的结果。</text>
+</svg>
+</div>
+<div class="stage-ctl m24-ctl">
+<div class="grp"><span class="k">ACLK</span>
+<label>SELA <select data-sel="a" id="m24-sela"><option selected="" value="0">000 · XT1CLK</option><option value="1">001 · VLOCLK</option><option value="2">010 · REFOCLK</option><option value="3">011 · DCOCLK</option><option value="4">100 · DCOCLKDIV</option><option value="5">101 · XT2CLK</option><option value="6">110 · 保留 → XT2CLK</option><option value="7">111 · 保留 → XT2CLK</option></select></label>
+<label>DIVA <select data-div="a" id="m24-diva"><option selected="" value="0">000 · ÷1</option><option value="1">001 · ÷2</option><option value="2">010 · ÷4</option><option value="3">011 · ÷8</option><option value="4">100 · ÷16</option><option value="5">101 · ÷32</option><option value="6">110 · 保留 → ÷32</option><option value="7">111 · 保留 → ÷32</option></select></label>
+</div>
+<div class="grp"><span class="k">MCLK</span>
+<label>SELM <select data-sel="m" id="m24-selm"><option value="0">000 · XT1CLK</option><option value="1">001 · VLOCLK</option><option value="2">010 · REFOCLK</option><option value="3">011 · DCOCLK</option><option selected="" value="4">100 · DCOCLKDIV</option><option value="5">101 · XT2CLK</option><option value="6">110 · 保留 → XT2CLK</option><option value="7">111 · 保留 → XT2CLK</option></select></label>
+<label>DIVM <select data-div="m" id="m24-divm"><option selected="" value="0">000 · ÷1</option><option value="1">001 · ÷2</option><option value="2">010 · ÷4</option><option value="3">011 · ÷8</option><option value="4">100 · ÷16</option><option value="5">101 · ÷32</option><option value="6">110 · 保留 → ÷32</option><option value="7">111 · 保留 → ÷32</option></select></label>
+</div>
+<div class="grp"><span class="k">SMCLK</span>
+<label>SELS <select data-sel="s" id="m24-sels"><option value="0">000 · XT1CLK</option><option value="1">001 · VLOCLK</option><option value="2">010 · REFOCLK</option><option value="3">011 · DCOCLK</option><option selected="" value="4">100 · DCOCLKDIV</option><option value="5">101 · XT2CLK</option><option value="6">110 · 保留 → XT2CLK</option><option value="7">111 · 保留 → XT2CLK</option></select></label>
+<label>DIVS <select data-div="s" id="m24-divs"><option selected="" value="0">000 · ÷1</option><option value="1">001 · ÷2</option><option value="2">010 · ÷4</option><option value="3">011 · ÷8</option><option value="4">100 · ÷16</option><option value="5">101 · ÷32</option><option value="6">110 · 保留 → ÷32</option><option value="7">111 · 保留 → ÷32</option></select></label>
+</div>
+<div class="grp"><span class="k">预设</span>
+<button class="mini" data-preset="puc" type="button">PUC 默认</button>
+<button class="mini" data-preset="xt2" type="button">UCS1_XT2.c</button>
+<button class="mini" data-preset="refo" type="button">ACLK = REFO</button>
+<button class="mini" data-preset="vlo" type="button">ACLK = VLO ÷ 2</button>
+</div>
+<p aria-live="polite" class="out" id="m24-sel-out">UCSCTL4 = <span class="hx">0x0044</span> · UCSCTL5 = <span class="hx">0x0000</span>。PUC 默认。SELA = 0（XT1CLK）：XT1 引脚还没配置时，ACLK 实际由 REFO 提供（§5），频率同样是 32768 Hz。</p>
+</div>
+</figure>
+<div class="note alert">
+<span class="lbl">MCLK 的上限</span>
+<p>选择器在 MCLK &gt; 8 MHz 时会报警：按推荐工作条件，复位后的核心电压等级 PMMCOREV = 0 只允许 MCLK 到 8 MHz，更高要先提高核心电压（PMM 模块）。DCO 表上的 135 MHz 只是振荡器的范围，不是 CPU 能用的频率。</p>
+</div>
+<p class="aside"><span class="reg o">DIVPA</span> 把 ACLK 再分频后送到外部引脚（ACLK/n），不影响内部的 ACLK。§1 的引脚图上能看到三路时钟的输出脚：P1.0/TA0CLK/<b>ACLK</b>（21 脚，输出的是 ACLK/n）、P2.2/TA2CLK/<b>SMCLK</b>（31 脚）、P7.7/TB0CLK/<b>MCLK</b>（60 脚）；按 M14 的方法设 PxSEL、PxDIR 选外设功能，就能用示波器量时钟。另外，外设可以通过 ACLK_REQ、MCLK_REQ、SMCLK_REQ 主动请求它用的时钟，即使低功耗模式本来会关掉它；UCSCTL8 的 ACLKREQEN、MCLKREQEN、SMCLKREQEN（复位值都是 1）允许这种请求。这和 M26 有关。</p>
+
+</section>
+
+<section class="sec" id="m24-s5">
+<h2><span class="n">§5</span>上电默认：为什么是 1048576 Hz <span class="tag">M24.7</span></h2>
+<p class="hook"><span class="zh">什么都不配置，CPU 跑多快？ACLK 又从哪里来？</span><span class="es">Configuración de arranque del módulo UCS.</span></p>
+<p>PUC 之后，UCS 的寄存器回到复位值。默认配置本来"想"用 XT1，可 XT1 的引脚这时还是普通 I/O。看系统怎样一步步自救：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="m24-sc-boot">
+<div class="stage-title"><span>Escena 5 · arranque del UCS</span><b>5 步</b></div>
+<div aria-label="动画：PUC 之后 UCS 的启动过程，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m24-sc-boot-t" role="img" viewbox="0 0 800 390">
+<title id="m24-sc-boot-t">PUC 后 ACLK 和 FLL 参考默认选 XT1，但 XT1 引脚未配置，故障逻辑改用 REFO；FLL 把 MCLK、SMCLK 锁在 1048576 Hz；配置引脚并清除故障 flag 后切回 XT1</title>
+<text class="tm xs g mid" data-step="4" x="120" y="44">P5SEL |= BIT4 | BIT5;</text>
+<rect class="bx o" height="72" rx="8" width="180" x="30" y="56"></rect>
+<rect class="bx r" data-out="4" data-step="2" height="72" rx="8" width="180" x="30" y="56"></rect>
+<rect class="bx g" data-hl="4" data-step="4" height="72" rx="8" width="180" x="30" y="56"></rect>
+<text class="tm o mid" x="120" y="82">XT1 · 32768 Hz</text>
+<text class="tm xs m mid" x="120" y="100">P5.4 XIN · P5.5 XOUT</text>
+<text class="tm xs r mid" data-out="4" x="120" y="118">引脚 = GPIO · 不起振</text>
+<text class="tm xs g mid" data-step="4" x="120" y="118">P5SEL.4/.5 = 1 · 起振</text>
+<rect class="bx o" height="56" rx="8" width="180" x="30" y="168"></rect>
+<text class="tm o mid" x="120" y="192">REFO</text>
+<text class="tz sm m mid" x="120" y="212">片内 32768 Hz</text>
+<rect class="bx o" data-hl="3" height="78" rx="8" width="180" x="30" y="258"></rect>
+<text class="tm o mid" x="120" y="282">DCO + FLL</text>
+<text class="tm xs m mid" x="120" y="302">DCORSEL=2 · D=2 · N=31</text>
+<text class="tm xs y mid" data-step="3" x="120" y="322">DCOCLK = 2097152 Hz</text>
+<rect class="bx o" height="48" rx="8" width="150" x="330" y="168"></rect>
+<text class="tm sm o mid" x="405" y="197">FLLREFCLK</text>
+<path class="ln o" d="M405 216 C 405 262, 320 272, 214 272" marker-end="url(#m24-ah-o)"></path>
+<path class="ln o" d="M210 312 H586" marker-end="url(#m24-ah-o)"></path>
+<text class="tm xs o mid" x="400" y="304">SELM = SELS = 100 · DCOCLKDIV</text>
+<path class="ln thin o dash" d="M210 80 H586"></path>
+<text class="tm xs o mid" x="400" y="72">SELA = 000 · XT1CLK</text>
+<path class="ln thin o dash" d="M210 112 C 300 112, 360 130, 390 164"></path>
+<text class="tm xs o mid" x="262" y="146">SELREF = 000</text>
+<rect class="bx o" height="60" rx="8" width="180" x="590" y="56"></rect>
+<text class="tm o mid" x="680" y="80">ACLK</text>
+<text class="tm xs m mid" data-out="2" x="680" y="102">SELA → XT1CLK ?</text>
+<text class="tm xs y mid" data-out="5" data-step="2" x="680" y="102">32768 Hz · 来自 REFO</text>
+<text class="tm xs g mid" data-step="5" x="680" y="102">32768 Hz · 来自 XT1</text>
+<rect class="bx o" data-hl="3" height="60" rx="8" width="180" x="590" y="282"></rect>
+<text class="tm o mid" x="680" y="306">MCLK = SMCLK</text>
+<text class="tm xs m mid" data-out="3" x="680" y="328">DCOCLKDIV</text>
+<text class="tm xs y mid" data-step="3" x="680" y="328">1048576 Hz</text>
+<g data-out="5" data-step="2">
+<path class="ln y draw" d="M210 184 C 300 184, 470 96, 586 96" marker-end="url(#m24-ah-y)"></path>
+<path class="ln y draw" d="M210 192 H326" marker-end="url(#m24-ah-y)"></path>
+</g>
+<g data-out="4" data-step="2">
+<text class="tz sm y mid" x="680" y="160">fail-safe：XT1 故障 → REFO</text>
+<text class="tz sm y mid" x="680" y="182">SELA、SELREF 的值不变</text>
+</g>
+<g data-out="5" data-step="4">
+<text class="tz sm r mid" x="680" y="160">XT1 起振了，但 flag 锁存着</text>
+<text class="tz sm r mid" x="680" y="182">→ 仍然用 REFO</text>
+</g>
+<g data-step="5">
+<path class="ln g draw" d="M210 88 H586" marker-end="url(#m24-ah-g)"></path>
+<path class="ln g draw" d="M210 118 C 300 118, 360 136, 398 164" marker-end="url(#m24-ah-g)"></path>
+<text class="tz sm g mid" x="680" y="160">清 flag 且故障已消失</text>
+<text class="tz sm g mid" x="680" y="182">→ ACLK、FLL 参考切回 XT1</text>
+</g>
+<text class="tm xs m" x="30" y="374">UCSCTL7:</text>
+<text class="tm xs r" x="100" y="374">XT1LFOFFG =</text>
+<text class="tm xs r" data-out="5" x="186" y="374">1</text>
+<text class="tm xs g" data-step="5" x="186" y="374">0</text>
+<text class="tm xs r" x="220" y="374">DCOFFG =</text>
+<text class="tm xs r" data-out="5" x="284" y="374">1</text>
+<text class="tm xs g" data-step="5" x="284" y="374">0</text>
+<text class="tm xs r" x="320" y="374">SFRIFG1.OFIFG =</text>
+<text class="tm xs r" data-out="5" x="432" y="374">1</text>
+<text class="tm xs g" data-step="5" x="432" y="374">0</text>
+<text class="tz sm m" x="470" y="374">复位值都是 1，只能由软件清</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="5200">PUC 之后：ACLK 和 FLL 参考都选 XT1CLK（SELA = 000、SELREF = 000），MCLK、SMCLK 选 DCOCLKDIV（SELM = SELS = 100），FLL 开着。可是 XT1 的引脚 P5.4/P5.5 还是普通 I/O，XT1 不能起振。</li>
+<li data-dur="4600">故障安全逻辑（fail-safe）立刻生效：ACLK 和 FLLREFCLK 自动改由 <span class="c-y">REFO</span> 提供。SELA、SELREF 的值并没有被改写。</li>
+<li data-dur="5000">REFO 也是 32768 Hz，FLL 照常工作：DCOCLK = 32768 × 32 × 2 = 2097152 Hz，MCLK = SMCLK = DCOCLKDIV = <span class="c-y">1048576 Hz</span>。CPU 在 PUC 后不到 5 µs 就开始执行代码，靠的就是起振快的 DCO。</li>
+<li data-dur="4800">程序把 P5.4/P5.5 交给 XT1，晶体开始起振（典型要 0.5–1 s）。但故障 flag 是<b>锁存</b>的：原因消失了，flag 仍然是 1，系统继续用 REFO。</li>
+<li data-dur="4800">软件清掉 XT1LFOFFG 和 OFIFG，而且故障确实不在了，ACLK 和 FLL 参考才切回 XT1。XT2 的引脚同样是普通 I/O，所以 XT2 一直关着。</li>
+</ol>
+<p class="stage-note">示意图。复位值：UCSCTL7 = 0703h（XT1LFOFFG = DCOFFG = 1），SFRIFG1 的 OFIFG 复位值为 1（POR 时置位）。起振时间是典型值。</p>
+</figure>
+<div class="formula" data-tex="f_{\mathrm{DCOCLK}} = \class{c-o}{2}\cdot(\class{c-o}{31}+1)\cdot\frac{32768}{\class{c-o}{1}} = 2097152\ \mathrm{Hz} \qquad f_{\mathrm{MCLK}} = f_{\mathrm{SMCLK}} = f_{\mathrm{DCOCLKDIV}} = \frac{2097152}{2} = \class{c-y}{1048576\ \mathrm{Hz}}">f_DCOCLK = 2·(31+1)·32768/1 = 2097152 Hz；f_MCLK = f_SMCLK = f_DCOCLKDIV = 1048576 Hz</div>
+<p class="aside">计算的起点：DCORSEL = 2、DCO = MOD = 0；FLLD = 001 → D = 2；FLLN = 0x1F → N = 31；FLLREFDIV = 000 → n = 1。</p>
+
+<p>全部寄存器的偏移、复位值和位域：</p>
+<div class="tbl-wrap">
+<table class="rst">
+<thead><tr><th>寄存器 · 偏移</th><th>复位值</th><th>位域（bits）= 复位后的值</th></tr></thead>
+<tbody>
+<tr><td>UCSCTL0 · 00h</td><td>0000h</td><td>DCO (12–8) = 0、MOD (7–3) = 0（FLL 运行后由硬件改写）</td></tr>
+<tr><td>UCSCTL1 · 02h</td><td>0020h</td><td>DCORSEL (6–4) = 2、DISMOD (0) = 0（调制器开）</td></tr>
+<tr><td>UCSCTL2 · 04h</td><td>101Fh</td><td>FLLD (14–12) = 001（D = 2）、FLLN (9–0) = 31</td></tr>
+<tr><td>UCSCTL3 · 06h</td><td>0000h</td><td>SELREF (6–4) = 000（XT1CLK）、FLLREFDIV (2–0) = 000（n = 1）</td></tr>
+<tr><td>UCSCTL4 · 08h</td><td>0044h</td><td>SELA (10–8) = 000（XT1CLK）、SELS (6–4) = SELM (2–0) = 100（DCOCLKDIV）</td></tr>
+<tr><td>UCSCTL5 · 0Ah</td><td>0000h</td><td>DIVPA (14–12)、DIVA (10–8)、DIVS (6–4)、DIVM (2–0) 全是 ÷1</td></tr>
+<tr><td>UCSCTL6 · 0Ch</td><td>C1CDh</td><td>XT2DRIVE (15–14) = 3、XT2BYPASS (12) = 0、XT2OFF (8) = 1、XT1DRIVE (7–6) = 3、XTS (5) = 0、XT1BYPASS (4) = 0、XCAP (3–2) = 3、SMCLKOFF (1) = 0、XT1OFF (0) = 1（§1 的位图）</td></tr>
+<tr><td>UCSCTL7 · 0Eh</td><td>0703h</td><td>XT2OFFG (3) = 0、XT1HFOFFG (2) = 0、XT1LFOFFG (1) = 1、DCOFFG (0) = 1；高字节的 07h 来自保留位，状态应忽略</td></tr>
+<tr><td>UCSCTL8 · 10h</td><td>0707h</td><td>SMCLKREQEN (2) = MCLKREQEN (1) = ACLKREQEN (0) = 1</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="takeaway">什么都不做：MCLK = SMCLK = DCOCLKDIV ≈ 1048576 Hz；ACLK ≈ 32768 Hz，先由 REFO 提供，配置好 XT1 引脚并清掉故障 flag 后才真正来自 XT1。改时钟会影响所有用这路时钟的外设，要小心。</p>
+
+</section>
+
+<section class="sec" id="m24-s6">
+<h2><span class="n">§6</span>振荡器故障 <span class="tag">M24.8</span></h2>
+<p class="hook"><span class="zh">晶体坏了、掉了，或者根本没配置——CPU 会停吗？软件怎么知道？</span><span class="es">Módulo de detección de fallo de oscilador.</span></p>
+<figure class="stage" data-scene="" id="m24-sc-fault">
+<div class="stage-title"><span>Escena 6 · fallo → OFIFG → UNMI</span><b>4 步</b></div>
+<div aria-label="动画：振荡器故障 flag 汇成 OFIFG，再请求用户 NMI" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m24-sc-fault-t" role="img" viewbox="0 0 800 330">
+<title id="m24-sc-fault-t">UCSCTL7 的四个故障 flag 和 POR 经过或门置位 OFIFG；OFIFG 与 OFIE 相与，请求 61 号向量的用户 NMI；下方是 fail-safe 自动换源规则</title>
+<g data-step="1">
+<text class="tm sm m" x="30" y="32">UCSCTL7</text>
+<rect class="bx r" height="34" rx="6" width="160" x="30" y="44"></rect>
+<rect class="bx r" height="34" rx="6" width="160" x="30" y="88"></rect>
+<rect class="bx r" height="34" rx="6" width="160" x="30" y="132"></rect>
+<rect class="bx r" height="34" rx="6" width="160" x="30" y="176"></rect>
+<text class="tm sm r mid" x="100" y="66">XT1LFOFFG</text>
+<text class="tm sm r mid" x="100" y="110">XT1HFOFFG</text>
+<text class="tm sm r mid" x="100" y="154">XT2OFFG</text>
+<text class="tm sm r mid" x="100" y="198">DCOFFG</text>
+<text class="tm xs m end" x="184" y="66">b1</text>
+<text class="tm xs m end" x="184" y="110">b2</text>
+<text class="tm xs m end" x="184" y="154">b3</text>
+<text class="tm xs m end" x="184" y="198">b0</text>
+</g>
+<g data-step="2">
+<path class="ln thin r draw" d="M190 61 C 220 61, 225 108, 250 108"></path>
+<path class="ln thin r draw" d="M190 105 C 215 105, 230 122, 256 122"></path>
+<path class="ln thin r draw" d="M190 149 C 215 149, 230 136, 256 136"></path>
+<path class="ln thin r draw" d="M190 193 C 220 193, 225 150, 252 150"></path>
+<text class="tm xs m" x="196" y="236">POR</text>
+<path class="ln thin m draw" d="M226 232 C 240 232, 238 164, 247 160"></path>
+<path class="bx r" d="M238 96 Q 262 132 238 168 Q 292 168 316 132 Q 292 96 238 96 z"></path>
+<path class="ln r" d="M316 132 H336" marker-end="url(#m24-ah-r)"></path>
+<rect class="bx r" data-hl="2" height="40" rx="6" width="150" x="340" y="112"></rect>
+<text class="tm sm r mid" x="415" y="137">OFIFG</text>
+<text class="tm xs m mid" x="415" y="170">SFRIFG1 · bit 1</text>
+</g>
+<g data-step="3">
+<rect class="bx g" height="40" rx="6" width="150" x="340" y="196"></rect>
+<text class="tm sm g mid" x="415" y="221">OFIE</text>
+<text class="tm xs m mid" x="415" y="254">SFRIE1 · bit 1</text>
+<path class="ln r" d="M490 132 H530"></path>
+<path class="ln g" d="M490 216 H510 V176 H530"></path>
+<path class="bx y" d="M530 120 H552 A 34 34 0 0 1 552 188 H530 z"></path>
+<path class="ln r draw" d="M586 154 H606" marker-end="url(#m24-ah-r)"></path>
+<rect class="bx r" data-hl="3" height="64" rx="8" width="172" x="610" y="122"></rect>
+<text class="tm r mid" x="696" y="148">UNMI</text>
+<text class="tm xs m mid" x="696" y="170">向量 61 · 0FFFAh</text>
+<text class="tm xs m mid" x="696" y="206">SYSUNIV = 04h → OFIFG</text>
+</g>
+<g data-step="4">
+<rect class="ln thin y" height="60" rx="8" width="752" x="30" y="262"></rect>
+<text class="tz sm w" x="46" y="286">fail-safe：给 ACLK / MCLK / SMCLK 供时钟的振荡器出故障 → 自动改用 DCOCLKDIV</text>
+<text class="tz sm w" x="46" y="310">例外：XT1 LF 出故障 → 改用 REFOCLK。SELx 不变；清 flag 且故障消失后才切回。</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4800">UCSCTL7 里每个振荡器一个故障 flag：<code>XT1LFOFFG</code>（bit 1，XT1 LF 模式）、<code>XT1HFOFFG</code>（bit 2，XT1 HF 模式）、<code>XT2OFFG</code>（bit 3）、<code>DCOFFG</code>（bit 0，DCO 到了 tap 0 或 31）。振荡器出故障、还没稳定，或者引脚没配置，flag 就置 1。</li>
+<li data-dur="5000">这些 flag 是<b>锁存</b>的：原因消失也不会自己清，要软件清；软件清了而原因还在，会马上再置 1。任何一个置 1，都会把 SFRIFG1 里的 <span class="c-r">OFIFG</span> 置 1；POR 也会把它置 1。</li>
+<li data-dur="5000">如果 SFRIE1 里的 <span class="c-g">OFIE</span> = 1，OFIFG 就请求一个 <b>UNMI</b>（用户非屏蔽中断，61 号向量）。在 ISR 里读 SYSUNIV（04h = OFIFG），再查 UCSCTL7 看是哪个振荡器。OFIFG 也必须由软件清。</li>
+<li data-dur="5000">就算不开中断，硬件也保证时钟不断：<b>fail-safe</b> 自动换源，CPU 照样运行。之后由程序决定怎样恢复。</li>
+</ol>
+<p class="stage-note">OFIFG 的复位值是 1，OFIE 的复位值是 0。</p>
+
+</figure>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>出故障的是</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>ACLK、MCLK 或 SMCLK 的源（XT1 LF 以外）</td><td>这路时钟自动改用 <b>DCOCLKDIV</b>；SELx 不变</td></tr>
+<tr><td>ACLK、MCLK 或 SMCLK 的源是 XT1 LF</td><td>这路时钟自动改用 <b>REFOCLK</b>；SELx 不变</td></tr>
+<tr><td>FLL 参考是 XT1 LF</td><td>FLLREFCLK 自动改由 REFO 提供（§5 的情形）</td></tr>
+<tr><td>FLL 参考是 XT1 HF 或 XT2</td><td>没有参考脉冲，积分器一直往下数，DCO 掉到 tap 0 → DCOFFG 置位</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">简化的记法“XT1 HF 故障转 DCO、XT1 LF 故障转 REFO”只是上表的两个特例。DCOCLKDIV 在最低 tap 也有输出，所以故障期间 CPU 仍能执行代码、处理 NMI。N 设得太大、DCO 被推到 tap 31 时，DCOFFG 同样会置位。</p>
+<p>两种处理方式：启动时<b>轮询</b>，直到所有 flag 都清得掉（§7 的 do…while）；或者运行中用 <b>UNMI 中断</b>随时接住故障。后者的骨架（示意）：</p>
+<pre class="code"><code><span class="ln-row"><span class="fl">SFRIE1</span> |= <span class="fl">OFIE</span>;                          <span class="cm">// 打开振荡器故障中断（UNMI 不受 GIE 控制）</span></span><span class="ln-row"> </span><span class="ln-row"><span class="pp">#pragma vector=UNMI_VECTOR</span>              <span class="cm">// 61 号，0FFFAh</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">UNMI_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">switch</span> (<span class="fn">__even_in_range</span>(<span class="fl">SYSUNIV</span>, 0x08)) {</span><span class="ln-row">    <span class="kw">case</span> 0x04:                           <span class="cm">// OFIFG：振荡器故障</span></span><span class="ln-row">        <span class="kw">do</span> {                             <span class="cm">// 清 flag，直到故障消失</span></span><span class="ln-row">            <span class="rg">UCSCTL7</span> &amp;= ~(<span class="fl">XT2OFFG</span> + <span class="fl">XT1LFOFFG</span> + <span class="fl">DCOFFG</span>);</span><span class="ln-row">            <span class="fl">SFRIFG1</span> &amp;= ~<span class="fl">OFIFG</span>;</span><span class="ln-row">        } <span class="kw">while</span> (<span class="fl">SFRIFG1</span> &amp; <span class="fl">OFIFG</span>);</span><span class="ln-row">        <span class="kw">break</span>;</span><span class="ln-row">    <span class="kw">default</span>: <span class="kw">break</span>;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<p class="aside">真实应用里不宜在 ISR 里死等（见 M21 §8：ISR 要短）；这里只是演示 flag 的清法。SYSUNIV：02h = NMIIFG、04h = OFIFG、06h = ACCVIFG。</p>
+
+</section>
+
+<section class="sec" id="m24-s7">
+<h2><span class="n">§7</span>在 CCS 里：把 MCLK 换成 XT2 <span class="tag">M24.9 · M24.10</span></h2>
+<p class="hook"><span class="zh">把 MCLK 换成 4 MHz 的晶体，要写几行？</span><span class="es">UCS1_XT2.c: XT2 como fuente de MCLK y SMCLK.</span></p>
+<p>示例程序 <code>UCS1_XT2.c</code> 让 LED1 用软件延时闪烁，并把 MCLK、SMCLK 切到 LaunchPad 上 4 MHz 的 XT2。逐行播放：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="m24-sc-code">
+<div class="stage-title"><span>Escena 7 · UCS1_XT2.c</span><b>7 步</b></div>
+<div aria-label="动画：UCS1_XT2.c 逐行配置 XT2 并把 MCLK 切过去" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m24-sc-code-t" role="img" viewbox="0 0 800 200">
+<title id="m24-sc-code-t">引脚 P5.2/P5.3、XT2、故障 flag、MCLK/SMCLK 四个方块随代码逐步改变，最后 LED1 闪烁</title>
+<rect class="bx m" height="70" rx="8" width="150" x="20" y="40"></rect>
+<rect class="bx g" data-hl="2" data-step="2" height="70" rx="8" width="150" x="20" y="40"></rect>
+<text class="tm sm w mid" x="95" y="64">P5.2 · P5.3</text>
+<text class="tm xs m mid" x="95" y="82">XT2IN · XT2OUT</text>
+<text class="tm xs m mid" data-out="2" x="95" y="100">GPIO</text>
+<text class="tm xs g mid" data-step="2" x="95" y="100">P5SEL = 1</text>
+<path class="ln thin m" d="M170 75 H230"></path>
+<rect class="bx o" data-hl="3 5" height="70" rx="8" width="140" x="230" y="40"></rect>
+<text class="tm o mid" x="300" y="64">XT2 · 4 MHz</text>
+<text class="tm xs m mid" data-out="3" x="300" y="84">XT2OFF = 1</text>
+<text class="tm xs g mid" data-step="3" x="300" y="84">XT2OFF = 0</text>
+<text class="tm xs m mid" data-out="5" x="300" y="102">XT2DRIVE = 3</text>
+<text class="tm xs y mid" data-step="5" x="300" y="102">XT2DRIVE = 0</text>
+<rect class="bx r" data-hl="4" height="70" rx="8" width="150" x="410" y="40"></rect>
+<text class="tm sm r mid" x="485" y="64">OFIFG</text>
+<text class="tm r mid" data-out="4" x="485" y="92">1</text>
+<text class="tm g mid" data-step="4" x="485" y="92">0</text>
+<text class="tm xs m mid" x="485" y="128">XT2OFFG · XT1LFOFFG · DCOFFG</text>
+<rect class="bx o" data-hl="6" height="70" rx="8" width="180" x="600" y="40"></rect>
+<text class="tm sm o mid" x="690" y="64">MCLK = SMCLK</text>
+<text class="tm xs m mid" data-out="6" x="690" y="88">DCOCLKDIV ≈ 1.05 MHz</text>
+<text class="tm xs y mid" data-step="6" x="690" y="88">XT2CLK = 4 MHz</text>
+<path class="ln y draw" d="M300 110 C 340 180, 560 180, 640 114" data-step="6" marker-end="url(#m24-ah-y)"></path>
+<circle class="bx m" cx="620" cy="160" r="12"></circle>
+<circle class="sl g m24-glow" cx="620" cy="160" data-step="7" r="10"></circle>
+<text class="tm xs m" x="640" y="164">LED1</text>
+<text class="tm xs g" data-step="7" x="640" y="182">每 0.25 s 翻转</text>
+<text class="tz sm m mid" x="330" y="194">每一步对应下面高亮的代码行</text>
+</svg>
+</div>
+<pre aria-label="UCS1_XT2.c 的 main（注释改写为中文）" class="code code-hl"><code><span class="ln-row" data-hl="1"><span class="rg">WDTCTL</span> = WDTPW + WDTHOLD;              <span class="cm">// 停 watchdog</span></span><span class="ln-row" data-hl="1"><span class="rg">P1DIR</span> |= BIT0;  <span class="rg">P1OUT</span> &amp;= ~BIT0;        <span class="cm">// LED1：输出，先灭</span></span><span class="ln-row" data-hl="2"><span class="rg">P5DIR</span> &amp;= ~BIT2;                        <span class="cm">// P5.2 = XT2IN</span></span><span class="ln-row" data-hl="2"><span class="rg">P5DIR</span> |= BIT3;                         <span class="cm">// P5.3 = XT2OUT</span></span><span class="ln-row" data-hl="2"><span class="rg">P5SEL</span> |= BIT2 | BIT3;                  <span class="cm">// 两个引脚交给 XT2</span></span><span class="ln-row" data-hl="3"><span class="rg">UCSCTL6</span> &amp;= ~XT2OFF;                    <span class="cm">// 打开 XT2</span></span><span class="ln-row" data-hl="4"><span class="kw">do</span> {</span><span class="ln-row" data-hl="4">    <span class="rg">UCSCTL7</span> &amp;= ~(<span class="fl">XT2OFFG</span> + <span class="fl">XT1LFOFFG</span> + <span class="fl">DCOFFG</span>);  <span class="cm">// 清各振荡器的 flag</span></span><span class="ln-row" data-hl="4">    <span class="fl">SFRIFG1</span> &amp;= ~<span class="fl">OFIFG</span>;                           <span class="cm">// 清总 flag</span></span><span class="ln-row" data-hl="4">} <span class="kw">while</span> (<span class="fl">SFRIFG1</span> &amp; <span class="fl">OFIFG</span>);             <span class="cm">// 故障还在 → flag 又被置 1 → 再来</span></span><span class="ln-row" data-hl="5"><span class="rg">UCSCTL6</span> &amp;= ~(XT2DRIVE0 | XT2DRIVE1);   <span class="cm">// XT2DRIVE = 00：4–8 MHz，电流最小</span></span><span class="ln-row" data-hl="6"><span class="rg">UCSCTL4</span> |= (SELM0 | SELM2);            <span class="cm">// SELM：100 | 101 = 101</span></span><span class="ln-row" data-hl="6"><span class="rg">UCSCTL4</span> &amp;= ~SELM1;                     <span class="cm">// （本来就是 0）→ MCLK = XT2CLK</span></span><span class="ln-row" data-hl="6"><span class="rg">UCSCTL4</span> |= SELS_5;                     <span class="cm">// SELS：100 | 101 = 101 → SMCLK = XT2CLK</span></span><span class="ln-row" data-hl="7"><span class="kw">while</span> (1) {</span><span class="ln-row" data-hl="7">    <span class="fn">__delay_cycles</span>(1000000);           <span class="cm">// 1 000 000 个 MCLK 周期</span></span><span class="ln-row" data-hl="7">    <span class="rg">P1OUT</span> ^= BIT0;</span><span class="ln-row" data-hl="7">}</span></code></pre>
+<ol class="captions">
+<li>起点：停 watchdog，P1.0（LED1）设为输出。此时 UCS 还是 PUC 默认：MCLK = SMCLK = DCOCLKDIV ≈ 1.05 MHz。</li>
+<li data-dur="4200">XT2 的引脚 P5.2（XT2IN）、P5.3（XT2OUT）复位后是普通 I/O。<code>P5SEL |= BIT2|BIT3</code> 把它们交给 XT2；代码顺手把方向也设了：XT2IN 输入、XT2OUT 输出。</li>
+<li><code>UCSCTL6 &amp;= ~XT2OFF</code>：XT2OFF 复位值是 1，清 0 让 XT2 起振。</li>
+<li data-dur="5200">故障循环：清 XT2OFFG、XT1LFOFFG、DCOFFG，再清 OFIFG。只要还有振荡器没稳定，flag 会立刻再被置 1，循环继续；OFIFG 能保持 0，才说明所有振荡器都正常。（照原样运行时，程序会卡在这里，见下面。）</li>
+<li data-dur="4400">XT2 稳定后再把驱动电流降到最小：XT2DRIVE = 00，对应 4–8 MHz 段，正好容纳 4 MHz 晶体。起振阶段用复位值 3（最大电流），起振快、可靠。</li>
+<li data-dur="4600">MCLK、SMCLK 切到 XT2CLK（编码 101）。这里用 <code>|=</code> 能成功，只是因为复位值 100 和 101 只差最低一位：100 | 101 = 101。</li>
+<li data-dur="4400">主循环：<code>__delay_cycles(1000000)</code> 等 10⁶ 个 MCLK 周期。MCLK = 4 MHz → 每 0.25 s 翻转一次 LED，每秒闪两次。</li>
+</ol>
+</figure>
+<h3>照原样为什么不能运行？</h3>
+<p>原程序照原样不能运行。代码里给了两个选项，都被注释掉了：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="orig" type="button">原样</button>
+<button aria-pressed="false" data-view="op1" type="button">选项 1 · XT1</button>
+<button aria-pressed="false" data-view="op2" type="button">选项 2 · REFO</button>
+</div>
+<div class="panel" data-pane="orig">
+<p>按 §6 的 fail-safe 规则可以推出原因：ACLK（SELA = 000）和 FLL 参考（SELREF = 000）仍然要用 XT1，可 P5.4/P5.5 没有配置，XT1 不起振 → XT1LFOFFG 每次刚清掉又被置 1 → OFIFG 一直是 1 → <code>do…while</code> 永远出不来。取消其中一个选项的注释即可。</p>
+</div>
+<div class="panel" data-pane="op1" hidden="">
+<pre class="code"><code><span class="ln-row"><span class="rg">P5DIR</span> &amp;= ~BIT4;                         <span class="cm">// P5.4 = XIN</span></span><span class="ln-row"><span class="rg">P5DIR</span> |= BIT5;                          <span class="cm">// P5.5 = XOUT</span></span><span class="ln-row"><span class="rg">P5SEL</span> |= BIT4 | BIT5;                   <span class="cm">// 引脚交给 XT1</span></span><span class="ln-row"><span class="rg">UCSCTL6</span> &amp;= ~(XT1DRIVE0 | XT1DRIVE1);    <span class="cm">// XT1DRIVE = 0：电流最小</span></span></code></pre>
+<p>XT1 开始起振，稳定后故障消失，循环结束。结果：ACLK = FLLREFCLK = XT1CLK。注意这里在循环<b>之前</b>就把 XT1DRIVE 降到 0，起振会慢一些（典型值：XT1DRIVE = 0 约 1 s，= 3 约 0.5 s）。</p>
+</div>
+<div class="panel" data-pane="op2" hidden="">
+<pre class="code"><code><span class="ln-row"><span class="rg">UCSCTL3</span> |= SELREF_2;                    <span class="cm">// FLL 参考 = REFOCLK（000 | 010 = 010）</span></span><span class="ln-row"><span class="rg">UCSCTL4</span> |= SELA_2;                      <span class="cm">// ACLK = REFOCLK（000 | 010 = 010）</span></span></code></pre>
+<p>XT1 没人用了，加上 XT1OFF 的复位值是 1，它就保持关闭，不再报故障。结果：ACLK = FLLREFCLK = REFO。这两行用 <code>|=</code> 没问题，因为 SELREF、SELA 的复位值是 000。</p>
+</div>
+</div>
+<div class="note alert">
+<span class="lbl">陷阱：用 |= 和 = 改多位字段</span>
+<p>文件里专门留了两条"不幸的指令"（INSTRUCCIÓN DESAFORTUNADA）：</p>
+<ul>
+<li><code>UCSCTL4 = SELS_5;</code> 用 <b>=</b> 覆盖了整个寄存器：SMCLK = XT2CLK 没错，但 SELA、SELM 也被写成 000 → ACLK = MCLK = XT1CLK（XT1 没起振时实际是 REFO 的 32768 Hz）。</li>
+<li><code>UCSCTL4 |= SELS_2;</code> 本意是 SMCLK = REFO。可 SELS 原来是 100（或者已经是 101），OR 之后变成 110 或 111——保留编码，在 F5529 上等于 <b>XT2CLK</b>，根本不是 REFO。</li>
+</ul>
+<p><code>|=</code> 只能把 0 变成 1。改多位字段要先清、再写：</p>
+</div>
+<pre class="code"><code><span class="ln-row"><span class="rg">UCSCTL4</span> &amp;= ~(SELS0 | SELS1 | SELS2);    <span class="cm">// 先把 SELS 清成 000</span></span><span class="ln-row"><span class="rg">UCSCTL4</span> |= SELS_2;                      <span class="cm">// 再写 010 → SMCLK = REFOCLK</span></span></code></pre>
+<h3 id="m24-s7b">软件延时跟着 MCLK 走 <span class="tag">M24.10</span></h3>
+<p><code>__delay_cycles(n)</code> 是编译器的内建函数，生成正好消耗 n 个 <b>MCLK 周期</b>的代码。所以同一行代码，换了时钟，延时就变了：</p>
+<div class="formula" data-tex="t = \frac{n_{\mathrm{ciclos}}}{\class{c-o}{f_{\mathrm{MCLK}}}} \qquad \frac{10^6}{4\ \mathrm{MHz}} = 0.25\ \mathrm{s} \qquad \frac{10^6}{1048576\ \mathrm{Hz}} \approx 0.954\ \mathrm{s}">t = 周期数 / f_MCLK；10⁶ / 4 MHz = 0.25 s；10⁶ / 1048576 Hz ≈ 0.954 s</div>
+<div class="grid3">
+<div class="cell o">
+<span class="k c-o">MCLK = XT2CLK</span>
+<h3>4 MHz</h3>
+<p>10⁶ 个周期 = 0.25 s。UCS1_XT2.c 的设计值：每秒闪两次。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">MCLK = DCOCLKDIV</span>
+<h3>1048576 Hz</h3>
+<p>不切换 MCLK（保持 PUC 默认）时：约 0.954 s 翻转一次。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">MCLK = XT1/REFO</span>
+<h3>32768 Hz</h3>
+<p>误写 <code>UCSCTL4 = SELS_5;</code> 的后果：10⁶ / 32768 ≈ 30.5 s 才翻转一次，看起来像"死机"。</p>
+</div>
+</div>
+<p class="aside">数一数 LED 闪的次数，就能反推 MCLK 是否切换成功。精确定时应该交给 Timer（Bloque 3），而不是靠 CPU 空转。</p>
+
+</section>
+
+<section class="sec" id="m24-practica">
+<h2>随机数值练习 <span class="tag plain">3 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。重点是方法。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="fll"></div>
+<div class="drill" id="m24-dr-reg"></div>
+<div class="drill" id="m24-dr-delay"></div>
+</div>
+</section>
+
+<section class="sec" id="m24-quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M24">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>MCLK 选的是 XT2CLK（SELM = 101），XT2 突然停振。会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>CPU 停下，直到 XT2 恢复</button>
+<button data-o="b" type="button"><span class="k">B</span>MCLK 自动改用 DCOCLKDIV，SELM 仍然是 101</button>
+<button data-o="c" type="button"><span class="k">C</span>MCLK 自动改用 REFOCLK，SELM 被改写成 010</button>
+<button data-o="d" type="button"><span class="k">D</span>芯片立即 PUC 复位</button>
+</div>
+<p class="why"><b>B。</b>fail-safe：源出故障就改用 DCOCLKDIV（只有 XT1 LF 例外，改用 REFO），SEL 位不变（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>哪个振荡器最省电，但精度最差？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>REFO</button>
+<button data-o="b" type="button"><span class="k">B</span>XT1</button>
+<button data-o="c" type="button"><span class="k">C</span>VLO</button>
+<button data-o="d" type="button"><span class="k">D</span>XT2</button>
+</div>
+<p class="why"><b>C。</b>VLO 约 10 kHz（6–14 kHz），随温度、电压变化很大，用于不需要准确时间基准的场合（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>在 MSP430F5529 上，UCSCTL6 的 XTS 位应该是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0：XT1 只支持 LF 模式</button>
+<button data-o="b" type="button"><span class="k">B</span>1：XT1 接 4 MHz 晶体</button>
+<button data-o="c" type="button"><span class="k">C</span>无所谓，XTS 只影响 XT2</button>
+<button data-o="d" type="button"><span class="k">D</span>必须等于 XT1BYPASS</button>
+</div>
+<p class="why"><b>A。</b>F5529 没有 XT1 高频模式的硬件，XTS 必须保持 0（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">04</span>UCSCTL6 配好了，可 XT1 的 32768 Hz 晶体仍然不起振。最可能漏了什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>没有把 P5SEL 的 BIT4、BIT5 置 1</button>
+<button data-o="b" type="button"><span class="k">B</span>没有打开 GIE</button>
+<button data-o="c" type="button"><span class="k">C</span>没有置位 DISMOD</button>
+<button data-o="d" type="button"><span class="k">D</span>没有清 SMCLKOFF</button>
+</div>
+<p class="why"><b>A。</b>复位后 XIN/XOUT（P5.4/P5.5）是普通 I/O，要先设 PSEL（§1、§5）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">05</span>DCO 的 32 个 tap 由哪个字段选择？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>UCSCTL1 的 DCORSEL</button>
+<button data-o="b" type="button"><span class="k">B</span>UCSCTL0 的 DCO（bits 12–8）</button>
+<button data-o="c" type="button"><span class="k">C</span>UCSCTL0 的 MOD（bits 7–3）</button>
+<button data-o="d" type="button"><span class="k">D</span>UCSCTL2 的 FLLD</button>
+</div>
+<p class="why"><b>B。</b>DCORSEL 选 8 个范围之一，DCO 在范围内选 32 个 tap 之一，MOD 在相邻两个 tap 之间调制（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>MOD = 8 时，一个调制周期里发生什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>8 个周期用 f<sub>DCO</sub>，24 个用 f<sub>DCO+1</sub></button>
+<button data-o="b" type="button"><span class="k">B</span>DCO 频率乘以 8</button>
+<button data-o="c" type="button"><span class="k">C</span>调制器关闭</button>
+<button data-o="d" type="button"><span class="k">D</span>24 个周期用 f<sub>DCO</sub>，8 个用 f<sub>DCO+1</sub></button>
+</div>
+<p class="why"><b>D。</b>32 个 DCOCLK 周期中，MOD 个用 tap DCO+1，其余用 tap DCO（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>f<sub>FLLREFCLK</sub> = 32768 Hz，n = 1，FLLN = 63，FLLD = 001。DCOCLKDIV 是多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>1048576 Hz</button>
+<button data-o="b" type="button"><span class="k">B</span>2097152 Hz</button>
+<button data-o="c" type="button"><span class="k">C</span>4194304 Hz</button>
+<button data-o="d" type="button"><span class="k">D</span>2064384 Hz</button>
+</div>
+<p class="why"><b>B。</b>(N + 1)·f/n = 64 × 32768 = 2097152 Hz。4194304 Hz 是再乘 D = 2 的 DCOCLK；2064384 忘了 +1（§3）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">08</span>下面哪个操作会关闭 FLL？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>把 SR 的 SCG0 或 SCG1 置 1</button>
+<button data-o="b" type="button"><span class="k">B</span>清 OFIE</button>
+<button data-o="c" type="button"><span class="k">C</span>把 DISMOD 置 1</button>
+<button data-o="d" type="button"><span class="k">D</span>把 FLLREFDIV 设为 000</button>
+</div>
+<p class="why"><b>A。</b>FLL 关闭后 DCO 停在当前 tap/MOD 上，不再被校正。DISMOD 只关调制器（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>PUC 之后什么都不配置，MCLK 是多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>32768 Hz</button>
+<button data-o="b" type="button"><span class="k">B</span>2097152 Hz</button>
+<button data-o="c" type="button"><span class="k">C</span>1048576 Hz</button>
+<button data-o="d" type="button"><span class="k">D</span>约 10 kHz</button>
+</div>
+<p class="why"><b>C。</b>MCLK = DCOCLKDIV = (31 + 1) × 32768 = 1048576 Hz；2097152 Hz 是 DCOCLK（§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">10</span>UCSCTL4 = 0x0044 表示什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>ACLK = XT1CLK，SMCLK = MCLK = DCOCLKDIV</button>
+<button data-o="b" type="button"><span class="k">B</span>ACLK = DCOCLKDIV，SMCLK = MCLK = XT1CLK</button>
+<button data-o="c" type="button"><span class="k">C</span>三路都是 DCOCLKDIV</button>
+<button data-o="d" type="button"><span class="k">D</span>ACLK = REFOCLK，SMCLK = MCLK = DCOCLK</button>
+</div>
+<p class="why"><b>A。</b>SELA（bits 10–8）= 000 = XT1CLK；SELS（6–4）= 100、SELM（2–0）= 100 = DCOCLKDIV。这正是复位值（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>软件清掉 XT1LFOFFG，但 XT1 仍然没有起振。结果是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>flag 保持 0，直到下次复位</button>
+<button data-o="b" type="button"><span class="k">B</span>flag 马上又被置 1，OFIFG 也跟着置 1</button>
+<button data-o="c" type="button"><span class="k">C</span>芯片复位</button>
+<button data-o="d" type="button"><span class="k">D</span>UCS 自动把 XTS 改成 1</button>
+</div>
+<p class="why"><b>B。</b>故障 flag 由硬件置位、软件清除；原因还在就会再置位（§6）。这也是 §7 的故障循环会卡住的原因。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>UCSCTL4 = 0x0044 时执行 <code>UCSCTL4 |= SELS_2;</code>，SMCLK 的源变成什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>REFOCLK</button>
+<button data-o="b" type="button"><span class="k">B</span>还是 DCOCLKDIV</button>
+<button data-o="c" type="button"><span class="k">C</span>SELS = 110，保留编码，在 F5529 上即 XT2CLK</button>
+<button data-o="d" type="button"><span class="k">D</span>VLOCLK</button>
+</div>
+<p class="why"><b>C。</b>100 | 010 = 110。|= 不能把 1 变回 0，要先清字段再写（§7）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="m24-terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">UCS<small>Unified Clock System</small></span><span class="back"><b>统一时钟系统</b><br/>5 个振荡器 → 6 个时钟源 → ACLK / MCLK / SMCLK（+ MODCLK）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">oscilador · fuente · señal<small>oscillator · source · signal</small></span><span class="back"><b>振荡器 · 时钟源 · 时钟信号</b><br/>产生 → 供选择 → 送给 CPU 和外设。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">VLO<small>very-low-power low-frequency oscillator</small></span><span class="back"><b>超低功耗低频振荡器</b><br/>片内约 10 kHz，最省电，也最不准。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">REFO<small>reference oscillator</small></span><span class="back"><b>片内参考振荡器</b><br/>校准到 32768 Hz；可作 FLL 参考；XT1 失效时顶替。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">XT1 · XIN / XOUT<small>cristal de 32768 Hz</small></span><span class="back"><b>晶体振荡器 1</b><br/>F5529 只用 LF 模式；引脚 P5.4/P5.5，要先设 P5SEL。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">XT2<small>XT2IN / XT2OUT</small></span><span class="back"><b>晶体振荡器 2</b><br/>4–32 MHz；引脚 P5.2/P5.3；XT2OFF = 0 打开。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DCO<small>Digitally Controlled Oscillator</small></span><span class="back"><b>数控振荡器</b><br/>片内 RC，起振快但会漂；DCORSEL、DCO、MOD 决定频率。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DCORSEL<small>UCSCTL1 · bits 6–4</small></span><span class="back"><b>DCO 频率范围</b><br/>8 个范围选一个；复位值 2。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modulador · MOD<small>UCSCTL0 · bits 7–3</small></span><span class="back"><b>调制器</b><br/>32 个周期中 MOD 个用 tap DCO+1，得到两档之间的频率。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">FLL<small>Frequency Locked Loop</small></span><span class="back"><b>锁频环</b><br/>积分器比较参考和 DCO 的分频，自动改写 DCO、MOD。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">FLLN · FLLD · FLLREFDIV<small>N+1 · D · n</small></span><span class="back"><b>FLL 的三个分频</b><br/>FLLN、FLLD 在 UCSCTL2；FLLREFDIV（和 SELREF）在 UCSCTL3。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DCOCLKDIV<small>DCOCLK / D</small></span><span class="back"><b>DCO 分频输出</b><br/>PUC 后 MCLK、SMCLK 的源：1048576 Hz。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ACLK<small>Auxiliary Clock</small></span><span class="back"><b>辅助时钟</b><br/>低频外设时钟；SELA / DIVA；SR 的 OSCOFF 关掉它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MCLK<small>Master Clock</small></span><span class="back"><b>主时钟</b><br/>CPU 的时钟；SELM / DIVM；SR 的 CPUOFF 关掉它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SMCLK<small>SubMain Clock</small></span><span class="back"><b>子主时钟</b><br/>高频外设时钟；SELS / DIVS；UCSCTL6 的 SMCLKOFF 关掉它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">MODCLK<small>MODOSC</small></span><span class="back"><b>模块时钟</b><br/>MODOSC 产生，Flash 控制器写、擦时使用，按需打开。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">OFIFG · OFIE<small>SFRIFG1 / SFRIE1 · bit 1</small></span><span class="back"><b>振荡器故障标志 / 使能</b><br/>两者都为 1 → 用户 NMI（61 号向量）。OFIFG 要软件清。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fail-safe<small>XT1LFOFFG · XT2OFFG · DCOFFG</small></span><span class="back"><b>故障安全切换</b><br/>源出故障 → 自动改用 DCOCLKDIV（XT1 LF → REFO），SEL 位不变。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M24"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id) { return document.getElementById(id); }
+  function trim(x, d) { var s = (+x).toFixed(d); return s.indexOf(".") >= 0 ? s.replace(/\.?0+$/, "") : s; }
+  function hex4(v) { var s = (v >>> 0).toString(16).toUpperCase(); while (s.length < 4) s = "0" + s; return "0x" + s; }
+  function bin3(v) { var s = v.toString(2); while (s.length < 3) s = "0" + s; return s; }
+  function fmtHz(f) {
+    if (f >= 1e6) return trim(f / 1e6, 6) + " MHz";
+    if (f >= 1e5) return trim(f / 1e3, 3) + " kHz";
+    return trim(f, 2) + " Hz";
+  }
+  function intHz(f) { return (Math.abs(f - Math.round(f)) < 1e-6 ? String(Math.round(f)) : trim(f, 1)) + " Hz"; }
+
+  
+  var CLK = [32768, 9400, 32768, 2097152, 1048576, 4000000];
+  var SRC = ["XT1CLK", "VLOCLK", "REFOCLK", "DCOCLK", "DCOCLKDIV", "XT2CLK"];
+
+  
+  var taps = $("m24-taps");
+  if (taps && !taps.firstChild) {
+    for (var k = 0; k < 32; k++) {
+      var h = 6.44 * Math.pow(1.08, k);
+      var r = document.createElementNS(NS, "rect");
+      r.setAttribute("x", (566 + k * 6.9).toFixed(1));
+      r.setAttribute("y", (126 - h).toFixed(1));
+      r.setAttribute("width", 5);
+      r.setAttribute("height", h.toFixed(1));
+      r.setAttribute("rx", 1);
+      r.setAttribute("class", "sl o");
+      taps.appendChild(r);
+    }
+  }
+
+  
+  (function () {
+    var cells = Array.prototype.slice.call(document.querySelectorAll("#m24-cells rect"));
+    var rd = $("m24-dco"), rm = $("m24-modr"), up = $("m24-int-up"), dn = $("m24-int-dn");
+    if (!cells.length || !rd || !rm) return;
+    var st = { dco: 12, mod: 8 };
+    function render() {
+      var d = st.dco, m = st.mod, eff = d < 31 ? m : 0;
+      
+      cells.forEach(function (c, i) {
+        var tz = 0, x = i;
+        if (x) while (!(x & 1)) { x >>= 1; tz++; }
+        var plus = eff > 0 && i > 0 && ((eff >> (4 - tz)) & 1) === 1;
+        c.setAttribute("class", plus ? "bx y" : "bx o");
+      });
+      rd.value = d; rm.value = m;
+      $("m24-dco-v").textContent = d; $("m24-mod-v").textContent = m;
+      $("m24-mod-t").textContent = d === 31
+        ? "DCO = 31 · MOD = " + m + " → 已是最高档，MOD 不起作用"
+        : "DCO = " + d + " · MOD = " + m + " → " + (32 - m) + " × t_DCO + " + m + " × t_DCO+1";
+      var reg = (d << 8) | (m << 3);
+      var T = ((32 - eff) + eff / 1.08) / 32;
+      var txt = "UCSCTL0 = <span class=\"hx\">" + hex4(reg) + "</span> · ";
+      txt += eff === 0 ? (d === 31 ? "f = f<sub>DCO</sub>(31)" : "MOD = 0：调制器不起作用，f = f<sub>DCO</sub>")
+        : "有效频率 ≈ f<sub>DCO</sub> × " + trim(1 / T, 3) + "（按每档 +8 % 估算，示意）";
+      if (d === 0 || d === 31) txt += " · <span class=\"warn\">DCO = " + d + " → DCOFFG 置位（§6）</span>";
+      $("m24-mod-out").innerHTML = txt;
+      up.disabled = d === 31 && m === 31;
+      dn.disabled = d === 0 && m === 0;
+    }
+    rd.addEventListener("input", function () { st.dco = +rd.value; render(); });
+    rm.addEventListener("input", function () { st.mod = +rm.value; render(); });
+    function step(delta) {
+      var v = st.dco * 32 + st.mod + delta;
+      if (v < 0 || v > 1023) return;
+      st.dco = v >> 5; st.mod = v & 31; render();
+    }
+    up.addEventListener("click", function () { step(1); });
+    dn.addEventListener("click", function () { step(-1); });
+    render();
+  })();
+
+  
+  var selector = (function () {
+    var Y = [48, 94, 140, 186, 232, 278], C = { a: 80, m: 170, s: 260 };
+    var NAME = { a: "ACLK", m: "MCLK", s: "SMCLK" };
+    var selEl = { a: $("m24-sela"), m: $("m24-selm"), s: $("m24-sels") };
+    var divEl = { a: $("m24-diva"), m: $("m24-divm"), s: $("m24-divs") };
+    if (!selEl.a || !divEl.a) return null;
+    if (!reduce) ["a", "m", "s"].forEach(function (k) { var p = $("m24-w" + k); if (p) p.setAttribute("class", "ln y m24-path"); });
+    var PRE = {
+      puc: { a: [0, 0], m: [4, 0], s: [4, 0] },
+      xt2: { a: [0, 0], m: [5, 0], s: [5, 0] },
+      refo: { a: [2, 0], m: [4, 0], s: [4, 0] },
+      vlo: { a: [1, 1], m: [4, 0], s: [4, 0] }
+    };
+    function eff(code) { return code >= 5 ? 5 : code; }
+    function render() {
+      var used = [false, false, false, false, false, false], v = {}, notes = [], warn = [];
+      ["a", "m", "s"].forEach(function (k) {
+        var sel = +selEl[k].value, dv = +divEl[k].value, e = eff(sel), D = Math.pow(2, Math.min(dv, 5));
+        var f = CLK[e] / D;
+        used[e] = true;
+        v[k] = { sel: sel, div: dv, f: f, e: e };
+        $("m24-w" + k).setAttribute("d", "M210 " + Y[e] + " C 270 " + Y[e] + ", 270 " + C[k] + ", 330 " + C[k]);
+        $("m24-dv" + k).textContent = "÷" + D;
+        $("m24-f" + k).textContent = (e === 1 ? "≈ " : "") + fmtHz(f);
+        $("m24-n" + k).textContent = SRC[e] + (sel >= 6 ? "（保留码 " + bin3(sel) + "）" : "") + " ÷ " + D;
+        if (sel >= 6 || dv >= 6) notes.push(NAME[k] + "：110/111 是保留编码，SEL 按 XT2CLK、DIV 按 ÷32 处理");
+      });
+      for (var i = 0; i < 6; i++) {
+        var g = $("m24-src" + i);
+        if (g) g.setAttribute("class", used[i] ? "" : "m24-dim");
+      }
+      var r4 = (v.a.sel << 8) | (v.s.sel << 4) | v.m.sel;
+      var r5 = (v.a.div << 8) | (v.s.div << 4) | v.m.div;
+      var isPuc = r4 === 0x0044 && r5 === 0;
+      if (isPuc) notes.push("PUC 默认。SELA = 0（XT1CLK）：XT1 引脚还没配置时，ACLK 实际由 REFO 提供（§5），频率同样是 32768 Hz");
+      else {
+        if (used[0]) notes.push("用到 XT1CLK：P5.4/P5.5 配置好、故障 flag 清掉之前，实际由 REFO 顶替（§5）");
+        if (used[5]) notes.push("用到 XT2CLK：先设 P5SEL.2/.3，并等故障 flag 清得掉（§7）");
+        if (used[1]) notes.push("VLO 只有 6–14 kHz 的精度");
+      }
+      if (v.m.f > 8e6) warn.push("MCLK = " + fmtHz(v.m.f) + " &gt; 8 MHz：复位后 PMMCOREV = 0 不允许，要先提高核心电压");
+      var html = "UCSCTL4 = <span class=\"hx\">" + hex4(r4) + "</span> · UCSCTL5 = <span class=\"hx\">" + hex4(r5) + "</span>。";
+      if (warn.length) html += "<span class=\"warn\">" + warn.join("。") + "。</span>";
+      html += notes.join("。") + (notes.length ? "。" : "");
+      $("m24-sel-out").innerHTML = html;
+    }
+    ["a", "m", "s"].forEach(function (k) {
+      selEl[k].addEventListener("change", render);
+      divEl[k].addEventListener("change", render);
+    });
+    Array.prototype.slice.call(document.querySelectorAll("#m24-sel [data-preset]")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var p = PRE[b.getAttribute("data-preset")];
+        if (!p) return;
+        ["a", "m", "s"].forEach(function (k) { selEl[k].value = p[k][0]; divEl[k].value = p[k][1]; });
+        render();
+      });
+    });
+    render();
+    return { render: render };
+  })();
+
+  
+  (function () {
+    var eSr = $("m24-selref"), eRd = $("m24-refdiv"), eN = $("m24-flln"), eD = $("m24-flld"), eDs = $("m24-dcorsel");
+    if (!eSr || !eN) return;
+    var REF = { 0: 32768, 2: 32768, 5: 4000000 }, NDIV = [1, 2, 4, 8, 12, 16], DD = [1, 2, 4, 8, 16, 32];
+    var RG = [[0.20, 0.70], [0.36, 1.47], [0.75, 3.17], [1.51, 6.07], [3.2, 12.3], [6.0, 23.7], [10.7, 39.0], [19.6, 60]];
+    var cells = Array.prototype.slice.call(document.querySelectorAll("#m24-rg rect"));
+    function calc() {
+      var sr = +eSr.value, rd = +eRd.value, fd = +eD.value, ds = +eDs.value;
+      var N = Math.round(+eN.value);
+      if (!isFinite(N) || N < 0) N = 0;
+      if (N > 1023) N = 1023;
+      var Ne = N === 0 ? 1 : N;
+      var fref = REF[sr], n = NDIV[rd], D = DD[fd];
+      var fr = fref / n, div = (Ne + 1) * fr, dco = D * div, mhz = dco / 1e6;
+      $("m24-fv0").textContent = intHz(fref);
+      $("m24-fv1").textContent = intHz(fr);
+      $("m24-fv2").textContent = intHz(div);
+      $("m24-fv3").textContent = intHz(dco);
+      $("m24-op1").textContent = "÷" + n;
+      $("m24-op2").textContent = "×" + (Ne + 1);
+      $("m24-op3").textContent = "×" + D;
+      var ok = [];
+      cells.forEach(function (c, i) {
+        var fit = mhz >= RG[i][0] && mhz <= RG[i][1];
+        if (fit) ok.push(i);
+        c.setAttribute("class", i === ds ? (fit ? "bx y" : "bx r") : (fit ? "bx g" : "bx hollow m"));
+      });
+      var t;
+      if (!ok.length) t = "DCOCLK = " + fmtHz(dco) + " 不在任何范围的建议区间里 → tap 会被推到 0 或 31，DCOFFG 置位";
+      else if (ok.indexOf(ds) >= 0) t = fmtHz(dco) + " 落在 DCORSEL " + ok.join("、") + " 的建议区间里；当前 DCORSEL = " + ds + " 合适。";
+      else t = fmtHz(dco) + " 装不进 DCORSEL = " + ds + " → 改成 " + ok.join(" 或 ") + "。";
+      $("m24-fv-t").textContent = t;
+      var out = "UCSCTL1 = <span class=\"hx\">" + hex4(ds << 4) + "</span> · UCSCTL2 = <span class=\"hx\">" + hex4((fd << 12) | N) +
+        "</span> · UCSCTL3 = <span class=\"hx\">" + hex4((sr << 4) | rd) + "</span> · 最坏稳定时间 n·32·32 / f<sub>FLLREF</sub> ≈ " +
+        trim(n * 1024 / fref * 1000, 3) + " ms";
+      if (N === 0) out += " · <span class=\"warn\">FLLN = 0 会被当成 1（N + 1 = 2）</span>";
+      if (div > 8e6) out += " · <span class=\"warn\">DCOCLKDIV &gt; 8 MHz：若 MCLK 用它，要先提高核心电压</span>";
+      $("m24-fll-out").innerHTML = out;
+      CLK[3] = dco; CLK[4] = div;
+      $("m24-sf3").textContent = "011 · " + fmtHz(dco);
+      $("m24-sf4").textContent = "100 · " + fmtHz(div);
+      if (selector) selector.render();
+    }
+    [eSr, eRd, eD, eDs].forEach(function (e) { e.addEventListener("change", calc); });
+    eN.addEventListener("input", calc);
+    eN.addEventListener("change", function () { calc(); var v = Math.round(+eN.value); if (!isFinite(v) || v < 0) eN.value = 0; else if (v > 1023) eN.value = 1023; });
+    $("m24-fll-reset").addEventListener("click", function () {
+      eSr.value = "0"; eRd.value = "0"; eN.value = 31; eD.value = "1"; eDs.value = "2"; calc();
+    });
+    calc();
+  })();
+
+  
+  var P = window.MICROPractice;
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function rint(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function check(item, input) {
+    if (P && P.check) return P.check(item, input);
+    var v = parseFloat(String(input).replace(",", "."));
+    return isFinite(v) && Math.abs(v - item.ans) <= Math.max((item.tol || 0) * Math.abs(item.ans), 1e-9);
+  }
+  var FREQ = [32768, null, 32768, 2097152, 1048576, 4000000];
+  var GENS = {
+    reg: {
+      title: "UCSCTL4 / UCSCTL5 ↔ 时钟",
+      make: function () {
+        if (Math.random() < 0.5) {
+          var sa = rint(0, 5), ss = rint(0, 5), sm = rint(0, 5), ans = (sa << 8) | (ss << 4) | sm;
+          return { kind: "hex", ans: ans,
+            q: "想要 ACLK ← <b>" + SRC[sa] + "</b>、SMCLK ← <b>" + SRC[ss] + "</b>、MCLK ← <b>" + SRC[sm] + "</b>。UCSCTL4 应该写成？",
+            fmt: "十六进制，例如 0x0044",
+            steps: ["SELA 在 bits 10–8，SELS 在 bits 6–4，SELM 在 bits 2–0。",
+              "SELA = " + bin3(sa) + "，SELS = " + bin3(ss) + "，SELM = " + bin3(sm) + "。",
+              "UCSCTL4 = (" + sa + " ≪ 8) | (" + ss + " ≪ 4) | " + sm + " = <b>" + hex4(ans) + "</b>"] };
+        }
+        var s = pick([0, 2, 3, 4, 5]), a = rint(0, 5), m = rint(0, 5), dv = rint(0, 5), D = Math.pow(2, dv), f = FREQ[s] / D;
+        var r4 = (a << 8) | (s << 4) | m, r5 = (rint(0, 5) << 8) | (dv << 4) | rint(0, 5);
+        return { kind: "num", ans: f, tol: 0.0005,
+          q: "UCSCTL4 = <b>" + hex4(r4) + "</b>，UCSCTL5 = <b>" + hex4(r5) + "</b>。假设 XT1 = REFO = 32768 Hz、DCOCLK = 2097152 Hz、DCOCLKDIV = 1048576 Hz、XT2 = 4 MHz，且都在正常工作。SMCLK 是多少 Hz？",
+          fmt: "填 Hz，可以带小数",
+          steps: ["SELS = UCSCTL4 的 bits 6–4 = " + bin3(s) + " → " + SRC[s] + " = " + FREQ[s] + " Hz",
+            "DIVS = UCSCTL5 的 bits 6–4 = " + bin3(dv) + " → ÷" + D,
+            "SMCLK = " + FREQ[s] + " / " + D + " = <b>" + trim(f, 3) + " Hz</b>"] };
+      }
+    },
+    delay: {
+      title: "__delay_cycles 的延时",
+      make: function () {
+        var src = pick([["DCOCLKDIV（PUC 默认）", 1048576], ["XT2CLK", 4000000], ["REFOCLK", 32768], ["DCOCLK", 2097152]]);
+        var dm = rint(0, 3), D = Math.pow(2, dm), cyc = pick([5000, 10000, 32768, 50000, 100000, 250000, 500000, 2000000]);
+        var f = src[1] / D, ms = cyc / f * 1000;
+        return { kind: "num", ans: ms, tol: 0.005,
+          q: "MCLK ← <b>" + src[0] + "</b>（" + src[1] + " Hz），DIVM = ÷" + D + "。<code>__delay_cycles(" + cyc + ")</code> 大约延时多少 ms？",
+          fmt: "填 ms，可以带小数",
+          steps: ["f<sub>MCLK</sub> = " + src[1] + " / " + D + " = " + trim(f, 2) + " Hz",
+            "t = 周期数 / f<sub>MCLK</sub> = " + cyc + " / " + trim(f, 2) + " s",
+            "= <b>" + trim(ms, 3) + " ms</b>"] };
+      }
+    }
+  };
+  function mount(box, g) {
+    if (!box || box.getAttribute("data-m24")) return;
+    box.setAttribute("data-m24", "1");
+    box.innerHTML = '<div class="dh"><h3></h3><span class="tally"></span></div><p class="dq"></p>' +
+      '<div class="row"><input type="text" inputmode="text" autocomplete="off" spellcheck="false" aria-label="你的答案">' +
+      '<button type="button" class="btn primary" data-a="check">检查</button><button type="button" class="btn" data-a="show">看答案</button>' +
+      '<button type="button" class="btn" data-a="new">换一题</button></div><p class="fmt"></p><div class="fb" hidden></div>';
+    var tally = box.querySelector(".tally"), dq = box.querySelector(".dq"), inp = box.querySelector("input");
+    var fmtEl = box.querySelector(".fmt"), fb = box.querySelector(".fb");
+    box.querySelector("h3").textContent = g.title;
+    var item, tries = 0, right = 0, counted = false;
+    function upd() { tally.textContent = "本次 " + right + " / " + tries + "（每题只算第一次）"; }
+    function fresh() { item = g.make(); dq.innerHTML = item.q; fmtEl.textContent = item.fmt || ""; inp.value = ""; fb.hidden = true; counted = false; }
+    function feedback(ok, shown) {
+      fb.hidden = false;
+      fb.className = "fb " + (ok ? "ok" : "no");
+      var a = item.kind === "hex" ? hex4(item.ans) : trim(item.ans, 3);
+      fb.innerHTML = '<span class="v">' + (shown ? "答案 · " + a : ok ? "正确 · " + a : "不对，再想想（或点“看答案”）") + "</span>" +
+        (ok || shown ? "<ol><li>" + item.steps.join("</li><li>") + "</li></ol>" : "");
+    }
+    box.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button[data-a]") : null;
+      if (!b) return;
+      var a = b.getAttribute("data-a");
+      if (a === "new") { fresh(); inp.focus(); return; }
+      if (a === "show") { if (!counted) { tries++; counted = true; upd(); } feedback(false, true); return; }
+      if (a === "check") {
+        if (!inp.value.trim()) { inp.focus(); return; }
+        var ok = check(item, inp.value);
+        if (!counted) { tries++; counted = true; if (ok) right++; upd(); }
+        feedback(ok, false);
+      }
+    });
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); box.querySelector('[data-a="check"]').click(); } });
+    fresh(); upd();
+  }
+  mount($("m24-dr-reg"), GENS.reg);
+  mount($("m24-dr-delay"), GENS.delay);
+})();
+</script>
+</body>
+</html>

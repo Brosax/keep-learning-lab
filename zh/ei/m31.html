@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M31 Inteligencia · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.m31-num {
+  width: 4.8rem; font: 13px/1.4 var(--f-mono); padding: 3px 6px;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink);
+}
+.m31-num:focus-visible { border-color: var(--signal); }
+.m31-io { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.m31-io .lbl2 { font: 600 13px/1.4 var(--f-mono); color: var(--muted); }
+.m31-io label { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1.4 var(--f-mono); }
+.calc-out { font: 13px/1.85 var(--f-mono); overflow-x: auto; }
+.calc-out div { white-space: nowrap; }
+.calc-out .on1 { color: var(--good); font-weight: 700; }
+.calc-out .on0 { color: var(--muted); font-weight: 700; }
+.big-out { font: 700 1.35rem/1.2 var(--f-mono); color: var(--signal); }
+tr.cur td { background: var(--accent-soft); }
+td.c, th.c { text-align: center; }
+.m31-e { fill: none; stroke: var(--muted); stroke-width: 1.4; transition: stroke .2s, opacity .2s; }
+.m31-e.live { stroke: var(--signal); stroke-width: 2.2; }
+.m31-e.zero { stroke-dasharray: 3 4; opacity: .45; }
+.m31-wl { fill: var(--ink); font: 600 11.5px var(--f-mono); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.m31-val { fill: var(--accent); font: 600 11.5px var(--f-mono); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.m31-fire { fill: var(--good-soft); stroke: var(--good); stroke-width: 2; }
+.m31-cur { fill: var(--signal); }
+.env-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding-block: 4px; border-bottom: 1px solid var(--line); }
+.env-row .dim { min-width: 6.5rem; font: 600 12px/1.4 var(--f-mono); color: var(--muted); }
+.env-row .res { font-size: 13px; }
+details.m31-orig { margin-block: 10px; }
+details.m31-orig > summary { cursor: pointer; font: 600 12px/1.6 var(--f-mono); color: var(--accent); }
+details.m31-orig > summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+details.m31-orig[open] > summary { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 3 章节" class="chain" data-chain="M31"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 3 · Otros aspectos · M31</div>
+<h1>Inteligencia</h1>
+<p class="zh">智能</p>
+<div class="meta">
+
+<span><b>8</b> 个学习目标</span>
+<span>阅读约 35 分钟</span>
+
+
+</div>
+<p class="lede">在 M21 里，智能环境靠 Conocimiento 模块记忆、决策、学习。这份“智能”从哪里来？这一章是一份 <b class="t">Inteligencia Artificial, IA (ES) / Artificial Intelligence, AI (EN)</b>——人工智能的速览：先看 IA 的四种定义、强弱之分和 Turing 测试，再看几种主要技术；然后换到本课程最常用的视角，即 <b class="t">agente inteligente (ES) / intelligent agent (EN)</b>——智能体，和它所处的 ambiente（环境）；最后亲手算一个小神经网络。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">3.1.1</span>
+<div class="txt"><span>定义 IA：像人／理性地 × 思考／行动</span><span class="es">Definir el concepto de Inteligencia Artificial (IA) (pensar/actuar racionalmente/humanamente).</span><a href="#s1">→ §1 IA 的四种定义</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.2</span>
+<div class="txt"><span>区分 IA fuerte（强）与 IA débil（弱）</span><span class="es">Distinguir entre IA fuerte y débil.</span><a href="#s2">→ §2 IA fuerte 与 débil</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.3</span>
+<div class="txt"><span>解释 Turing 测试</span><span class="es">Explicar el test de Turing.</span><a href="#s3">→ §3 Test de Turing</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.4</span>
+<div class="txt"><span>区分各种 IA 技术：sistemas expertos、algoritmos genéticos、machine learning、RNA、deep learning</span><span class="es">Distinguir entre las diferentes técnicas de IA (sistemas expertos, algoritmos genéticos, machine, learning, Red Neuronal Artificial (RNA), deep learning).</span><a href="#s4">→ §4 IA 的主要技术</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.5</span>
+<div class="txt"><span>定义 agente inteligente（智能体）</span><span class="es">Definir el concepto de agente inteligente.</span><a href="#s5">→ §5 Agente inteligente</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.6</span>
+<div class="txt"><span>区分 agente inteligente 的各种 ambientes（环境）</span><span class="es">Distinguir entre los diferentes ambientes de un agente inteligente.</span><a href="#s6">→ §6 Ambientes</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.7</span>
+<div class="txt"><span>区分 agente 的类型：reactivo simple、basado en objetivos、basado en utilidad</span><span class="es">Distinguir entre diferentes tipos de agentes inteligentes(reactivo simple, basado en objetivos o en utilidad).</span><a href="#s7">→ §7 Agente 的类型</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">3.1.8</span>
+<div class="txt"><span>分析一个基本的 RNA（人工神经网络）</span><span class="es">Analizar una RNA básica.</span><a href="#s8">→ §8 动手算一个 RNA</a></div>
+<button aria-pressed="false" class="chk" data-obj="3.1.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M31"><span class="val">0 / 8 已掌握</span><span class="bar"><i></i></span></div>
+
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>什么是 IA：四种定义 <span class="tag">3.1.1</span></h2>
+<p>先说 <b class="t">inteligencia (ES) / intelligence (EN)</b>——智能。这个词来自拉丁语 <i>intellegere</i>：inter（之间）+ legere（读、挑选），意思是理解、感知。它指理解、吸收、加工信息并用来解决问题的能力。智能不止一种，这是 Howard Gardner 的多元智能观点：一个人可以是国际象棋冠军，却在别的事上很笨拙。</p>
+<div class="note">
+<span class="lbl">定义 · 3.1.1</span>
+<p><b>IA</b> 是机器的智能，也是计算机科学中研究如何让信息系统拥有这种智能的分支。它的目标很宏大：造出一台<b>会思考的机器</b>，它有智能、有意识、能学习、有自由意志，还合乎伦理。这个名字由 John McCarthy 在 1956 年提出。</p>
+<p>IA 的定义很多。八条经典定义可以排进一张<b>二维表</b>：</p>
+<ul>
+<li><b>上下：pensar vs actuar</b>。上面两格关注思维过程和推理，下面两格关注行为。</li>
+<li><b>左右：humanamente vs racionalmente</b>。左边以“像不像人”衡量成功；右边和一个理想的标准比较，即 <b class="t">racionalidad</b>——理性：一个系统如果在已有知识下“hace lo correcto”（做正确的事），它就是理性的。</li>
+</ul>
+</div>
+<p><b>点一点：</b>四个格子各对应一种研究路线。点开每一格，看代表定义（中文意译）和这条路线的做法。</p>
+<div class="stack" data-explain="ah">
+<figure>
+<div class="fig">
+<svg aria-label="IA 定义的 2×2 矩阵：行是思考与行动，列是像人与理性，四格分别对应认知建模、思维法则、Turing 测试、理性智能体" role="img" viewbox="0 0 600 370">
+<text class="s-t" text-anchor="middle" x="245" y="28">Humanamente</text>
+<text class="s-t2" text-anchor="middle" x="245" y="46">以人类的表现为标准</text>
+<text class="s-t" text-anchor="middle" x="465" y="28">Racionalmente</text>
+<text class="s-t2" text-anchor="middle" x="465" y="46">以理想的理性为标准</text>
+<text class="s-t" text-anchor="middle" x="68" y="125">Pensar</text>
+<text class="s-t2" text-anchor="middle" x="68" y="144">思维过程、推理</text>
+<text class="s-t" text-anchor="middle" x="68" y="275">Actuar</text>
+<text class="s-t2" text-anchor="middle" x="68" y="294">行为表现</text>
+<g aria-label="Pensar humanamente" class="hot" data-key="ph" role="button" tabindex="0">
+<rect class="s-box" height="140" rx="8" width="210" x="140" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="245" y="100">Pensar humanamente</text>
+<text class="s-t2" text-anchor="middle" x="245" y="122">enfoque: modelado cognitivo</text>
+<text class="s-tm" text-anchor="middle" x="245" y="158">Haugeland 1985</text>
+<text class="s-tm" text-anchor="middle" x="245" y="176">Hellman 1978</text>
+</g>
+<g aria-label="Pensar racionalmente" class="hot" data-key="pr" role="button" tabindex="0">
+<rect class="s-box" height="140" rx="8" width="210" x="360" y="60"></rect>
+<text class="s-t" text-anchor="middle" x="465" y="100">Pensar racionalmente</text>
+<text class="s-t2" text-anchor="middle" x="465" y="122">enfoque: leyes del pensamiento</text>
+<text class="s-tm" text-anchor="middle" x="465" y="158">Charniak y McDermott 1985</text>
+<text class="s-tm" text-anchor="middle" x="465" y="176">Winston 1992</text>
+</g>
+<g aria-label="Actuar humanamente" class="hot" data-key="ah" role="button" tabindex="0">
+<rect class="s-box" height="140" rx="8" width="210" x="140" y="210"></rect>
+<text class="s-t" text-anchor="middle" x="245" y="250">Actuar humanamente</text>
+<text class="s-t2" text-anchor="middle" x="245" y="272">enfoque: Test de Turing</text>
+<text class="s-tm" text-anchor="middle" x="245" y="308">Kurzweil 1990</text>
+<text class="s-tm" text-anchor="middle" x="245" y="326">Rich y Knight 1991</text>
+</g>
+<g aria-label="Actuar racionalmente" class="hot" data-key="ar" role="button" tabindex="0">
+<rect class="s-box" height="140" rx="8" width="210" x="360" y="210"></rect>
+<text class="s-t" text-anchor="middle" x="465" y="250">Actuar racionalmente</text>
+<text class="s-t2" text-anchor="middle" x="465" y="272">enfoque: agente racional</text>
+<text class="s-tm" text-anchor="middle" x="465" y="308">Poole et al. 1998</text>
+<text class="s-tm" text-anchor="middle" x="465" y="326">Nilsson 1998</text>
+</g>
+</svg>
+</div>
+<figcaption>四格表：每格只列作者，定义见下方面板。<span class="hint">点击格子看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="ph" hidden="">
+<h3>Pensar humanamente · 像人一样思考</h3>
+<p><b>代表定义（意译）</b>：Haugeland (1985)：让计算机真正“思考”，造出字面意义上有心智的机器。Hellman (1978)：把我们和人类思维联系在一起的活动（决策、解题、学习……）自动化。</p>
+<p><b>路线：<b class="t">modelado cognitivo</b>——认知建模。</b>先弄清人是怎么想的，有三种办法：introspección（内省，捕捉自己的想法）、experimentos psicológicos（观察人的行为）、imágenes cerebrales（观察大脑活动）。有了足够精确的心智理论，就把它写成程序；程序的行为若和人一致，说明其中一些机制可能和人相同。</p>
+<p class="aside">例：Newell 和 Simon 的 GPS（General Problem Solver）。他们不满足于程序解对题，更想比较 GPS 的步骤和人解同一道题的步骤。由此发展出 ciencia cognitiva（认知科学）。</p>
+</div>
+<div class="panel" data-panel="pr" hidden="">
+<h3>Pensar racionalmente · 理性地思考</h3>
+<p><b>代表定义（意译）</b>：Charniak 和 McDermott (1985)：用计算模型研究智力。Winston (1992)：研究让感知、推理和行动成为可能的计算。</p>
+<p><b>路线：<b class="t">leyes del pensamiento</b>——思维法则。</b>亚里士多德的 silogismos（三段论）给出了“前提正确则结论必然正确”的论证模式（苏格拉底是人；人都会死；所以苏格拉底会死），由此诞生了逻辑学。IA 的 tradición lógica（逻辑传统）希望在这类逻辑程序上搭建智能系统。</p>
+<p><b>两大障碍</b>：① 把非正式、又不是百分之百确定的知识写成形式化的逻辑并不容易；② “原则上能解”和“实际上解得出”差距很大，几百条事实就可能耗尽计算资源。</p>
+</div>
+<div class="panel" data-panel="ah" hidden="">
+<h3>Actuar humanamente · 像人一样行动</h3>
+<p><b>代表定义（意译）</b>：Kurzweil (1990)：创造机器的艺术，这些机器执行的功能如果由人来做就需要智能。Rich 和 Knight (1991)：研究如何让计算机做那些目前人做得更好的事。</p>
+<p><b>路线：Test de Turing。</b>不问机器“怎么想”，只看它的行为能不能和人区分开。详见 <a href="#s3">§3</a>。</p>
+</div>
+<div class="panel" data-panel="ar" hidden="">
+<h3>Actuar racionalmente · 理性地行动</h3>
+<p><b>代表定义（意译）</b>：Poole et al. (1998)：inteligencia computacional 研究的是智能 agente 的设计。Nilsson (1998)：IA 关心人工制品中的智能行为。</p>
+<p><b>路线：<b class="t">agente racional</b>——理性智能体。</b>它的行动能得到最好的结果；有不确定性时，得到最好的<b>期望</b>结果。正确推理只是理性的一种手段：有时根本没有“正确”选项也得行动；有时不推理反而更好，比如手碰到烫的东西立刻缩回，这个反射比深思熟虑更有效。</p>
+<p><b>两个优点</b>：① 比“思维法则”更通用，因为正确推理只是实现理性的众多机制之一；② 比基于人类行为或思维的路线更便于科学研究，因为理性的标准在数学上定义得很清楚。</p>
+<p class="aside">在复杂环境里，完美的理性（永远做对）算力上做不到。实际做法是先假设完美理性来定义问题，再采用 racionalidad acotada（有限理性）：资源不够时也能恰当地行动。本章 §5–§7 的 agentes 就属于这条路线。</p>
+</div>
+</div>
+<p class="aside">以人为中心的路线部分是经验科学（观察、假设人的行为）；理性路线结合了数学和工程。四条路线历史上都有人走，现在两派常常合作。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>IA fuerte 与 IA débil <span class="tag">3.1.2</span></h2>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">IA débil</span><h3>弱 IA · weak AI</h3><p>猜想：机器<b>可以被编程，表现出</b>智能行为。IA 界普遍接受。</p></div>
+<div class="cell"><span class="eyebrow">IA fuerte</span><h3>强 IA · strong AI</h3><p>猜想：机器经过编程后<b>真正拥有</b>智能，<b>有意识</b>。争议很大。</p></div>
+</div>
+<div class="note">
+<span class="lbl">定义 · 3.1.2</span>
+<p>区别在于“<b>表现出</b>智能”还是“<b>拥有</b>智能和意识”。难点在于，智能和意识是<b>内部特征</b>，没法直接观察。Turing 的看法是：我们说别人聪明，是因为他们表现得聪明，尽管我们看不到他们的内心状态。那么，一台表现出同样外部特征的机器，我们愿不愿意给它同样的待遇？</p>
+</div>
+<p><b>先想再点：</b>下面每句话说的是哪一种？点击右列揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>说法</th><th>属于（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>IA 界普遍接受的猜想</td><td class="ans">IA débil</td></tr>
+<tr class="reveal"><td>反对者：机器本质上不同于人，永远不会有感情、分辨善恶、反思自身</td><td class="ans">IA fuerte（反对它的论点）</td></tr>
+<tr class="reveal"><td>支持者：人的心智由本身既非人类、也无意识的部件组成，组合起来却有了意识，机器为什么不能？</td><td class="ans">IA fuerte（支持它的论点）</td></tr>
+<tr class="reveal"><td>RNA、algoritmos genéticos、sistemas expertos 都是实现它的常用方法</td><td class="ans">IA débil</td></tr>
+<tr class="reveal"><td>最难验证，因为智能和意识无法直接识别</td><td class="ans">IA fuerte</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">也有研究者认为 IA 的目标不可能或不自洽（Hubert Dreyfus、John Searle），Joseph Weizenbaum（ELIZA 的作者）则认为 IA 不合伦理。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>Test de Turing <span class="tag">3.1.3</span></h2>
+<div class="note">
+<span class="lbl">定义 · 3.1.3</span>
+<p><b class="t">Test de Turing (ES) / Turing test (EN)</b>——图灵测试：Alan Turing 1950 年提出，目的是给智能一个令人满意的<b>操作性定义</b>（definición operacional）。一个人类审问者用<b>书面</b>形式提出若干问题后，如果<b>无法判断</b>书面回答来自人还是计算机，这台计算机就通过了测试。</p>
+</div>
+<div class="stepper" id="turing">
+<figure>
+<div class="fig">
+<svg aria-label="Turing 测试：计算机 A 和人 B 在墙的一侧，审问者 C 在另一侧，只通过书面问答交流" role="img" viewbox="0 0 620 305">
+<defs>
+<marker id="m31a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-soft" height="260" width="12" x="294" y="20"></rect>
+<text class="s-tm" text-anchor="middle" x="300" y="298">sin contacto físico</text>
+<rect class="s-box" height="70" rx="6" width="150" x="30" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="105" y="70">A · computadora</text>
+<text class="s-t2" text-anchor="middle" x="105" y="90">尽量答得像人</text>
+<rect class="s-box" height="70" rx="6" width="150" x="30" y="190"></rect>
+<text class="s-t" text-anchor="middle" x="105" y="220">B · persona</text>
+<text class="s-t2" text-anchor="middle" x="105" y="240">真正的人</text>
+<rect class="s-box" height="220" rx="6" width="150" x="440" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="515" y="130">C · interrogador</text>
+<text class="s-t2" text-anchor="middle" x="515" y="150">人类审问者</text>
+<g class="msg" data-step="1">
+<line class="s-line" marker-end="url(#m31a)" x1="438" x2="182" y1="62" y2="62"></line>
+<text class="s-ta" text-anchor="middle" x="372" y="54">pregunta</text>
+<line class="s-line" marker-end="url(#m31a)" x1="438" x2="182" y1="212" y2="212"></line>
+<text class="s-ta" text-anchor="middle" x="372" y="204">pregunta</text>
+</g>
+<g class="msg" data-step="2">
+<line class="s-line" marker-end="url(#m31a)" x1="182" x2="438" y1="92" y2="92"></line>
+<text class="s-ta" text-anchor="middle" x="240" y="84">respuesta</text>
+<line class="s-line" marker-end="url(#m31a)" x1="182" x2="438" y1="242" y2="242"></line>
+<text class="s-ta" text-anchor="middle" x="240" y="234">respuesta</text>
+</g>
+<g class="msg" data-step="3">
+<text class="s-ta" text-anchor="middle" x="515" y="190">¿A o B?</text>
+<text class="s-ta" text-anchor="middle" x="515" y="208">¿cuál es la máquina?</text>
+</g>
+<g class="msg" data-step="4">
+<line class="s-line" marker-end="url(#m31a)" marker-start="url(#m31a)" x1="438" x2="182" y1="150" y2="150"></line>
+<text class="s-ta" text-anchor="middle" x="372" y="142">vídeo + objetos</text>
+</g>
+</svg>
+</div>
+<figcaption>步进图：A、B 在一侧，C 在另一侧，彼此看不见。第 4 步是扩展版 Total Turing Test。</figcaption>
+</figure>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">看全部</button>
+</div>
+</div>
+
+<p>要通过测试，计算机需要四种能力；Total Turing Test 再加两种。这六门学科构成了 IA 的大部分：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Test de Turing</span><h3>4 种能力</h3><ul><li><b>procesamiento de lenguaje natural</b>：流利地交流</li><li><b>representación del conocimiento</b>：存储知道或学到的东西</li><li><b>razonamiento automático</b>：用存储的信息回答问题、得出新结论</li><li><b>machine learning</b>：适应新情况，发现并外推模式</li></ul></div>
+<div class="cell"><span class="eyebrow">Total Turing Test</span><h3>+ 2 种能力</h3><ul><li><b>visión por computadora</b>：识别物体（因为加了视频信号）</li><li><b>robótica</b>：操作物体（因为要通过小窗口递送实物）</li></ul></div>
+<div class="cell"><span class="eyebrow">为什么不要身体</span><h3>故意避开物理接触</h3><p>标准测试刻意避免审问者和计算机直接物理接触，因为模拟人的身体对智能来说不是必需的。</p></div>
+</div>
+<p class="aside">如今 IA 不太花力气去通过 Turing 测试，更看重研究智能的基本原理，而不是复制一个现有的智能。CAPTCHA（Completely Automated Public Turing test to tell Computers and Humans Apart）也来自这个想法。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>IA 的主要技术 <span class="tag">3.1.4</span></h2>
+<p>下面这些都是写出“符合 IA débil 的程序”的常用办法。先认识一个相关的概念：<b class="t">inteligencia computacional</b>——计算智能：IA 的一个分支，研究让复杂、多变的系统表现出智能行为的<b>自适应机制</b>，主要技术是 RNA、algoritmos genéticos 和 lógica borrosa。下面这张组合图给三种技术各画了一个例子：</p>
+
+<div class="note">
+<span class="lbl">先理清包含关系</span>
+<p>machine learning 是 IA 的一种方法 → 其中最流行的技术是 RNA → deep learning 是 RNA 层数很多的 machine learning → IA generativa 是会生成内容的 deep learning 模型。sistemas expertos 和 algoritmos genéticos 则是另外的路线：前者靠专家写的规则，后者靠模拟进化。</p>
+</div>
+<p><b>点开每一种技术：</b></p>
+<div class="stack" data-explain="se">
+<div aria-label="IA 技术" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="se" type="button">Sistemas expertos</button>
+<button aria-pressed="false" class="chip" data-key="ga" type="button">Algoritmos genéticos</button>
+<button aria-pressed="false" class="chip" data-key="rna" type="button">RNA</button>
+<button aria-pressed="false" class="chip" data-key="ml" type="button">Machine learning</button>
+<button aria-pressed="false" class="chip" data-key="dl" type="button">Deep learning</button>
+<button aria-pressed="false" class="chip" data-key="lb" type="button">Lógica borrosa <small>补充</small></button>
+</div>
+<div class="panel" data-panel="se" hidden="">
+<h3><b class="t">sistema experto (ES) / expert system (EN)</b>——专家系统</h3>
+<p>一个计算机系统，装着一位或多位人类专家在某个具体主题上的知识。它由专家提供的一组 <b>reglas</b>（规则）构成，好坏很大程度取决于规则的质量；它能从已知事实推理出结论，并推荐最合适的行动。<b>知识的存储</b>和<b>解题策略</b>是两件分开的事。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Componente</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>Base de conocimiento</td><td>由该领域专家建立；系统的水平取决于专家提供的知识</td></tr>
+<tr><td>Medio de comunicación</td><td>用户和系统对话：提问、得到回答（或反过来）</td></tr>
+<tr><td>Ayuda sensitiva al contexto</td><td>通常每个界面都有，按用户当前所处位置给出帮助</td></tr>
+<tr><td>Componente de solución de problemas</td><td>分析问题，用 <b>motor de inferencia</b>（推理引擎）推出合适的行动方案；推理引擎在用户和知识库规则之间交互</td></tr>
+</tbody>
+</table>
+</div>
+<p>推理引擎由多条 reglas de inferencia 组成；增删一条规则不影响其他规则，就像人更新知识一样。两种推理方式：<b>hacia adelante</b>（正向：从已有数据出发，用规则不断得出结论，直到目标）和 <b>hacia atrás</b>（反向：从一组目标出发往回推，看现有数据能不能达成其中某个目标）。</p>
+<p class="aside">例：Dendral（Stanford，60 年代中期，辅助识别未知有机化合物）；Mycin（Stanford，70 年代，诊断血液感染并推荐抗生素，诊断正确率约 65%，好于多数非专科医生，低于专家的 80%；但出于法律和伦理原因从未投入使用：诊断错了谁负责？）。</p>
+</div>
+<div class="panel" data-panel="ga" hidden="">
+<h3><b class="t">algoritmo genético (ES) / genetic algorithm (EN)</b>——遗传算法</h3>
+<p>有些问题太复杂，直接求解会耗尽内存或算不完。遗传算法让一代代试验解“进化”：随机行为 + 繁殖理论 + 自然选择。</p>
+<ol>
+<li>随机生成一组试验解。每个解叫 <b>cromosoma</b>（染色体），它的每个组成部分叫 <b>gen</b>（基因）。</li>
+<li>随机挑选 <b>padres</b>（父母），但看起来更可能通向解的染色体被选中的概率更大，即“适者生存”。判断哪些染色体最好，是整个算法最难的一步。</li>
+<li>每个后代（descendencia）是父母基因的随机组合，还可能发生 <b>mutación</b>（突变）。</li>
+<li>重复很多代，解越来越好，直到足够好为止。</li>
+</ol>
+<p><b>上面组合图的第三幅</b>把这个过程画成一个循环：<b>población inicial / nueva generación</b>（初始种群／新一代）→ <b>evaluación</b>（评估：每个个体按它的“基因”打分，图里 ★ = 5、▲ = 4、● = 3、■ = 2）→ <b>selección</b>（选择：留下的多是高分的 ★ 和 ▲）→ <b>cruzamiento / mutación</b>（交叉／突变：后代的符号是父母符号的拼合）→ <b>sustitución de población</b>（替换种群）→ 回到新一代。</p>
+<p>它<b>不保证</b>一定能找到解，但对相当多的复杂问题很有效。用在程序开发上叫 <b>programación evolutiva</b>（进化编程）：让程序进化出来，而不是写出来。</p>
+</div>
+<div class="panel" data-panel="rna" hidden="">
+<h3><b class="t">Red Neuronal Artificial, RNA (ES) / Artificial Neural Network, ANN (EN)</b>——人工神经网络</h3>
+<p>一组互相连接的处理单元（nodos 或 neuronas），协同产生一个输出，用来模拟生物神经网络（例如大脑）的某些特性。</p>
+<ul>
+<li>每个连接有一个 <b>peso</b>（权重），表示它的影响力；神经元取输入的<b>加权和</b>，再用一个函数决定输出。网络通过<b>改变权重</b>来学习。</li>
+<li>处理是<b>并行</b>的，不是串行的；有 <b>tolerancia a fallas</b>（容错）：部分神经元失效也能继续工作。</li>
+<li>能从一组例子里学会解复杂问题，并<b>泛化</b>去解没见过的问题。</li>
+<li>没有按顺序执行指令的中央处理器，架构和 von Neumann 模型很不一样。</li>
+</ul>
+<p>RNA 由若干层互联的节点组成，每个连接的权重可以通过 machine learning 调整。上面组合图的第一幅是一个给动物图片分类的网络：input layer 4 个神经元 → hidden layer 1 有 5 个 → hidden layer 2 有 3 个 → output 1 个，输出标签 “DOG”；相邻两层的神经元两两相连。<a href="#s8">§8</a> 里你可以亲手算。</p>
+</div>
+<div class="panel" data-panel="ml" hidden="">
+<h3><b class="t">aprendizaje automático (ES) / machine learning (EN)</b>——机器学习</h3>
+<p>机器<b>从数据中学习</b>，随经验改进，<b>不需要显式编程</b>。算法很多（regresión lineal 和 logística、árboles de decisión、bosques aleatorios、SVM、KNN、clustering、RNA 等，各适合不同问题），其中最流行的是 RNA。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>学习方式</th><th>靠什么学</th></tr></thead>
+<tbody>
+<tr><td>aprendizaje supervisado（监督）</td><td>例子：带标签的数据，告诉网络某些输入应该得到什么输出</td></tr>
+<tr><td>aprendizaje por refuerzo（强化）</td><td>奖励和惩罚</td></tr>
+<tr><td>aprendizaje no supervisado（无监督）</td><td>关联</td></tr>
+<tr><td>aprendizaje auto-supervisado（自监督）</td><td>混合技术</td></tr>
+</tbody>
+</table>
+</div>
+<p>用途：clasificar patrones（模式分类）、预测一个序列的值（regresión，回归）、agrupamiento（clustering，聚类）等。</p>
+</div>
+<div class="panel" data-panel="dl" hidden="">
+<h3><b class="t">aprendizaje profundo (ES) / deep learning (EN)</b>——深度学习</h3>
+<p>machine learning 的进化：RNA 有<b>很多层</b>，学习往往是 <b>auto-supervisado</b>，因此能从海量<b>非结构化、未标注</b>的数据里提取含义和关系。</p>
+<ul>
+<li>基本 machine learning 的 RNA：3 或 4 层（1 个输入层、1 个输出层、1–2 个隐藏层）。</li>
+<li>deep learning 的 RNA：可以有<b>几百个</b>隐藏层。</li>
+</ul>
+<p class="aside">训练时权重要在网络里前后传播，计算量很大；部署时只向前传播，所以能高效地跑在小型、可部署的硬件上。逐层抽象的例子见下面的人脸和汽车两例。</p>
+</div>
+<div class="panel" data-panel="lb" hidden="">
+<h3><b class="t">lógica borrosa / difusa (ES) / fuzzy logic (EN)</b>——模糊逻辑</h3>
+<p>它和 RNA、algoritmos genéticos 并列为 inteligencia computacional 的主要技术：在决策中处理不确定性和不精确性。它不在 3.1.4 的列表里。</p>
+<p><b>上面组合图的第二幅</b>用温度做对比（横轴是温度，纵轴是“属于这一类”的程度）：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>温度</th><th>Lógica clásica（经典逻辑）</th><th>Lógica difusa（模糊逻辑）</th></tr></thead>
+<tbody>
+<tr><td class="mono">X</td><td>Frío = 1，Caliente = 0</td><td>Frío = 0.3，Caliente = 0.1</td></tr>
+<tr><td class="mono">Y</td><td>Frío = 0，Caliente = 1</td><td>Frío = 0，Caliente = 0.8</td></tr>
+</tbody>
+</table>
+</div>
+<p>经典逻辑里每个温度只能 0 或 1，两类之间有一条硬边界；模糊逻辑里两类是梯形曲线、互相重叠，同一个温度可以“有点冷、也有点热”，程度在 0 到 1 之间。X、Y 处的数值是从图上读的。</p>
+<p>Técnicas Avanzadas de Procesado de Información（TAPI）这门课会详细讲。</p>
+</div>
+</div>
+<p><b>Deep learning 逐层抽象：</b>看一个人脸识别的例子：隐藏层很多，从低到高逐步提取越来越抽象的特征，过程和人的视觉系统很像。</p>
+<figure>
+<div class="fig">
+<svg aria-label="深度网络逐层提取特征：输入层是人脸图像，隐藏层 1 学到边缘和轮廓，隐藏层 2 学到眼、鼻、嘴等部件，隐藏层 3 学到整张脸，输出层有 4 个输出" role="img" viewbox="0 0 640 170">
+<defs>
+<marker id="m31b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-soft" height="86" rx="6" width="104" x="10" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="62" y="46">Entrada</text>
+<text class="s-tm" text-anchor="middle" x="62" y="66">input layer</text>
+<text class="s-t2" text-anchor="middle" x="62" y="90">人脸图像</text>
+<rect class="s-box" height="86" rx="6" width="104" x="138" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="190" y="46">Oculta 1</text>
+<text class="s-tm" text-anchor="middle" x="190" y="66">hidden layer 1</text>
+<text class="s-t2" text-anchor="middle" x="190" y="90">边缘、轮廓</text>
+<rect class="s-box" height="86" rx="6" width="104" x="266" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="318" y="46">Oculta 2</text>
+<text class="s-tm" text-anchor="middle" x="318" y="66">hidden layer 2</text>
+<text class="s-t2" text-anchor="middle" x="318" y="90">眼、鼻、嘴</text>
+<rect class="s-box" height="86" rx="6" width="104" x="394" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="446" y="46">Oculta 3</text>
+<text class="s-tm" text-anchor="middle" x="446" y="66">hidden layer 3</text>
+<text class="s-t2" text-anchor="middle" x="446" y="90">整张脸</text>
+<rect class="s-soft" height="86" rx="6" width="108" x="522" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="576" y="46">Salida</text>
+<text class="s-tm" text-anchor="middle" x="576" y="66">output layer</text>
+<text class="s-t2" text-anchor="middle" x="576" y="90">4 个输出</text>
+<line class="s-line" marker-end="url(#m31b)" x1="114" x2="136" y1="63" y2="63"></line>
+<line class="s-line" marker-end="url(#m31b)" x1="242" x2="264" y1="63" y2="63"></line>
+<line class="s-line" marker-end="url(#m31b)" x1="370" x2="392" y1="63" y2="63"></line>
+<line class="s-line" marker-end="url(#m31b)" x1="498" x2="520" y1="63" y2="63"></line>
+<line class="s-line" marker-end="url(#m31b)" x1="138" x2="498" y1="134" y2="134"></line>
+<text class="s-tm" text-anchor="middle" x="318" y="156">nivel de abstracción: bajo → alto（每层全连接到下一层）</text>
+</svg>
+</div>
+<figcaption>3 个隐藏层：最后一层隐藏层学到的已经是整张脸，输出层是 4 个神经元。真实网络的隐藏层可以多得多。</figcaption>
+</figure>
+
+<p>同样的逐层抽象，换成识别汽车：</p>
+
+<p><b>配对自测：</b>先点左边的技术，再点右边对应的描述。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="se" type="button">Sistema experto</button>
+<button data-l="ga" type="button">Algoritmo genético</button>
+<button data-l="rna" type="button">RNA</button>
+<button data-l="ml" type="button">Machine learning</button>
+<button data-l="dl" type="button">Deep learning</button>
+</div>
+<div class="col">
+<button data-r="dl" type="button">几百个隐藏层，从海量未标注数据中逐层提取特征</button>
+<button data-r="ga" type="button">随机试验解，挑选更好的父母组合、突变，一代代变好</button>
+<button data-r="ml" type="button">从数据中学习、随经验改进，不必显式编程</button>
+<button data-r="se" type="button">专家规则组成的知识库 + motor de inferencia</button>
+<button data-r="rna" type="button">许多简单的神经元互联，每个连接有一个可调的权重</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<div class="note warm">
+<span class="lbl">Combinación de estrategias</span>
+<p>现在常把几种技术组合使用。例如训练 RNA 时用遗传算法找最优权重；又如用 RNA 让专家系统的推理引擎工作得更好。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>Agente inteligente <span class="tag">3.1.5</span></h2>
+<div class="note">
+<span class="lbl">定义 · 3.1.5</span>
+<p><b class="t">agente (ES) / agent (EN)</b>——智能体（拉丁语 <i>agere</i>，“做”）：凡是通过 <b>sensores</b>（传感器）感知自己的 ambiente（环境），并通过 <b>actuadores</b>（执行器）在这个环境中作出响应的东西，都是 agente。</p>
+<p>agente 是 <b>inteligente</b> 的，如果它<b>总是做正确的事</b>，即做能让它获得<b>最佳 desempeño</b>（表现）的事。</p>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="智能体通过传感器从环境获得感知，通过执行器对环境采取行动" class="narrow-ok" role="img" viewbox="0 0 520 190">
+<defs>
+<marker id="m31c" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-box" height="150" rx="8" width="250" x="20" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="145" y="44">Agente</text>
+<rect class="s-soft" height="36" rx="4" width="210" x="40" y="58"></rect>
+<text class="s-t2" text-anchor="middle" x="145" y="81">sensores：眼睛、摄像头、红外</text>
+<line class="s-line" marker-end="url(#m31c)" x1="145" x2="145" y1="94" y2="120"></line>
+<text class="s-tm" x="155" y="112">¿qué hacer?</text>
+<rect class="s-soft" height="36" rx="4" width="210" x="40" y="122"></rect>
+<text class="s-t2" text-anchor="middle" x="145" y="145">actuadores：手脚、嘴、电机</text>
+<rect class="s-box" height="150" rx="8" width="120" x="380" y="20"></rect>
+<text class="s-t" text-anchor="middle" x="440" y="100">Ambiente</text>
+<line class="s-line" marker-end="url(#m31c)" x1="378" x2="252" y1="76" y2="76"></line>
+<text class="s-tm" text-anchor="middle" x="315" y="68">percepciones</text>
+<line class="s-line" marker-end="url(#m31c)" x1="252" x2="378" y1="140" y2="140"></line>
+<text class="s-tm" text-anchor="middle" x="315" y="132">acciones</text>
+</svg>
+</div>
+<figcaption>人类 agente 的传感器是眼睛、耳朵，执行器是手、腿、嘴；机器人用摄像头、红外传感器和电机。</figcaption>
+</figure>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Agente de software</span><h3>软件智能体</h3><p>一个和其他（子）程序交互的（子）程序；它的感知和动作都是编码后的比特串。“智能”的软件 agente 是一个<b>自主</b>实体，它感知并作用于环境，引导自己的活动去实现<b>目标</b>。</p></div>
+<div class="cell"><span class="eyebrow">Desempeño</span><h3>怎么衡量“做对”</h3><p>要有一个客观的表现度量，没有一把尺子能通用于所有 agente。这个度量由一个 autoridad（权威方）提出，规定什么样的表现算令人满意。</p></div>
+<div class="cell"><span class="eyebrow">Agente racional ideal</span><h3>理想理性智能体</h3><p>对每一种可能的感知序列，都做能让表现度量最大化的动作，依据是感知序列提供的证据和它内置的知识。</p></div>
+</div>
+<div class="panel">
+<h3>Mapeo de percepciones a acciones · 感知到动作的映射</h3>
+<p>agente 的行为只取决于它到目前为止的感知序列，所以原则上可以列一张表：每种感知序列对应什么动作。但这张表通常大得存不下，甚至是无限的。设计理想 agente，就是规定每种感知序列该做什么；不用真的列表，可以用一个<b>函数</b>来描述这个映射。实际上，理想理性 agente 做不出来：优化所需的时间太长，即使问题规模很小也是如此。所以要用更简单的 agente，见 <a href="#s7">§7</a>。</p>
+<p class="aside">也有人（例如 Russell 和 Norvig）更喜欢用 agente racional 而不是 agente inteligente 这个说法。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>Agente 的 ambientes <span class="tag">3.1.6</span></h2>
+<p><b class="t">ambiente (ES) / environment (EN)</b>——环境，来自拉丁语 ambiens（环绕）。在科学和工程里，系统是我们研究的那部分宇宙，环境是系统边界以外的其余部分。不论哪种 agente，关系都一样：agente 对环境施加动作，环境向 agente 提供感知。</p>
+<p>环境可以按五个维度区分。每一行的<b>左边</b>都是对 agente 更容易的一侧：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>维度</th><th>定义要点</th><th>为什么左边更简单</th></tr></thead>
+<tbody>
+<tr><td><b>accesible</b> / no accesible</td><td>传感器能获取环境的全部状态，即所有和选择动作相关的方面</td><td>agente 不必维护内部状态来跟踪环境</td></tr>
+<tr><td><b>determinista</b> / no determinista</td><td>下一个状态完全由当前状态和 agentes 选择的动作决定</td><td>不用担心不确定性。注意：不可访问的环境可能<b>看起来</b>是非确定的</td></tr>
+<tr><td><b>episódico</b> / no episódico</td><td>经验分成一个个 episodio（感知 + 行动）；后面的 episodio 不依赖前面的动作</td><td>每次只需对付当前这一段<sup>*</sup></td></tr>
+<tr><td><b>estático</b> / semidinámico / dinámico</td><td>agente 思考时环境会不会变：会变是 dinámico。环境不随时间变、但对表现的评分随时间变，是 <b>semidinámico</b></td><td>不必边决策边观察世界，也不用在意时间流逝</td></tr>
+<tr><td><b>discreto</b> / continuo</td><td>感知和动作数量有限、彼此清楚可分。ajedrez 是 discreto；开出租车是 continuo（速度、位置在连续范围内取值）</td><td>选项有限，可以逐个考虑</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">* 有的资料把 episódico 更简单的原因写成 agente “puede pensar por adelantado”（可以提前思考）；标准文本的意思是“不需要往前想”。按定义理解：episodio 之间相互独立。</p>
+<div class="note">
+<span class="lbl">最难的情况</span>
+<p>环境最难的情况是 <b>inaccesible、no episódico、dinámico 和 continuo</b>。</p>
+</div>
+<p><b>给环境分类：</b>选一个场景，在五个维度上各选一项，再点“核对”。</p>
+<div class="panel" id="env">
+<div aria-label="选择场景" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-sc="0" type="button">Crucigrama</button>
+<button aria-pressed="false" class="chip" data-sc="1" type="button">Ajedrez con reloj</button>
+<button aria-pressed="false" class="chip" data-sc="2" type="button">Póker</button>
+<button aria-pressed="false" class="chip" data-sc="3" type="button">Conducir un taxi</button>
+<button aria-pressed="false" class="chip" data-sc="4" type="button">Filtro de spam</button>
+</div>
+<p class="env-desc"></p>
+<div class="env-row"><span class="dim">acceso</span><div aria-label="accesible o no" class="seg" role="group"><button aria-pressed="false" data-d="acc" data-v="si" type="button">accesible</button><button aria-pressed="false" data-d="acc" data-v="no" type="button">no accesible</button></div><span class="res" data-res="acc"></span></div>
+<div class="env-row"><span class="dim">determinismo</span><div aria-label="determinista o no" class="seg" role="group"><button aria-pressed="false" data-d="det" data-v="si" type="button">determinista</button><button aria-pressed="false" data-d="det" data-v="no" type="button">no determinista</button></div><span class="res" data-res="det"></span></div>
+<div class="env-row"><span class="dim">episodios</span><div aria-label="episódico o no" class="seg" role="group"><button aria-pressed="false" data-d="epi" data-v="si" type="button">episódico</button><button aria-pressed="false" data-d="epi" data-v="no" type="button">no episódico</button></div><span class="res" data-res="epi"></span></div>
+<div class="env-row"><span class="dim">cambio</span><div aria-label="estático, semidinámico o dinámico" class="seg" role="group"><button aria-pressed="false" data-d="din" data-v="est" type="button">estático</button><button aria-pressed="false" data-d="din" data-v="semi" type="button">semidinámico</button><button aria-pressed="false" data-d="din" data-v="din" type="button">dinámico</button></div><span class="res" data-res="din"></span></div>
+<div class="env-row"><span class="dim">valores</span><div aria-label="discreto o continuo" class="seg" role="group"><button aria-pressed="false" data-d="dis" data-v="dis" type="button">discreto</button><button aria-pressed="false" data-d="dis" data-v="con" type="button">continuo</button></div><span class="res" data-res="dis"></span></div>
+<div class="stepper-ctl">
+<button class="btn primary" data-env="check" type="button">核对</button>
+<button class="btn" data-env="reset" type="button">重选</button>
+<span aria-live="polite" class="hint env-score"></span>
+</div>
+<p class="env-why aside" hidden=""></p>
+</div>
+<p class="aside">有争议的维度标为“不判分”。</p>
+<div class="panel">
+<h3>Programas de ambientes · 环境模拟程序（了解即可）</h3>
+<p>simulaAmbiente 算法（模拟环境）说明了 agente 和环境的基本关系：模拟器反复给每个 agente 提供感知、收回动作，再根据这些动作（和环境里其他非 agente 的动态过程）更新环境。所以环境由<b>初始状态</b>和<b>更新函数</b>定义。funcionDesempeño 给每个 agente 打分，打分通常是简单的累加、平均或取最大值。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>Agente 的类型 <span class="tag">3.1.7</span></h2>
+<p>理想理性 agente 做不出来（<a href="#s5">§5</a>），所以要用三种更简单的 agente。</p>
+<p class="aside">注意名字：学习目标 3.1.7 叫 reactivo simple、basado en objetivos、basado en utilidad；有的资料叫 reflejo simple、basado en (logro de) metas、basado en el logro del mejor desempeño。考题可能用任意一种。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>学习目标 3.1.7</th><th>另一种叫法</th><th>靠什么决定动作</th></tr></thead>
+<tbody>
+<tr><td><b>reactivo simple</b></td><td>agente de reflejo simple</td><td>当前感知 + reglas condición-acción（条件-动作规则）</td></tr>
+<tr><td><b>basado en objetivos</b></td><td>agente basado en (logro de) metas</td><td>预测动作的后果，判断是否 deseable（可取／不可取，二值）</td></tr>
+<tr><td><b>basado en utilidad</b></td><td>agente basado en el logro del mejor desempeño</td><td>utilidad 函数：把一个状态映射成一个实数，表示满意程度</td></tr>
+</tbody>
+</table>
+</div>
+<div class="stack" data-seg="">
+<div aria-label="切换 agente 类型" class="seg" role="group">
+<button aria-pressed="true" data-view="ref" type="button">Reactivo simple</button>
+<button aria-pressed="false" data-view="obj" type="button">Basado en objetivos</button>
+<button aria-pressed="false" data-view="uti" type="button">Basado en utilidad</button>
+</div>
+<div class="stack" data-pane="ref">
+<figure>
+<div class="fig">
+<svg aria-label="反射型智能体：传感器得到当前状态，用条件动作规则直接选出动作，作用于环境" role="img" viewbox="0 0 580 280">
+<defs>
+<marker id="m31d" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-dash" height="260" rx="10" width="400" x="10" y="10"></rect>
+<text class="s-tm" x="24" y="30">AGENTE</text>
+<rect class="s-box" height="260" rx="8" width="120" x="440" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="500" y="145">Ambiente</text>
+<rect class="s-box" height="34" rx="4" width="140" x="200" y="24"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="46">Sensores</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="80"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="98">¿Cómo se percibe el ambiente?</text>
+<text class="s-t2" text-anchor="middle" x="270" y="115">Estado actual</text>
+<rect class="s-soft" height="44" rx="20" width="130" x="30" y="146"></rect>
+<text class="s-t2" text-anchor="middle" x="95" y="164">Conjunto de reglas</text>
+<text class="s-t2" text-anchor="middle" x="95" y="181">condición-acción</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="212"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="230">Qué acción realizar de</text>
+<text class="s-t2" text-anchor="middle" x="270" y="247">acuerdo a lo percibido</text>
+<line class="s-line" marker-end="url(#m31d)" x1="438" x2="342" y1="41" y2="41"></line>
+<text class="s-tm" text-anchor="middle" x="376" y="33">percibe</text>
+<line class="s-line" marker-end="url(#m31d)" x1="270" x2="270" y1="58" y2="78"></line>
+<line class="s-line" marker-end="url(#m31d)" x1="200" x2="135" y1="124" y2="144"></line>
+<line class="s-line" marker-end="url(#m31d)" x1="135" x2="200" y1="190" y2="210"></line>
+<line class="s-line" marker-end="url(#m31d)" x1="370" x2="438" y1="234" y2="234"></line>
+<text class="s-tm" text-anchor="middle" x="389" y="226">actúa</text>
+</svg>
+</div>
+<figcaption>Agente de reflejo simple：没有“预测后果”这一步，规则直接把感知连到动作。</figcaption>
+</figure>
+<div class="panel">
+<h3>Agente reactivo simple · 简单反射型</h3>
+<p>完整的理想映射表太大（可能比宇宙里的粒子还多），但很简单的问题可以用 <b>condición-acción</b> 策略：<code>SI percepción = condición_i ENTONCES realizarAcción_i</code>。人也有这种连接：有的是学来的（看到障碍物就刹车），有的是天生的反射（东西靠近眼睛就眨眼）。</p>
+<p>算法：<code>estado ← interpretarEntrada(percepción)</code>，<code>acción ← condiciónAcción(estado)</code>，返回 acción。实现可以很高效（例如用 hash 表），但<b>适用范围很有限</b>。</p>
+</div>
+</div>
+<div class="stack" data-pane="obj" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="目标型智能体：由当前状态预测动作 A 的后果，结合目标判断是否可取，不可取就换一个动作，可取就执行" role="img" viewbox="0 0 580 350">
+<defs>
+<marker id="m31e" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-dash" height="330" rx="10" width="400" x="10" y="10"></rect>
+<text class="s-tm" x="24" y="30">AGENTE</text>
+<rect class="s-box" height="330" rx="8" width="120" x="440" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="500" y="180">Ambiente</text>
+<rect class="s-box" height="34" rx="4" width="140" x="200" y="24"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="46">Sensores</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="80"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="98">¿Cómo se percibe el ambiente?</text>
+<text class="s-t2" text-anchor="middle" x="270" y="115">Estado actual</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="146"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="164">¿Qué sucedería si</text>
+<text class="s-t2" text-anchor="middle" x="270" y="181">realizo la acción A?</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="212"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="239">¿Es deseable?</text>
+<rect class="s-soft" height="36" rx="18" width="96" x="40" y="158"></rect>
+<text class="s-t" text-anchor="middle" x="88" y="181">Metas</text>
+<rect class="s-box" height="48" rx="4" width="200" x="170" y="282"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="301">Realizar la acción acorde a la</text>
+<text class="s-t2" text-anchor="middle" x="270" y="318">percepción y las metas</text>
+<line class="s-line" marker-end="url(#m31e)" x1="438" x2="342" y1="41" y2="41"></line>
+<text class="s-tm" text-anchor="middle" x="376" y="33">percibe</text>
+<line class="s-line" marker-end="url(#m31e)" x1="270" x2="270" y1="58" y2="78"></line>
+<line class="s-line" marker-end="url(#m31e)" x1="270" x2="270" y1="124" y2="144"></line>
+<line class="s-line" marker-end="url(#m31e)" x1="270" x2="270" y1="190" y2="210"></line>
+<line class="s-line" marker-end="url(#m31e)" x1="128" x2="180" y1="194" y2="210"></line>
+<path class="s-line" d="M170,246 H28 V135 H266" marker-end="url(#m31e)"></path>
+<text class="s-tm" text-anchor="end" x="162" y="240">no</text>
+<line class="s-line" marker-end="url(#m31e)" x1="270" x2="270" y1="256" y2="280"></line>
+<text class="s-tm" x="278" y="273">sí</text>
+<line class="s-line" marker-end="url(#m31e)" x1="370" x2="438" y1="306" y2="306"></line>
+<text class="s-tm" text-anchor="middle" x="389" y="298">actúa</text>
+</svg>
+</div>
+<figcaption>Agente basado en el logro de metas：多了“预测后果”和“是否可取”两步。不可取（No）时从左侧绕回，重新进入“¿Qué sucedería si realizo la acción A?”，换一个动作再试；Metas 输入到“¿Es deseable?”。</figcaption>
+</figure>
+<div class="panel">
+<h3>Agente basado en objetivos (metas) · 目标型</h3>
+<p>只知道当前状态并不总是够用。机器人到了路口，直走、左转还是右转，取决于它<b>想去哪里</b>。所以除了当前状态，它还需要 <b>meta</b>（目标）信息，即哪些情况是可取的。它会考虑<b>未来</b>：“如果做这个动作会怎样？”“那样可取吗？”。有时一个动作就能达到目标，有时要找很长的动作序列；找这类序列正是 <b>búsqueda</b>（搜索）和 <b>planificación</b>（规划）这两个 IA 子领域的任务。</p>
+<p><b>对比反射型</b>：效率较低，但<b>更灵活</b>。只要换一个目的地，就会产生新的行为；反射型的“何时转弯”规则只适用于一个目的地，换目的地就得换规则。</p>
+</div>
+</div>
+<div class="stack" data-pane="uti" hidden="">
+<figure>
+<div class="fig">
+<svg aria-label="效用型智能体：预测动作 A 的后果，用效用函数判断得到的效用是否足够，不够就换动作，足够就执行" role="img" viewbox="0 0 580 350">
+<defs>
+<marker id="m31f" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-dash" height="330" rx="10" width="400" x="10" y="10"></rect>
+<text class="s-tm" x="24" y="30">AGENTE</text>
+<rect class="s-box" height="330" rx="8" width="120" x="440" y="10"></rect>
+<text class="s-t" text-anchor="middle" x="500" y="180">Ambiente</text>
+<rect class="s-box" height="34" rx="4" width="140" x="200" y="24"></rect>
+<text class="s-t" text-anchor="middle" x="270" y="46">Sensores</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="80"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="98">¿Cómo se percibe el ambiente?</text>
+<text class="s-t2" text-anchor="middle" x="270" y="115">Estado actual</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="146"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="164">¿Qué sucedería si</text>
+<text class="s-t2" text-anchor="middle" x="270" y="181">realizo la acción A?</text>
+<rect class="s-box" height="44" rx="4" width="200" x="170" y="212"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="230">¿Es suficiente</text>
+<text class="s-t2" text-anchor="middle" x="270" y="247">la utilidad obtenida?</text>
+<rect class="s-soft" height="36" rx="18" width="96" x="40" y="158"></rect>
+<text class="s-t" text-anchor="middle" x="88" y="181">Utilidad</text>
+<rect class="s-box" height="48" rx="4" width="200" x="170" y="282"></rect>
+<text class="s-t2" text-anchor="middle" x="270" y="301">Realizar la acción que entrega</text>
+<text class="s-t2" text-anchor="middle" x="270" y="318">la utilidad deseada</text>
+<line class="s-line" marker-end="url(#m31f)" x1="438" x2="342" y1="41" y2="41"></line>
+<text class="s-tm" text-anchor="middle" x="376" y="33">percibe</text>
+<line class="s-line" marker-end="url(#m31f)" x1="270" x2="270" y1="58" y2="78"></line>
+<line class="s-line" marker-end="url(#m31f)" x1="270" x2="270" y1="124" y2="144"></line>
+<line class="s-line" marker-end="url(#m31f)" x1="270" x2="270" y1="190" y2="210"></line>
+<line class="s-line" marker-end="url(#m31f)" x1="128" x2="180" y1="194" y2="210"></line>
+<path class="s-line" d="M170,246 H28 V135 H266" marker-end="url(#m31f)"></path>
+<text class="s-tm" text-anchor="end" x="162" y="240">no</text>
+<line class="s-line" marker-end="url(#m31f)" x1="270" x2="270" y1="256" y2="280"></line>
+<text class="s-tm" x="278" y="273">sí</text>
+<line class="s-line" marker-end="url(#m31f)" x1="370" x2="438" y1="306" y2="306"></line>
+<text class="s-tm" text-anchor="middle" x="389" y="298">actúa</text>
+</svg>
+</div>
+<figcaption>Agente basado en el mejor desempeño：结构和目标型相同，但判断标准从“是否可取”换成了“得到的效用是否足够”，Utilidad 输入到这一步。</figcaption>
+</figure>
+<div class="panel">
+<h3>Agente basado en utilidad · 效用型</h3>
+<p>光有目标还不足以产生“相当好”的行为：很多动作序列都能把机器人带到目的地，但有的更快、更便宜。目标只能把状态分成“可取”和“不可取”两类；更一般的表现度量则能<b>比较</b>不同状态。</p>
+<p>如果 agente 更喜欢某个状态，就说这个状态的 <b class="t">utilidad</b>——效用更高。<b>utilidad 是一个函数，把一个状态映射为一个实数</b>，表示满意程度。在两种情况下，它能帮 agente 做出理性决策，而这两种情况单靠目标解决不了：</p>
+<ol>
+<li>目标之间有冲突，只能实现其中一部分（例如速度和安全），utilidad 决定该怎么折中；</li>
+<li>有好几个目标，但没有一个能确定实现，utilidad 用来权衡成功的可能性和各目标的重要性。</li>
+</ol>
+<p class="aside">有时可以把 utilidad 函数转换成一组目标，这样目标型 agente 的决策和效用型几乎一样。</p>
+</div>
+</div>
+</div>
+
+<p><b>判断一下：</b>下面的 agente 属于哪种类型？点击右列揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>场景</th><th>类型（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>东西靠近眼睛就眨眼；看到障碍物就刹车</td><td class="ans">reactivo simple（reflejo simple）</td></tr>
+<tr class="reveal"><td>自动门：传感器检测到有人，就开门</td><td class="ans">reactivo simple</td></tr>
+<tr class="reveal"><td>机器人到了路口，往哪边走取决于它要去哪里</td><td class="ans">basado en objetivos（metas）</td></tr>
+<tr class="reveal"><td>只换一个新的目的地，不改任何规则，就产生了新的行为</td><td class="ans">basado en objetivos</td></tr>
+<tr class="reveal"><td>好几条路线都能送到，选更快、更便宜的那条</td><td class="ans">basado en utilidad（mejor desempeño）</td></tr>
+<tr class="reveal"><td>速度和安全不能兼得，要找合适的折中</td><td class="ans">basado en utilidad</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>分析一个基本的 RNA <span class="tag">3.1.8</span></h2>
+<p>生物神经元通过轴突（axones）连到别的神经元的树突（dendritas），传递的电信号<b>强度可变</b>，所以一个神经元对邻居的影响有大有小。人工神经元把这个“影响力”简化成一个数，即 <b class="t">peso (ES) / weight (EN)</b>——权重。</p>
+<div class="note">
+<span class="lbl">一个神经元怎么算</span>
+<ol>
+<li>算 <b>entrada efectiva</b>（有效输入，即加权和）：<code>s = v₁·w₁ + v₂·w₂ + v₃·w₃</code></li>
+<li>和这个神经元的 <b class="t">umbral (ES) / threshold (EN)</b>——阈值 θ 比较；</li>
+<li>输出 <b>0 或 1</b>。</li>
+</ol>
+<p>本页按 <code>s ≥ θ → 1，否则 → 0</code> 计算。“和阈值比较”本身没有说相等时怎么办；但下面两个网络只有取“≥”才能正常工作（例如 Red a 最上面那个隐藏神经元，s = 1、θ = 1 时必须输出 1），所以这里取 ≥。</p>
+</div>
+<p>一个 RNA 由几层互联的神经元组成：entrada（输入层）、oculta（隐藏层）、salida（输出层）。<b>分析</b>一个基本 RNA，就是给定输入，逐层算出每个神经元的输出（这就是 inferencia，推理阶段）。训练题 E31 练的正是这一步：它只涉及推理阶段，不涉及训练。</p>
+<div class="note warm">
+<span class="lbl">分析步骤</span>
+<ol>
+<li>对每个隐藏神经元：把每个输入乘以对应权重，加起来得到 s；</li>
+<li>s 和该神经元的 θ 比较，得到 0 或 1；</li>
+<li>把隐藏层的输出当作输出神经元的输入，重复 1–2；</li>
+<li>对所有输入组合都算一遍，列成真值表，看网络实现了什么函数。</li>
+</ol>
+</div>
+<p><b>计算器：</b>默认是两个预设网络中的 Red a，输入 [1, 1]。先用 [1, 1] 分别测试 Red a 和 Red b。每个权重和阈值都可以改，结果实时更新。</p>
+<div class="stack" data-seg="">
+<div aria-label="切换计算器" class="seg" role="group">
+<button aria-pressed="true" data-view="red" type="button">网络 · Red a / Red b</button>
+<button aria-pressed="false" data-view="neu" type="button">单个神经元</button>
+</div>
+<div class="stack" data-pane="red" id="nn">
+<div class="m31-io">
+<span class="lbl2">预设</span>
+<div aria-label="预设网络" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-preset="a" type="button">Red a</button>
+<button aria-pressed="false" class="chip" data-preset="b" type="button">Red b</button>
+</div>
+<span class="hint nn-custom" hidden="">已修改 · 自定义网络</span>
+</div>
+<div class="m31-io">
+<span class="lbl2">输入</span>
+<span class="lbl2">x₁</span>
+<div aria-label="输入 x1" class="seg" role="group"><button aria-pressed="false" data-v="0" data-x="0" type="button">0</button><button aria-pressed="true" data-v="1" data-x="0" type="button">1</button></div>
+<span class="lbl2">x₂</span>
+<div aria-label="输入 x2" class="seg" role="group"><button aria-pressed="false" data-v="0" data-x="1" type="button">0</button><button aria-pressed="true" data-v="1" data-x="1" type="button">1</button></div>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="两输入、三个隐藏神经元、一个输出神经元的网络，连线上标有权重，节点内是阈值，下方显示加权和与输出" role="img" viewbox="0 0 600 340">
+<defs>
+<marker id="m31g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-tm" text-anchor="middle" x="100" y="20">Entrada</text>
+<text class="s-tm" text-anchor="middle" x="300" y="20">Oculta</text>
+<text class="s-tm" text-anchor="middle" x="500" y="20">Salida</text>
+<g id="nn-edges"></g>
+<line class="s-line" marker-end="url(#m31g)" x1="22" x2="64" y1="110" y2="110"></line>
+<line class="s-line" marker-end="url(#m31g)" x1="22" x2="64" y1="230" y2="230"></line>
+<text class="s-tm" x="22" y="100">x₁</text>
+<text class="s-tm" x="22" y="220">x₂</text>
+<ellipse class="s-box" cx="100" cy="110" id="nn-n0" rx="34" ry="24"></ellipse>
+<text class="s-t" id="nn-t0" text-anchor="middle" x="100" y="115">1</text>
+<ellipse class="s-box" cx="100" cy="230" id="nn-n1" rx="34" ry="24"></ellipse>
+<text class="s-t" id="nn-t1" text-anchor="middle" x="100" y="235">1</text>
+<ellipse class="s-box" cx="300" cy="60" id="nn-n2" rx="34" ry="24"></ellipse>
+<text class="s-t" id="nn-t2" text-anchor="middle" x="300" y="65">θ 1</text>
+<text class="m31-val" id="nn-v2" text-anchor="middle" x="300" y="102">s=1 → 1</text>
+<ellipse class="s-box" cx="300" cy="170" id="nn-n3" rx="34" ry="24"></ellipse>
+<text class="s-t" id="nn-t3" text-anchor="middle" x="300" y="175">θ 1.5</text>
+<text class="m31-val" id="nn-v3" text-anchor="middle" x="300" y="212">s=2 → 1</text>
+<ellipse class="s-box" cx="300" cy="280" id="nn-n4" rx="34" ry="24"></ellipse>
+<text class="s-t" id="nn-t4" text-anchor="middle" x="300" y="285">θ 1</text>
+<text class="m31-val" id="nn-v4" text-anchor="middle" x="300" y="322">s=1 → 1</text>
+<ellipse class="s-box" cx="500" cy="170" id="nn-n5" rx="34" ry="24"></ellipse>
+<text class="s-t" id="nn-t5" text-anchor="middle" x="500" y="175">θ .5</text>
+<text class="m31-val" id="nn-v5" text-anchor="middle" x="500" y="212">s=0 → 0</text>
+<line class="s-line" marker-end="url(#m31g)" x1="534" x2="578" y1="170" y2="170"></line>
+<text class="s-t" id="nn-y" text-anchor="middle" x="588" y="160">0</text>
+</svg>
+</div>
+<figcaption>节点里是阈值 θ，连线上是权重；绿色节点表示输出 1，虚线表示权重为 0，彩色线表示正在传递 1 的连接。输入层节点里直接显示输入值。</figcaption>
+</figure>
+
+<div class="panel">
+<h3>逐个神经元的计算</h3>
+<div aria-live="polite" class="calc-out"></div>
+<p>输出 <span class="big-out nn-out">0</span></p>
+</div>
+<div class="tbl-wrap">
+<table class="nn-params">
+<thead><tr><th>神经元</th><th>来自 x₁ / H1</th><th>来自 x₂ / H2</th><th>来自 H3</th><th>阈值 θ</th></tr></thead>
+<tbody>
+<tr><td class="mono">H1（上）</td><td><input aria-label="H1 来自 x1 的权重" class="m31-num" data-p="h0a" step="0.05" type="number"/></td><td><input aria-label="H1 来自 x2 的权重" class="m31-num" data-p="h0b" step="0.05" type="number"/></td><td>—</td><td><input aria-label="H1 的阈值" class="m31-num" data-p="t0" step="0.05" type="number"/></td></tr>
+<tr><td class="mono">H2（中）</td><td><input aria-label="H2 来自 x1 的权重" class="m31-num" data-p="h1a" step="0.05" type="number"/></td><td><input aria-label="H2 来自 x2 的权重" class="m31-num" data-p="h1b" step="0.05" type="number"/></td><td>—</td><td><input aria-label="H2 的阈值" class="m31-num" data-p="t1" step="0.05" type="number"/></td></tr>
+<tr><td class="mono">H3（下）</td><td><input aria-label="H3 来自 x1 的权重" class="m31-num" data-p="h2a" step="0.05" type="number"/></td><td><input aria-label="H3 来自 x2 的权重" class="m31-num" data-p="h2b" step="0.05" type="number"/></td><td>—</td><td><input aria-label="H3 的阈值" class="m31-num" data-p="t2" step="0.05" type="number"/></td></tr>
+<tr><td class="mono">Salida</td><td><input aria-label="输出神经元来自 H1 的权重" class="m31-num" data-p="o0" step="0.05" type="number"/></td><td><input aria-label="输出神经元来自 H2 的权重" class="m31-num" data-p="o1" step="0.05" type="number"/></td><td><input aria-label="输出神经元来自 H3 的权重" class="m31-num" data-p="o2" step="0.05" type="number"/></td><td><input aria-label="输出神经元的阈值" class="m31-num" data-p="to" step="0.05" type="number"/></td></tr>
+</tbody>
+</table>
+</div>
+<p><b>真值表</b>（把四种输入 [0,0]、[0,1]、[1,0]、[1,1] 都算一遍；用当前权重自动计算，高亮行是当前输入）：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th class="c">x₁</th><th class="c">x₂</th><th class="c">H1</th><th class="c">H2</th><th class="c">H3</th><th class="c">salida</th></tr></thead>
+<tbody class="nn-tt"></tbody>
+</table>
+</div>
+<p class="nn-fn"></p>
+<p class="aside">上面的结果是按 ≥ 规则算出来的：Red a 是 XOR（异或），Red b 是 AND（与）。注意 Red b 里 H2 的两条输入权重都是 0，所以 H2 永远输出 0。</p>
+</div>
+<div class="stack" data-pane="neu" hidden="" id="neu">
+<figure>
+<div class="fig">
+<svg aria-label="单个人工神经元：三个输入乘以权重求和，与阈值比较，输出 0 或 1" role="img" viewbox="0 0 600 200">
+<defs>
+<marker id="m31h" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m31h)" x1="20" x2="168" y1="34" y2="80"></line>
+<line class="s-line" marker-end="url(#m31h)" x1="12" x2="158" y1="100" y2="100"></line>
+<line class="s-line" marker-end="url(#m31h)" x1="20" x2="168" y1="166" y2="120"></line>
+<text class="m31-wl" id="neu-l0" x="20" y="24">v₁·w₁</text>
+<text class="m31-wl" id="neu-l1" x="12" y="90">v₂·w₂</text>
+<text class="m31-wl" id="neu-l2" x="20" y="188">v₃·w₃</text>
+<rect class="s-box" height="120" id="neu-body" rx="60" width="400" x="160" y="40"></rect>
+<line class="s-line" x1="300" x2="300" y1="40" y2="160"></line>
+<line class="s-line" x1="430" x2="430" y1="40" y2="160"></line>
+<text class="s-t" text-anchor="middle" x="232" y="82">entrada efectiva</text>
+<text class="s-ta" id="neu-s" text-anchor="middle" x="232" y="108">s = 0.8</text>
+<text class="s-t2" text-anchor="middle" x="232" y="130">suma ponderada</text>
+<text class="s-t" text-anchor="middle" x="365" y="82">compara con θ</text>
+<text class="s-ta" id="neu-c" text-anchor="middle" x="365" y="108">0.8 ≥ 0.7</text>
+<text class="s-t2" text-anchor="middle" x="365" y="130">umbral</text>
+<text class="s-t" text-anchor="middle" x="488" y="82">salida</text>
+<text class="s-ta" id="neu-y" text-anchor="middle" x="488" y="108">y = 1</text>
+<text class="s-t2" text-anchor="middle" x="488" y="130">0 o 1</text>
+<line class="s-line" marker-end="url(#m31h)" x1="560" x2="594" y1="100" y2="100"></line>
+</svg>
+</div>
+<figcaption>神经元分三段：算有效输入、和阈值比较、输出 0 或 1。默认数值只作演示。</figcaption>
+</figure>
+
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>输入 v</th><th>权重 w</th></tr></thead>
+<tbody>
+<tr><td class="mono">1</td><td><input aria-label="输入 v1" class="m31-num" data-n="v0" step="0.1" type="number" value="1"/></td><td><input aria-label="权重 w1" class="m31-num" data-n="w0" step="0.05" type="number" value="0.5"/></td></tr>
+<tr><td class="mono">2</td><td><input aria-label="输入 v2" class="m31-num" data-n="v1" step="0.1" type="number" value="0"/></td><td><input aria-label="权重 w2" class="m31-num" data-n="w1" step="0.05" type="number" value="0.8"/></td></tr>
+<tr><td class="mono">3</td><td><input aria-label="输入 v3" class="m31-num" data-n="v2" step="0.1" type="number" value="1"/></td><td><input aria-label="权重 w3" class="m31-num" data-n="w2" step="0.05" type="number" value="0.3"/></td></tr>
+<tr><td class="mono">θ</td><td colspan="2"><input aria-label="阈值" class="m31-num" data-n="t" step="0.05" type="number" value="0.7"/></td></tr>
+</tbody>
+</table>
+</div>
+<div class="panel">
+<h3>计算过程</h3>
+<div aria-live="polite" class="calc-out neu-out"></div>
+<p class="aside">另一种常见写法：令 bias（偏置）b = −θ，则 y = 1 当且仅当 s + b ≥ 0。两种写法等价。</p>
+</div>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>RNA 怎么学 <span class="tag plain">了解即可</span></h2>
+<p>看一个例子：一个监督学习的 RNA 给人和动物（狗、猫……）的图片分类，有输入、隐藏、输出三层。输入层放入图像数据（可以是像素），隐藏层有大量系数（权重）需要调整，使输出层给出这张图对应的标签。它有两个阶段：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Entrenamiento</span><h3>训练</h3><p>用大量学习样本（图像 + 标签）让网络学会把每张图和它的标签联系起来。学习是自动的迭代过程，最经典的方法是 <b>gradiente descendente</b>（梯度下降）。</p></div>
+<div class="cell"><span class="eyebrow">Inferencia</span><h3>推理</h3><p>学完之后，网络能<b>泛化</b>：正确分类一张从没见过的图，例如分清一张新的人脸和一张狗脸。<a href="#s8">§8</a> 的计算就是推理。</p></div>
+</div>
+<p><b>点一点：</b>下图把两个阶段上下对照。点图里的方框，看每一步在做什么。</p>
+<div class="stack" data-explain="data">
+<figure>
+<div class="fig">
+<svg aria-label="RNA 的两个阶段：训练时大量样本前向通过网络得到输出，和标签比较得到误差，再反向传回网络；推理时较少样本只前向通过网络，输出 human face" role="img" viewbox="0 0 640 320">
+<defs>
+<marker id="m31i" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<text class="s-t" x="12" y="26">Training · 训练</text>
+<g aria-label="训练样本 Large N" class="hot" data-key="data" role="button" tabindex="0">
+<rect class="s-box" height="110" rx="6" width="110" x="12" y="40"></rect>
+<rect class="s-box" height="46" rx="2" width="56" x="50" y="50"></rect>
+<rect class="s-box" height="46" rx="2" width="56" x="42" y="58"></rect>
+<rect class="s-box" height="46" rx="2" width="56" x="34" y="66"></rect>
+<rect class="s-box" height="46" rx="2" width="56" x="26" y="74"></rect>
+<text class="s-tm" text-anchor="middle" x="67" y="140">Large N</text>
+</g>
+<line class="s-line" marker-end="url(#m31i)" x1="122" x2="168" y1="95" y2="95"></line>
+<text class="s-tm" text-anchor="middle" x="230" y="34">RNA</text>
+<rect class="s-box" height="110" rx="6" width="120" x="170" y="40"></rect>
+<circle class="s-soft" cx="200" cy="62" r="7"></circle><circle class="s-soft" cx="200" cy="84" r="7"></circle><circle class="s-soft" cx="200" cy="106" r="7"></circle><circle class="s-soft" cx="200" cy="128" r="7"></circle>
+<circle class="s-soft" cx="230" cy="73" r="7"></circle><circle class="s-soft" cx="230" cy="95" r="7"></circle><circle class="s-soft" cx="230" cy="117" r="7"></circle>
+<circle class="s-soft" cx="260" cy="84" r="7"></circle><circle class="s-soft" cx="260" cy="106" r="7"></circle>
+<line class="s-line" marker-end="url(#m31i)" x1="290" x2="378" y1="62" y2="62"></line>
+<text class="s-ta" text-anchor="middle" x="334" y="54">forward</text>
+<g aria-label="前向传播得到输出 dog" class="hot" data-key="fw" role="button" tabindex="0">
+<rect class="s-box" height="36" rx="4" width="90" x="380" y="44"></rect>
+<text class="s-t" text-anchor="middle" x="425" y="67">“dog”</text>
+</g>
+<line class="s-line" marker-end="url(#m31i)" x1="425" x2="425" y1="80" y2="100"></line>
+<g aria-label="和标签比较得到误差，反向传播" class="hot" data-key="err" role="button" tabindex="0">
+<rect class="s-box" height="30" rx="4" width="60" x="395" y="102"></rect>
+<text class="s-t" text-anchor="middle" x="425" y="122">=?</text>
+<rect class="s-box" height="44" rx="4" width="118" x="510" y="95"></rect>
+<text class="s-tm" text-anchor="middle" x="569" y="112">labels</text>
+<text class="s-t2" text-anchor="middle" x="569" y="130">“human face”</text>
+</g>
+<line class="s-line" marker-end="url(#m31i)" x1="508" x2="457" y1="117" y2="117"></line>
+<path class="s-line" d="M425,132 V146 H292" marker-end="url(#m31i)"></path>
+<text class="s-tm" x="434" y="158">error</text>
+<text class="s-ta" text-anchor="middle" x="350" y="164">backward</text>
+<text class="s-t" x="12" y="196">Inference · 推理</text>
+<rect class="s-dash" height="46" rx="2" width="56" x="50" y="218"></rect>
+<rect class="s-dash" height="46" rx="2" width="56" x="42" y="226"></rect>
+<rect class="s-box" height="46" rx="2" width="56" x="30" y="236"></rect>
+<text class="s-tm" text-anchor="middle" x="67" y="302">Smaller, varied N</text>
+<line class="s-line" marker-end="url(#m31i)" x1="122" x2="168" y1="255" y2="255"></line>
+<g aria-label="推理：只有前向传播，输出 human face" class="hot" data-key="inf" role="button" tabindex="0">
+<rect class="s-box" height="90" rx="6" width="120" x="170" y="210"></rect>
+<circle class="s-soft" cx="200" cy="226" r="7"></circle><circle class="s-soft" cx="200" cy="244" r="7"></circle><circle class="s-soft" cx="200" cy="262" r="7"></circle><circle class="s-soft" cx="200" cy="280" r="7"></circle>
+<circle class="s-soft" cx="230" cy="235" r="7"></circle><circle class="s-soft" cx="230" cy="253" r="7"></circle><circle class="s-soft" cx="230" cy="271" r="7"></circle>
+<circle class="s-soft" cx="260" cy="244" r="7"></circle><circle class="s-soft" cx="260" cy="262" r="7"></circle>
+<line class="s-line" marker-end="url(#m31i)" x1="290" x2="378" y1="255" y2="255"></line>
+<text class="s-ta" text-anchor="middle" x="334" y="247">forward</text>
+<rect class="s-box" height="36" rx="4" width="120" x="380" y="237"></rect>
+<text class="s-t" text-anchor="middle" x="440" y="260">“human face”</text>
+</g>
+</svg>
+</div>
+<figcaption>上面是训练，下面是推理。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+<div class="panel" data-panel="data" hidden="">
+<h3>Large N · 大量训练样本</h3>
+<p>训练用<b>非常多</b>的学习样本（图里标作 “Large N”），每个样本是一张图像加上它的标签。图里推理阶段的样本是 “Smaller, varied N”：数量较少、内容多变，而且是网络没见过的。</p>
+</div>
+<div class="panel" data-panel="fw" hidden="">
+<h3>Forward · 前向传播</h3>
+<p>图像数据从输入层进入，逐层向前传到输出层，得到网络此刻的“猜测”。图里输入的是一张人脸，网络却输出了 “dog”：训练初期的权重还不对。</p>
+</div>
+<div class="panel" data-panel="err" hidden="">
+<h3>=? → error → backward · 比较、误差、反向传播</h3>
+<p>把输出 “dog” 和这张图的标签 “human face” 比较（=?），两者的差就是 <b>error</b>（误差）。误差<b>向后</b>（backward）传回网络，用来调整权重；最经典的调整方法是 gradiente descendente（见下方）。对每个样本重复 forward → 比较 → backward，网络就逐步学会。</p>
+</div>
+<div class="panel" data-panel="inf" hidden="">
+<h3>Inference · 推理</h3>
+<p>学完之后只剩 <b>forward</b>：没有标签、没有比较、没有 backward。新的人脸图像一次前向通过，网络就输出 “human face”，这就是泛化。部署时只向前传播，所以计算量小得多。</p>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">Gradiente descendente · 梯度下降</span>
+<p>打个比方（见下面雾中下山的插画）：大雾中站在山坡上，只看得见一米远。想下到谷底，就往几个方向各试一步，找出坡最往下的方向，迈一步，重复，直到谷底。</p>
+<p>规则：<code>x(n+1) = x(n) − K·F′(x(n))</code>。F′ 是斜率（导数），K 调节步长。斜率为负时 x 增大，斜率为正时 x 减小。看下面 a、b、c、d 那张曲线图：在 <i>a</i> 点斜率为负，往右走一步到 <i>b</i> = <i>a</i> + Δ<i>a</i>；在 <i>d</i> 点斜率为正，往左走一步到 <i>c</i> = <i>d</i> − Δ<i>d</i>，两种情况都向谷底靠近。K 太大会越过最小值，太小则要走很多步。</p>
+<p>用到 RNA 上：定义一个误差函数 E（期望输出和网络输出之差的度量），它取决于权重；用链式法则求 E 对每个权重的导数，再用这条规则更新权重，让 E 趋向最小值 0。</p>
+</div>
+
+<p><b>试一试：</b>取函数 <code>F(x) = (x − 2)²</code>，最小值在 x = 2，导数 <code>F′(x) = 2(x − 2)</code>。改一改 K，看看 K = 0.1、0.9、1.1 时有什么不同。</p>
+<div class="stack" id="gd">
+<div class="m31-io">
+<label>x(0) <input aria-label="起点 x0" class="m31-num" data-g="x0" step="0.5" type="number" value="5.5"/></label>
+<label>K <input aria-label="步长系数 K" class="m31-num" data-g="k" step="0.05" type="number" value="0.1"/></label>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="函数 F(x)=(x-2)^2 的曲线和梯度下降每一步的位置" role="img" viewbox="0 0 520 230">
+<line class="s-line" x1="40" x2="505" y1="200" y2="200"></line>
+<line class="s-line" x1="40" x2="40" y1="200" y2="14"></line>
+<text class="s-tm" text-anchor="end" x="508" y="214">x</text>
+<text class="s-tm" x="46" y="18">F(x)</text>
+<text class="s-tm" text-anchor="middle" x="40" y="216">−2</text>
+<text class="s-tm" text-anchor="middle" x="155" y="216">0</text>
+<text class="s-tm" text-anchor="middle" x="270" y="216">2</text>
+<text class="s-tm" text-anchor="middle" x="385" y="216">4</text>
+<text class="s-tm" text-anchor="middle" x="500" y="216">6</text>
+<path class="s-line" d="" id="gd-curve"></path>
+<g id="gd-pts"></g>
+</svg>
+</div>
+<figcaption>示意。橙色点是当前位置，虚线连起各步。</figcaption>
+</figure>
+<div class="stepper-ctl">
+<button class="btn primary" data-g="step" type="button">走一步</button>
+<button class="btn" data-g="ten" type="button">走 10 步</button>
+<button class="btn" data-g="reset" type="button">重置</button>
+</div>
+<div aria-live="polite" class="log gd-log"></div>
+</div>
+<p class="aside">想看真实的权重更新，见本节资料里的两份推荐阅读。</p>
+
+</section>
+
+<section class="sec" id="s10">
+<h2><span class="n">§10</span>IA generativa <span class="tag plain">了解即可</span></h2>
+<p><b class="t">IA generativa (ES) / generative AI (EN)</b>——生成式 IA：能根据用户的指令生成复杂原创内容的 deep learning 模型，内容可以是长文本、高质量图像、逼真的视频或音频等。主要的技术和架构有：autocodificadores variacionales、GAN（Generative Adversarial Network）、modelos de difusión 和 transformers。</p>
+<div class="flow">
+<div class="cell"><span class="eyebrow">1 · Entrenamiento</span><p>训练出一个 <b>modelo fundacional</b>（基础模型）。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">2 · Ajuste</span><p>微调（refinamiento），适配某个具体应用。可以看作 aprendizaje por transferencia（迁移学习）的一种。</p></div>
+<span aria-hidden="true" class="arrow">→</span>
+<div class="cell"><span class="eyebrow">3 · Generación</span><p>生成、评估，再继续调整以提高准确度。</p></div>
+</div>
+<p><b class="t">modelo fundacional (ES) / foundation model (EN)</b>——基础模型：用来自不同领域的大量未标注数据训练（通常是自监督学习），能适配很多种任务。其中一类是 <b class="t">LLM, Large Language Model</b>——大语言模型，用来生成文本，例如 GPT（Generative Pre-trained Transformer）。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M31">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>Winston (1992) 把 IA 定义为“研究让感知、推理和行动成为可能的计算”。它在 §1 的四格表里属于哪一格？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>Actuar humanamente</button>
+<button data-o="b" type="button"><span class="k">B</span>Pensar humanamente</button>
+<button data-o="c" type="button"><span class="k">C</span>Pensar racionalmente</button>
+<button data-o="d" type="button"><span class="k">D</span>Actuar racionalmente</button>
+</div>
+<p class="why"><b>C。</b>§1 的四格表把 Charniak 和 McDermott (1985)、Winston (1992) 放在 Pensar racionalmente 一格。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">02</span>按 §5，一个 agente 是：</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>凡是通过 sensores 感知环境、并通过 actuadores 在环境中作出响应的东西</button>
+<button data-o="b" type="button"><span class="k">B</span>只能是运行在服务器上的软件程序</button>
+<button data-o="c" type="button"><span class="k">C</span>一台有意识的机器</button>
+<button data-o="d" type="button"><span class="k">D</span>只能在静态环境中工作的程序</button>
+</div>
+<p class="why"><b>A。</b>这是 agente 的定义；它是 inteligente 的，如果总是做能获得最佳表现的事（§5，目标 3.1.5）。人、机器人、软件都可以是 agente。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">03</span>“机器可以被编程，表现出智能行为”，这个猜想叫什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>IA fuerte</button>
+<button data-o="b" type="button"><span class="k">B</span>IA débil</button>
+<button data-o="c" type="button"><span class="k">C</span>IA generativa</button>
+<button data-o="d" type="button"><span class="k">D</span>Test de Turing</button>
+</div>
+<p class="why"><b>B。</b>IA débil 只要求“表现出”智能，被广泛接受；IA fuerte 要求机器真正拥有智能和意识（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>为什么 IA fuerte 很难验证？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>因为现在的计算机算力不够</button>
+<button data-o="b" type="button"><span class="k">B</span>因为缺少带标签的训练数据</button>
+<button data-o="c" type="button"><span class="k">C</span>因为机器永远通不过 Turing 测试</button>
+<button data-o="d" type="button"><span class="k">D</span>因为智能和意识是内部特征，无法直接识别</button>
+</div>
+<p class="why"><b>D。</b>我们说别人聪明，也只是因为他们表现得聪明，看不到他们的内心状态（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>在 Turing 测试中，计算机在什么情况下算通过？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>人类审问者用书面问答后，无法判断回答来自人还是计算机</button>
+<button data-o="b" type="button"><span class="k">B</span>计算机在国际象棋上战胜世界冠军</button>
+<button data-o="c" type="button"><span class="k">C</span>计算机能看见并递送物体</button>
+<button data-o="d" type="button"><span class="k">D</span>计算机证明了自己有意识</button>
+</div>
+<p class="why"><b>A。</b>这是 Turing 1950 年给出的智能的操作性定义（§3，目标 3.1.3）。递送物体属于 Total Turing Test。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>和标准 Turing 测试相比，Total Turing Test 额外要求哪两种能力？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>procesamiento de lenguaje natural 和 representación del conocimiento</button>
+<button data-o="b" type="button"><span class="k">B</span>razonamiento automático 和 machine learning</button>
+<button data-o="c" type="button"><span class="k">C</span>visión por computadora 和 robótica</button>
+<button data-o="d" type="button"><span class="k">D</span>lógica borrosa 和 algoritmos genéticos</button>
+</div>
+<p class="why"><b>C。</b>它加了视频信号和一个递送实物的小窗口，所以要能识别物体、操作物体。A、B 是标准测试本来就需要的四种能力（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">07</span>一个程序由专家提供的规则组成知识库，用 motor de inferencia 正向或反向推理，给出建议。这是哪种技术？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>algoritmo genético</button>
+<button data-o="b" type="button"><span class="k">B</span>RNA</button>
+<button data-o="c" type="button"><span class="k">C</span>deep learning</button>
+<button data-o="d" type="button"><span class="k">D</span>sistema experto</button>
+</div>
+<p class="why"><b>D。</b>sistema experto：base de conocimiento + motor de inferencia，推理分 hacia adelante 和 hacia atrás（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>从一组随机试验解出发，更好的解更可能被选为“父母”，后代组合父母的基因并可能突变，一代代改进。这是：</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RNA</button>
+<button data-o="b" type="button"><span class="k">B</span>algoritmo genético</button>
+<button data-o="c" type="button"><span class="k">C</span>sistema experto</button>
+<button data-o="d" type="button"><span class="k">D</span>gradiente descendente</button>
+</div>
+<p class="why"><b>B。</b>试验解叫 cromosoma，组成部分叫 gen；不保证找到解（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">09</span>按 §4，deep learning 的 RNA 和基本 machine learning 的 RNA 的主要区别是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>deep learning 不需要数据</button>
+<button data-o="b" type="button"><span class="k">B</span>deep learning 只有一个输入层和一个输出层</button>
+<button data-o="c" type="button"><span class="k">C</span>deep learning 的连接没有权重</button>
+<button data-o="d" type="button"><span class="k">D</span>deep learning 可以有几百个隐藏层，学习常常是自监督的</button>
+</div>
+<p class="why"><b>D。</b>基本的 RNA 有 3 或 4 层（1–2 个隐藏层），deep learning 可以有几百个隐藏层，能处理大量非结构化、未标注的数据（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>机器人到了路口，往哪边走取决于它要去的地方；换一个目的地，不改规则就有新行为。它是哪种 agente？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>reactivo simple</button>
+<button data-o="b" type="button"><span class="k">B</span>basado en objetivos</button>
+<button data-o="c" type="button"><span class="k">C</span>basado en utilidad</button>
+<button data-o="d" type="button"><span class="k">D</span>agente racional ideal</button>
+</div>
+<p class="why"><b>B。</b>它也叫 agente basado en metas：考虑动作的后果和目标，比反射型更灵活（§7）。要在多条可行路线里挑最快、最便宜的，才需要 utilidad。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">11</span>按 §6，下面哪种组合是 agente 环境最难的情况？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>accesible、episódico、estático、discreto</button>
+<button data-o="b" type="button"><span class="k">B</span>inaccesible、episódico、estático、discreto</button>
+<button data-o="c" type="button"><span class="k">C</span>inaccesible、no episódico、dinámico、continuo</button>
+<button data-o="d" type="button"><span class="k">D</span>accesible、no episódico、dinámico、discreto</button>
+</div>
+<p class="why"><b>C。</b>§6 列出的最难情况就是这四项；A 是最简单的情况。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>用 §8 的 Red a 网络（输出层阈值 .5，来自 H1、H2、H3 的权重分别是 1、−2、1），输入 [1, 0] 时，输出是多少？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>1</button>
+<button data-o="b" type="button"><span class="k">B</span>0</button>
+<button data-o="c" type="button"><span class="k">C</span>0.5</button>
+<button data-o="d" type="button"><span class="k">D</span>−1</button>
+</div>
+<p class="why"><b>A。</b>H1：1·1 + 0·0 = 1 ≥ 1 → 1；H2：1·1 + 1·0 = 1 &lt; 1.5 → 0；H3：0·1 + 1·0 = 0 &lt; 1 → 0；输出：1·1 + (−2)·0 + 1·0 = 1 ≥ 0.5 → 1。神经元的输出只能是 0 或 1，所以 C、D 不可能（§8，可以用计算器验证）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">20 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">Inteligencia Artificial<small>IA · AI</small></span><span class="back"><b>人工智能</b><br/>机器的智能，也是研究如何让信息系统拥有智能的学科。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IA débil<small>weak AI</small></span><span class="back"><b>弱人工智能</b><br/>机器可被编程，表现出智能行为。被广泛接受。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IA fuerte<small>strong AI</small></span><span class="back"><b>强人工智能</b><br/>机器真正拥有智能和意识。争议很大。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Test de Turing</span><span class="back"><b>图灵测试</b><br/>书面问答后，审问者分不出人和机器，机器就通过。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Total Turing Test</span><span class="back"><b>完全图灵测试</b><br/>再加视频和递送实物，还需要计算机视觉和机器人技术。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">racionalidad</span><span class="back"><b>理性</b><br/>在已有知识下“做正确的事”，即理想的表现标准。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sistema experto<small>expert system</small></span><span class="back"><b>专家系统</b><br/>装着专家规则的系统，用推理引擎得出结论、推荐行动。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">motor de inferencia</span><span class="back"><b>推理引擎</b><br/>由推理规则组成，可正向或反向推理。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">algoritmo genético<small>genetic algorithm</small></span><span class="back"><b>遗传算法</b><br/>选择、交叉、突变，让试验解一代代进化。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">machine learning<small>aprendizaje automático</small></span><span class="back"><b>机器学习</b><br/>从数据中学习、随经验改进，不必显式编程。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RNA<small>Red Neuronal Artificial · ANN</small></span><span class="back"><b>人工神经网络</b><br/>分层互联的简单神经元，通过调整权重来学习。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">peso<small>weight</small></span><span class="back"><b>权重</b><br/>连接上的数，表示这个输入的影响力。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">umbral<small>threshold</small></span><span class="back"><b>阈值</b><br/>加权和达到它，神经元输出 1，否则输出 0。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">deep learning<small>aprendizaje profundo</small></span><span class="back"><b>深度学习</b><br/>隐藏层很多（可达几百层）的 RNA，常用自监督学习。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">gradiente descendente<small>gradient descent</small></span><span class="back"><b>梯度下降</b><br/>x(n+1) = x(n) − K·F′(x(n))，沿下坡方向一步步走向最小值。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">agente</span><span class="back"><b>智能体</b><br/>用传感器感知环境、用执行器在环境中作出响应的任何东西。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ambiente accesible</span><span class="back"><b>可访问的环境</b><br/>传感器能获取与选择动作相关的全部状态。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ambiente episódico</span><span class="back"><b>分段式环境</b><br/>经验分成互不依赖的 episodios。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">agente reactivo simple<small>reflejo simple</small></span><span class="back"><b>简单反射型智能体</b><br/>只按条件-动作规则，把当前感知直接连到动作。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">utilidad<small>utility</small></span><span class="back"><b>效用</b><br/>把状态映射成实数（满意程度）的函数。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M31"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var box = document.getElementById("turing");
+  if (!box) return;
+  var msgs = Array.prototype.slice.call(box.querySelectorAll(".msg"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var N = 4;
+  var T = [
+    "全部一览。三方：<b>A</b> 是计算机，<b>B</b> 是人，<b>C</b> 是人类审问者。C 和 A、B 被隔开，彼此看不见，只能通过<b>文字</b>交流。点「下一步」逐步播放。",
+    "C 用<b>书面</b>形式向 A 和 B 提出若干问题。",
+    "A 和 B 都用书面形式回答。A 的任务是答得让人分不出它是机器。",
+    "C 必须判断哪一个是计算机。如果 C <b>判断不出</b>回答来自人还是计算机，计算机就<b>通过了测试</b>。",
+    "<b>Total Turing Test</b>：再加上视频信号（让 C 检验感知能力）和一个递送实物的小窗口。计算机因此还需要 <b>visión por computadora</b> 和 <b>robótica</b>。"
+  ];
+  var i = 0;
+  function render() {
+    msgs.forEach(function (m) {
+      var s = +m.getAttribute("data-step");
+      m.classList.toggle("on", i > 0 && s === i);
+      m.classList.toggle("dim", i > 0 && s > i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 步";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("env");
+  if (!root) return;
+  var DIMS = ["acc", "det", "epi", "din", "dis"];
+  var LAB = {
+    acc: { si: "accesible", no: "no accesible" },
+    det: { si: "determinista", no: "no determinista" },
+    epi: { si: "episódico", no: "no episódico" },
+    din: { est: "estático", semi: "semidinámico", din: "dinámico" },
+    dis: { dis: "discreto", con: "continuo" }
+  };
+  var SC = [
+    { d: "一个人在报纸上做填字游戏。", a: { acc: "si", det: "si", epi: "no", din: "est", dis: "dis" },
+      w: "整张格子和所有提示都看得见（accesible）；填一个字之后格子的状态完全由这一步决定（determinista）；前面填的字会限制后面的选择，所以不是 episódico；你思考时格子不会自己变（estático）；字母和格子都是有限个（discreto）。" },
+    { d: "两个人下国际象棋，每人有限时。", a: { acc: "si", det: "si", epi: "no", din: "semi", dis: "dis" },
+      w: "ajedrez 是 discreto。棋盘完全可见；下一个局面完全由当前局面和双方（两个 agente）选的走法决定，按定义算 determinista；每一步都影响后面；你思考时棋盘不变，但时钟在走，影响的是对表现的评分，正是 §6 说的 semidinámico。" },
+    { d: "和几个对手玩德州扑克。", a: { acc: "no", det: "no", epi: "no", din: "est", dis: "dis" },
+      w: "看不到对手的底牌（no accesible）；发牌是随机的，下一状态不只由动作决定（no determinista）；前面的下注影响后面的局面；你思考时牌局不会自己变化（estático）；牌和下注动作都是有限的（discreto）。" },
+    { d: "一辆自动驾驶出租车在城市里接送乘客。", a: { acc: "no", det: "no", epi: "no", din: "din", dis: "con" },
+      w: "taxi 是 continuo（速度、位置在连续范围内取值）。它也正是 §6 说的“最难的情况”：inaccesible、no episódico、dinámico、continuo。路况和其他司机的行为无法完全预测，所以 no determinista。" },
+    { d: "邮件过滤器逐封判断一封邮件是不是 spam。", a: { acc: null, det: null, epi: "si", din: "est", dis: "dis" },
+      w: "每封邮件单独判断，这一封判错不影响下一封，所以是 episódico，这是这个场景要练的重点。判断过程中邮件不会改变（estático）；词和类别都是有限的（discreto）。accesible 和 determinista 两项怎么归类都说得通，不判分。" }
+  ];
+  var cur = 0, pick = {};
+  var chips = Array.prototype.slice.call(root.querySelectorAll("[data-sc]"));
+  var opts = Array.prototype.slice.call(root.querySelectorAll("[data-d]"));
+  var desc = root.querySelector(".env-desc"), why = root.querySelector(".env-why"), score = root.querySelector(".env-score");
+  function res(d) { return root.querySelector('[data-res="' + d + '"]'); }
+  function clearRes() {
+    DIMS.forEach(function (d) { res(d).innerHTML = ""; });
+    why.hidden = true; score.textContent = "";
+  }
+  function load(k) {
+    cur = k; pick = {};
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", +c.getAttribute("data-sc") === k ? "true" : "false"); });
+    opts.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+    desc.textContent = SC[k].d;
+    clearRes();
+  }
+  chips.forEach(function (c) { c.addEventListener("click", function () { load(+c.getAttribute("data-sc")); }); });
+  opts.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var d = b.getAttribute("data-d");
+      pick[d] = b.getAttribute("data-v");
+      opts.forEach(function (x) { if (x.getAttribute("data-d") === d) x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      clearRes();
+    });
+  });
+  root.querySelector('[data-env="check"]').addEventListener("click", function () {
+    var ok = 0, n = 0, a = SC[cur].a;
+    DIMS.forEach(function (d) {
+      var r = res(d);
+      if (a[d] === null) { r.innerHTML = '<span class="verdict star">不判分</span>'; return; }
+      n++;
+      if (!pick[d]) { r.innerHTML = '<span class="verdict no">还没选</span> 应为 ' + LAB[d][a[d]]; return; }
+      if (pick[d] === a[d]) { ok++; r.innerHTML = '<span class="verdict ok">✓</span>'; }
+      else { r.innerHTML = '<span class="verdict no">✗</span> 应为 ' + LAB[d][a[d]]; }
+    });
+    score.textContent = ok + " / " + n + " 项正确";
+    why.textContent = SC[cur].w;
+    why.hidden = false;
+  });
+  root.querySelector('[data-env="reset"]').addEventListener("click", function () { load(cur); });
+  load(0);
+})();
+
+
+(function () {
+  var root = document.getElementById("nn");
+  if (!root) return;
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var PRE = {
+    a: { h: [[1, 0], [1, 1], [0, 1]], t: [1, 1.5, 1], o: [1, -2, 1], to: 0.5 },
+    b: { h: [[1, 0], [0, 0], [0, 1]], t: [1, 1.5, 1], o: [0.35, 0, 0.35], to: 0.5 }
+  };
+  var NODES = [[100, 110], [100, 230], [300, 60], [300, 170], [300, 280], [500, 170]];
+  var RX = 34, RY = 24;
+  var x = [1, 1];
+  var P = null;
+  var inputs = {};
+  Array.prototype.slice.call(root.querySelectorAll("[data-p]")).forEach(function (el) { inputs[el.getAttribute("data-p")] = el; });
+
+  function fmt(v) {
+    var r = Math.round(v * 1000) / 1000;
+    if (Object.is(r, -0)) r = 0;
+    var s = String(Math.abs(r));
+    return (r < 0 ? "−" : "") + s;
+  }
+  function term(w, v) { return (w < 0 ? "(" + fmt(w) + ")" : fmt(w)) + "·" + fmt(v); }
+  function step(s, t) { return s >= t - 1e-9 ? 1 : 0; }
+  function num(el) { var v = parseFloat(el.value); return isNaN(v) ? 0 : v; }
+
+  
+  var edgeG = document.getElementById("nn-edges");
+  var EDGES = [];
+  function trim(a, b) {
+    var dx = b[0] - a[0], dy = b[1] - a[1];
+    var f = 1 / Math.sqrt(Math.pow(dx / RX, 2) + Math.pow(dy / RY, 2));
+    return [a[0] + dx * f, a[1] + dy * f, b[0] - dx * f * 1.06, b[1] - dy * f * 1.06];
+  }
+  function addEdge(from, to) {
+    var c = trim(NODES[from], NODES[to]);
+    var ln = document.createElementNS(SVGNS, "line");
+    ln.setAttribute("class", "m31-e");
+    ln.setAttribute("x1", c[0].toFixed(1)); ln.setAttribute("y1", c[1].toFixed(1));
+    ln.setAttribute("x2", c[2].toFixed(1)); ln.setAttribute("y2", c[3].toFixed(1));
+    ln.setAttribute("marker-end", "url(#m31g)");
+    var tx = document.createElementNS(SVGNS, "text");
+    tx.setAttribute("class", "m31-wl");
+    tx.setAttribute("text-anchor", "middle");
+    var f = 0.7;
+    tx.setAttribute("x", (c[0] + (c[2] - c[0]) * f).toFixed(1));
+    tx.setAttribute("y", (c[1] + (c[3] - c[1]) * f + 4).toFixed(1));
+    edgeG.appendChild(ln);
+    edgeG.appendChild(tx);
+    EDGES.push({ from: from, to: to, line: ln, text: tx });
+  }
+  [0, 1].forEach(function (i) { [2, 3, 4].forEach(function (j) { addEdge(i, j); }); });
+  [2, 3, 4].forEach(function (j) { addEdge(j, 5); });
+
+  function readP() {
+    return {
+      h: [[num(inputs.h0a), num(inputs.h0b)], [num(inputs.h1a), num(inputs.h1b)], [num(inputs.h2a), num(inputs.h2b)]],
+      t: [num(inputs.t0), num(inputs.t1), num(inputs.t2)],
+      o: [num(inputs.o0), num(inputs.o1), num(inputs.o2)],
+      to: num(inputs.to)
+    };
+  }
+  function fill(p) {
+    inputs.h0a.value = p.h[0][0]; inputs.h0b.value = p.h[0][1];
+    inputs.h1a.value = p.h[1][0]; inputs.h1b.value = p.h[1][1];
+    inputs.h2a.value = p.h[2][0]; inputs.h2b.value = p.h[2][1];
+    inputs.t0.value = p.t[0]; inputs.t1.value = p.t[1]; inputs.t2.value = p.t[2];
+    inputs.o0.value = p.o[0]; inputs.o1.value = p.o[1]; inputs.o2.value = p.o[2];
+    inputs.to.value = p.to;
+  }
+  function run(p, xx) {
+    var s = [], h = [];
+    for (var j = 0; j < 3; j++) {
+      s[j] = p.h[j][0] * xx[0] + p.h[j][1] * xx[1];
+      h[j] = step(s[j], p.t[j]);
+    }
+    var so = p.o[0] * h[0] + p.o[1] * h[1] + p.o[2] * h[2];
+    return { s: s, h: h, so: so, y: step(so, p.to) };
+  }
+  var FN = { "0000": "constante 0（永远输出 0）", "0001": "AND（与）", "0111": "OR（或）", "0110": "XOR（异或）",
+    "1110": "NAND（与非）", "1000": "NOR（或非）", "1001": "XNOR（同或）", "0011": "等于 x₁", "0101": "等于 x₂",
+    "1100": "NOT x₁", "1010": "NOT x₂", "1111": "constante 1（永远输出 1）" };
+
+  var out = root.querySelector(".calc-out"), big = root.querySelector(".nn-out");
+  var tt = root.querySelector(".nn-tt"), fnp = root.querySelector(".nn-fn");
+  var presetBtns = Array.prototype.slice.call(root.querySelectorAll("[data-preset]"));
+  var custom = root.querySelector(".nn-custom");
+
+  function render() {
+    P = readP();
+    var r = run(P, x);
+    
+    document.getElementById("nn-t0").textContent = x[0];
+    document.getElementById("nn-t1").textContent = x[1];
+    document.getElementById("nn-n0").classList.toggle("m31-fire", x[0] === 1);
+    document.getElementById("nn-n1").classList.toggle("m31-fire", x[1] === 1);
+    for (var j = 0; j < 3; j++) {
+      document.getElementById("nn-t" + (j + 2)).textContent = "θ " + fmt(P.t[j]);
+      document.getElementById("nn-v" + (j + 2)).textContent = "s=" + fmt(r.s[j]) + " → " + r.h[j];
+      document.getElementById("nn-n" + (j + 2)).classList.toggle("m31-fire", r.h[j] === 1);
+    }
+    document.getElementById("nn-t5").textContent = "θ " + fmt(P.to);
+    document.getElementById("nn-v5").textContent = "s=" + fmt(r.so) + " → " + r.y;
+    document.getElementById("nn-n5").classList.toggle("m31-fire", r.y === 1);
+    document.getElementById("nn-y").textContent = r.y;
+    var act = [x[0], x[1], r.h[0], r.h[1], r.h[2]];
+    EDGES.forEach(function (e) {
+      var w = e.to === 5 ? P.o[e.from - 2] : P.h[e.to - 2][e.from];
+      e.text.textContent = fmt(w);
+      e.line.classList.toggle("zero", w === 0);
+      e.line.classList.toggle("live", w !== 0 && act[e.from] === 1);
+    });
+    
+    var L = [];
+    var names = ["H1", "H2", "H3"];
+    for (j = 0; j < 3; j++) {
+      L.push("<div>" + names[j] + "：s = " + term(P.h[j][0], x[0]) + " + " + term(P.h[j][1], x[1]) + " = " + fmt(r.s[j]) +
+        (r.h[j] ? " ≥ " : " &lt; ") + fmt(P.t[j]) + ' → <span class="on' + r.h[j] + '">y = ' + r.h[j] + "</span></div>");
+    }
+    L.push("<div>Salida：s = " + term(P.o[0], r.h[0]) + " + " + term(P.o[1], r.h[1]) + " + " + term(P.o[2], r.h[2]) + " = " + fmt(r.so) +
+      (r.y ? " ≥ " : " &lt; ") + fmt(P.to) + ' → <span class="on' + r.y + '">y = ' + r.y + "</span></div>");
+    out.innerHTML = L.join("");
+    big.textContent = r.y;
+    
+    var rows = "", key = "";
+    [[0, 0], [0, 1], [1, 0], [1, 1]].forEach(function (c) {
+      var q = run(P, c);
+      key += q.y;
+      var isCur = c[0] === x[0] && c[1] === x[1];
+      rows += "<tr" + (isCur ? ' class="cur"' : "") + '><td class="c mono">' + c[0] + '</td><td class="c mono">' + c[1] +
+        '</td><td class="c mono">' + q.h[0] + '</td><td class="c mono">' + q.h[1] + '</td><td class="c mono">' + q.h[2] +
+        '</td><td class="c mono"><b>' + q.y + "</b></td></tr>";
+    });
+    tt.innerHTML = rows;
+    fnp.innerHTML = "这张真值表对应的函数：<b>" + (FN[key] || "其他函数（输出序列 " + key + "）") + "</b>。";
+  }
+  function setPreset(k) {
+    fill(PRE[k]);
+    presetBtns.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-preset") === k ? "true" : "false"); });
+    custom.hidden = true;
+    render();
+  }
+  presetBtns.forEach(function (b) { b.addEventListener("click", function () { setPreset(b.getAttribute("data-preset")); }); });
+  Object.keys(inputs).forEach(function (k) {
+    inputs[k].addEventListener("input", function () {
+      presetBtns.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+      custom.hidden = false;
+      render();
+    });
+  });
+  Array.prototype.slice.call(root.querySelectorAll("[data-x]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      var i = +b.getAttribute("data-x");
+      x[i] = +b.getAttribute("data-v");
+      Array.prototype.slice.call(root.querySelectorAll('[data-x="' + i + '"]')).forEach(function (o) {
+        o.setAttribute("aria-pressed", o === b ? "true" : "false");
+      });
+      render();
+    });
+  });
+  setPreset("a");
+})();
+
+
+(function () {
+  var root = document.getElementById("neu");
+  if (!root) return;
+  var f = {};
+  Array.prototype.slice.call(root.querySelectorAll("[data-n]")).forEach(function (el) { f[el.getAttribute("data-n")] = el; });
+  var out = root.querySelector(".neu-out");
+  function fmt(v) {
+    var r = Math.round(v * 1000) / 1000;
+    if (Object.is(r, -0)) r = 0;
+    return (r < 0 ? "−" : "") + String(Math.abs(r));
+  }
+  function par(v) { return v < 0 ? "(" + fmt(v) + ")" : fmt(v); }
+  function num(el) { var v = parseFloat(el.value); return isNaN(v) ? 0 : v; }
+  function render() {
+    var v = [num(f.v0), num(f.v1), num(f.v2)], w = [num(f.w0), num(f.w1), num(f.w2)], t = num(f.t);
+    var s = 0, parts = [], vals = [];
+    for (var i = 0; i < 3; i++) {
+      s += v[i] * w[i];
+      parts.push(par(v[i]) + "·" + par(w[i]));
+      vals.push(fmt(v[i] * w[i]));
+      document.getElementById("neu-l" + i).textContent = par(v[i]) + "·" + par(w[i]);
+    }
+    var y = s >= t - 1e-9 ? 1 : 0;
+    document.getElementById("neu-s").textContent = "s = " + fmt(s);
+    document.getElementById("neu-c").textContent = fmt(s) + (y ? " ≥ " : " < ") + fmt(t);
+    document.getElementById("neu-y").textContent = "y = " + y;
+    document.getElementById("neu-body").classList.toggle("m31-fire", y === 1);
+    out.innerHTML =
+      "<div>s = v₁·w₁ + v₂·w₂ + v₃·w₃</div>" +
+      "<div>&nbsp;&nbsp;= " + parts.join(" + ") + "</div>" +
+      "<div>&nbsp;&nbsp;= " + vals.join(" + ") + " = <b>" + fmt(s) + "</b></div>" +
+      "<div>s " + (y ? "≥" : "&lt;") + " θ = " + fmt(t) + ' → <span class="on' + y + '">y = ' + y + "</span></div>";
+  }
+  Object.keys(f).forEach(function (k) { f[k].addEventListener("input", render); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("gd");
+  if (!root) return;
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var x0El = root.querySelector('[data-g="x0"]'), kEl = root.querySelector('[data-g="k"]');
+  var pts = document.getElementById("gd-pts"), log = root.querySelector(".gd-log");
+  function F(x) { return (x - 2) * (x - 2); }
+  function dF(x) { return 2 * (x - 2); }
+  function X(x) { return 40 + (x + 2) * 57.5; }
+  function Y(f) { return 200 - f * 11.25; }
+  var d = "";
+  for (var i = 0; i <= 80; i++) {
+    var xx = -2 + i * 0.1;
+    d += (i ? " L" : "M") + X(xx).toFixed(1) + "," + Y(F(xx)).toFixed(1);
+  }
+  document.getElementById("gd-curve").setAttribute("d", d);
+  var path = [], n = 0, stopped = false;
+  function r3(v) { var r = Math.round(v * 1000) / 1000; if (Object.is(r, -0)) r = 0; return (r < 0 ? "−" : "") + String(Math.abs(r)); }
+  function par(v) { return v < 0 ? "(" + r3(v) + ")" : r3(v); }
+  function inRange(x) { return x >= -2 && x <= 6; }
+  function say(s) {
+    var el = document.createElement("div");
+    el.textContent = s;
+    log.insertBefore(el, log.firstChild);
+  }
+  function draw() {
+    pts.innerHTML = "";
+    for (var i = 0; i < path.length; i++) {
+      if (i > 0) {
+        var ln = document.createElementNS(SVGNS, "line");
+        ln.setAttribute("class", "s-dash");
+        ln.setAttribute("x1", X(path[i - 1]).toFixed(1)); ln.setAttribute("y1", Y(F(path[i - 1])).toFixed(1));
+        ln.setAttribute("x2", X(path[i]).toFixed(1)); ln.setAttribute("y2", Y(F(path[i])).toFixed(1));
+        pts.appendChild(ln);
+      }
+    }
+    for (i = 0; i < path.length; i++) {
+      var c = document.createElementNS(SVGNS, "circle");
+      c.setAttribute("cx", X(path[i]).toFixed(1));
+      c.setAttribute("cy", Y(F(path[i])).toFixed(1));
+      c.setAttribute("r", i === path.length - 1 ? "6" : "3.5");
+      c.setAttribute("class", i === path.length - 1 ? "m31-cur" : "s-mk");
+      pts.appendChild(c);
+    }
+  }
+  function reset() {
+    var x0 = parseFloat(x0El.value);
+    if (isNaN(x0)) x0 = 5.5;
+    x0 = Math.max(-2, Math.min(6, x0));
+    path = [x0]; n = 0; stopped = false;
+    log.innerHTML = "";
+    say("x(0) = " + r3(x0) + "，F = " + r3(F(x0)) + "，斜率 F′ = " + r3(dF(x0)) + "。点「走一步」。");
+    draw();
+  }
+  function one() {
+    if (stopped) return false;
+    var k = parseFloat(kEl.value);
+    if (isNaN(k)) k = 0.1;
+    var x = path[path.length - 1];
+    var g = dF(x);
+    var nx = x - k * g;
+    n++;
+    if (!inRange(nx)) {
+      stopped = true;
+      say("第 " + n + " 步：x = " + r3(x) + " − " + par(k) + "·" + par(g) + " = " + r3(nx) + "，跳出了图的范围。K 太大，越走离最小值越远（发散）。点「重置」。");
+      return false;
+    }
+    path.push(nx);
+    say("第 " + n + " 步：x = " + r3(x) + " − " + par(k) + "·" + par(g) + " = " + r3(nx) + "，F = " + r3(F(nx)));
+    return true;
+  }
+  root.querySelector('[data-g="step"]').addEventListener("click", function () { one(); draw(); });
+  root.querySelector('[data-g="ten"]').addEventListener("click", function () { for (var i = 0; i < 10; i++) { if (!one()) break; } draw(); });
+  root.querySelector('[data-g="reset"]').addEventListener("click", reset);
+  x0El.addEventListener("change", reset);
+  kEl.addEventListener("change", reset);
+  reset();
+})();
+</script>
+</body>
+</html>

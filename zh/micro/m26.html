@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M26 Modos de bajo consumo · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .led-on { fill: var(--st-green); stroke: var(--st-green); filter: drop-shadow(0 0 8px rgb(131 193 103 / .9)); }
+.stage .veil { fill: var(--st-bg); opacity: .78; }
+#m26-dial svg rect, #m26-dial svg text { transition: fill .35s, stroke .35s, opacity .35s; }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini[aria-pressed="true"] { background: var(--st-yellow); border-color: var(--st-yellow); color: var(--st-bg); }
+.mini.na { border-style: dashed; color: var(--st-muted); }
+.mt td:first-child, .mt td.mono { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+.mt td.on { color: var(--green); }
+.mt td.off { color: var(--muted); }
+.mt td.one { color: var(--yellow); font-family: var(--f-mono); font-weight: 600; }
+.mt td.zero { color: var(--muted); font-family: var(--f-mono); }
+.sec h3[id] { scroll-margin-top: 80px; }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m26-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m26-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m26-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m26-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m26-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m26-ah-o" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-gold)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 2 章节" class="chain" data-chain="M26"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 2 · Interrupciones, reloj y bajo consumo · M26–M27</div>
+<h1>Modos de bajo consumo</h1>
+<p class="zh">低功耗模式：让 CPU 尽可能久地睡着</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 20 分钟</span>
+
+
+
+</div>
+<p class="lede">M21 让 CPU 不必盯着按钮；这一章更进一步：既然不用盯着，干脆让它睡觉。<b class="t">modo de bajo consumo (ES) / low-power mode (EN)</b>——低功耗模式，就是有选择地关掉时钟，甚至关掉 core 的电源。开关就在状态寄存器 SR 里，叫醒它的只有中断，而叫醒之后回到哪个模式，取决于栈里那份 SR 的副本。最后用三次实测，把"省电"换算成纽扣电池能用多少天。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M26.1</span>
+<div class="txt"><span>列出 5xx 的 8 种工作模式（AM、LPM0–LPM4、LPM3.5、LPM4.5），说出 F5529 实现了哪 7 种</span><span class="es">Modos de operación; el F5529 no implementa LPM3.5.</span><a href="#s1">→ §1 SR 里的四个开关</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.2</span>
+<div class="txt"><span>说出 SCG1、SCG0、OSCOFF、CPUOFF 在 SR 中的位置（7–4 位），写出 LPM0–LPM4 的位组合</span><span class="es">Bits del SR que controlan los modos de bajo consumo.</span><a href="#s1">→ §1 SR 里的四个开关</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.3</span>
+<div class="txt"><span>说出每个模式下 CPU/MCLK、SMCLK、ACLK、DCO/FLL 的状态，以及三个分组（LPM0/1、LPM2/3、LPM4）</span><span class="es">Consecuencias de cada modo sobre el módulo de reloj.</span><a href="#s2">→ §2 每个模式关掉什么</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.4</span>
+<div class="txt"><span>解释"进入靠写 SR、唤醒只靠中断"；RETI 恢复栈里的 SR = 回到原模式；进入 RTI 时 SR 清零但 SCG0 保留</span><span class="es">Entrada, despertar y salida de LPM0–LPM4.</span><a href="#s3">→ §3 睡下去，被叫醒</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.5</span>
+<div class="txt"><span>区分 __bis/__bic_SR_register 与 …_on_exit 版本，用它们在 RTI 里退出或切换低功耗模式</span><span class="es">Funciones intrínsecas que manipulan el SR guardado en la pila.</span><a href="#s4">→ §4 改写栈里的 SR</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.6</span>
+<div class="txt"><span>比较 LPM_a、LPM_b、LPM_c 三种程序结构；解释 LPM3 时 SR = 0x00D8 的来历</span><span class="es">LPM_a.c, LPM_b.c, LPM_c.c.</span><a href="#s5">→ §5 三个版本</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.7</span>
+<div class="txt"><span>说明 config_puertos_LPM()：未用引脚设为输出低，用 USBKEYPID = 0x9628 解锁后关掉 USB 稳压器</span><span class="es">Configuración de puertos y del módulo USB para bajo consumo.</span><a href="#s5b">→ §5 省电的端口配置</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.8</span>
+<div class="txt"><span>说明 LPM4.5：PMMREGOFF、VCORE 断电、RAM 与寄存器丢失、只能经 BOR 醒来；core 电压等级 0 时 MCLK 上限 8 MHz</span><span class="es">LPMx.5 y el módulo PMM.</span><a href="#s6">→ §6 连 core 一起断电</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.9</span>
+<div class="txt"><span>解释外设的时钟请求，以及 UCSCTL8 中 ACLKREQEN、MCLKREQEN、SMCLKREQEN 的作用</span><span class="es">Periféricos y modos de bajo consumo.</span><a href="#s7">→ §7 外设要时钟</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M26.10</span>
+<div class="txt"><span>说出在 LaunchPad 上怎样测电流，用"容量 ÷ 平均电流"估算续航，复现 §8 的三个例子</span><span class="es">Duración de la batería (ejemplos 1–3).</span><a href="#s8">→ §8 测电流，算续航</a></div>
+<button aria-pressed="false" class="chk" data-obj="M26.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M26"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>功能一样，耗电差很多</h2>
+<p class="hook"><span class="zh">两段程序都是"按一下 S2，LED1 翻转一次"。为什么一个能用几天，另一个能用几年？</span><span class="es">¿Dónde se va la energía mientras la CPU espera?</span></p>
+<figure class="stage" data-scene="" id="m26-sc-intro">
+<div class="stage-title"><span>Escena 0 · corriente frente a tiempo</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：空转与低功耗两种程序的电流曲线，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-intro-t" role="img" viewbox="0 0 800 380">
+<title id="m26-sc-intro-t">上面是 LPM_a：CPU 一直空转，电流一直高；下面是 LPM_b：CPU 在 LPM3 里睡，只在中断时短暂醒来</title>
+<text class="tz sm w" x="24" y="34">LPM_a · while(1) 空转</text>
+<text class="tm xs m" x="96" y="62">I</text>
+<path class="ln thin m" d="M110 50 V150 H780"></path>
+<text class="tm xs m end" x="780" y="168">t</text>
+<text class="tz sm w" x="24" y="200">LPM_b · LPM3 + 中断</text>
+<text class="tm xs m" x="96" y="228">I</text>
+<path class="ln thin m" d="M110 216 V310 H780"></path>
+<text class="tm xs m end" x="780" y="328">t</text>
+<g data-step="1">
+<rect class="bx o" height="78" rx="2" width="670" x="110" y="72"></rect>
+<path class="ln o draw" d="M110 72 H780"></path>
+<text class="tz sm o mid" x="445" y="118">CPU 一直醒着，MCLK 一直在跑</text>
+</g>
+<g data-step="2">
+<rect class="bx o" height="12" rx="1" width="670" x="110" y="298"></rect>
+<path class="ln o draw" d="M110 298 H780"></path>
+<text class="tz sm m mid" x="445" y="286">LPM3：只剩 ACLK</text>
+</g>
+<g data-step="3">
+<path class="ln thin r dash" d="M300 44 V316 M560 44 V316"></path>
+<text class="tm xs r mid" x="300" y="184">S2</text>
+<text class="tm xs r mid" x="560" y="184">S2</text>
+<rect class="bx o" height="62" rx="1" width="24" x="300" y="236"></rect>
+<rect class="bx o" height="62" rx="1" width="24" x="560" y="236"></rect>
+<path class="ln o draw" d="M300 298 V236 H324 V298 M560 298 V236 H584 V298"></path>
+<text class="tm xs y mid" x="312" y="230">RTI</text>
+<text class="tm xs y mid" x="572" y="230">RTI</text>
+<text class="tm xs y" x="306" y="66">RTI</text>
+<text class="tm xs y" x="566" y="66">RTI</text>
+</g>
+<g data-step="4">
+<text class="tm sm y end" x="776" y="100">Ī 高</text>
+<text class="tm sm y end" x="776" y="282">Ī 很低</text>
+<text class="tz sm w mid" x="445" y="346">平均电流 Ī = 曲线下的面积 ÷ 时间</text>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" data-hl="5" x="445" y="372">续航 = 电池容量 ÷ Ī（§8）</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">LPM_a：按 S2 翻转 LED1，翻转在 RTI 里做；main 只剩 <code>while(1)</code> 空转。CPU 和 MCLK 一刻不停，电流一直在高位。</li>
+<li data-dur="3600">LPM_b 做完全一样的事，但 main 让 CPU 进入 LPM3：CPU、MCLK、SMCLK 都停，只剩 ACLK。电流掉到很低。</li>
+<li data-dur="3600">按下 S2：中断把 CPU 叫醒，执行 RTI（翻转 LED1），然后接着睡。醒着的只有这一小段。</li>
+<li data-dur="3800">真正决定耗电的是<b>平均电流</b>：曲线下的面积除以时间。两段程序功能相同，面积却差得很远。</li>
+<li data-dur="4200">电池能用多久，取决于平均电流（§8）。所以低功耗编程的原则是：让 CPU 尽可能久地待在低功耗模式里，只在中断时醒来。</li>
+</ol>
+<p class="stage-note">示意图：纵轴不按比例。量级：3.0 V 下 1 MHz 活动模式约 0.36 mA，LPM3 约 2 µA，差两个数量级以上（§2 的电流表）；实测见 §8。</p>
+</figure>
+<p class="takeaway">低功耗模式 = 有选择地关掉时钟信号和振荡器（LPMx.5 还关掉 core 的电源）。编号越大越省电，但醒来越慢：CPU 一停就不能执行代码，只能等中断叫醒。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>SR 里的四个开关 <span class="tag">M26.1 · M26.2</span></h2>
+<p class="hook"><span class="zh">让 CPU 睡觉，不需要专门的"睡眠指令"，只要往一个熟悉的寄存器里写几个 1。是哪个寄存器？</span><span class="es">Los modos LPM0–LPM4 se controlan con los bits SCG1, SCG0, OSCOFF y CPUOFF del SR.</span></p>
+<p>5xx 家族定义了 8 种 <b class="t">modo de operación (ES) / operating mode (EN)</b>——工作模式：1 个 <b class="t">modo activo (ES) / active mode, AM (EN)</b>——活动模式，加 7 个低功耗模式 LPM0、LPM1、LPM2、LPM3、LPM4、LPM3.5、LPM4.5。不是每个型号都全有：<b>F5529 实现了其中 7 种，唯独没有 LPM3.5</b>。</p>
+<figure class="stage" data-scene="" id="m26-sc-sr">
+<div class="stage-title"><span>Escena 1 · el registro de estado</span><b>4 步</b></div>
+<div aria-label="动画：SR 的位，和 LPM3 时 SR 的值" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-sr-t" role="img" viewbox="0 0 800 300">
+<title id="m26-sc-sr-t">SR 的 16 位：第 7 到 4 位是 SCG1、SCG0、OSCOFF、CPUOFF；LPM3 加上 GIE 时 SR 等于 0x00D8</title>
+<text class="tx sm w" x="48" y="30">SR · R2</text>
+<text class="tm xs m mid" x="202" y="52">15–9</text>
+<text class="tm xs m mid" x="378" y="52">8</text>
+<text class="tm xs m mid" x="422" y="52">7</text>
+<text class="tm xs m mid" x="466" y="52">6</text>
+<text class="tm xs m mid" x="510" y="52">5</text>
+<text class="tm xs m mid" x="554" y="52">4</text>
+<text class="tm xs m mid" x="598" y="52">3</text>
+<text class="tm xs m mid" x="642" y="52">2</text>
+<text class="tm xs m mid" x="686" y="52">1</text>
+<text class="tm xs m mid" x="730" y="52">0</text>
+<rect class="bx hollow m" height="48" rx="3" width="308" x="48" y="60"></rect>
+<text class="tz sm m mid" x="202" y="90">Reserved</text>
+<rect class="bx hollow m" height="48" rx="3" width="44" x="356" y="60"></rect>
+<rect class="bx hollow o" height="48" rx="3" width="44" x="400" y="60"></rect>
+<rect class="bx hollow o" height="48" rx="3" width="44" x="444" y="60"></rect>
+<rect class="bx hollow o" height="48" rx="3" width="44" x="488" y="60"></rect>
+<rect class="bx hollow o" height="48" rx="3" width="44" x="532" y="60"></rect>
+<rect class="bx hollow g" height="48" rx="3" width="44" x="576" y="60"></rect>
+<rect class="bx hollow m" height="48" rx="3" width="44" x="620" y="60"></rect>
+<rect class="bx hollow m" height="48" rx="3" width="44" x="664" y="60"></rect>
+<rect class="bx hollow m" height="48" rx="3" width="44" x="708" y="60"></rect>
+<text class="tm xs m mid" x="378" y="128">V</text>
+<text class="tm xs o mid" x="422" y="128">SCG1</text>
+<text class="tm xs o mid" x="466" y="128">SCG0</text>
+<text class="tm xs o mid" x="510" y="128">OSCOFF</text>
+<text class="tm xs o mid" x="554" y="128">CPUOFF</text>
+<text class="tm xs g mid" x="598" y="128">GIE</text>
+<text class="tm xs m mid" x="642" y="128">N</text>
+<text class="tm xs m mid" x="686" y="128">Z</text>
+<text class="tm xs m mid" x="730" y="128">C</text>
+<g data-step="2">
+<rect class="ln y draw" height="54" rx="6" width="182" x="397" y="57"></rect>
+<text class="tz sm y mid" x="488" y="158">模式控制位 · mode-control bits</text>
+</g>
+<g data-step="3">
+<text class="tm sm m mid" x="378" y="90">0</text>
+<text class="tm sm y mid" x="422" y="90">1</text>
+<text class="tm sm y mid" x="466" y="90">1</text>
+<text class="tm sm m mid" x="510" y="90">0</text>
+<text class="tm sm y mid" x="554" y="90">1</text>
+<text class="tm sm g mid" x="598" y="90">1</text>
+<text class="tm sm m mid" x="642" y="90">0</text>
+<text class="tm sm m mid" x="686" y="90">0</text>
+<text class="tm sm m mid" x="730" y="90">0</text>
+<text class="tm lg w mid" data-hl="3" x="400" y="206">0000 0000 1101 1000 = 0x00D8</text>
+</g>
+<g data-step="4">
+<text class="tm sm o mid" x="400" y="246">SCG1 0x80 + SCG0 0x40 + CPUOFF 0x10 = 0xD0 = LPM3_bits</text>
+<text class="tz sm y mid" x="400" y="278">__low_power_mode_3() → BIS.W #0x00D8, SR（宏里已含 GIE 的 0x08）</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>SR（R2）是 16 位寄存器，有意义的只有低 9 位：C、Z、N、V 是运算标志，第 3 位 <span class="c-g">GIE</span> 是 M21 的总中断使能。</li>
+<li data-dur="3600">第 7–4 位是这一章的主角：<b>SCG1、SCG0、OSCOFF、CPUOFF</b>。把其中若干位置 1，就进入对应的低功耗模式，<b>立即生效</b>。</li>
+<li data-dur="3800">LPM3 = SCG1、SCG0、CPUOFF 置 1，OSCOFF = 0；GIE 也是 1。SR 读出来是 0000 0000 1101 1000 = <span class="c-y">0x00D8</span>。</li>
+<li data-dur="4800">拆开看：三个低功耗位 = 0xD0，就是头文件里的 <code>LPM3_bits</code>。而 intrinsics.h 把 <code>__low_power_mode_3()</code> 定义成 <code>__bis_SR_register(0xD8)</code>：立即数本身就带 GIE 的 0x08，所以反汇编是 <code>BIS.W #0x00D8, SR</code>（头文件见 §4，反汇编见 §3 的场景）。</li>
+</ol>
+
+</figure>
+<p>四个位的每种合法组合对应一个模式（下表）。记住规律：<b>CPUOFF 永远是 1</b>（所有 LPM 都停 CPU）；SCG0 = 1 的模式 FLL 停；SCG1 = 1 的模式（LPM2–4）SMCLK 停；OSCOFF 只有 LPM4 才置 1。</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>模式</th><th>SCG1</th><th>SCG0</th><th>OSCOFF</th><th>CPUOFF</th><th>LPMx_bits</th><th>__low_power_mode_x() 写入的值</th></tr></thead>
+<tbody>
+<tr><td>AM</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="mono">—</td><td>—（GIE = 1 时 SR = 0x0008）</td></tr>
+<tr><td>LPM0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="one">1</td><td class="mono">0x10</td><td class="mono">0x18</td></tr>
+<tr><td>LPM1</td><td class="zero">0</td><td class="one">1</td><td class="zero">0</td><td class="one">1</td><td class="mono">0x50</td><td class="mono">0x58</td></tr>
+<tr><td>LPM2</td><td class="one">1</td><td class="zero">0</td><td class="zero">0</td><td class="one">1</td><td class="mono">0x90</td><td class="mono">0x98</td></tr>
+<tr><td>LPM3</td><td class="one">1</td><td class="one">1</td><td class="zero">0</td><td class="one">1</td><td class="mono">0xD0</td><td class="mono">0xD8</td></tr>
+<tr><td>LPM4</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="mono">0xF0</td><td class="mono">0xF8</td></tr>
+<tr><td>LPM4.5</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td colspan="2">LPM4 的位 + PMM 里的 <code>PMMREGOFF = 1</code>（§6）</td></tr>
+<tr><td>LPM3.5</td><td colspan="6">F5529 没有实现</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">两列数值都来自头文件（截图见 §4）：msp430f5529.h 的 <code>LPM0_bits</code> … <code>LPM4_bits</code> 只含模式位；intrinsics.h 的 <code>__low_power_mode_0()</code> … <code>_4()</code> 写入的值<b>多了 GIE 的 0x08</b>，所以这些宏顺手把中断也打开了。把模式位放在 SR 里的好处是：中断时 SR 会被压栈，当前模式也就自动存了下来——§3 就靠这一点。</p>
+<p>这四个位在 UCS 时钟模块里各自接到：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>位</th><th>在 UCS 框图里接到</th><th>置 1 的效果</th></tr></thead>
+<tbody>
+<tr><td>CPUOFF</td><td>MCLK 的使能逻辑（MCLK Enable Logic）</td><td>MCLK 停，CPU 停</td></tr>
+<tr><td>OSCOFF</td><td>ACLK 的使能逻辑</td><td>ACLK 停</td></tr>
+<tr><td>SCG0</td><td>FLL 的 10 位频率积分器（off 端）</td><td>FLL 停止调节</td></tr>
+<tr><td>SCG1</td><td>DCO 的直流发生器（DC Generator，off 端）</td><td>DCO 偏置关；FLL 同样停</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">另外还有几个<b>不在 SR 里</b>的开关：XT1OFF、XT2OFF、SMCLKOFF（UCSCTL6）和 DISMOD（UCSCTL1）。SMCLK 自己的开关是 SMCLKOFF；LPM2–4 里 SMCLK 停，是上面模式表规定的模式行为。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>每个模式关掉什么 <span class="tag">M26.3</span></h2>
+<p class="hook"><span class="zh">LPM 的编号每加一，又多关掉了什么？哪些东西还醒着、还能叫醒 CPU？</span><span class="es">¿Qué consecuencias tiene cada modo de operación?</span></p>
+<p>低功耗模块和时钟模块（M24）是绑在一起的：SR 的四个位直接控制振荡器的开关和时钟信号的使能逻辑（§1 的 UCS 表）。选一个模式，看 SR 怎么变、哪些时钟域熄灭、电流掉到多少：</p>
+<figure class="stage" id="m26-dial">
+<div class="stage-title"><span>Simulador · modo de operación</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m26-dial-t" role="img" viewbox="0 0 800 440">
+<title id="m26-dial-t">模式选择器：上方是 SR 的四个模式位和 PMMREGOFF，中间是时钟源、时钟信号和使用者，下方是 VCORE 和相对电流</title>
+<text class="tm sm m" x="20" y="57">SR</text>
+<rect class="bx o" height="40" id="m26-c7" rx="4" width="62" x="56" y="30"></rect>
+<rect class="bx o" height="40" id="m26-c6" rx="4" width="62" x="124" y="30"></rect>
+<rect class="bx hollow m" height="40" id="m26-c5" rx="4" width="62" x="192" y="30"></rect>
+<rect class="bx o" height="40" id="m26-c4" rx="4" width="62" x="260" y="30"></rect>
+<text class="tm o mid" id="m26-v7" x="87" y="56">1</text>
+<text class="tm o mid" id="m26-v6" x="155" y="56">1</text>
+<text class="tm m mid" id="m26-v5" x="223" y="56">0</text>
+<text class="tm o mid" id="m26-v4" x="291" y="56">1</text>
+<text class="tm xs m mid" x="87" y="88">SCG1</text>
+<text class="tm xs m mid" x="155" y="88">SCG0</text>
+<text class="tm xs m mid" x="223" y="88">OSCOFF</text>
+<text class="tm xs m mid" x="291" y="88">CPUOFF</text>
+<rect class="bx hollow m" height="40" id="m26-cp" rx="4" width="110" x="346" y="30"></rect>
+<text class="tm m mid" id="m26-vp" x="401" y="56">0</text>
+<text class="tm xs m mid" x="401" y="88">PMMREGOFF</text>
+<text class="tz sm m" x="484" y="44">SR（GIE = 1）</text>
+<text class="tm lg y" id="m26-hex" x="484" y="72">0x00D8</text>
+<text class="tx lg y end" id="m26-mname" x="780" y="70">LPM3</text>
+<path class="ln thin m" d="M180 147 H300 M180 147 C 240 147, 240 219, 300 219 M180 291 H300 M450 147 H570 M450 219 H570 M450 291 H570 M105 170 V196"></path>
+<text class="tm xs m" x="114" y="188">稳频</text>
+<rect class="bx hollow m" height="46" id="m26-d-dco" rx="6" width="150" x="30" y="124"></rect>
+<text class="tm sm w mid" x="105" y="144">DCO</text>
+<text class="tm xs m mid" id="m26-s-dco" x="105" y="162">OFF</text>
+<rect class="bx hollow m" height="46" id="m26-d-fll" rx="6" width="150" x="30" y="196"></rect>
+<text class="tm sm w mid" x="105" y="216">FLL</text>
+<text class="tm xs m mid" id="m26-s-fll" x="105" y="234">OFF</text>
+<rect class="bx g" height="46" id="m26-d-src" rx="6" width="150" x="30" y="268"></rect>
+<text class="tm sm w mid" x="105" y="288">REFO / XT1</text>
+<text class="tm xs g mid" id="m26-s-src" x="105" y="306">ON</text>
+<rect class="bx hollow m" height="46" id="m26-d-mclk" rx="6" width="150" x="300" y="124"></rect>
+<text class="tm sm w mid" x="375" y="144">MCLK</text>
+<text class="tm xs m mid" id="m26-s-mclk" x="375" y="162">OFF</text>
+<rect class="bx hollow m" height="46" id="m26-d-smclk" rx="6" width="150" x="300" y="196"></rect>
+<text class="tm sm w mid" x="375" y="216">SMCLK</text>
+<text class="tm xs m mid" id="m26-s-smclk" x="375" y="234">OFF</text>
+<rect class="bx g" height="46" id="m26-d-aclk" rx="6" width="150" x="300" y="268"></rect>
+<text class="tm sm w mid" x="375" y="288">ACLK</text>
+<text class="tm xs g mid" id="m26-s-aclk" x="375" y="306">ON</text>
+<rect class="bx hollow m" height="46" id="m26-d-cpu" rx="6" width="200" x="570" y="124"></rect>
+<text class="tm sm w mid" x="670" y="144">CPU</text>
+<text class="tm xs m mid" id="m26-s-cpu" x="670" y="162">OFF · zZ</text>
+<rect class="bx hollow m" height="46" id="m26-d-ps" rx="6" width="200" x="570" y="196"></rect>
+<text class="tm sm w mid" x="670" y="216">外设 · 用 SMCLK</text>
+<text class="tm xs m mid" id="m26-s-ps" x="670" y="234">OFF</text>
+<rect class="bx g" height="46" id="m26-d-pa" rx="6" width="200" x="570" y="268"></rect>
+<text class="tm sm w mid" x="670" y="288">外设 · 用 ACLK</text>
+<text class="tm xs g mid" id="m26-s-pa" x="670" y="306">ON</text>
+<text class="tm xs o end" x="174" y="138">SCG1</text>
+<text class="tm xs o end" x="174" y="210">SCG0</text>
+<text class="tm xs o end" x="444" y="138">CPUOFF</text>
+<text class="tm xs o end" x="444" y="282">OSCOFF</text>
+<rect class="bx b" height="34" id="m26-d-vc" rx="6" width="740" x="30" y="332"></rect>
+<text class="tm sm w" x="46" y="354">VCORE · CPU + RAM + 寄存器</text>
+<text class="tm xs b end" id="m26-s-vc" x="754" y="354">ON · 内容保持</text>
+<text class="tz sm m" x="30" y="400">电流 · 对数刻度</text>
+<text class="tm xs m mid" x="230" y="381">0.1 µA</text>
+<text class="tm xs m mid" x="330" y="381">1</text>
+<text class="tm xs m mid" x="430" y="381">10</text>
+<text class="tm xs m mid" x="530" y="381">100</text>
+<text class="tm xs m mid" x="630" y="381">1 mA</text>
+<rect class="bx hollow m" height="20" rx="3" width="400" x="230" y="386"></rect>
+<rect class="bx o" height="20" id="m26-bar" rx="3" width="132" x="230" y="386"></rect>
+<path class="ln thin m" d="M330 386 V406 M430 386 V406 M530 386 V406"></path>
+<text class="tm xs o" id="m26-barv" x="230" y="428">典型 2.1 µA（XT1）· 实测 2.41 µA（XT1）/ 4.91 µA（REFO）</text>
+</svg>
+</div>
+<div class="stage-ctl" id="m26-modes">
+<button aria-pressed="false" class="mini" data-mode="AM" type="button">AM</button>
+<button aria-pressed="false" class="mini" data-mode="LPM0" type="button">LPM0</button>
+<button aria-pressed="false" class="mini" data-mode="LPM1" type="button">LPM1</button>
+<button aria-pressed="false" class="mini" data-mode="LPM2" type="button">LPM2</button>
+<button aria-pressed="true" class="mini" data-mode="LPM3" type="button">LPM3</button>
+<button aria-pressed="false" class="mini" data-mode="LPM4" type="button">LPM4</button>
+<button aria-pressed="false" class="mini na" data-mode="LPM35" type="button">LPM3.5</button>
+<button aria-pressed="false" class="mini" data-mode="LPM45" type="button">LPM4.5</button>
+<p aria-live="polite" class="out" id="m26-dout">LPM3：SCG1 + SCG0 + CPUOFF。只剩 ACLK，用 ACLK 的外设（例如定时器）可以继续工作并定时叫醒 CPU。</p>
+</div>
+<p class="stage-note">假设 §5 例子的时钟配置：MCLK = SMCLK = DCOCLKDIV（1 MHz），ACLK = REFO（或 XT1）。DCO 只在它还驱动着某个开着的时钟时运行。金色小字是四个 SR 位在 UCS 框图里的位置（§1）。电流条按下面电流表的典型值（3.0 V、25 °C）用对数刻度画，每格 10 倍；表里没有单列 LPM1，它的条长是估计。</p>
+</figure>
+<p>按关掉的东西，这些模式可以分成几组，越往下越省电：</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">CPUOFF · (+SCG0)</span>
+<h3>LPM0 和 LPM1</h3>
+<p>都停 CPU 和 MCLK，SMCLK、ACLK 照常。区别是 LPM1 多关了 FLL（SCG0）。如果 DCO 本来就没在用，LPM0 也会关掉 FLL，两者电流一样。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">SCG1 · CPUOFF · (+SCG0)</span>
+<h3>LPM2 和 LPM3</h3>
+<p>关掉同样的时钟：MCLK、SMCLK 和 FLL，只留 ACLK。LPM2 的 SCG0 = 0，FLL 的积分器没断电，醒来后 DCO 稳定得更快，代价是电流稍大。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">四位全 1 · (+PMMREGOFF)</span>
+<h3>LPM4 和 LPM4.5</h3>
+<p>CPU 和所有时钟全停，只有外部事件（例如端口中断）能叫醒。LPM4.5 再把 core 的电源也断掉，RAM 和寄存器内容丢失（§6）。</p>
+</div>
+</div>
+
+<div class="note">
+<span class="lbl">醒来之后，振荡器呢？</span>
+<p>LPM 能关掉 ACLK、MCLK、SMCLK 和 DCO。其余的振荡器：REFO 和 VLO 只要不是任何时钟的源就自动关掉；XT1、XT2 由 <code>XT1OFF</code>、<code>XT2OFF</code> 控制，用作时钟源时要考虑振荡器故障（M24）。</p>
+</div>
+<h3 id="s2b">各模式的电流</h3>
+<p>F5529 在各个模式下的电源电流，下面是 3.0 V、25 °C 的数值。§8 的实测值就是拿来和这张表对照的：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>模式</th><th>测试条件</th><th>典型值</th><th>最大值</th></tr></thead>
+<tbody>
+<tr><td>AM · 1 MHz</td><td>从 Flash 执行，PMMCOREV = 0</td><td class="mono">0.36 mA</td><td class="mono">0.47 mA</td></tr>
+<tr><td>AM · 8 MHz</td><td>从 Flash 执行，PMMCOREV = 0</td><td class="mono">2.32 mA</td><td class="mono">2.60 mA</td></tr>
+<tr><td>LPM0 · 1 MHz</td><td>SMCLK = DCO = 1 MHz，PMMCOREV = 3</td><td class="mono">83 µA</td><td class="mono">92 µA</td></tr>
+<tr><td>LPM2</td><td>ACLK = 32 kHz 晶振，DCO 偏置开着，PMMCOREV = 3</td><td class="mono">7.0 µA</td><td class="mono">13 µA</td></tr>
+<tr><td>LPM3 · XT1</td><td>ACLK = 32 kHz 晶振，PMMCOREV = 0</td><td class="mono">2.1 µA</td><td class="mono">2.9 µA</td></tr>
+<tr><td>LPM3 · VLO</td><td>ACLK = VLO，PMMCOREV = 0</td><td class="mono">1.4 µA</td><td class="mono">2.7 µA</td></tr>
+<tr><td>LPM4</td><td>所有时钟停，PMMCOREV = 0</td><td class="mono">1.1 µA</td><td class="mono">1.5 µA</td></tr>
+<tr><td>LPM4.5</td><td>稳压器关，不保持数据</td><td class="mono">0.18 µA</td><td class="mono">0.35 µA</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">共同条件：输入都接 0 V 或 VCC，输出不带负载，USB 关（VUSBEN = SLDOEN = 0）；LPM2、LPM3 的数值含 WDT 和 RTC 的电流。表里没有单列 LPM1，也没有"LPM3 + REFO"这一行。活动模式电流随 MCLK 上升（1 → 8 MHz 约 6.4 倍）；同样 1 MHz，从 RAM 执行只要 0.20 mA。</p>
+
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>睡下去，被叫醒 <span class="tag">M26.4</span></h2>
+<p class="hook"><span class="zh">CPU 睡着了，就不能执行任何代码。那谁来把它叫醒？醒来以后，它又怎么知道该回去接着睡？</span><span class="es">Entrada: bits del SR · Despertar: solo con una interrupción · Salida: la RTI decide.</span></p>
+<figure class="stage" data-scene="" id="m26-sc-map">
+<div class="stage-title"><span>Escena 3a · mapa de modos</span><b>3 步</b></div>
+<div aria-label="动画：工作模式之间的转换，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-map-t" role="img" viewbox="0 0 800 350">
+<title id="m26-sc-map-t">活动模式写 SR 位进入 LPM0 到 LPM4，任何已使能的中断或 NMI 叫回活动模式；置 PMMREGOFF 进入 LPMx.5，醒来经 BOR、POR、PUC 重新开始</title>
+<rect class="bx g" height="56" rx="10" width="200" x="230" y="24"></rect>
+<text class="tz sm w mid" x="330" y="48">Activo · AM</text>
+<text class="tm xs m mid" x="330" y="68">CPU 运行</text>
+<rect class="bx hollow b" height="56" rx="8" width="92" x="16" y="244"></rect>
+<rect class="bx hollow b" height="56" rx="8" width="92" x="118" y="244"></rect>
+<rect class="bx hollow b" height="56" rx="8" width="92" x="220" y="244"></rect>
+<rect class="bx hollow b" height="56" rx="8" width="92" x="322" y="244"></rect>
+<rect class="bx hollow b" height="56" rx="8" width="92" x="424" y="244"></rect>
+<text class="tm sm w mid" x="62" y="268">LPM0</text>
+<text class="tm sm w mid" x="164" y="268">LPM1</text>
+<text class="tm sm w mid" x="266" y="268">LPM2</text>
+<text class="tm sm w mid" x="368" y="268">LPM3</text>
+<text class="tm sm w mid" x="470" y="268">LPM4</text>
+<text class="tm xs b mid" x="62" y="288">0001</text>
+<text class="tm xs b mid" x="164" y="288">0101</text>
+<text class="tm xs b mid" x="266" y="288">1001</text>
+<text class="tm xs b mid" x="368" y="288">1101</text>
+<text class="tm xs b mid" x="470" y="288">1111</text>
+<text class="tm xs m" x="16" y="322">位序：SCG1 SCG0 OSCOFF CPUOFF</text>
+<g data-step="1">
+<path class="ln y draw" d="M300 80 V134 M52 134 H460"></path>
+<path class="ln y draw" d="M52 134 V240" marker-end="url(#m26-ah-y)"></path>
+<path class="ln y draw" d="M154 134 V240" marker-end="url(#m26-ah-y)"></path>
+<path class="ln y draw" d="M256 134 V240" marker-end="url(#m26-ah-y)"></path>
+<path class="ln y draw" d="M358 134 V240" marker-end="url(#m26-ah-y)"></path>
+<path class="ln y draw" d="M460 134 V240" marker-end="url(#m26-ah-y)"></path>
+<text class="tz sm y" x="16" y="122">进入：写 SR 模式位，立即生效</text>
+</g>
+<g data-step="2">
+<path class="ln r draw" d="M72 244 V196 M174 244 V196 M276 244 V196 M378 244 V196 M480 244 V196 M72 196 H480"></path>
+<path class="ln r draw" d="M400 196 V84" marker-end="url(#m26-ah-r)"></path>
+<text class="tz sm r" x="408" y="172">†</text>
+<text class="tz sm r" x="16" y="342">† 任何已使能的中断或 NMI 都能把 CPU 叫回 AM</text>
+</g>
+<g data-step="3">
+<path class="ln y draw" d="M410 80 L616 258" marker-end="url(#m26-ah-y)"></path>
+<text class="tm xs y" x="525" y="150">PMMREGOFF = 1</text>
+<text class="tm xs y" x="525" y="166">+ LPM4 的位</text>
+<rect class="bx r" height="56" rx="8" width="160" x="620" y="244"></rect>
+<text class="tm sm w mid" x="700" y="266">LPMx.5</text>
+<text class="tm xs m mid" x="700" y="288">VCORE off · RAM 丢失</text>
+<rect class="bx hollow r" height="32" rx="6" width="140" x="640" y="172"></rect>
+<rect class="bx hollow r" height="32" rx="6" width="140" x="640" y="106"></rect>
+<rect class="bx hollow r" height="32" rx="6" width="140" x="640" y="40"></rect>
+<text class="tm sm r mid" x="710" y="193">BOR</text>
+<text class="tm sm r mid" x="710" y="127">POR</text>
+<text class="tm sm r mid" x="710" y="61">PUC</text>
+<path class="ln r draw" d="M710 244 V208" marker-end="url(#m26-ah-r)"></path>
+<path class="ln r draw" d="M710 172 V142" marker-end="url(#m26-ah-r)"></path>
+<path class="ln r draw" d="M710 106 V76" marker-end="url(#m26-ah-r)"></path>
+<path class="ln r draw" d="M640 56 H434" marker-end="url(#m26-ah-r)"></path>
+<text class="tm xs r" x="718" y="230">唤醒</text>
+<text class="tm xs r mid" x="537" y="48">从 0xFFFE 重新开始</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">所有工作模式画在一张图上。从活动模式出发，往 SR 写模式位就进入 LPM0–LPM4，立即生效（方框里是 SCG1 SCG0 OSCOFF CPUOFF 四位）。</li>
+<li data-dur="4600">回来的路只有一条：<b>任何已使能的中断或 NMI</b>（图中的 †）。CPU 醒来先执行 RTI；RETI 之后是回到原模式还是留在 AM，由 RTI 决定（下面的场景和 §4）。</li>
+<li data-dur="5200">LPMx.5 不一样：在 LPM4 的位之外再置 <code>PMMREGOFF = 1</code>，VCORE 断电。RST/NMI 引脚、端口（P1/P2）能唤醒它，LPM3.5 还有 RTC；但醒来不是回到 AM，而是一次 <b>BOR</b>，再经 POR、PUC，从复位向量重新开始（§6）。</li>
+</ol>
+
+</figure>
+<p>整个过程可以总结成三句话：</p>
+<ul>
+<li><b>进入（entrada）</b>：把 SR 的 SCG1、SCG0、OSCOFF、CPUOFF 中若干位置 1。</li>
+<li><b>唤醒（despertar）</b>：<b>只能靠中断</b>（包括 NMI），去执行 RTI。所以睡之前，至少要有一个外设开着、使能了中断。</li>
+<li><b>退出（salida）</b>：在 RTI 里决定。不动栈里的 SR → RETI 后回到原来的模式；改了栈里的 SR → RETI 后进入新模式（§4）。</li>
+</ul>
+<p>下面用示例程序 LPM_b（§5）走一遍：main 进入 LPM3，S2 叫醒 CPU，RTI 翻转 LED1，然后接着睡。注意中间 SR 和栈的变化。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m26-sc-life">
+<div class="stage-title"><span>Escena 3 · LPM3 → RTI → LPM3</span><b>核心场景</b></div>
+<div aria-label="动画：LPM_b 的一次唤醒，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-life-t" role="img" viewbox="0 0 800 470">
+<title id="m26-sc-life-t">main 进入 LPM3，SR 等于 0x00D8；S2 中断时 PC 和 SR 压栈，SR 清零只留 SCG0；RTI 翻转 LED；RETI 恢复 0x00D8，CPU 回到 LPM3</title>
+
+<rect class="bx m" height="176" rx="8" width="270" x="16" y="44"></rect>
+<text class="tm sm m" x="30" y="68">main()</text>
+<text class="tm sm w" x="46" y="96">配置…; GIE = 1</text>
+<text class="tm sm w" x="46" y="124">while (1) {</text>
+<text class="tm sm w" data-hl="2" x="46" y="152">  __low_power_mode_3();</text>
+<text class="tm sm w" x="46" y="180">  __no_operation();</text>
+<text class="tm sm w" x="46" y="208">}</text>
+<path class="sl y" d="M30 85 L41 91 L30 97 z" data-out="2"></path>
+<path class="sl y" d="M30 141 L41 147 L30 153 z" data-out="3" data-step="2"></path>
+<path class="sl m" d="M30 169 L41 175 L30 181 z" data-step="3"></path>
+
+<g data-step="4">
+<rect class="bx y" height="140" rx="8" width="270" x="16" y="250"></rect>
+<text class="tm sm y" x="30" y="274">P1_ISR()</text>
+<text class="tm sm w" x="46" y="304">P1IFG &amp;= ~BIT1;</text>
+<text class="tm sm w" x="46" y="332">P1OUT ^= BIT0;</text>
+<text class="tm sm w" data-hl="6" x="46" y="360">RETI</text>
+<circle class="bx hollow m" cx="250" cy="312" r="9"></circle>
+<text class="tm xs m mid" x="250" y="340">LED1</text>
+</g>
+<circle class="led-on" cx="250" cy="312" data-step="5" r="9"></circle>
+<path class="sl y" d="M30 263 L41 269 L30 275 z" data-out="5" data-step="4"></path>
+<path class="sl y" d="M30 321 L41 327 L30 333 z" data-out="6" data-step="5"></path>
+<path class="sl y" d="M30 349 L41 355 L30 361 z" data-step="6"></path>
+
+<text class="tx sm w" x="310" y="30">CPU</text>
+<rect class="bx b" data-hl="2 4 6" height="70" rx="6" width="220" x="310" y="44"></rect>
+<text class="tm b" x="324" y="84">SR</text>
+<text class="tm lg b end" data-out="2" x="516" y="86">0x0008</text>
+<text class="tm lg y end" data-out="4" data-step="2" x="516" y="86">0x00D8</text>
+<text class="tm lg b end" data-out="6" data-step="4" x="516" y="86">0x0040</text>
+<text class="tm lg y end" data-step="6" x="516" y="86">0x00D8</text>
+<text class="tz sm g mid" data-out="2" x="420" y="142">Activo · 运行</text>
+<text class="tz sm m mid" data-out="4" data-step="2" x="420" y="142">LPM3 · zZ</text>
+<text class="tz sm y mid" data-out="6" data-step="4" x="420" y="142">Activo · 执行 RTI</text>
+<text class="tz sm m mid" data-step="6" x="420" y="142">LPM3 · zZ</text>
+<circle class="bx hollow m" cx="334" cy="176" r="9"></circle>
+<circle class="bx hollow m" cx="334" cy="214" r="9"></circle>
+<circle class="bx hollow m" cx="444" cy="176" r="9"></circle>
+<circle class="bx hollow m" cx="444" cy="214" r="9"></circle>
+<circle class="sl g" cx="334" cy="176" data-out="2" r="7"></circle>
+<circle class="sl g" cx="334" cy="176" data-out="6" data-step="4" r="7"></circle>
+<circle class="sl g" cx="334" cy="214" data-out="2" r="7"></circle>
+<circle class="sl g" cx="334" cy="214" data-out="6" data-step="4" r="7"></circle>
+<circle class="sl g" cx="444" cy="176" r="7"></circle>
+<circle class="sl g" cx="444" cy="214" data-out="2" r="7"></circle>
+<text class="tm xs w" x="350" y="180">MCLK</text>
+<text class="tm xs w" x="350" y="218">SMCLK</text>
+<text class="tm xs w" x="460" y="180">ACLK</text>
+<text class="tm xs w" x="460" y="218">FLL</text>
+<rect class="bx r" data-hl="3" height="40" rx="6" width="220" x="310" y="248"></rect>
+<text class="tm sm r" x="324" y="273">P1IFG.1</text>
+<text class="tm r end" data-out="3" x="516" y="274">0</text>
+<text class="tm r end" data-out="5" data-step="3" x="516" y="274">1</text>
+<text class="tm g end" data-step="5" x="516" y="274">0</text>
+<text class="tz sm r mid" data-out="4" data-step="3" x="420" y="312">↑ S2 按下</text>
+<text class="tz sm y mid" data-out="6" data-step="4" x="420" y="312">SCG0 保留 → FLL 仍关</text>
+
+<text class="tx sm p" x="560" y="30">Pila · stack</text>
+<path class="ln thin m dash" d="M598 66 H784"></path>
+<rect class="bx hollow p" height="40" rx="4" width="186" x="598" y="80"></rect>
+<rect class="bx hollow p" height="40" rx="4" width="186" x="598" y="126"></rect>
+<text class="tm xs p mid" data-out="6" data-step="3" x="691" y="105">PC → __no_operation</text>
+<text class="tm sm p mid" data-out="6" data-step="3" x="691" y="151">SR = 0x00D8</text>
+<text class="tm xs p mid" data-out="6" data-step="3" x="691" y="190">SP − 4</text>
+<text class="tm xs g mid" data-step="6" x="691" y="190">RETI：SP + 4</text>
+<path class="ln p draw" d="M530 70 C 562 70, 566 146, 596 146" data-out="6" data-step="3" id="m26-p-push" marker-end="url(#m26-ah-p)"></path>
+<circle class="sl p" data-move="#m26-p-push" data-out="4" data-step="3" r="6"></circle>
+<path class="ln g draw" d="M598 152 C 566 152, 562 96, 534 96" data-step="6" marker-end="url(#m26-ah-g)"></path>
+
+<text class="tm xs m" x="560" y="236">I</text>
+<path class="ln thin m" d="M572 226 V300 H784"></path>
+<path class="ln o draw" d="M572 248 H610" data-out="2"></path>
+<path class="ln o" d="M572 248 H610" data-step="2"></path>
+<path class="ln o draw" d="M610 248 V292 H680" data-step="2"></path>
+<path class="ln o draw" d="M680 292 V248 H714" data-step="4"></path>
+<path class="ln o draw" d="M714 248 V292 H784" data-step="6"></path>
+<text class="tm xs m mid" data-step="2" x="645" y="286">LPM3</text>
+<text class="tm xs y mid" data-step="4" x="697" y="242">RTI</text>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">配置完成（端口、S2 中断、GIE = 1）。SR = 0x0008，CPU 在运行，MCLK、SMCLK、ACLK 和 FLL 都开着。</li>
+<li data-dur="4400">执行 <code>__low_power_mode_3()</code>（反汇编：<code>BIS.W #0x00D8, SR</code>）：SR 变成 <span class="c-y">0x00D8</span>，立即生效。CPU、MCLK、SMCLK、FLL 停下，只剩 ACLK。程序停在这里，下一条指令还没执行。</li>
+<li data-dur="4600">按下 S2：<span class="c-r">P1IFG.1 = 1</span>，P1IE.1 和 GIE 都是 1，中断请求成立。CPU 被唤醒，先把 PC（指向 <code>__no_operation</code>）和 <b>SR = 0x00D8</b> 压栈——当前的低功耗模式就这样存进了栈。</li>
+<li data-dur="4800">SR 清零，<b>只有 SCG0 保持不变</b>：SR = 0x0040。CPUOFF、SCG1 清掉，CPU 和 MCLK 恢复；但 SCG0 = 1，RTI 执行期间 FLL 仍然关着。CPU 跳到 P1_ISR。</li>
+<li>RTI 清 flag、翻转 LED1。要做的事做完了。</li>
+<li data-dur="4800">RETI 弹出 SR = 0x00D8：又回到 LPM3，CPU 接着睡。PC 停在 <code>__no_operation</code>，但它一直没机会执行——每次醒来都只跑 RTI。</li>
+</ol>
+<p class="stage-note">电流线只是示意。</p>
+
+</figure>
+<div class="formula" data-tex="\text{RTI:}\ \class{c-b}{\mathtt{SR}} \leftarrow \class{c-b}{\mathtt{SR}} \wedge \class{c-o}{\mathtt{SCG0}} \qquad \text{RETI:}\ \class{c-b}{\mathtt{SR}} \leftarrow \class{c-p}{\mathtt{@SP{+}}}">RTI 入口：SR ← SR ∧ SCG0　　RETI：SR ← @SP+</div>
+<p class="aside">∧ SCG0 表示只留下 SCG0 这一位；@SP+ 表示从栈顶弹出那份副本。进入 RTI 时 CPUOFF、SCG1、OSCOFF 自动清零。FLL 关着时，DCO 按当时的 DCO、MOD 设置继续振荡，不再稳频，频率会随电压和温度漂移；如果希望 RTI 用经 FLL 稳频的 DCO 运行，可以在 RTI 里自己把 SCG0 清掉。</p>
+<p class="takeaway">低功耗位和 PC 一起存在栈里。RTI 什么都不改，RETI 就原样恢复：从哪个模式来，回哪个模式去。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>改写栈里的 SR <span class="tag">M26.5</span></h2>
+<p class="hook"><span class="zh">如果工作太多，不想塞在 RTI 里，而是要回到 main 去做，RTI 该怎么"放 CPU 一马"？</span><span class="es">Para cambiar de modo, se modifican los bits del SR almacenado en la pila.</span></p>
+<p>在 RTI 里改 CPU 当前的 SR 没用：它此刻本来就是醒着的（0x0040），RETI 一弹栈就被覆盖了。要改的是<b>栈里那份副本</b>。示例程序 LPM_c 正是这样做的：</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m26-sc-exit">
+<div class="stage-title"><span>Escena 4 · …_on_exit</span><b>5 步</b></div>
+<div aria-label="动画：在 RTI 里修改栈中的 SR，让 CPU 回到 main" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-exit-t" role="img" viewbox="0 0 800 400">
+<title id="m26-sc-exit-t">RTI 里清掉栈中 SR 副本的四个低功耗位，0x00D8 变成 0x0008；RETI 后 CPU 保持唤醒，main 翻转 LED 后再次进入 LPM3</title>
+<rect class="bx y" height="150" rx="8" width="330" x="16" y="40"></rect>
+<text class="tm sm y" x="30" y="64">P1_ISR()</text>
+<text class="tm sm w" x="46" y="96">P1IFG &amp;= ~BIT1;</text>
+<text class="tm sm w" data-hl="2" x="46" y="128">_low_power_mode_off_on_exit();</text>
+<text class="tm sm w" data-hl="3" x="46" y="160">RETI</text>
+<text class="tm sm y" data-step="2" x="30" y="216">BIC.W #0x00F0, 0(SP)</text>
+<text class="tz sm p" x="380" y="40">0(SP) · 栈里的 SR 副本</text>
+<rect class="bx p" data-hl="1 2" height="56" rx="6" width="190" x="380" y="52"></rect>
+<text class="tm lg p mid" data-out="2" x="475" y="88">0x00D8</text>
+<text class="tm lg y mid" data-step="2" x="475" y="88">0x0008</text>
+<text class="tm sm p mid" data-out="2" x="475" y="132">1101 1000</text>
+<text class="tm sm y mid" data-step="2" x="475" y="132">0000 1000</text>
+<text class="tz sm y mid" data-step="2" x="475" y="158">第 7–4 位清零</text>
+<path class="ln y draw" d="M346 124 C 362 124, 362 80, 376 80" data-step="2" marker-end="url(#m26-ah-y)"></path>
+<rect class="bx b" data-hl="3" height="56" rx="6" width="174" x="610" y="52"></rect>
+<text class="tm b" x="622" y="86">SR</text>
+<text class="tm lg b end" data-out="3" x="772" y="88">0x0040</text>
+<text class="tm lg g end" data-step="3" x="772" y="88">0x0008</text>
+<text class="tz sm y mid" data-out="3" x="697" y="136">RTI 中</text>
+<text class="tz sm g mid" data-step="3" x="697" y="136">Activo · 回到 main</text>
+<path class="ln g draw" d="M572 80 H606" data-step="3" id="m26-p-reti" marker-end="url(#m26-ah-g)"></path>
+<text class="tm xs g mid" data-step="3" x="589" y="70">RETI</text>
+<circle class="sl g" data-move="#m26-p-reti" data-out="4" data-step="3" r="6"></circle>
+<path class="ln g draw" d="M697 146 V230" data-step="3" marker-end="url(#m26-ah-g)"></path>
+<rect class="bx m" height="140" rx="8" width="404" x="380" y="236"></rect>
+<text class="tm sm m" x="394" y="258">main()</text>
+<text class="tm sm w" x="410" y="284">while (1) {</text>
+<text class="tm sm w" x="410" y="308">  __low_power_mode_3();</text>
+<text class="tm sm w" data-hl="4" x="410" y="332">  P1OUT ^= BIT0;</text>
+<text class="tm sm w" x="410" y="356">}</text>
+<path class="sl g" d="M394 321 L405 327 L394 333 z" data-out="4" data-step="3"></path>
+<path class="sl y" d="M394 297 L405 303 L394 309 z" data-step="4"></path>
+<path class="ln y draw" d="M610 328 C 668 328, 668 304, 622 304" data-step="4" marker-end="url(#m26-ah-y)"></path>
+<text class="tz sm y" data-step="4" x="672" y="320">再睡</text>
+<g data-step="5">
+<rect class="bx r" height="140" rx="8" width="340" x="16" y="236"></rect>
+<text class="tz sm r" x="30" y="262">另一种：从 LPM3 改去 LPM4</text>
+<text class="tm xs w" x="30" y="292">__bis_SR_register_on_exit(OSCOFF);</text>
+<text class="tm sm w" x="30" y="322">0x00D8 | 0x0020 = 0x00F8</text>
+<text class="tz sm m" x="30" y="354">RETI 后进入 LPM4：LED 不翻转</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3800">LPM_c 同样在 LPM3 里被 S2 唤醒，进入 RTI。此刻栈顶 0(SP) 存着进中断前的 SR = 0x00D8；CPU 自己的 SR 是 0x0040。</li>
+<li data-dur="4600"><code>_low_power_mode_off_on_exit()</code>：把栈里那份 SR 的 SCG1、SCG0、OSCOFF、CPUOFF 四位清零，反汇编就是一条 <code>BIC.W #0x00F0, 0(SP)</code>。副本变成 0x0008，GIE 不动。</li>
+<li data-dur="4400">RETI 弹出的是<b>改过的</b> SR：0x0008，没有任何低功耗位 → CPU 保持唤醒，从 <code>__low_power_mode_3()</code> 的下一条接着执行 main。</li>
+<li data-dur="4200">main 执行 <code>P1OUT ^= BIT0</code>，循环回到 <code>__low_power_mode_3()</code>，再睡。工作在 main 里做，RTI 只负责"叫醒"。</li>
+<li data-dur="4600">反方向也行：<code>__bis_SR_register_on_exit(OSCOFF)</code> 给副本<b>置位</b>，0x00D8 → 0x00F8，RETI 后进入 LPM4。注意：这样 LED 不会翻转，因为 CPU 没有回到活动模式，main 的那条指令根本没执行。</li>
+</ol>
+<p class="stage-note">这个 RTI 没有再压别的寄存器，栈顶就是 SR 副本，所以偏移是 0。RTI 里用到更多寄存器时，编译器会自己算偏移，这也是要用内建函数、不要手写汇编的原因。</p>
+
+</figure>
+<p>四个内建函数（<b class="t">función intrínseca (ES) / intrinsic (EN)</b>——编译器内建函数）的分工：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>函数</th><th>改哪个 SR</th><th>做什么</th></tr></thead>
+<tbody>
+<tr><td>__bis_SR_register(bits)</td><td>CPU 当前的 SR</td><td>把 bits 置 1：开 GIE、进入低功耗模式</td></tr>
+<tr><td>__bic_SR_register(bits)</td><td>CPU 当前的 SR</td><td>把 bits 清 0</td></tr>
+<tr><td>__bis_SR_register_on_exit(bits)</td><td>栈里的副本（在 RTI 里用）</td><td>置 1：RETI 后切到更深的模式</td></tr>
+<tr><td>__bic_SR_register_on_exit(bits)</td><td>栈里的副本（在 RTI 里用）</td><td>清 0：RETI 后醒着回到 main，或换到较浅的模式</td></tr>
+</tbody>
+</table>
+</div>
+<p>其余写法只是它们的"标签"。intrinsics.h 定义了 <code>__low_power_mode_0()</code> … <code>_4()</code> = <code>__bis_SR_register(0x18 … 0xF8)</code> 和 <code>__low_power_mode_off_on_exit()</code> = <code>__bic_SR_register_on_exit(0xF0)</code>；msp430f5529.h 定义了 <code>LPMx</code> = <code>__bis_SR_register(LPMx_bits)</code> 和 <code>LPMx_EXIT</code> = <code>__bic_SR_register_on_exit(LPMx_bits)</code>：</p>
+
+<p>所以进入 LPM3 的三种写法 <code>__low_power_mode_3()</code>、<code>LPM3</code>、<code>__bis_SR_register(LPM3_bits)</code> 并不完全一样：第一种写 0xD8，<b>连 GIE 一起置 1</b>；后两种只写 0xD0，GIE 保持原样。LPM_b 前面已经开了 GIE，三种效果相同；如果 GIE 还是 0，用后两种睡下去，可屏蔽中断都叫不醒它。退出也有两种，区别在于清哪些位：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="all" type="button">清全部 4 位</button>
+<button aria-pressed="false" data-view="lpm3" type="button">只清 LPM3 的位</button>
+<button aria-pressed="false" data-view="asm" type="button">反汇编</button>
+</div>
+<pre class="code" data-pane="all"><code><span class="ln-row"><span class="fn">_low_power_mode_off_on_exit</span>();         <span class="cm">// = __bic_SR_register_on_exit(0xF0)</span></span><span class="ln-row">                                        <span class="cm">// SCG1、SCG0、OSCOFF、CPUOFF 全部清 0</span></span><span class="ln-row">                                        <span class="cm">// 不管原来是哪个 LPM，RETI 后都是活动模式</span></span></code></pre>
+<pre class="code" data-pane="lpm3" hidden=""><code><span class="ln-row"><span class="fn">__bic_SR_register_on_exit</span>(LPM3_bits);   <span class="cm">// 只清 SCG1、SCG0、CPUOFF = 0xD0</span></span><span class="ln-row"><span class="cm">//LPM3_EXIT;                            同一件事（msp430f5529.h）</span></span><span class="ln-row">                                        <span class="cm">// 来自 LPM3 时效果相同；OSCOFF 不碰</span></span></code></pre>
+<pre class="code" data-pane="asm" hidden=""><code><span class="ln-row"><span class="cm">; LPM_b · main</span></span><span class="ln-row"><span class="kw">EINT</span>                          <span class="cm">; __bis_SR_register(GIE)</span></span><span class="ln-row"><span class="kw">BIS.W</span>  #0x00D8, SR            <span class="cm">; __low_power_mode_3()：SCG1+SCG0+CPUOFF+GIE</span></span><span class="ln-row"><span class="kw">NOP</span>                           <span class="cm">; __no_operation()，压栈的 PC 指向这里</span></span><span class="ln-row"><span class="kw">BR</span>     #0x45D4                <span class="cm">; while(1)：跳回 BIS.W</span></span><span class="ln-row"> </span><span class="ln-row"><span class="cm">; LPM_c · P1_ISR</span></span><span class="ln-row"><span class="kw">BIC.B</span>  #2, &amp;Port_A_PAIFG      <span class="cm">; P1IFG &amp;= ~BIT1</span></span><span class="ln-row"><span class="kw">BIC.W</span>  #0x00F0, 0x0000(SP)    <span class="cm">; _low_power_mode_off_on_exit()</span></span><span class="ln-row"><span class="cm">;      #0x00D0               ; 换成 __bic_SR_register_on_exit(LPM3_bits) 时</span></span><span class="ln-row"><span class="kw">RETI</span></span></code></pre>
+</div>
+
+<p class="aside">LPM_c.c 里写的是 <code>_low_power_mode_off_on_exit()</code>（一个下划线），intrinsics.h 里的宏是 <code>__low_power_mode_off_on_exit()</code>（两个下划线，见上面的头文件截图）。Escena 4 第 2 步就是这条指令：一个下划线的写法同样编译成 <code>BIC.W #0x00F0, 0(SP)</code>，两种写法在 CCS 里效果相同。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>LPM_a、LPM_b、LPM_c <span class="tag">M26.6 · M26.7</span></h2>
+<p class="hook"><span class="zh">同一个功能，三种写法。哪一种最省电？哪一种在中断多、任务重的时候最好扩展？</span><span class="es">Tres códigos con la misma función: conmutar LED1 al pulsar S2.</span></p>
+<p>三个文件的开头完全一样（<code>ESQUEMA: ACLK = REFOCLK = 32 kHz, MCLK = SMCLK = DCODIVCLK = 1 MHz</code>）：</p>
+<pre class="code"><code><span class="ln-row"><span class="rg">WDTCTL</span> = WDTPW + WDTHOLD;              <span class="cm">// 停 watchdog</span></span><span class="ln-row"><span class="fn">config_puertos_LPM</span>();                 <span class="cm">// 省电的端口配置（本节下半）</span></span><span class="ln-row"><span class="rg">P1DIR</span> |= BIT0;  <span class="rg">P1OUT</span> &amp;= ~BIT0;        <span class="cm">// LED1 输出、熄灭</span></span><span class="ln-row"><span class="rg">P1DIR</span> &amp;= ~BIT1; <span class="rg">P1REN</span> |= BIT1; <span class="rg">P1OUT</span> |= BIT1;   <span class="cm">// S2 输入、上拉</span></span><span class="ln-row"><span class="fl">P1IE</span> |= BIT1; <span class="rg">P1IES</span> |= BIT1; <span class="fl">P1IFG</span> &amp;= ~BIT1;   <span class="cm">// 下降沿中断，先清 flag</span></span><span class="ln-row"><span class="fn">__bis_SR_register</span>(GIE);              <span class="cm">// 总中断使能</span></span></code></pre>
+<p>区别只在 while 循环和 RTI。三个文件同在工程 LPM_funciones 里；要运行其中一个，在 CCS 里右键另外两个，选 "Exclude from build"。</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="a" type="button">LPM_a</button>
+<button aria-pressed="false" data-view="b" type="button">LPM_b</button>
+<button aria-pressed="false" data-view="c" type="button">LPM_c</button>
+</div>
+<pre class="code" data-pane="a"><code><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="fn">__no_operation</span>();                 <span class="cm">// CPU 醒着空转，一直耗电</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) {                   <span class="cm">// #pragma vector=PORT1_VECTOR …</span></span><span class="ln-row">    <span class="fl">P1IFG</span> &amp;= ~BIT1;</span><span class="ln-row">    <span class="rg">P1OUT</span> ^= BIT0;                     <span class="cm">// 工作在 RTI 里做</span></span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="b" hidden=""><code><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="fn">__low_power_mode_3</span>();             <span class="cm">// 进入 LPM3，停在这里</span></span><span class="ln-row">    <span class="cm">//LPM3;  //__bis_SR_register(LPM3_bits);   GIE 已开时效果相同（§4）</span></span><span class="ln-row">    <span class="fn">__no_operation</span>();</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fl">P1IFG</span> &amp;= ~BIT1;</span><span class="ln-row">    <span class="rg">P1OUT</span> ^= BIT0;                     <span class="cm">// 工作仍在 RTI 里；RETI 后回到 LPM3</span></span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="c" hidden=""><code><span class="ln-row"><span class="kw">while</span> (1) {</span><span class="ln-row">    <span class="fn">__low_power_mode_3</span>();             <span class="cm">// 睡</span></span><span class="ln-row">    <span class="rg">P1OUT</span> ^= BIT0;                     <span class="cm">// 被 RTI 放出来以后，在 main 里干活</span></span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="kw">void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="fl">P1IFG</span> &amp;= ~BIT1;</span><span class="ln-row">    <span class="fn">_low_power_mode_off_on_exit</span>();    <span class="cm">// 改栈里的 SR：RETI 后保持唤醒（§4）</span></span><span class="ln-row">    <span class="cm">//__bic_SR_register_on_exit(LPM3_bits);   来自 LPM3 时效果相同</span></span><span class="ln-row">}</span></code></pre>
+</div>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th></th><th>等待时 CPU</th><th>LED 在哪里翻转</th><th>RTI 怎么结束</th><th>适合</th></tr></thead>
+<tbody>
+<tr><td>LPM_a</td><td>活动模式，空转</td><td>RTI</td><td>直接 RETI</td><td>对照组：功能对，但一直耗电</td></tr>
+<tr><td>LPM_b</td><td>LPM3</td><td>RTI</td><td>直接 RETI → 回到 LPM3</td><td>中断里的工作很短</td></tr>
+<tr><td>LPM_c</td><td>LPM3</td><td>main</td><td>改栈里的 SR → 醒着回 main</td><td>工作多，放在 RTI 外面做（M21 §8 的 tareas-interrupción）</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note warm">
+<span class="lbl">调试时的怪现象 · 勘误 EEM13</span>
+<p>用调试器运行 LPM_b（或在 LPM_c 里试着改去 LPM4）时，可能碰到勘误表的 <b>EEM13</b>：在低功耗模式里来了中断、执行完又回到低功耗模式时出现。没有解决办法，但<b>只影响调试</b>，独立运行时正常。</p>
+</div>
+<h3 id="s5b">省电的端口配置 <span class="tag">M26.7</span></h3>
+<p>三个版本在配置 LED 和按钮<b>之前</b>，都先调用 <code>config_puertos_LPM()</code>。CPU 睡了，引脚和板上其他电路可还在耗电：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">void</span> <span class="fn">config_puertos_LPM</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="rg">P1DIR</span> = 0xFF;  <span class="rg">P1OUT</span> = 0x00;         <span class="cm">// 全部设为输出、全部低电平</span></span><span class="ln-row">    <span class="rg">P2DIR</span> = 0xFF;  <span class="rg">P2OUT</span> = 0x00;</span><span class="ln-row">    …                                  <span class="cm">// P3 … P8 同样</span></span><span class="ln-row">    <span class="rg">PJDIR</span> = 0xFF;  <span class="rg">PJOUT</span> = 0x00;         <span class="cm">// PJ 和 JTAG 共用，也不能悬空</span></span><span class="ln-row">    <span class="rg">USBKEYPID</span> = 0x9628;                <span class="cm">// 钥匙：解锁 USB 配置寄存器</span></span><span class="ln-row">    <span class="rg">USBPWRCTL</span> &amp;= ~VUSBEN;              <span class="cm">// 关 3.3 V LDO</span></span><span class="ln-row">    <span class="rg">USBPWRCTL</span> &amp;= ~SLDOEN;              <span class="cm">// 关 1.8 V LDO</span></span><span class="ln-row">    <span class="rg">USBKEYPID</span> = 0x0000;                <span class="cm">// 写任何别的值：重新上锁</span></span><span class="ln-row">}</span></code></pre>
+<div class="grid2">
+<div class="panel">
+<h3>未用的引脚：输出低</h3>
+<p>悬空的输入会耗电。建议的做法：未用引脚设为 I/O 功能、输出方向、板上不连接；或者打开 PxREN 的上拉/下拉，同样能避免悬空。复位后 PJ 是高阻输入，又和 JTAG 共用，在调试环境里悬空不容易被发现。</p>
+</div>
+<div class="panel">
+<h3>USB 稳压器：先解锁再关</h3>
+<p>USB 的配置寄存器（包括 <code>USBPWRCTL</code>）被锁着。往 <span class="reg">USBKEYPID</span> 写 <b>0x9628</b> 才能改，写别的值就重新上锁。<code>VUSBEN</code> 管 3.3 V LDO，<code>SLDOEN</code> 管 1.8 V LDO。</p>
+</div>
+</div>
+<p class="aside">补充：1.8 V LDO 默认由 SLDOAON 按 VBUS 有没有电自动开关，完全关掉要连 SLDOAON 一起清。上面的函数只清了 SLDOEN，这里照示例代码记。</p>
+<p class="takeaway">低功耗不只是写 SR：先让所有用不到的东西（悬空引脚、USB 稳压器、不用的外设）安静下来，再让 CPU 睡。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>LPM4.5：连 core 一起断电 <span class="tag">M26.8</span></h2>
+<p class="hook"><span class="zh">时钟全停了还不够省？那就把 core 的电源也拔掉。代价是什么？</span><span class="es">LPMx.5: se desconecta el regulador del PMM y con él la alimentación del core.</span></p>
+<p><b class="t">PMM (Power Management Module)</b>——电源管理模块，负责给 core（CPU 和存储器）和外设供电。core 的电压 <b class="t">VCORE</b> 由 PMM 里的 LDO 稳压器产生。LPMx.5 的做法是：在 LPM4 的四个位之外，再置 <code>PMMREGOFF = 1</code>，把这个稳压器关掉。</p>
+<figure class="stage" data-scene="" id="m26-sc-lpm45">
+<div class="stage-title"><span>Escena 6 · LPM4 → LPM4.5</span><b>5 步</b></div>
+<div aria-label="动画：LPM4.5 关掉 core 电源，唤醒变成复位" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-lpm45-t" role="img" viewbox="0 0 800 340">
+<title id="m26-sc-lpm45-t">芯片里的 VCORE 域由 PMM 供电；LPM4.5 关掉 LDO，RAM 和寄存器内容丢失，引脚状态锁存；只有 RST、上电或特定 I/O 能唤醒，唤醒就是 BOR</title>
+<rect class="ln thin w" height="260" rx="14" width="520" x="40" y="40"></rect>
+<text class="tm sm m" x="56" y="68">MSP430F5529</text>
+<path class="bx b" d="M80 32h14v10h-14z M130 32h14v10h-14z M180 32h14v10h-14z M230 32h14v10h-14z M280 32h14v10h-14z M330 32h14v10h-14z M380 32h14v10h-14z M430 32h14v10h-14z M480 32h14v10h-14z M80 298h14v10h-14z M130 298h14v10h-14z M180 298h14v10h-14z M230 298h14v10h-14z M280 298h14v10h-14z M330 298h14v10h-14z M380 298h14v10h-14z M430 298h14v10h-14z M480 298h14v10h-14z"></path>
+<rect class="bx b" height="150" rx="10" width="380" x="110" y="96"></rect>
+<text class="tz sm b" x="126" y="120">VCORE 域 · core</text>
+<rect class="bx hollow b" height="66" rx="6" width="100" x="130" y="140"></rect>
+<rect class="bx hollow b" height="66" rx="6" width="100" x="250" y="140"></rect>
+<rect class="bx hollow b" height="66" rx="6" width="100" x="370" y="140"></rect>
+<text class="tm sm w mid" x="180" y="178">CPU</text>
+<text class="tm sm w mid" x="300" y="178">RAM</text>
+<text class="tz sm w mid" x="420" y="178">寄存器</text>
+<rect class="bx hollow o" height="64" rx="8" width="180" x="600" y="60"></rect>
+<text class="tm sm o mid" x="690" y="86">PMM · LDO</text>
+<text class="tm sm g mid" data-out="2" x="690" y="110">ON</text>
+<text class="tm sm r mid" data-step="2" x="690" y="110">OFF</text>
+<path class="ln g" d="M600 92 H530 V150 H494" data-out="2" marker-end="url(#m26-ah-g)"></path>
+<path class="ln thin m dash" d="M600 92 H530 V150 H494" data-step="2"></path>
+<text class="tz sm g mid" data-out="2" x="300" y="234">LPM4：时钟全停，内容保持</text>
+<g data-step="2">
+<rect class="veil" height="146" rx="9" width="376" x="112" y="98"></rect>
+<path class="ln r draw" d="M262 148 L338 198 M338 148 L262 198 M382 148 L458 198 M458 148 L382 198"></path>
+<text class="tz sm r mid" x="300" y="234">断电：RAM、寄存器内容丢失</text>
+<text class="tm sm y mid" x="690" y="150">PMMREGOFF = 1</text>
+</g>
+<g data-step="3">
+<rect class="ln y dash" height="290" rx="18" width="540" x="30" y="24"></rect>
+<text class="tz sm y mid" x="300" y="332">I/O 引脚状态被锁存（LOCKLPM5）</text>
+</g>
+<g data-step="4">
+<text class="tz sm r mid" x="690" y="188">RST · 上电 · P1/P2 引脚</text>
+<path class="ln r draw" d="M690 198 V224 H566" marker-end="url(#m26-ah-r)"></path>
+<text class="tz sm r mid" x="690" y="254">BOR → 从 0xFFFE 重新开始</text>
+<text class="tm xs m mid" x="690" y="276">SYSRSTIV = 08h · PMMLPM5IFG = 1</text>
+</g>
+<g data-step="5">
+<text class="tm sm y mid" data-hl="5" x="690" y="326">LPM4.5 ✓ · LPM3.5 ✗</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">先看 LPM4：时钟全停，但 PMM 的 LDO 还在给 VCORE 供电，CPU 寄存器和 RAM 的内容都保持，任何已使能的中断都能叫醒它。</li>
+<li data-dur="4200">LPM4.5 = LPM4 的四个位 + <code>PMMREGOFF = 1</code>：LDO 关断，core 断电。<b>RAM 和寄存器的内容全部丢失</b>。</li>
+<li data-dur="3800">断电前，引脚的状态被自动锁存（LOCKLPM5），外部电路看到的输出不变；醒来后要由程序解锁。</li>
+<li data-dur="5200">唤醒只能靠 RST 引脚（LaunchPad 上的 RESET 按钮 S3）、重新上电或特定的 I/O 引脚：F5529 上 P1、P2 的所有引脚都有 LPM4.5 唤醒功能。醒来就是一次 <b>BOR</b>：从复位向量 0xFFFE 重新执行，<code>SYSRSTIV = 08h</code> 告诉程序"刚从 LPMx.5 回来"。</li>
+<li data-dur="3800">LPM3.5 和 LPM4.5 类似，但还能让 RTC 继续工作并定时唤醒。F5529 没有实现 LPM3.5，只有 LPM4.5。</li>
+</ol>
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>什么时候值得用 LPM4.5</h3>
+<p>醒来要重建 VCORE、跑完 boot code，再从头初始化，所以唤醒时间比其他模式长得多（约 2–3 ms；LPM2–4 回到活动模式只要几 µs 到约 150 µs）。建议只用于很少发生、对响应时间不敏感的事件。</p>
+</div>
+<div class="panel">
+<h3>core 电压等级与 MCLK</h3>
+<p>core 需要的最低电压取决于 MCLK 的频率。PMM 上电后处于等级 0（<code>PMMCOREV = 0</code>，Estado por defecto (ES)——默认状态），此时厂家只保证 MCLK 最高 <b>8 MHz</b>；要更高的频率，先提高 core 电压等级，而且电源电压 VCC 也要够高（下表）。§8 的三次测量都注明"3 V、PMMCOREV = 0"。</p>
+</div>
+</div>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>PMMCOREV</th><th>0（默认）</th><th>1</th><th>2</th><th>3</th></tr></thead>
+<tbody>
+<tr><td>MCLK 最高</td><td class="mono">8 MHz</td><td class="mono">12 MHz</td><td class="mono">20 MHz</td><td class="mono">25 MHz</td></tr>
+<tr><td>VCC 至少</td><td class="mono">1.8 V</td><td class="mono">2.0 V</td><td class="mono">2.2 V</td><td class="mono">2.4 V</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">VCC 上限都是 3.6 V。等级越高、频率越高，电流也越大：活动模式 25 MHz 要 PMMCOREV = 3，典型 10.1 mA。</p>
+<p class="aside">进入 LPMx.5 前还要：所有引脚设为通用 I/O、不能有悬空输入（正是 §5 的 config_puertos_LPM 做的事）；对应的唤醒 flag 必须先清掉，否则醒不过来。另外，只要 <code>XT1OFF = 0</code> 或 <code>XT2OFF = 0</code>（晶振开着），LPMx.5 请求就被忽略，芯片根本不进入 LPMx.5（§7 末尾）。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>外设要时钟 <span class="tag">M26.9</span></h2>
+<p class="hook"><span class="zh">LPM3 关掉了 SMCLK，可是有个定时器正用着 SMCLK 计时。它会停下来吗？</span><span class="es">Periféricos y modos de bajo consumo: la petición de reloj.</span></p>
+<p>外设被使能、并选了某个时钟后，会自动向时钟模块 UCS 发出 <b class="t">petición de reloj (ES) / clock request (EN)</b>——时钟请求。<b>默认情况下请求总会被满足</b>：即使这个时钟被低功耗模式关了，也会为这个外设重新打开。SR 里的低功耗位保持原样，只是对被请求的这个时钟不起作用。</p>
+<p>这个默认行为由 <span class="reg">UCSCTL8</span> 的三个位控制，复位后都是 1：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>位</th><th>名字</th><th>= 1（复位默认）</th><th>= 0</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>ACLKREQEN</td><td>外设请求 ACLK 就能拿到</td><td rowspan="3">时钟严格按低功耗模式开关，请求无效</td></tr>
+<tr><td>1</td><td>MCLKREQEN</td><td>外设请求 MCLK 就能拿到</td></tr>
+<tr><td>2</td><td>SMCLKREQEN</td><td>外设请求 SMCLK 就能拿到（还受 UCSCTL6 的 SMCLKOFF 影响）</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">UCSCTL8 还有位 3 <code>MODOSCREQEN</code>（MODOSC 的条件请求，复位为 0）；位 10–8 保留，必须写 1。所以 UCSCTL8 的复位值是 0x0707。</p>
+<p>请求开、关两种情况下，各时钟在每个模式里的状态如下（SMCLK 按 SMCLKOFF = 0；SMCLKOFF = 1 时，只有请求能让 SMCLK 继续）：</p>
+<div class="tbl-wrap">
+<table class="mt">
+<thead><tr><th>模式</th><th>ACLK · REQEN = 0 / 1</th><th>MCLK · REQEN = 0 / 1</th><th>SMCLK · REQEN = 0 / 1</th></tr></thead>
+<tbody>
+<tr><td>AM</td><td class="on">开 / 开</td><td class="on">开 / 开</td><td class="on">开 / 开</td></tr>
+<tr><td>LPM0、LPM1</td><td class="on">开 / 开</td><td><span class="c-r">关</span> / <span class="c-g">开</span></td><td class="on">开 / 开</td></tr>
+<tr><td>LPM2、LPM3</td><td class="on">开 / 开</td><td><span class="c-r">关</span> / <span class="c-g">开</span></td><td><span class="c-r">关</span> / <span class="c-g">开</span></td></tr>
+<tr><td>LPM4</td><td><span class="c-r">关</span> / <span class="c-g">开</span></td><td><span class="c-r">关</span> / <span class="c-g">开</span></td><td><span class="c-r">关</span> / <span class="c-g">开</span></td></tr>
+<tr><td>LPM3.5、LPM4.5</td><td class="off">关 / 关</td><td class="off">关 / 关</td><td class="off">关 / 关</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note alert">
+<span class="lbl">两个陷阱</span>
+<p>① 请求被满足时，芯片虽然"在 LPM3 里"，电流却可能高于 §2 电流表里这个模式的值。② 如果被请求时钟的源振荡器没开，会产生<b>振荡器故障</b>：UCSCTL7 里的故障位和 OFIFG 置 1，可以用 NMI 来处理（M24）。</p>
+</div>
+<p class="aside">（有些资料里写成 ACKLREQEN、MCKLREQEN、SMCKLREQEN，是笔误。）进入 LPMx.5 前的请求一律被忽略（但 XT1OFF 或 XT2OFF = 0 时芯片根本不进入 LPMx.5，见 §6）。</p>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>测电流，算续航 <span class="tag">M26.10</span></h2>
+<p class="hook"><span class="zh">"省电"到底省了多少？把电流换成一颗纽扣电池能用的天数，就一目了然。</span><span class="es">Duración de la batería = carga (mAh) / corriente media.</span></p>
+<p>在 LaunchPad 上这样测电流：jumpers de aislamiento (ES)——隔离跳线块里的 <b>3V3 跳线</b>串在板子 3.3 V 电源线上。拔掉它（同时拔掉 RXD、TXD），把万用表的 µA 档接在两个测点之间，就能测出电流 I，功率 P = I·V。</p>
+<div class="note warm">
+<span class="lbl">别被调试器骗了</span>
+<p>在 CCS 里调试运行时，JTAG 调试接口也在耗电，读数会偏大。要退出调试器，按 S3（RESET）让程序独立运行，再读表，读数才和 §2 电流表里的值对得上。</p>
+</div>
+<p>电池能用多久，就是电荷量除以平均电流：</p>
+<div class="formula" data-tex="t_{\text{h}} = \frac{\class{c-b}{C}\ (\text{mAh})}{\class{c-o}{\bar I}\ (\text{mA})} \qquad t_{\text{d}} = \frac{t_{\text{h}}}{24}">t(h) = C(mAh) / Ī(mA)　　t(天) = t(h) / 24</div>
+<p class="aside">注意单位：µA 要先换成 mA（÷ 1000）。程序有醒有睡时，Ī 是按时间加权的平均：睡得越久，Ī 越接近睡眠电流（§0）。</p>
+<figure class="stage" data-scene="" id="m26-sc-bat">
+<div class="stage-title"><span>Escena 8 · tres ejemplos medidos</span><b>5 步</b></div>
+<div aria-label="动画：三个实测例子的电池续航" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m26-sc-bat-t" role="img" viewbox="0 0 800 300">
+<title id="m26-sc-bat-t">CR2020 电池 125 mAh：LPM4 1.36 微安 3829.65 天；LPM3 加 REFO 4.91 微安 1060.76 天；LPM3 加 XT1 2.41 微安 2161.13 天</title>
+<g data-step="1">
+<text class="tm sm w" x="24" y="36">CR2020 · 125 mAh</text>
+<text class="tz sm y" x="270" y="36">天数 = 125 mAh ÷ Ī ÷ 24 h</text>
+<path class="ln thin m" d="M260 56 V262"></path>
+</g>
+<g data-step="2">
+<text class="tm sm w" x="24" y="92">LPM4 · 1.36 µA</text>
+<text class="tz sm m" x="24" y="114">所有时钟停</text>
+<rect class="bx b" height="32" rx="3" width="400" x="260" y="80"></rect>
+<path class="ln b draw" d="M260 80 H660 V112 H260"></path>
+<text class="tm sm b" x="670" y="102">3829.65 天</text>
+</g>
+<g data-step="3">
+<text class="tm sm w" x="24" y="162">LPM3 · 4.91 µA</text>
+<text class="tz sm m" x="24" y="184">ACLK = REFO</text>
+<rect class="bx r" height="32" rx="3" width="111" x="260" y="150"></rect>
+<path class="ln r draw" d="M260 150 H371 V182 H260"></path>
+<text class="tm sm r" x="381" y="172">1060.76 天</text>
+</g>
+<g data-step="4">
+<text class="tm sm w" x="24" y="232">LPM3 · 2.41 µA</text>
+<text class="tz sm m" x="24" y="254">ACLK = XT1 晶振</text>
+<rect class="bx g" height="32" rx="3" width="226" x="260" y="220"></rect>
+<path class="ln g draw" d="M260 220 H486 V252 H260"></path>
+<text class="tm sm g" x="496" y="242">2161.13 天</text>
+</g>
+<g data-step="5">
+<text class="tz sm y" data-hl="5" x="260" y="288">同是 LPM3：ACLK 用 REFO 多耗约 2.5 µA → 天数约少一半</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">算法：续航（h）= 电池容量（mAh）÷ 平均电流（mA），再除以 24 得到天数。电池是 CR2020 纽扣电池，125 mAh。</li>
+<li data-dur="4400">例 1 · LPM_consumo1（LPM4，所有端口输出低）：实测 1.36 µA，落在 §2 电流表里 LPM4 的 1.1–1.5 µA 之间→ 125 ÷ 0.00136 ≈ 91 912 h ≈ <b>3829.65 天</b>，十年以上。</li>
+<li data-dur="4200">例 2 · LPM_consumo2（LPM3，ACLK = REFO）：实测 4.91 µA → <b>1060.76 天</b>。ACLK 还开着，REFO 振荡器也得一直跑。</li>
+<li data-dur="4400">例 3 · LPM_consumo3（LPM3，ACLK = XT1，P5.4/P5.5 配成 XIN/XOUT）：实测 2.41 µA，落在 §2 电流表里"LPM3 · XT1"的 2.1–2.9 µA 之间 → <b>2161.13 天</b>。同一个模式，换个时钟源，续航翻倍。</li>
+<li data-dur="4800">怎么解释例 2？§2 的电流表里没有"LPM3 + REFO"这一行，所以按 LPM4 的基础电流（1.1–1.5 µA）+ REFO 自身的消耗（典型约 3 µA）来估。除了选模式，还要选对时钟源。</li>
+</ol>
+<p class="stage-note">条长按天数比例画。</p>
+</figure>
+<div class="note">
+<span class="lbl">为什么例 1、例 2 的 ACLK 是 REFO？</span>
+<p>上电默认 ACLK 来自 XT1。但这两个程序没有把 P5.4、P5.5 配成 XIN/XOUT，XT1 起振失败，触发振荡器故障，ACLK 自动切到 REFO（M24 的 fail-safe）。例 3 配了这两个引脚，ACLK 才真正用上晶振。</p>
+</div>
+<div class="drill" data-drill="bat"></div>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">1 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="bat"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M26">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>LPM3 是由 SR 中哪几位置 1 组成的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>GIE、CPUOFF</button>
+<button data-o="b" type="button"><span class="k">B</span>SCG1、SCG0、CPUOFF</button>
+<button data-o="c" type="button"><span class="k">C</span>SCG1、OSCOFF、CPUOFF</button>
+<button data-o="d" type="button"><span class="k">D</span>SCG1、SCG0、OSCOFF、CPUOFF 四位全部</button>
+</div>
+<p class="why"><b>B。</b>LPM3 = 1101（SCG1 SCG0 OSCOFF CPUOFF）。四位全 1 是 LPM4（§1）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>程序还没开 GIE（SR = 0x0000），直接执行 <code>__low_power_mode_3()</code>。此时 SR 的值是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0x00D0</button>
+<button data-o="b" type="button"><span class="k">B</span>0x00F8</button>
+<button data-o="c" type="button"><span class="k">C</span>0x00D8</button>
+<button data-o="d" type="button"><span class="k">D</span>0x0008</button>
+</div>
+<p class="why"><b>C。</b>intrinsics.h 里 <code>__low_power_mode_3()</code> 就是 <code>__bis_SR_register(0xD8)</code>：0x80 + 0x40 + 0x10 再加 GIE 的 0x08，GIE 被顺手置 1。写成 <code>LPM3</code> 或 <code>__bis_SR_register(LPM3_bits)</code> 才只置 0xD0，SR = 0x00D0。0x00F8 是 LPM4（§1、§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">03</span>在 LPM3 中，哪个系统时钟还在工作（不考虑外设的时钟请求）？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>MCLK</button>
+<button data-o="b" type="button"><span class="k">B</span>SMCLK</button>
+<button data-o="c" type="button"><span class="k">C</span>ACLK</button>
+<button data-o="d" type="button"><span class="k">D</span>一个都没有</button>
+</div>
+<p class="why"><b>C。</b>LPM2、LPM3 只留 ACLK；LPM4 才全部停掉（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>LPM0 和 LPM1 的区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>LPM1 还停掉了 SMCLK</button>
+<button data-o="b" type="button"><span class="k">B</span>LPM1 还关掉了 FLL（SCG0 = 1）</button>
+<button data-o="c" type="button"><span class="k">C</span>LPM1 还停掉了 ACLK</button>
+<button data-o="d" type="button"><span class="k">D</span>LPM1 的 CPU 还在运行</button>
+</div>
+<p class="why"><b>B。</b>两者都停 CPU 和 MCLK，SMCLK、ACLK 照常；LPM1 多置了 SCG0，FLL 关闭（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>CPU 处于 LPM3。什么能把它唤醒？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>任何已使能的中断</button>
+<button data-o="b" type="button"><span class="k">B</span>只有 RST 引脚</button>
+<button data-o="c" type="button"><span class="k">C</span>main 里的下一条指令把 SR 清零</button>
+<button data-o="d" type="button"><span class="k">D</span>只有 watchdog 超时</button>
+</div>
+<p class="why"><b>A。</b>LPM0–LPM4 只能由中断唤醒；CPU 睡着时 main 不会执行任何指令。只能靠 RST/上电/特定 I/O 唤醒的是 LPM4.5（§3、§6）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">06</span>从 LPM3 唤醒后执行 RTI，RTI 没有修改栈里的 SR。RETI 之后会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>回到活动模式，继续执行 main</button>
+<button data-o="b" type="button"><span class="k">B</span>进入 LPM4</button>
+<button data-o="c" type="button"><span class="k">C</span>芯片复位</button>
+<button data-o="d" type="button"><span class="k">D</span>恢复 SR = 0x00D8，回到 LPM3</button>
+</div>
+<p class="why"><b>D。</b>RETI 恢复的是压栈时的 SR，里面带着 LPM3 的位（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>CPU 从 LPM3 被中断唤醒。RTI 执行期间，FLL 是什么状态？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>开着，因为进入 RTI 时 SR 全部清零</button>
+<button data-o="b" type="button"><span class="k">B</span>关着，因为进入 RTI 时 SCG0 保持原值（1）</button>
+<button data-o="c" type="button"><span class="k">C</span>取决于 GIE</button>
+<button data-o="d" type="button"><span class="k">D</span>FLL 和 DCO 都停，RTI 用 ACLK 执行</button>
+</div>
+<p class="why"><b>B。</b>进入 RTI 时 SR 除 SCG0 外全部清零，SR = 0x0040；需要时可以在 RTI 里自己清 SCG0（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">08</span>想让 RTI 结束后 CPU 醒着回到 main（LPM_c 的结构），RTI 里应写？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>__bic_SR_register(LPM3_bits);</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>__bic_SR_register_on_exit(LPM3_bits);</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>__bis_SR_register(GIE);</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>__low_power_mode_3();</code></button>
+</div>
+<p class="why"><b>B。</b>要改的是栈里的副本。A 改的是当前 SR，RTI 里它本来就是醒着的，RETI 一弹栈就被覆盖（§4）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">09</span>RTI 里执行 <code>__bis_SR_register_on_exit(OSCOFF)</code>，进中断前是 LPM3。RETI 后？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>回到活动模式</button>
+<button data-o="b" type="button"><span class="k">B</span>回到 LPM3</button>
+<button data-o="c" type="button"><span class="k">C</span>进入 LPM4，main 里的指令不会执行</button>
+<button data-o="d" type="button"><span class="k">D</span>进入 LPM4.5</button>
+</div>
+<p class="why"><b>C。</b>栈里 0x00D8 | 0x0020 = 0x00F8 = LPM4。这样 LED 不会翻转。LPM4.5 还需要 PMMREGOFF（§4、§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>关于 F5529 的 LPMx.5，哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>LPM3.5 和 LPM4.5 都支持</button>
+<button data-o="b" type="button"><span class="k">B</span>只支持 LPM4.5；唤醒时发生 BOR，从复位向量重新开始</button>
+<button data-o="c" type="button"><span class="k">C</span>LPM4.5 中 RAM 内容保持</button>
+<button data-o="d" type="button"><span class="k">D</span>任何已使能的中断都能唤醒 LPM4.5</button>
+</div>
+<p class="why"><b>B。</b>F5529 没有 LPM3.5；LPM4.5 关掉 VCORE，RAM 丢失，只能用 RST、上电或特定 I/O 唤醒（§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>复位后不改 UCSCTL8。CPU 进入 LPM3 时，一个定时器正用 SMCLK 计时。会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>SMCLK 停掉，定时器也停</button>
+<button data-o="b" type="button"><span class="k">B</span>SMCLKREQEN 默认为 1，定时器的请求让 SMCLK 继续供给它</button>
+<button data-o="c" type="button"><span class="k">C</span>CPU 被迫退出 LPM3，回到活动模式</button>
+<button data-o="d" type="button"><span class="k">D</span>一定会产生振荡器故障</button>
+</div>
+<p class="why"><b>B。</b>请求默认总被满足，SR 的低功耗位不变，CPU 继续睡；代价是电流可能高于 §2 电流表里的 LPM3 值（§7）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>125 mAh 的纽扣电池，电路平均电流 1.36 µA。理论续航约为？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>约 3.8 天</button>
+<button data-o="b" type="button"><span class="k">B</span>约 92 天</button>
+<button data-o="c" type="button"><span class="k">C</span>约 3830 天</button>
+<button data-o="d" type="button"><span class="k">D</span>约 91 912 天</button>
+</div>
+<p class="why"><b>C。</b>125 ÷ 0.00136 ≈ 91 912 h，÷ 24 ≈ 3830 天（§8 例 1：3829.65 天）。D 忘了除以 24（§8）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">modo activo<small>active mode · AM</small></span><span class="back"><b>活动模式</b><br/>CPU 运行，时钟全开。响应最快，电流最大。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">modo de bajo consumo<small>low-power mode · LPM0–LPM4</small></span><span class="back"><b>低功耗模式</b><br/>CPU 停，按编号逐步关掉时钟；编号越大越省电、醒得越慢。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">CPUOFF<small>SR.4</small></span><span class="back"><b>关 CPU</b><br/>所有 LPM 都置 1：接在 MCLK 的使能逻辑上，CPU 和 MCLK 停止。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">OSCOFF<small>SR.5</small></span><span class="back"><b>关振荡器</b><br/>只在 LPM4（及 LPMx.5）置 1：接在 ACLK 的使能逻辑上，连 ACLK 也停。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SCG0<small>System Clock Generator 0 · SR.6</small></span><span class="back"><b>系统时钟发生器 0</b><br/>关 FLL 的频率积分器。进入 RTI 时唯一不被清零的位。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">SCG1<small>System Clock Generator 1 · SR.7</small></span><span class="back"><b>系统时钟发生器 1</b><br/>关 DCO 的直流发生器（DC Generator），FLL 也停。LPM2–LPM4 置 1，这些模式里 SMCLK 停。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PMM<small>Power Management Module</small></span><span class="back"><b>电源管理模块</b><br/>给 core 和外设供电；LDO 产生 VCORE。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PMMREGOFF</span><span class="back"><b>关 PMM 稳压器</b><br/>和 LPM4 的位一起置 1 → LPMx.5，core 断电。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">LPM4.5<small>LPMx.5</small></span><span class="back"><b>core 断电模式</b><br/>RAM、寄存器丢失；RST/上电/特定 I/O 唤醒 → BOR。F5529 没有 LPM3.5。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">core<small>VCORE</small></span><span class="back"><b>内核</b><br/>CPU 和存储器（Flash、RAM）。最低电压取决于 MCLK 频率。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">__bis_SR_register()<small>__bic_SR_register()</small></span><span class="back"><b>改当前 SR</b><br/>bis 置 1、bic 清 0。用来开 GIE、进入 LPM。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">…_SR_register_on_exit()</span><span class="back"><b>改栈里的 SR</b><br/>只在 RTI 里用：RETI 后切换或退出低功耗模式。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">_low_power_mode_off_on_exit()</span><span class="back"><b>退出低功耗</b><br/>清栈中 SR 的 4 个 LPM 位，RETI 后 CPU 醒着回 main。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">petición de reloj<small>clock request · xCLKREQEN</small></span><span class="back"><b>时钟请求</b><br/>外设要时钟就给（UCSCTL8 默认）；可能让电流高于 §2 电流表的值。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">USBKEYPID<small>0x9628</small></span><span class="back"><b>USB 钥匙寄存器</b><br/>写 0x9628 解锁 USB 配置寄存器，写别的值上锁。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">duración de la batería<small>battery life · mAh</small></span><span class="back"><b>电池续航</b><br/>容量（mAh）÷ 平均电流（mA）= 小时数。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M26"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+  var box = $("m26-dial");
+  if (!box || box.getAttribute("data-ready")) return;
+  box.setAttribute("data-ready", "1");
+
+  
+  function on(t) { return [1, t || "ON"]; }
+  function off(t) { return [0, t || "OFF"]; }
+  var M = {
+    AM: { name: "AM", b: [0, 0, 0, 0], p: 0, hex: "0x0008", w: 356,
+      d: { cpu: on("运行"), mclk: on(), smclk: on(), aclk: on(), dco: on(), fll: on(), src: on(), ps: on(), pa: on(), vc: on("ON · 内容保持") },
+      cur: "典型值：1 MHz、从 Flash 执行约 0.36 mA",
+      say: "Activo（AM）：CPU 执行代码，MCLK、SMCLK、ACLK 全开，FLL 稳住 DCO。响应最快，电流最大。" },
+    LPM0: { name: "LPM0", b: [0, 0, 0, 1], p: 0, hex: "0x0018", w: 292,
+      d: { cpu: off("OFF · zZ"), mclk: off(), smclk: on(), aclk: on(), dco: on(), fll: on(), src: on(), ps: on(), pa: on(), vc: on("ON · 内容保持") },
+      cur: "典型值：83 µA（SMCLK = DCO = 1 MHz，PMMCOREV = 3）",
+      say: "LPM0：只置 CPUOFF。CPU 和 MCLK 停；SMCLK、ACLK 照常，FLL 继续稳 DCO。用 SMCLK 的外设可以继续工作。" },
+    LPM1: { name: "LPM1", b: [0, 1, 0, 1], p: 0, hex: "0x0058", w: 275,
+      d: { cpu: off("OFF · zZ"), mclk: off(), smclk: on(), aclk: on(), dco: on("ON · 不再稳频"), fll: off(), src: on(), ps: on(), pa: on(), vc: on("ON · 内容保持") },
+      cur: "电流表没有单列 LPM1：比 LPM0 略低（条长是估计）",
+      say: "LPM1：再加 SCG0，关掉 FLL。DCO 仍在为 SMCLK 运行，但不再被稳频。如果 DCO 本来就没在用，LPM0 和 LPM1 电流一样。" },
+    LPM2: { name: "LPM2", b: [1, 0, 0, 1], p: 0, hex: "0x0098", w: 185,
+      d: { cpu: off("OFF · zZ"), mclk: off(), smclk: off(), aclk: on(), dco: off(), fll: off("OFF · 积分器保持"), src: on(), ps: off(), pa: on(), vc: on("ON · 内容保持") },
+      cur: "典型值：7.0 µA（最大 13 µA，含 WDT、RTC）",
+      say: "LPM2：SCG1 + CPUOFF。SMCLK 也停了，只剩 ACLK。FLL 关闭，但 SCG0 = 0，积分器没断电：醒来后 DCO 稳定得比 LPM3 快，代价是电流稍大。" },
+    LPM3: { name: "LPM3", b: [1, 1, 0, 1], p: 0, hex: "0x00D8", w: 132,
+      d: { cpu: off("OFF · zZ"), mclk: off(), smclk: off(), aclk: on(), dco: off(), fll: off(), src: on(), ps: off(), pa: on(), vc: on("ON · 内容保持") },
+      cur: "典型 2.1 µA（XT1）· 实测 2.41 µA（XT1）/ 4.91 µA（REFO）",
+      say: "LPM3：SCG1 + SCG0 + CPUOFF。只剩 ACLK，用 ACLK 的外设（例如定时器）可以继续工作并定时叫醒 CPU。" },
+    LPM4: { name: "LPM4", b: [1, 1, 1, 1], p: 0, hex: "0x00F8", w: 104,
+      d: { cpu: off("OFF · zZ"), mclk: off(), smclk: off(), aclk: off(), dco: off(), fll: off(), src: off(), ps: off(), pa: off(), vc: on("ON · 内容保持") },
+      cur: "典型值：1.1 µA（最大 1.5）· 实测 1.36 µA",
+      say: "LPM4：四个位全 1。CPU 和所有时钟都停，只有外部事件（例如端口中断）能叫醒。RAM 和寄存器内容保持。" },
+    LPM45: { name: "LPM4.5", b: [1, 1, 1, 1], p: 1, hex: "0x00F8", w: 26,
+      d: { cpu: off("断电"), mclk: off(), smclk: off(), aclk: off(), dco: off(), fll: off(), src: off(), ps: off(), pa: off(), vc: off("OFF · RAM、寄存器丢失") },
+      cur: "典型值：0.18 µA（最大 0.35 µA）",
+      say: "LPM4.5：LPM4 的四个位 + PMMREGOFF = 1。PMM 的 LDO 关断，VCORE 断电。只能用 RST、重新上电或特定 I/O 唤醒，醒来就是一次 BOR（§6）。" }
+  };
+  var KEYS = ["cpu", "mclk", "smclk", "aclk", "dco", "fll", "src", "ps", "pa"];
+  var bar = $("m26-bar"), barW = +bar.getAttribute("width"), anim = 0, cur = "LPM3";
+  var btns = Array.prototype.slice.call(document.querySelectorAll("#m26-modes button[data-mode]"));
+  var out = $("m26-dout");
+
+  function setBar(w) {
+    if (anim) { cancelAnimationFrame(anim); anim = 0; }
+    if (reduce) { barW = w; bar.setAttribute("width", w); return; }
+    var w0 = barW, t0 = null;
+    function f(ts) {
+      if (t0 == null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / 450), e = 1 - Math.pow(1 - k, 3);
+      barW = w0 + (w - w0) * e;
+      bar.setAttribute("width", barW.toFixed(1));
+      if (k < 1) anim = requestAnimationFrame(f); else anim = 0;
+    }
+    anim = requestAnimationFrame(f);
+  }
+  function bit(n, v) {
+    $("m26-c" + n).setAttribute("class", v ? "bx o" : "bx hollow m");
+    var t = $("m26-v" + n);
+    t.textContent = v ? "1" : "0";
+    t.setAttribute("class", "tm mid " + (v ? "o" : "m"));
+  }
+  function show(key) {
+    var m = M[key];
+    if (!m) return;
+    cur = key;
+    bit(7, m.b[0]); bit(6, m.b[1]); bit(5, m.b[2]); bit(4, m.b[3]);
+    $("m26-cp").setAttribute("class", m.p ? "bx r" : "bx hollow m");
+    $("m26-vp").textContent = m.p ? "1" : "0";
+    $("m26-vp").setAttribute("class", "tm mid " + (m.p ? "r" : "m"));
+    $("m26-hex").textContent = m.hex;
+    $("m26-mname").textContent = m.name;
+    KEYS.forEach(function (k) {
+      var s = m.d[k];
+      $("m26-d-" + k).setAttribute("class", s[0] ? "bx g" : "bx hollow m");
+      var t = $("m26-s-" + k);
+      t.textContent = s[1];
+      t.setAttribute("class", "tm xs mid " + (s[0] ? "g" : "m"));
+    });
+    var vc = m.d.vc;
+    $("m26-d-vc").setAttribute("class", vc[0] ? "bx b" : "bx hollow r");
+    $("m26-s-vc").textContent = vc[1];
+    $("m26-s-vc").setAttribute("class", "tm xs end " + (vc[0] ? "b" : "r"));
+    $("m26-barv").textContent = m.cur;
+    setBar(m.w);
+    btns.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-mode") === key ? "true" : "false"); });
+    out.textContent = m.say;
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-mode");
+      if (k === "LPM35") {
+        out.textContent = "F5529 没有 LPM3.5。在有它的型号上，LPM3.5 和 LPM4.5 一样关掉 VCORE，但 RTC 还能工作并定时唤醒芯片。图上仍显示 " + M[cur].name + "。";
+        return;
+      }
+      if (k === cur) return;
+      show(k);
+    });
+  });
+  show("LPM3");
+})();
+</script>
+</body>
+</html>

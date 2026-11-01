@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M12 Sistema de desarrollo · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .led-on { fill: var(--st-green); stroke: var(--st-green); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--st-green) 90%, transparent)); }
+.stage .ghost { opacity: .14; }
+.stage .jcap { cursor: pointer; }
+.stage .jcap:focus-visible { outline: none; }
+.stage .jcap:focus-visible rect { stroke: var(--st-yellow); stroke-width: 3; }
+.mini {
+  border: 1px solid var(--st-line); background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.mini:disabled { opacity: .35; cursor: default; }
+.mini .k { color: var(--st-muted); font-weight: 400; margin-left: 4px; }
+.stage-ctl .out ul { margin: .3rem 0 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .15rem; font-weight: 400; }
+.stage-ctl .out .ok { color: var(--st-green); }
+.stage-ctl .out .no { color: var(--st-red); }
+
+
+.dbg { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; padding: 14px; }
+@media (max-width: 720px) { .dbg { grid-template-columns: minmax(0, 1fr); } }
+.dbg-tab { font: 600 11px/1.3 var(--f-mono); letter-spacing: .06em; color: var(--st-muted); padding: 0 0 6px 4px; }
+.dbg-src.code { border-radius: 8px; border: 1px solid var(--st-line); padding: 8px 0; }
+.dbg-src .dl { display: flex; align-items: center; white-space: pre; padding-right: 14px; min-height: 24px; min-width: max-content; }
+.dbg-src .dl.pc { background: color-mix(in srgb, var(--st-yellow) 15%, transparent); box-shadow: inset 3px 0 0 var(--st-yellow); }
+.dbg-src .no { color: var(--st-muted); width: 2em; text-align: right; margin-right: 10px; flex: none; }
+.dbg-src .bp, .dbg-src .bp0 { width: 24px; height: 24px; flex: 0 0 24px; border: 0; background: transparent; padding: 0; position: relative; }
+.dbg-src .bp { cursor: pointer; }
+.dbg-src .bp::after { content: ""; position: absolute; left: 7px; top: 7px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px dashed var(--st-line); box-sizing: border-box; }
+.dbg-src .bp:hover::after { border-color: var(--st-red); }
+.dbg-src .bp[aria-pressed="true"]::after { background: var(--st-red); border: 0; }
+.dbg-side { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.dbg-win { border: 1px solid var(--st-line); border-radius: 8px; background: var(--st-panel); padding: 7px 10px; font: 13px/1.5 var(--f-mono); color: var(--st-ink); min-width: 0; }
+.dbg-h { font: 600 10.5px/1.3 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--st-muted); margin-bottom: 3px; }
+.dbg-win table { font-size: 13px; width: 100%; }
+.dbg-win td { border-bottom: 1px solid var(--st-grid); padding: 2px 6px; color: var(--st-ink); background: transparent; }
+.dbg-win td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.dbg-win td.chg { background: color-mix(in srgb, var(--st-yellow) 24%, transparent); color: var(--st-yellow); }
+.dbg-win.stale table, .dbg-win.stale .v { opacity: .4; }
+.dbg-state { font-weight: 600; }
+.dbg-state.run { color: var(--st-green); }
+.dbg-state.susp { color: var(--st-yellow); }
+.dbg-state.edit { color: var(--st-muted); }
+.dbg-board { display: flex; align-items: center; gap: 10px; }
+.dbg-board svg { width: 34px; height: 34px; min-width: 0; display: block; }
+
+
+.ledtbl td:first-child, .ledtbl td:nth-child(2) { white-space: nowrap; }
+.dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--line); vertical-align: -1px; }
+.dot.g { background: var(--green); border-color: var(--green); }
+.dot.r { background: var(--red); border-color: var(--red); }
+.dot.blink { background: transparent; border-style: dashed; border-color: var(--red); }
+.keys td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; color: var(--blue); }
+.pins td:first-child { white-space: nowrap; font-weight: 600; }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m12-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m12-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m12-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m12-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m12-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+<marker id="m12-ah-t" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-teal)"></path></marker>
+<marker id="m12-ah-m" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-muted)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 1 章节" class="chain" data-chain="M12"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 1 · Aspectos básicos del MSP430F5529 y E/S por sondeo · M12–M13</div>
+<h1>Sistema de desarrollo</h1>
+<p class="zh">开发系统：LaunchPad、工具链与 CCS</p>
+<div class="meta">
+
+<span>Tutorial <b>T13</b></span>
+<span><b>10</b> 个要点</span>
+<span>阅读约 20 分钟</span>
+
+
+</div>
+<p class="lede">一段 C 代码要变成板子上一闪一闪的 LED，中间要经过三样东西：一块带调试器的开发板、一条把 C 翻译成机器码的工具链、一个把这一切串起来的 IDE。这一章先拆开 <b class="t">placa de desarrollo (ES) / development board (EN)</b>——开发板，再沿着"源码 → 可执行代码 → Flash"走一遍，最后在 <b class="t">Code Composer Studio (CCS)</b> 里把程序停下来、单步、看寄存器。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M12.1</span>
+<div class="txt"><span>说出开发系统的三部分，以及 LaunchPad 的四个区块和板上的两颗 MSP430</span><span class="es">Placa MSP-EXP430F5529LP, CCS, MSP430ware; bloques de la placa.</span><a href="#s1">→ §1 四个区块</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.2</span>
+<div class="txt"><span>画出供电路径：VBUS 5 V、TPS62237 降到 3,3 V，各给谁；TUSB2046 hub 接了哪两个口</span><span class="es">Bloque de alimentación y hub USB.</span><a href="#s1">→ §1 四个区块</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.3</span>
+<div class="txt"><span>解释 eZ-FET 为什么是"复合 USB 设备"：调试接口（Spy-Bi-Wire）和 Application UART（USCI_A1）</span><span class="es">Programador/depurador eZ-FET.</span><a href="#s2">→ §2 eZ-FET</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.4</span>
+<div class="txt"><span>说出隔离跳线块上有哪些信号，以及什么时候要拔掉哪一个</span><span class="es">Bloque de jumpers de aislamiento.</span><a href="#s2">→ §2 eZ-FET</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.5</span>
+<div class="txt"><span>记住 S1、S2、LED1、LED2 接的引脚，为什么按钮要上拉、JP8 有什么用；RESET、BSL、XT1、XT2</span><span class="es">Bloque de aplicación: pulsadores, LEDs, cristales.</span><a href="#s3">→ §3 应用区</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.6</span>
+<div class="txt"><span>按抽象层级排出汇编、C、DriverLib、Energia，说出每往上一级"不用管"的是什么、代价是什么</span><span class="es">Niveles de abstracción.</span><a href="#s4">→ §4 抽象的梯子</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.7</span>
+<div class="txt"><span>说明为什么选 C：它的高级语言特性和低级特性各举几条</span><span class="es">¿Por qué C?</span><a href="#s5">→ §5 为什么是 C</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.8</span>
+<div class="txt"><span>定义机器码、汇编语言、汇编器、编译器、链接器，按顺序画出开发流程</span><span class="es">Flujo de desarrollo software.</span><a href="#s6">→ §6 工具链</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.9</span>
+<div class="txt"><span>区分 workspace 和 project，会新建工程（目标芯片、连接、编译器）并 Build</span><span class="es">Espacio de trabajo, proyecto, construcción.</span><a href="#s7">→ §7 CCS</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M12.10</span>
+<div class="txt"><span>用 Run/Suspend/Step Over/断点调试，读 Registers、Variables、Expressions、Memory 窗口</span><span class="es">Aspectos básicos de depuración.</span><a href="#s8">→ §8 调试</a></div>
+<button aria-pressed="false" class="chk" data-obj="M12.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M12"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>从一行代码到一盏灯</h2>
+<p class="hook"><span class="zh">你在电脑上写了 <code>P1OUT ^= BIT0;</code>，板子上的 LED 就开始闪。这中间发生了什么？</span><span class="es">¿Qué hay entre el código fuente y el LED que parpadea?</span></p>
+<figure class="stage" data-scene="" id="m12-sc-intro">
+<div class="stage-title"><span>Escena 0 · del PC a la placa</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：代码从 PC 经 USB 和 eZ-FET 写进 MSP430F5529，LED1 开始闪烁。用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-intro-t" role="img" viewbox="0 0 800 380">
+<title id="m12-sc-intro-t">PC 上的 CCS 通过 USB 线连到 LaunchPad；板上的 eZ-FET 经 Spy-Bi-Wire 把程序写进 MSP430F5529；程序运行，LED1 闪烁</title>
+<rect class="bx b" height="160" rx="10" width="230" x="20" y="70"></rect>
+<text class="tx sm b" x="36" y="102">PC · CCS</text>
+<text class="tm sm w" x="36" y="140">P1DIR |= BIT0;</text>
+<text class="tm sm w" x="36" y="166">P1OUT ^= BIT0;</text>
+<text class="tm sm m" x="36" y="192">for(i=50000;…);</text>
+<path class="ln thin m" d="M135 230 V252 M100 252 H170"></path>
+<g data-step="2">
+<path class="ln m draw" d="M250 150 C 300 150, 310 112, 360 112"></path>
+<text class="tm xs m mid" x="300" y="104">USB</text>
+<rect class="ln thin m" height="300" rx="14" width="420" x="360" y="30"></rect>
+<text class="tm sm m" x="376" y="56">MSP-EXP430F5529LP</text>
+<rect class="bx w" height="66" rx="8" width="170" x="390" y="80"></rect>
+<text class="tx sm w mid" x="475" y="110">eZ-FET lite</text>
+<text class="tz sm m mid" x="475" y="134">depurador</text>
+<path class="ln thin m dash" d="M372 176 H768"></path>
+<text class="tm xs m end" x="768" y="168">emulador ↑</text>
+<text class="tm xs m end" x="768" y="194">target ↓</text>
+<rect class="bx w" height="86" rx="8" width="240" x="390" y="206"></rect>
+<text class="tx sm w mid" x="510" y="240">MSP430F5529</text>
+<text class="tz sm m mid" x="510" y="270">FLASH ← programa</text>
+<path class="ln thin m" d="M630 249 H694"></path>
+<circle class="bx m" cx="710" cy="249" r="14"></circle>
+<text class="tm xs m mid" x="710" y="286">LED1 · P1.0</text>
+</g>
+<g data-step="3">
+<path class="ln p draw" d="M475 146 V206" marker-end="url(#m12-ah-p)"></path>
+<text class="tm xs p" x="486" y="182">Spy-Bi-Wire</text>
+</g>
+<path d="M250 150 C 300 150, 310 112, 390 112 H475 V250" id="m12-p-load" style="fill:none;stroke:none"></path>
+<circle class="sl b" data-move="#m12-p-load" data-move-dur="1600" data-out="4" data-step="3" r="6"></circle>
+<g data-step="4">
+<path class="ln g" d="M630 249 H694"></path>
+<circle class="led-on" cx="710" cy="249" r="14"></circle>
+<text class="tz sm g mid" x="510" y="318">P1OUT ^= BIT0 → 闪烁</text>
+</g>
+<g data-step="5">
+<text class="tx sm y mid" data-hl="5" x="400" y="366">placa  +  Code Composer Studio  +  MSP430ware</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>起点：PC 上的 CCS 里有一段 C 代码，就是本章例子 <code>MSP430F55xx_1.c</code> 的核心——翻转 P1.0。</li>
+<li data-dur="3600">一根 USB–microUSB 线把 PC 连到 LaunchPad。板子分两半：上面是 <b>eZ-FET</b> 调试器，下面是我们真正要编程的 <b>MSP430F5529</b>（target）。</li>
+<li data-dur="3600">编译好的程序经 USB 送到 eZ-FET，eZ-FET 再通过 <b class="t">Spy-Bi-Wire (SBW)</b>——两线 JTAG——把它写进 F5529 的 FLASH。</li>
+<li>F5529 开始执行：每圈翻转一次 P1.0，LED1 闪烁。</li>
+<li data-dur="3800">开发系统 = 开发板 <b>MSP-EXP430F5529LP</b> + 开发调试环境 <b>CCS</b> + 软件包 <b>MSP430ware</b>。下面逐一拆开。</li>
+</ol>
+</figure>
+<p class="takeaway">开发板负责"连上并调试"，工具链负责"翻译"，CCS 把编辑、编译、下载、调试放进同一个窗口。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>LaunchPad 的四个区块 <span class="tag">M12.1 · M12.2</span></h2>
+<p class="hook"><span class="zh">一根 USB 线，既供电、又下载程序、又能当串口，还能让 F5529 自己做 USB 设备。板上是怎么分工的？</span><span class="es">Diagrama de bloques de la MSP-EXP430F5529LP.</span></p>
+<p><b class="t">LaunchPad</b>（TI 对这类开发板的叫法）可以分成四个区块：电源与 hub、<b class="t">programador/depurador (ES) / debugger (EN)</b>——下载调试器 eZ-FET、应用区（MSP430F5529）、<b class="t">jumpers de aislamiento (ES) / isolation jumpers (EN)</b>——隔离跳线。下面一块一块搭起来：</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m12-sc-board">
+<div class="stage-title"><span>Escena 1 · diagrama de bloques</span><b>5 步</b></div>
+<div aria-label="动画：LaunchPad 的四个区块逐个出现" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-board-t" role="img" viewbox="0 0 800 440">
+<title id="m12-sc-board-t">USB 接口接 TUSB2046 hub；VBUS 5 V 一路经跳线到目标芯片，一路经 TPS62237 变成 3,3 V；hub 一个口接 eZ-FET，另一个口接 F5529 的 USB；eZ-FET 与 F5529 之间隔着 10 个跳线</title>
+
+<text class="tm xs m mid" x="52" y="48">micro-USB</text>
+<rect class="bx m" height="44" rx="6" width="64" x="20" y="58"></rect>
+<text class="tm sm w mid" x="52" y="85">USB</text>
+<path class="ln b" d="M84 72 H130"></path>
+<text class="tm xs m mid" x="107" y="64">ESD</text>
+<rect class="bx w" height="84" rx="8" width="170" x="130" y="40"></rect>
+<text class="tm sm w mid" x="215" y="72">TUSB2046</text>
+<text class="tz sm m mid" x="215" y="98">hub USB · 4 puertos</text>
+<path class="ln t draw" d="M52 102 V150 H421 V180" id="m12-p-vbus" marker-end="url(#m12-ah-t)"></path>
+<text class="tm xs t" x="62" y="142">VBUS 5 V</text>
+<path class="ln t" d="M210 150 V184"></path>
+<rect class="bx t" height="64" rx="8" width="160" x="130" y="184"></rect>
+<text class="tm sm t mid" x="210" y="212">TPS62237</text>
+<text class="tz sm m mid" x="210" y="236">5 V → 3,3 V</text>
+<path class="ln t draw" d="M290 216 H340 V172 H413 a8 8 0 0 1 16 0 H462 V180" id="m12-p-3v3" marker-end="url(#m12-ah-t)"></path>
+<text class="tm xs t" x="298" y="208">3,3 V</text>
+<circle class="sl t" data-move="#m12-p-vbus" data-out="2" data-step="1" r="5"></circle>
+<circle class="sl t" data-move="#m12-p-3v3" data-move-dur="1500" data-out="2" data-step="1" r="5"></circle>
+
+<g data-step="2">
+<path class="ln b draw" d="M300 72 H440"></path>
+<text class="tm xs b mid" x="370" y="64">USB</text>
+<rect class="bx w" data-hl="2" height="84" rx="8" width="330" x="440" y="40"></rect>
+<text class="tx sm w" x="456" y="72">eZ-FET lite</text>
+<text class="tz sm m" x="456" y="102">programador / depurador · MSP430F5528</text>
+<circle class="bx g" cx="726" cy="66" r="7"></circle>
+<circle class="bx r" cx="750" cy="66" r="7"></circle>
+</g>
+
+<g data-step="3">
+<path class="ln b draw" d="M215 40 V22 H786 V365 H770" marker-end="url(#m12-ah-b)"></path>
+<text class="tm xs b" x="560" y="16">USB de aplicación</text>
+<rect class="bx w" data-hl="3" height="90" rx="8" width="390" x="380" y="320"></rect>
+<text class="tx sm w" x="396" y="354">MSP430F5529</text>
+<text class="tz sm m" x="396" y="386">aplicación · 4 pulsadores · 2 LEDs · 40 pines</text>
+</g>
+
+<g data-step="4">
+<rect class="ln thin m dash" height="56" rx="6" width="410" x="360" y="176"></rect>
+<path class="ln thin b" d="M503 124 V184 M544 124 V184 M585 124 V184 M626 124 V184"></path>
+<path class="ln thin p" d="M667 124 V184 M708 124 V184"></path>
+<path class="ln thin t" d="M421 224 V320 M462 224 V320"></path>
+<path class="ln thin b" d="M503 224 V320 M544 224 V320 M585 224 V320 M626 224 V320"></path>
+<path class="ln thin p" d="M667 224 V320 M708 224 V320"></path>
+<rect class="bx m" height="40" rx="3" width="34" x="363" y="184"></rect>
+<rect class="bx t" height="40" rx="3" width="34" x="404" y="184"></rect>
+<rect class="bx t" height="40" rx="3" width="34" x="445" y="184"></rect>
+<rect class="bx b" height="40" rx="3" width="34" x="486" y="184"></rect>
+<rect class="bx b" height="40" rx="3" width="34" x="527" y="184"></rect>
+<rect class="bx b" height="40" rx="3" width="34" x="568" y="184"></rect>
+<rect class="bx b" height="40" rx="3" width="34" x="609" y="184"></rect>
+<rect class="bx p" height="40" rx="3" width="34" x="650" y="184"></rect>
+<rect class="bx p" height="40" rx="3" width="34" x="691" y="184"></rect>
+<rect class="bx hollow m" height="40" rx="3" width="34" x="732" y="184"></rect>
+<text class="tm xs m mid" x="380" y="208">GND</text>
+<text class="tm xs t mid" x="421" y="208">5V</text>
+<text class="tm xs t mid" x="462" y="208">3V3</text>
+<text class="tm xs b mid" x="503" y="208">RTS</text>
+<text class="tm xs b mid" x="544" y="208">CTS</text>
+<text class="tm xs b mid" x="585" y="208">RXD</text>
+<text class="tm xs b mid" x="626" y="208">TXD</text>
+<text class="tm xs p mid" x="667" y="208">RST</text>
+<text class="tm xs p mid" x="708" y="208">TST</text>
+<text class="tm xs m mid" x="749" y="208">N/C</text>
+</g>
+<g data-step="5">
+<path class="ln thin y dash" d="M20 290 H360"></path>
+<text class="tz sm y" x="24" y="280">emulador · alimentación · hub ↑</text>
+<text class="tz sm y" x="24" y="314">target ↓</text>
+<text class="tm xs y mid" data-hl="5" x="215" y="140">2 de 4 puertos en uso</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4600"><b>电源与 hub</b>：USB 口后面先过一级 ESD 保护。USB 主机提供 5 V（VBUS，青色），一路经跳线直接送到目标芯片；另一路进 <b>TPS62237</b>（DC-DC）降到 3,3 V，经跳线给 F5529 供电（MSP430 的工作电压是 1,8–3,6 V）。这条 3,3 V 同时也给 hub 和 eZ-FET 供电。</li>
+<li data-dur="4000"><b>eZ-FET</b>：hub 的一个口接到 eZ-FET。它本身是一颗 <b>MSP430F5528</b>，被编程成 USB device，向 PC 提供下载、调试和串口服务；旁边的绿、红两个指示灯显示它的状态（§2）。</li>
+<li data-dur="4200"><b>应用区</b>：hub 的另一个口直接接到 F5529 内置的 USB 外设，用来开发你自己的 USB 设备。F5529 周围还有按钮、LED、晶振和 40 针扩展口。</li>
+<li data-dur="4200"><b>隔离跳线</b>：eZ-FET 和 F5529 之间的连接——电源、串口、Spy-Bi-Wire——都经过一排跳线，每根都可以单独拔掉（§2）。</li>
+<li data-dur="4000">板子被一条虚线分成两半：仿真器一侧（电源和 hub 也算在这一侧）和目标一侧。<b>TUSB2046</b> 有 4 个口，只用了 2 个，其余两个已端接、不可用。</li>
+</ol>
+<p class="stage-note">线的走法不代表实际布线。</p>
+
+</figure>
+<p>点一个区块，看它的要点：</p>
+<div class="stack" data-explain="pwr">
+<div aria-label="LaunchPad 区块" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-key="pwr" type="button">Alimentación y hub</button>
+<button aria-pressed="false" class="chip" data-key="ezfet" type="button">eZ-FET</button>
+<button aria-pressed="false" class="chip" data-key="app" type="button">Aplicación F5529</button>
+<button aria-pressed="false" class="chip" data-key="jmp" type="button">Jumpers</button>
+</div>
+<div class="panel" data-panel="pwr">
+<h3>电源与 hub · Alimentación y hub USB</h3>
+<ul>
+<li>默认由 USB 主机供电：<span class="reg">VBUS</span> = 5 V。</li>
+<li>5 V 经跳线送到目标 F5529，给它<b>内置的 USB 外设</b>用（开发 USB 设备时需要）。USB 设备也靠 VBUS 是否存在来判断主机是否接上。</li>
+<li>5 V 同时进 <b>TPS62237</b>（DC-DC）得到 3,3 V，经跳线给 F5529 供电。这条 3,3 V 还给 hub 和 eZ-FET 供电。</li>
+<li><b>TUSB2046</b>：4 口 hub，用了 2 个——一个给 eZ-FET，一个给 F5529 的 USB；另外两个口不用。所以一根线就能同时调试和开发 USB 应用。</li>
+<li>跳线之后，<b>5 V</b>（下图绿色）到 F5529、左侧排针 J1 顶上的 5V 针和左下角电源排针 J3（GND、GND、5V）；<b>3,3 V</b>（黄色）到 F5529、J1 顶上的 3V3 针和右下角电源排针 J10（GND、GND、3V3）。</li>
+</ul>
+
+</div>
+<div class="panel" data-panel="ezfet" hidden="">
+<h3>下载调试器 · eZ-FET</h3>
+<ul>
+<li>一颗 <b>MSP430F5528</b>（VQFN 封装，在板子右上方），被编程成 USB device。</li>
+<li>对 PC 是一个<b>复合 USB 设备</b>：一个接口用于下载和调试（Spy-Bi-Wire），一个接口是虚拟串口，接到 F5529 的 USCI_A1。</li>
+<li>板上有两个指示灯，表示它的状态（§2 有表）。</li>
+</ul>
+</div>
+<div class="panel" data-panel="app" hidden="">
+<h3>应用区 · Bloque de aplicación</h3>
+<ul>
+<li>MSP430F5529（LQFP 封装，板子中间的 U6）+ 40 针扩展口 + 2 个 LED + 4 个按钮 + 一个晶体 + 一个陶瓷谐振器 + 电容、电阻、跳线。</li>
+<li>板上的丝印标出了每个元件在原理图里的名字；按钮、LED、扩展针还标了接到哪个引脚（下面的板面图）。</li>
+<li>细节见 §3。</li>
+</ul>
+</div>
+<div class="panel" data-panel="jmp" hidden="">
+<h3>隔离跳线 · Jumpers de aislamiento</h3>
+<ul>
+<li>位于调试区和应用区之间，分成三组：<b>电源</b>、<b>串口</b>、<b>Spy-Bi-Wire</b>。</li>
+<li>从左到右丝印是 GND、5V、3V3、RTS &gt;&gt;、CTS &lt;&lt;、RXD &lt;&lt;、TXD &gt;&gt;、SBW RST、SBW TST，最后一位没有丝印（N/C）。照片在 §2 的跳线模拟器下面。</li>
+<li>拔掉它们可以测目标电流、改用外部电源、把 eZ-FET 接到别的目标板（§2 的模拟器）。</li>
+</ul>
+</div>
+</div>
+<p>方块图对应到真实的板子上是这样：</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m12-sc-map">
+<div class="stage-title"><span>Escena 1b · la placa vista desde arriba</span><b>5 步</b></div>
+<div aria-label="动画：LaunchPad 板面布局，逐步标出仿真器一侧、隔离跳线、目标芯片与时钟、底边的按钮和 LED、两侧排针。用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-map-t" role="img" viewbox="0 0 800 640">
+<title id="m12-sc-map-t">板面俯视图：上半部是 micro-USB、DC-DC、hub 和 eZ-FET（MSP430F5528）；中间一条虚线上跨着隔离跳线块；下半部中间是 MSP430F5529，上方 Q4（XT2），左下 Q2（XT1），左上 RST 和 BSL 按钮；底边从左到右是 S1、LED1、JP8、LED2、S2；两侧是 J1、J5 两组 2×10 排针，底角是电源排针 J3、J10</title>
+<rect class="ln thin m" height="580" rx="14" width="460" x="170" y="40"></rect>
+<g data-step="1">
+<rect class="bx m" height="34" rx="4" width="60" x="218" y="20"></rect>
+<text class="tm xs w mid" x="248" y="42">USB</text>
+<rect class="bx t" height="40" rx="4" width="40" x="226" y="128"></rect>
+<text class="tm xs t mid" x="246" y="184">DC-DC</text>
+<rect class="bx w" height="46" rx="3" width="46" x="306" y="84"></rect>
+<text class="tm xs w mid" x="329" y="111">hub</text>
+<text class="tm xs w mid" x="329" y="146">TUSB2046</text>
+<circle class="bx g" cx="378" cy="58" r="5"></circle>
+<circle class="bx r" cx="394" cy="58" r="5"></circle>
+<text class="tm xs m" x="406" y="62">状态灯</text>
+<path class="ln thin m dash" d="M402 70 V208"></path>
+<path class="bx w" d="M500 102 L546 148 L500 194 L454 148 Z" data-hl="1"></path>
+<text class="tm xs w mid" x="500" y="152">F5528</text>
+<text class="tm xs w" x="640" y="136">eZ-FET lite</text>
+<text class="tm xs m" x="640" y="152">MSP430F5528</text>
+<text class="tm xs m" x="640" y="168">VQFN</text>
+</g>
+<g data-step="2">
+<path class="ln thin m dash" d="M176 240 H388 M584 240 H624"></path>
+<text class="tm xs m mid" x="284" y="232">— LaunchPad —</text>
+<rect class="bx m" height="32" rx="2" width="16" x="392" y="224"></rect>
+<rect class="bx t" height="32" rx="2" width="16" x="411" y="224"></rect>
+<rect class="bx t" height="32" rx="2" width="16" x="430" y="224"></rect>
+<rect class="bx b" height="32" rx="2" width="16" x="449" y="224"></rect>
+<rect class="bx b" height="32" rx="2" width="16" x="468" y="224"></rect>
+<rect class="bx b" height="32" rx="2" width="16" x="487" y="224"></rect>
+<rect class="bx b" height="32" rx="2" width="16" x="506" y="224"></rect>
+<rect class="bx p" height="32" rx="2" width="16" x="525" y="224"></rect>
+<rect class="bx p" height="32" rx="2" width="16" x="544" y="224"></rect>
+<rect class="bx hollow m" height="32" rx="2" width="16" x="563" y="224"></rect>
+<rect class="ln thin y" data-hl="2" height="44" rx="4" width="199" x="386" y="218"></rect>
+<text class="tm xs y end" x="160" y="232">eZ-FET ↑</text>
+<text class="tm xs y end" x="160" y="254">target ↓</text>
+<text class="tm xs y" x="640" y="236">jumpers de</text>
+<text class="tm xs y" x="640" y="252">aislamiento</text>
+</g>
+<g data-step="3">
+<rect class="bx r" height="44" rx="6" width="44" x="222" y="262"></rect>
+<circle class="ln thin r" cx="244" cy="284" r="10"></circle>
+<text class="tm xs r mid" x="244" y="322">S3 RST</text>
+<rect class="bx r" height="44" rx="6" width="44" x="302" y="262"></rect>
+<circle class="ln thin r" cx="324" cy="284" r="10"></circle>
+<text class="tm xs r mid" x="324" y="322">S5 BSL</text>
+<rect class="bx o" height="14" rx="3" width="34" x="372" y="318"></rect>
+<text class="tm xs o" x="412" y="330">Q4 XT2 4 MHz</text>
+<rect class="bx w" data-hl="3" height="114" rx="4" width="114" x="350" y="356"></rect>
+<text class="tm sm w mid" x="407" y="408">F5529</text>
+<text class="tm xs m mid" x="407" y="430">U6 · LQFP</text>
+<rect class="bx o" height="56" rx="8" width="20" x="300" y="432"></rect>
+<text class="tm xs o" x="326" y="484">Q2 XT1</text>
+<text class="tm xs o" x="326" y="498">32 kHz</text>
+</g>
+<g data-step="4">
+<rect class="bx r" data-hl="4" height="44" rx="6" width="44" x="294" y="560"></rect>
+<circle class="ln thin r" cx="316" cy="582" r="10"></circle>
+<text class="tm xs r mid" x="316" y="552">S1 · P2.1</text>
+<rect class="bx r" height="8" rx="2" width="12" x="368" y="574"></rect>
+<text class="tm xs r mid" x="374" y="560">LED1</text>
+<text class="tm xs b mid" x="374" y="614">P1.0</text>
+<rect class="bx w" height="40" rx="2" width="14" x="404" y="566"></rect>
+<text class="tm xs w mid" x="411" y="560">JP8</text>
+<rect class="bx g" height="8" rx="2" width="12" x="442" y="574"></rect>
+<text class="tm xs g mid" x="448" y="560">LED2</text>
+<text class="tm xs b mid" x="448" y="614">P4.7</text>
+<rect class="bx r" data-hl="4" height="44" rx="6" width="44" x="490" y="560"></rect>
+<circle class="ln thin r" cx="512" cy="582" r="10"></circle>
+<text class="tm xs r mid" x="512" y="552">S2 · P1.1</text>
+</g>
+<g data-step="5">
+<rect class="bx t" height="12" rx="2" width="12" x="226" y="338"></rect>
+<text class="tm xs t end" x="222" y="348">3V3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="358"></rect>
+<text class="tm xs w end" x="222" y="368">P6.5</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="378"></rect>
+<text class="tm xs w end" x="222" y="388">P3.4</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="398"></rect>
+<text class="tm xs w end" x="222" y="408">P3.3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="418"></rect>
+<text class="tm xs w end" x="222" y="428">P1.6</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="438"></rect>
+<text class="tm xs w end" x="222" y="448">P6.6</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="458"></rect>
+<text class="tm xs w end" x="222" y="468">P3.2</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="478"></rect>
+<text class="tm xs w end" x="222" y="488">P2.7</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="498"></rect>
+<text class="tm xs w end" x="222" y="508">P4.2</text>
+<rect class="bx m" height="12" rx="2" width="12" x="226" y="518"></rect>
+<text class="tm xs w end" x="222" y="528">P4.1</text>
+<rect class="bx t" height="12" rx="2" width="12" x="246" y="338"></rect>
+<text class="tm xs t" x="262" y="348">5V</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="358"></rect>
+<text class="tm xs m" x="262" y="368">GND</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="378"></rect>
+<text class="tm xs w" x="262" y="388">P6.0</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="398"></rect>
+<text class="tm xs w" x="262" y="408">P6.1</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="418"></rect>
+<text class="tm xs w" x="262" y="428">P6.2</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="438"></rect>
+<text class="tm xs w" x="262" y="448">P6.3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="458"></rect>
+<text class="tm xs w" x="262" y="468">P6.4</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="478"></rect>
+<text class="tm xs w" x="262" y="488">P7.0</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="498"></rect>
+<text class="tm xs w" x="262" y="508">P3.6</text>
+<rect class="bx m" height="12" rx="2" width="12" x="246" y="518"></rect>
+<text class="tm xs w" x="262" y="528">P3.5</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="322"></rect>
+<text class="tm xs w end" x="542" y="332">P2.5</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="342"></rect>
+<text class="tm xs w end" x="542" y="352">P2.4</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="362"></rect>
+<text class="tm xs w end" x="542" y="372">P1.5</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="382"></rect>
+<text class="tm xs w end" x="542" y="392">P1.4</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="402"></rect>
+<text class="tm xs w end" x="542" y="412">P1.3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="422"></rect>
+<text class="tm xs w end" x="542" y="432">P1.2</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="442"></rect>
+<text class="tm xs w end" x="542" y="452">P4.3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="462"></rect>
+<text class="tm xs w end" x="542" y="472">P4.0</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="482"></rect>
+<text class="tm xs w end" x="542" y="492">P3.7</text>
+<rect class="bx m" height="12" rx="2" width="12" x="546" y="502"></rect>
+<text class="tm xs w end" x="542" y="512">P8.2</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="322"></rect>
+<text class="tm xs m" x="582" y="332">GND</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="342"></rect>
+<text class="tm xs w" x="582" y="352">P2.0</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="362"></rect>
+<text class="tm xs w" x="582" y="372">P2.2</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="382"></rect>
+<text class="tm xs w" x="582" y="392">P7.4</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="402"></rect>
+<text class="tm xs m" x="582" y="412">RST</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="422"></rect>
+<text class="tm xs w" x="582" y="432">P3.0</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="442"></rect>
+<text class="tm xs w" x="582" y="452">P3.1</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="462"></rect>
+<text class="tm xs w" x="582" y="472">P2.6</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="482"></rect>
+<text class="tm xs w" x="582" y="492">P2.3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="566" y="502"></rect>
+<text class="tm xs w" x="582" y="512">P8.1</text>
+<text class="tm xs y mid" x="242" y="548">J1</text>
+<text class="tm xs y mid" x="562" y="530">J5</text>
+<rect class="bx m" height="12" rx="2" width="12" x="230" y="560"></rect>
+<rect class="bx m" height="12" rx="2" width="12" x="230" y="576"></rect>
+<rect class="bx t" height="12" rx="2" width="12" x="230" y="592"></rect>
+<text class="tm xs m" x="246" y="570">GND</text>
+<text class="tm xs m" x="246" y="586">GND</text>
+<text class="tm xs t" x="246" y="602">5V</text>
+<text class="tm xs y end" x="226" y="586">J3</text>
+<rect class="bx m" height="12" rx="2" width="12" x="582" y="560"></rect>
+<rect class="bx m" height="12" rx="2" width="12" x="582" y="576"></rect>
+<rect class="bx t" height="12" rx="2" width="12" x="582" y="592"></rect>
+<text class="tm xs m" x="598" y="570">GND</text>
+<text class="tm xs m" x="598" y="586">GND</text>
+<text class="tm xs t" x="598" y="602">3V3</text>
+<text class="tm xs y end" x="578" y="586">J10</text>
+<text class="tm xs y end" x="160" y="404">J1 + J5</text>
+<text class="tm xs y end" x="160" y="420">40 pines</text>
+<text class="tm xs y end" x="160" y="436">BoosterPack</text>
+<text class="tm xs t end" x="160" y="590">电源排针</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4600">上半部分是<b>仿真器一侧</b>：左上角 micro-USB 口，旁边是 DC-DC（TPS62237）和 hub（TUSB2046）；虚线右边是 eZ-FET lite，一颗 <b>MSP430F5528</b>（VQFN 封装）。顶上的绿、红两个小灯就是它的状态灯。</li>
+<li data-dur="4000">横穿板子的虚线（丝印 "LaunchPad"）把板子分成两半，<b>隔离跳线块</b>正好跨在线上：上面接 eZ-FET，下面接目标芯片。</li>
+<li data-dur="4600">下半部分是<b>目标一侧</b>：中间的 U6 就是 <b>MSP430F5529</b>（LQFP 封装）。它上方的 Q4 是 XT2 的 4 MHz 陶瓷谐振器，左下的 Q2 是 XT1 的 32 kHz 晶体；左上角两个按钮是 RST（S3）和 BSL（S5）。</li>
+<li data-dur="4200">底边一排是给你用的：<b>S1（P2.1）</b>、LED1（P1.0，红）、跳线 JP8、LED2（P4.7，绿）、<b>S2（P1.1）</b>。接哪个引脚就印在元件旁边。</li>
+<li data-dur="5000">两侧的 J1、J5 各是 2×10 针，合起来就是 40 针 BoosterPack 接口，每根针旁印着引脚名。J1 顶上是 3V3 和 5V；底角的 J3（GND、GND、5V）和 J10（GND、GND、3V3）是电源排针。</li>
+</ol>
+<p class="stage-note">位置和大小是近似的；排针上的引脚名照丝印抄录（Rev 1.4/1.5 的板子相同）。跳线颜色和 Escena 1 一样。</p>
+
+</figure>
+<p class="takeaway">一根 USB 线 → hub 分成两路数据（eZ-FET、F5529 的 USB）+ 两路电源（5 V、降压后的 3,3 V），全部经过跳线进入目标一侧。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>eZ-FET：一个 USB 口，两个串口 <span class="tag">M12.3 · M12.4</span></h2>
+<p class="hook"><span class="zh">插上板子，Windows 的设备管理器里会多出两个 COM 口。为什么是两个？</span><span class="es">La conexión eZ-FET es un dispositivo USB compuesto.</span></p>
+<p>eZ-FET 对 PC 来说是一个 <b class="t">dispositivo USB compuesto (ES) / composite USB device (EN)</b>——复合 USB 设备：同一个设备里有两个接口。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="m12-sc-ezfet">
+<div class="stage-title"><span>Escena 2 · dos interfaces, un cable</span><b>5 步</b></div>
+<div aria-label="动画：eZ-FET 的调试接口和串口接口" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-ezfet-t" role="img" viewbox="0 0 800 380">
+<title id="m12-sc-ezfet-t">PC 设备管理器里有 MSP Debug Interface 和 MSP Application UART1；eZ-FET 的调试接口经 Spy-Bi-Wire 两根线接 F5529，串口接口经 TXD、RXD 接 USCI_A1（P4.4、P4.5）；所有线都经过跳线</title>
+<rect class="bx m" height="200" rx="10" width="232" x="16" y="40"></rect>
+<text class="tx sm w" x="32" y="72">PC</text>
+<text class="tm xs m" x="70" y="70">devmgmt.msc</text>
+<text class="tm xs m" x="32" y="98">Ports (COM &amp; LPT)</text>
+<path class="ln m" d="M248 140 H300"></path>
+<text class="tm xs m mid" x="274" y="130">USB</text>
+<rect class="bx w" height="260" rx="10" width="190" x="300" y="40"></rect>
+<text class="tx sm w mid" x="395" y="72">eZ-FET lite</text>
+<text class="tz sm m mid" x="395" y="98">MSP430F5528 · VQFN</text>
+<text class="tm xs y mid" data-hl="1 5" x="395" y="126">USB compuesto</text>
+<rect class="bx w" height="300" rx="10" width="176" x="610" y="40"></rect>
+<text class="tx sm w mid" x="698" y="72">MSP430F5529</text>
+<g data-step="2">
+<rect class="bx p" height="40" rx="6" width="204" x="30" y="118"></rect>
+<text class="tm xs p" x="42" y="143">MSP Debug Interface</text>
+<rect class="bx p" height="36" rx="18" width="162" x="314" y="150"></rect>
+<text class="tm xs p mid" x="395" y="173">CDC · depuración</text>
+<path class="ln thin p dash" d="M314 168 C 280 168, 270 138, 234 138"></path>
+<path class="ln p draw" d="M490 164 H610" id="m12-p-sbw"></path>
+<path class="ln p draw" d="M490 190 H610"></path>
+<text class="tm xs p" x="496" y="154">SBW</text>
+<text class="tm xs p" x="620" y="168">RST/NMI/SBWTDIO</text>
+<text class="tm xs p" x="620" y="194">TEST/SBWTCK</text>
+</g>
+<circle class="sl p" data-move="#m12-p-sbw" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<rect class="bx b" height="40" rx="6" width="204" x="30" y="170"></rect>
+<text class="tm xs b" x="42" y="195">MSP Application UART1</text>
+<rect class="bx b" height="36" rx="18" width="162" x="314" y="200"></rect>
+<text class="tm xs b mid" x="395" y="223">CDC · UART</text>
+<path class="ln thin b dash" d="M314 218 C 280 218, 270 190, 234 190"></path>
+<path class="ln b draw" d="M610 250 H490" id="m12-p-tx" marker-end="url(#m12-ah-b)"></path>
+<path class="ln b draw" d="M490 280 H610" id="m12-p-rx" marker-end="url(#m12-ah-b)"></path>
+<text class="tm xs b" x="574" y="244">TXD</text>
+<text class="tm xs b" x="574" y="274">RXD</text>
+<text class="tm xs b" x="620" y="254">P4.4 · UCA1TXD</text>
+<text class="tm xs b" x="620" y="284">P4.5 · UCA1RXD</text>
+<text class="tz sm b" x="620" y="320">USCI_A1</text>
+</g>
+<circle class="sl b" data-move="#m12-p-tx" data-out="4" data-step="3" r="5"></circle>
+<circle class="sl b" data-move="#m12-p-rx" data-out="4" data-step="3" r="5"></circle>
+<g data-step="4">
+<rect class="ln thin y dash" data-hl="4" height="170" rx="6" width="32" x="536" y="136"></rect>
+<text class="tm xs y mid" x="552" y="128">jumpers</text>
+<rect class="bx w" height="14" rx="2" width="16" x="544" y="157"></rect>
+<rect class="bx w" height="14" rx="2" width="16" x="544" y="183"></rect>
+<rect class="bx w" height="14" rx="2" width="16" x="544" y="243"></rect>
+<rect class="bx w" height="14" rx="2" width="16" x="544" y="273"></rect>
+</g>
+<g data-step="5">
+<text class="tz sm y mid" x="400" y="366">一根 USB 线 = 下载 / 调试通道 + 串口通道</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>USB 线接到 eZ-FET。它是<b>复合 USB 设备</b>：PC 一次枚举出两个接口。</li>
+<li data-dur="4600">接口 1：<b>下载与调试</b>。在 PC 上显示为 <code>MSP Debug Interface</code>，只给 CCS、IAR 这类工具用。eZ-FET 用 <b>Spy-Bi-Wire</b> 两根线连到 F5529：数据线和 RST/NMI 共用引脚，时钟线和 TEST 共用引脚。</li>
+<li data-dur="4600">接口 2：<b>Application UART</b>（backchannel UART）。在 PC 上显示为 <code>MSP Application UART1</code>，另一端接 F5529 的 <b>USCI_A1</b>：TXD 在 P4.4，RXD 在 P4.5。用终端软件打开这个 COM 口就能和程序对话（Bloque 3 会用到）。</li>
+<li>两条通道都经过隔离跳线，可以单独断开。</li>
+<li>结论：一根线同时完成"下载调试"和"串口通信"，所以设备管理器里出现两个口。COM 号因电脑而异，名字不变。</li>
+</ol>
+
+</figure>
+<div class="note">
+<span class="lbl">细节</span>
+<p>调试接口是 JTAG 的 Spy-Bi-Wire 版本。更准确地说：MSP430F5xx 同时支持标准的四线 JTAG 和两线的 <b>Spy-Bi-Wire（SBW）</b>，而板上的 eZ-FET lite <b>只支持 SBW</b>。两根线在跳线块上标作 "SBW RST" 和 "SBW TST"。两个接口在 PC 上都是虚拟串口（CDC 接口，虚拟 COM 口）。</p>
+</div>
+<h3>隔离跳线：拔掉一根会怎样？</h3>
+<p>跳线块一共 10 个位置。点下面的开关拔插跳线（GND 和 N/C 固定不动），看哪些功能还能用：</p>
+<figure class="stage" id="m12-jmp">
+<div class="stage-title"><span>Simulador · jumpers de aislamiento</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="m12-jmp-t" role="img" viewbox="0 0 800 200">
+<title id="m12-jmp-t">隔离跳线块：上方是 eZ-FET，下方是 MSP430F5529；10 个位置从左到右是 GND、5V、3V3、RTS、CTS、RXD、TXD、SBW RST、SBW TST、N/C</title>
+<text class="tm xs m" x="16" y="20">eZ-FET ↑</text>
+<text class="tm xs m" x="16" y="194">MSP430F5529 ↓</text>
+<path class="ln thin t" d="M110 30 H235"></path>
+<text class="tz sm t mid" x="172" y="24">alimentación</text>
+<path class="ln thin b" d="M260 30 H535"></path>
+<text class="tz sm b mid" x="397" y="24">UART (backchannel)</text>
+<path class="ln thin p" d="M560 30 H685"></path>
+<text class="tz sm p mid" x="622" y="24">Spy-Bi-Wire</text>
+<rect class="ln thin m dash" height="110" rx="8" width="760" x="20" y="40"></rect>
+<g id="m12-jrow"></g>
+</svg>
+</div>
+<div class="stage-ctl">
+<button aria-pressed="true" class="sw" id="m12-jb-5v" type="button"><span class="knob"></span><span class="lab">5V</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-3v3" type="button"><span class="knob"></span><span class="lab">3V3</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-rts" type="button"><span class="knob"></span><span class="lab">RTS</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-cts" type="button"><span class="knob"></span><span class="lab">CTS</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-rxd" type="button"><span class="knob"></span><span class="lab">RXD</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-txd" type="button"><span class="knob"></span><span class="lab">TXD</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-rst" type="button"><span class="knob"></span><span class="lab">SBW RST</span></button>
+<button aria-pressed="true" class="sw" id="m12-jb-tst" type="button"><span class="knob"></span><span class="lab">SBW TST</span></button>
+<button class="mini" id="m12-jb-all" type="button">全部插回</button>
+<div aria-live="polite" class="out" id="m12-jout"></div>
+</div>
+<p class="stage-note">跳线的顺序和丝印（RTS &gt;&gt;、CTS &lt;&lt;……）和板上一样；第 10 位板上没有丝印，记为 N/C。模拟器假设没有外接电源。</p>
+
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>什么时候拔跳线</h3>
+<ul>
+<li><b>测目标电流</b>：拔掉 3V3，在两针之间串电流表；hub、eZ-FET、DC-DC 的电流不计在内。要测得准，还要拔掉 UART 和 SBW 跳线，避免经 I/O 漏电。</li>
+<li><b>外接 3,3 V</b>：必须拔掉 3V3，防止反向给 eZ-FET 供电。</li>
+<li><b>UART 引脚另作他用</b>：拔掉 UART 跳线；只需两个普通 I/O 时，可以只拔 RTS、CTS。</li>
+<li><b>调试别的目标板</b>：拔掉跳线，把自己的板子接到跳线块上。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>eZ-FET 的两个指示灯</h3>
+<div class="tbl-wrap">
+<table class="ledtbl">
+<thead><tr><th>绿 · Power</th><th>红 · Mode</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td><span class="dot"></span> 灭</td><td><span class="dot"></span> 灭</td><td>没连上 PC 或没准备好：拔下重插</td></tr>
+<tr><td><span class="dot g"></span> 亮</td><td><span class="dot"></span> 灭</td><td>已连接就绪，IDE 还没打开它</td></tr>
+<tr><td><span class="dot g"></span> 亮</td><td><span class="dot r"></span> 亮</td><td>IDE 正在用，但没有数据传输</td></tr>
+<tr><td><span class="dot g"></span> 亮</td><td><span class="dot blink"></span> 闪</td><td>正在和 IDE 传数据</td></tr>
+<tr><td><span class="dot"></span> 灭</td><td><span class="dot r"></span> 亮</td><td>严重错误：拔下重插，不行就送修</td></tr>
+<tr><td colspan="2">两个都闪</td><td>正在更新 eZ-FET 的固件，别动它</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+<p class="takeaway">eZ-FET = 一颗 MSP430F5528 做的 USB 复合设备：SBW 负责下载调试，Application UART 接 USCI_A1；跳线块把两边隔开，可以逐根断开。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>应用区：按钮、LED、时钟 <span class="tag">M12.5</span></h2>
+<p class="hook"><span class="zh">按下 S2，P1.1 读到的是 1 还是 0？</span><span class="es">¿A qué terminal está conectado cada pulsador y cada LED?</span></p>
+<figure class="stage" data-ms="3400" data-scene="" id="m12-sc-app">
+<div class="stage-title"><span>Escena 3 · pulsadores, LEDs y relojes</span><b>5 步</b></div>
+<div aria-label="动画：按钮、LED、复位与 BSL 按钮、晶振与 MSP430F5529 引脚的连接" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-app-t" role="img" viewbox="0 0 800 420">
+<title id="m12-sc-app-t">S1 接在 P2.1 与 GND 之间、S2 接在 P1.1 与 GND 之间，板上没有外接电阻，靠芯片内部的上拉电阻；LED1 经 JP8 和 470 Ω 电阻从 P1.0 接到 GND，LED2 经 470 Ω 从 P4.7 接到 GND；上方 RESET 按钮接 RST（47 kΩ 上拉），BSL 按钮把 PUR 拉高；下方 XT1 是 32,768 kHz 晶体，XT2 是 4 MHz 陶瓷谐振器</title>
+<rect class="bx w" height="260" rx="10" width="200" x="300" y="70"></rect>
+<text class="tx sm w mid" x="400" y="196">MSP430F5529</text>
+<text class="tz sm m mid" x="400" y="218">target</text>
+<text class="tm sm b" x="306" y="142">P2.1</text>
+<text class="tm sm b" x="306" y="282">P1.1</text>
+<text class="tm sm b end" x="494" y="142">P1.0</text>
+<text class="tm sm b end" x="494" y="282">P4.7</text>
+<text class="tm xs m" x="540" y="404">+ 40 pines BoosterPack</text>
+<g data-step="2">
+
+<text class="tm xs m mid" x="380" y="98">Vcc</text>
+<path class="ln b draw" d="M380 104 V112 l7 4 l-14 7 l14 7 l-14 7 l7 4 V150 H300"></path>
+<text class="tm xs b" x="394" y="118">pull-up interno</text>
+<text class="tm xs m mid" x="380" y="238">Vcc</text>
+<path class="ln b draw" d="M380 244 V252 l7 4 l-14 7 l14 7 l-14 7 l7 4 V290 H300"></path>
+<text class="tm xs b" x="394" y="258">pull-up interno</text>
+
+<path class="ln thin m" d="M300 150 H200 V166 M200 198 V206 M188 206 H212 M192 211 H208 M196 216 H204"></path>
+<circle class="sl r" cx="200" cy="168" r="3"></circle>
+<circle class="sl r" cx="200" cy="196" r="3"></circle>
+<line class="ln r" x1="200" x2="220" y1="168" y2="190"></line>
+<text class="tm sm r end" x="186" y="188">S1</text>
+<text class="tm xs m" x="306" y="176">P2IN.1 = 1</text>
+
+<path class="ln thin m" d="M300 290 H90 V306 M90 338 V346 M78 346 H102 M82 351 H98 M86 356 H94"></path>
+<circle class="sl r" cx="90" cy="308" r="3"></circle>
+<circle class="sl r" cx="90" cy="336" r="3"></circle>
+<text class="tm sm r end" x="76" y="328">S2</text>
+<text class="tm xs m" x="120" y="282">sin resistencia externa</text>
+</g>
+<line class="ln r" data-out="3" data-step="2" x1="90" x2="110" y1="308" y2="330"></line>
+<line class="ln y" data-out="4" data-step="3" x1="90" x2="90" y1="308" y2="336"></line>
+<line class="ln r" data-step="4" x1="90" x2="110" y1="308" y2="330"></line>
+<text class="tm xs b" data-out="3" data-step="2" x="306" y="316">P1IN.1 = 1</text>
+<text class="tm xs y" data-hl="3" data-out="4" data-step="3" x="306" y="316">P1IN.1 = 0</text>
+<text class="tm xs b" data-step="4" x="306" y="316">P1IN.1 = 1</text>
+<path class="ln y" d="M90 290 H380" data-out="4" data-step="3"></path>
+<g data-step="4">
+
+<path class="ln thin m" d="M500 150 H532 M576 150 H596 M640 150 H664 M692 150 H740 V162 M728 162 H752 M732 167 H748 M736 172 H744"></path>
+<circle class="sl w" cx="540" cy="150" r="4"></circle>
+<circle class="sl w" cx="568" cy="150" r="4"></circle>
+<rect class="ln thin w" height="18" rx="3" width="48" x="530" y="141"></rect>
+<text class="tm xs w mid" x="554" y="132">JP8</text>
+<path class="ln thin m" d="M596 150 l4 -7 l7 14 l7 -14 l7 14 l7 -14 l7 14 l5 -7"></path>
+<text class="tm xs m mid" x="618" y="132">470 Ω</text>
+<circle class="bx r" cx="678" cy="150" r="14"></circle>
+<text class="tm xs r mid" x="678" y="186">LED1 · rojo</text>
+
+<path class="ln thin m" d="M500 290 H596 M640 290 H664 M692 290 H740 V302 M728 302 H752 M732 307 H748 M736 312 H744"></path>
+<path class="ln thin m" d="M596 290 l4 -7 l7 14 l7 -14 l7 14 l7 -14 l7 14 l5 -7"></path>
+<text class="tm xs m mid" x="618" y="272">470 Ω</text>
+<circle class="bx g" cx="678" cy="290" r="14"></circle>
+<text class="tm xs g mid" x="678" y="326">LED2 · verde</text>
+<text class="tm xs g mid" x="660" y="226">输出 1 → 亮</text>
+</g>
+<g data-step="5">
+<rect class="bx r" height="30" rx="6" width="70" x="370" y="14"></rect>
+<text class="tm xs r mid" x="405" y="34">RESET</text>
+<path class="ln thin r" d="M405 44 V70"></path>
+<text class="tm xs r" x="411" y="62">RST</text>
+<text class="tm xs r end" x="362" y="26">S3 · 47 kΩ 上拉到 3V3</text>
+<text class="tm xs r end" x="362" y="42">按下 → RST = 0 → 复位</text>
+<rect class="bx r" height="30" rx="6" width="62" x="448" y="14"></rect>
+<text class="tm xs r mid" x="479" y="34">BSL</text>
+<path class="ln thin r dash" d="M479 44 V70"></path>
+<text class="tm xs r" x="485" y="62">PUR</text>
+<text class="tm xs r" x="520" y="26">S5 · 按下 → PUR = 1</text>
+<text class="tm xs r" x="520" y="42">上电时按住 → USB BSL</text>
+<path class="ln thin o" d="M340 330 V354 M470 330 V354"></path>
+<rect class="bx o" height="22" rx="3" width="40" x="320" y="354"></rect>
+<rect class="bx o" height="22" rx="3" width="40" x="450" y="354"></rect>
+<text class="tm xs o mid" x="340" y="398">XT1 · 32,768 kHz</text>
+<text class="tm xs m mid" x="340" y="414">cristal · Q2</text>
+<text class="tm xs o mid" x="470" y="398">XT2 · 4 MHz</text>
+<text class="tm xs m mid" x="470" y="414">cerámico · Q4</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>应用区的核心是 MSP430F5529。按钮、LED、扩展针都在板上丝印了接到哪个引脚，查原理图也能知道。</li>
+<li data-dur="5200">两个通用按钮：<b>S1 → P2.1</b>，<b>S2 → P1.1</b>。按钮直接接在引脚和 GND 之间，<b>板上没有外接电阻</b>。所以按钮需要的上拉电阻只能是端口<b>内部</b>的上拉：松开时引脚经它读到 1。这个内部电阻默认不接，要由程序打开（PxREN、PxOUT，M14 讲）。</li>
+<li data-dur="3800">按下 S2：引脚被接到 GND，<span class="c-y">P1IN.1 = 0</span>。按下 = 0、松开 = 1，这个"反逻辑"在 M14 写轮询程序时要记住。</li>
+<li data-dur="4800">两个 LED：<b>LED1 → P1.0</b>（红），<b>LED2 → P4.7</b>（绿），都经一个 <b>470 Ω</b> 限流电阻接到 GND：引脚<b>输出 1 灯亮</b>，输出 0 灯灭。LED1 前面还有跳线 <b>JP8</b>：P1 口能产生中断，需要把 P1.0 当中断输入时，可以把 LED 断开。</li>
+<li data-dur="5200"><b>RESET（S3）</b>：RST 引脚经 47 kΩ 上拉，按下接地 → 复位（低有效）。<b>BSL（S5）</b>：按下把 PUR 引脚拉到 3,3 V；插 USB 上电时按住它，F5529 就启动 FLASH 里的 USB <b class="t">bootstrap loader (BSL)</b>——引导加载程序（FLASH 坏了、JTAG 进不去时有用）。底部：32,768 kHz 晶体构成 <b>XT1</b>，4 MHz 陶瓷谐振器构成 <b>XT2</b>（Bloque 2 讲）。</li>
+</ol>
+<p class="stage-note">只画了和本章有关的元件。按钮旁没有电阻，所以上拉在片内：PxREN = 1 且 PxOUT = 1 时接上拉（M14）。</p>
+
+</figure>
+<div class="note warm">
+<span class="lbl">XT2 的频率</span>
+<p>XT2 是 <b>4 MHz</b> 陶瓷谐振器（Q4，型号 CSTCR4M00），XT1 是 32,768 kHz 晶体（Q2，两边各接 12 pF 电容）。为什么这样选：32 kHz 晶体让 LPM3 的电流更低；4 MHz 谐振器精度 ±2500 ppm，主要给 USB 的 PLL 做参考时钟。</p>
+</div>
+<p>自测一下：点一行，看答案。</p>
+<div class="tbl-wrap">
+<table class="pins">
+<thead><tr><th>元件</th><th>接到</th><th>备注</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>S1</td><td class="ans">P2.1</td><td>另一端接 GND，没有外接电阻：用片内上拉，按下 = 0</td></tr>
+<tr class="reveal"><td>S2</td><td class="ans">P1.1</td><td>同上</td></tr>
+<tr class="reveal"><td>LED1（红）</td><td class="ans">P1.0，经 JP8 和 470 Ω</td><td>输出 1 亮；JP8 可以断开 LED</td></tr>
+<tr class="reveal"><td>LED2（绿）</td><td class="ans">P4.7，经 470 Ω</td><td>输出 1 亮</td></tr>
+<tr class="reveal"><td>RESET（S3）</td><td class="ans">RST/NMI，47 kΩ 上拉</td><td>按下 = 0 → 复位</td></tr>
+<tr class="reveal"><td>BSL（S5）</td><td class="ans">PUR</td><td>上电时按住 → USB BSL</td></tr>
+<tr class="reveal"><td>Application UART</td><td class="ans">USCI_A1：P4.4 TXD、P4.5 RXD</td><td>经跳线到 eZ-FET</td></tr>
+<tr class="reveal"><td>XT1</td><td class="ans">32,768 kHz 晶体（Q2）</td><td>Bloque 2</td></tr>
+<tr class="reveal"><td>XT2</td><td class="ans">4 MHz 陶瓷谐振器（Q4）</td><td>Bloque 2</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">40 针扩展口用来插 TI 叫 <b class="t">BoosterPack</b> 的扩展板（键盘、显示屏……）。</p>
+<p class="takeaway">S1 = P2.1、S2 = P1.1（接 GND，靠片内上拉，按下读 0）；LED1 = P1.0（经 JP8）、LED2 = P4.7（都是输出 1 亮）。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>抽象的梯子 <span class="tag">M12.6</span></h2>
+<p class="hook"><span class="zh">同样是"让 LED 闪"，可以一条条写机器指令，也可以调一个函数。每往上爬一级，你放下了什么、又失去了什么？</span><span class="es">Niveles de abstracción: cuanto más subimos, más nos "desentendemos del hardware".</span></p>
+<figure class="stage" data-ms="3200" data-scene="" id="m12-sc-ladder">
+<div class="stage-title"><span>Escena 4 · niveles de abstracción</span><b>5 步</b></div>
+<div aria-label="动画：从机器码到 Energia 的五级抽象" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-ladder-t" role="img" viewbox="0 0 800 400">
+<title id="m12-sc-ladder-t">五级梯子，自下而上：机器码、汇编、C 加头文件、DriverLib 库、Energia；越往上越抽象</title>
+<path class="ln y" d="M84 366 V78" marker-end="url(#m12-ah-y)"></path>
+<text class="tz sm y mid" x="84" y="62">abstracción</text>
+<text class="tz sm b mid" x="84" y="392">control</text>
+<g data-step="1">
+<rect class="bx m" data-hl="1" height="48" rx="6" width="440" x="150" y="322"></rect>
+<text class="tz sm w" x="166" y="352">Código máquina</text>
+<text class="tm xs m" x="380" y="351">0100 0011 0100 1000</text>
+<text class="tz sm m" x="610" y="352">CPU 直接执行的位</text>
+</g>
+<g data-step="2">
+<rect class="bx b" data-hl="2" height="48" rx="6" width="440" x="150" y="262"></rect>
+<text class="tz sm w" x="166" y="292">Ensamblador</text>
+<text class="tm xs b" x="380" y="291">xor.b #BIT0,&amp;P1OUT</text>
+<text class="tz sm m" x="610" y="292">要完全了解微控制器</text>
+</g>
+<g data-step="3">
+<rect class="bx b" data-hl="3" height="48" rx="6" width="440" x="150" y="202"></rect>
+<text class="tz sm w" x="166" y="232">C + ficheros de cabecera</text>
+<text class="tm xs b" x="400" y="231">P1OUT ^= BIT0;</text>
+<text class="tz sm m" x="610" y="232">C 自然抽象内存映射</text>
+</g>
+<g data-step="4">
+<rect class="bx g" data-hl="4" height="48" rx="6" width="440" x="150" y="142"></rect>
+<text class="tz sm w" x="166" y="172">DriverLib</text>
+<text class="tm xs g" x="330" y="171">GPIO_toggleOutputOnPin(…)</text>
+<text class="tz sm m" x="610" y="172">不用管是哪颗 MSP430</text>
+</g>
+<g data-step="5">
+<rect class="bx y" data-hl="5" height="48" rx="6" width="440" x="150" y="82"></rect>
+<text class="tz sm w" x="166" y="112">Energia</text>
+<text class="tm xs y" x="330" y="111">API «wiring», estilo Arduino</text>
+<text class="tz sm m" x="610" y="112">连开发板也不用管</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li><b>机器码</b>：CPU 真正执行的位模式，人没法直接写（§6）。</li>
+<li data-dur="3600"><b>汇编</b>：机器码的符号表示，一条汇编对应一条机器指令。必须对微控制器"了如指掌"。</li>
+<li data-dur="4200"><b>C</b>：仍然要很了解芯片，但 C 天然地把内存映射抽象掉了。汇编和 C 都用 TI 提供的<b>头文件</b>：寄存器和每个位都有标签（<code>P1OUT</code>、<code>BIT0</code>），写得好的话代码能在同系列、甚至同家族的几个系列之间移植。</li>
+<li data-dur="4600"><b>库</b>：MSP430ware 里的 <b>MSP430 DriverLib</b> 提供 API 函数，把"是哪颗 MSP430"抽象掉：同样外设的芯片，代码几乎不用改；名字像自然语言，好读好维护。Bloque 4 会用到。</li>
+<li data-dur="4200"><b>Energia</b>：再上一级，连开发板都不用管——把为 Arduino（"wiring" 库 API）写的代码搬到 TI 的开发板上。</li>
+</ol>
+<p class="stage-note">每一级的代码片段都是示意（同一个"翻转 P1.0"）。最底下那串位是 §6 的例子 MOV.B R3,R8 的编码，不是上面那条指令的。</p>
+</figure>
+<p>同一个闪灯程序，在三个层级上的样子：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="c" type="button">C（TI 例程）</button>
+<button aria-pressed="false" data-view="asm" type="button">汇编</button>
+<button aria-pressed="false" data-view="lib" type="button">DriverLib</button>
+</div>
+<pre class="code" data-pane="asm" hidden=""><code><span class="ln-row">        <span class="kw">mov.w</span>   #WDTPW|WDTHOLD, &amp;<span class="rg">WDTCTL</span>   <span class="cm">; 停 watchdog</span></span><span class="ln-row">        <span class="kw">bis.b</span>   #BIT0, &amp;<span class="rg">P1DIR</span>             <span class="cm">; P1.0 设为输出</span></span><span class="ln-row"><span class="fn">bucle</span>:  <span class="kw">xor.b</span>   #BIT0, &amp;<span class="rg">P1OUT</span>             <span class="cm">; 翻转 LED1</span></span><span class="ln-row">        <span class="kw">mov.w</span>   #<span class="nm">50000</span>, R15               <span class="cm">; 延时计数</span></span><span class="ln-row"><span class="fn">espera</span>: <span class="kw">dec.w</span>   R15</span><span class="ln-row">        <span class="kw">jnz</span>     espera</span><span class="ln-row">        <span class="kw">jmp</span>     bucle</span></code></pre>
+<pre class="code" data-pane="c"><code><span class="ln-row"><span class="pp">#include &lt;msp430.h&gt;</span></span><span class="ln-row"><span class="kw">volatile unsigned int</span> i;</span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="rg">WDTCTL</span> = WDTPW|WDTHOLD;      <span class="cm">// Stop WDT</span></span><span class="ln-row">    <span class="rg">P1DIR</span> |= BIT0;               <span class="cm">// P1.0 set as output</span></span><span class="ln-row">    <span class="kw">while</span>(<span class="nm">1</span>) {</span><span class="ln-row">        <span class="rg">P1OUT</span> ^= BIT0;           <span class="cm">// XOR P1.0</span></span><span class="ln-row">        <span class="kw">for</span>(i=<span class="nm">50000</span>;i&gt;<span class="nm">0</span>;i--);   <span class="cm">// Delay</span></span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="lib" hidden=""><code><span class="ln-row"><span class="fn">WDT_A_hold</span>(WDT_A_BASE);                        <span class="cm">// 停 watchdog</span></span><span class="ln-row"><span class="fn">GPIO_setAsOutputPin</span>(GPIO_PORT_P1, GPIO_PIN0);  <span class="cm">// P1.0 设为输出</span></span><span class="ln-row"><span class="kw">while</span>(<span class="nm">1</span>) {</span><span class="ln-row">    <span class="fn">GPIO_toggleOutputOnPin</span>(GPIO_PORT_P1, GPIO_PIN0);</span><span class="ln-row">    <span class="kw">for</span>(i=<span class="nm">50000</span>;i&gt;<span class="nm">0</span>;i--);</span><span class="ln-row">}</span></code></pre>
+</div>
+<p class="aside">C 版本就是 TI 例程 <code>MSP430F55xx_1.c</code>（"Software Toggle P1.0"）；汇编版和 DriverLib 版按同样的逻辑写成，只是示意。</p>
+<div class="grid2">
+<div class="cell g">
+<span class="k c-g">librerías · 优点</span>
+<h3>简单、可移植、好读</h3>
+<p>一份代码几乎不改就能用在另一颗有相同外设的 MSP430 上；函数名接近自然语言，更好维护。</p>
+</div>
+<div class="cell r">
+<span class="k c-r">librerías · 代价</span>
+<h3>可能不够优、也更大</h3>
+<p>面向一大批芯片的库，可能没提供某些选项、对某个外设不是最优，或者为一件小事带进太多代码。单片机内存紧张，这一点可能很要命。</p>
+</div>
+</div>
+<p class="aside">TI 生态里的其他工具：<b>ULP Advisor</b>（Ultra-Low Power）帮你写更省电的代码；<b>GRACE</b> 用图形界面生成外设配置代码。</p>
+<p class="takeaway">越往上越少管硬件：C 抽象掉内存映射，库抽象掉具体芯片，Energia 抽象掉开发板；代价是控制和效率。</p>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>为什么是 C <span class="tag">M12.7</span></h2>
+<p class="hook"><span class="zh">汇编最接近硬件，库最省事。这门课为什么偏偏选 C？</span><span class="es">C: un lenguaje de nivel medio.</span></p>
+<p>答案是：C 是<b class="t">lenguaje de nivel medio (ES) / middle-level language (EN)</b>——中级语言。它既能像汇编一样访问几乎所有硬件资源，又有高级语言的程序结构，还能让芯片架构对程序员"透明"。学术上的理由有四条：</p>
+<ol>
+<li>C 可能是单片机编程里用得最广的语言。</li>
+<li>C 帮你管理程序的复杂度。</li>
+<li>C 相对标准化：学会用 C 写一颗单片机，换一颗也用得上。</li>
+<li>库越来越常用，而库通常是用 C 写的：会 C，才看得懂库是怎么实现的。</li>
+</ol>
+<div class="grid2">
+<div class="panel">
+<h3>高级语言那一面</h3>
+<ul>
+<li><b>用变量自动管理内存</b>：只要给名字和类型，编译器/链接器就按内存映射找地方放它。</li>
+<li><b>函数</b>：参数和返回值传数据，局部变量简化临时存储（对比汇编的子程序）。</li>
+<li><b>模块化</b>：接口放 <code>.h</code>，实现放 <code>.c</code>。</li>
+<li><b>抽象硬件</b>：MSP430 的指令集没有乘除法指令；C 里写 <code>a * b</code>，编译器会生成相应的机器码。有 <b class="t">hardware multiplier (EN)</b>——硬件乘法器、编译选项里又选了用它时，编译器会配置它来算。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>低级语言那一面</h3>
+<ul>
+<li><b>指针</b>：直接操作内存地址——指向变量，也可以指向函数的起始地址。</li>
+<li><b>精确指定数据大小</b>：单片机内存很紧，这很重要。</li>
+<li><b>编译器扩展</b>（非标准）：指定变量放在哪个地址；把函数定义成中断服务程序（M21 的 <code>#pragma vector</code> / <code>__interrupt</code>）。</li>
+</ul>
+</div>
+</div>
+<div class="note">
+<span class="lbl">学 C 写单片机，需要先会什么？</span>
+<p>四条：C 的一般基础（假定大家已经会）；目标单片机的架构（M11、M12 起陆续讲）；所用 IDE 的 C 编译器（后面各章逐步讲）；单片机的汇编。最后一条很有争议：懂汇编有帮助，特殊情况下能写出更优的 C，但只要足够了解架构就不是必须的，所以课程不强调汇编。</p>
+</div>
+<p class="aside">对照：只有部分 MSP430 有硬件乘法器（作为外设）；F5529 就有。</p>
+<p class="takeaway">C 是中级语言：高级的结构（变量、函数、模块）+ 低级的能力（指针、数据大小、中断函数），所以适合单片机。</p>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>工具链：编译、汇编、链接 <span class="tag">M12.8</span></h2>
+<p class="hook"><span class="zh">存储器里只能放 0 和 1。一行 C 是怎样变成 CPU 能取的位的？</span><span class="es">Flujo de desarrollo software: del código fuente al código máquina.</span></p>
+<p>先看最底下两层。<b class="t">código máquina (ES) / machine code (EN)</b>——机器码：描述要执行的指令及其操作数大小、个数和位置的位模式。<b class="t">lenguaje ensamblador (ES) / assembly language (EN)</b>——汇编语言：机器码的符号表示，每条指令用一个 <b class="t">nemónico (ES) / mnemonic (EN)</b>——助记符表示，一条汇编生成一条机器指令。例子："把 R3 的低字节送到 R8 的低字节"：</p>
+<figure class="stage" data-scene="" id="m12-sc-mc">
+<div class="stage-title"><span>Escena 6a · ensamblador ↔ código máquina</span><b>3 步</b></div>
+<div aria-label="动画：MOV.B R3,R8 拆成格式 I 的各个字段" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-mc-t" role="img" viewbox="0 0 800 260">
+<title id="m12-sc-mc-t">汇编指令 MOV.B R3, R8 按 MSP430 双操作数格式拆成 op-code、Rsrc、Ad、B/W、As、Rdst 六个字段，拼成 16 位 0x4348</title>
+<text class="tm lg w mid" x="320" y="50">MOV</text>
+<text class="tm lg y mid" x="372" y="50">.B</text>
+<text class="tm lg w mid" x="424" y="50">R3,</text>
+<text class="tm lg w mid" x="474" y="50">R8</text>
+<text class="tz sm m" x="530" y="50">← ensamblador</text>
+<g data-out="2" data-step="1">
+<path class="ln thin m" d="M320 58 L304 72 M372 58 V72 M449 58 V72"></path>
+<text class="tm xs m mid" x="300" y="86">nemónico</text>
+<text class="tm xs y mid" x="372" y="86">tamaño</text>
+<text class="tm xs m mid" x="452" y="86">operandos</text>
+<text class="tm xs m mid" x="452" y="102">(origen, destino)</text>
+</g>
+<g data-step="2">
+<path class="ln thin y" d="M320 58 L170 84 M372 58 L460 84 M424 58 L330 84 M474 58 L630 84"></path>
+<text class="tm xs m mid" x="160" y="100">op-code</text>
+<text class="tm xs m mid" x="320" y="100">Rsrc</text>
+<text class="tm xs m mid" x="420" y="100">Ad</text>
+<text class="tm xs m mid" x="460" y="100">B/W</text>
+<text class="tm xs m mid" x="520" y="100">As</text>
+<text class="tm xs m mid" x="640" y="100">Rdst</text>
+<rect class="bx b" height="44" rx="3" width="160" x="80" y="110"></rect>
+<rect class="bx b" height="44" rx="3" width="160" x="240" y="110"></rect>
+<rect class="bx m" height="44" rx="3" width="40" x="400" y="110"></rect>
+<rect class="bx y" height="44" rx="3" width="40" x="440" y="110"></rect>
+<rect class="bx m" height="44" rx="3" width="80" x="480" y="110"></rect>
+<rect class="bx b" height="44" rx="3" width="160" x="560" y="110"></rect>
+<text class="tm lg w mid" x="160" y="140">0100</text>
+<text class="tm lg w mid" x="320" y="140">0011</text>
+<text class="tm lg w mid" x="420" y="140">0</text>
+<text class="tm lg y mid" x="460" y="140">1</text>
+<text class="tm lg w mid" x="520" y="140">00</text>
+<text class="tm lg w mid" x="640" y="140">1000</text>
+<text class="tm xs m mid" x="160" y="174">15–12</text>
+<text class="tm xs m mid" x="320" y="174">11–8</text>
+<text class="tm xs m mid" x="420" y="174">7</text>
+<text class="tm xs m mid" x="460" y="174">6</text>
+<text class="tm xs m mid" x="520" y="174">5–4</text>
+<text class="tm xs m mid" x="640" y="174">3–0</text>
+<text class="tz sm b mid" x="160" y="198">MOV</text>
+<text class="tz sm b mid" x="320" y="198">R3</text>
+<text class="tz sm y mid" x="460" y="198">byte</text>
+<text class="tz sm b mid" x="640" y="198">R8</text>
+</g>
+<g data-step="3">
+<text class="tx lg y mid" data-hl="3" x="400" y="242">= 0x4348</text>
+<text class="tz sm m" x="490" y="240">código máquina · 16 bits</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>一条汇编指令分三部分：<b>助记符</b> <code>MOV</code>、<b>大小</b> <code>.B</code>（按字节）、<b>操作数</b>（源, 目的）<code>R3, R8</code>。意思是"把 R3 的低字节送到 R8"。</li>
+<li data-dur="4600"><b>汇编器</b>把它填进双操作数指令的格式（Format I）：op-code（MOV = 4）、源寄存器 R3、Ad、<span class="c-y">B/W = 1</span>（字节）、As（寄存器模式）、目的寄存器 R8。</li>
+<li>拼起来是 16 位 <span class="c-y">0100 0011 0100 1000 = 0x4348</span>：这就是存进 FLASH、CPU 去取的东西。按四个半字节读它：Mover / R3 / Byte / R8。</li>
+</ol>
+<p class="stage-note">细节：R3 也是常数发生器，As = 00 时 R3 读出常数 0，所以这条指令实际上把 0 写进 R8 的低字节——这里只把它当作编码的例子。</p>
+
+</figure>
+<p>再看翻译程序。三个定义：</p>
+<div class="grid3">
+<div class="cell b">
+<span class="k c-b">programa ensamblador</span>
+<h3>汇编器</h3>
+<p>把汇编<b>源代码</b>翻成机器码<b>目标代码</b>（código objeto），这叫"汇编"。另外提供：伪指令（directivas）、标签（代表地址的符号）、表达式、多种数制、宏。</p>
+</div>
+<div class="cell y">
+<span class="k c-y">compilador</span>
+<h3>编译器</h3>
+<p>把 C 源代码翻成<b>汇编</b>代码（也还是源代码），之后再汇编、链接。另外提供：伪指令、特殊函数（中断服务程序）、访问硬件的内建函数（intrínsecas）、数学和浮点库。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">enlazador / linkador</span>
+<h3>链接器</h3>
+<p>把多个目标代码文件——你的代码和用到的库（标准库或别的库）——合成<b>一个</b>可执行的机器码文件。<b>就算只有一个源文件也要链接</b>：只有链接器掌握内存映射。</p>
+</div>
+</div>
+<p>用一小段汇编把"汇编"和"链接"两步串起来：</p>
+<figure class="stage" data-ms="3800" data-scene="" id="m12-sc-link">
+<div class="stage-title"><span>Escena 6b · ensamblado y enlazado</span><b>3 步</b></div>
+<div aria-label="动画：三条汇编指令被汇编成 4 个字的目标代码，再由链接器放到 0xC000 起的存储器里，按 little endian 存放" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-link-t" role="img" viewbox="0 0 800 340">
+<title id="m12-sc-link-t">源代码 Loop: SWPB R10 / CMP.B @R10+,cont / JNE Loop，符号 Loop = 0xC000、cont = 0x0200；汇编得到 0x108A、0x9AF0、0x41FC、0x23FC；链接后从 0xC000 起按字节存为 8A 10 F0 9A FC 41 FC 23（little endian）</title>
+<text class="tz sm b" x="16" y="32">código fuente · ensamblador</text>
+<rect class="bx b" height="96" rx="6" width="300" x="16" y="44"></rect>
+<text class="tm sm w" x="30" y="76">Loop   SWPB   R10</text>
+<text class="tm sm w" x="30" y="100">       CMP.B  @R10+,cont</text>
+<text class="tm sm w" x="30" y="124">       JNE    Loop</text>
+<text class="tz sm m" x="340" y="52">etiquetas = direcciones</text>
+<text class="tm sm y" x="340" y="80">Loop → 0xC000</text>
+<text class="tm sm y" x="340" y="104">cont → 0x0200</text>
+<g data-step="2">
+<path class="ln m draw" d="M60 140 V176" marker-end="url(#m12-ah-m)"></path>
+<text class="tz sm y" x="72" y="164">ensamblado</text>
+<text class="tz sm b end" x="316" y="172">código objeto</text>
+<rect class="bx b" data-hl="2" height="140" rx="6" width="300" x="16" y="180"></rect>
+<text class="tm sm w" x="30" y="210">0x108A</text>
+<text class="tm sm w" x="30" y="240">0x9AF0</text>
+<text class="tm sm w" x="30" y="270">0x41FC</text>
+<text class="tm sm w" x="30" y="300">0x23FC</text>
+<text class="tm xs m" x="104" y="209">← SWPB R10</text>
+<text class="tm xs m" x="104" y="239">← CMP.B @R10+,cont</text>
+<text class="tm xs m" x="104" y="269">  └ 第 2 个字：cont 的偏移</text>
+<text class="tm xs m" x="104" y="299">← JNE Loop</text>
+</g>
+<g data-step="3">
+<path class="ln m draw" d="M316 250 H420 V150 H544" marker-end="url(#m12-ah-m)"></path>
+<text class="tz sm y" x="430" y="206">enlazado</text>
+<path class="ln thin m" d="M600 40 V300 M700 40 V300"></path>
+<path class="ln thin m dash" d="M600 66 H700 M600 92 H700 M600 118 H700 M600 144 H700 M600 170 H700 M600 196 H700 M600 222 H700 M600 248 H700 M600 274 H700"></path>
+<rect class="bx b" height="204" rx="6" width="94" x="603" y="42"></rect>
+<rect class="ln thin y" data-hl="3" height="44" rx="4" width="88" x="606" y="45"></rect>
+<text class="tm xs m end" x="592" y="58">0xC000</text>
+<text class="tm xs m end" x="592" y="84">0xC001</text>
+<text class="tm xs m end" x="592" y="110">0xC002</text>
+<text class="tm xs m end" x="592" y="136">0xC003</text>
+<text class="tm xs m end" x="592" y="162">0xC004</text>
+<text class="tm xs m end" x="592" y="188">0xC005</text>
+<text class="tm xs m end" x="592" y="214">0xC006</text>
+<text class="tm xs m end" x="592" y="240">0xC007</text>
+<text class="tm xs m end" x="592" y="266">0xC008</text>
+<text class="tm xs m end" x="592" y="292">0xC009</text>
+<text class="tm sm y mid" x="650" y="58">0x8A</text>
+<text class="tm sm y mid" x="650" y="84">0x10</text>
+<text class="tm sm w mid" x="650" y="110">0xF0</text>
+<text class="tm sm w mid" x="650" y="136">0x9A</text>
+<text class="tm sm w mid" x="650" y="162">0xFC</text>
+<text class="tm sm w mid" x="650" y="188">0x41</text>
+<text class="tm sm w mid" x="650" y="214">0xFC</text>
+<text class="tm sm w mid" x="650" y="240">0x23</text>
+<text class="tz sm g mid" x="650" y="22">código ejecutable</text>
+<text class="tz sm y mid" x="650" y="328">little endian：低字节在低地址</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">例子：三条汇编指令。<code>Loop</code> 和 <code>cont</code> 是<b>标签</b>（etiquetas）：代表存储器地址的符号，一个指向代码，一个指向变量。</li>
+<li data-dur="4800"><b>汇编</b>（ensamblado）：每条指令翻成机器码。<code>CMP.B @R10+,cont</code> 占两个字，第二个字是 cont 相对 PC 的偏移；三条指令一共 4 个字，这就是<b>目标代码</b>。</li>
+<li data-dur="5600"><b>链接</b>（enlazado）：链接器知道内存映射，把代码放到 0xC000 起（所以 Loop = 0xC000），得到<b>可执行代码</b>。每个 16 位字按 <b>little endian</b> 存：低字节放低地址，所以 0x108A 存成 0xC000 = 8A、0xC001 = 10。</li>
+</ol>
+<p class="stage-note">地址 0xC000、0x0200 只是例子，不是 F5529 的内存映射：F5529 的 0x0200 在外设区，FLASH 从 0x4400 开始（见 <a href="m11.html#s4">M11 §4</a>）。严格说，0x41FC 这个偏移要等链接定下地址后才算得出，这里为了简单直接画成了最终值。</p>
+
+</figure>
+<p>编译器那一步也有一个例子：一个 <code>for</code> 循环编译出来的汇编。输出仍然是<b>源代码</b>，之后还要汇编、链接。</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="c18" type="button">C 源代码</button>
+<button aria-pressed="false" data-view="a18" type="button">编译器输出（汇编）</button>
+</div>
+<pre class="code" data-pane="c18"><code><span class="ln-row"><span class="kw">for</span> (cont = <span class="nm">0</span>; cont &lt; <span class="nm">10</span>; cont++) {</span><span class="ln-row">    array[cont] += <span class="nm">32</span>;</span><span class="ln-row">}</span></code></pre>
+<pre class="code" data-pane="a18" hidden=""><code><span class="ln-row">          <span class="kw">MOV.W</span>   #<span class="nm">0x0</span>, <span class="rg">R15</span>        <span class="cm">; cont = 0，cont 放在 R15</span></span><span class="ln-row">          <span class="kw">JMP</span>     ??main_1         <span class="cm">; 先去判断条件</span></span><span class="ln-row"><span class="fn">??main_0</span>: <span class="kw">MOV.W</span>   <span class="rg">R15</span>, <span class="rg">R14</span></span><span class="ln-row">          <span class="kw">RLA.W</span>   <span class="rg">R14</span>              <span class="cm">; R14 = 2·cont（int 占 2 字节）</span></span><span class="ln-row">          <span class="kw">ADD.W</span>   <span class="rg">SP</span>, <span class="rg">R14</span>          <span class="cm">; + SP：array 是栈上的局部数组</span></span><span class="ln-row">          <span class="kw">ADD.W</span>   #<span class="nm">0x20</span>, 0(<span class="rg">R14</span>)    <span class="cm">; array[cont] += 32</span></span><span class="ln-row">          <span class="kw">ADD.W</span>   #<span class="nm">0x1</span>, <span class="rg">R15</span>        <span class="cm">; cont++</span></span><span class="ln-row"><span class="fn">??main_1</span>: <span class="kw">CMP.W</span>   #<span class="nm">0xa</span>, <span class="rg">R15</span>        <span class="cm">; cont &lt; 10 ?</span></span><span class="ln-row">          <span class="kw">JL</span>      ??main_0         <span class="cm">; 是 → 再做一遍循环体</span></span></code></pre>
+</div>
+<p class="aside">指令是这段 C 编译出来的汇编。编译器替你做了 §5 说的那些事：变量 cont 放进寄存器 R15，局部数组 array 放在栈上（相对 SP），下标乘 2 换成字节地址；<code>??main_0</code> 这样的标签是编译器自己生成的。</p>
+<figure class="stage" data-ms="3800" data-scene="" id="m12-sc-flow">
+<div class="stage-title"><span>Escena 6c · flujo de desarrollo</span><b>6 步</b></div>
+<div aria-label="动画：C 源代码经编译、汇编、链接变成可执行代码，再写进 FLASH" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-flow-t" role="img" viewbox="0 0 800 480">
+<title id="m12-sc-flow-t">C 源代码 → 编译器 → 汇编源代码 → 汇编器 → 目标代码；目标代码和库 → 链接器 → 可执行代码；链接器按内存映射把代码放进 FLASH、变量放进 RAM；最后经 eZ-FET 写进芯片</title>
+<rect class="bx b" height="70" rx="6" width="150" x="16" y="40"></rect>
+<text class="tz sm b" x="30" y="66">main.c · fuente</text>
+<text class="tm xs w" x="30" y="94">P1OUT ^= BIT0;</text>
+<g data-step="2">
+<path class="ln m draw" d="M166 75 H212" marker-end="url(#m12-ah-m)"></path>
+<rect class="bx y" data-hl="2" height="54" rx="27" width="130" x="216" y="48"></rect>
+<text class="tz sm y mid" x="281" y="80">Compilador</text>
+<path class="ln m draw" d="M346 75 H392" marker-end="url(#m12-ah-m)"></path>
+<rect class="bx b" height="70" rx="6" width="170" x="396" y="40"></rect>
+<text class="tz sm b" x="410" y="66">ensamblador · fuente</text>
+<text class="tm xs w" x="410" y="94">xor.b #BIT0,&amp;P1OUT</text>
+</g>
+<g data-step="3">
+<path class="ln m draw" d="M566 75 H612" marker-end="url(#m12-ah-m)"></path>
+<rect class="bx y" data-hl="3" height="54" rx="27" width="168" x="616" y="48"></rect>
+<text class="tz sm y mid" x="700" y="80">Ensamblador</text>
+<path class="ln m draw" d="M700 102 V166" marker-end="url(#m12-ah-m)"></path>
+<rect class="bx b" height="70" rx="6" width="168" x="616" y="170"></rect>
+<text class="tz sm b" x="630" y="196">código objeto</text>
+<text class="tm xs w" x="630" y="222">binario</text>
+</g>
+<g data-step="4">
+<path class="ln m draw" d="M616 205 H544" marker-end="url(#m12-ah-m)"></path>
+<rect class="bx y" data-hl="4" height="54" rx="27" width="180" x="360" y="178"></rect>
+<text class="tz sm y mid" x="450" y="210">Enlazador</text>
+<text class="tz sm m mid" x="450" y="160">conoce el mapa de memoria</text>
+<rect class="bx m" height="58" rx="6" width="184" x="600" y="276"></rect>
+<text class="tz sm w" x="614" y="300">librerías</text>
+<text class="tm xs m" x="614" y="322">código objeto · RTS</text>
+<path class="ln m draw" d="M600 305 C 520 305, 470 290, 462 238" marker-end="url(#m12-ah-m)"></path>
+<path class="ln m draw" d="M360 205 H220" marker-end="url(#m12-ah-m)"></path>
+<rect class="bx g" height="70" rx="6" width="200" x="16" y="170"></rect>
+<text class="tz sm g" x="30" y="196">ejecutable</text>
+<text class="tm xs w" x="30" y="222">código máquina ubicado</text>
+</g>
+<g data-step="5">
+<rect class="bx m" height="44" rx="3" width="90" x="16" y="360"></rect>
+<rect class="bx m" height="44" rx="3" width="70" x="106" y="360"></rect>
+<rect class="bx m" height="44" rx="3" width="56" x="176" y="360"></rect>
+<rect class="bx p" height="44" rx="3" width="176" x="240" y="360"></rect>
+<rect class="bx b" data-hl="6" height="44" rx="3" width="368" x="416" y="360"></rect>
+<rect class="bx r" height="36" rx="3" width="60" x="560" y="364"></rect>
+<text class="tm xs m mid" x="61" y="387">perif.</text>
+<text class="tm xs m mid" x="141" y="387">BSL</text>
+<text class="tm xs m mid" x="204" y="387">IM</text>
+<text class="tm xs p mid" x="328" y="387">RAM · variables</text>
+<text class="tm xs b mid" x="488" y="387">FLASH · código</text>
+<text class="tm xs r mid" x="590" y="387">vect.</text>
+<text class="tm xs b mid" x="702" y="387">constantes</text>
+<text class="tm xs m" x="16" y="424">0x0000</text>
+<text class="tm xs m mid" x="240" y="424">0x1C00</text>
+<text class="tm xs m mid" x="416" y="424">0x4400</text>
+<text class="tm xs m mid" x="560" y="424">0xFF80</text>
+<text class="tm xs m end" x="784" y="424">0x243FF</text>
+<path class="ln thin g dash" d="M150 240 C 150 320, 470 300, 488 356" id="m12-p-code" marker-end="url(#m12-ah-g)"></path>
+<path class="ln thin p dash" d="M70 240 C 70 320, 320 300, 328 356" id="m12-p-var" marker-end="url(#m12-ah-p)"></path>
+</g>
+<circle class="sl g" data-move="#m12-p-code" data-move-dur="1400" data-out="6" data-step="5" r="6"></circle>
+<circle class="sl p" data-move="#m12-p-var" data-move-dur="1400" data-out="6" data-step="5" r="6"></circle>
+<g data-step="6">
+<text class="tz sm y mid" x="400" y="464">Run – Debug (F11)：eZ-FET 经 Spy-Bi-Wire 把可执行代码写进 FLASH</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>程序员写的是 <b>C 源代码</b>（código fuente）。</li>
+<li data-dur="3800"><b>编译器</b>把 C 翻成<b>汇编</b>。注意：输出仍然是"源代码"，还要继续处理。</li>
+<li data-dur="3800"><b>汇编器</b>把汇编翻成机器码，得到<b>目标代码</b>（código objeto）。</li>
+<li data-dur="5000"><b>链接器</b>把你的目标代码和库的目标代码合在一起，生成<b>一个可执行文件</b>（executable object file）。库包括 TI 的 <b>run-time-support library</b>（RTS，运行时支持库）和用 archiver 打包的目标文件库。即使只有一个源文件也必须链接：只有链接器知道内存映射。</li>
+<li data-dur="4800">按 M11 的内存映射：代码和常量放进 <span class="c-b">FLASH</span>（从 0x4400 起），变量在 <span class="c-p">RAM</span>（0x1C00–0x43FF）里分配地址，中断向量在 0xFF80–0xFFFF。</li>
+<li data-dur="4200">最后可执行文件交给调试工具：在 CCS 里按 Debug，经 USB → eZ-FET → Spy-Bi-Wire 写进 F5529 的 FLASH（§8）。</li>
+</ol>
+<p class="stage-note">只保留 C 源文件 → 编译器 → 汇编源文件 → 汇编器 → 目标文件 → 链接器 → 可执行目标文件这条主线。中间的汇编行是示意（真实的编译输出见上面 for 循环的例子）；内存条不按比例，只画了 M11 列出的区域。</p>
+
+</figure>
+<p><b class="t">IDE (Integrated Development Environment)</b>——集成开发环境，把整条流程集中起来：编辑器、汇编器、编译器、链接器、调试器、模拟器、库、工程管理……课程用的是 <b>CCS + TI 自己的编译器</b>。</p>
+<div class="note warm">
+<span class="lbl">为什么是 CCS</span>
+<p>MSP430 常用的开发环境有三个：TI 的 <b>Code Composer Studio</b>、<b>IAR Embedded Workbench</b>、开源的 <b>MSPGCC</b>。CCS 和 IAR 的免费授权可能有时间或代码量限制；GCC 的支持不如商业编译器。现在 CCS 加 TI 编译器对 MSP430 没有限制，所以课程用它；大部分示例也能用 GCC 编译。具体地说：到 CCS v6 为止 TI 编译器的免费版限制代码量，CCSv7 起取消了，所以 TI 和 GNU 编译器都可以选。</p>
+</div>
+<p class="takeaway">C →（编译器）→ 汇编 →（汇编器）→ 目标代码 →（链接器 + 库）→ 可执行代码 →（eZ-FET/SBW）→ FLASH。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>CCS：workspace、project、build <span class="tag">M12.9</span></h2>
+<p class="hook"><span class="zh">CCS 一打开就问你要一个文件夹。它要拿这个文件夹做什么？</span><span class="es">Espacio de trabajo y proyecto.</span></p>
+<div class="grid2">
+<div class="panel">
+<h3><b class="t">espacio de trabajo (ES) / workspace (EN)</b>——工作区</h3>
+<p>最高一层：把一个应用相关的工程都放在一起。CCS 启动时先弹出 <i>Code Composer Studio Launcher</i>（下图）："Select a directory as workspace"，在 Workspace 栏填路径或按 Browse…，再按 Launch；新建时，在指定位置建一个文件夹，存放所有新建或导入的工程。对话框里的 <i>Use this as the default and do not ask again</i> 一旦勾上，以后就不再问（要换用 File – Switch Workspace，见 §8 常见问题）。最好起个有意义的名字，例如 <code>workspace_msp430</code>。</p>
+
+</div>
+<div class="panel">
+<h3><b class="t">proyecto (ES) / project (EN)</b>——工程</h3>
+<p>一起编译、汇编、链接成<b>一个</b>可执行程序的所有源文件。每个工程有自己的配置，包括目标芯片和编译/链接工具（见下面的工程属性表）。新建或导入工程时，workspace 里会多一个和工程同名的文件夹。</p>
+</div>
+</div>
+<pre aria-label="workspace 和工程文件夹的结构" class="code"><code><span class="ln-row"><span class="fn">workspace_msp430/</span>              <span class="cm">← 打开 CCS 时选的文件夹</span></span><span class="ln-row">├── <span class="fn">Tutorial1/</span>                <span class="cm">← 工程 = 同名文件夹</span></span><span class="ln-row">│   ├── .project .cproject .ccsproject  <span class="cm">← 工程的描述和设置</span></span><span class="ln-row">│   ├── .settings/  .launches/</span><span class="ln-row">│   ├── <span class="fn">targetConfigs/</span>        <span class="cm">← 目标芯片 + 连接的配置</span></span><span class="ln-row">│   ├── <span class="fn">Debug/</span>                <span class="cm">← Build 的输出，以当前 configuration 命名</span></span><span class="ln-row">│   ├── lnk_msp430f5529.cmd   <span class="cm">← 链接命令文件（内存映射）</span></span><span class="ln-row">│   └── main.c                <span class="cm">← 源文件</span></span><span class="ln-row">└── <span class="fn">（另一个工程）/</span></span></code></pre>
+<p class="aside">真实工程里还会看到 <code>driverlib/</code>（用了 DriverLib 时）；Build 输出文件夹以当前 configuration 命名，例如 <code>Debug__TI(2)</code>。</p>
+<h3>新建工程：Project – New CCS Project</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>字段</th><th>填什么</th></tr></thead>
+<tbody>
+<tr><td>Project name</td><td>例如 <code>Tutorial1</code>；勾着 <i>Use default location</i>，工程就建在 workspace 里的同名文件夹</td></tr>
+<tr><td>Target</td><td>家族选 <b>MSP430x5xx Family</b>，型号选 <b>MSP430F5529</b>（板上的芯片）</td></tr>
+<tr><td>Connection</td><td>默认的 <b>TI MSP430 USB1 [Default]</b>；可以按 <i>Identify</i> 查看</td></tr>
+<tr><td>Compiler version</td><td>保留默认的 TI 编译器</td></tr>
+<tr><td>Project templates</td><td>不改；选 <i>Empty Project</i> 则不生成 <code>main.c</code>，要自己 File – New – Source File</td></tr>
+</tbody>
+</table>
+</div>
+<h3>工程属性：Project – Properties – General</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>字段</th><th>对话框里的值</th><th>意思</th></tr></thead>
+<tbody>
+<tr><td>Configuration</td><td><code>Debug__TI(2) [ Active ]</code></td><td>当前的构建配置；Build 输出放在同名文件夹</td></tr>
+<tr><td>Device · Family / Variant</td><td>MSP430 / <b>MSP430F5529</b></td><td>目标芯片</td></tr>
+<tr><td>Connection</td><td>TI MSP430 USB1 [Default]</td><td>经 eZ-FET 连接；<i>Identify…</i> 可查看</td></tr>
+<tr><td>Compiler version</td><td>TI v…LTS</td><td>TI 编译器（版本号因安装而异）</td></tr>
+<tr><td>Output type · format</td><td>Executable · eabi (ELF)</td><td>输出一个可执行文件</td></tr>
+<tr><td>Device endianness</td><td><b>little</b></td><td>和 §6 汇编与链接的例子一样：低字节在低地址</td></tr>
+<tr><td>Linker command file</td><td><code>lnk_msp430f5529.cmd</code></td><td>告诉链接器 F5529 的内存映射——"只有链接器知道内存映射"就是从这里来的</td></tr>
+<tr><td>Runtime support library</td><td>&lt;automatic&gt;</td><td>运行时支持库（RTS），链接时自动选</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">同一个窗口左边的树：Build → <b>MSP430 Compiler</b>（Processor Options、Optimization、<b>Include Options</b>、ULP Advisor……）、<b>MSP430 Linker</b>、MSP430 Hex Utility；还有 Debug。头文件路径就在 Include Options 里加（§8 的 "could not open source file"）。</p>
+<div class="grid2">
+<div class="panel">
+<h3>工程操作要点</h3>
+<ul>
+<li><b>导入</b>：Project – Import CCS Project，勾 <i>Copy projects into workspace</i>，否则改的是原来位置上的那份文件。</li>
+<li><b>加文件</b>：Project – Add Files，选 <i>Copy Files</i>（复制进工程）或链接到原来位置上的文件；也可以直接拖进 Project Explorer。</li>
+<li><b>改名</b>：F2 或右键 Rename。注意：改名后有些工程选项会恢复默认，要检查配置。</li>
+<li><b>工程选项</b>：先在 Project Explorer 选中工程（显示 [Active – Debug]），再 Project – Properties。</li>
+<li>缩进乱了：选中后 <code>Ctrl+I</code>。关掉的窗口从 View 菜单找回来。</li>
+</ul>
+</div>
+<div class="panel">
+<h3>两个 <b class="t">perspectiva (ES) / perspective (EN)</b>——透视图</h3>
+<ul>
+<li><b>CCS Edit</b>：编辑和配置工程。</li>
+<li><b>CCS Debug</b>：调试和受控执行。</li>
+<li>透视图就是"适合这个阶段的一组窗口"；也可以自定义。开始调试时自动切到 CCS Debug。</li>
+</ul>
+</div>
+</div>
+<p><b>Build</b>：选中工程，Project – Build Project。会出现两个窗口：<b>Console</b> 显示工具链每一步的消息和结果；<b>Problems</b> 列出发现的问题。可以故意制造一个错误——把 <code>WDTCTL</code> 的 L 删掉——看看两种情况：</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="ok" type="button">正确的代码</button>
+<button aria-pressed="false" data-view="err" type="button">删掉一个 L</button>
+</div>
+<pre class="code" data-pane="ok"><code><span class="ln-row">    <span class="rg">WDTCTL</span> = WDTPW|WDTHOLD;</span><span class="ln-row"> </span><span class="ln-row"><span class="fn">Console</span>   编译 → 汇编 → 链接，各步的消息……构建成功</span><span class="ln-row"><span class="fn">Problems</span>  （空）</span></code></pre>
+<pre class="code" data-pane="err" hidden=""><code><span class="ln-row">    <span class="bad">WDTCT</span> = WDTPW|WDTHOLD;          <span class="cm">// 编辑器里这一行被标出</span></span><span class="ln-row"> </span><span class="ln-row"><span class="fl">Console</span>   消息显示构建过程中出现了错误</span><span class="ln-row"><span class="fl">Problems</span>  逐条列出错误；点一条，编辑器跳到出错的那一行</span><span class="ln-row"><span class="fl">Project Explorer</span>  有错的文件带红色 ×</span></code></pre>
+</div>
+<p class="aside">Console 和 Problems 的具体文字因 CCS 版本而异，这里只写会看到的现象。</p>
+<div class="note">
+<span class="lbl">安装和版本，一句话</span>
+<p>安装时以 CCS 10.2 为例：自定义安装，只勾 <b>MSP430 ultra-low power MCUs</b>，装完重启。本章的操作步骤按 CCSv8 写，课程现在链接的是 CCS 12.4.0，界面略有差别但不影响。另外两条提醒：workspace 路径里不要有重音字母、ñ 这类字符，只用英文字母和数字；不要把 workspace 搬到别的电脑，要用"导出工程 → 在新电脑导入"。</p>
+</div>
+<p class="aside">TI Resource Explorer（View – Resource Explorer）可以在线看各种板子的示例。MSPWare 每年都在变，看示例时要注意它是为哪个版本写的。</p>
+<p class="takeaway">workspace ⊃ project ⊃ 源文件；新建工程时定好目标芯片、连接、编译器；Build 的结果看 Console 和 Problems。</p>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>调试：让程序停在你想看的地方 <span class="tag">M12.10</span></h2>
+<p class="hook"><span class="zh">程序在板上全速跑，LED 在闪。你怎样让它停在某一行，看一眼寄存器，再一步一步往下走？</span><span class="es">Ejecución – Suspensión – Paso a paso – Reanudación.</span></p>
+<figure class="stage" data-ms="3600" data-scene="" id="m12-sc-dbg">
+<div class="stage-title"><span>Escena 8 · estados de una sesión de depuración</span><b>6 步</b></div>
+<div aria-label="动画：CCS 调试会话的状态与快捷键" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="m12-sc-dbg-t" role="img" viewbox="0 0 800 380">
+<title id="m12-sc-dbg-t">CCS Edit 按 F11 进入 CCS Debug；Suspended 按 F8 变 Running，Running 按 Alt+F8 或碰到断点变回 Suspended；Suspended 可按 F6 单步、Restart 回到开头；Ctrl+F2 结束，回到 CCS Edit</title>
+<rect class="bx m" data-hl="1 6" height="80" rx="12" width="170" x="16" y="150"></rect>
+<text class="tx sm w mid" x="101" y="184">CCS Edit</text>
+<text class="tz sm m mid" x="101" y="210">editar · Build</text>
+<g data-step="2">
+<rect class="ln thin m dash" height="330" rx="14" width="534" x="250" y="30"></rect>
+<text class="tm xs m" x="266" y="52">perspectiva CCS Debug</text>
+<path class="ln y draw" d="M186 190 H288" id="m12-p-f11" marker-end="url(#m12-ah-y)"></path>
+<text class="tm xs y mid" x="237" y="180">F11</text>
+<text class="tm xs m mid" x="237" y="212">Debug</text>
+<rect class="bx y" data-hl="2 4" height="80" rx="12" width="180" x="290" y="150"></rect>
+<text class="tx sm y mid" x="380" y="184">Suspended</text>
+<text class="tz sm m mid" x="380" y="210">cursor en una línea</text>
+</g>
+<circle class="sl y" data-move="#m12-p-f11" data-out="3" data-step="2" r="6"></circle>
+<g data-step="3">
+<path class="ln g draw" d="M440 150 C 480 96, 570 96, 610 148" marker-end="url(#m12-ah-g)"></path>
+<text class="tm xs g mid" x="525" y="94">F8 · Resume</text>
+<rect class="bx g" data-hl="3" height="80" rx="12" width="180" x="580" y="150"></rect>
+<text class="tx sm g mid" x="670" y="184">Running</text>
+<text class="tz sm m mid" x="670" y="210">LED1 parpadea</text>
+</g>
+<g data-step="4">
+<path class="ln b draw" d="M610 232 C 570 286, 480 286, 440 232" marker-end="url(#m12-ah-b)"></path>
+<text class="tm xs b mid" x="525" y="300">Alt+F8 · Suspend</text>
+</g>
+<g data-step="5">
+<path class="ln b draw" d="M320 232 C 290 300, 400 300, 392 236" marker-end="url(#m12-ah-b)"></path>
+<text class="tm xs b mid" x="350" y="318">F6 · Step Over</text>
+<path class="ln b draw" d="M316 150 C 296 92, 372 82, 362 146" marker-end="url(#m12-ah-b)"></path>
+<text class="tm xs b mid" x="334" y="78">Restart</text>
+</g>
+<g data-step="6">
+<circle class="sl r" cx="525" cy="273" r="6"></circle>
+<text class="tm xs r mid" x="525" y="336">breakpoint</text>
+<path class="ln m draw" d="M250 330 H101 V234" marker-end="url(#m12-ah-m)"></path>
+<text class="tm xs m mid" x="170" y="350">Ctrl+F2 · Terminate</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>在 <b>CCS Edit</b> 里写代码、Build。</li>
+<li data-dur="4400"><b>Run – Debug（F11）</b>：把可执行代码下载到板上，进入调试模式，窗口切到 <b>CCS Debug</b> 透视图。下载失败（比如板子没接好）会弹出错误窗口。程序此时还没跑，等你按 Resume。</li>
+<li data-dur="4000"><b>Run – Resume（F8）</b>：程序全速运行。Debug 窗口里显示调试驱动名 <code>TI MSP430 USB1/MSP430</code> 和状态 <span class="c-g">Running</span>，LED1 开始闪。</li>
+<li data-dur="4400"><b>Run – Suspend（Alt+F8）</b>：程序暂停，状态变 <span class="c-y">Suspended</span>，显示当前指令所在的函数层次；有源码时光标停在那一行，LED 停止闪烁。</li>
+<li data-dur="4800"><b>Step Over（F6）</b>：执行<b>一条完整的 C 语句</b>，然后再停。<b>Run – Restart</b>：回到第一条指令重新开始。F8、Alt+F8、F6 可以随意交替。</li>
+<li data-dur="5000"><b>断点</b>：在代码左边的蓝色栏双击，程序 Resume 后跑到那一行就自动停下。<b>Run – Terminate（Ctrl+F2）</b>：结束调试，回到 CCS Edit。</li>
+</ol>
+</figure>
+<p>下面是一个调试模拟器，步骤和 CCS 里一样，程序就是 <code>MSP430F55xx_1.c</code>。点代码左边的圆点设断点（相当于 CCS 里双击蓝色栏）。</p>
+<figure class="stage" id="m12-sim">
+<div class="stage-title"><span>Simulador · sesión de depuración</span><b>自己动手</b></div>
+<div class="dbg">
+<div>
+<div class="dbg-tab">main.c</div>
+<div aria-label="源代码，带断点开关" class="code dbg-src" id="m12-src">
+<div class="dl" data-ln="1"><span class="bp0"></span><span class="no">1</span><span><span class="pp">#include &lt;msp430.h&gt;</span></span></div>
+<div class="dl" data-ln="2"><span class="bp0"></span><span class="no">2</span><span><span class="kw">volatile unsigned int</span> i;</span></div>
+<div class="dl" data-ln="3"><span class="bp0"></span><span class="no">3</span><span><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>)</span></div>
+<div class="dl" data-ln="4"><span class="bp0"></span><span class="no">4</span><span>{</span></div>
+<div class="dl" data-ln="5"><button aria-label="第 5 行断点" aria-pressed="false" class="bp" data-bp="5" type="button"></button><span class="no">5</span><span> <span class="rg">WDTCTL</span> = WDTPW|WDTHOLD;     <span class="cm">// Stop WDT</span></span></div>
+<div class="dl" data-ln="6"><button aria-label="第 6 行断点" aria-pressed="false" class="bp" data-bp="6" type="button"></button><span class="no">6</span><span> <span class="rg">P1DIR</span> |= BIT0;              <span class="cm">// P1.0 set as output</span></span></div>
+<div class="dl" data-ln="7"><span class="bp0"></span><span class="no">7</span><span> <span class="kw">while</span>(<span class="nm">1</span>)                    <span class="cm">// continuous loop</span></span></div>
+<div class="dl" data-ln="8"><span class="bp0"></span><span class="no">8</span><span>    {</span></div>
+<div class="dl" data-ln="9"><button aria-label="第 9 行断点" aria-pressed="false" class="bp" data-bp="9" type="button"></button><span class="no">9</span><span> <span class="rg">P1OUT</span> ^= BIT0;          <span class="cm">// XOR P1.0</span></span></div>
+<div class="dl" data-ln="10"><button aria-label="第 10 行断点" aria-pressed="false" class="bp" data-bp="10" type="button"></button><span class="no">10</span><span> <span class="kw">for</span>(i=<span class="nm">50000</span>;i&gt;<span class="nm">0</span>;i--);   <span class="cm">// Delay</span></span></div>
+<div class="dl" data-ln="11"><span class="bp0"></span><span class="no">11</span><span>    }</span></div>
+<div class="dl" data-ln="12"><span class="bp0"></span><span class="no">12</span><span>}</span></div>
+</div>
+</div>
+<div class="dbg-side">
+<div class="dbg-win"><div class="dbg-h">Debug</div><div class="v"><span class="dbg-state edit" id="m12-dstate">（没有调试会话）</span></div></div>
+<div class="dbg-win" id="m12-wreg"><div class="dbg-h">Registers</div>
+<table><tbody>
+<tr><td>WDTCTL.WDTHOLD</td><td id="m12-r-wdt">—</td></tr>
+<tr><td>Port_1_2 · P1DIR</td><td id="m12-r-dir">—</td></tr>
+<tr><td>Port_1_2 · P1OUT</td><td id="m12-r-out">—</td></tr>
+</tbody></table>
+</div>
+<div class="dbg-win" id="m12-wvar"><div class="dbg-h">Variables · Expressions</div>
+<table><tbody>
+<tr><td>i</td><td id="m12-r-i">—</td></tr>
+<tr><td>i&gt;25000</td><td id="m12-r-ex">—</td></tr>
+</tbody></table>
+</div>
+<div class="dbg-win dbg-board"><svg aria-hidden="true" viewbox="0 0 34 34"><circle class="bx m" cx="17" cy="17" id="m12-led" r="11"></circle></svg><span>LED1 · P1.0</span></div>
+</div>
+</div>
+<div class="stage-ctl">
+<button class="mini" id="m12-b-debug" type="button">Debug<span class="k">F11</span></button>
+<button class="mini" id="m12-b-resume" type="button">Resume<span class="k">F8</span></button>
+<button class="mini" id="m12-b-susp" type="button">Suspend<span class="k">Alt+F8</span></button>
+<button class="mini" id="m12-b-step" type="button">Step Over<span class="k">F6</span></button>
+<button class="mini" id="m12-b-restart" type="button">Restart</button>
+<button class="mini" id="m12-b-term" type="button">Terminate<span class="k">Ctrl+F2</span></button>
+<p aria-live="polite" class="out" id="m12-dout">先按 Debug（F11），把程序下载到板上。</p>
+</div>
+<p class="stage-note">示意模拟器：下载后停在第 5 行、单步时跳过 <code>while(1)</code> 这一行、在第 10 行按 F6 一次跑完整个延时，都是简化。P1OUT 复位后的值不确定（undefined），这里假设为 0x00。和 CCS 里一样，两次暂停之间变了的寄存器用黄色底标出；运行时窗口里的值不刷新（变灰）。</p>
+</figure>
+<h3>四个观察窗口</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>窗口</th><th>打开方式</th><th>看什么、能做什么</th></tr></thead>
+<tbody>
+<tr><td><b>Registers</b></td><td>View – Registers</td><td>按模块分组；端口 1 在 <code>Port_1_2</code> 下。两次暂停之间变了的值<b>黄色底</b>；点值可以直接改（只对有权限的寄存器）。</td></tr>
+<tr><td><b>Variables</b></td><td>View – Variables</td><td>当前作用域里的变量自动列出（停在 main 时看不到别的函数的局部变量）；也能改值。</td></tr>
+<tr><td><b>Expressions</b></td><td>View – Expressions</td><td>自己加：Add new expression，例如 <code>i&gt;25000</code>，F8/Alt+F8 交替看它变化。</td></tr>
+<tr><td><b>Memory Browser</b></td><td>View – Memory Browser</td><td>输入地址回车，例如 <code>0x002400</code>（在 RAM 0x1C00–0x43FF 之内，见 <a href="m11.html#s4">M11 §4</a>），或变量 i 的地址；格式选 <i>16 Bit Unsigned Int</i>；Open New View 再开一个。</td></tr>
+</tbody>
+</table>
+</div>
+<h3>快捷键速查</h3>
+<div class="tbl-wrap">
+<table class="keys">
+<thead><tr><th>键</th><th>菜单</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>F11</td><td>Run – Debug</td><td>下载并进入调试（CCS Debug）</td></tr>
+<tr><td>F8</td><td>Run – Resume</td><td>运行 / 继续</td></tr>
+<tr><td>Alt+F8</td><td>Run – Suspend</td><td>暂停</td></tr>
+<tr><td>F6</td><td>Step Over</td><td>执行一条完整的 C 语句</td></tr>
+<tr><td>—</td><td>Run – Restart</td><td>回到第一条指令</td></tr>
+<tr><td>双击</td><td>代码左侧蓝色栏</td><td>设 / 删断点</td></tr>
+<tr><td>Ctrl+F2</td><td>Run – Terminate</td><td>结束调试，回到 CCS Edit</td></tr>
+<tr><td>F7</td><td>—</td><td>停在没有源码的库函数里（"No source available"）时，走到下一行有源码的语句；也可以 View Disassembly 看汇编</td></tr>
+<tr><td>Ctrl+I · F2</td><td>—</td><td>修正缩进 · 工程改名</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note alert">
+<span class="lbl">常见问题</span>
+<ul>
+<li><b>could not open source file…</b>：<code>#include</code> 的路径没加进工程配置。</li>
+<li><b>Error initializing emulator: No USB FET was found</b>：板子没连好（检查线的两端），或驱动安装有问题。</li>
+<li><b>Debug 视图里的运行/调试图标不见了</b>：确认板子已连接、程序已下载，再 View – Debug。</li>
+<li><b>CCS 不再询问 workspace</b>：File – Switch Workspace；想每次都问，在 Window – Preferences 里打开 <i>Prompt for workspace on startup</i>。</li>
+<li>第一次调试时 CCS 可能要求更新板上调试固件：选 Update，更新过程中别拔板子。关于功耗（ULP）的提示可以先不管。</li>
+</ul>
+</div>
+<p class="aside">结束后可以右键工程 Close Project；之后用 Open Project 重新打开。</p>
+<p class="takeaway">F11 下载进调试 → F8 跑 → Alt+F8 停 → F6 单步；断点让程序自己停；变了的寄存器标黄；Ctrl+F2 收工。</p>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M12">
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">01</span>课程用的开发系统由哪三部分组成？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>MSP-EXP430F5529LP 开发板、Code Composer Studio、MSP430ware</button>
+<button data-o="b" type="button"><span class="k">B</span>MSP-EXP430F5529LP 开发板、Energia、IAR</button>
+<button data-o="c" type="button"><span class="k">C</span>eZ-FET、GCC、DriverLib</button>
+<button data-o="d" type="button"><span class="k">D</span>CCS、BoosterPack、GRACE</button>
+</div>
+<p class="why"><b>A。</b>开发板 + 开发调试环境 CCS + 软件包 MSP430ware（§0）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">02</span>LaunchPad 上 5 V 和 3,3 V 分别给 F5529 做什么用？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>5 V 给 CPU，3,3 V 给 USB 外设</button>
+<button data-o="b" type="button"><span class="k">B</span>两路都给 CPU，互为备份</button>
+<button data-o="c" type="button"><span class="k">C</span>3,3 V（TPS62237 从 VBUS 降压）给芯片供电；5 V 给它内置的 USB 外设</button>
+<button data-o="d" type="button"><span class="k">D</span>3,3 V 只给 eZ-FET，5 V 给 F5529</button>
+</div>
+<p class="why"><b>C。</b>MSP430 的工作电压是 1,8–3,6 V，所以 3,3 V 给芯片；5 V 用于 F5529 的 USB 外设，开发 USB 设备时需要（§1）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">03</span>为什么插上 LaunchPad 后，设备管理器里会出现两个 COM 口？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>F5529 和 F5528 各自枚举出一个口</button>
+<button data-o="b" type="button"><span class="k">B</span>eZ-FET 是复合 USB 设备：一个接口用于下载调试，一个是接到 USCI_A1 的 Application UART</button>
+<button data-o="c" type="button"><span class="k">C</span>TUSB2046 hub 的每个口各算一个 COM 口</button>
+<button data-o="d" type="button"><span class="k">D</span>一个给 USCI_A0，一个给 USCI_A1</button>
+</div>
+<p class="why"><b>B。</b>MSP Debug Interface + MSP Application UART1，后者接 F5529 的 USCI_A1（§2）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">04</span>板上的 eZ-FET lite 用什么接口下载和调试 F5529？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>四线 JTAG</button>
+<button data-o="b" type="button"><span class="k">B</span>Application UART</button>
+<button data-o="c" type="button"><span class="k">C</span>BSL 按钮启动的 bootstrap loader</button>
+<button data-o="d" type="button"><span class="k">D</span>两线的 Spy-Bi-Wire（与 RST/NMI、TEST 引脚共用）</button>
+</div>
+<p class="why"><b>D。</b>F5xx 支持四线 JTAG 和 SBW，但 eZ-FET lite 只支持 SBW；两根线在跳线块上叫 SBW RST、SBW TST（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>想测 F5529 本身的电流（不含 hub 和 eZ-FET），应该怎么做？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>拔掉隔离跳线块上的 3V3，在两针之间串电流表</button>
+<button data-o="b" type="button"><span class="k">B</span>拔掉 5V 跳线，串电流表</button>
+<button data-o="c" type="button"><span class="k">C</span>拔掉 JP8</button>
+<button data-o="d" type="button"><span class="k">D</span>在 USB 线上串电流表</button>
+</div>
+<p class="why"><b>A。</b>3V3 跳线就是目标的 3,3 V 供电；要测得更准，还应拔掉 UART 和 SBW 跳线（§2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>按下 S2 时，P1.1 读到什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>1，因为按钮接 Vcc</button>
+<button data-o="b" type="button"><span class="k">B</span>不确定，要看 LED1</button>
+<button data-o="c" type="button"><span class="k">C</span>0：按钮把引脚接到 GND；松开时靠上拉电阻读到 1</button>
+<button data-o="d" type="button"><span class="k">D</span>0，因为 S2 接的是 P2.1</button>
+</div>
+<p class="why"><b>C。</b>S2 → P1.1，S1 → P2.1；按钮另一端接地、板上没有外接电阻，所以要用片内上拉，按下 = 0（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>跳线 JP8 是做什么的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>选择 XT1 还是 XT2</button>
+<button data-o="b" type="button"><span class="k">B</span>把 LED1 和 P1.0 断开，好把 P1.0 用作中断输入</button>
+<button data-o="c" type="button"><span class="k">C</span>断开 Spy-Bi-Wire</button>
+<button data-o="d" type="button"><span class="k">D</span>把 LED2 接到 P4.7</button>
+</div>
+<p class="why"><b>B。</b>P1 口有中断能力，需要 P1.0 作中断输入时可以拔掉 JP8（§3）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">08</span>关于 MSP430 DriverLib 这类库，哪一句符合 §4 的说法？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>库生成的代码总是比手写 C 更小</button>
+<button data-o="b" type="button"><span class="k">B</span>用库就完全不需要了解外设</button>
+<button data-o="c" type="button"><span class="k">C</span>库把开发板也抽象掉了，Arduino 代码可以直接用</button>
+<button data-o="d" type="button"><span class="k">D</span>代码简单、可移植、好读，但可能不够优化，也可能带进多余的代码</button>
+</div>
+<p class="why"><b>D。</b>把开发板抽象掉的是 Energia，不是 DriverLib（§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>下面哪一项属于 C 的"低级语言"特性？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>用指针直接访问内存地址</button>
+<button data-o="b" type="button"><span class="k">B</span>声明变量后编译器/链接器自动给它找地址</button>
+<button data-o="c" type="button"><span class="k">C</span>用 .h 和 .c 分开接口和实现</button>
+<button data-o="d" type="button"><span class="k">D</span>函数通过参数和返回值传数据</button>
+</div>
+<p class="why"><b>A。</b>B、C、D 都是高级语言那一面的优点（§5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>按 §6 的定义，编译器的输出是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>直接是可执行的机器码</button>
+<button data-o="b" type="button"><span class="k">B</span>目标代码，不需要再处理</button>
+<button data-o="c" type="button"><span class="k">C</span>汇编语言代码（仍是源代码），之后还要汇编和链接</button>
+<button data-o="d" type="button"><span class="k">D</span>写进 FLASH 的二进制镜像</button>
+</div>
+<p class="why"><b>C。</b>C → 汇编（编译器）→ 目标代码（汇编器）→ 可执行代码（链接器）（§6）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">11</span>工程只有一个 <code>main.c</code>，还需要链接器吗？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>不需要，链接器只用来合并多个文件</button>
+<button data-o="b" type="button"><span class="k">B</span>需要：只有链接器掌握内存映射，它生成可执行代码</button>
+<button data-o="c" type="button"><span class="k">C</span>只有用汇编写时才需要</button>
+<button data-o="d" type="button"><span class="k">D</span>只有用到 DriverLib 时才需要</button>
+</div>
+<p class="why"><b>B。</b>就算只有一个源文件也要链接，这一点要特别记住（§6）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>调试时想让程序每次执行到 <code>P1OUT ^= BIT0;</code> 都自己停下，并看 P1OUT 怎么变，应该怎么做？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>在那一行设断点，按 Resume（F8），在 Registers 的 Port_1_2 里看 P1OUT</button>
+<button data-o="b" type="button"><span class="k">B</span>一直按 Ctrl+F2</button>
+<button data-o="c" type="button"><span class="k">C</span>重新 Build Project</button>
+<button data-o="d" type="button"><span class="k">D</span>在 Memory Browser 里输入 0xFFFE</button>
+</div>
+<p class="why"><b>A。</b>这正是 §8 调试模拟器里的练习；两次暂停之间变了的寄存器会标黄（§8）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">17 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">MSP-EXP430F5529LP<small>LaunchPad</small></span><span class="back"><b>开发板</b><br/>F5529 + eZ-FET 调试器 + 电源/hub + 隔离跳线。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">eZ-FET lite<small>programador / depurador</small></span><span class="back"><b>板载调试器</b><br/>一颗 MSP430F5528，经 USB 提供下载、调试和串口。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">dispositivo USB compuesto<small>composite USB device</small></span><span class="back"><b>复合 USB 设备</b><br/>一个设备里有多个接口；eZ-FET 有调试 + UART 两个。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Spy-Bi-Wire<small>SBW · SBWTDIO / SBWTCK</small></span><span class="back"><b>两线 JTAG</b><br/>与 RST/NMI、TEST 共用引脚；eZ-FET lite 只支持它。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">backchannel UART<small>MSP Application UART1</small></span><span class="back"><b>应用串口</b><br/>PC 上的虚拟 COM 口，接 F5529 的 USCI_A1（P4.4/P4.5）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">jumpers de aislamiento<small>isolation jumper block</small></span><span class="back"><b>隔离跳线</b><br/>电源、UART、SBW 都经过它，可以逐根断开。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">TUSB2046 · TPS62237</span><span class="back"><b>hub · DC-DC</b><br/>4 口 USB hub（用 2 口）；把 VBUS 5 V 降到 3,3 V。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BSL<small>bootstrap loader</small></span><span class="back"><b>引导加载程序</b><br/>FLASH 里的程序；F5529 上走 USB（上电时按住 BSL 键）。JTAG 进不去时救急。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">resistencia de pull-up<small>pull-up resistor</small></span><span class="back"><b>上拉电阻</b><br/>按钮松开时让引脚读到 1、按下接地读 0。S1、S2 没有外接电阻，用片内上拉（PxREN）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BoosterPack</span><span class="back"><b>扩展板</b><br/>插在 40 针扩展口上的外设板（键盘、显示屏……）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">código máquina<small>machine code</small></span><span class="back"><b>机器码</b><br/>CPU 能直接执行的位模式，存在存储器里。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">nemónico<small>mnemonic</small></span><span class="back"><b>助记符</b><br/>汇编里代表一条指令的符号，如 MOV。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">compilador<small>compiler</small></span><span class="back"><b>编译器</b><br/>把 C 源代码翻成汇编（仍是源代码）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">enlazador / linkador<small>linker</small></span><span class="back"><b>链接器</b><br/>合并目标代码和库，按内存映射（.cmd 链接命令文件）生成可执行代码。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">espacio de trabajo · proyecto<small>workspace · project</small></span><span class="back"><b>工作区 · 工程</b><br/>workspace 装多个相关工程；工程 = 一起生成一个可执行程序的源文件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">punto de ruptura<small>breakpoint</small></span><span class="back"><b>断点</b><br/>程序运行到这一行时自动暂停。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Step Over<small>paso a paso · F6</small></span><span class="back"><b>单步（跳过）</b><br/>执行一条完整的 C 语句后暂停。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M12"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  if (window.M12_PAGE_INIT) return;
+  window.M12_PAGE_INIT = true;
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+
+  
+  var NS = "http://www.w3.org/2000/svg";
+  var JORDER = [
+    { k: "gnd", lab: "GND", c: "m", fixed: true },
+    { k: "5v", lab: "5V", c: "t" },
+    { k: "3v3", lab: "3V3", c: "t" },
+    { k: "rts", lab: "RTS >>", c: "b" },
+    { k: "cts", lab: "CTS <<", c: "b" },
+    { k: "rxd", lab: "RXD <<", c: "b" },
+    { k: "txd", lab: "TXD >>", c: "b" },
+    { k: "rst", lab: "SBW RST", c: "p" },
+    { k: "tst", lab: "SBW TST", c: "p" },
+    { k: "nc", lab: "N/C", c: "m", fixed: true }
+  ];
+  var JDESC = {
+    "5v": "5V：USB 主机来的 VBUS。F5529 要做 USB 连接时需要它。",
+    "3v3": "3V3：DC-DC 从 VBUS 降出的 3,3 V，目标芯片的电源。",
+    "rts": "RTS：硬件流控，目标用它表示自己能不能接收 PC 的数据。",
+    "cts": "CTS：硬件流控，PC（经 eZ-FET）用它表示自己能不能接收数据。",
+    "rxd": "RXD：目标 F5529 从这根线收数据。",
+    "txd": "TXD：目标 F5529 从这根线发数据。",
+    "rst": "SBW RST：Spy-Bi-Wire 的数据线 SBWTDIO，同一个引脚也是低有效的 RST。",
+    "tst": "SBW TST：Spy-Bi-Wire 的时钟线 SBWTCK，同一个引脚也是 TST。"
+  };
+  var J = {}, caps = {};
+  var jrow = $("m12-jrow");
+  function mk(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var a in attrs) if (attrs.hasOwnProperty(a)) e.setAttribute(a, attrs[a]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  JORDER.forEach(function (j, idx) {
+    var cx = 60 + idx * 75;
+    var g = mk("g", {}, jrow);
+    mk("circle", { "class": "sl w", cx: cx, cy: 70, r: 4 }, g);
+    mk("circle", { "class": "sl w", cx: cx, cy: 120, r: 4 }, g);
+    var t = mk("text", { "class": "tm xs " + j.c + " mid", x: cx, y: 172 }, g);
+    t.textContent = j.lab;
+    var cap = mk("g", { "class": "jcap" }, g);
+    mk("rect", { "class": "bx " + j.c, x: cx - 14, y: 56, width: 28, height: 78, rx: 4 }, cap);
+    if (!j.fixed) {
+      cap.setAttribute("tabindex", "0");
+      cap.setAttribute("role", "button");
+      cap.setAttribute("aria-label", "跳线 " + j.lab);
+      J[j.k] = true;
+      caps[j.k] = cap;
+      cap.addEventListener("click", function () { flip(j.k); });
+      cap.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(j.k); }
+      });
+    }
+  });
+  var jout = $("m12-jout");
+  function row(ok, label, txt) {
+    return "<li><span class=\"" + (ok ? "ok" : "no") + "\">" + (ok ? "✓" : "✗") + "</span> " + label + "：" + txt + "</li>";
+  }
+  function jrender(last) {
+    Object.keys(J).forEach(function (k) {
+      caps[k].setAttribute("class", "jcap" + (J[k] ? "" : " ghost"));
+      caps[k].setAttribute("aria-pressed", J[k] ? "true" : "false");
+      var b = $("m12-jb-" + k);
+      if (b) b.setAttribute("aria-pressed", J[k] ? "true" : "false");
+    });
+    var pw = J["3v3"];
+    var dbg = pw && J.rst && J.tst;
+    var uart = pw && J.rxd && J.txd;
+    var flow = J.rts && J.cts;
+    var usb = pw && J["5v"];
+    var h = last ? "<b>" + (J[last] ? "插上 " : "拔掉 ") + "</b>" + JDESC[last] : "全部跳线都插着：正常使用时就该这样。";
+    h += "<ul>";
+    h += row(pw, "目标供电", pw ? "3,3 V 接通" : "断开。可以在 3V3 两针之间串电流表测目标电流；或者从排针外接 3,3 V（这时必须拔掉它，免得反向给 eZ-FET 供电）");
+    h += row(dbg, "CCS 下载 / 调试", dbg ? "可以（Spy-Bi-Wire 两根线都通）" : (!pw ? "目标没电" : "不行：Spy-Bi-Wire 断了，eZ-FET 够不到目标"));
+    h += row(uart, "Application UART", uart ? (flow ? "可用，带硬件流控" : "可用，没有硬件流控（只拔 RTS/CTS 时 TXD/RXD 照常）") : (!pw ? "目标没电" : "不可用：TXD/RXD 断开，P4.4/P4.5 可以另作他用"));
+    h += row(usb, "F5529 的 USB 应用", usb ? "可以（有 VBUS）" : (!pw ? "目标没电" : "USB 模块拿不到 VBUS"));
+    h += "</ul>";
+    jout.innerHTML = h;
+  }
+  function flip(k) { J[k] = !J[k]; jrender(k); }
+  Object.keys(J).forEach(function (k) {
+    var b = $("m12-jb-" + k);
+    if (b) b.addEventListener("click", function () { flip(k); });
+  });
+  $("m12-jb-all").addEventListener("click", function () {
+    Object.keys(J).forEach(function (k) { J[k] = true; });
+    jrender(null);
+  });
+  jrender(null);
+
+  
+  var NEXT = { 5: 6, 6: 9, 9: 10, 10: 9 };
+  var TICK = reduce ? 700 : 380;
+  var st = { mode: "edit", pc: 5, wdt: 0, dir: 0, out: 0, i: 0, bp: {}, snap: null, chg: {}, timer: null };
+  var rows = Array.prototype.slice.call(document.querySelectorAll("#m12-src .dl"));
+  var bps = Array.prototype.slice.call(document.querySelectorAll("#m12-src .bp"));
+  var dout = $("m12-dout");
+  function hex(v) { return "0x" + (v < 16 ? "0" : "") + v.toString(16).toUpperCase(); }
+  function vals() { return { wdt: st.wdt, dir: st.dir, out: st.out, i: st.i }; }
+  function say(s) { dout.innerHTML = s; }
+  function stopTimer() { if (st.timer) { clearInterval(st.timer); st.timer = null; } }
+  function snapshot() {
+    var now = vals(), c = {};
+    if (st.snap) for (var k in now) if (now.hasOwnProperty(k) && now[k] !== st.snap[k]) c[k] = true;
+    st.chg = c;
+    st.snap = now;
+  }
+  function cell(id, txt, key) {
+    var td = $(id);
+    td.textContent = txt;
+    td.className = st.mode === "susp" && st.chg[key] ? "chg" : "";
+  }
+  function render() {
+    var on = st.mode !== "edit";
+    rows.forEach(function (r) {
+      r.classList.toggle("pc", st.mode === "susp" && +r.getAttribute("data-ln") === st.pc);
+    });
+    var ds = $("m12-dstate");
+    ds.className = "dbg-state " + st.mode;
+    ds.textContent = st.mode === "edit" ? "（没有调试会话）" : "TI MSP430 USB1/MSP430 · " + (st.mode === "run" ? "Running" : "Suspended");
+    cell("m12-r-wdt", on ? String(st.wdt) : "—", "wdt");
+    cell("m12-r-dir", on ? hex(st.dir) : "—", "dir");
+    cell("m12-r-out", on ? hex(st.out) : "—", "out");
+    cell("m12-r-i", on ? String(st.i) : "—", "i");
+    cell("m12-r-ex", on ? (st.i > 25000 ? "1" : "0") : "—", "i");
+    $("m12-wreg").classList.toggle("stale", st.mode === "run");
+    $("m12-wvar").classList.toggle("stale", st.mode === "run");
+    var lit = on && (st.dir & 1) && (st.out & 1);
+    $("m12-led").setAttribute("class", lit ? "led-on" : "bx m");
+    $("m12-b-debug").disabled = on;
+    $("m12-b-resume").disabled = st.mode !== "susp";
+    $("m12-b-susp").disabled = st.mode !== "run";
+    $("m12-b-step").disabled = st.mode !== "susp";
+    $("m12-b-restart").disabled = st.mode !== "susp";
+    $("m12-b-term").disabled = !on;
+    bps.forEach(function (b) { b.setAttribute("aria-pressed", st.bp[+b.getAttribute("data-bp")] ? "true" : "false"); });
+  }
+  function exec() {
+    var ln = st.pc;
+    if (ln === 5) st.wdt = 1;
+    else if (ln === 6) st.dir = st.dir | 1;
+    else if (ln === 9) st.out = st.out ^ 1;
+    else if (ln === 10) st.i = 0;
+    st.pc = NEXT[ln];
+    return ln;
+  }
+  function suspendAt(msg) {
+    stopTimer();
+    st.mode = "susp";
+    snapshot();
+    render();
+    say(msg);
+  }
+  function tick() {
+    if (st.mode !== "run") { stopTimer(); return; }
+    exec();
+    if (st.bp[st.pc]) { suspendAt("碰到第 " + st.pc + " 行的断点，程序自动停下（还没执行这一行）。看看 Registers 里哪些值变黄了。"); return; }
+    render();
+  }
+  $("m12-b-debug").addEventListener("click", function () {
+    if (st.mode !== "edit") return;
+    stopTimer();
+    st.mode = "susp"; st.pc = 5; st.wdt = 0; st.dir = 0; st.out = 0; st.i = 0;
+    st.snap = vals(); st.chg = {};
+    render();
+    say("下载完成，切到 CCS Debug 透视图。程序在 main 开头等着：按 <b>Resume</b> 全速运行，或按 <b>Step Over</b> 一行一行走。");
+  });
+  $("m12-b-resume").addEventListener("click", function () {
+    if (st.mode !== "susp") return;
+    stopTimer();
+    st.mode = "run";
+    render();
+    say("<b>Running</b>：LED1 在闪。运行时窗口里的值不刷新。按 Suspend 停下" + (Object.keys(st.bp).some(function (k) { return st.bp[k]; }) ? "，或者等它碰到断点。" : "。"));
+    st.timer = setInterval(tick, TICK);
+  });
+  $("m12-b-susp").addEventListener("click", function () {
+    if (st.mode !== "run") return;
+    if (st.pc === 10) st.i = 1 + Math.floor(Math.random() * 49998);
+    suspendAt("<b>Suspended</b>：光标停在第 " + st.pc + " 行。" + (st.pc === 10 ? "多数时间 CPU 都在延时循环里，所以常常停在这里，i 是一个中间值。" : "") + "试试 Step Over。");
+  });
+  $("m12-b-step").addEventListener("click", function () {
+    if (st.mode !== "susp") return;
+    var ln = exec();
+    snapshot();
+    render();
+    var why = ln === 5 ? "watchdog 停了（WDTHOLD = 1）。" :
+      ln === 6 ? "P1.0 变成输出：P1DIR 变黄。" :
+      ln === 9 ? "P1OUT 的第 0 位翻转，LED1 " + ((st.dir & 1) && (st.out & 1) ? "亮了" : "灭了") + "。" :
+      "整个延时循环一次跑完，i 回到 0。";
+    say("Step Over 执行了第 " + ln + " 行：" + why + " 现在停在第 " + st.pc + " 行。");
+  });
+  $("m12-b-restart").addEventListener("click", function () {
+    if (st.mode !== "susp") return;
+    st.pc = 5;
+    render();
+    say("Restart：回到第一条指令（第 5 行），寄存器里的值不变。");
+  });
+  $("m12-b-term").addEventListener("click", function () {
+    if (st.mode === "edit") return;
+    stopTimer();
+    st.mode = "edit"; st.chg = {}; st.snap = null;
+    render();
+    say("Terminate：调试会话结束，回到 CCS Edit 透视图。");
+  });
+  bps.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var ln = +b.getAttribute("data-bp");
+      st.bp[ln] = !st.bp[ln];
+      render();
+      say(st.bp[ln] ? "第 " + ln + " 行设了断点。" + (st.mode === "run" ? "程序下次到这一行就会停。" : "按 Resume 让程序跑到这里。") : "删掉了第 " + ln + " 行的断点。");
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>

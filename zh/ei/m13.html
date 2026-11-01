@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M13 Entornos inteligentes · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.fig .hot:hover .s-line, .fig .hot:focus-visible .s-line { stroke: var(--signal); }
+.fig .hot.on .s-line { stroke: var(--signal); stroke-width: 2.6; }
+.chip.static { cursor: default; }
+.chip.static:hover { border-color: var(--line); }
+.sim { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: .9rem 1rem; display: flex; flex-direction: column; gap: .75rem; }
+.sim-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.sim-row .lb { font: 600 12px/1.4 var(--f-mono); color: var(--muted); min-width: 4.6rem; }
+.ctx-out { background: var(--sunk); border-radius: var(--r); padding: .75rem .9rem; display: flex; flex-direction: column; gap: .35rem; }
+.ctx-out .src { font-size: 12.5px; color: var(--muted); }
+.wc-rule { font-size: 14px; }
+.wc-stage { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.wc-cell { background: var(--sunk); border-radius: var(--r); padding: .6rem .75rem; display: flex; flex-direction: column; gap: 4px; min-width: 0; transition: background .3s; }
+.wc-cell .k { font: 600 11px/1.3 var(--f-mono); color: var(--muted); letter-spacing: .04em; }
+.wc-cell .v { font: 700 15px/1.3 var(--f-mono); }
+.wc-cell.lamp-on { background: var(--signal-soft); }
+.wc-cell.lamp-on .v { color: var(--signal); }
+.wc-cell.alert { background: var(--bad-soft); }
+.wc-cell.alert .v { color: var(--bad); }
+.wc-bar { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.wc-bar i { display: block; height: 100%; width: 0; background: var(--signal); transition: width .3s; }
+.tvflow { list-style: none; padding: 0 !important; counter-reset: tv; gap: 4px !important; }
+.tvflow li { counter-increment: tv; padding: .35rem .7rem; border-left: 3px solid var(--line); font-size: 14px; color: var(--muted); border-radius: 0 4px 4px 0; }
+.tvflow li::before { content: counter(tv) " · "; font: 600 12px var(--f-mono); }
+.tvflow li.done { border-left-color: var(--accent); color: var(--ink); }
+.tvflow li.on { border-left-color: var(--signal); background: var(--signal-soft); color: var(--ink); font-weight: 600; }
+.orig-d { margin: .4rem 0 0; }
+.orig-d summary { cursor: pointer; font: 600 12px/1.6 var(--f-mono); color: var(--accent); letter-spacing: .03em; }
+.orig-d figure { margin-top: .6rem; }
+@media (max-width: 560px) { .wc-stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 1 章节" class="chain" data-chain="M13"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 1 · Introducción · M13</div>
+<h1>Entornos inteligentes</h1>
+<p class="zh">智能环境</p>
+<div class="meta">
+
+<span><b>8</b> 个学习目标</span>
+<span>阅读约 25 分钟</span>
+
+
+</div>
+<p class="lede">“最深刻的技术是那些会消失的技术。”1991 年 Mark Weiser 这样描绘计算机的未来。这一章从他的泛在计算出发，看智能环境比它<b>多了什么</b>：情境感知、智能和有分寸的交互；再看两个具体的东西（一个智能电视平台、一间会“想”的房子），最后看 AmI 还卡在哪里，以及它的阴暗面。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">1.3.1</span>
+<div class="txt"><span>区分 computación ubicua（泛在计算）和 entorno inteligente（智能环境）</span><span class="es">Distinguir entre computación ubicua y entorno inteligente.</span><a href="#s4">→ §4 泛在计算 ≠ 智能环境</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.2</span>
+<div class="txt"><span>定义 computación sensible al contexto（情境感知计算）</span><span class="es">Definir la computación sensible al contexto.</span><a href="#s2">→ §2 情境感知计算</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.3</span>
+<div class="txt"><span>定义 entorno inteligente（智能环境）</span><span class="es">Definir el concepto de entorno inteligente.</span><a href="#s3">→ §3 什么是智能环境</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.4</span>
+<div class="txt"><span>指出 AmI 可能的 cuellos de botella（瓶颈）</span><span class="es">Identificar posibles cuellos de botella para AmI (Ambient Intelligence).</span><a href="#s8">→ §8 还卡在哪里</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.5</span>
+<div class="txt"><span>讨论 AmI 的伦理问题（隐私和安全）</span><span class="es">Discutir aspectos éticos de AmI (privacidad y seguridad).</span><a href="#s9">→ §9 阴暗面</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.6</span>
+<div class="txt"><span>指出智能环境的研究课题</span><span class="es">Identificar tópicos de investigación en entornos inteligentes.</span><a href="#s5">→ §5 研究课题</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.7</span>
+<div class="txt"><span>区分 casa inteligente（智能住宅）和 hogar digital（数字家庭）</span><span class="es">Distinguir entre casa inteligente y hogar digital.</span><a href="#s7">→ §7 casa inteligente ≠ hogar digital</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">1.3.8</span>
+<div class="txt"><span>指出一个智能平台（例如电视）的功能模块</span><span class="es">Identificar los módulos funcionales de una plataforma inteligente (por ejemplo, TV).</span><a href="#s6">→ §6 智能电视平台</a></div>
+<button aria-pressed="false" class="chk" data-obj="1.3.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M13"><span class="val">0 / 8 已掌握</span><span class="bar"><i></i></span></div>
+<p class="aside">标着“para saber más”的内容只帮助理解，不必背；正文里要读的文章属于主线。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>Weiser 的“隐形计算机” <span class="tag plain">背景</span></h2>
+<p>90 年代，Xerox PARC 的 Mark Weiser 观察到：一台昂贵的 mainframe（大型机）被很多人共用的时代已经过去，每人一台 PC 的时代已经到来，而下一个时代已隐约可见：每个人都能即时用上成百万台计算机。<b>点击图中的曲线或方框：</b></p>
+<div class="stack" data-explain="ubicua">
+<figure>
+<div class="fig">
+<svg aria-label="Weiser 的预测：大型机、个人计算机、泛在计算三条曲线依次兴起，右侧是今天的大数据、物联网、5G、可穿戴设备和深度学习" role="img" viewbox="0 0 640 252">
+<defs>
+<marker id="m13a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<line class="s-line" marker-end="url(#m13a)" x1="20" x2="628" y1="222" y2="222"></line>
+<text class="s-tm" text-anchor="end" x="626" y="242">tiempo</text>
+<text class="s-tm" x="30" y="20">Mark Weiser · Xerox PARC · 1991</text>
+<g aria-label="Mainframes" class="hot" data-key="mainframe" role="button" tabindex="0">
+<path class="s-line" d="M30,221 C 90,220 120,168 175,168 C 220,168 240,195 275,204"></path>
+<rect class="s-box" height="40" rx="5" width="116" x="30" y="110"></rect>
+<text class="s-t" text-anchor="middle" x="88" y="127">Mainframes</text>
+<text class="s-t2" text-anchor="middle" x="88" y="143">1 台 · 多人用</text>
+</g>
+<g aria-label="Ordenador personal" class="hot" data-key="pc" role="button" tabindex="0">
+<path class="s-line" d="M129,221 C 175,215 200,60 245,50 C 262,48 272,54 280,59"></path>
+<rect class="s-box" height="40" rx="5" width="100" x="100" y="40"></rect>
+<text class="s-t" text-anchor="middle" x="150" y="57">PC</text>
+<text class="s-t2" text-anchor="middle" x="150" y="73">1 人 · 1 台</text>
+</g>
+<g aria-label="Computación ubicua" class="hot" data-key="ubicua" role="button" tabindex="0">
+<path class="s-line" d="M200,221 C 240,218 255,120 274,32"></path>
+<rect class="s-box" height="44" rx="5" width="160" x="290" y="12"></rect>
+<text class="s-t" text-anchor="middle" x="370" y="31">Computación ubicua</text>
+<text class="s-t2" text-anchor="middle" x="370" y="48">1 人 · 成百万台</text>
+</g>
+<g aria-label="Hoy" class="hot" data-key="hoy" role="button" tabindex="0">
+<rect class="s-box" height="104" rx="36" width="156" x="470" y="72"></rect>
+<text class="s-t" text-anchor="middle" x="548" y="98">Hoy · 今天</text>
+<text class="s-tm" text-anchor="middle" x="548" y="118">Big data · IoT</text>
+<text class="s-tm" text-anchor="middle" x="548" y="136">5G · wearables</text>
+<text class="s-tm" text-anchor="middle" x="548" y="154">Deep learning</text>
+</g>
+</svg>
+</div>
+<figcaption>三条曲线先后兴起：Mainframes 最早、峰最低，后来回落；PC 更晚、更高；泛在计算最晚、几乎垂直地冲到最高。曲线只示意趋势，没有刻度。<span class="hint">点击看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="mainframe" hidden="">
+<h3>Mainframes · 大型机时代</h3>
+<p>计算机昂贵，<b>一台机器由很多用户共用</b>。</p>
+</div>
+<div class="panel" data-panel="pc" hidden="">
+<h3>Ordenador personal · 个人计算机时代</h3>
+<p><b>每人有自己的一台</b>。Weiser 在 1991 年的文章里认为，“personal computer”只是一个过渡阶段，它没法让计算真正成为生活中看不见的一部分（para saber más）。</p>
+</div>
+<div class="panel" data-panel="ubicua" hidden="">
+<h3>Computación ubicua · 泛在计算</h3>
+<p>Weiser 预言：计算机会<b>溶入环境</b>，变成隐形、安静的仆人。他把这叫 <b class="t">computación ubicua (ES) / ubiquitous computing (EN)</b>——泛在计算，也叫 <b class="t">virtualidad encarnada (ES) / embodied virtuality (EN)</b>——具身虚拟。</p>
+<p class="aside">“具身虚拟”这个名字是故意和 virtual reality（虚拟现实）唱反调：虚拟现实把人拉进计算机里的世界，Weiser 要把计算机拉出“盒子”、放进真实世界（para saber más）。</p>
+</div>
+<div class="panel" data-panel="hoy" hidden="">
+<h3>Hoy · 今天</h3>
+<p>泛在的计算和通信已经是现实：smartphones、tablets、wearables、IoT 传感器连到“nube”（云），云以惊人的速度存储和处理几乎所有信息（<b class="t">big data</b>——大数据），并且是“智能地”处理（<b class="t">deep learning</b>——深度学习）。</p>
+</div>
+</div>
+<p>要实现泛在计算，需要三样东西：新的交互设备、高集成度和超低功耗的技术、把所有元素连起来的强大无线网络。90 年代还没有这样的技术。</p>
+<p>新的交互设备叫 <b>tabs, pads and boards</b>，按尺寸分三种（para saber más）：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Tab · 英寸级</span><h3>像会动的便利贴</h3><p>一个房间里可能有一百多个。例：active badge（主动式工牌），能让建筑知道人在哪里。</p></div>
+<div class="cell"><span class="eyebrow">Pad · 英尺级</span><h3>像一张纸、一本书</h3><p>每个房间十到二十个。随手拿起就用的“草稿纸电脑”，不属于某个人。</p></div>
+<div class="cell"><span class="eyebrow">Board · 码级</span><h3>像黑板、公告栏</h3><p>每个房间一两块。大屏，供多人一起用。</p></div>
+</div>
+<p class="aside">有些资料写作“taps, pads y boards”；Weiser 本人用的词是 tabs, pads and boards，指的是同一组设备。</p>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>情境感知计算 <span class="tag">1.3.2</span></h2>
+<p>泛在计算的一个重要组成部分，是要能意识到情境：<b class="t">context awareness (EN)</b>——情境感知。这个概念最早由 Schilit（1994）提出，用来描述一种会根据<b>地点、用户、时刻</b>等调整自己的计算模型。今天的说法是 <b class="t">computación consciente / sensible al contexto (ES) / context-aware computing (EN)</b>——情境感知计算。</p>
+<div class="note">
+<span class="lbl">定义 · 1.3.2</span>
+<p><b>computación sensible al contexto</b>：一种计算范式，它利用<b>情境</b>，在用户<b>无论身在何处</b>（dondequiera que se encuentre）都能为他提供<b>相关的信息和/或服务</b>。</p>
+<p>情境包括：personas（人）、lugares u objetos（地点或物体，物理的或虚拟的）、hora（时间）、estación del año（季节）、coyuntura（当下的处境）等。</p>
+</div>
+<p class="aside"></p>
+<p>一个人的情境可以分成两层：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Contexto primario</span><h3>主要情境</h3><p>身份、位置、正在做什么、什么时候做。</p></div>
+<div class="cell"><span class="eyebrow">Contexto secundario</span><h3>次要情境</h3><p>电子邮箱、要和客户开会、约了医生、读过 MBA……</p></div>
+</div>
+<p><b>试一试：</b>同一位用户，换个地点、换个时间，情境感知系统给的东西就不一样。</p>
+<div class="sim" id="ctx">
+<div class="sim-row">
+<span class="lb">¿Dónde?</span>
+<div aria-label="地点" class="seg" role="group">
+<button aria-pressed="false" data-where="casa" type="button">casa</button>
+<button aria-pressed="true" data-where="oficina" type="button">oficina</button>
+<button aria-pressed="false" data-where="calle" type="button">calle</button>
+</div>
+</div>
+<div class="sim-row">
+<span class="lb">¿Cuándo?</span>
+<div aria-label="时间" class="seg" role="group">
+<button aria-pressed="true" data-when="manana" type="button">mañana</button>
+<button aria-pressed="false" data-when="noche" type="button">noche</button>
+</div>
+</div>
+<div aria-live="polite" class="ctx-out"></div>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>什么是智能环境 <span class="tag">1.3.3</span></h2>
+<p>Entorno Inteligente（Intelligent Environments）这个概念归功于 Coen（1998）：他把它定义为<b>泛在计算 + 人与计算机之间的自然交互</b>。</p>
+<p class="aside">有些资料里写作“Michael Cohen”，标准拼法是 Coen。两种拼法都常见，指的是同一个人。</p>
+<div class="note">
+<span class="lbl">定义 · 1.3.3</span>
+<p><b class="t">entorno inteligente (ES) / intelligent environment (EN)</b>——智能环境，也叫 <b class="t">Inteligencia Ambiental (ES) / Ambient Intelligence, AmI (EN)</b>——环境智能：</p>
+<ul>
+<li>给一个环境<b>加上技术</b>（通常是传感器和执行器网络），</li>
+<li>构建出一个能<b>为居住者的利益做决策</b>的系统，</li>
+<li>决策依据既有<b>实时采集</b>的信息，也有<b>长期记录</b>下来的信息。</li>
+</ul>
+</div>
+<p class="aside">Intelligent Environments / Smart Environments 是美国的叫法；欧洲为同一个想法造了 Ambient Intelligence（AmI）这个词。</p>
+<figure>
+<div class="fig">
+<svg aria-label="智能环境示意：云形的环境里有一个人，下面有两个传感器和一个执行器；两个传感器都连到左边的网络节点，左节点把数据送到中间节点，中间节点连到右节点，右节点驱动执行器；中间节点下面是一个圆，Inteligencia 和 Seguridad 都指向它" role="img" viewbox="0 0 600 324">
+<defs>
+<marker id="m13c" markerheight="6" markerwidth="6" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-soft" height="150" rx="46" width="260" x="170" y="14"></rect>
+<circle class="s-box" cx="300" cy="44" r="9"></circle>
+<line class="s-line" x1="300" x2="300" y1="53" y2="80"></line>
+<line class="s-line" x1="286" x2="314" y1="64" y2="64"></line>
+<line class="s-line" x1="300" x2="290" y1="80" y2="98"></line>
+<line class="s-line" x1="300" x2="310" y1="80" y2="98"></line>
+<line class="s-dash" x1="250" x2="350" y1="112" y2="112"></line>
+<ellipse class="s-mk" cx="245" cy="136" rx="5" ry="8"></ellipse>
+<ellipse class="s-mk" cx="275" cy="124" rx="8" ry="9"></ellipse>
+<path class="s-mk" d="M362,120 L376,120 L369,146 z"></path>
+<rect class="s-box" height="44" rx="2" width="40" x="220" y="176"></rect>
+<rect class="s-box" height="44" rx="2" width="38" x="350" y="170"></rect>
+<rect class="s-box" height="70" rx="2" width="36" x="282" y="196"></rect>
+<circle class="s-box" cx="300" cy="294" r="18"></circle>
+<line class="s-line" x1="245" x2="245" y1="144" y2="176"></line>
+<line class="s-line" x1="275" x2="252" y1="133" y2="176"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="369" x2="369" y1="170" y2="150"></line>
+<path class="s-line" d="M240,220 L240,238 L279,238" fill="none" marker-end="url(#m13c)"></path>
+<path class="s-line" d="M318,232 L369,232 L369,214" fill="none"></path>
+<line class="s-line" x1="300" x2="300" y1="266" y2="276"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="154" x2="286" y1="62" y2="76"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="154" x2="236" y1="130" y2="136"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="154" x2="217" y1="200" y2="198"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="154" x2="279" y1="296" y2="296"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="456" x2="424" y1="28" y2="40"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="446" x2="380" y1="134" y2="132"></line>
+<line class="s-line" marker-end="url(#m13c)" x1="446" x2="315" y1="268" y2="283"></line>
+<text class="s-t" text-anchor="end" x="148" y="60">Interacción</text>
+<text class="s-t2" text-anchor="end" x="148" y="76">交互</text>
+<text class="s-t" text-anchor="end" x="148" y="128">sensores</text>
+<text class="s-t2" text-anchor="end" x="148" y="144">传感器</text>
+<text class="s-t" text-anchor="end" x="148" y="198">redes</text>
+<text class="s-t2" text-anchor="end" x="148" y="214">网络（节点）</text>
+<text class="s-t" text-anchor="end" x="148" y="294">Seguridad</text>
+<text class="s-t2" text-anchor="end" x="148" y="310">安全</text>
+<text class="s-t" x="462" y="26">Entorno</text>
+<text class="s-t2" x="462" y="42">环境</text>
+<text class="s-t" x="452" y="132">actuadores</text>
+<text class="s-t2" x="452" y="148">执行器</text>
+<text class="s-t" x="452" y="266">Inteligencia</text>
+<text class="s-t2" x="452" y="282">智能</text>
+</svg>
+</div>
+<figcaption>云形的环境里，人和系统交互；两个传感器都接到左边的网络节点，数据经中间节点到右节点，再由右节点驱动执行器（箭头指向执行器）；中间节点下面的圆是核心，<b>Inteligencia 和 Seguridad 两个标签都指向这个圆</b>。</figcaption>
+</figure>
+
+<p>这是一个<b>多学科</b>领域。下面五个学科共同为居住者提供灵活、智能的服务：</p>
+<div aria-label="智能环境涉及的学科" class="chips">
+<span class="chip static">Redes de comunicaciones · 通信网络</span>
+<span class="chip static">Sensores · 传感器</span>
+<span class="chip static">HCI · 人机交互</span>
+<span class="chip static">Computación ubicua · 泛在计算</span>
+<span class="chip static">AI · 人工智能</span>
+</div>
+
+<p class="aside"><b class="t">HCI (Human Computer Interaction)</b>——人机交互。AmI 从这些领域汲取养分，但其中任何一个单独拿出来都不等于 AmI（para saber más）。</p>
+<h3>“主动，但有分寸”</h3>
+<p>Raffler（2006）给 AmI 的定义是：</p>
+<div class="note warm">
+<span class="lbl">定义 · AmI</span>
+<p>“A digital environment that proactively, but sensibly, supports people in their daily lives.”</p>
+<p class="aside">一个主动地、但有分寸地在日常生活中支持人们的数字环境。</p>
+</div>
+<p>要“有分寸”（sensato），系统必须是智能的：像一个训练有素的助手，留意着我们、帮我们，但<b>非必要不介入</b>。这需要它<b>认出用户</b>、<b>学到或知道用户的偏好</b>、能<b>体察用户的情绪</b>，并考虑每个地点和时刻的情境。有一句西班牙俗语说：好的服务员要像蒜，“在场，但不被察觉”。</p>
+<p>为此，智能环境要不断问自己 5 个问题。<b>点击每个问题：</b></p>
+<div class="stack" data-explain="quien">
+<figure>
+<div class="fig">
+<svg aria-label="智能环境的五个问题：左边从上到下是 WHO（谁、什么角色）、WHY（意图）、WHEN（何时变化、持续多久），右边是 WHAT（在做或习惯做什么）和 WHERE（用户或目标在哪里），中间标注 Schilit (1994)" role="img" viewbox="0 0 600 290">
+<line class="s-line" x1="240" x2="200" y1="116" y2="52"></line>
+<line class="s-line" x1="235" x2="200" y1="140" y2="145"></line>
+<line class="s-line" x1="240" x2="200" y1="164" y2="242"></line>
+<line class="s-line" x1="360" x2="400" y1="116" y2="62"></line>
+<line class="s-line" x1="360" x2="400" y1="164" y2="210"></line>
+<rect class="s-soft" height="60" rx="8" width="130" x="235" y="110"></rect>
+<text class="s-t" text-anchor="middle" x="300" y="135">5 W</text>
+<text class="s-tm" text-anchor="middle" x="300" y="154">Schilit (1994)</text>
+<g aria-label="¿Quién?" class="hot" data-key="quien" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="180" x="20" y="14"></rect>
+<text class="s-t" text-anchor="middle" x="110" y="35">¿Quién? · WHO</text>
+<text class="s-t2" text-anchor="middle" x="110" y="54">谁？扮演什么角色？</text>
+</g>
+<g aria-label="¿Por qué?" class="hot" data-key="porque" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="180" x="20" y="119"></rect>
+<text class="s-t" text-anchor="middle" x="110" y="140">¿Por qué? · WHY</text>
+<text class="s-t2" text-anchor="middle" x="110" y="159">用户的意图是什么？</text>
+</g>
+<g aria-label="¿Cuándo?" class="hot" data-key="cuando" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="180" x="20" y="224"></rect>
+<text class="s-t" text-anchor="middle" x="110" y="245">¿Cuándo? · WHEN</text>
+<text class="s-t2" text-anchor="middle" x="110" y="264">何时变化、持续多久？</text>
+</g>
+<g aria-label="¿Qué?" class="hot" data-key="que" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="180" x="400" y="30"></rect>
+<text class="s-t" text-anchor="middle" x="490" y="51">¿Qué? · WHAT</text>
+<text class="s-t2" text-anchor="middle" x="490" y="70">在做（或习惯做）什么？</text>
+</g>
+<g aria-label="¿Dónde?" class="hot" data-key="donde" role="button" tabindex="0">
+<rect class="s-box" height="52" rx="6" width="180" x="400" y="190"></rect>
+<text class="s-t" text-anchor="middle" x="490" y="211">¿Dónde? · WHERE</text>
+<text class="s-t2" text-anchor="middle" x="490" y="230">用户/目标在哪里？</text>
+</g>
+</svg>
+</div>
+<figcaption>左边是 WHO、WHY、WHEN，右边是 WHAT、WHERE；这五个问题合称泛在计算设计的“5Ws”原则。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="quien" hidden="">
+<h3>¿Quién? · 谁</h3>
+<p>识别<b>用户</b>，以及他在环境中扮演的<b>角色</b>。可以扩展到其他元素：宠物、机器人、感兴趣的物体。</p>
+</div>
+<div class="panel" data-panel="donde" hidden="">
+<h3>¿Dónde? · 在哪里</h3>
+<p>随时<b>定位</b>用户或目标物体。可能要混用多种技术：室内定位和室外定位用的技术不一样（GPS 在室内不工作）。Bloque 2 的 M24 Localización 会细讲。</p>
+</div>
+<div class="panel" data-panel="cuando" hidden="">
+<h3>¿Cuándo? · 什么时候</h3>
+<p>知道变化<b>何时发生、持续多久</b>，从而理解环境是怎么演变的。</p>
+</div>
+<div class="panel" data-panel="que" hidden="">
+<h3>¿Qué? · 在做什么</h3>
+<p><b>识别用户的活动</b>，再决定要不要帮忙。这并不容易，因为它取决于空间和时间情境。</p>
+<p>这个问题的完整问法是“¿Qué hace (o acostumbra a hacer) el usuario?”：不只是此刻在做什么，还包括他<b>习惯</b>做什么。</p>
+</div>
+<div class="panel" data-panel="porque" hidden="">
+<h3>¿Por qué? · 为什么</h3>
+<p><b>推断用户的意图</b>，用常识（有分寸地）<b>提前满足需要</b>。</p>
+<p class="aside">这被认为是该领域最难的挑战之一（para saber más）。</p>
+</div>
+</div>
+<p><b>交互上的折中</b>（solución de compromiso）：一方面，要尽量减少用户的主动操作，由系统凭自己的智能发起交互；另一方面，必须<b>始终保留</b>用户自己发起交互的选项，因为用户想要的东西，系统不一定知道。</p>
+<p>应用很多，例如：</p>
+<div class="grid3">
+<div class="cell"><h3>Casas inteligentes</h3><p>帮有特殊需要的人提高生活质量。例：独自在家的老年痴呆症患者，环境能提供一定协助、降低风险、给照护者建议。</p></div>
+<div class="cell"><h3>Hospitales</h3><p>监测、分析病人的病情进展；控制授权人员和病人能进入哪些区域、使用哪些设备。</p></div>
+<div class="cell"><h3>Transporte público</h3><p>加入定位技术，让服务更高效、流畅、安全。</p></div>
+<div class="cell"><h3>Educación</h3><p>跟踪学生的进度：作业、出勤、习惯等。</p></div>
+<div class="cell"><h3>Emergencias</h3><p>大型灾难中的预警和高效管理。</p></div>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>泛在计算 ≠ 智能环境 <span class="tag">1.3.1</span></h2>
+<p>智能环境和 Weiser 的“disappearing computer”（消失的计算机）、泛在计算（也叫 pervasiva）关系很近，但有一个清楚的区别：</p>
+<div class="note">
+<span class="lbl">区分 · 1.3.1</span>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Computación ubicua / pervasiva</span><p>重点是资源的<b>物理存在和可用性</b>：计算无处不在、随时可用。通常<b>不考虑</b>一个关键要素：<b>智能</b>。</p></div>
+<div class="cell"><span class="eyebrow">Entorno inteligente / AmI</span><p>在此之上“多一些”：<b>flexibilidad</b>（灵活）、<b>adaptación</b>（适应）、<b>anticipación</b>（预判），以及面向用户的 <b>interfaz “sensata”</b>（有分寸的界面）。</p></div>
+</div>
+<p class="aside">记忆口诀：泛在 = 到处都有计算；智能环境 = 到处都有计算 + 会想、有分寸。</p>
+</div>
+<p class="aside">术语：<b class="t">computación ubicua</b> 由 Weiser 提出；<b class="t">computación pervasiva (ES) / pervasive computing (EN)</b>——普适计算，是 IBM 采用的说法。两者意思相近。</p>
+<p>同一间办公室，切换看看两种系统的差别：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换系统类型" class="seg" role="group">
+<button aria-pressed="true" data-view="ubi" type="button">Computación ubicua</button>
+<button aria-pressed="false" data-view="ei" type="button">Entorno inteligente</button>
+</div>
+<div class="panel" data-pane="ubi">
+<span class="verdict ok">资源无处不在</span>
+<p>Weiser 的实验办公室（para saber más）：门只为佩戴正确工牌的人打开；房间叫出你的名字；电话自动转到你此刻所在的地方；终端调出坐在它前面的人的偏好；日程表自己写自己。</p>
+<p>Weiser 自己说：“No revolution in artificial intelligence is needed”——只要把计算机恰当地嵌进日常世界。系统知道“谁在哪儿”，但不推理、不预判。</p>
+</div>
+<div class="panel" data-pane="ei" hidden="">
+<span class="verdict star">再加上智能</span>
+<p>同一间办公室加上“智能”，会是这样：系统从过去几周的记录里学到你周一上午总在 3 号会议室开组会，提前调好室温、把上次的文件放上屏幕；看到你正专心写报告，就先把不紧急的来电转成留言，等你停下来再提醒。</p>
+<p>它是 <b>proactivo</b>（主动）的，也是 <b>sensato</b>（有分寸）的：flexibilidad、adaptación、anticipación。</p>
+</div>
+</div>
+<p><b>自查：</b>先看左列描述，想好它说的是哪一个，再<b>点击右列</b>揭晓。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>描述</th><th>说的是（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>Se centra en la presencia física y disponibilidad de recursos</td><td class="ans">Computación ubicua / pervasiva</td></tr>
+<tr class="reveal"><td>No suele tener en cuenta la inteligencia</td><td class="ans">Computación ubicua / pervasiva</td></tr>
+<tr class="reveal"><td>Proporciona flexibilidad, adaptación, anticipación y una interfaz “sensata”</td><td class="ans">Entorno inteligente (AmI)</td></tr>
+<tr class="reveal"><td>La consciencia del contexto (context awareness) es un componente importante</td><td class="ans">Computación ubicua（AmI 也依赖它）</td></tr>
+<tr class="reveal"><td>Conjuga la computación ubicua con una interacción natural persona–computador</td><td class="ans">Entorno inteligente（Coen 1998 的定义）</td></tr>
+<tr class="reveal"><td>Término acuñado por Weiser</td><td class="ans">Computación ubicua</td></tr>
+<tr class="reveal"><td>Término adoptado por IBM</td><td class="ans">Computación pervasiva</td></tr>
+<tr class="reveal"><td>Término europeo para la misma idea que Intelligent Environments</td><td class="ans">Ambient Intelligence (AmI)</td></tr>
+</tbody>
+</table>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>研究课题 <span class="tag">1.3.6</span></h2>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>去 <a href="http://www.wikicfp.com/cfp/program?id=1532&amp;s=IE&amp;f=Intelligent%20Environments" rel="noopener" target="_blank">Conferencia Internacional de Entornos Inteligentes（IE）的网站 ↗</a>，看看近几年的 tópicos de interés（征稿主题）。下面先把这个领域的研究方向整理出来。</p>
+</div>
+<p>智能环境是一个多学科领域（§3 的五个学科：redes、sensores、HCI、computación ubicua、AI）。按研究方向，可以把它整理成一份“研究课题”清单（para saber más）。</p>
+<p><b>配对：</b>先点左边的研究方向，再点右边属于它的项目。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="fisico" type="button">Componentes físicos <span class="es">sensores, controladores, dispositivos inteligentes</span></button>
+<button data-l="loc" type="button">Localización y seguimiento <span class="es">location-awareness, mobility tracking</span></button>
+<button data-l="ui" type="button">Interfaces naturales <span class="es">natural interfaces</span></button>
+<button data-l="model" type="button">Modelado del habitante <span class="es">inhabitant modeling</span></button>
+<button data-l="dec" type="button">Toma de decisiones <span class="es">decision making</span></button>
+<button data-l="salud" type="button">Salud: monitorización y asistencia <span class="es">health monitoring and assistance</span></button>
+</div>
+<div class="col">
+<button data-r="dec" type="button">Adaptive Home（Mozer）：用神经网络和强化学习决定灯和风扇怎么设</button>
+<button data-r="ui" type="button">KidsRoom（MIT）：孩子们一起划虚拟船、喊咒语，故事才往下走</button>
+<button data-r="salud" type="button">洗手提示系统：认出痴呆症患者做到哪一步，提醒下一步</button>
+<button data-r="fisico" type="button">Smart sofa（Trinity College）：根据坐姿的体重分布认出是谁</button>
+<button data-r="model" type="button">MavHome：从大量运动和灯光事件里挖掘常见的行为序列</button>
+<button data-r="loc" type="button">Aware Home：地板里的压力传感器捕捉脚步，用来定位和识别人</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<p class="aside">另一个研究方向是 pervasive computing 与 middleware（服务发现、互操作、异构），Bloque 2 的 M21 专门讲。</p>
+<p>这个领域<b>仍待解决的挑战</b>，本身也是研究课题（para saber más）：</p>
+<ul>
+<li>一个环境里有<b>多个居住者</b>：要建模他们的互动和相互冲突的目标；</li>
+<li>把“环境”从单个场所扩展到人一天经过的所有场所（家、车、办公室、机场、医院……）；</li>
+<li>不只让环境适应人，还用环境去<b>影响人</b>的行为、情绪和健康；</li>
+<li>采集的数据和自动化环境的<b>安全与隐私</b>；</li>
+<li>为整个智能环境建立<b>评估方法</b>。</li>
+</ul>
+<p>IE 会议历年的主题大致包括下面这些（以官网为准）：</p>
+<div aria-label="IE 会议常见主题" class="chips">
+<span class="chip static">Ambient Intelligence</span>
+<span class="chip static">smart homes &amp; buildings</span>
+<span class="chip static">smart cities</span>
+<span class="chip static">IoT</span>
+<span class="chip static">context awareness</span>
+<span class="chip static">HCI · 多模态交互</span>
+<span class="chip static">AI · machine learning</span>
+<span class="chip static">agentes · robótica</span>
+<span class="chip static">AAL · e-salud</span>
+<span class="chip static">privacidad · seguridad · ética</span>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>智能电视平台的功能模块 <span class="tag">1.3.8</span></h2>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>读 Mireia Clar 2007 年介绍“televisión digital inteligente”（智能数字电视）的文章（题目见本节末“资料”），看这个频道怎么工作。下面先把它拆开来看。</p>
+</div>
+<p>这篇文章反映的是 2007 年时对 AmI 的设想。这个频道不需要用户做任何操作（或者尽量少），就显示他<b>此刻想看或需要看</b>的内容：预录的节目，加上叠在屏幕上的信息。做法是：收集用户的情境数据，分组、预处理后发给数字电视运营商，再据此挑选要播的内容。</p>
+<p>平台由下面这些 <b class="t">módulos funcionales (ES)</b>——功能模块组成，属于泛在计算的模块。<b>点击每个模块：</b></p>
+<div class="stack" data-explain="remoto">
+<figure>
+<div class="fig">
+<svg aria-label="智能电视平台的七个功能模块：家中的传感器网络、本地处理、解码器，运营商侧的远程处理、运营商后端、智能信息搜索，以及位于两者之间的知识表示" role="img" viewbox="0 0 680 360">
+<defs>
+<marker id="m13b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="s-dash" height="326" rx="8" width="310" x="10" y="24"></rect>
+<rect class="s-dash" height="326" rx="8" width="310" x="360" y="24"></rect>
+<text class="s-tm" x="24" y="44">HOGAR · 用户家中</text>
+<text class="s-tm" x="374" y="44">OPERADOR · 电视运营商</text>
+<line class="s-line" marker-end="url(#m13b)" x1="100" x2="100" y1="112" y2="158"></line>
+<text class="s-tm" x="108" y="140">captación</text>
+<line class="s-line" marker-end="url(#m13b)" x1="170" x2="508" y1="184" y2="184"></line>
+<text class="s-tm" text-anchor="middle" x="245" y="176">contexto</text>
+<line class="s-line" marker-end="url(#m13b)" x1="580" x2="580" y1="112" y2="158"></line>
+<text class="s-tm" text-anchor="end" x="572" y="140">info externa</text>
+<line class="s-line" marker-end="url(#m13b)" x1="580" x2="580" y1="208" y2="268"></line>
+<text class="s-tm" text-anchor="end" x="572" y="243">qué y en qué formato</text>
+<line class="s-line" marker-end="url(#m13b)" x1="510" x2="172" y1="294" y2="294"></line>
+<text class="s-tm" text-anchor="middle" x="440" y="286">carrusel</text>
+<line class="s-dash" x1="290" x2="172" y1="112" y2="162"></line>
+<line class="s-dash" x1="390" x2="508" y1="112" y2="164"></line>
+<text class="s-tm" text-anchor="middle" x="100" y="338">→ pantalla TV</text>
+<g aria-label="Red de sensores inalámbricos" class="hot" data-key="sensores" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="30" y="64"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="85">Red de sensores</text>
+<text class="s-t2" text-anchor="middle" x="100" y="102">inalámbricos</text>
+</g>
+<g aria-label="Gestión y representación del conocimiento" class="hot" data-key="conocimiento" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="270" y="64"></rect>
+<text class="s-t" text-anchor="middle" x="340" y="85">Conocimiento</text>
+<text class="s-t2" text-anchor="middle" x="340" y="102">perfil · profiling</text>
+</g>
+<g aria-label="Búsqueda de información inteligente" class="hot" data-key="busqueda" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="510" y="64"></rect>
+<text class="s-t" text-anchor="middle" x="580" y="85">Búsqueda</text>
+<text class="s-t2" text-anchor="middle" x="580" y="102">información externa</text>
+</g>
+<g aria-label="Sistema de procesado local" class="hot" data-key="local" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="30" y="160"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="181">Procesado local</text>
+<text class="s-t2" text-anchor="middle" x="100" y="198">汇总情境 · 识别是谁</text>
+</g>
+<g aria-label="Sistema de procesado remoto" class="hot" data-key="remoto" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="510" y="160"></rect>
+<text class="s-t" text-anchor="middle" x="580" y="181">Procesado remoto</text>
+<text class="s-t2" text-anchor="middle" x="580" y="198">决策 · elemento clave</text>
+</g>
+<g aria-label="Decodificador" class="hot" data-key="deco" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="30" y="270"></rect>
+<text class="s-t" text-anchor="middle" x="100" y="291">Decodificador</text>
+<text class="s-t2" text-anchor="middle" x="100" y="308">家里的程序在这运行</text>
+</g>
+<g aria-label="Back-end del operador de TV" class="hot" data-key="backend" role="button" tabindex="0">
+<rect class="s-box" height="48" rx="6" width="140" x="510" y="270"></rect>
+<text class="s-t" text-anchor="middle" x="580" y="291">Back-end operador</text>
+<text class="s-t2" text-anchor="middle" x="580" y="308">存储 · 标签化内容</text>
+</g>
+</svg>
+</div>
+<figcaption>模块分在用户家中（HOGAR）和电视运营商（OPERADOR）两侧，知识表示放在中间；实线箭头是数据的流向，虚线表示用到用户画像。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="sensores" hidden="">
+<h3>Red de sensores inalámbricos · 家中的无线传感器网络</h3>
+<p>装在家里各处，捕捉与用户<b>活动</b>和<b>行为模式</b>有关的信息。种类很多：运动和存在、门窗开合、家电和基本服务的活动（燃气、水、电的消耗）、温度、湿度等。</p>
+</div>
+<div class="panel" data-panel="conocimiento" hidden="">
+<h3>Herramientas de gestión y representación del conocimiento · 知识管理与表示</h3>
+<p>高效地存储代表情境的全部信息，供基于 IA 算法的系统使用。它用 <b class="t">profiling (EN)</b>——画像（perfilado）技术保存用户档案：文化偏好（喜欢哪类书和纪录片）、休闲（常听什么音乐、常买什么电影）、特别感兴趣的话题、个人发展的愿望，以及他和同住者的日程。</p>
+</div>
+<div class="panel" data-panel="local" hidden="">
+<h3>Sistema de procesado local · 本地处理系统</h3>
+<p>把与用户情境有关的数据<b>汇总</b>在一起：来自本地传感器的数据，加上知识表示系统里存的信息。还要实现一个<b>识别系统</b>，判断此刻是<b>谁</b>在看这个频道。</p>
+</div>
+<div class="panel" data-panel="remoto" hidden="">
+<span class="verdict star">elemento clave · 关键模块</span>
+<h3>Sistema de procesado remoto · 远程处理系统</h3>
+<p>基于一个高级<b>决策系统</b>，在 <b class="t">Back-End</b>——后端（处理所收集数据的系统）上运行，是实现 <b>context-awareness</b> 的代码。输入是来自用户本地环境的数据，输出是决定：<b>给用户看什么内容、用什么视听格式</b>。</p>
+<p>它是整个系统的关键，这项服务的附加价值就来自它。</p>
+</div>
+<div class="panel" data-panel="busqueda" hidden="">
+<h3>Sistema de búsqueda de información inteligente · 智能信息搜索</h3>
+<p>连接<b>外部信息系统</b>，获取可能影响用户的更多信息。例如：用户对花粉过敏，春天打开这个频道时，就给他看最新的花粉地图（以字幕或滚动条显示）。</p>
+</div>
+<div class="panel" data-panel="backend" hidden="">
+<h3>Back-end del operador de TV · 运营商后端</h3>
+<p>存储和管理运营商要分发给用户的内容。内容必须<b>打好标签</b>，这样 procesado remoto 的输出才一致，并能以 <b>carrusel</b>（轮播）的方式发给最终用户。</p>
+</div>
+<div class="panel" data-panel="deco" hidden="">
+<h3>Decodificador · 解码器</h3>
+<p>家里运行的<b>所有程序都在解码器上运行</b>，所以它也能在本地保存数据。</p>
+</div>
+</div>
+<p class="aside">注意两个容易混的“Back-End”：procesado remoto <b>在 Back-End 上运行</b>（Back-End 指处理所收集数据的系统）；“Back-end del operador”是另一个模块，负责存储和管理内容。</p>
+<p><b>跟着数据走一遍</b>（以花粉过敏为例）：</p>
+<div class="stepper" id="tvsteps">
+<ol class="tvflow">
+<li data-step="1">Red de sensores 采集活动数据</li>
+<li data-step="2">Procesado local 汇总并识别是谁</li>
+<li data-step="3">Conocimiento 提供用户画像</li>
+<li data-step="4">Procesado remoto 做决定</li>
+<li data-step="5">Búsqueda 找来外部信息</li>
+<li data-step="6">Back-end 以轮播方式发出内容</li>
+<li data-step="7">Decodificador 在家里播放</li>
+</ol>
+<div class="panel">
+<span class="hint step-n">概览</span>
+<p class="step-txt"></p>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一步</button>
+<button class="btn primary" data-act="next" type="button">下一步 →</button>
+<button class="btn" data-act="all" type="button">回到概览</button>
+</div>
+</div>
+<p class="aside">这个顺序是帮助理解的简化，不是严格的步骤。</p>
+<div class="note">
+<span class="lbl">结论</span>
+<ul>
+<li>这种服务要<b>整合大量不同的技术</b>，从用户一直到电视运营商：家庭传感器网络、运营商的 Back-End、内容标签……</li>
+<li>创新点：在一个 punto-multipunto（点对多点）的广播媒体上，给每个用户看<b>个性化</b>的内容。</li>
+<li>如果商业化，要研究系统的安全问题，保护个人的<b>隐私权</b>和信息的<b>安全传输</b>（→ §9）。</li>
+<li>context-awareness 在这里的意思：对个人心理和个人情境的了解，用在 AmI 应用中；基于一个能按用户当下情境挑选合适内容的决策系统。</li>
+</ul>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>casa inteligente ≠ hogar digital <span class="tag">1.3.7</span></h2>
+<p>智能环境的典型例子是 <b class="t">casa inteligente (ES) / smart house (EN)</b>——智能住宅。注意：不要把它和 <b class="t">hogar digital (ES)</b>——数字家庭混为一谈，<b>数字家庭不一定是智能的</b>。</p>
+<div class="note">
+<span class="lbl">区分 · 1.3.7</span>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">Hogar digital</span><p>家里的<b>服务、基础设施和设备的融合</b>。它在 2000 年前后出现（见 M12），比 domótica 更进一步，把它和数据网络（PC、打印机）、多媒体（电视、音响、DVD）整合起来，提供宽带上网和本地、远程管理。重点是<b>连接和自动化</b>。</p></div>
+<div class="cell"><span class="eyebrow">Casa inteligente</span><p>一个<b>智能环境</b>（AmI 的实例）：用传感器和执行器感知情境，依据实时和历史信息<b>推理、学习、替住户做决定</b>。重点是<b>智能</b>。</p></div>
+</div>
+</div>
+<p>看一个例子：酒吧洗手间装了存在检测器，检测到运动就开灯一段时间；如果你在这段时间里一动不动，灯就灭了。<b>模拟一下：</b>先点「进门」，然后什么都别点。</p>
+<div class="sim" id="wc">
+<div class="sim-row">
+<span class="lb">系统</span>
+<div aria-label="选择系统" class="seg" role="group">
+<button aria-pressed="true" data-mode="hd" type="button">Hogar digital · 定时器</button>
+<button aria-pressed="false" data-mode="ci" type="button">Casa inteligente · 推理</button>
+</div>
+</div>
+<p class="wc-rule"></p>
+<div class="wc-stage">
+<div class="wc-cell" data-c="luz"><span class="k">LUZ · 灯</span><span class="v">OFF</span></div>
+<div class="wc-cell" data-c="persona"><span class="k">PERSONA · 人</span><span class="v">不在</span></div>
+<div class="wc-cell" data-c="timer"><span class="k">TEMPORIZADOR · 倒计时</span><span class="v">—</span><span class="wc-bar"><i></i></span></div>
+</div>
+<div class="stepper-ctl">
+<button class="btn primary" data-do="in" type="button">进门</button>
+<button class="btn" data-do="move" type="button">动一下</button>
+<button class="btn" data-do="out" type="button">出门</button>
+<button class="btn" data-do="reset" type="button">重置</button>
+</div>
+<div aria-live="polite" class="log"></div>
+</div>
+<p class="aside">模拟里的 8 秒只作演示。只靠运动传感器、门上没有传感器时，一个静静看书的人会被系统留在黑暗里，因为它把“没有运动”当成了“没有人”：灯虽然亮过，这个推理可算不上“bright”（para saber más）。</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>Hogar digital</th><th>Casa inteligente</th></tr></thead>
+<tbody>
+<tr><td>核心</td><td>融合：服务、基础设施、设备连在一起</td><td>智能：感知情境、推理、学习、预判</td></tr>
+<tr><td>怎么反应</td><td>固定规则（检测到运动 → 开灯 N 秒）</td><td>根据情境推断（进来了还没出去 → 人还在）</td></tr>
+<tr><td>例子</td><td>酒吧洗手间的感应灯；远程控制家电</td><td>Gator Tech Smart House</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">西班牙 2011 年修订的 ICT 规范把 hogar digital 定义为：一个通过服务、基础设施和设备的融合，满足居住者在安全与控制、通信、休闲与舒适、环境融合和无障碍方面需求的地方（见 M12）。注意这个定义里没有“智能”。智能环境区别于“用户可控的环境”的一个特征，是能为居住者的行为<b>建模</b>（para saber más）。</p>
+<p class="aside">也有资料把 casa inteligente、domótica、inmótica、hogar conectado、hogar digital 并列混用，称为一场术语“baile”（混乱）。那是市场上的旧说法；</p>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>浏览一篇介绍 Gator Tech Smart House 的文章（副标题把它称为 programmable pervasive space——可编程的泛在空间；作者、题目见本节末“资料”），了解一间智能住宅是什么样（不用花太多时间，Bloque 2 会细讲，见 <a href="m21.html#s8">M21 §8</a>）。屋里的一些“hot spots”：smart floor 识别并追踪所有住户的位置，还在开发跌倒检测；smart mirror 在需要时提醒服药；smart bed 监测睡眠模式；smart front door 用 RFID 免钥匙进门，还能和访客对话。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>还卡在哪里：瓶颈 <span class="tag">1.3.4</span></h2>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>读 Burgelman 的文章（题目见本节末“资料”），看 AmI 的瓶颈和伦理问题。</p>
+</div>
+<p>AmI 要变成现实，还有哪些“<b class="t">cuellos de botella (ES)</b>——瓶颈”？出发点是 <b class="t">ISTAG (Information Society Technologies Advisory Group)</b>——欧盟信息社会技术咨询组描绘的 AmI 愿景。Jean-Claude Burgelman 参与了这项工作；到 2009 年，他回头看了当年的要求和瓶颈，也提出了伦理问题（§9）。先自己想，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>问题</th><th>答案（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>ISTAG 报告用了几类要求（requisitos）？</td><td class="ans">5 类：① 不间断的移动/固定、基于 Web 的通信基础设施；② 非常不显眼的硬件；③ 动态、大规模分布的设备网络；④ 看起来自然的人机界面；⑤ 可靠性与安全</td></tr>
+<tr class="reveal"><td>到 2009 年，ISTAG 当年提出的瓶颈还剩几个仍然重要？</td><td class="ans">只剩 2 个</td></tr>
+<tr class="reveal"><td>瓶颈之一</td><td class="ans">能源：怎么给所有终端设备储能、供电。需要能撑远远超过 24 小时、最好能自己充电的电池</td></tr>
+<tr class="reveal"><td>瓶颈之二，也是<b>最主要</b>的</td><td class="ans">缺少智能软件：需要一种 software proactivo（主动软件），能预见或高效支持所有人类行为</td></tr>
+<tr class="reveal"><td>Burgelman 对电池问题的希望</td><td class="ans">对替代能源的大规模投入也许会顺带解决；已经有太阳能板供电的笔记本在卖</td></tr>
+<tr class="reveal"><td>Burgelman 对软件问题的希望</td><td class="ans">Web 2.0：自下而上地创造和管理知识；例子是拿着智能手机，个人档案马上推荐合口味的餐厅</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">到 2009 年，泛在网络、易用性、RFID、mesh 网络等其他方面已经进展很大。</p>
+<p class="aside">para saber más：人越依赖 AmI 的“e-bubble”（电子气泡），它的可靠性就越要达到 safety-critical（安全关键）系统的水平；“极小、几乎不耗电的设备”也被列为一项挑战。</p>
+
+</section>
+
+<section class="sec" id="s9">
+<h2><span class="n">§9</span>阴暗面：隐私与安全 <span class="tag">1.3.5</span></h2>
+<p>ISTAG 最初的版本就警告过，AmI 除了美好的一面，还带着别的东西，特别是<b>侵犯隐私</b>；所以要强调 AmI 必须是<b>可控的</b>，即“<b>bajo demanda</b>”（按需）。</p>
+
+<p><b>点击每个话题：</b></p>
+<div class="stack" data-explain="orwell">
+<div aria-label="AmI 的伦理风险" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="orwell" type="button">Orwell · 全面监控</button>
+<button aria-pressed="false" class="chip" data-key="dilema" type="button">¿Seguridad o intimidad?</button>
+<button aria-pressed="false" class="chip" data-key="convergencia" type="button">Convergencia · 不可逆</button>
+<button aria-pressed="false" class="chip" data-key="etica" type="button">伦理先行</button>
+<button aria-pressed="false" class="chip" data-key="ataques" type="button">身份盗用 · 攻击</button>
+<button aria-pressed="false" class="chip" data-key="brecha" type="button">数字鸿沟</button>
+<button aria-pressed="false" class="chip" data-key="weiser" type="button">Weiser 的警告 <small>1991</small></button>
+</div>
+<div class="panel" data-panel="orwell" hidden="">
+<h3>Orwell 式的“hipótesis oscuras”（黑暗假设）</h3>
+<p>有些设想描绘了一种可能变得 <b>orwelliana</b>（奥威尔式）的威胁性技术：如果我们对安全、受保护的世界的渴望变得过于执着，AmI 就会沿着斜坡滑向<b>全面控制</b>和<b>彻底失去隐私</b>。</p>
+<p class="aside">para saber más：政府、保险公司、雇主都可能想要这些数据，后果包括歧视（保费更高、工作机会更少）、勒索；连照顾老人的“智能床”也可能伤害尊严，因为它能看出人何时上下床、睡得好不好、床上睡了几个人。</p>
+</div>
+<div class="panel" data-panel="dilema" hidden="">
+<h3>¿Quieres seguridad o intimidad? · 安全还是隐私</h3>
+<p>美欧恐袭之后出现了一种“安全神经症”，正好给黑暗假设撑腰：借口反恐，开始登记每个人、记录一切。如果通话被录音、数据流量被扫描、付款和购物被条码或 RFID 记录、到处都要过生物识别，而且这些数据被不断交叉关联，任何感兴趣的人都能知道我们一天里 90% 的行为。</p>
+<p>但问题不简单：正是这类存档和追踪技术，让马德里恐袭者在<b>一周内</b>落网，调查者 48 小时内就知道去哪里找。Burgelman 因此呼吁就技术和人类的未来展开更广泛的讨论。</p>
+</div>
+<div class="panel" data-panel="convergencia" hidden="">
+<h3>Convergencia · 技术融合与不可逆</h3>
+<p>第二个黑暗假设：<b class="t">TIC (Tecnologías de la Información y la Comunicación)</b>——信息通信技术与<b>生物技术、机器人、纳米技术</b>的融合。Sun Microsystems 的 Bill Joy 在 Wired 上警告，这可能把我们带进 Minority Report 式的社会；而且这些趋势<b>不可逆</b>，像转基因作物，一旦大规模放进自然就收不回来，所以必须事先慎重考虑后果。</p>
+</div>
+<div class="panel" data-panel="etica" hidden="">
+<h3>伦理先行</h3>
+<p>技术问题的答案很简单：技术上几乎什么都能做。所以关于 TIC 未来最重要的讨论，首先是伦理：“¿qué tipo de inteligencia ambiental queremos realmente?”（我们到底想要哪种 AmI？）</p>
+<p>Burgelman 对早期愿景的批评：技术推动应用、忽视消费者的视角；把人看得过于个人主义，低估了社会互动（Web 2.0 就是反证）。他提出 crecimiento lento（慢增长）：用 AmI 提高生活质量、<b>有尊严地变老</b>（<b class="t">AAL (Ambient Assisted Living)</b>——环境辅助生活），而不是每天多干三小时。</p>
+</div>
+<div class="panel" data-panel="ataques" hidden="">
+<h3>系统与数据的安全（para saber más）</h3>
+<ul>
+<li><b>Robo de identidad</b>（身份盗用）：个人信息越容易拿到，被盗用于欺诈的风险越大。存在随身设备里，设备可能被偷；存在远程服务器上保护可能更好，但一旦被攻破损失更大。</li>
+<li><b>Ataques maliciosos</b>（恶意攻击）：主动攻击篡改或伪造数据，被动攻击只是窃听；病毒、拒绝服务。家居应用被操纵可能导致火灾，医疗和紧急系统失灵危及生命。人越依赖 AmI，越需要诊断和后备机制。</li>
+</ul>
+</div>
+<div class="panel" data-panel="brecha" hidden="">
+<h3>数字鸿沟与社会压力（para saber más）</h3>
+<p>人可能被迫使用 AmI（例如保险公司只给使用健康监测的人投保）；被系统预设的流程束缚，失去自主；远程照护减少面对面交流，老人更孤独；个性化只适配一个人，引发家庭成员之间的冲突；付费服务让不是人人都能受益。还有 spamming（用画像推送垃圾信息）。</p>
+</div>
+<div class="panel" data-panel="weiser" hidden="">
+<h3>Weiser 自己的警告（1991 年，para saber más）</h3>
+<p>他认为隐私是泛在计算最关键的社会问题：每个房间几百台能感知人的联网计算机，可能让以往的极权都显得像无政府；房间里一个“流氓”tab 就能录下发生的一切。</p>
+<p>对策：从一开始就把<b>加密</b>设计进系统；用 digital pseudonyms（数字化名）代替交出信用卡号、地址等个人信息；另一条原则：和现实世界一样的保护，闯进去就会留下“数字指纹”。</p>
+</div>
+</div>
+<div class="note">
+<span class="lbl">“seguridad” 的两层意思</span>
+<ul>
+<li><b>系统和数据的安全</b>：防攻击、防身份盗用、安全传输。§6 的智能电视商业化之前，就要研究这些，以保护隐私权。</li>
+<li><b>人身和社会的安全</b>：对“安全世界”的渴望。上面“安全还是隐私”的两难问的是这一层：为了它要付出多少隐私？</li>
+</ul>
+</div>
+<div class="note">
+<span class="lbl">保障思路</span>
+<ul>
+<li>AmI 必须可控，“bajo demanda”（ISTAG 的最初愿景）。</li>
+<li>把隐私保护作为一项设计要求<b>内建</b>到系统里，而不是全靠用户自己控制数据（para saber más）。</li>
+<li>加密、数字化名、留痕（Weiser 的对策）。</li>
+</ul>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M13">
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">01</span>按 §4，computación ubicua / pervasiva 和 entorno inteligente 的关键区别是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>泛在计算不考虑 context awareness</button>
+<button data-o="b" type="button"><span class="k">B</span>泛在计算关注资源的物理存在和可用性，通常不考虑“智能”</button>
+<button data-o="c" type="button"><span class="k">C</span>泛在计算提供 flexibilidad、adaptación、anticipación 和 interfaz sensata</button>
+<button data-o="d" type="button"><span class="k">D</span>两者是同义词，只是欧洲和美国的叫法不同</button>
+</div>
+<p class="why"><b>B。</b>C 描述的恰恰是智能环境多出来的部分；A 错，context awareness 是泛在计算的重要组成；D 混淆了，同义的是 Intelligent Environments（美）和 AmI（欧）。见 §4。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">02</span>computación sensible al contexto 的定义最接近哪一项？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只根据用户的明确指令提供服务</button>
+<button data-o="b" type="button"><span class="k">B</span>根据设备的硬件配置自动调整性能</button>
+<button data-o="c" type="button"><span class="k">C</span>把所有数据上传到云端集中处理</button>
+<button data-o="d" type="button"><span class="k">D</span>利用情境（人、地点、物体、时间、季节、处境……），在用户所在的任何地方提供相关信息和/或服务</button>
+</div>
+<p class="why"><b>D。</b>这是目标 1.3.2 的定义，见 §2。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">03</span>按 §3 的定义，entorno inteligente 做决策的依据是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>实时采集的信息和长期记录的信息</button>
+<button data-o="b" type="button"><span class="k">B</span>只有实时采集的信息</button>
+<button data-o="c" type="button"><span class="k">C</span>只有用户事先设定好的规则</button>
+<button data-o="d" type="button"><span class="k">D</span>运营商推送的内容</button>
+</div>
+<p class="why"><b>A。</b>智能环境给环境加上技术（通常是传感器和执行器网络），为居住者的利益做决策，依据既有实时信息，也有随时间记录下来的信息。见 §3。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">04</span>关于术语，哪一项正确？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>“computación pervasiva”是 Weiser 提出的</button>
+<button data-o="b" type="button"><span class="k">B</span>AmI 是美国的叫法，Smart Environments 是欧洲的叫法</button>
+<button data-o="c" type="button"><span class="k">C</span>“ubicua”由 Weiser 提出，“pervasiva”是 IBM 采用的说法</button>
+<button data-o="d" type="button"><span class="k">D</span>Intelligent Environments 的概念由 Raffler 在 2006 年提出</button>
+</div>
+<p class="why"><b>C。</b>Intelligent Environments 归功于 Coen（1998）；Raffler（2006）给的是 AmI 的一个定义；美国叫 Intelligent / Smart Environments，欧洲叫 AmI。见 §3、§4。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">05</span>智能环境问自己的 5 个问题里，“推断用户的意图，用常识提前满足需要”对应哪一个？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>¿Quién?</button>
+<button data-o="b" type="button"><span class="k">B</span>¿Dónde?</button>
+<button data-o="c" type="button"><span class="k">C</span>¿Cuándo?</button>
+<button data-o="d" type="button"><span class="k">D</span>¿Por qué?</button>
+</div>
+<p class="why"><b>D。</b>¿Qué? 是识别活动，¿Por qué? 是推断意图、提前满足需要。见 §3 的 5 个问题。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">06</span>Raffler 说 AmI “proactively, but sensibly” 地支持人们。要做到“sensato”，系统需要什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>尽可能多地主动介入</button>
+<button data-o="b" type="button"><span class="k">B</span>认出用户、学到他的偏好、体察他的情绪，并考虑当时当地的情境</button>
+<button data-o="c" type="button"><span class="k">C</span>让用户手动配置所有规则</button>
+<button data-o="d" type="button"><span class="k">D</span>接入尽可能多的传感器</button>
+</div>
+<p class="why"><b>B。</b>像训练有素的助手：留意我们、帮我们，但非必要不介入（服务员要像蒜）。见 §3。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">07</span>酒吧洗手间的灯：检测到运动就亮一段时间，你一动不动它就灭。这个例子说明什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>hogar digital 不一定是智能的；它不知道人还在，只知道刚才有没有运动</button>
+<button data-o="b" type="button"><span class="k">B</span>这是 casa inteligente 的典型例子</button>
+<button data-o="c" type="button"><span class="k">C</span>装了存在检测器就等于 AmI</button>
+<button data-o="d" type="button"><span class="k">D</span>只要接入宽带，家就变聪明了</button>
+</div>
+<p class="why"><b>A。</b>这个例子说明 casa inteligente 和 hogar digital 的区别：数字家庭不一定是智能的。见 §7。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>§6 的“Televisión Inteligente”平台里，被称为整个系统 elemento clave、实现 context-awareness 的是哪个模块？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>家中的无线传感器网络</button>
+<button data-o="b" type="button"><span class="k">B</span>解码器</button>
+<button data-o="c" type="button"><span class="k">C</span>在 Back-End 上运行的 sistema de procesado remoto</button>
+<button data-o="d" type="button"><span class="k">D</span>sistema de búsqueda de información inteligente</button>
+</div>
+<p class="why"><b>C。</b>远程处理系统基于高级决策系统，决定给用户看什么内容、用什么格式，服务的附加价值来自它。见 §6。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">09</span>同一平台里，“家里运行的所有程序”都跑在哪个模块上？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>sistema de procesado local</button>
+<button data-o="b" type="button"><span class="k">B</span>decodificador</button>
+<button data-o="c" type="button"><span class="k">C</span>Back-end del operador</button>
+<button data-o="d" type="button"><span class="k">D</span>herramientas de representación del conocimiento</button>
+</div>
+<p class="why"><b>B。</b>所有程序都在解码器上运行，所以它能在本地保存数据。本地处理系统负责汇总情境数据、识别是谁在看。见 §6。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">10</span>按 §8，ISTAG 当年提出的瓶颈到 2009 年只剩两个仍然重要。是哪两个？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>网络带宽和显示器分辨率</button>
+<button data-o="b" type="button"><span class="k">B</span>法规和成本</button>
+<button data-o="c" type="button"><span class="k">C</span>无线网络覆盖和 RFID 价格</button>
+<button data-o="d" type="button"><span class="k">D</span>终端设备的能源（电池）和主动的智能软件</button>
+</div>
+<p class="why"><b>D。</b>其中缺少智能软件是最主要的瓶颈。见 §8。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">11</span>ISTAG 最初的 AmI 愿景就警告了侵犯隐私的风险，因此强调 AmI 必须？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>可控，即“bajo demanda”</button>
+<button data-o="b" type="button"><span class="k">B</span>完全自主，不受用户干预</button>
+<button data-o="c" type="button"><span class="k">C</span>只在公共空间部署</button>
+<button data-o="d" type="button"><span class="k">D</span>把所有数据集中到政府服务器</button>
+</div>
+<p class="why"><b>A。</b>ISTAG 最初的愿景就这样强调。见 §9。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">12</span>§3 的学科图列出了智能环境涉及的五个学科。下面哪一项<b>不在</b>其中？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>HCI（人机交互）</button>
+<button data-o="b" type="button"><span class="k">B</span>AI（人工智能）</button>
+<button data-o="c" type="button"><span class="k">C</span>Realidad virtual（虚拟现实）</button>
+<button data-o="d" type="button"><span class="k">D</span>Computación ubicua（泛在计算）</button>
+</div>
+<p class="why"><b>C。</b>五个学科是 redes de comunicaciones、sensores、HCI、computación ubicua、AI。Weiser 甚至说虚拟现实和他的设想正好相反。见 §1、§3。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">18 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">computación ubicua<small>ubiquitous computing · Weiser</small></span><span class="back"><b>泛在计算</b><br/>计算机溶入环境，成为隐形、安静的仆人；关注资源的存在和可用性。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">computación pervasiva<small>pervasive computing · IBM</small></span><span class="back"><b>普适计算</b><br/>IBM 采用的说法，和 computación ubicua 意思相近。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">virtualidad encarnada<small>embodied virtuality</small></span><span class="back"><b>具身虚拟</b><br/>Weiser 对泛在计算的另一个叫法：把计算机从盒子里拿出来，放进真实世界。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">tabs · pads · boards<small>也写作 taps</small></span><span class="back"><b>三种尺度的设备</b><br/>英寸级的便利贴、英尺级的一张纸、码级的黑板。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">computación sensible al contexto<small>context-aware computing</small></span><span class="back"><b>情境感知计算</b><br/>利用情境，在用户所在的任何地方提供相关信息和/或服务。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">contexto primario / secundario</span><span class="back"><b>主要 / 次要情境</b><br/>主要：身份、位置、活动、时间；次要：邮箱、会议、预约、学历……</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">entorno inteligente<small>Intelligent / Smart Environment</small></span><span class="back"><b>智能环境</b><br/>加上技术的环境，依据实时和历史信息为居住者做决策。概念归功于 Coen（1998）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AmI<small>Ambient Intelligence · Inteligencia Ambiental</small></span><span class="back"><b>环境智能</b><br/>欧洲对智能环境的叫法。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">HCI<small>Human Computer Interaction</small></span><span class="back"><b>人机交互</b><br/>智能环境涉及的五个学科之一。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">interfaz sensata<small>sensible interface</small></span><span class="back"><b>有分寸的界面</b><br/>主动帮忙，但非必要不介入；要认出用户、懂偏好、体察情绪。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">casa inteligente<small>smart house</small></span><span class="back"><b>智能住宅</b><br/>智能环境的典型例子；会感知、推理、替住户做决定。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">hogar digital</span><span class="back"><b>数字家庭</b><br/>家里服务、基础设施和设备的融合；不一定是智能的。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">profiling<small>perfilado</small></span><span class="back"><b>用户画像</b><br/>保存用户的偏好、兴趣、日程，供智能电视的决策使用。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">Back-End</span><span class="back"><b>后端</b><br/>处理所收集数据的系统；智能电视的远程处理在这里运行。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">decodificador</span><span class="back"><b>解码器</b><br/>家里运行的所有程序都在它上面，能在本地保存数据。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">cuello de botella</span><span class="back"><b>瓶颈</b><br/>AmI 还剩两个：终端设备的能源，和主动的智能软件（最主要）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">ISTAG<small>Information Society Technologies Advisory Group</small></span><span class="back"><b>信息社会技术咨询组</b><br/>为欧盟提出 AmI 愿景，并警告了隐私风险。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">AAL<small>Ambient Assisted Living</small></span><span class="back"><b>环境辅助生活</b><br/>可用于医疗照护的、基于 TIC 的智能服务的统称。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M13"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var box = document.getElementById("ctx");
+  if (!box) return;
+  var out = box.querySelector(".ctx-out");
+  var where = "oficina", when = "manana";
+  var NAME = { casa: "casa", oficina: "oficina", calle: "calle", manana: "mañana", noche: "noche" };
+  var T = {
+    "casa|manana": ["闹钟察觉到你翻来覆去、快醒了，轻声问一句“coffee?”；窗户上显示孩子们已经起床、在厨房了。", "位置（家）、正在做什么（快醒了）、时间（早上）"],
+    "casa|noche": ["打开“Televisión Inteligente”频道，不用做任何操作，就播放你此刻想看或需要看的内容。", "身份（谁在看）、个人偏好"],
+    "oficina|manana": ["一进办公室就被认出来：温度和背景音乐调成你喜欢的，电脑打开你平时用的程序。", "身份（被认出来）、位置（办公室）、个人偏好"],
+    "oficina|noche": ["你已经离开办公室：打到办公室的电话自动转到你此刻所在的地方。", "位置（你此刻在哪里）"],
+    "calle|manana": ["开车上班时，前视镜显示前方堵车，还标出旁边街上新开的一家咖啡店。", "位置（路上）、正在做什么（开车上班）、时间（早上）"],
+    "calle|noche": ["拿着智能手机走在纽约街头，你的个人档案马上推荐最合口味的餐厅，还能查附近爵士俱乐部的演出、订个好座位。", "位置（纽约街头）、个人档案（口味）"]
+  };
+  function render() {
+    Array.prototype.forEach.call(box.querySelectorAll("button[data-where]"), function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-where") === where ? "true" : "false");
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("button[data-when]"), function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-when") === when ? "true" : "false");
+    });
+    var r = T[where + "|" + when];
+    out.innerHTML = "<p><b>情境</b>：同一位用户 · ¿dónde? " + NAME[where] + " · ¿cuándo? " + NAME[when] + "</p>" +
+      "<p><b>系统提供</b>：" + r[0] + "</p>" +
+      '<p class="src">用到的情境：' + r[1] + "</p>";
+  }
+  box.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-where], button[data-when]");
+    if (!b) return;
+    if (b.hasAttribute("data-where")) where = b.getAttribute("data-where");
+    else when = b.getAttribute("data-when");
+    render();
+  });
+  render();
+})();
+
+
+(function () {
+  var box = document.getElementById("tvsteps");
+  if (!box) return;
+  var items = Array.prototype.slice.call(box.querySelectorAll(".tvflow li"));
+  var txt = box.querySelector(".step-txt"), cnt = box.querySelector(".step-n");
+  var prev = box.querySelector('[data-act="prev"]'), next = box.querySelector('[data-act="next"]'), all = box.querySelector('[data-act="all"]');
+  var T = [
+    "一条数据流，以一位花粉过敏的用户为例。点「下一步」逐步走一遍。",
+    "<b>Red de sensores</b>：家里的无线传感器记录用户的活动和行为模式：在不在、开没开门、用没用家电、水电气消耗……",
+    "<b>Procesado local</b>：把传感器数据和知识表示系统里的信息汇总起来，并识别<b>此刻是谁</b>在看这个频道。",
+    "<b>Conocimiento</b>：用户画像里有他的偏好、兴趣、日程。假设这位用户对花粉过敏。",
+    "<b>Procesado remoto</b>（在 Back-End 上运行）：拿到来自家里的情境数据，决定<b>播什么内容、用什么格式</b>。这是整个系统的关键模块。",
+    "<b>Búsqueda inteligente</b>：连接外部信息系统，找到最新的花粉地图。春天，这条信息会影响这位用户。",
+    "<b>Back-end del operador</b>：从打好标签的内容里取出合适的节目，以 <b>carrusel</b>（轮播）方式发给用户。",
+    "<b>Decodificador</b>：家里的程序都在解码器上运行。电视播放节目，花粉地图以字幕或滚动条的形式出现在屏幕上。"
+  ];
+  var i = 0, N = items.length;
+  function render() {
+    items.forEach(function (li) {
+      var s = +li.getAttribute("data-step");
+      li.classList.toggle("on", i > 0 && s === i);
+      li.classList.toggle("done", i > 0 && s < i);
+    });
+    txt.innerHTML = T[i];
+    cnt.textContent = i === 0 ? "概览" : "第 " + i + " / " + N + " 步";
+    prev.disabled = i === 0;
+    next.disabled = i === N;
+  }
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < N) { i++; render(); } });
+  all.addEventListener("click", function () { i = 0; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("wc");
+  if (!root) return;
+  var T = 8;
+  var mode = "hd", inside = false, light = false, left = 0, timer = null;
+  var rule = root.querySelector(".wc-rule"), log = root.querySelector(".log");
+  var cL = root.querySelector('[data-c="luz"]'), cP = root.querySelector('[data-c="persona"]'), cT = root.querySelector('[data-c="timer"]');
+  var bar = cT.querySelector(".wc-bar i");
+  var bIn = root.querySelector('[data-do="in"]'), bMove = root.querySelector('[data-do="move"]'), bOut = root.querySelector('[data-do="out"]');
+  var RULE = {
+    hd: "<b>Hogar digital</b>：规则是写死的，检测到运动就开灯 " + T + " 秒，每次运动重新计时。它不知道人在不在，只知道刚才有没有动。",
+    ci: "<b>Casa inteligente</b>：门上的传感器记下“进来了、还没出去”，于是推断<b>里面有人</b>，不管人动不动都开着灯；人一出门就关灯。"
+  };
+  function say(s) {
+    var d = document.createElement("div");
+    d.textContent = s;
+    log.insertBefore(d, log.firstChild);
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  function start() { if (!timer) timer = setInterval(tick, 1000); }
+  function tick() {
+    if (mode !== "hd" || !light) { stop(); return; }
+    left--;
+    if (left <= 0) {
+      left = 0; light = false; stop();
+      say(inside ? "时间到，灯灭了。可你还在里面，只是没动。" : "时间到，灯灭了。人早走了，灯白亮了好几秒。");
+    }
+    draw();
+  }
+  function draw() {
+    cL.classList.toggle("lamp-on", light);
+    cL.querySelector(".v").textContent = light ? "ON" : "OFF";
+    var dark = inside && !light;
+    cP.classList.toggle("alert", dark);
+    cP.querySelector(".v").textContent = inside ? (dark ? "在 · 黑暗中" : "在") : "不在";
+    if (mode === "hd") {
+      cT.querySelector(".v").textContent = light ? left + " s" : "—";
+      bar.style.width = light ? Math.round(left / T * 100) + "%" : "0";
+    } else {
+      cT.querySelector(".v").textContent = "不需要";
+      bar.style.width = "0";
+    }
+    rule.innerHTML = RULE[mode];
+    bIn.disabled = inside;
+    bMove.disabled = !inside;
+    bOut.disabled = !inside;
+  }
+  function reset(msg) {
+    stop();
+    inside = false; light = false; left = 0;
+    log.innerHTML = "";
+    say(msg || "先点「进门」，然后什么都别点，看看会怎样。");
+    draw();
+  }
+  root.addEventListener("click", function (e) {
+    var m = e.target.closest("button[data-mode]");
+    if (m) {
+      mode = m.getAttribute("data-mode");
+      Array.prototype.forEach.call(root.querySelectorAll("button[data-mode]"), function (b) {
+        b.setAttribute("aria-pressed", b === m ? "true" : "false");
+      });
+      reset(mode === "hd" ? "切换到 hogar digital。先点「进门」，然后什么都别点。" : "切换到 casa inteligente。同样先点「进门」，然后什么都别点。");
+      return;
+    }
+    var b = e.target.closest("button[data-do]");
+    if (!b) return;
+    var act = b.getAttribute("data-do");
+    if (act === "reset") { reset(); return; }
+    if (act === "in") {
+      inside = true;
+      if (mode === "hd") { light = true; left = T; start(); say("进门：运动传感器检测到运动，开灯，倒计时 " + T + " 秒。"); }
+      else { light = true; say("进门：门传感器记下“进入”，推断有人，开灯。"); }
+    } else if (act === "move") {
+      if (mode === "hd") { light = true; left = T; start(); say("动了一下：重新计时 " + T + " 秒。"); }
+      else { say("动了一下：对判断没有影响，灯本来就开着。"); }
+    } else if (act === "out") {
+      inside = false;
+      if (mode === "hd") { say(light ? "出门：系统不知道你走了，灯继续亮到倒计时结束。" : "出门。灯早就灭了。"); }
+      else { light = false; say("出门：门传感器记下“离开”，推断没人了，关灯。"); }
+    }
+    draw();
+  });
+  reset();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M22 Sensores y actuadores · EI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.m22-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 10px 14px; }
+.m22-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+.m22-form input, .m22-form select {
+  font: 500 14px/1.4 var(--f-mono); color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r); padding: 6px 8px; width: 100%; min-width: 0;
+}
+.m22-form input:hover, .m22-form select:hover { border-color: var(--accent); }
+.m22-range { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.m22-range input[type="range"] { flex: 1 1 12rem; min-width: 0; accent-color: var(--accent); }
+.m22-range output { font: 600 13px/1 var(--f-mono); color: var(--ink); min-width: 3em; }
+.m22-res { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 10px; }
+.m22-res .v { font: 700 1.2rem/1.35 var(--f-mono); color: var(--accent); overflow-wrap: anywhere; }
+.m22-res .f { font: 400 12px/1.65 var(--f-mono); color: var(--muted); overflow-wrap: anywhere; }
+.m22-warn { color: var(--bad); font-weight: 600; }
+.m22-key { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.m22-key span { display: inline-flex; align-items: center; gap: 6px; }
+.m22-key i { display: inline-block; width: 20px; height: 0; border-top: 3px solid var(--muted); }
+.m22-key i.k-true { border-top-style: dashed; }
+.m22-key i.k-acc { border-top-color: var(--signal); }
+.m22-key i.k-gyr { border-top-color: var(--bad); }
+.m22-key i.k-fus { border-top-color: var(--accent); }
+.m22-grid { fill: none; stroke: var(--line); stroke-width: 1; }
+.m22-true { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.m22-acc { fill: none; stroke: var(--signal); stroke-width: 1; opacity: .85; }
+.m22-gyr { fill: none; stroke: var(--bad); stroke-width: 1.6; }
+.m22-fus { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+.m22-tf { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+.m22-off { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.m22-pt { fill: var(--signal); stroke: var(--surface); stroke-width: 2; }
+.m22-solid { fill: currentColor; stroke: none; }
+.m22-x { fill: none; stroke: var(--bad); stroke-width: 3.2; stroke-linecap: round; }
+.m22-big { fill: currentColor; font: 700 20px var(--f-body); }
+.m22-imu { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.4; }
+.m22-err { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 8px; }
+.m22-err div { background: var(--sunk); border-radius: var(--r); padding: .5rem .7rem; font-size: 13px; color: var(--muted); }
+.m22-err b { display: block; font: 700 1.05rem/1.35 var(--f-mono); color: var(--ink); }
+.m22-pick .chips .chip { text-align: left; }
+.chip.m22-right { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+.chip.m22-wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.chip:disabled { cursor: default; }
+.m22-q { font-size: 1.02rem; font-weight: 500; }
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">EI<span> · </span>互动笔记</a></span>
+<nav aria-label="Tema 2 章节" class="chain" data-chain="M22"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Tema 2 · Arquitecturas y Tecnologías · M22</div>
+<h1>Sensores y actuadores</h1>
+<p class="zh">传感器与执行器</p>
+<div class="meta">
+
+<span><b>7</b> 个学习目标</span>
+<span>阅读约 30 分钟</span>
+
+
+</div>
+<p class="lede">智能环境靠 <b class="t">sensor (ES/EN)</b>——传感器去“感知”，靠 <b class="t">actuador (ES) / actuator (EN)</b>——执行器去“行动”。这一章先认识各类传感器和执行器，再看三项让它们变得又小又聪明的技术：MEMS、传感器融合（代表是 <b class="t">IMU (Inertial Measurement Unit)</b>——惯性测量单元）和可穿戴设备；最后动手读一份真实的加速度计 <b class="t">datasheet (EN)</b>——数据手册。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>学习目标 </h2>
+<p>读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">2.2.1</span>
+<div class="txt"><span>把传感器和它测量的物理量对应起来</span><span class="es">Relacionar sensores con la magnitud física que miden.</span><a href="#s1">→ §1 传感器与执行器的类型</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.2.2</span>
+<div class="txt"><span>为具体应用选出合适的传感器</span><span class="es">Identificar sensores para una aplicación concreta.</span><a href="#s2">→ §2 为应用挑传感器</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.2.3</span>
+<div class="txt"><span>定义 MEMS 技术</span><span class="es">Definir la tecnología MEMS.</span><a href="#s3">→ §3 MEMS</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.2.4</span>
+<div class="txt"><span>举例解释传感器融合</span><span class="es">Explicar el concepto de fusión de sensores con ejemplos.</span><a href="#s4">→ §4 传感器融合</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.2.5</span>
+<div class="txt"><span>定义 IMU（惯性测量单元）</span><span class="es">Definir el concepto de IMU (Inertial Measurement Unit).</span><a href="#s5">→ §5 IMU</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.2.6</span>
+<div class="txt"><span>定义可穿戴技术（wearable）</span><span class="es">Definir el concepto de tecnología wearable.</span><a href="#s6">→ §6 可穿戴设备</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">2.2.7</span>
+<div class="txt"><span>分析一个传感器的特性（练习题）</span><span class="es">Analizar las características de un sensor (ejercicio).</span><a href="#s7">→ §7 读一份 datasheet</a></div>
+<button aria-pressed="false" class="chk" data-obj="2.2.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M22"><span class="val">0 / 7 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>传感器与执行器：谁测什么，谁做什么 <span class="tag">2.2.1</span></h2>
+<p>智能环境里的传感器有两类测量对象。一类是<b>用户</b>的参数：localización（定位）、tracking（跟踪，即朝向和位置）、identificación（身份识别）、comunicación（交流）和 señales biológicas（生理信号）；另一类是<b>环境</b>的物理量。执行器负责断开、打开、锁定和移动各种装置，负责照明和声音提醒，也通过显示、声音或振动和用户交互。</p>
+<p>切换两张表看看：</p>
+<div class="stack" data-seg="">
+<div aria-label="切换传感器表与执行器表" class="seg" role="group">
+<button aria-pressed="true" data-view="sens" type="button">Tipos de sensores · 传感器</button>
+<button aria-pressed="false" data-view="act" type="button">Tipos de actuadores · 执行器</button>
+</div>
+<div class="panel" data-pane="sens">
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>TIPO</th><th>TECNOLOGÍAS</th></tr></thead>
+<tbody>
+<tr><td><b>Localización</b> 定位</td><td>inerciales, UWB, RFID, BT, WiFi, GPS…</td></tr>
+<tr><td><b>Tracking</b> 跟踪</td><td>acelerómetros, giróscopos y magnetómetros inerciales, sensores ópticos IR, ultrasonidos…</td></tr>
+<tr><td><b>Identificación</b> 识别</td><td>RFID, NFC, sensores biométricos（指纹、虹膜、人脸、手）…</td></tr>
+<tr><td><b>Comunicación</b> 交流</td><td>sensores de imagen RGB, sensores de imagen TOF, micrófonos…</td></tr>
+<tr><td><b>Ambiente</b> 环境</td><td>presión, temperatura, humedad, luz, gas, nivel de sólidos y líquidos…</td></tr>
+<tr><td><b>Señales biológicas</b> 生理信号</td><td>tasa cardiaca, GSR, ECG, EMG, EEG…</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="panel" data-pane="act" hidden="">
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>TIPO</th><th>TECNOLOGÍAS</th></tr></thead>
+<tbody>
+<tr><td><b>Apertura/cierre</b> 开闭</td><td>relés electromecánicos, relés de estado sólido, contactores, electroválvulas…</td></tr>
+<tr><td><b>Movimiento</b> 运动</td><td>motores, materiales piezoeléctricos…</td></tr>
+<tr><td><b>Iluminación</b> 照明</td><td>lámparas incandescentes, halógenas, fluorescentes, LED…</td></tr>
+<tr><td><b>Sonido</b> 声音</td><td>altavoces electrodinámicos, capacitivos, piezoeléctricos…</td></tr>
+<tr><td><b>Displays</b> 显示</td><td>LED, DPL, OLED…</td></tr>
+<tr><td><b>Vibración</b> 振动</td><td>motores, actuadores piezoeléctricos…</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">Displays 一行的 “DPL” 可能是 DLP 的笔误。</p>
+</div>
+</div>
+<p><b>配对：</b>先点左边的传感器，再点右边它测量的物理量。</p>
+<div class="stack">
+<div class="match">
+<div class="col">
+<button data-l="acel" type="button">Acelerómetro <span class="es">加速度计</span></button>
+<button data-l="giro" type="button">Giróscopo <span class="es">陀螺仪</span></button>
+<button data-l="mag" type="button">Magnetómetro <span class="es">磁力计</span></button>
+<button data-l="baro" type="button">Barómetro / altímetro <span class="es">气压计</span></button>
+<button data-l="gsr" type="button">GSR <span class="es">galvanic skin response</span></button>
+<button data-l="ecg" type="button">ECG <span class="es">electrocardiografía</span></button>
+<button data-l="emg" type="button">EMG <span class="es">electromiografía</span></button>
+<button data-l="eeg" type="button">EEG <span class="es">electroencefalografía</span></button>
+</div>
+<div class="col">
+<button data-r="emg" type="button">肌肉的电活动</button>
+<button data-r="mag" type="button">磁场（如地磁场）</button>
+<button data-r="ecg" type="button">心脏的电活动</button>
+<button data-r="acel" type="button">加速度；静止时 = 重力矢量</button>
+<button data-r="eeg" type="button">头皮上的电活动（脑）</button>
+<button data-r="giro" type="button">转动的速度（角速度）</button>
+<button data-r="gsr" type="button">皮肤的电导率</button>
+<button data-r="baro" type="button">大气压 → 高度</button>
+</div>
+</div>
+<span class="match-status"></span>
+</div>
+<div class="note warm">
+<span class="lbl">小任务</span>
+<p>浏览两份网页：National Instruments 的 <a href="http://www.ni.com/white-paper/4045/en/">Fundamentals Sensors</a>（每种物理量有哪些传感器），Libelium 的 <a href="https://www.libelium.com/libeliumworld/top_50_iot_sensor_applications_ranking/">50 Sensor Applications for a Smarter World</a>（每个应用领域用哪些传感器）。想深入可以去必修课 “Del mundo físico al controlador: sensores, interfaces y comunicaciones”。</p>
+</div>
+<div class="panel">
+<h3>拓展：sentroller <span class="tag plain">拓展</span></h3>
+<p>物联网里大量“低数据率”的末端设备被叫做 <b class="t">sentroller</b>：sensores + actuadores + controladores。它们大部分时间在睡眠，偶尔只发几个比特（比如一条开/关消息）。例：恒温器测温度，和设定值比较，再启动暖气或空调。今天家里的恒温器、运动传感器、电表多是独立工作的“generation-zero” sentroller；连上网后，同一个运动传感器既能开灯，也能在布防时触发报警。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>为具体应用挑传感器 <span class="tag">2.2.2</span></h2>
+<p>挑传感器，先问<b>要测什么物理量</b>（§1），再看<b>量程或距离、目标材料、环境（脏、湿、温度）、速度</b>，最后看供电和接口（§7）。</p>
+<p>工业现场常见的四种接近传感器，可以这样比较 <span class="tag plain">拓展</span>：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>Inductivo 电感式</th><th>Fotoeléctrico 光电式</th><th>Ultrasónico 超声波</th><th>Capacitivo 电容式</th></tr></thead>
+<tbody>
+<tr><td>检测距离</td><td class="mono">1–40 mm</td><td class="mono">1–50 000 mm</td><td class="mono">10–6000 mm</td><td class="mono">1–40 mm</td></tr>
+<tr><td>目标材料</td><td>只有金属</td><td>任何反光的材料</td><td>任何反射声波的材料</td><td>金属、非金属、液体、粉末</td></tr>
+<tr><td>检测速度</td><td class="mono">0.02–10 kHz</td><td class="mono">1–5 kHz</td><td class="mono">1–10 Hz</td><td class="mono">15–500 Hz</td></tr>
+<tr><td>环境</td><td>普通或恶劣脏污环境，最高 IP 68 / IP 69K</td><td>无粉尘、无蒸汽的干净环境，最高 IP 67</td><td>工业环境，最高 IP 67</td><td>普通或苛刻环境，最高 IP 67</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>情景挑选：</b>9 个情景，每个只能选一次，选完看解析。</p>
+<div class="stack m22-pick" id="pick">
+<div class="panel">
+<span class="hint pick-n">情景 1 / 9</span>
+<p class="m22-q pick-q"></p>
+<div aria-label="候选传感器" class="chips pick-o" role="group"></div>
+<div aria-live="polite" class="pick-fb stack"></div>
+</div>
+<div class="stepper-ctl">
+<button class="btn" data-act="prev" type="button">← 上一个</button>
+<button class="btn primary" data-act="next" type="button">下一个 →</button>
+<button class="btn" data-act="reset" type="button">重做</button>
+<span class="hint pick-score"></span>
+</div>
+</div>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>MEMS：把机械做进芯片 <span class="tag">2.2.3</span></h2>
+<div class="note">
+<span class="lbl">定义 · 2.2.3</span>
+<p><b class="t">MEMS (MicroElectroMechanical Systems)</b>——微机电系统：一大类机械、化学、光学和生物技术产品的基础技术。这些产品用<b>硅集成电路的制造技术</b>来生产，因此带来四个优点：</p>
+<ul>
+<li>批量制造（fabricación por lotes），成本随尺寸缩放；</li>
+<li>资源可以复用（reutilización de recursos）；</li>
+<li>机械性能优异，“tan duros como el acero”（和钢一样硬）；</li>
+<li>能把生物、光学、机械和电子系统集成在<b>一块芯片</b>上。</li>
+</ul>
+</div>
+<p>市场上已经有很多 MEMS 器件：压力传感器、麦克风、加速度计、陀螺仪、磁力计、喷墨打印头的喷嘴、硬盘的磁头定位器、投影仪的微镜……MEMS 产品可以是传感器、执行器、微结构，或者用 multichip 技术或 <b class="t">iMEMS (integrated MEMS)</b>——集成 MEMS 把它们组合起来。<b>点开每一类：</b></p>
+<div class="stack" data-explain="sensores">
+<div aria-label="MEMS 产品类别" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="sensores" type="button">Sensores</button>
+<button aria-pressed="false" class="chip" data-key="actuadores" type="button">Actuadores</button>
+<button aria-pressed="false" class="chip" data-key="loc" type="button">LOC <small>Lab On Chip</small></button>
+<button aria-pressed="false" class="chip" data-key="harvest" type="button">Recolectores de energía</button>
+<button aria-pressed="false" class="chip" data-key="micro" type="button">Microbaterías</button>
+<button aria-pressed="false" class="chip" data-key="nems" type="button">NEMS</button>
+</div>
+<div class="panel" data-panel="sensores" hidden="">
+<h3>Sensores MEMS · MEMS 传感器</h3>
+<p>测 presión（压力）、aceleración（加速度）、temperatura、flujo y masa（流量和质量），也有 químicos、bioquímicos、biológicos（化学、生化、生物）传感器。</p>
+</div>
+<div class="panel" data-panel="actuadores" hidden="">
+<h3>Actuadores MEMS · MEMS 执行器</h3>
+<ul>
+<li>micropinzas（microgrippers，微夹钳）：显微操作；</li>
+<li>microconmutadores（微开关）：高集成度器件；</li>
+<li>micro-resonadores（微谐振器）：做射频振荡器和滤波器；</li>
+<li>micropalancas（cantilevers，微悬臂）和 micromotores（微电机）：做微型机器；</li>
+<li>microespejos（微镜）：光开关。</li>
+</ul>
+</div>
+<div class="panel" data-panel="loc" hidden="">
+<h3>LOC (Lab On Chip) · 芯片实验室</h3>
+<p>把多种传感器和执行器集成在一块芯片上，取代整个实验室，常把 MEMS 和纳米技术结合。最有前景的是医疗和生物技术：</p>
+<ul>
+<li>体积和重量大幅缩小，可以把实验室带到病人身边；</li>
+<li>成本大降，可以做一次性实验室；</li>
+<li>样本从毫升降到纳升、皮升；检测时间从几小时、几天缩到几分钟。</li>
+</ul>
+</div>
+<div class="panel" data-panel="harvest" hidden="">
+<h3>Recolectores de energía · 能量收集器</h3>
+<p><b class="t">energy scavengers / harvesters (EN)</b>：把各种非电能转成电能。对于没法换电池、或换电池不现实的超低功耗无线智能传感器，它是关键技术（M26 Consumo energético 会详细讲）。</p>
+</div>
+<div class="panel" data-panel="micro" hidden="">
+<h3>Microbaterías · 微电池</h3>
+<p>可充电微电池对能量收集器尤其重要：能量来源不活跃时，需要某种临时储能。研究方向有直接沉积在芯片上的薄膜锂电池，以及 3D 结构的微电池。</p>
+</div>
+<div class="panel" data-panel="nems" hidden="">
+<h3>NEMS · 纳机电系统</h3>
+<p><b class="t">sistemas nanoelectromecánicos (ES)</b>，也叫 nanosistemas：MEMS 的演进，比 MEMS 小得多，来自纳米技术的大量投入。NEMS 工作在<b>分子层面</b>，能改变材料的性质，打开了以前想不到的应用。</p>
+</div>
+</div>
+<p>最直观的例子就在口袋里。看一块智能手机主板的简化图，红色的都是 MEMS 和传感器：</p>
+
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>图上的红色模块</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>accelerometer, gyroscope, electronic compass, pressure sensor</td><td>运动、姿态、方向、气压（§4–§5 的 IMU 就由前三个组成）</td></tr>
+<tr><td>silicon microphone</td><td>硅麦克风</td></tr>
+<tr><td>BAW filters, BAW duplexers, RF switch / variable capacitor, TCXO oscillators</td><td>射频前端：滤波、双工、开关和振荡器</td></tr>
+<tr><td>MEMS micro-mirror</td><td>微型投影仪（picoprojector）的微镜</td></tr>
+<tr><td>CMOS image sensor, auto-focus actuator</td><td>摄像头模组：图像传感器和对焦执行器</td></tr>
+<tr><td>front camera, ALS &amp; proximity sensor, microdisplay</td><td>前置摄像头、环境光和接近传感器、微显示</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">注意执行器也在里面：微镜和自动对焦执行器都是 MEMS actuadores，正好对应上面 “Actuadores” 一格里的 microespejos。</p>
+<p>影响领域很广：医疗、制药、化妆品、卫生、通信、家电、建筑、安全与国防、太空探索……所有预测都认为这个市场在未来几十年还会增长。</p>
+<div class="panel">
+<h3>拓展：为什么到处都是 MEMS <span class="tag plain">拓展</span></h3>
+<p>MEMS 传感器用半导体工艺做出微型的机械和机电结构，灵敏度高、准确、重复性好；比替代技术<b>更小、更便宜、更省电</b>，所以被用来测加速度、转动、压力等。例：MEMS 湿度传感器是一层吸水的介质夹在两个电极之间，水汽改变介电常数，电容随之变化。MEMS 越来越便宜、越来越小，也带动了传感器进入新应用。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>传感器融合：1 + 1 &gt; 2 <span class="tag">2.2.4</span></h2>
+<div class="note">
+<span class="lbl">定义 · 2.2.4</span>
+<p><b class="t">fusión de sensores (ES) / sensor fusion (EN)</b>——传感器融合：把多个传感器组合起来，得到<b>新的</b>或<b>更可靠的</b>结果。</p>
+<p>典型例子：</p>
+<ul>
+<li><b>brújula digital</b>（电子罗盘）= magnetómetro + acelerómetro；</li>
+<li><b>IMU</b> = acelerómetros + giróscopos + magnetómetros，得到物体在空间中的姿态（§5）。</li>
+</ul>
+</div>
+<p>先看加速度计到底“看得见”什么。下图把它能测的情况排成一行，最后一格打了红叉。<b>点击每一格：</b></p>
+<div class="stack" data-explain="f2til">
+<figure>
+<div class="fig">
+<svg aria-label="加速度计能检测的情况：加速度、振动（周期性加速度）、冲击（瞬时加速度）、倾斜（静态加速度）；绕竖直轴的转动被划掉，测不出" role="img" viewbox="0 0 660 180">
+<defs>
+<marker id="m22b" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<g aria-label="Acceleration" class="hot" data-key="f2acc" role="button" tabindex="0">
+<rect class="s-box" height="168" rx="8" width="120" x="8" y="6"></rect>
+<rect class="s-box" height="40" width="12" x="38" y="34"></rect>
+<rect class="s-box" height="40" width="12" x="58" y="34"></rect>
+<rect class="m22-solid" height="40" width="12" x="78" y="34"></rect>
+<line class="s-line" marker-end="url(#m22b)" x1="34" x2="100" y1="88" y2="88"></line>
+<text class="s-t" text-anchor="middle" x="68" y="124">Acceleration *</text>
+<text class="s-t2" text-anchor="middle" x="68" y="142">aceleración</text>
+</g>
+<g aria-label="Vibration" class="hot" data-key="f2vib" role="button" tabindex="0">
+<rect class="s-box" height="168" rx="8" width="120" x="138" y="6"></rect>
+<rect class="m22-solid" height="22" width="44" x="176" y="44"></rect>
+<path class="s-line" d="M166,36 Q156,55 166,74 M158,30 Q144,55 158,80 M230,36 Q240,55 230,74 M238,30 Q252,55 238,80"></path>
+<text class="s-t" text-anchor="middle" x="198" y="124">Vibration</text>
+<text class="s-t2" text-anchor="middle" x="198" y="142">aceleración</text>
+<text class="s-t2" text-anchor="middle" x="198" y="158">periódica</text>
+</g>
+<g aria-label="Shock" class="hot" data-key="f2sho" role="button" tabindex="0">
+<rect class="s-box" height="168" rx="8" width="120" x="268" y="6"></rect>
+<rect class="m22-solid" height="44" width="14" x="321" y="30"></rect>
+<line class="s-line" x1="314" x2="314" y1="22" y2="70"></line>
+<line class="s-line" x1="342" x2="342" y1="22" y2="70"></line>
+<line class="s-line" x1="298" x2="358" y1="96" y2="96"></line>
+<path class="s-line" d="M318,86 L304,78 M338,86 L352,78 M328,84 V76"></path>
+<text class="s-t" text-anchor="middle" x="328" y="124">Shock</text>
+<text class="s-t2" text-anchor="middle" x="328" y="142">aceleración</text>
+<text class="s-t2" text-anchor="middle" x="328" y="158">instantánea</text>
+</g>
+<g aria-label="Tilt" class="hot" data-key="f2til" role="button" tabindex="0">
+<rect class="s-box" height="168" rx="8" width="120" x="398" y="6"></rect>
+<rect class="m22-solid" height="22" transform="rotate(-20 458 58)" width="44" x="436" y="47"></rect>
+<path class="s-line" d="M424,40 Q414,58 424,80" marker-end="url(#m22b)" marker-start="url(#m22b)"></path>
+<path class="s-line" d="M492,36 Q504,58 492,80" marker-end="url(#m22b)" marker-start="url(#m22b)"></path>
+<text class="s-t" text-anchor="middle" x="458" y="124">Tilt</text>
+<text class="s-t2" text-anchor="middle" x="458" y="142">aceleración</text>
+<text class="s-t2" text-anchor="middle" x="458" y="158">estática</text>
+</g>
+<g aria-label="Rotation，测不出" class="hot" data-key="f2rot" role="button" tabindex="0">
+<rect class="s-box" height="168" rx="8" width="124" x="528" y="6"></rect>
+<rect class="m22-solid" height="64" width="16" x="582" y="26"></rect>
+<ellipse class="s-line" cx="590" cy="58" rx="40" ry="10" stroke-dasharray="4 3"></ellipse>
+<path class="m22-x" d="M560,22 L620,94 M620,22 L560,94"></path>
+<text class="s-t" text-anchor="middle" x="590" y="124">Rotation</text>
+<text class="s-t2" text-anchor="middle" x="590" y="142">✗ no se detecta</text>
+</g>
+</svg>
+</div>
+<figcaption>图标是简化的：前四格是加速度计能测的，第五格 Rotation 被划掉。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="f2acc" hidden="">
+<h3>Acceleration · 加速度</h3>
+<p>线性加速度：速度的变化（图里三块方块沿箭头移动）。</p>
+</div>
+<div class="panel" data-panel="f2vib" hidden="">
+<h3>Vibration · 振动 = aceleración periódica</h3>
+<p>振动就是<b>周期性</b>的加速度。白色家电的振动、摇晃检测就属于这一类（§7 的 FXLN83xxQ 典型应用）。</p>
+</div>
+<div class="panel" data-panel="f2sho" hidden="">
+<h3>Shock · 冲击 = aceleración instantánea</h3>
+<p><b>瞬时</b>加速度，也就是 <i>movimientos bruscos</i>（caídas, golpes）——摔倒、撞击。§2 养老院腕带的摔倒报警就是这个。</p>
+</div>
+<div class="panel" data-panel="f2til" hidden="">
+<h3>Tilt · 倾斜 = aceleración estática</h3>
+<p><b>静态</b>加速度：静止时加速度计测到的是重力矢量，看重力在各轴上的分量就知道倾斜了多少，得到 <b>roll</b> 和 <b>pitch</b>。</p>
+</div>
+<div class="panel" data-panel="f2rot" hidden="">
+<h3>Rotation · 转动：测不出</h3>
+<p>图里绕<b>竖直轴</b>的转动被打了红叉：这样转的时候，重力相对传感器的方向不变，倾斜也不变，加速度计看不出来。所以 yaw（heading）测不了，要靠 <b>magnetómetro</b> 补上；测转动的速度则要靠 <b>giróscopo</b>。</p>
+</div>
+</div>
+<p>为什么要融合？因为每种惯性传感器都有短板。先自己想，再<b>点击右列</b>揭晓：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>传感器</th><th>测什么</th><th>能给出什么</th><th>短板（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td><b>Acelerómetro</b></td><td>加速度；静止时就是重力矢量</td><td>roll、pitch 方向的倾斜；突然的运动（摔倒、撞击）</td><td class="ans">测不了 yaw；和磁力计组成的 3D 传感器噪声大、不够准，快速转动时不灵；对振动敏感</td></tr>
+<tr class="reveal"><td><b>Magnetómetro</b></td><td>磁场的变化，例如地磁场</td><td>yaw（heading），像指南针</td><td class="ans">一倾斜就不准；怕磁干扰</td></tr>
+<tr class="reveal"><td><b>Giróscopo</b></td><td>转动的速度（角速度）</td><td>三个轴的转动，积分得到角度；精确、响应快</td><td class="ans">deriva——漂移，也叫 zero bias drift（零偏漂移）</td></tr>
+</tbody>
+</table>
+</div>
+<p>两组的优缺点正好互补：陀螺仪<b>短期</b>准、长期漂移；acc + mag <b>长期</b>不漂、短期噪声大。下面这个典型方案就是把两者接起来。<b>点击方框看说明：</b></p>
+<div class="stack" data-explain="giro">
+<figure>
+<div class="fig">
+<svg aria-label="IMU 的传感器融合：加速度计给出 pitch 和 roll、磁力计给出 yaw，一起进入低通滤波；陀螺仪数据先积分再进入高通滤波；两路在 Σ 相加得到姿态；陀螺仪另有一路直接输出角速度" role="img" viewbox="0 0 700 330">
+<defs>
+<marker id="m22a" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path class="s-mk" d="M0,0 L10,5 L0,10 z"></path></marker>
+</defs>
+<rect class="m22-imu" height="304" rx="8" width="340" x="230" y="12"></rect>
+<text class="m22-big" text-anchor="end" x="558" y="40">IMU</text>
+<g aria-label="Acelerómetro" class="hot" data-key="acc" role="button" tabindex="0">
+<rect class="s-box" height="46" rx="6" width="120" x="10" y="50"></rect>
+<text class="s-t" text-anchor="middle" x="70" y="78">acelerómetro</text>
+</g>
+<g aria-label="Magnetómetro" class="hot" data-key="mag" role="button" tabindex="0">
+<rect class="s-box" height="46" rx="6" width="120" x="10" y="160"></rect>
+<text class="s-t" text-anchor="middle" x="70" y="188">magnetómetro</text>
+</g>
+<g aria-label="Giróscopo" class="hot" data-key="giro" role="button" tabindex="0">
+<rect class="s-box" height="46" rx="6" width="120" x="10" y="277"></rect>
+<text class="s-t" text-anchor="middle" x="70" y="305">giróscopo</text>
+</g>
+<g aria-label="Filtro paso bajo" class="hot" data-key="bajo" role="button" tabindex="0">
+<rect class="s-box" height="46" rx="6" width="150" x="260" y="50"></rect>
+<text class="s-t" text-anchor="middle" x="335" y="78">Filtro paso bajo</text>
+</g>
+<g aria-label="Filtro paso alto" class="hot" data-key="alto" role="button" tabindex="0">
+<rect class="s-box" height="46" rx="6" width="150" x="260" y="140"></rect>
+<text class="s-t" text-anchor="middle" x="335" y="168">Filtro paso alto</text>
+</g>
+<g aria-label="Integración" class="hot" data-key="integ" role="button" tabindex="0">
+<rect class="s-box" height="46" rx="6" width="150" x="260" y="222"></rect>
+<text class="s-t" text-anchor="middle" x="335" y="250">Integración</text>
+</g>
+<g aria-label="Suma y orientación" class="hot" data-key="suma" role="button" tabindex="0">
+<rect class="s-box" height="60" rx="6" width="60" x="450" y="88"></rect>
+<text class="m22-big" text-anchor="middle" x="480" y="126">Σ</text>
+<rect class="s-box" height="28" rx="6" width="100" x="590" y="104"></rect>
+<text class="s-t" text-anchor="middle" x="640" y="123">orientación</text>
+</g>
+<g aria-label="Velocidad angular" class="hot" data-key="vel" role="button" tabindex="0">
+<rect class="s-box" height="28" rx="6" width="112" x="580" y="286"></rect>
+<text class="s-t2" text-anchor="middle" x="636" y="304">velocidad angular</text>
+</g>
+<line class="s-line" marker-end="url(#m22a)" x1="130" x2="258" y1="73" y2="73"></line>
+<text class="s-tm" text-anchor="middle" x="194" y="65">pitch y roll</text>
+<line class="s-line" marker-end="url(#m22a)" x1="130" x2="258" y1="183" y2="88"></line>
+<text class="s-tm" text-anchor="middle" x="216" y="152">yaw</text>
+<line class="s-line" marker-end="url(#m22a)" x1="130" x2="258" y1="292" y2="252"></line>
+<line class="s-line" marker-end="url(#m22a)" x1="130" x2="578" y1="300" y2="300"></line>
+<line class="s-line" marker-end="url(#m22a)" x1="335" x2="335" y1="222" y2="188"></line>
+<line class="s-line" marker-end="url(#m22a)" x1="410" x2="448" y1="73" y2="102"></line>
+<line class="s-line" marker-end="url(#m22a)" x1="410" x2="448" y1="163" y2="134"></line>
+<line class="s-line" marker-end="url(#m22a)" x1="510" x2="588" y1="118" y2="118"></line>
+</svg>
+</div>
+<figcaption>acelerómetro（pitch y roll）和 magnetómetro（yaw）一起进<b>低通</b>；giróscopo 先<b>积分</b>再进<b>高通</b>；两路在 Σ 相加得到 orientación。陀螺仪还有一路直接输出 velocidad angular。<span class="hint">点击方框看说明</span></figcaption>
+</figure>
+
+<div class="panel" data-panel="giro" hidden="">
+<h3>Giróscopo · 陀螺仪</h3>
+<p>测 velocidad de giro（角速度），要<b>积分</b>才得到转过的角度。比 acc + mag 精确得多，响应很快，但有 <b class="t">deriva (ES) / drift (EN)</b>——漂移。</p>
+</div>
+<div class="panel" data-panel="integ" hidden="">
+<h3>Integración · 积分</h3>
+<p>角速度对时间积分 → 角度。陀螺仪的小偏差也被一起积分，所以误差随时间越积越大，这就是漂移的来源。</p>
+</div>
+<div class="panel" data-panel="alto" hidden="">
+<h3>Filtro paso alto · 高通滤波</h3>
+<p>只保留<b>快速</b>的姿态变化（<i>sólo se consideran los cambios rápidos</i>），慢慢累积的漂移被滤掉。</p>
+</div>
+<div class="panel" data-panel="acc" hidden="">
+<h3>Acelerómetro · 加速度计</h3>
+<p>静止时测到的是重力矢量，所以能算出 roll 和 pitch 方向的倾斜；也能检测摔倒、撞击这类突然的运动。绕 yaw 轴转时倾斜不变，所以测不了 yaw。图里它的箭头就标着 <b>pitch y roll</b>，直接进低通滤波。</p>
+</div>
+<div class="panel" data-panel="mag" hidden="">
+<h3>Magnetómetro · 磁力计</h3>
+<p>检测磁场的变化。测地磁场时就像一个绕 yaw 轴转的指南针，补上了加速度计缺的 yaw。图里它的箭头标着 <b>yaw</b>，和加速度计那一路汇入同一个低通滤波。</p>
+</div>
+<div class="panel" data-panel="bajo" hidden="">
+<h3>Filtro paso bajo · 低通滤波</h3>
+<p>acc（roll、pitch）+ mag（yaw）合起来叫 <b class="t">sensor de orientación 3D</b>——三轴姿态传感器：三个轴都有了，但 ruidoso、poco preciso（噪声大、不够准），快速转动时也不灵。图里没有给它单独画框，而是让两路箭头直接汇入低通。</p>
+<p>低通只留下<b>缓慢</b>、长期可靠的部分，滤掉噪声和快速转动时的误差。</p>
+</div>
+<div class="panel" data-panel="suma" hidden="">
+<h3>Σ → Orientación · 合成姿态</h3>
+<p>两路相加：短期信陀螺仪，长期信 acc + mag。这一步也常用 <b class="t">filtro de Kalman (ES) / Kalman filter (EN)</b>——卡尔曼滤波来完成。</p>
+<p class="aside">Kalman 滤波分“预测”和“更新”两步，更可信的数据权重更大，只依赖当前输入和上一次算出的状态。</p>
+</div>
+<div class="panel" data-panel="vel" hidden="">
+<h3>Velocidad angular · 角速度输出</h3>
+<p>图里陀螺仪还有一路<b>不经过积分和滤波</b>，直接穿过 IMU 输出 velocidad angular。也就是说，IMU 除了融合后的 orientación，还直接给出转动的速度。</p>
+<p class="aside">上图把三颗传感器画在 IMU 框的外面，框里只有处理部分；但有些资料的定义是 IMU 组合这三类传感器。答定义题按有些资料写（§5）。</p>
+</div>
+</div>
+<p><b>动手试试：</b>下面是一段虚构的转动过程。拖动 α，看融合结果怎样同时躲开加速度计的噪声和陀螺仪的漂移。</p>
+<div class="stack" id="fusim">
+<figure>
+<div class="fig">
+<svg aria-label="模拟曲线：真实角度、只用加速度计和磁力计的估计、只用陀螺仪积分的估计、融合后的估计" role="img" viewbox="0 0 600 250">
+<line class="m22-grid" x1="50" x2="590" y1="20" y2="20"></line>
+<line class="m22-grid" x1="50" x2="590" y1="58" y2="58"></line>
+<line class="m22-grid" x1="50" x2="590" y1="96" y2="96"></line>
+<line class="m22-grid" x1="50" x2="590" y1="134" y2="134"></line>
+<line class="m22-grid" x1="50" x2="590" y1="172" y2="172"></line>
+<line class="s-line" x1="50" x2="590" y1="210" y2="210"></line>
+<line class="s-line" x1="50" x2="50" y1="20" y2="210"></line>
+<text class="s-tm" text-anchor="end" x="44" y="24">60</text>
+<text class="s-tm" text-anchor="end" x="44" y="62">40</text>
+<text class="s-tm" text-anchor="end" x="44" y="100">20</text>
+<text class="s-tm" text-anchor="end" x="44" y="138">0</text>
+<text class="s-tm" text-anchor="end" x="44" y="176">−20</text>
+<text class="s-tm" text-anchor="end" x="44" y="214">−40</text>
+<text class="s-tm" text-anchor="middle" x="50" y="227">0</text>
+<text class="s-tm" text-anchor="middle" x="158" y="227">2</text>
+<text class="s-tm" text-anchor="middle" x="266" y="227">4</text>
+<text class="s-tm" text-anchor="middle" x="374" y="227">6</text>
+<text class="s-tm" text-anchor="middle" x="482" y="227">8</text>
+<text class="s-tm" text-anchor="middle" x="590" y="227">10</text>
+<text class="s-tm" x="56" y="12">ángulo (°)</text>
+<text class="s-tm" text-anchor="end" x="590" y="244">t (s)</text>
+<polyline class="m22-acc" points=""></polyline>
+<polyline class="m22-gyr" points=""></polyline>
+<polyline class="m22-true" points=""></polyline>
+<polyline class="m22-fus" points=""></polyline>
+</svg>
+</div>
+<figcaption>数据是虚构的：1 s 和 7.5 s 处有两次快速转动，4–7 s 是一次缓慢倾斜。加速度计那一路在快速转动时误差变大（<i>no funcionan bien si los giros son rápidos</i>）。</figcaption>
+</figure>
+<div aria-hidden="true" class="m22-key">
+<span><i class="k-true"></i>真实角度</span>
+<span><i class="k-acc"></i>只用 acc + mag</span>
+<span><i class="k-gyr"></i>只用陀螺仪积分</span>
+<span><i class="k-fus"></i>融合结果</span>
+</div>
+<div class="m22-range"><label for="fu-a">α：信陀螺仪的比重</label><input id="fu-a" max="1" min="0" step="0.01" type="range" value="0.96"/><output for="fu-a" id="fu-a-o">0.96</output></div>
+<div class="m22-range"><label for="fu-b">陀螺仪零偏（°/s）</label><input id="fu-b" max="5" min="0" step="0.5" type="range" value="2.5"/><output for="fu-b" id="fu-b-o">2.5</output></div>
+<div aria-live="polite" class="m22-err">
+<div>只用 acc + mag · RMS 误差<b data-e="acc">—</b></div>
+<div>只用陀螺仪 · RMS 误差<b data-e="gyr">—</b></div>
+<div>融合 · RMS 误差<b data-e="fus">—</b></div>
+<div>时间常数 τ<b data-e="tau">—</b></div>
+</div>
+<p class="aside">每一步：θ<sub>fus</sub> ← α·(θ<sub>fus</sub> + ω·Δt) + (1 − α)·θ<sub>acc+mag</sub>，Δt = 0.02 s，τ = α·Δt / (1 − α)。陀螺仪那一路相当于高通，acc + mag 那一路相当于低通，正是上面融合框图的结构。这种写法常叫 <b class="t">filtro complementario (ES) / complementary filter (EN)</b>——互补滤波。α = 0 只信 acc + mag，α = 1 只信陀螺仪。</p>
+</div>
+<p>更多融合的例子：</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">必学</span><h3>倾斜补偿的指南针</h3><p>磁力计当 brújula 用，一倾斜就不准；加上加速度计测出倾角，就能修正读数。</p></div>
+<div class="cell"><span class="eyebrow">拓展</span><h3>计步器</h3><p>加速度计计步；altímetro（气压，需要温度补偿）算上下楼的高度变化；陀螺仪补偿手臂摆动；再加一颗 MCU 处理，就是高精度计步器。</p></div>
+<div class="cell"><span class="eyebrow">拓展</span><h3>自动驾驶</h3><p>摄像头、lidar、radar、超声各有适用条件：摄像头要光线和天气好，radar 在黑夜和雨天也可靠。GNSS 每秒一次定位，静止时位置也会“飘”，所以要参考 IMU 判断车是否在动。</p></div>
+</div>
+<div class="panel">
+<h3>拓展：融合的三种方式</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>方式</th><th>含义</th><th>例子</th></tr></thead>
+<tbody>
+<tr><td><b>Complementaria</b> 互补</td><td>几个传感器各自独立监测同一现象，融合起来补全不完整的数据</td><td>L 形房间用两台摄像头监测人员</td></tr>
+<tr><td><b>Competitiva</b> 竞争</td><td>几个传感器测同一现象（或一个传感器测多次），提高鲁棒性，提供冗余和容错</td><td>冗余的同类传感器</td></tr>
+<tr><td><b>Cooperativa</b> 协作</td><td>把独立的测量组合起来，得到单个传感器测不到的量</td><td>双目摄像头得到深度</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">采集方式还分 distribuida（依次轮询，每轮出一个结果）、concentrada（同时轮询，一次融合）和 mixta。注意：这里的 complementaria 是融合方式的分类，和上面“高通 + 低通”的 filtro complementario 不是一回事。用多个传感器的理由有三个：替代昂贵的传感器、一个传感器拿不到全部数据、消除单点故障（冗余）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>IMU：惯性测量单元 <span class="tag">2.2.5</span></h2>
+<div class="note">
+<span class="lbl">定义 · 2.2.5</span>
+<p><b class="t">IMU (Inertial Measurement Unit)</b>——惯性测量单元：组合 <b>acelerómetros、giróscopos 和 magnetómetros</b>，得到物体在空间中的 <b>orientación</b>（姿态）。它是传感器融合最典型的例子（§4）。</p>
+</div>
+<p>姿态用三个转轴描述：<b class="t">roll</b>——横滚、<b class="t">pitch</b>——俯仰、<b class="t">yaw / heading</b>——偏航（航向）。下图右侧的飞机标出了三个轴：roll 绕机身纵轴、pitch 绕机翼方向的横轴、yaw 绕竖直轴。分工是：加速度计给 roll 和 pitch，磁力计给 yaw，陀螺仪给三个轴的转速；融合后三个轴又准又快。</p>
+
+<p><b>搭一搭：</b>选几种传感器，看能组成几轴的系统，叫什么。</p>
+<div class="stack" id="dofb">
+<div aria-label="选择要组合的传感器" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-ax="3" data-s="acc" type="button">Acelerómetro 3D <small>3 轴</small></button>
+<button aria-pressed="false" class="chip" data-ax="3" data-s="gyr" type="button">Giróscopo 3D <small>3 轴</small></button>
+<button aria-pressed="false" class="chip" data-ax="3" data-s="mag" type="button">Magnetómetro 3D <small>3 轴</small></button>
+<button aria-pressed="false" class="chip" data-ax="1" data-s="bar" type="button">Barómetro <small>1</small></button>
+<button aria-pressed="false" class="chip" data-ax="1" data-s="tem" type="button">Termómetro <small>1</small></button>
+<button aria-pressed="false" class="chip" data-ax="1" data-s="luz" type="button">Luz ambiente <small>1</small></button>
+</div>
+<div aria-live="polite" class="panel">
+<span class="hint dof-n">0 轴</span>
+<p class="dof-t"></p>
+</div>
+</div>
+<div class="note warm">
+<span class="lbl">注意</span>
+<p>有的资料把只有 3 轴加速度计 + 3 轴陀螺仪的器件（如 Bosch BHI360、BMI088）也叫 IMU（6-DoF），加上外接磁力计才叫 9-DoF IMU；有些资料的定义包含三类传感器。acelerómetros + giróscopos + magnetómetros → orientación。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>可穿戴设备与多传感器平台 <span class="tag">2.2.6</span></h2>
+<p>传感器和执行器通常被集成到能接入服务器或网络的设备里，主要有三种：<b class="t">plataforma multisensor</b>——多传感器平台、<b>wearables</b>，以及智能手机和它的扩展。</p>
+<p>多传感器平台的典型例子是 WSN（无线传感器网络）里的 <b class="t">mota</b>——无线传感节点：一块板上带一组环境传感器（光照、温度、湿度）。可以看看 <a href="http://www.libelium.com/es/products/plug-sense/models/">Libelium 的 mota 型号</a>。</p>
+<div class="note">
+<span class="lbl">定义 · 2.2.6</span>
+<p><b class="t">tecnología wearable (ES) / wearable technology (EN)</b>——可穿戴技术：用户<b>随身携带</b>的设备，用于两件事之一：</p>
+<ul>
+<li><b>monitorización</b>——监测，例如带 tracking 和生命体征传感器的腕带，监测病人的健康或运动员的状态；</li>
+<li>作为和系统<b>交互和/或通信</b>的媒介。</li>
+</ul>
+<p>今天的例子：智能手表和手环、一次性贴片、增强现实眼镜、脑机接口、电子服装……</p>
+</div>
+<p>可穿戴技术的应用可以画成一把扇子：中心是 8 个 <b>Sector</b>（领域），往外依次是 Applications（应用）、Functions（功能）、Products（产品）。</p>
+
+<p>图上字很小，<b>点开每个领域</b>看它的四层：</p>
+<div class="stack" data-explain="med">
+<div aria-label="可穿戴应用图的 8 个领域" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="bus" type="button">Business Operations <small>商业运营</small></button>
+<button aria-pressed="false" class="chip" data-key="seg" type="button">Security/Safety <small>安全与防护</small></button>
+<button aria-pressed="false" class="chip" data-key="med" type="button">Medical <small>医疗</small></button>
+<button aria-pressed="false" class="chip" data-key="wel" type="button">Wellness <small>健康管理</small></button>
+<button aria-pressed="false" class="chip" data-key="spo" type="button">Sport/Fitness <small>运动健身</small></button>
+<button aria-pressed="false" class="chip" data-key="lif" type="button">Lifestyle Computing <small>生活计算</small></button>
+<button aria-pressed="false" class="chip" data-key="com" type="button">Communication <small>通信</small></button>
+<button aria-pressed="false" class="chip" data-key="gla" type="button">Glamor <small>时尚展示</small></button>
+</div>
+<div class="panel" data-panel="bus" hidden="">
+<h3>Business Operations · 商业运营</h3>
+<ul>
+<li><b>Applications：</b>Logistics, Knowledge Share, Information Access, Customer Service, Access Control</li>
+<li><b>Functions：</b>Stock Management, Personalised Service, HUD Dialogue, Secure Keys, Event Tickets</li>
+<li><b>Products：</b>Remote Tech Support, Event Ticket Band, Stock Scanner, Customer Service, Hotel Key Band</li>
+</ul>
+</div>
+<div class="panel" data-panel="seg" hidden="">
+<h3>Security/Safety · 安全与防护</h3>
+<ul>
+<li><b>Applications：</b>Military, Emergency Services, Identity Recognition, Rescue/Tracking, Environment</li>
+<li><b>Functions：</b>Real-Time Data, Remote Team Monitoring, Security Profiling, Hazmat Detection, Remote Monitoring</li>
+<li><b>Products：</b>Connected Police Officer, Situational Awareness, Trackable Wallet, Personal Locator Beacon, Identity Bracelet</li>
+</ul>
+</div>
+<div class="panel" data-panel="med" hidden="">
+<h3>Medical · 医疗</h3>
+<ul>
+<li><b>Applications：</b>Vital Signs Monitoring, In Vivo/Implants, Chronic Disease Management, Brain/Eye Movement</li>
+<li><b>Functions：</b>Unobtrusive Patient Monitoring, Body Augmentation, Diabetes Care, Remote EEG, ECG, EMG</li>
+<li><b>Products：</b>Vision Enhancement, Wireless EEG Headset, Bio Feedback Patch, Hearing Aid, Ingestible Sensors</li>
+</ul>
+</div>
+<div class="panel" data-panel="wel" hidden="">
+<h3>Wellness · 健康管理</h3>
+<ul>
+<li><b>Applications：</b>Physiological Monitoring, Weight/Energy Monitoring, Gait/Posture Correction</li>
+<li><b>Functions：</b>Sleep/Diet/Motion Tracking, Obesity Control, Interactive Instruction</li>
+<li><b>Products：</b>Posture Sensor Belt, Lifestyle Tracker Band, Weight Monitoring Band, Sensor Insoles, Sun Exposure Monitor</li>
+</ul>
+</div>
+<div class="panel" data-panel="spo" hidden="">
+<h3>Sport/Fitness · 运动健身</h3>
+<ul>
+<li><b>Applications：</b>Sport Performance, Fitness Monitoring, Virtual Coaching, Outdoor Navigation/Tracking, Body Cooling/Heating</li>
+<li><b>Functions：</b>Performance Monitoring/Training, Activity Tracking, Direction Data/Location Share, Goal Monitoring/Management</li>
+<li><b>Products：</b>Activity Tracker Band, Smart Training Shoes, Bioharness, Heated Clothing, Smart Sunglasses</li>
+</ul>
+</div>
+<div class="panel" data-panel="lif" hidden="">
+<h3>Lifestyle Computing · 生活计算</h3>
+<ul>
+<li><b>Applications：</b>Organiser, Responsive Learning, Interactive Gaming, Data/Media Access, Shared Experience</li>
+<li><b>Functions：</b>Schedule Management, EEG/Optimised Learning, Augmented Reality, Realtime Streaming, HUD</li>
+<li><b>Products：</b>SmartWatch, HUD Glasses, Gesture Control Band, VR Gaming Headset, GPS Shoes</li>
+</ul>
+</div>
+<div class="panel" data-panel="com" hidden="">
+<h3>Communication · 通信</h3>
+<ul>
+<li><b>Applications：</b>Personal, Interactive Group, Physical Expression</li>
+<li><b>Functions：</b>Access Voice, Text, Email, Multimedia; Use Social Media; Use Touch &amp; Hugs</li>
+<li><b>Products：</b>Connected T-Shirt, Bluetooth Jewelry, MIDI Jacket, Touch Connected Underwear, Social Media Dress</li>
+</ul>
+</div>
+<div class="panel" data-panel="gla" hidden="">
+<h3>Glamor · 时尚展示</h3>
+<ul>
+<li><b>Applications：</b>Light Embellishment, Decorative Display, Animated, Reactive Response</li>
+<li><b>Functions：</b>Playful Show, Ambience Through Light, Pattern Changing, Track/Display Emotions</li>
+<li><b>Products：</b>Light Reactive Dress, Sound Animated Dress, Mood Responsive Sweater, Physically Reactive Dress, Light Display Top</li>
+</ul>
+</div>
+</div>
+<p class="aside">上面的列表保留图上的英文原词；产品照片按它在图上所处的扇区归类，相邻两个扇区交界处的个别产品可能归错。和 2.2.6 的定义对照：Medical、Wellness、Sport/Fitness 偏 monitorización，Communication、Lifestyle Computing 偏 interacción y/o comunicación。</p>
+<p><b>小任务：</b>浏览 “Sensor Mania! The Internet of Things” 一文的第 2 节，找出 wearable 的应用和实现。这一节的六个小节整理如下，<b>点开每一格：</b></p>
+<div class="stack" data-explain="reloj">
+<div aria-label="可穿戴应用的六类" class="layers" role="group">
+<button aria-pressed="false" class="layer" data-key="reloj" type="button"><span class="es">Relojes y pulseras</span><span class="zh">智能手表与手环</span></button>
+<button aria-pressed="false" class="layer" data-key="parche" type="button"><span class="es">Parches</span><span class="zh">可穿戴贴片</span></button>
+<button aria-pressed="false" class="layer" data-key="continua" type="button"><span class="es">Monitorización continua</span><span class="zh">连续监测</span></button>
+<button aria-pressed="false" class="layer" data-key="bci" type="button"><span class="es">BCI · EEG</span><span class="zh">脑机接口与情绪</span></button>
+<button aria-pressed="false" class="layer" data-key="movil" type="button"><span class="es">Smartphone +</span><span class="zh">手机与外设、AR 眼镜</span></button>
+<button aria-pressed="false" class="layer l1" data-key="entorno" type="button"><span class="es">Entorno y domótica</span><span class="zh">环境与家居（非穿戴）</span></button>
+</div>
+<div class="panel" data-panel="reloj" hidden="">
+<h3>Smartwatches y pulseras · 智能手表与手环</h3>
+<p>可穿戴计算这一类，正由智能手表和手环、增强现实眼镜和可穿戴纺织品来定义。Pebble 通过 Bluetooth 连手机，推送来电和消息；Basis 手表是一个多传感器平台：3D 加速度计、心率、温度、GSR。</p>
+<p>手环是智能手表的前身，最早靠加速度计计步（Nike Fuelband、Jawbone UP 等）。临床上还有用皮肤电活动加加速度检测癫痫发作的腕带，可以一直戴着，比实验室 EEG 方便。</p>
+</div>
+<div class="panel" data-panel="parche" hidden="">
+<h3>Parches · 可穿戴贴片</h3>
+<p>低成本、一次性，连续贴几天后扔掉。例子：</p>
+<ul>
+<li>Sano Intelligence 的贴片（用一周）：已演示测血糖和血钾；</li>
+<li>mc10 的可拉伸电子纹身：心率、脑活动、体温、水分；</li>
+<li>iRhythm 的 Zio Patch（用两周）：监测心律，预警心律失常；</li>
+<li>CGM 连续血糖仪：皮下传感器每 1–5 分钟把读数发给接收器或胰岛素泵。</li>
+</ul>
+</div>
+<div class="panel" data-panel="continua" hidden="">
+<h3>Monitorización continua · 连续监测</h3>
+<p>IoT 设备的关键期待：连续监测加实时传输，最好还有实时反馈和个性化建议。例：BodyGuardian（ECG、心率、呼吸率、体力活动）；Visi Mobile（ECG、心率、呼吸、体温）；Proteus：药片上的可吞服传感器把数据发给身上的贴片。</p>
+</div>
+<div class="panel" data-panel="bci" hidden="">
+<h3>BCI, neurosensing y emociones · 脑机接口与情绪</h3>
+<p>消费级 EEG，也叫 brain-computer interface（BCI）：14 节点的 Emotiv、单节点的 NeuroSky、测睡眠的 myZeo，用于注意力、冥想和游戏。情绪识别（affect）仍然很难。Affectiva 用多传感器腕带（GSR、温度、加速度）配合摄像头眼动追踪；只用 GSR 也能大致检测压力水平。</p>
+</div>
+<div class="panel" data-panel="movil" hidden="">
+<h3>Smartphone y periféricos · 手机与外设</h3>
+<p>手机加外设：AliveCor 的心电记录器、手机超声、CellScope（耳镜、皮肤镜）。也有把传感器直接做进手机的（LifeWatch V）。Google Project Glass 定义了新的可穿戴类别：眼镜角上的小摄像头和计算节点，把实时搜索结果显示在眼前。</p>
+</div>
+<div class="panel" data-panel="entorno" hidden="">
+<h3>Monitorización ambiental y domótica · 环境与家居</h3>
+<p>这一类<b>不是</b>穿戴设备，而是环境监测和家庭自动化：钥匙扣大小的 Sensordrone（经 Bluetooth 发数据）、Flexibity（每个传感器有自己的 IPv6 地址）、Air Quality Egg、开源的 openHAB。它们更接近上面说的多传感器平台。</p>
+</div>
+</div>
+<p class="aside">另外，可穿戴纺织品（如 Hexoskin）也属于这一类；新一代自我追踪产品的“标配”大致是加速度计、GSR、温度，可能再加心率。</p>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>分析传感器特性：读一份 datasheet <span class="tag">2.2.7</span></h2>
+<div class="note warm">
+<span class="lbl"></span>
+<p>2.2.7 是练习型目标。下面用一颗真实的加速度计来练习。讲术语和选型的那两份读物本身属于拓展，重点是读 datasheet 的<b>能力</b>。</p>
+</div>
+<h3>第 1 步：认识术语</h3>
+<p>描述一个传感器，常用下面十个特性。<b>点开每一个：</b></p>
+<div class="stack" data-explain="sen">
+<div aria-label="传感器特性术语" class="chips" role="group">
+<button aria-pressed="false" class="chip" data-key="sen" type="button">Sensibilidad</button>
+<button aria-pressed="false" class="chip" data-key="ran" type="button">Rango</button>
+<button aria-pressed="false" class="chip" data-key="pre" type="button">Precisión</button>
+<button aria-pressed="false" class="chip" data-key="res" type="button">Resolución</button>
+<button aria-pressed="false" class="chip" data-key="exa" type="button">Exactitud</button>
+<button aria-pressed="false" class="chip" data-key="off" type="button">Offset</button>
+<button aria-pressed="false" class="chip" data-key="lin" type="button">Linealidad</button>
+<button aria-pressed="false" class="chip" data-key="his" type="button">Histéresis</button>
+<button aria-pressed="false" class="chip" data-key="tre" type="button">Tiempo de respuesta</button>
+<button aria-pressed="false" class="chip" data-key="din" type="button">Linealidad dinámica</button>
+</div>
+<div class="panel" data-panel="sen" hidden="">
+<h3><b class="t">sensibilidad (ES) / sensitivity (EN)</b>——灵敏度</h3>
+<p>输出特性曲线的<b>斜率 ΔY/ΔX</b>；更一般地说，是能引起可检测输出变化的最小输入。例：血压换能器 10 mV/V/mmHg，即每伏激励电压、每 mmHg 压力输出 10 mV。</p>
+<p><b>sensitivity error</b>（灵敏度误差）：实际斜率偏离理想值，例如实际只有 7.8 mV/V/mmHg。</p>
+</div>
+<div class="panel" data-panel="ran" hidden="">
+<h3><b class="t">rango (ES) / range (EN)</b>——量程</h3>
+<p>能测的最小值到最大值。正负可以不对称，例如某血压换能器 −50 到 +450 mmHg。<b>dynamic range</b>（动态范围）是从最小到最大的总范围。</p>
+</div>
+<div class="panel" data-panel="pre" hidden="">
+<h3><b class="t">precisión (ES) / precision (EN)</b>——精密度</h3>
+<p>测量的<b>重复性</b>：同一个值测很多次，理想传感器每次输出一样，真实传感器的读数会散开。例：一直加 150 mmHg 的压力，读数仍会变来变去。</p>
+</div>
+<div class="panel" data-panel="res" hidden="">
+<h3><b class="t">resolución (ES) / resolution (EN)</b>——分辨率</h3>
+<p>输出信号里能检测到的<b>最小输入增量</b>。可以用读数（或满量程）的比例表示，也可以用绝对值。从数字输出的角度看，分辨率通常由 ADC 的位数决定。</p>
+</div>
+<div class="panel" data-panel="exa" hidden="">
+<h3><b class="t">exactitud (ES) / accuracy (EN)</b>——准确度</h3>
+<p>真实值（要用一级或可靠的二级标准测得）和传感器指示值之间的<b>最大差</b>，可以写成满量程的百分比或绝对值。也可以写成 Accuracy = 100 % − Error。</p>
+</div>
+<div class="panel" data-panel="off" hidden="">
+<h3><b class="t">offset</b>——零点偏移</h3>
+<p>本应为零时的输出；或者在某种条件下，实际输出和规定输出之差。例：斜率没错，但曲线在 b 处而不是零点穿过 Y 轴；pH 电极的曲线随温度平移。</p>
+</div>
+<div class="panel" data-panel="lin" hidden="">
+<h3><b class="t">linealidad (ES) / linearity (EN)</b>——线性度</h3>
+<p>实测曲线偏离理想直线（或最小二乘拟合线）的程度，常写成 % nonlinearity = D<sub>in(max)</sub> / IN<sub>f.s.</sub> × 100，即最大输入偏差除以满量程输入。它会受温度、振动、噪声、湿度等环境因素影响。</p>
+</div>
+<div class="panel" data-panel="his" hidden="">
+<h3><b class="t">histéresis (ES) / hysteresis (EN)</b>——迟滞</h3>
+<p>输入从高处还是从低处接近同一个值，输出不一样。同一个输入因为“上一个值”不同而读数不同，这就是迟滞误差。</p>
+</div>
+<div class="panel" data-panel="tre" hidden="">
+<h3><b class="t">tiempo de respuesta (ES) / response time (EN)</b>——响应时间</h3>
+<p>输入突变后，输出变到新值的容差带内所需的时间。它和系统的时间常数 τ 不同，τ 通常更短；上升时间和下降时间也不一定相同。</p>
+</div>
+<div class="panel" data-panel="din" hidden="">
+<h3><b class="t">linealidad dinámica (ES) / dynamic linearity (EN)</b>——动态线性度</h3>
+<p>跟随输入<b>快速变化</b>的能力，取决于幅度失真、相位失真和响应时间。</p>
+</div>
+</div>
+<p>其中几个特性画在特性曲线上最好理解：第一张图是灵敏度、量程和 offset，第二张是迟滞。</p>
+
+<div class="note">
+<span class="lbl">别混淆 · precisión ≠ exactitud</span>
+<p>举个例子：真实值 1.00 g。读数 1.10、1.11、1.10：很<b>精密</b>（重复性好），但<b>不准确</b>（整体偏了 0.1 g，像是 offset）。读数 0.95、1.06、0.99：平均接近真值，但不精密。</p>
+</div>
+<h3>第 2 步：认识这颗传感器</h3>
+<p>选型时最该看的参数是：range、resolution、accuracy、temperature、I/O、power consumption、supply voltage range、packaging。我们用它们和第 1 步的术语去“审”一颗真实的传感器：<b>Freescale Xtrinsic FXLN83xxQ</b>。</p>
+<div class="grid3">
+<div class="cell"><span class="eyebrow">是什么</span><h3>3 轴模拟输出加速度计</h3><p>低功耗、low-g：加速度传感元件 + CMOS 信号调理与控制 ASIC，封装 3 × 3 × 1 mm QFN-12。X、Y、Z 三路模拟电压输出。</p></div>
+<div class="cell"><span class="eyebrow">四个型号</span><h3>看第 3、4 位数字</h3><p>836x = Low BW，837x = High BW；83x1 = ±2/±8 g，83x2 = ±4/±16 g。温度范围和封装都一样。</p></div>
+<div class="cell"><span class="eyebrow">典型应用</span><h3>和 §2 呼应</h3><p>防拆检测；白色家电的倾斜、振动、摇晃检测；机器人运动感知；倾角计、振动计；运动和医疗设备的活动监测。</p></div>
+</div>
+<h3>第 3 步：带着问题读 datasheet</h3>
+<p>先自己在这份 datasheet 里找答案，再<b>点击右列</b>核对：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>特性</th><th>问题</th><th>datasheet 里的答案（点击揭晓）</th></tr></thead>
+<tbody>
+<tr class="reveal"><td>Rango</td><td>能测多大的加速度？怎么切换？</td><td class="ans">83x1：±2 或 ±8 g；83x2：±4 或 ±16 g。引脚 5 g-Select：高电平 = 小量程，低电平 = 大量程</td></tr>
+<tr class="reveal"><td>Sensibilidad</td><td>每 1 g 输出变化多少？</td><td class="ans">±2 g：229.0 mV/g；±4 g：114.5；±8 g：57.25；±16 g：28.62 mV/g</td></tr>
+<tr class="reveal"><td>Offset</td><td>0 g 时输出多少？</td><td class="ans">0.75 V，与 V<sub>DD</sub> 无关；±2 g 档容差 0.705–0.795 V，其余三档 0.7125–0.7875 V；焊到板上后还会再偏 ±200 mg</td></tr>
+<tr class="reveal"><td>Error de sensibilidad</td><td>灵敏度本身准不准？</td><td class="ans">校准灵敏度误差 ±5 %（±2 g）、±6 %（±4 g）；温漂 ±0.07 %/°C；交叉轴灵敏度 ±4.2 %</td></tr>
+<tr class="reveal"><td>Ancho de banda</td><td>能跟上多快的变化？</td><td class="ans">High BW（837x）：XY 2.7 kHz、Z 600 Hz；Low BW（836x）：XY 1.1 kHz、Z 600 Hz。每个轴的带宽可以用外接电容调</td></tr>
+<tr class="reveal"><td>Ruido</td><td>输出有多“抖”？</td><td class="ans">噪声密度：837x 为 XY 200、Z 280 µg/√Hz；836x 为 XY 130、Z 200 µg/√Hz。带宽高的型号噪声也大</td></tr>
+<tr class="reveal"><td>Resolución</td><td>最小能分辨多少 g？</td><td class="ans">表里没有。输出是模拟量，分辨率取决于读它的 ADC 位数和噪声。用下面的计算器估算</td></tr>
+<tr class="reveal"><td>Alimentación</td><td>供电电压？</td><td class="ans">1.71–3.6 V，典型 2.8 V；绝对最大值 −0.3 到 +3.6 V</td></tr>
+<tr class="reveal"><td>Consumo</td><td>功耗？</td><td class="ans">工作电流 180 µA（典型），关断 30 nA；EN 引脚低电平即关断</td></tr>
+<tr class="reveal"><td>Tiempo de respuesta</td><td>上电后多久能用？</td><td class="ans">turn-on time 660 µs：从 EN 置高到输出达到终值的 90 %；切换量程要 340 µs</td></tr>
+<tr class="reveal"><td>Temperatura</td><td>工作温度？</td><td class="ans">−40 到 +105 °C；存储 −40 到 +125 °C</td></tr>
+<tr class="reveal"><td>I/O · encapsulado</td><td>接口和封装？</td><td class="ans">三路模拟输出 X<sub>OUT</sub>、Y<sub>OUT</sub>、Z<sub>OUT</sub>，没有 I²C/SPI，要接 MCU 的 ADC；3 × 3 × 1 mm 12 脚 QFN</td></tr>
+<tr class="reveal"><td>Linealidad · histéresis</td><td>线性度和迟滞？</td><td class="ans">datasheet 的机械特性表（表 4）和电气特性表（表 5）都没有给出。“没写”本身也是分析结论</td></tr>
+</tbody>
+</table>
+</div>
+<div class="panel">
+<h3>读 datasheet 的三个提醒</h3>
+<ul>
+<li><b>Absolute Maximum Ratings</b>（绝对最大值表）只是“不损坏”的极限，不保证在这些条件下正常工作；正常工作看机械特性表和电气特性表。</li>
+<li>分清 <b>Typ</b> 和 <b>Min / Max</b>：典型值不是保证值。</li>
+<li>看 <b>Test Conditions</b>：这两张特性表默认 V<sub>DD</sub> = 2.8 V、25 °C、±2 g（或 ±4 g）档。</li>
+</ul>
+</div>
+<h3>第 4 步：算一算</h3>
+<p>先看 datasheet 怎样说明静止时的输出：芯片按不同朝向放置，各轴的读数在 −1 g、0 g、+1 g 之间变化，下面的表给出每个量程对应的输出电压。</p>
+
+<p>选型号和 g-Select，输入 X 轴读到的电压，实时算出加速度、倾角、ADC 分辨率和功耗。可以先点“−1 g / 0 g / +1 g”，填入上图表里的电压，验证公式。</p>
+<div class="stack" id="calc">
+<div class="m22-form">
+<label>型号 · part number
+          <select id="c-pn">
+<option value="8361">FXLN8361Q（±2/8 g · Low BW）</option>
+<option value="8362">FXLN8362Q（±4/16 g · Low BW）</option>
+<option value="8371">FXLN8371Q（±2/8 g · High BW）</option>
+<option value="8372">FXLN8372Q（±4/16 g · High BW）</option>
+</select>
+</label>
+<label>g-Select（引脚 5）
+          <select id="c-gs">
+<option value="1">高电平 1 → 小量程</option>
+<option value="0">低电平 0 → 大量程</option>
+</select>
+</label>
+<label>X 轴读数 V<sub>OUT</sub>（V）
+          <input id="c-v" inputmode="decimal" max="1.5" min="0" step="0.001" type="number" value="0.979"/>
+</label>
+<label>ADC 位数
+          <select id="c-n">
+<option value="8">8 bit</option>
+<option value="10">10 bit</option>
+<option selected="" value="12">12 bit</option>
+<option value="14">14 bit</option>
+<option value="16">16 bit</option>
+</select>
+</label>
+<label>供电 V<sub>DD</sub>（V）
+          <input id="c-vdd" inputmode="decimal" max="3.6" min="1.71" step="0.01" type="number" value="2.8"/>
+</label>
+</div>
+<div class="stepper-ctl">
+<span class="aside">按上图填入：</span>
+<button class="btn" data-g="0" type="button">−1 g</button>
+<button class="btn" data-g="1" type="button">0 g</button>
+<button class="btn" data-g="2" type="button">+1 g</button>
+</div>
+<figure>
+<div class="fig">
+<svg aria-label="传递特性：输出电压随加速度线性变化，0 g 对应 0.75 V；圆点是当前读数" role="img" viewbox="0 0 560 236">
+<line class="m22-grid" x1="70" x2="530" y1="35" y2="35"></line>
+<line class="m22-grid" x1="70" x2="530" y1="185" y2="185"></line>
+<line class="m22-off" x1="70" x2="530" y1="110" y2="110"></line>
+<line class="m22-off" x1="300" x2="300" y1="20" y2="200"></line>
+<line class="s-line" x1="70" x2="530" y1="200" y2="200"></line>
+<line class="s-line" x1="70" x2="70" y1="20" y2="200"></line>
+<text class="s-tm" text-anchor="end" x="64" y="39">1.208</text>
+<text class="s-tm" text-anchor="end" x="64" y="114">0.750</text>
+<text class="s-tm" text-anchor="end" x="64" y="189">0.292</text>
+<text class="s-tm" data-tick="-1" text-anchor="middle" x="70" y="216">−2</text>
+<text class="s-tm" data-tick="-0.5" text-anchor="middle" x="185" y="216">−1</text>
+<text class="s-tm" data-tick="0" text-anchor="middle" x="300" y="216">0</text>
+<text class="s-tm" data-tick="0.5" text-anchor="middle" x="415" y="216">+1</text>
+<text class="s-tm" data-tick="1" text-anchor="middle" x="530" y="216">+2</text>
+<text class="s-tm" x="76" y="14">V_OUT (V)</text>
+<text class="s-tm" text-anchor="end" x="552" y="232">a (g)</text>
+<line class="m22-tf" x1="70" x2="530" y1="185" y2="35"></line>
+<circle class="m22-pt" cx="415" cy="72" r="6"></circle>
+</svg>
+</div>
+<figcaption>传递特性：V<sub>OUT</sub> = 0.75 V + a × SEN。横轴随量程变化，纵轴不变：满量程输出总是约 0.292–1.208 V（FSR × SEN ≈ 0.458 V，四档都一样），所以<b>量程越大，灵敏度越低</b>。</figcaption>
+</figure>
+<div aria-live="polite" class="m22-res">
+<div class="cell"><span class="eyebrow">量程 · 带宽 · 噪声</span><span class="v" id="r-cfg">—</span><span class="f" id="r-cfg-f"></span></div>
+<div class="cell"><span class="eyebrow">灵敏度 SEN</span><span class="v" id="r-sen">—</span><span class="f" id="r-sen-f"></span></div>
+<div class="cell"><span class="eyebrow">加速度 a</span><span class="v" id="r-acc">—</span><span class="f" id="r-acc-f"></span></div>
+<div class="cell"><span class="eyebrow">倾角 θ（静止时）</span><span class="v" id="r-tilt">—</span><span class="f" id="r-tilt-f"></span></div>
+<div class="cell"><span class="eyebrow">ADC 分辨率</span><span class="v" id="r-res">—</span><span class="f" id="r-res-f"></span></div>
+<div class="cell"><span class="eyebrow">功耗</span><span class="v" id="r-pwr">—</span><span class="f" id="r-pwr-f"></span></div>
+</div>
+<p class="aside">计算器用到的数值：SEN、0.75 V offset、校准公式 V<sub>BYP</sub>/(3.276·gRange)、V<sub>BYP</sub> = 1.5 V、180 µA / 30 nA、带宽和噪声密度；公式：倾角 θ = arcsin(a / 1 g)、1 g ≈ 9.81 m/s²、ADC 的 LSB = V<sub>ref</sub> / 2<sup>N</sup>（这里假设 V<sub>ref</sub> = V<sub>BYP</sub> = 1.5 V；电气特性表的测试条件提到 BYP 可为 ADC 参考输入供电）。</p>
+</div>
+
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">12 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M22">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>加速度计静止放着时，测到的是什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>地磁场</button>
+<button data-o="b" type="button"><span class="k">B</span>角速度</button>
+<button data-o="c" type="button"><span class="k">C</span>重力的矢量</button>
+<button data-o="d" type="button"><span class="k">D</span>大气压</button>
+</div>
+<p class="why"><b>C。</b><i>En reposo, el acelerómetro mide el vector asociado a la fuerza de la gravedad</i>。所以它能算出 roll、pitch 的倾斜（§1、§4）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">02</span>§1 传感器表 “Señales biológicas” 一行里的 EMG 测量什么？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>肌肉的电活动</button>
+<button data-o="b" type="button"><span class="k">B</span>心脏的电活动</button>
+<button data-o="c" type="button"><span class="k">C</span>头皮上的脑电活动</button>
+<button data-o="d" type="button"><span class="k">D</span>皮肤的电导率</button>
+</div>
+<p class="why"><b>A。</b>EMG = electromiografía。B 是 ECG，C 是 EEG，D 是 GSR（§1 配对）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>要隔着塑料罐壁检测罐里粉末的料位，最合适的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>电感式传感器</button>
+<button data-o="b" type="button"><span class="k">B</span>光电式传感器</button>
+<button data-o="c" type="button"><span class="k">C</span>磁力计</button>
+<button data-o="d" type="button"><span class="k">D</span>电容式传感器</button>
+</div>
+<p class="why"><b>D。</b>电容式能检测金属、非金属、液体和粉末，常用于料位控制，也能隔着非金属容器壁检测。电感式只检测金属（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>按 §3，MEMS 借用硅集成电路的制造技术，带来的优点之一是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>只能做电子器件，不能做机械结构</button>
+<button data-o="b" type="button"><span class="k">B</span>批量制造，成本随尺寸缩放</button>
+<button data-o="c" type="button"><span class="k">C</span>每个器件都要单独手工装配</button>
+<button data-o="d" type="button"><span class="k">D</span>必须用分子级的纳米工艺</button>
+</div>
+<p class="why"><b>B。</b>四个优点：批量制造使成本随尺寸缩放、资源复用、机械性能优异（和钢一样硬）、单芯片集成生物、光学、机械和电子系统（§3，目标 2.2.3）。D 说的是 NEMS。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">05</span>NEMS 和 MEMS 是什么关系？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>NEMS 是 MEMS 的演进，小得多，工作在分子层面</button>
+<button data-o="b" type="button"><span class="k">B</span>NEMS 是 MEMS 的一种封装形式</button>
+<button data-o="c" type="button"><span class="k">C</span>NEMS 是用 multichip 把几个 MEMS 组合起来</button>
+<button data-o="d" type="button"><span class="k">D</span>NEMS 是一种传感器融合算法</button>
+</div>
+<p class="why"><b>A。</b>sistemas nanoelectromecánicos 来自纳米技术，比 MEMS 小得多，能改变材料性质（§3）。C 描述的是 multichip / iMEMS 组合。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">06</span>IMU 为什么要把陀螺仪和“加速度计 + 磁力计”融合？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>因为陀螺仪比磁力计便宜</button>
+<button data-o="b" type="button"><span class="k">B</span>因为加速度计能测 yaw，陀螺仪不能</button>
+<button data-o="c" type="button"><span class="k">C</span>陀螺仪精确、响应快但会漂移；acc + mag 噪声大、快速转动时不准，两者互补</button>
+<button data-o="d" type="button"><span class="k">D</span>因为这样就不需要滤波器了</button>
+</div>
+<p class="why"><b>C。</b>这正是 §4 的论证。融合恰恰要靠滤波器（高通、低通或 Kalman）；加速度计测不了 yaw（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>在 §4 的融合框图里，陀螺仪的数据怎样处理？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>直接经过低通滤波</button>
+<button data-o="b" type="button"><span class="k">B</span>先积分，再经过高通滤波</button>
+<button data-o="c" type="button"><span class="k">C</span>先求导，再经过低通滤波</button>
+<button data-o="d" type="button"><span class="k">D</span>和磁力计的数据相乘</button>
+</div>
+<p class="why"><b>B。</b>陀螺仪积分后走高通（只留快速变化），acc（pitch y roll）+ mag（yaw）走低通，两路在 Σ 相加（§4 的融合框图和模拟器）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">08</span>单靠加速度计，测不出哪个方向的转动？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>roll</button>
+<button data-o="b" type="button"><span class="k">B</span>pitch</button>
+<button data-o="c" type="button"><span class="k">C</span>三个方向都测得出</button>
+<button data-o="d" type="button"><span class="k">D</span>yaw（heading）</button>
+</div>
+<p class="why"><b>D。</b>绕 yaw 轴转时倾斜不变，加速度计看不出来，所以要用磁力计（§4、§5）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">09</span>下面哪一项是 IMU 的定义？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>组合加速度计、陀螺仪和磁力计，得到物体在空间中的姿态</button>
+<button data-o="b" type="button"><span class="k">B</span>测心电图的一次性贴片</button>
+<button data-o="c" type="button"><span class="k">C</span>WSN 里带温湿度传感器的 mota</button>
+<button data-o="d" type="button"><span class="k">D</span>把模拟电压转成数字的 ADC</button>
+</div>
+<p class="why"><b>A。</b><i>Los IMU combinan acelerómetros, giróscopos y magnetómetros para obtener la orientación</i>（§5，目标 2.2.5）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">10</span>按 §6，wearable 指的是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>装在墙上的环境传感器</button>
+<button data-o="b" type="button"><span class="k">B</span>只能测运动的设备</button>
+<button data-o="c" type="button"><span class="k">C</span>用户随身携带，用于监测，或作为与系统交互、通信媒介的设备</button>
+<button data-o="d" type="button"><span class="k">D</span>必须植入体内的传感器</button>
+</div>
+<p class="why"><b>C。</b>两种用途：monitorización，或 medio de interacción y/o comunicación con un sistema（§6，目标 2.2.6）。环境传感器属于多传感器平台。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">11</span>FXLN8361Q，g-Select 接高电平，X 轴输出 0.979 V。X 轴的加速度约为？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>+4.28 g</button>
+<button data-o="b" type="button"><span class="k">B</span>−1 g</button>
+<button data-o="c" type="button"><span class="k">C</span>+0.5 g</button>
+<button data-o="d" type="button"><span class="k">D</span>+1 g</button>
+</div>
+<p class="why"><b>D。</b>高电平 → ±2 g，SEN = 229.0 mV/g。a = (0.979 − 0.750) / 0.229 = +1.00 g，和 §7 第 4 步 datasheet 图里 +1 g 的电压一致。A 是忘了减 0.75 V offset 的结果（§7 计算器）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">12</span>对传感器一直加 150 mmHg 的压力，读数却每次都不一样。这说明哪项特性不好？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>rango</button>
+<button data-o="b" type="button"><span class="k">B</span>precisión（重复性）</button>
+<button data-o="c" type="button"><span class="k">C</span>offset</button>
+<button data-o="d" type="button"><span class="k">D</span>histéresis</button>
+</div>
+<p class="why"><b>B。</b>§7 第 1 步用的就是这个例子：precision 指同一个值反复测量时输出的一致程度。迟滞要求输入从不同方向接近同一值。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">20 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">MEMS<small>MicroElectroMechanical Systems</small></span><span class="back"><b>微机电系统</b><br/>用硅集成电路工艺制造的微型机械、化学、光学、生物器件。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">NEMS<small>sistemas nanoelectromecánicos</small></span><span class="back"><b>纳机电系统</b><br/>MEMS 的演进，小得多，工作在分子层面。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">LOC<small>Lab On Chip</small></span><span class="back"><b>芯片实验室</b><br/>一块芯片集成多种传感器和执行器，取代整个实验室。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">recolector de energía<small>energy harvester / scavenger</small></span><span class="back"><b>能量收集器</b><br/>把非电能转成电能，用于没法换电池的传感器。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">fusión de sensores<small>sensor fusion</small></span><span class="back"><b>传感器融合</b><br/>组合多个传感器，得到新的或更可靠的结果。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">IMU<small>Inertial Measurement Unit</small></span><span class="back"><b>惯性测量单元</b><br/>加速度计 + 陀螺仪 + 磁力计 → 空间姿态。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">DoF<small>degrees of freedom</small></span><span class="back"><b>自由度</b><br/>3D 加速度计 + 陀螺仪 + 磁力计 = 9 轴 = 9-DoF。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">acelerómetro<small>accelerometer</small></span><span class="back"><b>加速度计</b><br/>静止时测重力矢量 → roll、pitch 倾角；也测摔倒、撞击。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">giróscopo<small>gyroscope</small></span><span class="back"><b>陀螺仪</b><br/>测角速度，积分得角度；精确、快，但会漂移。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">magnetómetro<small>magnetometer</small></span><span class="back"><b>磁力计</b><br/>测磁场；测地磁场时像指南针，给出 yaw。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">roll · pitch · yaw<small>yaw = heading</small></span><span class="back"><b>横滚 · 俯仰 · 偏航</b><br/>描述姿态的三个转轴；加速度计测不了 yaw。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">deriva<small>drift</small></span><span class="back"><b>漂移</b><br/>陀螺仪的小偏差经积分不断累积。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">filtro de Kalman<small>Kalman filter</small></span><span class="back"><b>卡尔曼滤波</b><br/>预测 + 更新两步；更可信的数据权重更大。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">wearable</span><span class="back"><b>可穿戴设备</b><br/>随身携带，用于监测，或与系统交互、通信。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">mota<small>nodo de una WSN</small></span><span class="back"><b>无线传感节点</b><br/>典型的多传感器平台，如光照、温度、湿度。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GSR<small>galvanic skin response</small></span><span class="back"><b>皮肤电反应</b><br/>测皮肤电导率，可用来估计压力水平。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sensibilidad<small>sensitivity</small></span><span class="back"><b>灵敏度</b><br/>输出曲线的斜率 ΔY/ΔX，例如 229 mV/g。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">rango · FSR<small>full scale range</small></span><span class="back"><b>量程</b><br/>能测的最小值到最大值，例如 ±2 g。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">resolución<small>resolution</small></span><span class="back"><b>分辨率</b><br/>输出中能检测到的最小输入增量。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">precisión · exactitud<small>precision · accuracy</small></span><span class="back"><b>精密度 · 准确度</b><br/>重复读数是否一致 · 和真值最多差多少。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M22"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script>
+
+(function () {
+  var root = document.getElementById("pick");
+  if (!root) return;
+  var S = [
+    { q: "养老院的腕带要在老人<b>摔倒</b>时自动报警。", o: ["Magnetómetro", "Acelerómetro", "Sensor de gas", "Barómetro"], a: 1,
+      w: "acelerómetro 能检测 movimientos bruscos（caídas、golpes），也能测 roll、pitch 方向的倾斜（§4）。" },
+    { q: "手机的<b>电子罗盘</b>要知道你面朝哪个方向（yaw），而且手机常常斜着拿。", o: ["只用 acelerómetro", "Barómetro + termómetro", "Magnetómetro + acelerómetro", "Micrófono"], a: 2,
+      w: "磁力计测地磁场，可以当指南针；但一倾斜就不准，所以要融合加速度计测出倾角来校正（§4）。单靠加速度计测不了 yaw。" },
+    { q: "<b>无人机</b>悬停拍照，需要稳住飞行高度。", o: ["Sensor de presión barométrica", "Sensor de humedad", "Sensor inductivo", "GSR"], a: 0,
+      w: "无人机用气压传感器把气压换算成高度、稳住悬停，再配合加速度计和陀螺仪。（拓展内容）" },
+    { q: "可穿戴设备想估计用户的<b>压力水平</b>。", o: ["Magnetómetro", "Sensor inductivo", "Barómetro", "GSR（皮肤电导）"], a: 3,
+      w: "即使没有 EEG 或眼动追踪，也能用 GSR 这类传感器检测压力水平（§6）。GSR 在 §1 传感器表的 Señales biológicas 一行。" },
+    { q: "智慧城市：<b>没有车经过时</b>，路灯没必要一直亮着。", o: ["Sensor de humedad", "Sensor de movimiento（运动/存在）", "Giróscopo", "Sensor de gas"], a: 1,
+      w: "只需要在路灯里装一个 motion sensor，再加上能解读数据的标准基础设施。（拓展内容）" },
+    { q: "工厂：在<b>干净环境</b>的传送带上控制<b>纸箱</b>的位置。", o: ["Sensor inductivo", "Magnetómetro", "Sensor fotoeléctrico", "Termómetro"], a: 2,
+      w: "光电式能检测任何反光的材料，常用来控制传送带上纸箱的位置，适合无粉尘、无蒸汽的环境。电感式只能检测金属。" },
+    { q: "机床：检测<b>金属</b>刀具的位置，周围全是切削液和金属屑。", o: ["Sensor inductivo", "Sensor fotoeléctrico", "Micrófono", "Sensor de humedad"], a: 0,
+      w: "电感式只检测金属（1–40 mm），有用于恶劣、脏污环境的版本（最高 IP 68 / IP 69K）；光电式要求干净环境。" },
+    { q: "隔着<b>塑料罐壁</b>检测里面<b>粉末</b>的料位。", o: ["Sensor inductivo", "Giróscopo", "Sensor fotoeléctrico", "Sensor capacitivo"], a: 3,
+      w: "电容式能检测金属、非金属、液体、粉末，常用于料位控制，也能隔着非金属容器壁检测。" },
+    { q: "办公楼想监测<b>室内空气质量</b>（VOC，挥发性有机物）。", o: ["Micrófono", "Sensor de gas（MOx 化学电阻）", "Sensor inductivo", "Magnetómetro"], a: 1,
+      w: "现在的室内空气质量传感器多用 chemiresistor——电阻随周围化学环境变化的半导体，很多是金属氧化物（MOx）。§1 传感器表的 Ambiente 一行也有 gas。" }
+  ];
+  var i = 0, ans = S.map(function () { return null; });
+  var cnt = root.querySelector(".pick-n"), txt = root.querySelector(".pick-q"), opts = root.querySelector(".pick-o");
+  var fb = root.querySelector(".pick-fb"), sc = root.querySelector(".pick-score");
+  var prev = root.querySelector('[data-act="prev"]'), next = root.querySelector('[data-act="next"]'), rst = root.querySelector('[data-act="reset"]');
+  function render() {
+    var s = S[i];
+    cnt.textContent = "情景 " + (i + 1) + " / " + S.length;
+    txt.innerHTML = s.q;
+    opts.innerHTML = "";
+    s.o.forEach(function (o, k) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = o;
+      b.setAttribute("data-k", k);
+      if (ans[i] !== null) {
+        b.disabled = true;
+        if (k === s.a) b.classList.add("m22-right");
+        else if (k === ans[i]) b.classList.add("m22-wrong");
+      }
+      opts.appendChild(b);
+    });
+    if (ans[i] === null) {
+      fb.innerHTML = '<p class="aside">先选一个，再看解析。</p>';
+    } else {
+      fb.innerHTML = (ans[i] === s.a
+        ? '<span class="verdict ok">选对了</span>'
+        : '<span class="verdict no">正确答案：' + s.o[s.a] + "</span>") + "<p>" + s.w + "</p>";
+    }
+    prev.disabled = i === 0;
+    next.disabled = i === S.length - 1;
+    var done = 0, ok = 0;
+    ans.forEach(function (x, k) { if (x !== null) { done++; if (x === S[k].a) ok++; } });
+    sc.textContent = done === S.length ? "完成 · 答对 " + ok + " / " + S.length : "已答 " + done + " / " + S.length + " · 答对 " + ok;
+  }
+  opts.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-k]");
+    if (!b || ans[i] !== null) return;
+    ans[i] = +b.getAttribute("data-k");
+    render();
+  });
+  prev.addEventListener("click", function () { if (i > 0) { i--; render(); } });
+  next.addEventListener("click", function () { if (i < S.length - 1) { i++; render(); } });
+  rst.addEventListener("click", function () { ans = S.map(function () { return null; }); i = 0; render(); });
+  render();
+})();
+
+
+(function () {
+  var root = document.getElementById("fusim");
+  if (!root) return;
+  var svg = root.querySelector("svg");
+  var pTrue = svg.querySelector(".m22-true"), pAcc = svg.querySelector(".m22-acc");
+  var pGyr = svg.querySelector(".m22-gyr"), pFus = svg.querySelector(".m22-fus");
+  var inA = document.getElementById("fu-a"), outA = document.getElementById("fu-a-o");
+  var inB = document.getElementById("fu-b"), outB = document.getElementById("fu-b-o");
+  function E(k) { return root.querySelector('[data-e="' + k + '"]'); }
+  var DT = 0.02, N = 501;
+  var seed = 20221;
+  function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  function gauss() { var u = 1 - rnd(), v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  
+  var SEG = [[0, 1, 0, 0], [1, 1.5, 0, 45], [1.5, 4, 45, 45], [4, 7, 45, -20], [7, 7.5, -20, -20], [7.5, 8, -20, 15], [8, 99, 15, 15]];
+  function truth(t) {
+    for (var k = 0; k < SEG.length; k++) {
+      var s = SEG[k];
+      if (t < s[1]) {
+        var u = (t - s[0]) / (s[1] - s[0]);
+        return s[2] + (s[3] - s[2]) * u * u * (3 - 2 * u);
+      }
+    }
+    return 15;
+  }
+  var T = [], W = [], nA = [], nG = [], n;
+  for (n = 0; n < N; n++) T.push(truth(n * DT));
+  for (n = 0; n < N; n++) W.push(n === 0 ? 0 : (T[n] - T[n - 1]) / DT);
+  for (n = 0; n < N; n++) { nA.push(gauss() * 4); nG.push(gauss() * 1); }
+  function X(k) { return 50 + k * DT * 54; }
+  function Y(a) { return 210 - (Math.max(-40, Math.min(60, a)) + 40) * 1.9; }
+  function pts(arr) { return arr.map(function (v, k) { return X(k).toFixed(1) + "," + Y(v).toFixed(1); }).join(" "); }
+  function rms(arr) { var s = 0; for (var k = 0; k < N; k++) { var d = arr[k] - T[k]; s += d * d; } return Math.sqrt(s / N); }
+  pTrue.setAttribute("points", pts(T));
+  function run() {
+    var a = +inA.value, b = +inB.value;
+    outA.textContent = a.toFixed(2);
+    outB.textContent = b.toFixed(1);
+    var acc = [], gyr = [], fus = [], g = 0, f = 0;
+    for (var k = 0; k < N; k++) {
+      var am = T[k] + nA[k] + 0.12 * W[k];
+      var wm = W[k] + b + nG[k];
+      if (k > 0) {
+        g += wm * DT;
+        f = a * (f + wm * DT) + (1 - a) * am;
+      }
+      acc.push(am); gyr.push(g); fus.push(f);
+    }
+    pAcc.setAttribute("points", pts(acc));
+    pGyr.setAttribute("points", pts(gyr));
+    pFus.setAttribute("points", pts(fus));
+    E("acc").textContent = rms(acc).toFixed(1) + "°";
+    E("gyr").textContent = rms(gyr).toFixed(1) + "°";
+    E("fus").textContent = rms(fus).toFixed(1) + "°";
+    E("tau").textContent = a >= 1 ? "∞ · 只信陀螺仪" : (a <= 0 ? "0 · 只信 acc + mag" : (a * DT / (1 - a)).toFixed(2) + " s");
+  }
+  inA.addEventListener("input", run);
+  inB.addEventListener("input", run);
+  run();
+})();
+
+
+(function () {
+  var root = document.getElementById("dofb");
+  if (!root) return;
+  var btns = Array.prototype.slice.call(root.querySelectorAll("button[data-s]"));
+  var outN = root.querySelector(".dof-n"), outT = root.querySelector(".dof-t");
+  var MSG = {
+    "": "点上面的传感器，组合看看。",
+    "acc": "只有加速度计：能测 roll、pitch 的倾斜和突然的运动，测不了 yaw（§4）。",
+    "gyr": "只有陀螺仪：三个轴的转速都有，积分得角度，精确又快，但会漂移（§4）。",
+    "mag": "只有磁力计：能当指南针给出 yaw，但一倾斜就不准（§4）。",
+    "acc+mag": "<b>e-compass · brújula digital</b>：最基本的传感器融合例子，也叫 sensor de orientación 3D——三轴都有，但噪声大，快速转动时不灵。",
+    "acc+gyr": "<b>6-DoF</b>：例如 Bosch BHI360 或 BMI088。按 §5 的定义它还缺磁力计：yaw 只能靠陀螺仪积分，会漂移（下面的提醒说明了另一种叫法）。",
+    "gyr+mag": "6 轴的组合：没有加速度计，就缺少对 roll、pitch 的长期参考。",
+    "acc+gyr+mag": "<b>9 轴 · 9-DoF · IMU</b>：§5 定义的 IMU，三类传感器都有，融合后得到完整的空间姿态。nine-axis system 也就是 9-DoF。",
+    "acc+gyr+mag+bar+tem+luz": "<b>12 轴</b>：Freescale 2012 年推出的 12-axis Xtrinsic 平台 = 9 轴 + 气压计 + 温度计 + 环境光，由一颗 32 位 MCU 做融合。"
+  };
+  function upd() {
+    var on = btns.filter(function (b) { return b.getAttribute("aria-pressed") === "true"; });
+    var key = on.map(function (b) { return b.getAttribute("data-s"); }).join("+");
+    var ax = on.reduce(function (s, b) { return s + +b.getAttribute("data-ax"); }, 0);
+    outN.textContent = ax + " 轴";
+    var t = MSG[key];
+    if (!t) {
+      var has = function (s) { return key.split("+").indexOf(s) >= 0; };
+      if (has("acc") && has("gyr") && has("mag")) {
+        t = "完整的 9 轴 IMU，另加 " + (ax - 9) + " 个辅助传感器。三个辅助传感器都加上，就是 2012 年 Xtrinsic 的 12 轴平台。";
+      } else if (!has("acc") && !has("gyr") && !has("mag")) {
+        t = "这些不是惯性传感器：气压计可换算高度；温度计常用来做温度补偿（精确的气压读数需要测温）；光传感器测环境光。";
+      } else {
+        t = ax + " 轴的组合。要得到完整姿态，需要加速度计、陀螺仪、磁力计三类都有。";
+      }
+    }
+    outT.innerHTML = t;
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      upd();
+    });
+  });
+  upd();
+})();
+
+
+(function () {
+  var root = document.getElementById("calc");
+  if (!root) return;
+  function $(id) { return document.getElementById(id); }
+  var SEN = { 2: 229.0, 4: 114.5, 8: 57.25, 16: 28.62 };            
+  var SENS = { 2: "229.0", 4: "114.5", 8: "57.25", 16: "28.62" };
+  var FIG4 = { 2: [0.521, 0.750, 0.979], 8: [0.693, 0.750, 0.807], 4: [0.636, 0.750, 0.865], 16: [0.722, 0.750, 0.779] };
+  var PN = { "8361": { f: 1, hb: false }, "8362": { f: 2, hb: false }, "8371": { f: 1, hb: true }, "8372": { f: 2, hb: true } };
+  var V0 = 0.75, VBYP = 1.5;
+  var line = root.querySelector(".m22-tf"), pt = root.querySelector(".m22-pt");
+  var ticks = Array.prototype.slice.call(root.querySelectorAll("[data-tick]"));
+  function range() {
+    var p = PN[$("c-pn").value], hi = $("c-gs").value === "1";
+    return p.f === 1 ? (hi ? 2 : 8) : (hi ? 4 : 16);
+  }
+  function sg(x, d) { return (x < 0 ? "−" : "+") + Math.abs(x).toFixed(d); }
+  function trim(x) { return String(parseFloat(x.toFixed(5))); }
+  function X(a, g) { return 300 + (a / g) * 230; }
+  function Y(v) { return 200 - (v - 0.2) / 1.1 * 180; }
+  function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+  function upd() {
+    var pn = $("c-pn").value, p = PN[pn], g = range(), sv = SEN[g] / 1000;
+    var v = parseFloat($("c-v").value), nb = +$("c-n").value, vdd = parseFloat($("c-vdd").value);
+    var full = g * sv;
+
+    $("r-cfg").textContent = "±" + g + " g";
+    $("r-cfg-f").innerHTML = "FXLN" + pn + "Q · " + (p.hb
+      ? "High BW：XY 2.7 kHz / Z 600 Hz；噪声密度 XY 200 / Z 280 µg/√Hz"
+      : "Low BW：XY 1.1 kHz / Z 600 Hz；噪声密度 XY 130 / Z 200 µg/√Hz");
+
+    var cal = VBYP / (3.276 * g) * 1000;
+    $("r-sen").textContent = SENS[g] + " mV/g";
+    $("r-sen-f").innerHTML = "datasheet 的 SEN。校准公式 V<sub>BYP</sub>/(3.276·gRange) = 1.5 / (3.276 × " + g + ") = " + cal.toFixed(2) + " mV/g" +
+      (g === 2 ? "；校准误差 ±5 %" : g === 4 ? "；校准误差 ±6 %" : "；这一档的误差表中未给出");
+
+    ticks.forEach(function (t) {
+      var k = parseFloat(t.getAttribute("data-tick")), val = k * g;
+      t.textContent = val === 0 ? "0" : sg(val, 0);
+    });
+    line.setAttribute("y1", Y(V0 - full).toFixed(1));
+    line.setAttribute("y2", Y(V0 + full).toFixed(1));
+
+    if (!isFinite(v)) {
+      $("r-acc").textContent = "—";
+      $("r-acc-f").textContent = "请输入电压。";
+      $("r-tilt").textContent = "—";
+      $("r-tilt-f").textContent = "";
+      pt.setAttribute("r", "0");
+    } else {
+      var a = (v - V0) / sv;
+      var sat = Math.abs(v - V0) > full + 1e-9;
+      $("r-acc").textContent = sat ? (v > V0 ? "≥ +" : "≤ −") + g + " g" : sg(a, 3) + " g";
+      $("r-acc-f").innerHTML = "a = (V<sub>OUT</sub> − 0.75 V) / SEN = (" + v.toFixed(3) + " − 0.750) / " + trim(sv) + " V/g = " + sg(a, 3) + " g ≈ " + sg(a * 9.81, 2) + " m/s²。满量程输出 " +
+        (V0 - full).toFixed(3) + "–" + (V0 + full).toFixed(3) + " V（0.75 V ± FSR × SEN）" +
+        (sat ? '<br><span class="m22-warn">读数超出满量程输出：传感器已饱和，真实加速度可能更大，应换更大的量程。</span>' : "");
+      if (sat || Math.abs(a) > 1) {
+        $("r-tilt").textContent = "—";
+        $("r-tilt-f").innerHTML = "|a| &gt; 1 g：除了重力还有运动加速度，不能直接当倾角。";
+      } else {
+        $("r-tilt").textContent = sg(Math.asin(a) * 180 / Math.PI, 1) + "°";
+        $("r-tilt-f").innerHTML = "静止、只受重力时：θ = arcsin(a / 1 g) = arcsin(" + a.toFixed(3) + ")。";
+      }
+      pt.setAttribute("r", "6");
+      pt.setAttribute("cx", X(clamp(a, -g, g), g).toFixed(1));
+      pt.setAttribute("cy", Y(clamp(v, 0.2, 1.3)).toFixed(1));
+    }
+
+    var lsb = VBYP / Math.pow(2, nb), resg = lsb / sv * 1000;
+    $("r-res").textContent = resg.toPrecision(3) + " mg";
+    $("r-res-f").innerHTML = "LSB = 1.5 V / 2<sup>" + nb + "</sup> = " + (lsb * 1000).toPrecision(3) + " mV；LSB / SEN = " + resg.toPrecision(3) + " mg（假设 V<sub>ref</sub> = V<sub>BYP</sub>；噪声可能比它还大）";
+
+    if (!isFinite(vdd)) {
+      $("r-pwr").textContent = "—";
+      $("r-pwr-f").textContent = "请输入 VDD。";
+    } else {
+      $("r-pwr").textContent = (vdd * 180).toFixed(0) + " µW";
+      $("r-pwr-f").innerHTML = "P = V<sub>DD</sub> × I<sub>DD</sub> = " + vdd.toFixed(2) + " V × 180 µA；关断（EN 低电平）：" + vdd.toFixed(2) + " V × 30 nA = " + (vdd * 30).toFixed(0) + " nW" +
+        (vdd < 1.71 || vdd > 3.6 ? '<br><span class="m22-warn">超出 1.71–3.6 V 的工作范围；绝对最大值是 3.6 V。</span>' : "");
+    }
+  }
+  ["c-pn", "c-gs", "c-v", "c-n", "c-vdd"].forEach(function (id) {
+    $(id).addEventListener("input", upd);
+    $(id).addEventListener("change", upd);
+  });
+  Array.prototype.slice.call(root.querySelectorAll("button[data-g]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      $("c-v").value = FIG4[range()][+b.getAttribute("data-g")].toFixed(3);
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

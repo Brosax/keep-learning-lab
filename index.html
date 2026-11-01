@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-lang="zh" data-base="./">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOTES // 互动图解与个人知识库 — Interactive Visual Notes &amp; Archive</title>
+<meta name="description" content="个人互动图解与技术知识分享平台：通过可交互的 SVG 仿真画布、时序推演与随堂练习，拆解微控制器、嵌入式系统、物联网架构与工程数学。支持中英切换与 Google 云端进度同步。">
+<script src="sync.js" data-api="api/progress/" data-home="./" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F2EC;
+  --bg-elev: #FAF9F5;
+  --bg-cell: #F7F5F0;
+  --bg-hover: #EFECE4;
+  --ink: #121316;
+  --ink-2: #373A40;
+  --muted: #686C73;
+  --line: #D5D0C5;
+  --line-strong: #121316;
+  --accent: #D84315;
+  --accent-soft: rgba(216, 67, 21, 0.10);
+  --blue: #1D5B9E;
+  --blue-soft: rgba(29, 91, 158, 0.10);
+  --green: #1E7E48;
+  --green-soft: rgba(30, 126, 72, 0.11);
+  --amber: #B86B11;
+  --f-display: "Space Grotesk", "Noto Sans SC", system-ui, sans-serif;
+  --f-sans: "Plus Jakarta Sans", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", "Noto Sans SC", ui-monospace, monospace;
+}
+
+html[data-theme="dark"] {
+  --bg: #111316;
+  --bg-elev: #171A1E;
+  --bg-cell: #14171B;
+  --bg-hover: #1C2026;
+  --ink: #ECEAE4;
+  --ink-2: #B8B5AD;
+  --muted: #82868E;
+  --line: #2A2E35;
+  --line-strong: #ECEAE4;
+  --accent: #FF6438;
+  --accent-soft: rgba(255, 100, 56, 0.14);
+  --blue: #5CA0F2;
+  --blue-soft: rgba(92, 160, 242, 0.14);
+  --green: #4CC382;
+  --green-soft: rgba(76, 195, 130, 0.14);
+  --amber: #E59A3C;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; color: inherit; }
+
+/* ---------- SWISS OUTER SHELL ---------- */
+.swiss-page {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 20px 64px;
+}
+
+/* ---------- STICKY TOPBAR ---------- */
+.sw-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--line-strong);
+}
+.sw-topbar-inner {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 20px;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.sw-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+.sw-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  background: var(--line-strong);
+  color: var(--bg);
+  font: 700 13px/1 var(--f-mono);
+  letter-spacing: 0.06em;
+}
+.sw-brand-mark svg {
+  width: 13px;
+  height: 13px;
+}
+.sw-brand-sub {
+  font: 600 12.5px/1.2 var(--f-mono);
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.sw-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.sw-nav a {
+  padding: 6px 10px;
+  font: 600 12px/1 var(--f-mono);
+  color: var(--ink-2);
+  border: 1px solid transparent;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.sw-nav a:hover {
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--bg-elev);
+}
+.sw-nav a .num {
+  color: var(--accent);
+  margin-right: 4px;
+}
+.sw-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sw-btn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  font: 600 11.5px/1 var(--f-mono);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.sw-btn-chip:hover {
+  border-color: var(--line-strong);
+}
+.sw-btn-chip kbd {
+  font: 600 10px/1 var(--f-mono);
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+}
+.sw-lang-group {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+}
+.sw-lang-btn {
+  padding: 6px 9px;
+  border: 0;
+  background: transparent;
+  font: 700 11px/1 var(--f-mono);
+  color: var(--muted);
+  cursor: pointer;
+}
+.sw-lang-btn.active {
+  background: var(--line-strong);
+  color: var(--bg);
+}
+.sw-sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  font: 600 11px/1 var(--f-mono);
+  color: var(--ink-2);
+}
+.sw-sync-pill:hover {
+  border-color: var(--line-strong);
+}
+.sw-sync-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.sw-sync-pill[data-state="ok"] .sw-sync-dot { background: var(--green); }
+.sw-sync-pill[data-state="busy"] .sw-sync-dot { background: var(--amber); }
+.sw-sync-pill[data-state="err"] .sw-sync-dot { background: var(--accent); }
+
+/* ---------- SWISS ARCHITECTURAL FRAME ---------- */
+.sw-frame {
+  margin-top: 22px;
+  border: 2px solid var(--line-strong);
+  background: var(--bg-cell);
+}
+
+/* ---------- HERO 2-COLUMN ASYMMETRIC GRID ---------- */
+.sw-hero {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  border-bottom: 2px solid var(--line-strong);
+}
+.sw-hero-main {
+  padding: 36px 38px 34px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 26px;
+}
+.sw-eyebrow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sw-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 11.5px/1.2 var(--f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.sw-eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  display: inline-block;
+}
+.sw-edition-tag {
+  font: 600 11px/1 var(--f-mono);
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--muted);
+}
+.sw-hero-title {
+  margin: 14px 0 14px;
+  font: 800 clamp(27px, 3.3vw, 42px)/1.14 var(--f-display);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+.sw-hero-sub {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.68;
+  color: var(--ink-2);
+  max-width: 66ch;
+}
+.sw-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--bg-elev);
+}
+.sw-metric-cell {
+  padding: 13px 15px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sw-metric-k {
+  font: 600 10.5px/1.2 var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.sw-metric-v {
+  margin-top: 5px;
+  font: 700 23px/1.1 var(--f-display);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.sw-metric-v small {
+  font: 600 11.5px/1 var(--f-mono);
+  color: var(--accent);
+  margin-left: 4px;
+}
+
+/* ---------- RIGHT HERO CELL: READING INDEX & RESUME ---------- */
+.sw-hero-side {
+  padding: 28px 30px;
+  background: var(--bg-elev);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+.sw-side-hd {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+}
+.sw-side-lbl {
+  font: 700 11px/1.2 var(--f-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sw-side-stat {
+  font: 600 11.5px/1 var(--f-mono);
+  color: var(--ink-2);
+}
+.sw-big-readout {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.sw-big-pct {
+  font: 700 48px/1 var(--f-display);
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.sw-series-bars {
+  display: grid;
+  gap: 8px;
+}
+.sw-sbar-row {
+  display: grid;
+  grid-template-columns: 74px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+  font: 600 11.5px/1 var(--f-mono);
+}
+.sw-sbar-code {
+  color: var(--ink);
+}
+.sw-sbar-track {
+  height: 6px;
+  background: var(--line);
+  overflow: hidden;
+}
+.sw-sbar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+.sw-sbar-val {
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.sw-resume-box {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  background: var(--bg-cell);
+  display: grid;
+  gap: 8px;
+}
+.sw-resume-tag {
+  font: 700 10.5px/1 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.sw-resume-title {
+  font: 700 13.5px/1.35 var(--f-sans);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sw-resume-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sw-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  background: var(--line-strong);
+  color: var(--bg);
+  font: 700 12px/1 var(--f-mono);
+  letter-spacing: 0.03em;
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sw-btn-primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.sw-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 11.5px/1 var(--f-mono);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.sw-btn-ghost:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-hover);
+}
+
+/* ---------- CONTROL BAR: CATEGORY FILTER + SEARCH + DENSITY ---------- */
+.sw-control-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 24px;
+  border-bottom: 2px solid var(--line-strong);
+  background: var(--bg-elev);
+}
+.sw-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sw-filter-tab {
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  background: var(--bg-cell);
+  font: 600 11.5px/1 var(--f-mono);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all 0.14s;
+}
+.sw-filter-tab:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.sw-filter-tab.active {
+  background: var(--line-strong);
+  color: var(--bg);
+  border-color: var(--line-strong);
+}
+.sw-search-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sw-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.sw-search-input {
+  width: 260px;
+  padding: 7px 54px 7px 11px;
+  border: 1px solid var(--line);
+  background: var(--bg-cell);
+  font: 500 12.5px/1.2 var(--f-sans);
+  color: var(--ink);
+}
+.sw-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.sw-search-clear {
+  position: absolute;
+  right: 7px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  font: 600 10px/1 var(--f-mono);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* ---------- SECTION HEADER BAND ---------- */
+.sw-sec-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 24px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  font: 700 12px/1.2 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sw-sec-band-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.sw-sec-num {
+  padding: 3px 7px;
+  background: var(--line-strong);
+  color: var(--bg);
+  font: 700 11px/1 var(--f-mono);
+}
+.sw-sec-band-right {
+  font: 500 11.5px/1.2 var(--f-mono);
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ---------- 01 // INTERACTIVE VISUAL SERIES STRIPS ---------- */
+.sw-series-strip {
+  display: grid;
+  grid-template-columns: 230px 1.1fr 1.65fr;
+  border-bottom: 2px solid var(--line-strong);
+  background: var(--bg-cell);
+}
+.sw-series-strip[hidden] {
+  display: none !important;
+}
+.sw-series-col-idx {
+  padding: 26px 24px;
+  border-right: 1px solid var(--line);
+  background: var(--bg-elev);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+.sw-giant-num {
+  font: 700 54px/0.92 var(--f-display);
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+.sw-series-code-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font: 700 12px/1 var(--f-mono);
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+.sw-spec-list {
+  display: grid;
+  gap: 7px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font: 500 11.5px/1.3 var(--f-mono);
+}
+.sw-spec-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+}
+.sw-spec-item strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.sw-series-col-info {
+  padding: 26px 28px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+.sw-series-domain {
+  font: 600 11px/1.2 var(--f-mono);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sw-series-title {
+  margin: 8px 0 6px;
+  font: 800 23px/1.22 var(--f-display);
+  color: var(--ink);
+}
+.sw-series-sub {
+  margin: 0 0 12px;
+  font: 600 13px/1.4 var(--f-mono);
+  color: var(--accent);
+}
+.sw-series-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+.sw-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.sw-tag {
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  font: 500 11px/1.2 var(--f-mono);
+  color: var(--ink-2);
+}
+.sw-series-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- CHAPTER MATRIX (COL 3) ---------- */
+.sw-series-col-chaps {
+  padding: 20px 22px;
+  background: var(--bg-cell);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sw-chaps-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font: 700 11px/1.2 var(--f-mono);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sw-unit-group {
+  display: grid;
+  gap: 6px;
+}
+.sw-unit-title {
+  font: 700 11px/1.3 var(--f-mono);
+  color: var(--ink-2);
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.sw-chap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 7px;
+}
+.sw-chap-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  transition: border-color 0.14s, transform 0.14s, background 0.14s;
+}
+.sw-chap-cell:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+.sw-chap-cell.done {
+  border-left: 3px solid var(--green);
+}
+.sw-chap-cell.started {
+  border-left: 3px solid var(--accent);
+}
+.sw-chap-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font: 700 11px/1 var(--f-mono);
+}
+.sw-chap-code {
+  color: var(--accent);
+}
+.sw-chap-prog {
+  font: 600 10.5px/1 var(--f-mono);
+  color: var(--muted);
+}
+.sw-chap-cell.done .sw-chap-prog {
+  color: var(--green);
+}
+.sw-chap-name {
+  font: 600 12.5px/1.35 var(--f-sans);
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sw-chap-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 10px/1 var(--f-mono);
+  color: var(--muted);
+}
+
+/* ---------- 02 // STANDALONE TOOLS & FIELD NOTES BENTO GRID ---------- */
+.sw-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 2px solid var(--line-strong);
+  background: var(--bg-elev);
+}
+.sw-tool-card {
+  padding: 22px 20px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  transition: background 0.15s;
+}
+.sw-tool-card:last-child {
+  border-right: 0;
+}
+.sw-tool-card:hover {
+  background: var(--bg-hover);
+}
+.sw-tool-card.extensible {
+  background: var(--bg-cell);
+  border-left: 1px dashed var(--line);
+}
+.sw-tool-code {
+  font: 700 11px/1 var(--f-mono);
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.sw-tool-cat {
+  display: inline-block;
+  margin-top: 4px;
+  font: 600 10.5px/1.2 var(--f-mono);
+  color: var(--muted);
+}
+.sw-tool-title {
+  margin: 8px 0 6px;
+  font: 700 16px/1.3 var(--f-display);
+  color: var(--ink);
+}
+.sw-tool-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.58;
+  color: var(--ink-2);
+}
+.sw-tool-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font: 700 11.5px/1 var(--f-mono);
+  color: var(--ink);
+}
+.sw-tool-card:hover .sw-tool-foot {
+  color: var(--accent);
+}
+
+/* ---------- 03 // CHANGELOG & RECENT UPDATES ---------- */
+.sw-log-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 2px solid var(--line-strong);
+  background: var(--bg-cell);
+}
+.sw-log-cell {
+  padding: 20px 24px;
+  border-right: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.sw-log-cell:last-child {
+  border-right: 0;
+}
+.sw-log-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font: 700 11px/1 var(--f-mono);
+}
+.sw-log-date {
+  color: var(--accent);
+}
+.sw-log-tag {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--muted);
+}
+.sw-log-title {
+  margin: 2px 0 0;
+  font: 700 15px/1.35 var(--f-display);
+  color: var(--ink);
+}
+.sw-log-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+/* ---------- 04 // CLOUD SYNC & BACKUP ---------- */
+.sw-sync-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  background: var(--bg-elev);
+}
+.sw-sync-cell {
+  padding: 26px 28px;
+  border-right: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.sw-sync-cell:last-child {
+  border-right: 0;
+}
+.sw-sync-title {
+  margin: 0;
+  font: 700 17px/1.3 var(--f-display);
+  color: var(--ink);
+}
+.sw-sync-desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.sw-sync-status-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  background: var(--bg-cell);
+  font: 600 12px/1.3 var(--f-mono);
+  color: var(--ink-2);
+}
+.sw-sync-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* ---------- FOOTER ---------- */
+.sw-footer {
+  margin-top: 20px;
+  padding: 16px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font: 500 12px/1.4 var(--f-mono);
+  color: var(--muted);
+}
+.sw-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.sw-footer-links a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1120px) {
+  .sw-hero { grid-template-columns: 1fr; }
+  .sw-hero-main { border-right: 0; border-bottom: 1px solid var(--line); }
+  .sw-series-strip { grid-template-columns: 1fr; }
+  .sw-series-col-idx, .sw-series-col-info { border-right: 0; border-bottom: 1px solid var(--line); }
+  .sw-tools-grid { grid-template-columns: repeat(2, 1fr); }
+  .sw-tool-card { border-bottom: 1px solid var(--line); }
+  .sw-log-grid { grid-template-columns: 1fr; }
+  .sw-log-cell { border-right: 0; border-bottom: 1px solid var(--line); }
+  .sw-sync-grid { grid-template-columns: 1fr; }
+  .sw-sync-cell { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 680px) {
+  .swiss-page { padding: 0 12px 44px; }
+  .sw-hero-main, .sw-hero-side { padding: 22px 18px; }
+  .sw-metrics { grid-template-columns: repeat(2, 1fr); }
+  .sw-control-bar { grid-template-columns: 1fr; padding: 12px 16px; }
+  .sw-search-input { width: 100%; }
+  .sw-tools-grid { grid-template-columns: 1fr; }
+  .sw-nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="sw-topbar">
+  <div class="sw-topbar-inner">
+    <a class="sw-brand" href="#top">
+      <span class="sw-brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>NOTES //</span>
+      </span>
+      <span class="sw-brand-sub" id="ui-brand-sub">互动图解与个人知识库</span>
+    </a>
+
+    <nav class="sw-nav" aria-label="Primary sections">
+      <a href="#series"><span class="num">01</span><span id="nav-series">互动图解系列</span></a>
+      <a href="#tools"><span class="num">02</span><span id="nav-tools">独立工具与随笔</span></a>
+      <a href="#changelog"><span class="num">03</span><span id="nav-log">更新日志</span></a>
+      <a href="#sync"><span class="num">04</span><span id="nav-sync">云端同步</span></a>
+    </nav>
+
+    <div class="sw-tools">
+      <button type="button" class="sw-btn-chip" id="btn-focus-search" title="Search chapters &amp; tools (/)">
+        <span id="ui-search-btn-lbl">检索</span> <kbd>/</kbd>
+      </button>
+      <div class="sw-lang-group" role="group" aria-label="Language switch">
+        <button type="button" class="sw-lang-btn active" data-lang-btn="zh">中文</button>
+        <button type="button" class="sw-lang-btn" data-lang-btn="en">EN</button>
+      </div>
+      <button type="button" class="sw-btn-chip" id="btn-theme" title="Toggle Light / Dark Theme">
+        <span id="theme-icon">☀ / ☾</span>
+      </button>
+      <a class="sw-sync-pill" id="top-sync-pill" href="#sync" data-state="off">
+        <span class="sw-sync-dot"></span>
+        <span id="top-sync-lbl">本地模式</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="swiss-page" id="top">
+  <div class="sw-frame">
+
+    <!-- HERO SECTION -->
+    <section class="sw-hero">
+      <div class="sw-hero-main">
+        <div>
+          <div class="sw-eyebrow-row">
+            <span class="sw-eyebrow" id="hero-eyebrow">INDEX // 01 — INTERACTIVE VISUAL NOTES &amp; PERSONAL ARCHIVE</span>
+            <span class="sw-edition-tag" id="hero-edition">SWISS GRID EDITION · ZH / EN</span>
+          </div>
+          <h1 class="sw-hero-title" id="hero-title">把复杂概念拆解为可拨动、可推演的互动图解。</h1>
+          <p class="sw-hero-sub" id="hero-sub">这是一个持续生长的个人知识库与交互式笔记空间。不局限于单一学科：从底层微控制器时序、操作系统内核机制、传感器与网络架构，到独立的交互式仿真小工具与跨领域读书随笔，每一篇笔记都力求用可动手调节的动态几何画布代替静态公式。</p>
+        </div>
+
+        <div class="sw-metrics" id="hero-metrics">
+          <div class="sw-metric-cell">
+            <div class="sw-metric-k" id="mk-series">互动专题系列</div>
+            <div class="sw-metric-v"><span id="mv-series">03</span><small>SERIES</small></div>
+          </div>
+          <div class="sw-metric-cell">
+            <div class="sw-metric-k" id="mk-chaps">已归档长篇笔记</div>
+            <div class="sw-metric-v"><span id="mv-chaps">28</span><small>NOTES</small></div>
+          </div>
+          <div class="sw-metric-cell">
+            <div class="sw-metric-k" id="mk-scenes">可交互推演画布</div>
+            <div class="sw-metric-v"><span id="mv-scenes">88</span><small>CANVASES</small></div>
+          </div>
+          <div class="sw-metric-cell">
+            <div class="sw-metric-k" id="mk-nodes">核心知识节点</div>
+            <div class="sw-metric-v"><span id="mv-nodes">168</span><small>NODES</small></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sw-hero-side" aria-label="Reading progress and quick resume">
+        <div>
+          <div class="sw-side-hd">
+            <span class="sw-side-lbl" id="side-hd-lbl">READING INDEX // 阅读与掌握进度</span>
+            <span class="sw-side-stat" id="side-hd-stat">0 / 168</span>
+          </div>
+          <div class="sw-big-readout" style="margin-top:12px;">
+            <div class="sw-big-pct" id="side-big-pct">0%</div>
+            <div style="text-align:right;font:500 11.5px/1.4 var(--f-mono);color:var(--muted);" id="side-sync-hint">
+              自动保存在浏览器本地<br>支持 Google 云端多端合并
+            </div>
+          </div>
+        </div>
+
+        <div class="sw-series-bars" id="side-series-bars"></div>
+
+        <div class="sw-resume-box">
+          <span class="sw-resume-tag" id="resume-tag">CONTINUE READING // 最近阅读轨迹</span>
+          <div class="sw-resume-title" id="resume-title">01 / MICRO · M1.1 微控制器概览与内部架构</div>
+          <div class="sw-resume-actions">
+            <a class="sw-btn-primary" id="resume-btn" href="zh/micro/m1-1.html">继续阅读 →</a>
+            <a class="sw-btn-ghost" href="#tools" id="resume-tools-btn">独立小工具 ↓</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- FILTER & SEARCH BAR -->
+    <div class="sw-control-bar">
+      <div class="sw-filter-tabs" id="domain-tabs" role="tablist" aria-label="Domain filter">
+        <button type="button" class="sw-filter-tab active" data-domain="all" id="tab-all">全部 ALL</button>
+        <button type="button" class="sw-filter-tab" data-domain="hardware" id="tab-hw">硬件与底层 HARDWARE</button>
+        <button type="button" class="sw-filter-tab" data-domain="systems" id="tab-sys">系统与并发 SYSTEMS</button>
+        <button type="button" class="sw-filter-tab" data-domain="iot" id="tab-iot">物联网与架构 IOT</button>
+        <button type="button" class="sw-filter-tab" data-domain="tools" id="tab-tools">独立工具 TOOLS</button>
+      </div>
+
+      <div class="sw-search-controls">
+        <div class="sw-search-wrap">
+          <input type="search" class="sw-search-input" id="search-input" placeholder="检索篇章、外设、算法或工具 (按 / 聚焦)…">
+          <button type="button" class="sw-search-clear" id="search-clear" hidden>ESC</button>
+        </div>
+        <button type="button" class="sw-btn-ghost" id="btn-group-mode" title="Toggle Unit Grouping vs Flat Matrix">
+          <span id="group-mode-lbl">视图：按单元分组</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 01 // INTERACTIVE VISUAL SERIES -->
+    <div class="sw-sec-band" id="series">
+      <div class="sw-sec-band-left">
+        <span class="sw-sec-num">01</span>
+        <span id="sec01-title">INTERACTIVE VISUAL SERIES // 长篇互动图解系列</span>
+      </div>
+      <div class="sw-sec-band-right" id="sec01-sub">点击任意篇章直接进入交互画布，进度实时同步</div>
+    </div>
+
+    <div id="series-container"></div>
+
+    <!-- 02 // STANDALONE TOOLS & FIELD NOTES -->
+    <div class="sw-sec-band" id="tools">
+      <div class="sw-sec-band-left">
+        <span class="sw-sec-num">02</span>
+        <span id="sec02-title">STANDALONE TOOLS &amp; FIELD NOTES // 独立仿真工具与技术随笔</span>
+      </div>
+      <div class="sw-sec-band-right" id="sec02-sub">无需按章节顺序，即点即用的交互式工程计算器与专题短文</div>
+    </div>
+
+    <section class="sw-tools-grid" id="tools-container" aria-label="Standalone interactive tools"></section>
+
+    <!-- 03 // RECENT UPDATES & CHANGELOG -->
+    <div class="sw-sec-band" id="changelog">
+      <div class="sw-sec-band-left">
+        <span class="sw-sec-num">03</span>
+        <span id="sec03-title">RECENT UPDATES // 知识库近期更新日志</span>
+      </div>
+      <div class="sw-sec-band-right" id="sec03-sub">持续迭代的互动图解、工具与双语修订记录</div>
+    </div>
+
+    <section class="sw-log-grid" id="log-container" aria-label="Recent updates"></section>
+
+    <!-- 04 // CLOUD SYNC & BACKUP -->
+    <div class="sw-sec-band" id="sync">
+      <div class="sw-sec-band-left">
+        <span class="sw-sec-num">04</span>
+        <span id="sec04-title">CLOUD SYNC &amp; LOCAL ARCHIVE // 跨设备云同步与本地 JSON 备份</span>
+      </div>
+      <div class="sw-sec-band-right" id="sec04-sub">零门槛本地存储 + 可选 Google 账号多端合并</div>
+    </div>
+
+    <section class="sw-sync-grid" aria-label="Cloud sync and JSON backup">
+      <div class="sw-sync-cell">
+        <h2 class="sw-sync-title" id="sync-col1-title">Google 账号跨设备自动同步</h2>
+        <p class="sw-sync-desc" id="sync-col1-desc">未登录时，所有笔记掌握标记、自测记录与最近阅读轨迹均保存在当前浏览器 localStorage。登录 Google 账号后，系统按毫秒级时间戳自动与云端合并，在电脑、平板与手机间无缝接力。</p>
+        <div class="sw-sync-status-line" id="sync-status-box">
+          <span class="sw-sync-dot" id="sync-box-dot"></span>
+          <span id="sync-status-txt">当前状态：本地笔记模式（未连接云端账号）</span>
+        </div>
+        <div class="sw-sync-actions">
+          <div id="google-btn-slot"></div>
+          <button type="button" class="sw-btn-ghost" id="btn-sync-now" hidden>立即同步 ↻</button>
+          <button type="button" class="sw-btn-ghost" id="btn-sign-out" hidden>退出账号</button>
+        </div>
+      </div>
+
+      <div class="sw-sync-cell">
+        <h2 class="sw-sync-title" id="sync-col2-title">离线 JSON 快照导出与恢复</h2>
+        <p class="sw-sync-desc" id="sync-col2-desc">喜欢纯本地管理数据？你可以随时将所有专题与章节的阅读进度打包导出为单个标准 `.json` 文件保存，或在更换浏览器时一键导入合并。</p>
+        <div class="sw-sync-actions" style="margin-top:8px;">
+          <button type="button" class="sw-btn-primary" id="btn-export-json">导出进度快照 (.json)</button>
+          <label class="sw-btn-ghost" style="cursor:pointer;">
+            <span id="lbl-import-json">导入备份文件…</span>
+            <input type="file" id="inp-import-json" accept="application/json,.json" hidden>
+          </label>
+        </div>
+        <div id="backup-msg" style="font:600 11.5px/1.4 var(--f-mono);color:var(--green);min-height:18px;"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="sw-footer">
+    <div>
+      <strong>NOTES //</strong> <span id="foot-copy">互动图解与个人知识库 · Swiss International Grid Edition</span>
+    </div>
+    <div class="sw-footer-links">
+      <a href="zh/micro/index.html">01 / MICRO</a>
+      <a href="zh/emp/index.html">02 / EMP (ZH)</a>
+      <a href="en/emp/index.html">02 / EMP (EN)</a>
+      <a href="zh/ei/index.html">03 / EI</a>
+      <a href="#sync" id="foot-sync-link">云端同步</a>
+    </div>
+  </footer>
+</main>
+
+<script id="catalog-data" type="application/json">{"platform": {"brand": "NOTES //", "title": "互动图解与个人知识库", "en_title": "Interactive Visual Notes & Personal Knowledge Archive", "subtitle": "把复杂机制拆成一步一图的互动笔记", "en_subtitle": "Step-by-step interactive diagrams, technical notes, and standalone tools", "updated": "2026.11"}, "published": [{"code": "MICRO", "slug": "micro", "es": "Microcontroladores", "zh_title": "微控制器底层机制：MSP430 与 ESP32-S3", "en_title": "Microcontroller Internals: TI MSP430 & ESP32-S3", "track": "hw", "track_label": "硬件与底层架构", "en_track_label": "Hardware & Bare-Metal", "badge": "已完结 · 12 篇", "en_badge": "Complete · 12 Ch.", "featured_order": 1, "accent": "#DF3B1E", "accent_dark": "#FF5636", "soft": "#F5E6E2", "soft_dark": "#2A1815", "band": "stage", "summary": "以 TI MSP430F5529 为主线、ESP32-S3 为拓展，用分步交互动画把 CPU 内存模型、GPIO 轮询、中断响应 8 步链路、UCS 时钟树与 FLL、LPM 低功耗唤醒、Timer_A/PWM 以及 UART 调制机制一步步画出来。", "en_summary": "Centered on TI MSP430F5529 and extended to ESP32-S3. Uses step-by-step interactive animations to visualize the CPU & memory map, GPIO polling, 8-step interrupt lifecycle, UCS clock tree & FLL, LPM low-power wakeup, Timer_A/PWM, and USCI baud-rate modulation.", "tags": ["MSP430F5529", "ESP32-S3", "GPIO 与中断", "时钟与低功耗", "Timer_A / PWM", "UART / SPI / I2C"], "en_tags": ["MSP430F5529", "ESP32-S3", "GPIO & Interrupts", "UCS Clocks & LPM", "Timer_A & PWM", "UART / SPI / I2C"], "en_chapters": {"M11": "CPU architecture, 16-bit registers (PC/SP/SR), unified memory map, and little-endian byte order", "M12": "Bitwise C idioms, volatile registers, MSP430F5529 LaunchPad hardware & debug flow", "M14": "Digital I/O registers (PxDIR/PxIN/PxOUT/PxREN), pull-up/down resistors, button debouncing & polling", "M21": "Interrupt lifecycle: GIE & mask bits, vector table, stack frame (PC+SR), ISR & RETI, Port P1/P2 IV", "M24": "Unified Clock System (UCS): 5 clock sources, FLL frequency-locked loop, and ACLK/SMCLK/MCLK routing", "M26": "Low-Power Modes (LPM0–LPM4): SR control bits, active clocks vs. current draw, and wakeup exit", "M28": "System reliability & power supervision: Watchdog Timer (WDT_A) modes and Supply Voltage Supervisor (SVS)", "M31": "Timer_A core: 16-bit TAR counter, 4 counting modes (Stop/Up/Continuous/Up-Down), TAIFG vs. CCIFG0/TAIV", "M32": "Capture/Compare blocks (TACCRx) and hardware PWM generation (OUTMOD 0–7) without CPU overhead", "M33": "Serial communication fundamentals: synchronous vs. asynchronous framing, SPI 4-wire & I2C arbitration", "M34": "USCI_A UART: frame format, oversampling (UCOS16) vs. low-frequency baud-rate modulation, and UCAxIV", "M41": "Beyond 16-bit MCUs: dual-core Xtensa ESP32-S3 architecture, FreeRTOS, GPIO matrix & ESP-IDF workflow"}, "key": "micro-web-v1", "has_en": false, "temas": [{"t": 1, "es": "Aspectos básicos del MSP430F5529 y E/S por sondeo"}, {"t": 2, "es": "Interrupciones, reloj y bajo consumo"}, {"t": 3, "es": "Temporizadores y comunicaciones serie"}, {"t": 4, "es": "Otras arquitecturas: ESP32-S3"}], "chapters": [{"t": 1, "code": "M11", "mods": "M11", "file": "m11.html", "es": "La CPU y el modelo de memoria", "zh": "MSP430 家族、Von Neumann、内存映射、R0–R15 与 SR、栈、小端序", "en_desc": "", "obj": "M11.", "n": 10, "scenes": 10, "quizzes": 1, "drills": 4}, {"t": 1, "code": "M12", "mods": "M12–M13", "file": "m12.html", "es": "Sistema de desarrollo", "zh": "LaunchPad 与 eZ-FET、抽象层级、编译 → 汇编 → 链接、CCS 调试", "en_desc": "", "obj": "M12.", "n": 10, "scenes": 13, "quizzes": 1, "drills": 0}, {"t": 1, "code": "M14", "mods": "M14–M16", "file": "m14.html", "es": "Puertos de E/S y sondeo", "zh": "PxDIR/PxIN/PxOUT/PxREN/PxSEL、位运算、按钮与 LED、轮询", "en_desc": "", "obj": "M14.", "n": 9, "scenes": 11, "quizzes": 1, "drills": 4}, {"t": 2, "code": "M21", "mods": "M21–M23", "file": "m21.html", "es": "Interrupciones", "zh": "事件 → flag → 使能 → GIE、三类中断、8 个步骤、向量表、在 CCS 里写 ISR、P1IV、短 ISR", "en_desc": "", "obj": "M21.", "n": 10, "scenes": 11, "quizzes": 1, "drills": 5}, {"t": 2, "code": "M24", "mods": "M24–M25", "file": "m24.html", "es": "Sistema de reloj (UCS)", "zh": "VLO/REFO/XT1/XT2/DCO、FLL、ACLK/MCLK/SMCLK、默认配置、振荡器故障", "en_desc": "", "obj": "M24.", "n": 10, "scenes": 10, "quizzes": 1, "drills": 2}, {"t": 2, "code": "M26", "mods": "M26–M27", "file": "m26.html", "es": "Modos de bajo consumo", "zh": "LPM0–LPM4.5、SR 的 SCG1/SCG0/OSCOFF/CPUOFF、唤醒与 on_exit、电流与续航", "en_desc": "", "obj": "M26.", "n": 10, "scenes": 8, "quizzes": 1, "drills": 2}, {"t": 2, "code": "M28", "mods": "M28", "file": "m28.html", "es": "Arquitecturas de programación", "zh": "无限循环、循环 + 中断、加低功耗、调度器、RTOS", "en_desc": "", "obj": "M28.", "n": 6, "scenes": 8, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M31", "mods": "M31", "file": "m31.html", "es": "Temporizadores", "zh": "Timer_A 结构、TASSEL/ID/IDEX、up/continuous/up-down、比较模式、TAxIV", "en_desc": "", "obj": "M31.", "n": 9, "scenes": 10, "quizzes": 1, "drills": 3}, {"t": 3, "code": "M32", "mods": "M32", "file": "m32.html", "es": "PWM", "zh": "输出单元、OUTMOD 0–7、占空比公式、方波频率", "en_desc": "", "obj": "M32.", "n": 9, "scenes": 9, "quizzes": 1, "drills": 3}, {"t": 3, "code": "M33", "mods": "M33", "file": "m33.html", "es": "Comunicaciones serie", "zh": "并行与串行、同步与异步、SPI 与 I2C、UART 帧、RS-232", "en_desc": "", "obj": "M33.", "n": 9, "scenes": 10, "quizzes": 1, "drills": 2}, {"t": 3, "code": "M34", "mods": "M34", "file": "m34.html", "es": "USCI en modo UART", "zh": "USCI_A/B、波特率发生器、UCOS16 与调制、初始化顺序、UCAxIV、driverlib", "en_desc": "", "obj": "M34.", "n": 10, "scenes": 12, "quizzes": 1, "drills": 4}, {"t": 4, "code": "M41", "mods": "M41–M44", "file": "m41.html", "es": "ESP32-S3", "zh": "Xtensa LX7 双核、Wi-Fi + BLE、DevKitC-1、ESP-IDF 与调试链", "en_desc": "", "obj": "M41.", "n": 8, "scenes": 9, "quizzes": 1, "drills": 0}], "capitulos": 12, "total": 110, "prefijos": ["M11.", "M12.", "M14.", "M21.", "M24.", "M26.", "M28.", "M31.", "M32.", "M33.", "M34.", "M41."], "scenes": 121, "quizzes": 12, "drills": 29}, {"code": "EMP", "slug": "emp", "es": "Microprocesadores Empotrados", "zh_title": "嵌入式 Linux 与 POSIX 系统编程", "en_title": "Embedded Linux & POSIX Systems Programming", "track": "sys", "track_label": "操作系统与并发", "en_track_label": "OS & Concurrency", "badge": "中/EN 双语 · 4 篇", "en_badge": "EN & ZH · 4 Ch.", "featured_order": 2, "accent": "#1A5F7A", "accent_dark": "#58C4DD", "soft": "#DFEBF0", "soft_dark": "#152830", "band": "stage", "summary": "在运行 Linux 的 ARM 开发板（Raspberry Pi）上使用 POSIX 标准编写多任务程序：对比裸机 MCU 与带 MMU 的微处理器，构建交叉编译工具链与 Buildroot 根文件系统，深入 fork/pthread 并发同步、实时信号与 POSIX 定时器漂移消除，以及 TCP/UDP 网络套接字。", "en_summary": "Write POSIX multitasking software on Linux-powered ARM boards (Raspberry Pi): contrast bare-metal MCUs vs. MMU-equipped MPUs, build cross-compilation toolchains & Buildroot images, master fork/pthread synchronization, real-time POSIX signals/timers, and TCP/UDP sockets.", "tags": ["ARM & Linux", "交叉编译 / Buildroot", "多进程与 pthread", "互斥量与条件变量", "POSIX 信号与定时器", "TCP/UDP Sockets"], "en_tags": ["ARM & Embedded Linux", "Cross-Toolchain & Buildroot", "Processes & pthreads", "Mutex & Condvars", "POSIX Signals & Timers", "TCP/UDP Sockets"], "en_chapters": {}, "key": "emp-web-v1", "has_en": true, "temas": [{"t": 1, "es": "Sistemas empotrados, ARM y Linux embebido"}, {"t": 2, "es": "Multitarea: procesos y threads"}, {"t": 3, "es": "Señales y temporización POSIX"}, {"t": 4, "es": "Comunicaciones: sockets"}], "chapters": [{"t": 1, "code": "T1", "mods": "Tema 1", "file": "t1.html", "es": "Sistemas empotrados, ARM y Linux embebido", "zh": "嵌入式系统与 MPU、ARM 架构与 Thumb、嵌入式 Linux、交叉编译工具链、Buildroot、Raspberry Pi", "en_desc": "Embedded systems & MPUs, ARM architecture & Thumb, embedded Linux, cross-compilation toolchain, Buildroot, Raspberry Pi", "obj": "T1.", "n": 10, "scenes": 5, "quizzes": 1, "drills": 0}, {"t": 2, "code": "T2", "mods": "Tema 2", "file": "t2.html", "es": "Multitarea: procesos y threads", "zh": "进程与线程、fork/exec/wait、pthread_create/join、竞争条件、互斥量、信号量、条件变量、调度", "en_desc": "Multitasking: processes & threads, fork/exec/wait, pthread_create/join, race conditions, mutexes, semaphores, condition variables, scheduling", "obj": "T2.", "n": 10, "scenes": 7, "quizzes": 1, "drills": 4}, {"t": 3, "code": "T3", "mods": "Tema 3", "file": "t3.html", "es": "Señales y temporización POSIX", "zh": "信号与处理函数、sigaction、信号掩码、实时信号、POSIX 时钟、nanosleep、timer_create/timer_settime、漂移", "en_desc": "Signals & POSIX timers: signal handlers, sigaction, signal masks, real-time signals, POSIX clocks, nanosleep, timer_create/timer_settime, drift", "obj": "T3.", "n": 10, "scenes": 5, "quizzes": 1, "drills": 8}, {"t": 4, "code": "T4", "mods": "Tema 4", "file": "t4.html", "es": "Comunicaciones: sockets", "zh": "TCP/IP 分层、套接字、地址与字节序、TCP 服务器/客户端、UDP、阻塞与 select、HTTP 基础", "en_desc": "Communications: sockets, TCP/IP layering, addresses & byte order, TCP server/client, UDP, blocking & select, HTTP basics", "obj": "T4.", "n": 10, "scenes": 5, "quizzes": 1, "drills": 4}], "capitulos": 4, "total": 40, "prefijos": ["T1.", "T2.", "T3.", "T4."], "scenes": 22, "quizzes": 4, "drills": 16}, {"code": "EI", "slug": "ei", "es": "Entornos Inteligentes", "zh_title": "智能环境与物联网系统架构", "en_title": "Intelligent Environments & IoT System Architecture", "track": "iot", "track_label": "物联网与系统架构", "en_track_label": "IoT & Architecture", "badge": "已完结 · 16 篇", "en_badge": "Complete · 16 Ch.", "featured_order": 3, "accent": "#1D6E42", "accent_dark": "#46B876", "soft": "#DFEFE6", "soft_dark": "#142B1E", "band": "soft", "summary": "从楼宇自动化（KNX/X10）与普适计算出发，系统拆解物联网中间件、MEMS 传感器融合、WSN 与雾/云协同、室内外定位（BLE/UWB/RFID）、节点低功耗续航建模，以及智慧交通、电网与城市级应用。", "en_summary": "From building automation (KNX/X10) and ubiquitous computing to IoT middleware, MEMS sensor fusion, WSN & fog/cloud architectures, indoor localization (BLE/UWB/RFID), node battery modeling, and smart city applications.", "tags": ["IoT 架构", "KNX / 楼宇", "WSN 传感网", "室内定位", "低功耗估算", "人工智能与交互"], "en_tags": ["IoT Architecture", "KNX / Smart Building", "WSN & Fog", "Indoor RTLS", "Energy Modeling", "AI & Multimodal HCI"], "en_chapters": {"M11": "Technology overview map: processors, software layers, networking, AI, power, and HW/SW co-design", "M12": "Home & building automation (domótica/inmótica), digital home, ICT, KNX & X10 protocols, residential gateway", "M13": "Ubiquitous computing & Ambient Intelligence (AmI), context awareness, bottlenecks & ethics", "M14": "Evolution of IoT, M2M/CPS/Digital Twin, Big Data, smart grid, smart city, IPv4 vs. IPv6", "M21": "Middleware, service discovery, semantic web, OSGi, and layered Gator Tech Smart House architecture", "M22": "Sensor classification, MEMS, sensor fusion, IMU, and wearable devices", "M23": "Fog vs. cloud, WSN topologies, white space, MAC & routing, IPSO, IMT-2020, SDN/NFV", "M24": "Indoor & outdoor localization, RTLS & proximity schemes, BLE/WiFi/UWB/RFID comparison", "M25": "Node classes, ARM Cortex families, 8/32-bit MCUs, MCU/FPGA/SoC/DSP/ASIP trade-offs", "M26": "Electrochemical energy storage, mote power profile, duty cycle, energy harvesting & battery life math", "M31": "AI foundations, strong vs. weak AI, Turing test, intelligent agents, and neural networks", "M32": "Haptics, spoken dialogue, gesture, emotion, multimodal interfaces, eye-tracking, BCI & Web 3D", "M33": "Security, privacy & dependability, biometrics, and hardware vs. software cryptography", "M34": "De facto vs. de jure standards, SDOs, industry alliances, and regulatory frameworks", "M35": "Intelligent transport & eCall, V2X standards, smart homes, e-Health & Digital Twins", "M36": "Smart metering, SmartSantander city testbed, smart grid infrastructure & precision agriculture WSN"}, "key": "ei-web-v1", "has_en": false, "temas": [{"t": 1, "es": "Introducción"}, {"t": 2, "es": "Arquitecturas y Tecnologías"}, {"t": 3, "es": "Otros aspectos"}], "chapters": [{"t": 1, "code": "M11", "mods": "M11", "file": "m11.html", "es": "El mapa del tesoro", "zh": "智能环境涉及的技术一张图：处理器、软件层、网络、IA、电源、软硬件协同设计", "en_desc": "", "obj": "1.1.", "n": 11, "scenes": 9, "quizzes": 1, "drills": 0}, {"t": 1, "code": "M12", "mods": "M12", "file": "m12.html", "es": "Edificios inteligentes", "zh": "domótica 与 inmótica、hogar digital、ICT、KNX 和 X10 等楼宇协议、pasarela residencial", "en_desc": "", "obj": "1.2.", "n": 10, "scenes": 4, "quizzes": 1, "drills": 0}, {"t": 1, "code": "M13", "mods": "M13", "file": "m13.html", "es": "Entornos inteligentes", "zh": "普适计算与 AmI、情境感知、瓶颈与伦理、casa inteligente 与 hogar digital", "en_desc": "", "obj": "1.3.", "n": 8, "scenes": 5, "quizzes": 1, "drills": 0}, {"t": 1, "code": "M14", "mods": "M14", "file": "m14.html", "es": "La Internet de las Cosas y más allá", "zh": "IoT 的演变、M2M/CPS/Digital Twin、Big Data、smart grid、smart city、IPv4 与 IPv6", "en_desc": "", "obj": "1.4.", "n": 7, "scenes": 7, "quizzes": 1, "drills": 0}, {"t": 2, "code": "M21", "mods": "M21", "file": "m21.html", "es": "Arquitectura de un entorno inteligente", "zh": "中间件、服务发现、语义网、OSGi，以及 Gator 智能屋的分层", "en_desc": "", "obj": "2.1.", "n": 6, "scenes": 5, "quizzes": 1, "drills": 0}, {"t": 2, "code": "M22", "mods": "M22", "file": "m22.html", "es": "Sensores y actuadores", "zh": "传感器分类、MEMS、传感器融合、IMU、可穿戴设备", "en_desc": "", "obj": "2.2.", "n": 7, "scenes": 7, "quizzes": 1, "drills": 0}, {"t": 2, "code": "M23", "mods": "M23", "file": "m23.html", "es": "Redes", "zh": "fog 与 cloud、WSN、white space、MAC 与路由、IPSO、IMT-2020、SDN/NFV", "en_desc": "", "obj": "2.3.", "n": 9, "scenes": 5, "quizzes": 1, "drills": 0}, {"t": 2, "code": "M24", "mods": "M24", "file": "m24.html", "es": "Localización", "zh": "室内外定位技术、RTLS 与近场方案、BLE/WiFi/UWB/RFID 对比", "en_desc": "", "obj": "2.4.", "n": 4, "scenes": 3, "quizzes": 1, "drills": 0}, {"t": 2, "code": "M25", "mods": "M25", "file": "m25.html", "es": "Nodos", "zh": "节点类型、ARM 家族、8/32 位 MCU、MCU/FPGA/SoC/DSP/ASIP", "en_desc": "", "obj": "2.5.", "n": 5, "scenes": 7, "quizzes": 1, "drills": 0}, {"t": 2, "code": "M26", "mods": "M26", "file": "m26.html", "es": "Consumo energético", "zh": "电化学储能、mota 功耗、占空比、能量收集、电池续航计算", "en_desc": "", "obj": "2.6.", "n": 6, "scenes": 3, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M31", "mods": "M31", "file": "m31.html", "es": "Inteligencia", "zh": "IA 的定义、强 IA 与弱 IA、Turing 测试、IA 技术、智能体与环境、神经网络", "en_desc": "", "obj": "3.1.", "n": 8, "scenes": 4, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M32", "mods": "M32", "file": "m32.html", "es": "Interacción", "zh": "触觉、语音对话、手势、情绪、多模态、眼动与 BCI、情感计算、IPA、Web 3D", "en_desc": "", "obj": "3.2.", "n": 11, "scenes": 4, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M33", "mods": "M33", "file": "m33.html", "es": "Privacidad y seguridad", "zh": "隐私和安全问题、seguridad/privacidad/confiabilidad、生物识别、加密的软硬件实现", "en_desc": "", "obj": "3.3.", "n": 6, "scenes": 3, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M34", "mods": "M34", "file": "m34.html", "es": "Normativa y estándares", "zh": "de facto 与 de iure、标准化组织与厂商联盟、AENOR", "en_desc": "", "obj": "3.4.", "n": 4, "scenes": 4, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M35", "mods": "M35", "file": "m35.html", "es": "Aplicaciones I", "zh": "智能交通与 eCall、车联网通信标准、smart house、e-salud 与 Digital Twin", "en_desc": "", "obj": "3.5.", "n": 6, "scenes": 5, "quizzes": 1, "drills": 0}, {"t": 3, "code": "M36", "mods": "M36", "file": "m36.html", "es": "Aplicaciones II", "zh": "智能电表、Santander 智慧城市、Iberdrola 智能电网、农业 WSN", "en_desc": "", "obj": "3.6.", "n": 5, "scenes": 6, "quizzes": 1, "drills": 0}], "capitulos": 16, "total": 113, "prefijos": ["1.1.", "1.2.", "1.3.", "1.4.", "2.1.", "2.2.", "2.3.", "2.4.", "2.5.", "2.6.", "3.1.", "3.2.", "3.3.", "3.4.", "3.5.", "3.6."], "scenes": 81, "quizzes": 16, "drills": 0}], "standalone_tools": [{"id": "tool-uart", "code": "TOOL 01", "cat": "hw", "cat_label": "硬件计算器", "en_cat_label": "Hardware Tool", "title": "UART 波特率分频与调制位模式计算器", "en_title": "UART Baud-Rate Divider & Bit-Modulation Calculator", "desc": "输入时钟源频率与目标波特率，实时计算低频模式（UCBRSx 8 位调制表）与 16 倍过采样模式（UCOS16 / UCBRFx）的分频参数与逐位采样误差。", "en_desc": "Compute low-frequency (UCBRSx bit pattern) and 16x oversampling (UCOS16 / UCBRFx) dividers and bit-timing error for any BRCLK and baud rate.", "href_zh": "zh/micro/m34.html", "href_en": "zh/micro/m34.html", "tag": "MICRO · M34"}, {"id": "tool-timer-pwm", "code": "TOOL 02", "cat": "hw", "cat_label": "波形与定时", "en_cat_label": "Timing & PWM", "title": "16 位定时器计数模式与硬件 PWM 占空比推演", "en_title": "16-Bit Timer Counting Modes & Hardware PWM Visualizer", "desc": "交互式对比 Up / Continuous / Up-Down 计数模式下的溢出周期，以及 TACCR0 / TACCRx 双比较寄存器配合 OUTMOD 生成无 CPU 干预的 PWM 波形。", "en_desc": "Visualize Up, Continuous, and Up-Down timer cycles alongside zero-CPU hardware PWM generation with TACCR0/TACCRx and OUTMOD.", "href_zh": "zh/micro/m32.html", "href_en": "zh/micro/m32.html", "tag": "MICRO · M32"}, {"id": "tool-posix-drift", "code": "TOOL 03", "cat": "sys", "cat_label": "系统与并发", "en_cat_label": "Systems & OS", "title": "POSIX 周期定时漂移对比与 timespec 归一化练习", "en_title": "POSIX Periodic Timer Drift & timespec Normalization", "desc": "对比相对睡眠循环带来的累积相位漂移与绝对时钟（CLOCK_MONOTONIC / timer_settime）的精确定时机制，附带随机参数数值校验。", "en_desc": "Contrast cumulative phase drift in relative sleep loops against drift-free periodic timers using CLOCK_MONOTONIC and timer_settime.", "href_zh": "zh/emp/t3.html", "href_en": "en/emp/t3.html", "tag": "EMP · T3 (中/EN)"}, {"id": "tool-battery", "code": "TOOL 04", "cat": "iot", "cat_label": "功耗建模", "en_cat_label": "Energy Model", "title": "无线节点占空比（Duty Cycle）与电池续航估算", "en_title": "Wireless Node Duty Cycle & Battery Life Estimator", "desc": "根据休眠电流、采样/发射峰值电流与唤醒占空比，拆解低功耗物联网节点的平均功耗预算与电化学电池理论续航。", "en_desc": "Calculate average current draw and theoretical battery lifetime from sleep current, active TX bursts, and wake-up duty cycle.", "href_zh": "zh/ei/m26.html", "href_en": "zh/ei/m26.html", "tag": "EI · M26"}], "tracks": [], "learning_log": [{"phase": "2026.11 · 双语图解上线", "en_phase": "2026.11 · BILINGUAL SERIES LIVE", "state": "active", "title": "嵌入式 Linux 与 POSIX 系统编程（中/英双语全 4 篇）", "en_title": "Embedded Linux & POSIX Systems (4 Chapters in ZH & EN)", "detail": "完成 ARM + Linux 交叉编译、fork/pthread 多任务同步、实时信号与高分辨率定时器、TCP/UDP 套接字通信的分步机制动画，并同步上线英文版。"}, {"phase": "2026.10 · 完整图解归档", "en_phase": "2026.10 · SERIES ARCHIVED", "state": "done", "title": "微控制器底层机制 (12 篇) & 智能环境与物联网架构 (16 篇)", "en_title": "Microcontroller Internals (12 Ch.) & IoT Architecture (16 Ch.)", "detail": "MSP430F5529 寄存器级机制动画（GPIO、中断响应 8 步链路、UCS 时钟树、LPM 低功耗、Timer_A/PWM、UART 波特率调制）与 ESP32-S3 专题，以及物联网 16 篇协议与架构图解全部归档开放。"}, {"phase": "NEXT · 持续扩展", "en_phase": "NEXT · ONGOING EXPANSION", "state": "next", "title": "更多独立技术笔记、交互工具与跨领域专题", "en_title": "Standalone Technical Notes, Interactive Tools & New Topics", "detail": "后续将不限于单一方向，陆续加入微内核 RTOS、FPGA 数字逻辑、信号处理、软件工程方法以及日常技术拆解与随笔。"}], "courses_meta": {"MICRO": {"zh_title": "微控制器底层机制：MSP430 与 ESP32-S3", "en_title": "Microcontroller Internals: TI MSP430 & ESP32-S3", "track": "hw", "track_label": "硬件与底层架构", "en_track_label": "Hardware & Bare-Metal", "badge": "已完结 · 12 篇", "en_badge": "Complete · 12 Ch.", "state": "published", "featured_order": 1, "accent": "#DF3B1E", "accent_dark": "#FF5636", "soft": "#F5E6E2", "soft_dark": "#2A1815", "band": "stage", "summary": "以 TI MSP430F5529 为主线、ESP32-S3 为拓展，用分步交互动画把 CPU 内存模型、GPIO 轮询、中断响应 8 步链路、UCS 时钟树与 FLL、LPM 低功耗唤醒、Timer_A/PWM 以及 UART 调制机制一步步画出来。", "en_summary": "Centered on TI MSP430F5529 and extended to ESP32-S3. Uses step-by-step interactive animations to visualize the CPU & memory map, GPIO polling, 8-step interrupt lifecycle, UCS clock tree & FLL, LPM low-power wakeup, Timer_A/PWM, and USCI baud-rate modulation.", "tags": ["MSP430F5529", "ESP32-S3", "GPIO 与中断", "时钟与低功耗", "Timer_A / PWM", "UART / SPI / I2C"], "en_tags": ["MSP430F5529", "ESP32-S3", "GPIO & Interrupts", "UCS Clocks & LPM", "Timer_A & PWM", "UART / SPI / I2C"], "en_chapters": {"M11": "CPU architecture, 16-bit registers (PC/SP/SR), unified memory map, and little-endian byte order", "M12": "Bitwise C idioms, volatile registers, MSP430F5529 LaunchPad hardware & debug flow", "M14": "Digital I/O registers (PxDIR/PxIN/PxOUT/PxREN), pull-up/down resistors, button debouncing & polling", "M21": "Interrupt lifecycle: GIE & mask bits, vector table, stack frame (PC+SR), ISR & RETI, Port P1/P2 IV", "M24": "Unified Clock System (UCS): 5 clock sources, FLL frequency-locked loop, and ACLK/SMCLK/MCLK routing", "M26": "Low-Power Modes (LPM0–LPM4): SR control bits, active clocks vs. current draw, and wakeup exit", "M28": "System reliability & power supervision: Watchdog Timer (WDT_A) modes and Supply Voltage Supervisor (SVS)", "M31": "Timer_A core: 16-bit TAR counter, 4 counting modes (Stop/Up/Continuous/Up-Down), TAIFG vs. CCIFG0/TAIV", "M32": "Capture/Compare blocks (TACCRx) and hardware PWM generation (OUTMOD 0–7) without CPU overhead", "M33": "Serial communication fundamentals: synchronous vs. asynchronous framing, SPI 4-wire & I2C arbitration", "M34": "USCI_A UART: frame format, oversampling (UCOS16) vs. low-frequency baud-rate modulation, and UCAxIV", "M41": "Beyond 16-bit MCUs: dual-core Xtensa ESP32-S3 architecture, FreeRTOS, GPIO matrix & ESP-IDF workflow"}}, "EMP": {"zh_title": "嵌入式 Linux 与 POSIX 系统编程", "en_title": "Embedded Linux & POSIX Systems Programming", "track": "sys", "track_label": "操作系统与并发", "en_track_label": "OS & Concurrency", "badge": "中/EN 双语 · 4 篇", "en_badge": "EN & ZH · 4 Ch.", "state": "published", "featured_order": 2, "accent": "#1A5F7A", "accent_dark": "#58C4DD", "soft": "#DFEBF0", "soft_dark": "#152830", "band": "stage", "summary": "在运行 Linux 的 ARM 开发板（Raspberry Pi）上使用 POSIX 标准编写多任务程序：对比裸机 MCU 与带 MMU 的微处理器，构建交叉编译工具链与 Buildroot 根文件系统，深入 fork/pthread 并发同步、实时信号与 POSIX 定时器漂移消除，以及 TCP/UDP 网络套接字。", "en_summary": "Write POSIX multitasking software on Linux-powered ARM boards (Raspberry Pi): contrast bare-metal MCUs vs. MMU-equipped MPUs, build cross-compilation toolchains & Buildroot images, master fork/pthread synchronization, real-time POSIX signals/timers, and TCP/UDP sockets.", "tags": ["ARM & Linux", "交叉编译 / Buildroot", "多进程与 pthread", "互斥量与条件变量", "POSIX 信号与定时器", "TCP/UDP Sockets"], "en_tags": ["ARM & Embedded Linux", "Cross-Toolchain & Buildroot", "Processes & pthreads", "Mutex & Condvars", "POSIX Signals & Timers", "TCP/UDP Sockets"]}, "EI": {"zh_title": "智能环境与物联网系统架构", "en_title": "Intelligent Environments & IoT System Architecture", "track": "iot", "track_label": "物联网与系统架构", "en_track_label": "IoT & Architecture", "badge": "已完结 · 16 篇", "en_badge": "Complete · 16 Ch.", "state": "published", "featured_order": 3, "accent": "#1D6E42", "accent_dark": "#46B876", "soft": "#DFEFE6", "soft_dark": "#142B1E", "band": "soft", "summary": "从楼宇自动化（KNX/X10）与普适计算出发，系统拆解物联网中间件、MEMS 传感器融合、WSN 与雾/云协同、室内外定位（BLE/UWB/RFID）、节点低功耗续航建模，以及智慧交通、电网与城市级应用。", "en_summary": "From building automation (KNX/X10) and ubiquitous computing to IoT middleware, MEMS sensor fusion, WSN & fog/cloud architectures, indoor localization (BLE/UWB/RFID), node battery modeling, and smart city applications.", "tags": ["IoT 架构", "KNX / 楼宇", "WSN 传感网", "室内定位", "低功耗估算", "人工智能与交互"], "en_tags": ["IoT Architecture", "KNX / Smart Building", "WSN & Fog", "Indoor RTLS", "Energy Modeling", "AI & Multimodal HCI"], "en_chapters": {"M11": "Technology overview map: processors, software layers, networking, AI, power, and HW/SW co-design", "M12": "Home & building automation (domótica/inmótica), digital home, ICT, KNX & X10 protocols, residential gateway", "M13": "Ubiquitous computing & Ambient Intelligence (AmI), context awareness, bottlenecks & ethics", "M14": "Evolution of IoT, M2M/CPS/Digital Twin, Big Data, smart grid, smart city, IPv4 vs. IPv6", "M21": "Middleware, service discovery, semantic web, OSGi, and layered Gator Tech Smart House architecture", "M22": "Sensor classification, MEMS, sensor fusion, IMU, and wearable devices", "M23": "Fog vs. cloud, WSN topologies, white space, MAC & routing, IPSO, IMT-2020, SDN/NFV", "M24": "Indoor & outdoor localization, RTLS & proximity schemes, BLE/WiFi/UWB/RFID comparison", "M25": "Node classes, ARM Cortex families, 8/32-bit MCUs, MCU/FPGA/SoC/DSP/ASIP trade-offs", "M26": "Electrochemical energy storage, mote power profile, duty cycle, energy harvesting & battery life math", "M31": "AI foundations, strong vs. weak AI, Turing test, intelligent agents, and neural networks", "M32": "Haptics, spoken dialogue, gesture, emotion, multimodal interfaces, eye-tracking, BCI & Web 3D", "M33": "Security, privacy & dependability, biometrics, and hardware vs. software cryptography", "M34": "De facto vs. de jure standards, SDOs, industry alliances, and regulatory frameworks", "M35": "Intelligent transport & eCall, V2X standards, smart homes, e-Health & Digital Twins", "M36": "Smart metering, SmartSantander city testbed, smart grid infrastructure & precision agriculture WSN"}}}}</script>
+<script>
+(function () {
+  "use strict";
+
+  var rawEl = document.getElementById("catalog-data");
+  var DATA = {};
+  try { DATA = JSON.parse(rawEl ? rawEl.textContent : "{}"); } catch (e) { DATA = {}; }
+
+  var BASE = document.documentElement.getAttribute("data-base") || "./";
+  var defLang = document.documentElement.getAttribute("data-default-lang") || "zh";
+  var urlParams = new URLSearchParams(window.location.search);
+  var curLang = (urlParams.get("lang") || defLang) === "en" ? "en" : "zh";
+  var curDomain = "all";
+  var searchQ = "";
+  var groupByUnit = true;
+
+  var DOMAIN_MAP = {
+    micro: "hardware",
+    emp: "systems",
+    ei: "iot"
+  };
+
+  var UI_I18N = {
+    zh: {
+      brandSub: "互动图解与个人知识库",
+      navSeries: "互动图解系列",
+      navTools: "独立工具与随笔",
+      navLog: "更新日志",
+      navSync: "云端同步",
+      searchBtn: "检索",
+      eyebrow: "INDEX // 01 — INTERACTIVE VISUAL NOTES & PERSONAL ARCHIVE",
+      edition: "SWISS GRID EDITION · 中 / EN 双语架构",
+      heroTitle: "把复杂概念拆解为可拨动、可推演的互动图解。",
+      heroSub: "这是一个持续生长的个人知识库与交互式笔记空间。不局限于单一学科：从底层微控制器时序、操作系统内核机制、传感器与网络架构，到独立的交互式仿真小工具与跨领域读书随笔，每一篇笔记都力求用可动手调节的动态几何画布代替静态公式。",
+      mkSeries: "互动专题系列",
+      mkChaps: "已归档长篇笔记",
+      mkScenes: "可交互推演画布",
+      mkNodes: "核心知识节点",
+      sideHdLbl: "READING INDEX // 阅读与掌握进度",
+      sideSyncHint: "自动保存在浏览器本地<br>支持 Google 云端多端合并",
+      resumeTagLast: "CONTINUE READING // 上次阅读轨迹",
+      resumeTagStart: "RECOMMENDED ENTRY // 推荐起点",
+      resumeBtn: "继续阅读 →",
+      resumeToolsBtn: "独立小工具 ↓",
+      tabAll: "全部 ALL",
+      tabHw: "硬件与底层 HARDWARE",
+      tabSys: "系统与并发 SYSTEMS",
+      tabIot: "物联网与架构 IOT",
+      tabTools: "独立工具 TOOLS",
+      searchPh: "检索篇章、外设、算法或工具 (按 / 聚焦)…",
+      groupUnit: "视图：按单元分组",
+      groupFlat: "视图：平铺全部篇章",
+      sec01Title: "INTERACTIVE VISUAL SERIES // 长篇互动图解系列",
+      sec01Sub: "点击任意篇章直接进入交互画布，阅读进度自动记录",
+      sec02Title: "STANDALONE TOOLS & FIELD NOTES // 独立仿真工具与技术随笔",
+      sec02Sub: "无需按章节顺序，即点即用的交互式工程计算器与专题短文",
+      sec03Title: "RECENT UPDATES // 知识库近期更新日志",
+      sec03Sub: "持续迭代的互动图解、工具与双语修订记录",
+      sec04Title: "CLOUD SYNC & LOCAL ARCHIVE // 跨设备云同步与本地 JSON 备份",
+      sec04Sub: "零门槛本地存储 + 可选 Google 账号多端合并",
+      syncCol1Title: "Google 账号跨设备自动同步",
+      syncCol1Desc: "未登录时，所有笔记掌握标记、自测记录与最近阅读轨迹均保存在当前浏览器 localStorage。登录 Google 账号后，系统按毫秒级时间戳自动与云端合并，在电脑、平板与手机间无缝接力。",
+      syncCol2Title: "离线 JSON 快照导出与恢复",
+      syncCol2Desc: "喜欢纯本地管理数据？你可以随时将所有专题与章节的阅读进度打包导出为单个标准 .json 文件保存，或在更换浏览器时一键导入合并。",
+      btnSyncNow: "立即同步 ↻",
+      btnSignOut: "退出账号",
+      btnExport: "导出进度快照 (.json)",
+      lblImport: "导入备份文件…",
+      footCopy: "互动图解与个人知识库 · Swiss International Grid Edition",
+      footSync: "云端同步",
+      specChaps: "篇章数量",
+      specScenes: "交互画布",
+      specNodes: "核心要点",
+      specMastered: "已掌握度",
+      enterSeries: "进入系列总览 →",
+      enterEnEdition: "EN 英文版 →",
+      chapsMatrixHd: "CHAPTER MATRIX // 篇章索引与实时掌握状态",
+      unitPrefix: "单元 ",
+      openTool: "打开交互工具 →",
+      futureSlotCode: "NOTES // NEXT",
+      futureSlotCat: "跨领域扩展预留",
+      futureSlotTitle: "更多独立工具、读书笔记与跨学科图解持续归档中",
+      futureSlotDesc: "架构已解耦为通用知识容器：未来无论是数学直觉可视化、信号处理推演、编程随笔还是生活效率小工具，都可以在此直接挂载发布。",
+      futureSlotFoot: "EXTENSIBLE ARCHIVE //"
+    },
+    en: {
+      brandSub: "Interactive Visual Notes & Personal Archive",
+      navSeries: "Visual Series",
+      navTools: "Standalone Tools",
+      navLog: "Changelog",
+      navSync: "Cloud Sync",
+      searchBtn: "Search",
+      eyebrow: "INDEX // 01 — INTERACTIVE VISUAL NOTES & PERSONAL ARCHIVE",
+      edition: "SWISS GRID EDITION · BILINGUAL ZH / EN",
+      heroTitle: "Deconstructing complex ideas into tactile, interactive visual notes.",
+      heroSub: "An evolving personal knowledge archive and interactive notebook. Not bound to a single syllabus: from bare-metal microcontroller timing, OS kernel concurrency, and IoT system architecture to standalone calculators and field notes — replacing static formulas with live geometric canvases.",
+      mkSeries: "Visual Series",
+      mkChaps: "Archived Notes",
+      mkScenes: "Interactive Canvases",
+      mkNodes: "Knowledge Nodes",
+      sideHdLbl: "READING INDEX // MASTERY PROGRESS",
+      sideSyncHint: "Saved locally in browser<br>Optional Google Cloud merge",
+      resumeTagLast: "CONTINUE READING // RECENT VISIT",
+      resumeTagStart: "RECOMMENDED ENTRY // START HERE",
+      resumeBtn: "Continue →",
+      resumeToolsBtn: "Standalone Tools ↓",
+      tabAll: "ALL",
+      tabHw: "HARDWARE",
+      tabSys: "SYSTEMS & OS",
+      tabIot: "IOT & ARCH",
+      tabTools: "TOOLS & NOTES",
+      searchPh: "Filter notes, peripherals, POSIX APIs, or tools (Press /)…",
+      groupUnit: "View: Grouped by Unit",
+      groupFlat: "View: Flat Matrix",
+      sec01Title: "INTERACTIVE VISUAL SERIES // LONG-FORM VISUAL NOTES",
+      sec01Sub: "Click any note to launch its interactive simulations and drills",
+      sec02Title: "STANDALONE TOOLS & FIELD NOTES // SIMULATORS & ESSAYS",
+      sec02Sub: "Direct-launch interactive engineering calculators and standalone notes",
+      sec03Title: "RECENT UPDATES // ARCHIVE CHANGELOG",
+      sec03Sub: "Continuous updates to visual canvases, tools, and translations",
+      sec04Title: "CLOUD SYNC & LOCAL ARCHIVE // GOOGLE SYNC & JSON BACKUP",
+      sec04Sub: "Zero-setup local storage + optional Google cross-device merge",
+      syncCol1Title: "Google Account Cross-Device Sync",
+      syncCol1Desc: "By default, all mastered checkpoints, quiz scores, and reading history stay in your browser's localStorage. Sign in with Google to merge progress across desktop, tablet, and mobile with millisecond timestamps.",
+      syncCol2Title: "Offline JSON Snapshot Export & Restore",
+      syncCol2Desc: "Prefer local files? Export your entire reading progress across all series into a portable .json snapshot anytime, or restore from a backup file.",
+      btnSyncNow: "Sync Now ↻",
+      btnSignOut: "Sign Out",
+      btnExport: "Export Snapshot (.json)",
+      lblImport: "Import Backup (.json)…",
+      footCopy: "Interactive Visual Notes & Personal Knowledge Archive · Swiss Grid Edition",
+      footSync: "Cloud Sync",
+      specChaps: "Chapters",
+      specScenes: "Simulations",
+      specNodes: "Checkpoints",
+      specMastered: "Mastered",
+      enterSeries: "Open Series Index →",
+      enterEnEdition: "ZH 中文版 →",
+      chapsMatrixHd: "CHAPTER MATRIX // INTERACTIVE NOTES & LIVE STATUS",
+      unitPrefix: "Unit ",
+      openTool: "Launch Interactive Tool →",
+      futureSlotCode: "NOTES // NEXT",
+      futureSlotCat: "Cross-Domain Slot",
+      futureSlotTitle: "More Standalone Simulators, Essays & Visual Notes Incoming",
+      futureSlotDesc: "Built as an open-ended personal publishing grid: new standalone calculators, math visualizations, software architecture notes, and essays plug directly into this archive.",
+      futureSlotFoot: "EXTENSIBLE ARCHIVE //"
+    }
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function resolveUrl(relPath) {
+    if (!relPath) return "#";
+    if (/^(https?:|mailto:|#)/i.test(relPath)) return relPath;
+    return BASE + relPath.replace(/^\.\//, "");
+  }
+
+  /* ---------- THEME INIT & TOGGLE ---------- */
+  var THEME_KEY = "open-seei-theme";
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+  }
+  (function initTheme() {
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (saved === "dark" || saved === "light") {
+      applyTheme(saved);
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      applyTheme("dark");
+    } else {
+      applyTheme("light");
+    }
+  })();
+
+  document.getElementById("btn-theme").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(cur);
+    if (window.SeeiSync && SeeiSync.renderGoogleButton) {
+      SeeiSync.renderGoogleButton(document.getElementById("google-btn-slot"));
+    }
+  });
+
+  /* ---------- PROGRESS CALCULATION FROM LOCALSTORAGE ---------- */
+  function readCourseProgress(course) {
+    var objMap = {};
+    var quizMap = {};
+    try {
+      var raw = JSON.parse(localStorage.getItem(course.key) || "{}");
+      objMap = raw.obj || {};
+      quizMap = raw.quiz || {};
+    } catch (e) {}
+
+    var totalK = 0;
+    var totalN = course.total || 0;
+    var byChap = {};
+
+    (course.chapters || []).forEach(function (ch) {
+      var k = 0;
+      Object.keys(objMap).forEach(function (id) {
+        if (objMap[id] && id.indexOf(ch.obj) === 0) k++;
+      });
+      k = Math.min(k, ch.n || 0);
+      totalK += k;
+      byChap[ch.code] = { k: k, n: ch.n || 0, quiz: quizMap[ch.code] || null };
+    });
+
+    return {
+      k: totalK,
+      n: totalN,
+      pct: totalN ? Math.round((totalK / totalN) * 100) : 0,
+      byChap: byChap
+    };
+  }
+
+  /* ---------- RENDER STATIC COPY & METRICS ---------- */
+  function applyStaticCopy() {
+    var T = UI_I18N[curLang];
+    document.getElementById("ui-brand-sub").textContent = T.brandSub;
+    document.getElementById("nav-series").textContent = T.navSeries;
+    document.getElementById("nav-tools").textContent = T.navTools;
+    document.getElementById("nav-log").textContent = T.navLog;
+    document.getElementById("nav-sync").textContent = T.navSync;
+    document.getElementById("ui-search-btn-lbl").textContent = T.searchBtn;
+    document.getElementById("hero-eyebrow").textContent = T.eyebrow;
+    document.getElementById("hero-edition").textContent = T.edition;
+    document.getElementById("hero-title").textContent = T.heroTitle;
+    document.getElementById("hero-sub").textContent = T.heroSub;
+    document.getElementById("mk-series").textContent = T.mkSeries;
+    document.getElementById("mk-chaps").textContent = T.mkChaps;
+    document.getElementById("mk-scenes").textContent = T.mkScenes;
+    document.getElementById("mk-nodes").textContent = T.mkNodes;
+    document.getElementById("side-hd-lbl").textContent = T.sideHdLbl;
+    document.getElementById("side-sync-hint").innerHTML = T.sideSyncHint;
+    document.getElementById("resume-tools-btn").textContent = T.resumeToolsBtn;
+    document.getElementById("tab-all").textContent = T.tabAll;
+    document.getElementById("tab-hw").textContent = T.tabHw;
+    document.getElementById("tab-sys").textContent = T.tabSys;
+    document.getElementById("tab-iot").textContent = T.tabIot;
+    document.getElementById("tab-tools").textContent = T.tabTools;
+    document.getElementById("search-input").placeholder = T.searchPh;
+    document.getElementById("group-mode-lbl").textContent = groupByUnit ? T.groupUnit : T.groupFlat;
+    document.getElementById("sec01-title").textContent = T.sec01Title;
+    document.getElementById("sec01-sub").textContent = T.sec01Sub;
+    document.getElementById("sec02-title").textContent = T.sec02Title;
+    document.getElementById("sec02-sub").textContent = T.sec02Sub;
+    document.getElementById("sec03-title").textContent = T.sec03Title;
+    document.getElementById("sec03-sub").textContent = T.sec03Sub;
+    document.getElementById("sec04-title").textContent = T.sec04Title;
+    document.getElementById("sec04-sub").textContent = T.sec04Sub;
+    document.getElementById("sync-col1-title").textContent = T.syncCol1Title;
+    document.getElementById("sync-col1-desc").textContent = T.syncCol1Desc;
+    document.getElementById("sync-col2-title").textContent = T.syncCol2Title;
+    document.getElementById("sync-col2-desc").textContent = T.syncCol2Desc;
+    document.getElementById("btn-sync-now").textContent = T.btnSyncNow;
+    document.getElementById("btn-sign-out").textContent = T.btnSignOut;
+    document.getElementById("btn-export-json").textContent = T.btnExport;
+    document.getElementById("lbl-import-json").textContent = T.lblImport;
+    document.getElementById("foot-copy").textContent = T.footCopy;
+    document.getElementById("foot-sync-link").textContent = T.footSync;
+
+    document.querySelectorAll("[data-lang-btn]").forEach(function (btn) {
+      btn.classList.toggle("active", btn.getAttribute("data-lang-btn") === curLang);
+    });
+  }
+
+  /* ---------- RENDER HERO METRICS & SIDE PROGRESS ---------- */
+  function renderHeroAndProgress() {
+    var T = UI_I18N[curLang];
+    var pub = DATA.published || [];
+    var totalChaps = 0, totalScenes = 0, totalNodes = 0, totalMastered = 0;
+
+    var barsHtml = [];
+    pub.forEach(function (c, idx) {
+      var p = readCourseProgress(c);
+      totalChaps += c.capitulos || 0;
+      totalScenes += (c.scenes || 0) + (c.drills || 0);
+      totalNodes += p.n;
+      totalMastered += p.k;
+      var num = ("0" + (idx + 1)).slice(-2);
+      var targetLang = (curLang === "en" && c.has_en) ? "en" : "zh";
+      var href = resolveUrl(targetLang + "/" + c.slug + "/index.html");
+      barsHtml.push(
+        '<a class="sw-sbar-row" href="' + esc(href) + '">' +
+          '<span class="sw-sbar-code">' + num + ' / ' + esc(c.code) + '</span>' +
+          '<div class="sw-sbar-track"><div class="sw-sbar-fill" style="width:' + p.pct + '%"></div></div>' +
+          '<span class="sw-sbar-val">' + p.pct + '%</span>' +
+        '</a>'
+      );
+    });
+
+    document.getElementById("mv-series").textContent = ("0" + pub.length).slice(-2);
+    document.getElementById("mv-chaps").textContent = totalChaps;
+    document.getElementById("mv-scenes").textContent = totalScenes;
+    document.getElementById("mv-nodes").textContent = totalNodes;
+
+    var allPct = totalNodes ? Math.round((totalMastered / totalNodes) * 100) : 0;
+    document.getElementById("side-hd-stat").textContent = totalMastered + " / " + totalNodes;
+    document.getElementById("side-big-pct").textContent = allPct + "%";
+    document.getElementById("side-series-bars").innerHTML = barsHtml.join("");
+
+    /* Resume activity */
+    var act = (window.SeeiSync && SeeiSync.getActivity) ? SeeiSync.getActivity() : {};
+    var last = act && act.last;
+    var resumeTagEl = document.getElementById("resume-tag");
+    var resumeTitleEl = document.getElementById("resume-title");
+    var resumeBtnEl = document.getElementById("resume-btn");
+
+    if (last && last.slug && last.file) {
+      resumeTagEl.textContent = T.resumeTagLast;
+      resumeTitleEl.textContent = last.slug.toUpperCase() + " · " + (last.title || last.file);
+      resumeBtnEl.href = resolveUrl((last.lang || "zh") + "/" + last.slug + "/" + last.file);
+    } else {
+      resumeTagEl.textContent = T.resumeTagStart;
+      if (curLang === "en") {
+        resumeTitleEl.textContent = "02 / EMP · L1 Linux Threads, Processes & Signals";
+        resumeBtnEl.href = resolveUrl("en/emp/l1-1.html");
+      } else {
+        resumeTitleEl.textContent = "01 / MICRO · M1.1 微控制器架构与超低功耗导论";
+        resumeBtnEl.href = resolveUrl("zh/micro/m1-1.html");
+      }
+    }
+    resumeBtnEl.textContent = T.resumeBtn;
+  }
+
+  /* ---------- RENDER 01 // INTERACTIVE VISUAL SERIES ---------- */
+  function renderSeries() {
+    var T = UI_I18N[curLang];
+    var pub = DATA.published || [];
+    var container = document.getElementById("series-container");
+    var q = searchQ.trim().toLowerCase();
+
+    var html = pub.map(function (c, idx) {
+      var dom = DOMAIN_MAP[c.slug] || "hardware";
+      var hideByDomain = (curDomain !== "all" && curDomain !== "tools" && curDomain !== dom);
+      var p = readCourseProgress(c);
+      var num = ("0" + (idx + 1)).slice(-2);
+
+      var primaryLang = (curLang === "en" && c.has_en) ? "en" : "zh";
+      var seriesHref = resolveUrl(primaryLang + "/" + c.slug + "/index.html");
+      var altHref = c.has_en ? resolveUrl((primaryLang === "en" ? "zh" : "en") + "/" + c.slug + "/index.html") : "";
+
+      var title = curLang === "en" ? (c.en || c.zh) : c.zh;
+      var sub = curLang === "en" ? (c.es || c.subtitle) : (c.subtitle || c.es);
+      var summary = curLang === "en" ? (c.en_summary || c.summary) : c.summary;
+      var tags = (curLang === "en" && c.en_tags && c.en_tags.length) ? c.en_tags : (c.tags || []);
+
+      var filteredChaps = (c.chapters || []).filter(function (ch) {
+        if (!q) return true;
+        var enMeta = (c.en_chapters && c.en_chapters[ch.code]) || {};
+        var hay = [
+          ch.code, ch.mods, ch.es, ch.zh, ch.en_desc,
+          enMeta.title, enMeta.desc, c.code, c.zh, c.en
+        ].join(" ").toLowerCase();
+        return hay.indexOf(q) >= 0;
+      });
+
+      if (hideByDomain || (q && filteredChaps.length === 0)) {
+        return "";
+      }
+
+      function renderChapCell(ch) {
+        var cp = p.byChap[ch.code] || { k: 0, n: ch.n || 0, quiz: null };
+        var stCls = (cp.k >= cp.n && cp.n > 0) ? " done" : ((cp.k > 0 || cp.quiz) ? " started" : "");
+        var enMeta = (c.en_chapters && c.en_chapters[ch.code]) || {};
+        var chTitle = curLang === "en"
+          ? (enMeta.title || ch.es || ch.zh)
+          : (ch.es + " · " + ch.zh);
+        var chHref = resolveUrl(primaryLang + "/" + c.slug + "/" + ch.file);
+        var progTxt = (cp.k >= cp.n && cp.n > 0 ? "✓ " : "") + cp.k + " / " + cp.n;
+
+        return '<a class="sw-chap-cell' + stCls + '" href="' + esc(chHref) + '">' +
+          '<div class="sw-chap-top">' +
+            '<span class="sw-chap-code">' + esc(ch.mods || ch.code) + '</span>' +
+            '<span class="sw-chap-prog">' + esc(progTxt) + '</span>' +
+          '</div>' +
+          '<div class="sw-chap-name">' + esc(chTitle) + '</div>' +
+          '<div class="sw-chap-meta">' +
+            '<span>' + (ch.scenes || 0) + (curLang === "en" ? " sims" : " 动画") + '</span>' +
+            '<span>·</span>' +
+            '<span>' + (ch.n || 0) + (curLang === "en" ? " pts" : " 要点") + '</span>' +
+          '</div>' +
+        '</a>';
+      }
+
+      var chapsContent = "";
+      if (groupByUnit && !q && Array.isArray(c.temas) && c.temas.length) {
+        chapsContent = c.temas.map(function (tm) {
+          var unitChaps = filteredChaps.filter(function (ch) { return ch.t === tm.t; });
+          if (!unitChaps.length) return "";
+          return '<div class="sw-unit-group">' +
+            '<div class="sw-unit-title">' + esc(T.unitPrefix + tm.t + " // " + tm.es) + '</div>' +
+            '<div class="sw-chap-grid">' + unitChaps.map(renderChapCell).join("") + '</div>' +
+          '</div>';
+        }).join("");
+      } else {
+        chapsContent = '<div class="sw-chap-grid">' + filteredChaps.map(renderChapCell).join("") + '</div>';
+      }
+
+      return '<article class="sw-series-strip" data-domain="' + esc(dom) + '">' +
+        '<div class="sw-series-col-idx">' +
+          '<div>' +
+            '<div class="sw-giant-num">' + num + '</div>' +
+            '<div class="sw-series-code-badge">SERIES // ' + esc(c.code) + '</div>' +
+          '</div>' +
+          '<div class="sw-spec-list">' +
+            '<div class="sw-spec-item"><span>' + esc(T.specChaps) + '</span><strong>' + (c.capitulos || 0) + '</strong></div>' +
+            '<div class="sw-spec-item"><span>' + esc(T.specScenes) + '</span><strong>' + ((c.scenes || 0) + (c.drills || 0)) + '</strong></div>' +
+            '<div class="sw-spec-item"><span>' + esc(T.specNodes) + '</span><strong>' + p.n + '</strong></div>' +
+            '<div class="sw-spec-item"><span>' + esc(T.specMastered) + '</span><strong>' + p.k + ' / ' + p.n + ' (' + p.pct + '%)</strong></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="sw-series-col-info">' +
+          '<div>' +
+            '<div class="sw-series-domain">' + esc(c.category || c.code) + '</div>' +
+            '<h2 class="sw-series-title">' + esc(title) + '</h2>' +
+            '<div class="sw-series-sub">' + esc(sub) + '</div>' +
+            '<p class="sw-series-desc">' + esc(summary) + '</p>' +
+            '<div class="sw-tag-row">' +
+              tags.map(function (t) { return '<span class="sw-tag">' + esc(t) + '</span>'; }).join("") +
+            '</div>' +
+          '</div>' +
+          '<div class="sw-series-cta-row">' +
+            '<a class="sw-btn-primary" href="' + esc(seriesHref) + '">' + esc(T.enterSeries) + '</a>' +
+            (altHref ? '<a class="sw-btn-ghost" href="' + esc(altHref) + '">' + esc(T.enterEnEdition) + '</a>' : '') +
+          '</div>' +
+        '</div>' +
+
+        '<div class="sw-series-col-chaps">' +
+          '<div class="sw-chaps-hd">' +
+            '<span>' + esc(T.chapsMatrixHd) + '</span>' +
+            '<span>' + filteredChaps.length + ' / ' + (c.capitulos || 0) + '</span>' +
+          '</div>' +
+          chapsContent +
+        '</div>' +
+      '</article>';
+    }).filter(Boolean).join("");
+
+    container.innerHTML = html || (
+      '<div style="padding:32px 24px;font:600 13px/1.5 var(--f-mono);color:var(--muted);">' +
+        (curLang === "en" ? "No matching series or notes for current filter." : "当前筛选条件下没有匹配的专题或篇章。") +
+      '</div>'
+    );
+  }
+
+  /* ---------- RENDER 02 // STANDALONE TOOLS & FIELD NOTES ---------- */
+  function renderTools() {
+    var T = UI_I18N[curLang];
+    var tools = DATA.standalone_tools || [];
+    var q = searchQ.trim().toLowerCase();
+    var container = document.getElementById("tools-container");
+
+    var cards = tools.filter(function (tl) {
+      if (!q) return true;
+      var hay = [tl.code, tl.zh, tl.en, tl.desc_zh, tl.desc_en, tl.category_zh, tl.category_en].join(" ").toLowerCase();
+      return hay.indexOf(q) >= 0;
+    }).map(function (tl) {
+      var title = curLang === "en" ? tl.en : tl.zh;
+      var desc = curLang === "en" ? tl.desc_en : tl.desc_zh;
+      var cat = curLang === "en" ? tl.category_en : tl.category_zh;
+      var href = resolveUrl((curLang === "en" && tl.href_en) ? tl.href_en : tl.href_zh);
+      return '<a class="sw-tool-card" href="' + esc(href) + '">' +
+        '<div>' +
+          '<div class="sw-tool-code">' + esc(tl.code) + '</div>' +
+          '<span class="sw-tool-cat">' + esc(cat) + '</span>' +
+          '<h3 class="sw-tool-title">' + esc(title) + '</h3>' +
+          '<p class="sw-tool-desc">' + esc(desc) + '</p>' +
+        '</div>' +
+        '<div class="sw-tool-foot">' +
+          '<span>' + esc(T.openTool) + '</span>' +
+        '</div>' +
+      '</a>';
+    });
+
+    /* Extensible 5th slot for future non-course notes/tools */
+    if (!q) {
+      cards.push(
+        '<div class="sw-tool-card extensible">' +
+          '<div>' +
+            '<div class="sw-tool-code">' + esc(T.futureSlotCode) + '</div>' +
+            '<span class="sw-tool-cat">' + esc(T.futureSlotCat) + '</span>' +
+            '<h3 class="sw-tool-title">' + esc(T.futureSlotTitle) + '</h3>' +
+            '<p class="sw-tool-desc">' + esc(T.futureSlotDesc) + '</p>' +
+          '</div>' +
+          '<div class="sw-tool-foot">' +
+            '<span>' + esc(T.futureSlotFoot) + '</span>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    container.innerHTML = cards.join("");
+  }
+
+  /* ---------- RENDER 03 // CHANGELOG ---------- */
+  function renderChangelog() {
+    var logs = DATA.learning_log || [];
+    var container = document.getElementById("log-container");
+    container.innerHTML = logs.map(function (item) {
+      var title = curLang === "en" ? (item.en_title || item.title) : item.title;
+      var desc = curLang === "en" ? (item.en_desc || item.desc) : item.desc;
+      return '<div class="sw-log-cell">' +
+        '<div class="sw-log-top">' +
+          '<span class="sw-log-date">' + esc(item.date) + '</span>' +
+          '<span class="sw-log-tag">' + esc(item.tag) + '</span>' +
+        '</div>' +
+        '<h3 class="sw-log-title">' + esc(title) + '</h3>' +
+        '<p class="sw-log-desc">' + esc(desc) + '</p>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderAll() {
+    applyStaticCopy();
+    renderHeroAndProgress();
+    renderSeries();
+    renderTools();
+    renderChangelog();
+  }
+
+  /* ---------- INTERACTIVE CONTROLS ---------- */
+  document.querySelectorAll("[data-lang-btn]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      curLang = btn.getAttribute("data-lang-btn") === "en" ? "en" : "zh";
+      renderAll();
+      updateSyncUi();
+    });
+  });
+
+  document.querySelectorAll("#domain-tabs .sw-filter-tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      curDomain = tab.getAttribute("data-domain") || "all";
+      document.querySelectorAll("#domain-tabs .sw-filter-tab").forEach(function (t) {
+        t.classList.toggle("active", t === tab);
+      });
+      if (curDomain === "tools") {
+        document.getElementById("tools").scrollIntoView({ behavior: "smooth" });
+      }
+      renderSeries();
+    });
+  });
+
+  var searchInp = document.getElementById("search-input");
+  var searchClear = document.getElementById("search-clear");
+  searchInp.addEventListener("input", function () {
+    searchQ = searchInp.value || "";
+    searchClear.hidden = !searchQ;
+    renderSeries();
+    renderTools();
+  });
+  searchClear.addEventListener("click", function () {
+    searchInp.value = "";
+    searchQ = "";
+    searchClear.hidden = true;
+    renderSeries();
+    renderTools();
+  });
+
+  document.getElementById("btn-focus-search").addEventListener("click", function () {
+    searchInp.focus();
+    searchInp.select();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "/" && document.activeElement !== searchInp && !/^(INPUT|TEXTAREA)$/i.test((document.activeElement || {}).tagName || "")) {
+      e.preventDefault();
+      searchInp.focus();
+    } else if (e.key === "Escape" && document.activeElement === searchInp && searchQ) {
+      searchClear.click();
+    }
+  });
+
+  document.getElementById("btn-group-mode").addEventListener("click", function () {
+    groupByUnit = !groupByUnit;
+    document.getElementById("group-mode-lbl").textContent = groupByUnit ? UI_I18N[curLang].groupUnit : UI_I18N[curLang].groupFlat;
+    renderSeries();
+  });
+
+  /* ---------- SYNC & BACKUP INTEGRATION ---------- */
+  function updateSyncUi() {
+    if (!window.SeeiSync) return;
+    var st = SeeiSync.status();
+    var pill = document.getElementById("top-sync-pill");
+    var topLbl = document.getElementById("top-sync-lbl");
+    var boxDot = document.getElementById("sync-box-dot");
+    var statusTxt = document.getElementById("sync-status-txt");
+    var btnNow = document.getElementById("btn-sync-now");
+    var btnOut = document.getElementById("btn-sign-out");
+    var gSlot = document.getElementById("google-btn-slot");
+
+    pill.setAttribute("data-state", st.state || "off");
+    if (boxDot) {
+      boxDot.style.background = st.state === "ok" ? "var(--green)" : st.state === "busy" ? "var(--amber)" : st.state === "err" ? "var(--accent)" : "var(--muted)";
+    }
+
+    if (st.on && st.user) {
+      var uName = st.user.name || st.user.email || "Google";
+      topLbl.textContent = curLang === "en" ? ("Synced · " + uName) : ("已同步 · " + uName);
+      statusTxt.textContent = (curLang === "en" ? "Connected as " : "已连接 Google 账号：") + uName + (st.text ? " (" + st.text + ")" : "");
+      btnNow.hidden = false;
+      btnOut.hidden = false;
+      gSlot.hidden = true;
+    } else {
+      topLbl.textContent = curLang === "en" ? "Local Mode" : "本地模式";
+      statusTxt.textContent = st.text || (curLang === "en" ? "Local mode (saved in browser localStorage)" : "本地笔记模式（进度保存在当前浏览器）");
+      btnNow.hidden = true;
+      btnOut.hidden = true;
+      gSlot.hidden = false;
+      if (SeeiSync.renderGoogleButton) {
+        SeeiSync.renderGoogleButton(gSlot);
+      }
+    }
+  }
+
+  document.addEventListener("seei-sync-state", updateSyncUi);
+  document.addEventListener("seei-sync", function () {
+    renderHeroAndProgress();
+    renderSeries();
+  });
+
+  document.getElementById("btn-sync-now").addEventListener("click", function () {
+    if (window.SeeiSync && SeeiSync.now) SeeiSync.now();
+  });
+  document.getElementById("btn-sign-out").addEventListener("click", function () {
+    if (window.SeeiSync && SeeiSync.signOut) {
+      SeeiSync.signOut();
+      updateSyncUi();
+    }
+  });
+
+  var backupMsg = document.getElementById("backup-msg");
+  document.getElementById("btn-export-json").addEventListener("click", function () {
+    if (!window.SeeiSync || !SeeiSync.exportBackup) return;
+    var data = SeeiSync.exportBackup();
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "notes-progress-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    backupMsg.textContent = curLang === "en" ? "✓ Progress snapshot exported." : "✓ 进度快照已导出为 notes-progress-backup.json";
+  });
+
+  document.getElementById("inp-import-json").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file || !window.SeeiSync || !SeeiSync.importBackup) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var ok = SeeiSync.importBackup(String(reader.result || ""));
+      if (ok) {
+        backupMsg.style.color = "var(--green)";
+        backupMsg.textContent = curLang === "en" ? "✓ Backup restored and merged!" : "✓ 备份文件已成功导入并合并！";
+        renderHeroAndProgress();
+        renderSeries();
+      } else {
+        backupMsg.style.color = "var(--accent)";
+        backupMsg.textContent = curLang === "en" ? "✕ Invalid backup JSON file." : "✕ 备份文件格式无效，请检查。";
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  renderAll();
+  updateSyncUi();
+})();
+</script>
+</body>
+</html>

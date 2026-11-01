@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apuntes interactivos de sistemas electrónicos</title>
+<meta name="description" content="Apuntes interactivos de sistemas empotrados, microcontroladores y entornos inteligentes: animaciones paso a paso y ejercicios prácticos.">
+<style>
+:root { --bg: #f7f5f0; --ink: #1d1d1f; --mute: #5f5f66; --card: #fff; --line: #e2ded5; --accent: #2a6fdb; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #14161a; --ink: #e8e6e1; --mute: #9a9aa2; --card: #1d2026; --line: #2c3038; --accent: #6ea8ff; } }
+:root[data-theme="dark"] { --bg: #14161a; --ink: #e8e6e1; --mute: #9a9aa2; --card: #1d2026; --line: #2c3038; --accent: #6ea8ff; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 880px; margin: 0 auto; padding: 48px 16px; }
+h1 { font-size: 30px; margin: 0 0 8px; }
+.lead { color: var(--mute); margin: 0 0 28px; }
+.langs { display: flex; gap: 8px; margin-bottom: 28px; font-size: 14px; }
+.langs a, .langs span { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); text-decoration: none; }
+.langs .on { border-color: var(--accent); color: var(--accent); }
+.langs .soon { color: var(--mute); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.card { display: block; padding: 20px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; color: inherit; text-decoration: none; }
+.card:hover { border-color: var(--accent); }
+.card .es { font-weight: 700; font-size: 18px; }
+.card .zh { color: var(--mute); font-size: 14px; margin-top: 6px; }
+footer { margin-top: 48px; font-size: 13px; color: var(--mute); }
+footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Apuntes interactivos de sistemas electrónicos</h1>
+  <p class="lead">Animaciones paso a paso para comprender los mecanismos esenciales, con objetivos clave, autoevaluación y ejercicios numéricos aleatorios.</p>
+  <nav class="langs" aria-label="Idiomas">
+    <a href="../">中文</a><a href="../en/">English</a><a class="on" href="./">Español</a>
+  </nav>
+  <div class="grid">
+    <a class="card" href="ei/"><div class="es">Entornos Inteligentes</div><div class="zh">Arquitectura IoT, redes de sensores, protocolos de comunicación, computación en la nube y en el borde, escenarios de aplicación</div></a>
+    <a class="card" href="micro/"><div class="es">Microcontroladores</div><div class="zh">Microcontrolador MSP430: GPIO, interrupciones, reloj y modos de bajo consumo, temporizadores, comunicaciones serie y ESP32-S3</div></a>
+    <a class="card" href="emp/"><div class="es">Microprocesadores Empotrados</div><div class="zh">Linux embebido: ARM y compilación cruzada, procesos e hilos, señales y temporización POSIX, sockets</div></a>
+  </div>
+  <footer>
+    <p>Apuntes de la comunidad elaborados por estudiantes; no es material oficial de ninguna universidad ni asignatura. Compartido bajo licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">CC BY-NC-SA 4.0</a>.</p>
+  </footer>
+</main>
+</body>
+</html>

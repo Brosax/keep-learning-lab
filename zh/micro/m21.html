@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<script src="../../sync.js" data-api="../../api/progress/" data-home="../../index.html" data-cursos="ei:ei-web-v1 micro:micro-web-v1 emp:emp-web-v1"></script>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>M21 Interrupciones · MICRO</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Serif+SC:wght@600;900&amp;family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
+
+.stage .tm.xs { font-size: 11.5px; }
+.stage .arm { transition: transform .35s ease; }
+.stage .glow-r { filter: drop-shadow(0 0 8px rgb(252 98 85 / .85)); }
+.stage .glow-y { filter: drop-shadow(0 0 10px rgb(244 211 69 / .9)); }
+.stage .led-on { fill: var(--st-green); stroke: var(--st-green); filter: drop-shadow(0 0 8px rgb(131 193 103 / .9)); }
+.mini {
+  border: 1px solid #2B3340; background: transparent; color: var(--st-ink); border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; font: 600 13px/1.4 var(--f-mono);
+}
+.mini:hover:not(:disabled) { border-color: var(--st-yellow); color: var(--st-yellow); }
+.press:disabled, .mini:disabled { opacity: .35; cursor: default; }
+.vt td:nth-child(5) { font: 600 12px/1.5 var(--f-mono); white-space: nowrap; }
+.vt .single { color: var(--green); }
+.vt .multi { color: var(--muted); }
+.vt-detail { min-height: 7.5rem; }
+.vt-detail .big { font: 700 1.25rem/1.3 var(--f-mono); color: var(--yellow); }
+.cmp td:first-child { font: 600 13px/1.5 var(--f-mono); white-space: nowrap; }
+</style>
+<script>
+window.MathJax = {
+  tex: { packages: { "[+]": ["html"] } },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () { if (window.MICROMath) window.MICROMath(); });
+    }
+  }
+};
+</script>
+<script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<marker id="m21-ah-y" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-yellow)"></path></marker>
+<marker id="m21-ah-r" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-red)"></path></marker>
+<marker id="m21-ah-b" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-blue)"></path></marker>
+<marker id="m21-ah-g" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-green)"></path></marker>
+<marker id="m21-ah-p" markerheight="4.5" markerwidth="4.5" orient="auto-start-reverse" refx="8.5" refy="5" viewbox="0 0 10 10"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--st-purple)"></path></marker>
+</defs>
+</svg>
+<header class="topbar">
+<div class="topbar-in">
+<span class="crumbs"><a class="hub" href="../../index.html" title="返回 OpenSEEI 课程主页">OpenSEEI</a><span class="sep" aria-hidden="true">/</span><a class="brand" href="index.html">MICRO<span> · </span>互动笔记</a></span>
+<nav aria-label="Bloque 2 章节" class="chain" data-chain="M21"></nav>
+</div>
+</header>
+<main class="wrap">
+<section class="chapter-head">
+<div class="eyebrow">Bloque 2 · Interrupciones, reloj y bajo consumo · M21–M23</div>
+<h1>Interrupciones</h1>
+<p class="zh">中断：让 CPU 不必一直盯着</p>
+<div class="meta">
+
+
+<span><b>10</b> 个要点</span>
+<span>阅读约 18 分钟</span>
+
+
+
+</div>
+<p class="lede">按钮什么时候被按下，CPU 事先不知道。它可以一遍遍地去问，也可以让硬件在事件发生时"拍它一下"。这一章把后一种机制拆开来看：事件怎样变成 <b class="t">interrupción (ES) / interrupt (EN)</b>——中断，CPU 怎样保存现场、找到 <b class="t">RTI (ES) / ISR (EN)</b>——中断服务程序、再回到原处；最后在 CCS 里把它写出来。</p>
+</section>
+
+<section class="sec" id="objetivos">
+<h2>要点 <span class="tag">本章要点</span></h2>
+<p>下面是这一章要掌握的内容。读完对应小节后，自己判断是否掌握，点右边的按钮记下来。</p>
+<ul class="objs">
+<li class="obj">
+<span class="code">M21.1</span>
+<div class="txt"><span>定义 evento、flag、activación、habilitación，说出可屏蔽中断发生的三个条件</span><span class="es">Evento, flag de interrupción, habilitación individual y GIE.</span><a href="#s1">→ §1 一条事件链</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.1" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.2</span>
+<div class="txt"><span>区分三类中断：RESET、NMI（UNMI、SNMI）、enmascarables</span><span class="es">Tipos de interrupción del MSP430.</span><a href="#s2">→ §2 三类中断</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.2" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.3</span>
+<div class="txt"><span>说出 BOR、POR、PUC 的级联关系（谁引发谁），以及 BOR 之后的状态（watchdog 32 ms）</span><span class="es">RESET: BOR, POR, PUC; estado tras el reset.</span><a href="#s2">→ §2 三类中断</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.3" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.4</span>
+<div class="txt"><span>按顺序复述中断处理的 8 个步骤：压栈顺序、SR 的变化、向量装入 PC、RETI</span><span class="es">Pasos del proceso de interrupción.</span><a href="#s3">→ §3 八个步骤</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.4" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.5</span>
+<div class="txt"><span>说明 CPUx 怎样把 20 位 PC 存进栈；CALL/RET 与 CALLA/RETA 的区别</span><span class="es">CPUx e interrupciones.</span><a href="#s3b">→ §3 CPUx</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.5" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.6</span>
+<div class="txt"><span>由向量号算出向量地址，读懂向量表；分清单源与多源向量</span><span class="es">Tabla de vectores de interrupción.</span><a href="#s4">→ §4 向量表</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.6" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.7</span>
+<div class="txt"><span>在 CCS 里配置端口中断，并用 #pragma vector / __interrupt 声明 ISR</span><span class="es">Configuración de periféricos y vector de interrupción en CCS.</span><a href="#s5">→ §5 在 CCS 里写出来</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.7" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.8</span>
+<div class="txt"><span>解释为什么必须清 PxIFG，以及怎样翻转 PxIES 同时抓到按下和松开</span><span class="es">Bajada del aviso de interrupción; flancos.</span><a href="#s6">→ §6 忘了清 flag</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.8" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.9</span>
+<div class="txt"><span>用 PxIE &amp; PxIFG 或 PxIV 判断中断源；说出 PxIV 的取值和优先级</span><span class="es">Identificación de la fuente de interrupción.</span><a href="#s7">→ §7 是谁触发的</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.9" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+<li class="obj">
+<span class="code">M21.10</span>
+<div class="txt"><span>说明 RTI 为什么要短，以及 modelo tarea-interrupción</span><span class="es">Consejos de uso de las RTI.</span><a href="#s8">→ §8 RTI 要短</a></div>
+<button aria-pressed="false" class="chk" data-obj="M21.10" type="button"><span class="box"></span><span class="lab">标记掌握</span></button>
+</li>
+</ul>
+<div class="meter" data-meter="M21"><span class="val">0 / 10 已掌握</span><span class="bar"><i></i></span></div>
+</section>
+
+<section class="sec" id="s0">
+<h2><span class="n">§0</span>两种等待的方式</h2>
+<p class="hook"><span class="zh">CPU 正在做别的事，按钮被按了一下。它怎么知道？</span><span class="es">¿Cómo se entera la CPU de que ha ocurrido un evento?</span></p>
+<figure class="stage" data-scene="" id="sc-intro">
+<div class="stage-title"><span>Escena 0 · sondeo vs interrupción</span><b>按 ▶ 播放</b></div>
+<div aria-label="动画：轮询与中断，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-intro-t" role="img" viewbox="0 0 800 400">
+<title id="sc-intro-t">左边是轮询：CPU 不停地读按钮；右边是中断：CPU 睡着，事件发生时由硬件唤醒</title>
+<rect class="ln thin m" height="376" rx="12" width="378" x="12" y="12"></rect>
+<text class="tx w" x="32" y="50">Sondeo</text>
+<text class="tz sm m" x="32" y="76">polling · 轮询</text>
+<rect class="bx b" height="84" rx="10" width="120" x="44" y="118"></rect>
+<text class="tx b mid" x="104" y="168">CPU</text>
+<circle class="bx r" cx="318" cy="160" r="28"></circle>
+<text class="tm sm r mid" x="318" y="165">S2</text>
+<text class="tm sm m mid" x="318" y="214">P1.1</text>
+<g data-step="1">
+<path class="ln y draw" d="M168 140 C 210 100, 262 100, 292 142" marker-end="url(#m21-ah-y)"></path>
+<path class="ln y draw" d="M292 180 C 262 222, 210 222, 168 182" marker-end="url(#m21-ah-y)"></path>
+<text class="tm sm y mid" x="229" y="98">¿P1IN.1 = 0?</text>
+</g>
+<g data-step="2">
+<text class="tz sm m" x="32" y="301">CPU 时间</text>
+<rect class="bx y" height="24" rx="4" width="262" x="110" y="284"></rect>
+<path class="ln thin y" d="M126 284v24M142 284v24M158 284v24M174 284v24M190 284v24M206 284v24M222 284v24M238 284v24M254 284v24M270 284v24M286 284v24M302 284v24M318 284v24M334 284v24M350 284v24M366 284v24"></path>
+<text class="tz sm y mid" x="241" y="342">每一圈都读一次 P1IN · 不能睡觉</text>
+</g>
+<rect class="ln thin m" height="376" rx="12" width="378" x="410" y="12"></rect>
+<text class="tx w" x="430" y="50">Interrupción</text>
+<text class="tz sm m" x="430" y="76">interrupt · 中断</text>
+<g data-step="3">
+<rect class="bx g" data-hl="4" height="84" rx="10" width="120" x="442" y="118"></rect>
+<text class="tx g mid" x="502" y="162">CPU</text>
+<circle class="bx r" cx="716" cy="160" r="28"></circle>
+<text class="tm sm r mid" x="716" y="165">S2</text>
+<text class="tm sm m mid" x="716" y="214">P1.1</text>
+<text class="tm sm m mid" data-out="4" x="502" y="188">LPM · zZ</text>
+</g>
+<g data-step="4">
+<path class="ln r draw" d="M688 160 L 566 160" id="m21-p-irq" marker-end="url(#m21-ah-r)"></path>
+<text class="tz sm r mid" x="627" y="146">事件</text>
+<text class="tm sm y mid" x="502" y="188">→ RTI</text>
+</g>
+<circle class="sl r" data-move="#m21-p-irq" data-out="5" data-step="4" r="7"></circle>
+<g data-step="5">
+<text class="tz sm m" x="430" y="301">CPU 时间</text>
+<path class="ln thin m" d="M508 296 H 770"></path>
+<rect class="bx r" height="24" rx="4" width="30" x="660" y="284"></rect>
+<text class="tz sm m mid" x="584" y="342">空闲 / 低功耗</text>
+<text class="tz sm r mid" x="675" y="342">RTI</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>想知道"按钮被按下了"，有两种办法。左边是 <b>sondeo (polling)</b>——轮询：CPU 一遍又一遍地去读按钮的状态。</li>
+<li data-dur="3400">每一圈都要读一次 <code>P1IN</code>。按钮大部分时间没被按，这些读取几乎全是白费的，CPU 也不能去睡觉省电。</li>
+<li>右边是 <b>interrupción</b>——中断：CPU 先去做别的事，甚至进入低功耗模式（LPM）睡觉。</li>
+<li data-dur="3600">按钮一按，硬件把<span class="c-r">事件</span>报给 CPU：CPU 暂停手头的事，去执行一段专门写好的 <b>RTI</b>（Rutina de Tratamiento de Interrupción），执行完再回到原处。</li>
+<li data-dur="4200">时间线对比：轮询一直占着 CPU；中断只在事件发生时占用一小段。代价是要配置使能位、写 RTI、处理 flag——这一章要讲的就是这些。</li>
+</ol>
+</figure>
+<p>事件从哪里来：</p>
+
+<p class="takeaway">中断是一种硬件机制：外设（或外部设备经由 E/S 外设）通过控制总线向 CPU 发出信号，打断当前程序，转去执行 RTI，之后再回到被打断的地方。</p>
+
+</section>
+
+<section class="sec" id="s1">
+<h2><span class="n">§1</span>一条事件链 <span class="tag">M21.1</span></h2>
+<p class="hook"><span class="zh">按钮被按下，和 CPU 被打断，中间隔着几道门？</span><span class="es">Evento → flag → habilitación → interrupción.</span></p>
+<p>先把四个词对上号：</p>
+<ul>
+<li><b class="t">evento (ES) / event (EN)</b>——事件：输入、输出或外设里一个值得关注的变化，比如引脚从 1 变到 0。分<b>内部</b>（watchdog、定时器、振荡器故障……）和<b>外部</b>（引脚变化、通信外设收到数据……）。</li>
+<li><b class="t">flag de interrupción (ES) / interrupt flag (EN)</b>——中断标志：事件发生时<b>硬件自动</b>把某个寄存器里的一位置 1，把事件"记下来"。flag 置 1 叫 <b>activación</b>（激活）。</li>
+<li><b class="t">habilitación (ES) / enable (EN)</b>——使能：flag 置 1 不等于中断一定发生。外设寄存器里还有一个<span class="c-g">单独使能位</span>（例如 <span class="reg g">P1IE.1</span>），为 1 才允许这个事件去打断 CPU。</li>
+<li><b class="t">GIE (General Interrupt Enable)</b>——总使能：状态寄存器 SR 的第 3 位。它为 0 时，所有 <b class="t">interrupciones enmascarables (ES) / maskable interrupts (EN)</b>——可屏蔽中断都被挡住，单独使能位是什么都没用。</li>
+</ul>
+<p>下面这个模拟器把链条画出来。你可以改 <span class="reg">P1IES.1</span>（边沿）、<span class="reg g">P1IE.1</span> 和 <span class="reg g">GIE</span>，然后按下、松开 S2，看黄色的脉冲走到哪里停下。</p>
+<figure class="stage" id="sc-chain">
+<div class="stage-title"><span>Simulador · evento → CPU</span><b>自己动手</b></div>
+<div class="stage-canvas">
+<svg aria-labelledby="sc-chain-t" role="img" viewbox="0 0 800 280">
+<title id="sc-chain-t">事件链：按钮 S2 → 边沿检测 P1IES.1 → 标志 P1IFG.1 → 单独使能 P1IE.1 → 总使能 GIE → CPU</title>
+<path class="ln thin m" d="M86 140 H120 M232 140 H272 M384 140 H420 M480 140 H560 M620 140 H660"></path>
+<circle class="bx r" cx="58" cy="140" id="m21-btn" r="27"></circle>
+<text class="tm sm r mid" x="58" y="145">S2</text>
+<text class="tm xs m mid" x="58" y="192">P1.1</text>
+<text class="tm xs b mid" id="m21-lvl" x="58" y="96">P1IN.1 = 1</text>
+<rect class="bx b" height="64" id="m21-edge" rx="8" width="112" x="120" y="108"></rect>
+<text class="tm xs b mid" x="176" y="132">P1IES.1</text>
+<text class="tm b mid" id="m21-edgev" x="176" y="158">1 · ↓</text>
+<text class="tz sm m mid" x="176" y="200">边沿</text>
+<rect class="bx r" height="64" id="m21-flag" rx="8" width="112" x="272" y="108"></rect>
+<text class="tm xs r mid" x="328" y="132">P1IFG.1</text>
+<text class="tm lg r mid" id="m21-flagv" x="328" y="160">0</text>
+<text class="tz sm m mid" x="328" y="200">flag</text>
+<circle class="sl w" cx="420" cy="140" r="4"></circle>
+<circle class="sl w" cx="480" cy="140" r="4"></circle>
+<line class="ln g arm" id="m21-sw1" x1="420" x2="480" y1="140" y2="140"></line>
+<text class="tm sm g mid" x="450" y="100">P1IE.1</text>
+<text class="tz sm m mid" id="m21-sw1t" x="450" y="200">闭合</text>
+<circle class="sl w" cx="560" cy="140" r="4"></circle>
+<circle class="sl w" cx="620" cy="140" r="4"></circle>
+<line class="ln g arm" id="m21-sw2" x1="560" x2="620" y1="140" y2="140"></line>
+<text class="tm sm g mid" x="590" y="100">GIE</text>
+<text class="tm xs m mid" x="590" y="82">SR.3</text>
+<text class="tz sm m mid" id="m21-sw2t" x="590" y="200">断开</text>
+<rect class="bx b" height="84" id="m21-cpu" rx="10" width="124" x="660" y="98"></rect>
+<text class="tx b mid" x="722" y="136">CPU</text>
+<text class="tm sm m mid" id="m21-cput" x="722" y="164">main()</text>
+<circle class="bx m" cx="690" cy="232" id="m21-led" r="12"></circle>
+<text class="tm xs m" x="710" y="236">LED1 · P1.0</text>
+<text class="tz sm m mid" x="330" y="258">evento → flag → 单独使能 → 总使能 → CPU</text>
+<circle class="sl y" cx="58" cy="140" id="m21-pulse" r="8" style="opacity:0"></circle>
+</svg>
+</div>
+<div class="stage-ctl">
+<button class="press" id="m21-down" type="button">按下 S2</button>
+<button class="press" disabled="" id="m21-up" type="button">松开 S2</button>
+<button aria-pressed="true" class="sw" id="m21-ies" type="button"><span class="knob"></span><span class="lab">P1IES.1 = 1 · ↓</span></button>
+<button aria-pressed="true" class="sw" id="m21-ie" type="button"><span class="knob"></span><span class="lab">P1IE.1</span></button>
+<button aria-pressed="false" class="sw" id="m21-gie" type="button"><span class="knob"></span><span class="lab">GIE</span></button>
+<button class="mini" id="m21-clr" type="button">清 P1IFG.1</button>
+<p aria-live="polite" class="out" id="m21-out">现在 P1IE.1 = 1、GIE = 0。先按下 S2，看事件走到哪一步停下。</p>
+</div>
+</figure>
+<div class="formula" data-tex="\class{c-r}{\mathtt{P1IFG.1}} \;\wedge\; \class{c-g}{\mathtt{P1IE.1}} \;\wedge\; \class{c-g}{\mathtt{GIE}} \;\Longrightarrow\; \class{c-y}{\text{IRQ}}">P1IFG.1 ∧ P1IE.1 ∧ GIE ⇒ 中断请求</div>
+<p class="aside">可屏蔽中断的请求条件。flag 由硬件置位，与使能位无关：使能关着时，flag 照样会被置 1，并一直挂着，直到被清掉。</p>
+<div class="note">
+<span class="lbl">试试看</span>
+<p>GIE = 0 时按下 S2：flag 变成 1 但 CPU 没反应。<b>不清 flag</b>，直接打开 GIE：中断立刻发生。挂着的 flag 会在使能打开的瞬间触发中断，所以 §5 的配置顺序里要先清 flag，再开 GIE。</p>
+</div>
+<div class="note warm">
+<span class="lbl">优先级 · prioridad</span>
+<p>几个已使能的事件同时发生时，先处理优先级最高的，其余的挂起等待。MSP430 的优先级由向量号决定：号码越大越优先（Reset 是 63 号，最高）。完整的顺序见 §4 的向量表。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s2">
+<h2><span class="n">§2</span>三类中断 <span class="tag">M21.2 · M21.3</span></h2>
+<p class="hook"><span class="zh">GIE = 0 能挡住所有中断吗？</span><span class="es">No todas las interrupciones son enmascarables.</span></p>
+<div class="grid3">
+<div class="cell r">
+<span class="k c-r">no enmascarable</span>
+<h3>RESET</h3>
+<p>任何方式都关不掉，优先级最高（63 号，0FFFEh）。不管 CPU 在做什么，都会把系统带回一个已知的初始状态。</p>
+</div>
+<div class="cell o">
+<span class="k c-o">(no) enmascarable · NMI</span>
+<h3>UNMI / SNMI</h3>
+<p><b>不受 GIE 控制</b>，但可以用外设里各自的使能位关掉。UNMI（用户）：RST/NMI 引脚设为 NMI 时的信号、振荡器故障、Flash 访问违例。SNMI（系统）：电源 PMM、访问未实现的内存、JTAG mailbox。SNMI 比 UNMI 优先；进入 NMI 会自动禁止同类 NMI，避免 <b class="t">anidamiento (ES) / nesting (EN)</b>——中断嵌套。SNMI 还有防重入机制：RETI 之后主程序至少先执行一条指令，再进入下一次 SNMI。</p>
+</div>
+<div class="cell g">
+<span class="k c-g">enmascarable</span>
+<h3>可屏蔽中断</h3>
+<p>双重控制：外设里的单独使能位 + SR 里的 <b>GIE</b>。GIE = 0 时全部被挡住，不管单独使能位是什么。端口、定时器、USCI 等外设中断都属于这一类。</p>
+</div>
+</div>
+<p>RESET 本身又分三层。看它们谁引发谁：</p>
+<figure class="stage" data-scene="" id="sc-reset">
+<div class="stage-title"><span>Escena 2 · BOR ⇒ POR ⇒ PUC</span><b>4 步</b></div>
+<div aria-label="动画：三种复位的起因，一层套一层" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-reset-t" role="img" viewbox="0 0 800 360">
+<title id="sc-reset-t">三种复位一层套一层：最外层的框是 PUC 的起因，里面套着 POR 的起因，最里面是 BOR 的起因；每个起因旁边是 SYSRSTIV 的编码</title>
+<g data-step="1">
+<rect class="ln r draw" height="280" rx="12" width="768" x="16" y="36"></rect>
+<text class="tx r" x="32" y="68">PUC</text>
+<text class="tz sm m" x="84" y="68">power-up clear</text>
+<text class="tm xs m" x="32" y="110">16h</text><text class="tz sm w" x="68" y="110">watchdog 超时</text>
+<text class="tm xs m" x="32" y="138">18h</text><text class="tz sm w" x="68" y="138">WDT 密码违例</text>
+<text class="tm xs m" x="32" y="166">1Ah</text><text class="tz sm w" x="68" y="166">Flash 密码违例</text>
+<text class="tm xs m" x="32" y="194">20h</text><text class="tz sm w" x="68" y="194">PMM 密码违例</text>
+<text class="tm xs m" x="32" y="222">1Eh</text><text class="tz sm w" x="68" y="222">从外设空间取指令</text>
+</g>
+<g data-step="2">
+<rect class="ln p draw" height="228" rx="10" width="518" x="250" y="76"></rect>
+<text class="tx p" x="266" y="108">POR</text>
+<text class="tz sm m" x="318" y="108">power-on reset</text>
+<text class="tm xs m" x="266" y="146">0Ch</text><text class="tm xs w" x="300" y="146">SVSL</text>
+<text class="tm xs m" x="266" y="170">0Eh</text><text class="tm xs w" x="300" y="170">SVSH</text>
+<text class="tm xs m" x="266" y="194">10h</text><text class="tm xs w" x="300" y="194">SVML_OVP</text>
+<text class="tm xs m" x="266" y="218">12h</text><text class="tm xs w" x="300" y="218">SVMH_OVP</text>
+<text class="tm xs m" x="266" y="242">14h</text><text class="tm xs w" x="300" y="242">PMMSWPOR · 软件</text>
+<text class="tz sm m" x="266" y="284">电源异常 / 电源状态变化</text>
+</g>
+<g data-step="3">
+<rect class="ln b draw" height="176" rx="8" width="268" x="484" y="112"></rect>
+<text class="tx b" x="500" y="142">BOR</text>
+<text class="tz sm m" x="552" y="142">brownout reset</text>
+<text class="tm xs m" x="500" y="172">02h</text><text class="tz sm w" x="534" y="172">上电 · 欠压 brownout</text>
+<text class="tm xs m" x="500" y="196">04h</text><text class="tz sm w" x="534" y="196">RST/NMI 引脚（RST 模式）</text>
+<text class="tm xs m" x="500" y="220">06h</text><text class="tz sm w" x="534" y="220">PMMSWBOR · 软件</text>
+<text class="tm xs m" x="500" y="244">08h</text><text class="tz sm w" x="534" y="244">退出 LPMx.5</text>
+<text class="tm xs m" x="500" y="268">0Ah</text><text class="tz sm w" x="534" y="268">安全违例</text>
+</g>
+<g data-step="4">
+<text class="tz sm y mid" data-hl="4" x="400" y="346">起因在哪一层，就触发这一层和外面每一层的复位：BOR ⇒ POR ⇒ PUC</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4600">把复位画成一层套一层的框，框里写的是<b>起因</b>。最外层是 <b>PUC</b>（power-up clear）：多半是"用错了关键模块"——watchdog 超时，WDT、Flash、PMM 的密码违例，以及从外设空间取指令。左边的编号是复位后 <span class="reg">SYSRSTIV</span> 读出的值。</li>
+<li data-dur="4200">PUC 的框里套着 <b>POR</b>（power-on reset）：电源出问题或电源状态变化（SVS / SVM 电压监控），也可以由软件触发（PMMSWPOR）。</li>
+<li data-dur="4200">最里面是 <b>BOR</b>（brownout reset）：上电或欠压、RST/NMI 引脚（设为 RST 模式）拉低、软件触发（PMMSWBOR）、退出 LPMx.5、安全违例。</li>
+<li data-dur="5200">读法：起因落在哪个框里，就触发这个框的复位，以及包住它的每一层复位。所以 <span class="c-y">BOR ⇒ POR ⇒ PUC</span>：BOR 一定带来 POR 和 PUC；PUC 可以单独发生（例如 watchdog 超时），不会反过来引发 POR 或 BOR。BOR 在最里面，却是最彻底的复位。（Flash <b>访问</b>违例是 UNMI，不会复位；Flash <b>密码</b>违例才会引发 PUC。）</li>
+</ol>
+<p class="stage-note">SYSRSTIV 的 1Ch 和 22h–3Eh 是保留编码，场景里没有画。</p>
+
+</figure>
+<div class="grid2">
+<div class="panel">
+<h3>BOR 之后的状态</h3>
+<ul>
+<li>RST/NMI 引脚处于 RESET 模式</li>
+<li>所有端口引脚都是<b>输入</b></li>
+<li>SR 全部清零（GIE = 0）</li>
+<li><b class="c-r">watchdog 已经在计时</b>，约 32 ms 后会触发 PUC 复位</li>
+<li>PC 从复位向量 0FFFEh 取出程序入口地址，开始执行</li>
+<li>想知道复位是谁引起的，读 <span class="reg">SYSRSTIV</span>：00h 表示没有挂起的复位源，其余偶数编码就是上图每个起因左边的值，02h（BOR）优先级最高。写这个寄存器会清掉所有挂起的复位源 flag</li>
+</ul>
+</div>
+<div class="panel">
+<h3>所以 main 的第一行通常是</h3>
+<pre class="code"><code><span class="ln-row"><span class="rg">WDTCTL</span> = WDTPW + WDTHOLD;  <span class="cm">// 停 watchdog</span></span></code></pre>
+<p class="aside">不停掉也不按时"喂狗"，32 ms 后就会复位，程序陷入无限复位循环。<b class="t">watchdog</b>——看门狗的本意是防止软件卡死：程序正常时定期重置计数，卡死时来不及重置，于是复位。</p>
+</div>
+</div>
+<h3 id="s2b">读寄存器表的记号</h3>
+<p>寄存器表给每一位标两件事：能不能读写，以及各种复位之后是什么值。后面各章的寄存器表都用这套记号：</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>记号</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>rw · r · w</td><td>可读写 · 只读 · 只写</td></tr>
+<tr><td>r0 · r1</td><td>读出来总是 0 · 总是 1</td></tr>
+<tr><td>w0 · w1</td><td>只能写 0 · 只能写 1</td></tr>
+<tr><td>(w)</td><td>没有实际的位：写 1 产生一个脉冲，读出来总是 0</td></tr>
+<tr><td>h0 · h1</td><td>由硬件清 0 · 由硬件置 1</td></tr>
+<tr><td>-0 · -1</td><td>PUC 之后的值</td></tr>
+<tr><td>-(0) · -(1)</td><td>POR 之后的值</td></tr>
+<tr><td>-[0] · -[1]</td><td>BOR 之后的值</td></tr>
+<tr><td>-{0} · -{1}</td><td>brownout 之后的值</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="aside">例：SR 的低 9 位标作 <b>rw-0</b>（SR 的各位见 <a href="#s3b">§3 CPUx</a>），意思是可读写、PUC 之后为 0。复位等级越高，写在越外面的括号里。</p>
+
+</section>
+
+<section class="sec" id="s3">
+<h2><span class="n">§3</span>八个步骤 <span class="tag">M21.4</span></h2>
+<p class="hook"><span class="zh">打断一个程序容易，难的是回来之后，它要像什么都没发生过一样继续。</span><span class="es">¿Cómo vuelve la CPU exactamente al mismo punto y en el mismo contexto?</span></p>
+<p>这就是整个处理过程要解决的两个问题：去哪里找 RTI？怎样原样回来？下面一步一步看寄存器、<b class="t">pila (ES) / stack (EN)</b>——栈和 <b class="t">tabla de vectores de interrupción (ES) / interrupt vector table (EN)</b>——中断向量表怎样变化。场景假设 main 正在执行，S2 被按下，P1IE.1 和 GIE 都已经是 1。</p>
+<figure class="stage" data-ms="3600" data-scene="" id="sc-steps">
+<div class="stage-title"><span>Escena 3 · PASO 1 → PASO 8</span><b>核心场景</b></div>
+<div aria-label="动画：中断处理的 8 个步骤，用左右方向键逐步查看" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-steps-t" role="img" viewbox="0 0 800 470">
+<title id="sc-steps-t">中断处理的 8 个步骤：程序存储器、CPU 寄存器 PC/SR/SP、栈和向量表的变化</title>
+
+<text class="tx sm w" x="16" y="30">Memoria de programa</text>
+<rect class="bx m" height="150" rx="8" width="244" x="16" y="44"></rect>
+<text class="tm sm m" x="30" y="68">main()</text>
+<text class="tm sm w" x="44" y="96">4A10  while (1) {</text>
+<text class="tm sm w" x="44" y="124">4A12    i++;</text>
+<text class="tm sm w" x="44" y="152">4A14    n = 2*i;</text>
+<text class="tm sm w" x="44" y="180">      }</text>
+<path class="sl y" d="M26 113 L37 119 L26 125 z" data-out="2"></path>
+<path class="sl y" d="M26 141 L37 147 L26 153 z" data-out="8" data-step="2"></path>
+<path class="sl y" d="M26 279 L37 285 L26 291 z" data-out="9" data-step="8"></path>
+<path class="sl y" d="M26 141 L37 147 L26 153 z" data-step="9"></path>
+<g data-step="8">
+<rect class="bx y" height="150" rx="8" width="244" x="16" y="236"></rect>
+<text class="tm sm y" x="30" y="260">P1_ISR()</text>
+<text class="tm sm w" x="44" y="290">4566  P1OUT ^= BIT0;</text>
+<text class="tm sm w" x="44" y="318">456C  P1IFG &amp;= ~BIT1;</text>
+<text class="tm sm w" data-hl="9" x="44" y="346">4572  RETI</text>
+</g>
+
+<text class="tx sm w" x="290" y="30">CPU</text>
+<rect class="bx b" data-hl="2 8 9" height="48" rx="6" width="222" x="290" y="48"></rect>
+<text class="tm b" x="304" y="78">PC</text>
+<text class="tm lg b end" data-out="2" x="498" y="80">0x4A12</text>
+<text class="tm lg b end" data-out="8" data-step="2" x="498" y="80">0x4A14</text>
+<text class="tm lg y end" data-out="9" data-step="8" x="498" y="80">0x4566</text>
+<text class="tm lg b end" data-step="9" x="498" y="80">0x4A14</text>
+<rect class="bx b" data-hl="4 7 9" height="76" rx="6" width="222" x="290" y="114"></rect>
+<text class="tm b" x="304" y="148">SR</text>
+<rect class="bx hollow m" height="32" rx="3" width="32" x="340" y="124"></rect>
+<rect class="bx hollow m" height="32" rx="3" width="32" x="374" y="124"></rect>
+<rect class="bx hollow m" height="32" rx="3" width="32" x="408" y="124"></rect>
+<rect class="bx hollow m" height="32" rx="3" width="32" x="442" y="124"></rect>
+<rect class="bx hollow g" height="32" rx="3" width="32" x="476" y="124"></rect>
+<text class="tm sm w mid" x="356" y="145">0</text>
+<text class="tm sm w mid" x="390" y="145">0</text>
+<text class="tm sm w mid" x="424" y="145">0</text>
+<text class="tm sm w mid" x="458" y="145">0</text>
+<text class="tm sm g mid" data-out="7" x="492" y="145">1</text>
+<text class="tm sm r mid" data-out="9" data-step="7" x="492" y="145">0</text>
+<text class="tm sm g mid" data-step="9" x="492" y="145">1</text>
+<text class="tm xs m mid" x="356" y="176">SCG1</text>
+<text class="tm xs m mid" x="390" y="176">SCG0</text>
+<text class="tm xs m mid" x="424" y="176">OSC</text>
+<text class="tm xs m mid" x="458" y="176">CPU</text>
+<text class="tm xs g mid" x="492" y="176">GIE</text>
+<rect class="bx p" data-hl="3 4 9" height="48" rx="6" width="222" x="290" y="208"></rect>
+<text class="tm p" x="304" y="238">SP</text>
+<text class="tm lg p end" data-out="3" x="498" y="240">0x4400</text>
+<text class="tm lg p end" data-out="4" data-step="3" x="498" y="240">0x43FE</text>
+<text class="tm lg p end" data-out="9" data-step="4" x="498" y="240">0x43FC</text>
+<text class="tm lg p end" data-step="9" x="498" y="240">0x4400</text>
+<g data-step="5">
+<rect class="bx y" data-hl="5" height="40" rx="6" width="222" x="290" y="276"></rect>
+<text class="tz sm y mid" x="401" y="301">优先级：选 47 · P1</text>
+</g>
+<rect class="bx r" data-hl="1 6" height="40" rx="6" width="222" x="290" y="334"></rect>
+<text class="tm sm r" x="304" y="359">P1IFG.1</text>
+<text class="tm r end" data-out="9" x="498" y="360">1</text>
+<text class="tm g end" data-step="9" x="498" y="360">0</text>
+<text class="tz sm r mid" data-step="6" x="401" y="398">多源向量：flag 不会自动清</text>
+
+<text class="tx sm p" x="540" y="30">Pila · stack</text>
+<text class="tm sm m end" x="576" y="70">4400</text>
+<path class="ln thin m dash" d="M584 66 H744"></path>
+<rect class="bx hollow p" height="40" rx="4" width="160" x="584" y="80"></rect>
+<rect class="bx hollow p" height="40" rx="4" width="160" x="584" y="126"></rect>
+<rect class="bx hollow p" height="40" rx="4" width="160" x="584" y="172"></rect>
+<text class="tm sm m end" x="576" y="105">43FE</text>
+<text class="tm sm m end" x="576" y="151">43FC</text>
+<text class="tm sm m end" x="576" y="197">43FA</text>
+<text class="tm sm p mid" data-out="9" data-step="3" x="664" y="105">PC = 4A14</text>
+<text class="tm sm p mid" data-out="9" data-step="4" x="664" y="151">SR（GIE=1）</text>
+<text class="tz sm m mid" x="664" y="236">栈向低地址增长 ↓</text>
+<g data-out="3"><path class="sl p" d="M750 66 l12 -7 v14 z"></path><text class="tm sm p" x="766" y="71">SP</text></g>
+<g data-out="4" data-step="3"><path class="sl p" d="M750 100 l12 -7 v14 z"></path><text class="tm sm p" x="766" y="105">SP</text></g>
+<g data-out="9" data-step="4"><path class="sl p" d="M750 146 l12 -7 v14 z"></path><text class="tm sm p" x="766" y="151">SP</text></g>
+<g data-step="9"><path class="sl p" d="M750 66 l12 -7 v14 z"></path><text class="tm sm p" x="766" y="71">SP</text></g>
+<path class="ln p draw" d="M512 72 C 548 72, 548 100, 582 100" data-out="9" data-step="3" id="m21-p-pc" marker-end="url(#m21-ah-p)"></path>
+<circle class="sl p" data-move="#m21-p-pc" data-out="4" data-step="3" r="6"></circle>
+<path class="ln p draw" d="M512 152 C 548 152, 548 146, 582 146" data-out="9" data-step="4" id="m21-p-sr" marker-end="url(#m21-ah-p)"></path>
+<circle class="sl p" data-move="#m21-p-sr" data-out="5" data-step="4" r="6"></circle>
+<g data-step="9">
+<path class="ln g draw" d="M584 146 C 552 146, 548 160, 516 160" marker-end="url(#m21-ah-g)"></path>
+<path class="ln g draw" d="M584 100 C 552 100, 548 78, 516 78" marker-end="url(#m21-ah-g)"></path>
+<text class="tm xs g mid" x="550" y="127">RETI</text>
+</g>
+
+<rect class="bx hollow p" height="150" rx="8" width="244" x="540" y="288"></rect>
+<text class="tm sm p" x="554" y="312">Tabla de vectores</text>
+<text class="tm sm m" x="554" y="342">FFFE  63 · Reset</text>
+<text class="tm sm m" x="554" y="370">FFEA  53 · TA0CCR0</text>
+<text class="tm sm w" data-hl="8" x="554" y="398">FFDE  47 · P1 → <tspan class="sl y">4566</tspan></text>
+<text class="tm sm m" x="554" y="426">FF80   0 · …</text>
+<path class="ln y draw" d="M538 392 C 524 392, 526 300, 524 210 C 522 130, 522 92, 514 86" data-out="9" data-step="8" id="m21-p-vec" marker-end="url(#m21-ah-y)"></path>
+<circle class="sl y" data-move="#m21-p-vec" data-move-dur="1400" data-out="9" data-step="8" r="6"></circle>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">起点：main 正在执行 0x4A12 这条指令。S2 被按下，<span class="c-r">P1IFG.1 = 1</span>，而且 P1IE.1、GIE 都是 1，中断请求成立。</li>
+<li>PASO 1：先把<b>当前指令执行完</b>（如果 CPU 在低功耗模式，就先退出 LPM）。PC 指向下一条指令 0x4A14。</li>
+<li>PASO 2：<b>PC 压栈</b>。SP − 2 = 0x43FE，栈顶存下 0x4A14，将来从这里回来。</li>
+<li data-dur="4000">PASO 3：<b>SR 压栈</b>。SP 再 − 2 = 0x43FC。保存下来的 SR 里有 GIE = 1 和低功耗位，返回时原样恢复。</li>
+<li>PASO 4：如果同时有好几个中断在等，<b>选优先级最高</b>的；其余继续挂起。这里只有 47 号（P1）。</li>
+<li data-dur="4200">PASO 5：<b>单源</b>向量的 flag 由硬件自动清零；<b>多源</b>向量（P1 的 8 个引脚共用 47 号）的 flag 保持为 1，要软件在 RTI 里清。</li>
+<li data-dur="4200">PASO 6：<b>SR 清零，只有 SCG0 保持不变</b>。GIE 变成 0，RTI 执行期间其他可屏蔽中断进不来（不嵌套）；CPUOFF 等位也清零，CPU 保持唤醒。</li>
+<li data-dur="4200">PASO 7：<b>向量装入 PC</b>。47 号向量在 0xFFDE，里面存的是 RTI 的地址 0x4566。CPU 跳过去执行 RTI。</li>
+<li data-dur="4600">PASO 8：RTI 执行完，最后一条 <b>RETI</b> 先弹出 SR、再弹出 PC：GIE、低功耗位、PC 全部恢复，SP 回到 0x4400，程序回到 0x4A14 继续。flag 已经在 RTI 里清掉了。</li>
+</ol>
+<p class="stage-note">地址和 RTI 内容只作演示；RTI 地址 0x4566 和 §4 截图里 P1_ISR 的地址相同。PASO 1–7 由硬件自动完成，共 6 个时钟周期；RETI 需要 5 个周期。</p>
+</figure>
+<div class="note">
+<span class="lbl">压栈顺序，一句话记住</span>
+<p>进来时：先 <span class="reg p">PC</span> 后 <span class="reg p">SR</span>，SP 共减 4。回去时（RETI）：先 <span class="reg p">SR</span> 后 <span class="reg p">PC</span>，SP 共加 4。栈是后进先出，所以顺序正好相反。</p>
+</div>
+<h3 id="s3b">CPUx：20 位的 PC 怎么塞进 16 位的栈？ <span class="tag">M21.5</span></h3>
+<p>F5529 的 CPU 是 <b>CPUx</b>：PC 有 20 位，可以寻址 1 MB。可栈上每个字只有 16 位，而且中断帧最好和老 CPU 保持同样大小（两个字）。办法是借用 SR 里没用到的高 4 位：</p>
+<figure class="stage" data-scene="" id="sc-cpux">
+<div class="stage-title"><span>Escena 3b · CPUx 的中断栈帧</span><b>3 步</b></div>
+<div aria-label="动画：CPUx 怎样把 20 位 PC 和 SR 存进两个字" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-cpux-t" role="img" viewbox="0 0 800 290">
+<title id="sc-cpux-t">20 位 PC 拆成 PC.19:16 和 PC.15:0；PC.15:0 存在 SP+2，PC.19:16 和 SR.11:0 合在 SP 处的一个字里</title>
+<text class="tx sm w" x="20" y="62">PC</text>
+<text class="tz sm m" x="20" y="86">20 位</text>
+<rect class="bx y" height="44" rx="4" width="96" x="200" y="40"></rect>
+<text class="tm y mid" x="248" y="68">19:16</text>
+<rect class="bx b" height="44" rx="4" width="384" x="296" y="40"></rect>
+<text class="tm b mid" x="488" y="68">15:0</text>
+<g data-step="2">
+<text class="tz sm p" x="20" y="178">SP + 2</text>
+<rect class="bx b" height="44" rx="4" width="384" x="296" y="150"></rect>
+<text class="tm b mid" x="488" y="178">PC.15:0</text>
+<path class="ln b draw" d="M488 88 V144" marker-end="url(#m21-ah-b)"></path>
+<text class="tm xs m mid" x="308" y="144">15</text>
+<text class="tm xs m mid" x="668" y="144">0</text>
+</g>
+<g data-step="3">
+<text class="tz sm p" x="20" y="248">SP · 栈顶</text>
+<rect class="bx y" height="44" rx="4" width="96" x="296" y="220"></rect>
+<text class="tm sm y mid" x="344" y="247">PC.19:16</text>
+<rect class="bx t" height="44" rx="4" width="288" x="392" y="220"></rect>
+<text class="tm t mid" x="536" y="248">SR.11:0</text>
+<path class="ln y draw" d="M248 88 C 248 160, 344 150, 344 214" marker-end="url(#m21-ah-y)"></path>
+<text class="tm xs m mid" x="308" y="214">15</text>
+<text class="tm xs m mid" x="380" y="214">12</text>
+<text class="tm xs m mid" x="404" y="214">11</text>
+<text class="tm xs m mid" x="668" y="214">0</text>
+<text class="tz sm t" x="690" y="248">← SR</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>CPUx 的 PC 有 20 位：高 4 位 PC.19:16，低 16 位 PC.15:0。栈上的每个字只有 16 位。</li>
+<li>先压的是 PC 的低 16 位：PC.15:0 放在 SP + 2。</li>
+<li data-dur="4200">再压 SR 时，SR 只有低 12 位有意义，高 4 位正好装下 PC.19:16。两个字装下"20 位 PC + SR"，和老 CPU 的中断帧一样大，RETI 能完整恢复 20 位 PC。</li>
+</ol>
+
+</figure>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>指令</th><th>栈里保存什么</th><th>能到哪里</th></tr></thead>
+<tbody>
+<tr><td>CALL / RET</td><td>PC 的低 16 位（1 个字）</td><td>子程序必须在低 64 KB</td></tr>
+<tr><td>CALLA / RETA</td><td>完整的 20 位 PC（2 个字）</td><td>整个 1 MB</td></tr>
+<tr><td>中断 / RETI</td><td>PC.15:0，再加 PC.19:16 + SR（2 个字）</td><td>RTI 入口必须在低 64 KB（向量只有 16 位）；返回地址可以在 1 MB 内任何位置</td></tr>
+</tbody>
+</table>
+</div>
+<p class="aside">SR 本身：位 15–9 保留，8 V，7 SCG1，6 SCG0，5 OSCOFF，4 CPUOFF，3 GIE，2 N，1 Z，0 C。有用的只有低 9 位，所以存 SR.11:0 时高 4 位腾得出来。</p>
+<p class="aside">CALL 和 CALLA 的栈格式不同，所以必须配对使用：CALL 配 RET，CALLA 配 RETA。函数调用是程序员安排好的同步过程，只自动保存返回地址；中断是异步的，所以连 SR 一起保存。</p>
+
+</section>
+
+<section class="sec" id="s4">
+<h2><span class="n">§4</span>向量表 <span class="tag">M21.6</span></h2>
+<p class="hook"><span class="zh">CPU 被打断时，怎么知道该跳到哪里？</span><span class="es">La tabla de vectores de interrupción.</span></p>
+<figure class="stage" data-scene="" id="sc-vt">
+<div class="stage-title"><span>Escena 4 · 0xFF80 – 0xFFFF</span><b>3 步</b></div>
+<div aria-label="动画：向量表的位置和向量地址的计算" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-vt-t" role="img" viewbox="0 0 800 300">
+<title id="sc-vt-t">64 个向量排成一条，0 号在 0xFF80，63 号在 0xFFFE；47 号 P1 在 0xFFDE，里面以小端序存着 0x4566</title>
+<g id="m21-strip"></g>
+<text class="tm xs m" x="40" y="140">0xFF80 · 0 号 · 优先级最低</text>
+<text class="tm xs y end" x="744" y="140">63 号 · 最高 · 0xFFFE</text>
+<g data-step="1">
+<path class="ln thin m" d="M40 70 V60 H480 V70"></path>
+<text class="tz sm m mid" x="260" y="50">0–40 号：保留</text>
+<path class="ln thin b" d="M491 70 V60 H744 V70"></path>
+<text class="tz sm b mid" x="617" y="50">F5529 用 41–63 号</text>
+</g>
+<g data-step="2">
+<rect class="ln y" height="48" rx="2" width="14" x="555" y="74"></rect>
+<text class="tm sm y mid" x="260" y="196">0xFF80 + 2 × 47 = 0xFF80 + 0x5E = 0xFFDE</text>
+<path class="ln thin y" d="M562 124 C 562 170, 470 190, 440 192"></path>
+</g>
+<g data-step="3">
+<path class="ln thin y dash" d="M556 124 L 482 222 M568 124 L 690 222"></path>
+<rect class="bx p" height="36" rx="4" width="108" x="472" y="222"></rect>
+<text class="tm sm p mid" x="526" y="245">FFDE: 66</text>
+<rect class="bx p" height="36" rx="4" width="108" x="584" y="222"></rect>
+<text class="tm sm p mid" x="638" y="245">FFDF: 45</text>
+<text class="tm sm y" x="700" y="245">= 0x4566</text>
+<text class="tz sm m mid" x="582" y="286">小端序：低字节在低地址</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="4200">向量表在第一个 64 KB 的最顶端：0xFF80 – 0xFFFF，共 128 字节 = 64 个向量。号码越大优先级越高。F5529 只用了 41–63 号，0–40 号保留。</li>
+<li data-dur="4200">每个向量占 2 字节，所以 n 号向量的地址 = 0xFF80 + 2n。P1 是 47 号：0xFF80 + 94 = <span class="c-y">0xFFDE</span>。</li>
+<li data-dur="5200">向量里存的是 RTI 的入口地址。例子里是 0x4566，按小端序存放：低字节 0x66 在 0xFFDE，高字节 0x45 在 0xFFDF。<b>写这个地址是程序员的责任</b>，CCS 里用 <code>#pragma vector</code> 完成（§5）。没写会怎样，看下面的截图。</li>
+</ol>
+</figure>
+<div class="formula" data-tex="\mathrm{addr}(n) = \class{c-p}{\mathtt{0xFF80}} + 2n \qquad\qquad n = \frac{\mathrm{addr} - \class{c-p}{\mathtt{0xFF80}}}{2}">addr(n) = 0xFF80 + 2n　　n = (addr − 0xFF80) / 2</div>
+<p class="aside"><code>#pragma vector=47</code> 就是这样算出来的：(0xFFDE − 0xFF80) / 2 = 47。</p>
+<p>没写向量时会怎样：</p>
+
+<p>下面是 F5529 用到的全部向量。点一行看说明。</p>
+<div class="tbl-wrap">
+<table class="vt" id="m21-vt">
+<thead><tr><th>Nº</th><th>地址</th><th>来源</th><th>flags</th><th>单源 / 多源</th></tr></thead>
+<tbody>
+<tr class="pick" data-k="Reset" data-n="63"><td class="mono">63</td><td class="mono">FFFE</td><td>System Reset：上电、外部复位、watchdog 超时、密码违例、Flash 密码违例</td><td class="mono">WDTIFG, KEYV (SYSRSTIV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="(No) enmascarable" data-n="62"><td class="mono">62</td><td class="mono">FFFC</td><td>System NMI：PMM、访问未实现的内存、JTAG mailbox</td><td class="mono">SVMLIFG … JMBOUTIFG (SYSSNIV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="(No) enmascarable" data-n="61"><td class="mono">61</td><td class="mono">FFFA</td><td>User NMI：NMI 引脚、振荡器故障、Flash 访问违例</td><td class="mono">NMIIFG, OFIFG, ACCVIFG, BUSIFG (SYSUNIV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="60"><td class="mono">60</td><td class="mono">FFF8</td><td>Comp_B 比较器</td><td class="mono">(CBIV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="59"><td class="mono">59</td><td class="mono">FFF6</td><td>TB0 · CCR0</td><td class="mono">TB0CCR0 CCIFG0</td><td class="single">单源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="58"><td class="mono">58</td><td class="mono">FFF4</td><td>TB0 · CCR1–CCR6、溢出</td><td class="mono">CCIFG1–6, TB0IFG (TB0IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="57"><td class="mono">57</td><td class="mono">FFF2</td><td>Watchdog（interval timer 模式）</td><td class="mono">WDTIFG</td><td class="single">单源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="56"><td class="mono">56</td><td class="mono">FFF0</td><td>USCI_A0 收 / 发</td><td class="mono">UCA0RXIFG, UCA0TXIFG (UCA0IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="55"><td class="mono">55</td><td class="mono">FFEE</td><td>USCI_B0 收 / 发</td><td class="mono">UCB0RXIFG, UCB0TXIFG (UCB0IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="54"><td class="mono">54</td><td class="mono">FFEC</td><td>ADC12_A</td><td class="mono">ADC12IFG0–15 (ADC12IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="53"><td class="mono">53</td><td class="mono">FFEA</td><td>TA0 · CCR0</td><td class="mono">TA0CCR0 CCIFG0</td><td class="single">单源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="52"><td class="mono">52</td><td class="mono">FFE8</td><td>TA0 · CCR1–CCR4、溢出</td><td class="mono">CCIFG1–4, TA0IFG (TA0IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="51"><td class="mono">51</td><td class="mono">FFE6</td><td>USB_UBM</td><td class="mono">(USBIV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="50"><td class="mono">50</td><td class="mono">FFE4</td><td>DMA</td><td class="mono">DMA0IFG–DMA2IFG (DMAIV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="49"><td class="mono">49</td><td class="mono">FFE2</td><td>TA1 · CCR0</td><td class="mono">TA1CCR0 CCIFG0</td><td class="single">单源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="48"><td class="mono">48</td><td class="mono">FFE0</td><td>TA1 · CCR1–CCR2、溢出</td><td class="mono">CCIFG1–2, TA1IFG (TA1IV)</td><td class="multi">多源</td></tr>
+<tr class="pick on" data-k="Enmascarable" data-n="47"><td class="mono">47</td><td class="mono">FFDE</td><td>I/O Port P1</td><td class="mono">P1IFG.0–7 (P1IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="46"><td class="mono">46</td><td class="mono">FFDC</td><td>USCI_A1 收 / 发</td><td class="mono">UCA1RXIFG, UCA1TXIFG (UCA1IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="45"><td class="mono">45</td><td class="mono">FFDA</td><td>USCI_B1 收 / 发</td><td class="mono">UCB1RXIFG, UCB1TXIFG (UCB1IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="44"><td class="mono">44</td><td class="mono">FFD8</td><td>TA2 · CCR0</td><td class="mono">TA2CCR0 CCIFG0</td><td class="single">单源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="43"><td class="mono">43</td><td class="mono">FFD6</td><td>TA2 · CCR1–CCR2、溢出</td><td class="mono">CCIFG1–2, TA2IFG (TA2IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="42"><td class="mono">42</td><td class="mono">FFD4</td><td>I/O Port P2</td><td class="mono">P2IFG.0–7 (P2IV)</td><td class="multi">多源</td></tr>
+<tr class="pick" data-k="Enmascarable" data-n="41"><td class="mono">41</td><td class="mono">FFD2</td><td>RTC_A 实时时钟</td><td class="mono">RTCRDYIFG … RT1PSIFG (RTCIV)</td><td class="multi">多源</td></tr>
+<tr><td class="mono">40–0</td><td class="mono">FFD0–FF80</td><td>Reserved（保留）</td><td></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<div aria-live="polite" class="panel vt-detail" id="m21-vtd">
+<span class="big">47 号 · 0xFFDE</span>
+<p>I/O Port P1。8 个引脚共用这一个向量，属于<b>多源</b>向量：进入 RTI 时 flag 不会自动清，要在 RTI 里判断是哪个引脚，再清对应的 P1IFG 位，或者读 P1IV（§7）。</p>
+</div>
+<div class="note warm">
+<span class="lbl">单源 vs 多源</span>
+<p>有些资料举的单源向量是 57、53、49、44；按向量表，59 号（TB0 的 CCR0）其实也是单源。57 是 watchdog 的 interval timer 模式，53、49、44 是 TA0、TA1、TA2 的 CCR0。其余向量都是多源：flags 列里带 <code>…IV</code> 寄存器的，就是多源向量，读这个 IV 寄存器能知道具体来源。</p>
+</div>
+<p class="aside">F5529 还可以把向量表搬到 RAM 的最高地址：把 SYSCTL 里的 SYSRIVECT 置 1。BOR 会把它清零，所以复位向量必须始终在 0xFFFE。</p>
+<div class="drill" data-drill="vec"></div>
+
+</section>
+
+<section class="sec" id="s5">
+<h2><span class="n">§5</span>在 CCS 里写出来 <span class="tag">M21.7</span></h2>
+<p class="hook"><span class="zh">§1 那条链上的每一个零件，都对应一行代码。</span><span class="es">Configuración del periférico + habilitación + vector + RTI.</span></p>
+<p>以课程的示例程序 Codigo7 为例：S2（P1.1）按下时点亮 LED1（P1.0）。配置部分逐行播放，看链条怎样一节一节接通：</p>
+<figure class="stage" data-ms="3400" data-scene="" id="sc-config">
+<div class="stage-title"><span>Escena 5 · 代码 ↔ 事件链</span><b>6 步</b></div>
+<div aria-label="动画：配置代码与事件链一一对应" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-config-t" role="img" viewbox="0 0 800 210">
+<title id="sc-config-t">上拉电阻、边沿、flag、P1IE、GIE、向量表，随代码逐一配置好</title>
+<text class="tm xs m mid" x="60" y="20">Vcc</text>
+<path class="ln b draw" d="M60 26 V40 l8 5 l-16 10 l16 10 l-16 10 l16 10 l-8 5 V114" data-step="1"></path>
+<text class="tm xs b" data-step="1" x="76" y="66">pull-up</text>
+<circle class="sl w" cx="60" cy="120" r="5"></circle>
+<text class="tm sm m mid" x="60" y="150">P1.1</text>
+<text class="tm xs m mid" x="60" y="168">S2</text>
+<text class="tm xs b" data-step="1" x="72" y="112">= 1</text>
+<path class="ln thin m" d="M65 120 H140 M244 120 H280 M384 120 H420 M476 120 H520 M576 120 H620"></path>
+<rect class="bx b" data-hl="3" height="56" rx="6" width="104" x="140" y="92"></rect>
+<text class="tm xs b mid" x="192" y="113">P1IES.1</text>
+<text class="tm sm m mid" data-out="3" x="192" y="137">?</text>
+<text class="tm sm b mid" data-step="3" x="192" y="137">1 · ↓</text>
+<rect class="bx r" data-hl="4" height="56" rx="6" width="104" x="280" y="92"></rect>
+<text class="tm xs r mid" x="332" y="113">P1IFG.1</text>
+<text class="tm sm m mid" data-out="4" x="332" y="137">?</text>
+<text class="tm sm r mid" data-step="4" x="332" y="137">0</text>
+<circle class="sl w" cx="420" cy="120" r="4"></circle>
+<circle class="sl w" cx="476" cy="120" r="4"></circle>
+<line class="ln m" data-out="2" x1="420" x2="468" y1="120" y2="92"></line>
+<line class="ln g" data-hl="2" data-step="2" x1="420" x2="476" y1="120" y2="120"></line>
+<text class="tm xs g mid" x="448" y="80">P1IE.1</text>
+<circle class="sl w" cx="520" cy="120" r="4"></circle>
+<circle class="sl w" cx="576" cy="120" r="4"></circle>
+<line class="ln m" data-out="5" x1="520" x2="568" y1="120" y2="92"></line>
+<line class="ln g" data-hl="5" data-step="5" x1="520" x2="576" y1="120" y2="120"></line>
+<text class="tm xs g mid" x="548" y="80">GIE</text>
+<rect class="bx p" data-hl="6" height="68" rx="6" width="164" x="620" y="86"></rect>
+<text class="tm xs p mid" x="702" y="108">47 · 0xFFDE</text>
+<text class="tm sm m mid" data-out="6" x="702" y="136">????</text>
+<text class="tm sm y mid" data-step="6" x="702" y="136">→ P1_ISR</text>
+<text class="tz sm m mid" x="400" y="196">每一行配置代码，都接通链条上的一个零件</text>
+</svg>
+</div>
+<pre aria-label="Codigo7 的配置和 RTI" class="code code-hl"><code><span class="ln-row"><span class="rg">WDTCTL</span> = WDTPW + WDTHOLD;      <span class="cm">// 停 watchdog</span></span><span class="ln-row"><span class="rg">P1DIR</span>  |= BIT0;                <span class="cm">// P1.0（LED1）设为输出</span></span><span class="ln-row" data-hl="1"><span class="rg">P1REN</span>  |= BIT1;                <span class="cm">// P1.1 接上电阻……</span></span><span class="ln-row" data-hl="1"><span class="rg">P1OUT</span>  |= BIT1;                <span class="cm">// ……选上拉：S2 松开时读到 1</span></span><span class="ln-row" data-hl="2"><span class="fl">P1IE</span>   |= BIT1;                <span class="cm">// 使能 P1.1 的中断</span></span><span class="ln-row" data-hl="3"><span class="rg">P1IES</span>  |= BIT1;                <span class="cm">// 下降沿（按下）触发</span></span><span class="ln-row" data-hl="4"><span class="fl">P1IFG</span>  &amp;= ~BIT1;               <span class="cm">// 先清 flag，防止配置过程中误触发</span></span><span class="ln-row" data-hl="5"><span class="fn">__bis_SR_register</span>(GIE);     <span class="cm">// 总使能，也可以写 __enable_interrupt()</span></span><span class="ln-row" data-hl="5"><span class="fn">__no_operation</span>();             <span class="cm">// 习惯上加一条 NOP（CPU39 针对的其实是清 GIE，见下方）</span></span><span class="ln-row"><span class="kw">while</span> (1) { <span class="fn">__no_operation</span>(); }</span><span class="ln-row"> </span><span class="ln-row" data-hl="6"><span class="pp">#pragma vector=PORT1_VECTOR</span>     <span class="cm">// 47 号：把下面函数的地址写进 0xFFDE</span></span><span class="ln-row" data-hl="6"><span class="kw">__interrupt void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">if</span> (<span class="rg">P1IN</span> &amp; BIT1) <span class="rg">P1OUT</span> &amp;= ~BIT0;   <span class="cm">// 松开：灭灯</span></span><span class="ln-row">    <span class="kw">else</span>             <span class="rg">P1OUT</span> |= BIT0;    <span class="cm">// 按下：亮灯</span></span><span class="ln-row">    <span class="fl">P1IFG</span> &amp;= ~BIT1;                 <span class="cm">// 别忘了！（§6）</span></span><span class="ln-row">}</span></code></pre>
+<ol class="captions">
+<li><code>P1REN</code> 接上电阻，<code>P1OUT</code> 的同一位选择上拉：S2 松开时 P1.1 读到 1，按下时变 0。（P1DIR.1 和 P1SEL.1 复位后是 0，即数字输入。）</li>
+<li><code>P1IE |= BIT1</code>：打开 P1.1 的<span class="c-g">单独使能</span>。</li>
+<li><code>P1IES |= BIT1</code>：选 <b class="t">flanco de bajada (ES) / falling edge (EN)</b>——下降沿。上拉时按下 = 1 → 0，所以是"按下时触发"。</li>
+<li data-dur="3600"><code>P1IFG &amp;= ~BIT1</code>：配置寄存器的过程中可能已经误置了 flag，先清掉，免得一开 GIE 就进入一次假中断。</li>
+<li data-dur="3800"><code>__bis_SR_register(GIE)</code>：打开<span class="c-g">总使能</span>，这是写 SR 的内建函数（intrinsic）。部分 5xx 芯片可能需要紧跟一条 <code>__no_operation()</code>（为什么，见下方"关于 CPU39"）。</li>
+<li data-dur="4400"><code>#pragma vector=PORT1_VECTOR</code> + <code>__interrupt</code>：告诉编译器"这个函数是 47 号向量的 RTI"，链接时它的地址被写进 0xFFDE。没有这一步，CPU 不知道去哪里。</li>
+</ol>
+</figure>
+<p>RTI 的写法和编译器有关。<code>__interrupt</code> 表示这个函数是 RTI：不能有参数，也不能有返回值，编译器会用 RETI 结尾。</p>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="ti" type="button">TI / IAR</button>
+<button aria-pressed="false" data-view="gcc" type="button">GCC</button>
+<button aria-pressed="false" data-view="both" type="button">两种都兼容</button>
+</div>
+<pre class="code" data-pane="ti"><code><span class="ln-row"><span class="pp">#pragma vector=PORT1_VECTOR</span>      <span class="cm">// 或 #pragma vector=47</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) { … }</span></code></pre>
+<pre class="code" data-pane="gcc" hidden=""><code><span class="ln-row"><span class="kw">__attribute__</span>((interrupt(PORT1_VECTOR)))</span><span class="ln-row"><span class="kw">void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) { … }</span></code></pre>
+<pre class="code" data-pane="both" hidden=""><code><span class="ln-row"><span class="pp">#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)</span></span><span class="ln-row"><span class="pp">#pragma vector=PORT1_VECTOR</span></span><span class="ln-row"><span class="kw">__interrupt</span></span><span class="ln-row"><span class="pp">#elif defined(__GNUC__)</span></span><span class="ln-row"><span class="kw">__attribute__</span>((interrupt(PORT1_VECTOR)))</span><span class="ln-row"><span class="pp">#endif</span></span><span class="ln-row"><span class="kw">void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) { … }</span></code></pre>
+</div>
+<p class="aside">尽量用 <code>msp430f5529.h</code> 末尾定义的标签（<code>PORT1_VECTOR</code>、<code>TIMER0_A0_VECTOR</code>……），不要直接写 47：不同型号的向量号可能不同，标签让代码更容易移植。头文件里写的就是向量号，注释里给出地址：<code>#define PORT1_VECTOR (47 * 1u) /* 0xFFDE Port 1 */</code>。在 CCS 里对标签点右键 → Open Declaration 就能跳过去：</p>
+
+<div class="note">
+<span class="lbl">关于 CPU39</span>
+<p>CPU39 是这颗芯片的一条 <b class="t">erratum (EN)</b>——芯片勘误：在<b>调试器单步</b>执行一条清 GIE 的指令时，PC 可能出错；解决办法是在后面加一条 NOP（<code>__no_operation()</code>）。另外，开中断指令的下一条指令总会先执行。所以在开关 GIE 的指令旁边放一条 <code>__no_operation()</code>，是个无害的好习惯。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s6">
+<h2><span class="n">§6</span>忘了清 flag 会怎样 <span class="tag">M21.8</span></h2>
+<p class="hook"><span class="zh">RTI 执行完了，RETI 也回去了，为什么程序又立刻跳回 RTI？</span><span class="es">Atención a interrupciones: bajada del aviso.</span></p>
+<figure class="stage" data-scene="" id="sc-flag">
+<div class="stage-title"><span>Escena 6 · el flag que nadie baja</span><b>4 步</b></div>
+<div aria-label="动画：不清 flag 时 RTI 反复重入" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-flag-t" role="img" viewbox="0 0 800 310">
+<title id="sc-flag-t">上面一条时间线：flag 不清，RTI 一次又一次执行；下面一条：RTI 里清了 flag，回到 main</title>
+<text class="tz sm m" x="24" y="28">RTI 里没有清 flag</text>
+<text class="tm xs m" x="24" y="74">CPU</text>
+<rect class="bx b" height="22" rx="3" width="100" x="90" y="60"></rect>
+<text class="tm xs b mid" x="140" y="75">main</text>
+<path class="ln thin r dash" d="M190 44 V130"></path>
+<text class="tz sm r mid" x="190" y="40">按下</text>
+<text class="tm xs r" x="24" y="118">P1IFG.1</text>
+<g data-step="1">
+<rect class="bx y" height="22" rx="3" width="80" x="190" y="60"></rect>
+<text class="tm xs y mid" x="230" y="75">RTI</text>
+<path class="ln r draw" d="M90 124 H190 V104 H780"></path>
+</g>
+<g data-step="2">
+<rect class="bx y" height="22" rx="3" width="80" x="276" y="60"></rect>
+<rect class="bx y" height="22" rx="3" width="80" x="362" y="60"></rect>
+<rect class="bx y" height="22" rx="3" width="80" x="448" y="60"></rect>
+<rect class="bx y" height="22" rx="3" width="80" x="534" y="60"></rect>
+<rect class="bx y" height="22" rx="3" width="80" x="620" y="60"></rect>
+<text class="tm xs y mid" x="316" y="75">RTI</text>
+<text class="tm xs y mid" x="402" y="75">RTI</text>
+<text class="tm xs y mid" x="488" y="75">RTI</text>
+<text class="tm xs y mid" x="574" y="75">RTI</text>
+<text class="tm xs y mid" x="660" y="75">RTI</text>
+<text class="tx y" x="712" y="80">… ∞</text>
+</g>
+<g data-step="3">
+<text class="tz sm m" x="24" y="176">RTI 最后写 P1IFG &amp;= ~BIT1</text>
+<text class="tm xs m" x="24" y="222">CPU</text>
+<rect class="bx b" height="22" rx="3" width="100" x="90" y="208"></rect>
+<text class="tm xs b mid" x="140" y="223">main</text>
+<rect class="bx y" height="22" rx="3" width="80" x="190" y="208"></rect>
+<text class="tm xs y mid" x="230" y="223">RTI</text>
+<rect class="bx b" height="22" rx="3" width="504" x="276" y="208"></rect>
+<text class="tm xs b mid" x="528" y="223">main 继续</text>
+<text class="tm xs r" x="24" y="266">P1IFG.1</text>
+<path class="ln r draw" d="M90 272 H190 V252 H262 V272 H780"></path>
+<text class="tz sm g mid" x="262" y="294">清零</text>
+</g>
+<g data-step="4">
+<text class="tz sm y" x="330" y="294">单源向量进入 RTI 时自动清；P1 这种多源向量必须手动清</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li data-dur="3600">RTI 里没有清 P1IFG.1。RETI 回到 main 时，flag 还是 1，P1IE.1 和 GIE 也都是 1，请求条件依然成立……</li>
+<li data-dur="3800">……于是马上又进入 RTI，无限循环。从外面看，程序像"卡死"了。在 RTI 里设断点就能看到：每次 Resume 都回到 RTI 的第一行，P1IFG1 一直是 1（截图在下面）。</li>
+<li>修复：RTI 结束前写 <code>P1IFG &amp;= ~BIT1</code>。flag 落下，RETI 之后回到 main。</li>
+<li>回忆 PASO 5：只有多源向量需要手动清。单源向量（例如 TA0CCR0）进入 RTI 时由硬件自动清。</li>
+</ol>
+</figure>
+<div class="note">
+<span class="lbl">CCS · punto de ruptura</span>
+<p><b class="t">punto de ruptura (ES) / breakpoint (EN)</b>——断点：程序在执行这一行<b>之前</b>停下。Run → Toggle Breakpoint，或在行号左边双击。Toggle Breakpoint 的快捷键随 CCS 版本不同（Ctrl+Alt+B 或 Ctrl+Shift+B），以菜单里显示的为准。View → Breakpoints 里统一启用、停用，断点标着 [H/W BP]，即硬件断点；Run → New Breakpoint 还能设次数或条件。在 RTI 里设断点、按 Resume（F8），就会看到每次都回到 RTI 第一行；Registers 窗口里 P1IFG 的第 1 位一直是 1。</p>
+</div>
+
+
+<p>接着第二个问题：只设了下降沿，按下时灯亮，松开时却不会灭，因为松开是 <b class="t">flanco de subida (ES) / rising edge (EN)</b>——上升沿。办法是在 RTI 里翻转 <span class="reg">P1IES.1</span>，让它每次都等"另一个"边沿：</p>
+<figure class="stage" data-scene="" id="sc-edge">
+<div class="stage-title"><span>Escena 6b · 两个边沿</span><b>4 步</b></div>
+<div aria-label="动画：在 RTI 里翻转 P1IES，按下和松开都能捕获" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-edge-t" role="img" viewbox="0 0 800 280">
+<title id="sc-edge-t">时序图：P1IN.1 的按下和松开，P1IES.1 在每次 RTI 里翻转，LED1 跟随</title>
+<text class="tm sm b" x="24" y="64">P1IN.1</text>
+<text class="tm sm b" x="24" y="134">P1IES.1</text>
+<text class="tm sm y" x="24" y="194">RTI</text>
+<text class="tm sm g" x="24" y="250">LED1</text>
+<g data-step="1">
+<path class="ln b draw" d="M150 44 H260 V84 H520"></path>
+<text class="tz sm r mid" x="260" y="30">↓ 按下</text>
+<path class="ln b" d="M150 116 H272"></path>
+<text class="tm xs b" x="156" y="110">1</text>
+<rect class="bx y" height="24" rx="3" width="26" x="262" y="178"></rect>
+<path class="ln g draw" d="M150 260 H288 V236 H520"></path>
+</g>
+<g data-step="2">
+<path class="ln b draw" d="M272 116 V144 H532"></path>
+<text class="tm xs b" x="290" y="138">0</text>
+<text class="tz sm b" x="300" y="166">RTI 里改成上升沿</text>
+</g>
+<g data-step="3">
+<path class="ln b draw" d="M520 84 V44 H780"></path>
+<text class="tz sm g mid" x="520" y="30">↑ 松开</text>
+<rect class="bx y" height="24" rx="3" width="26" x="522" y="178"></rect>
+<path class="ln b draw" d="M532 144 V116 H780"></path>
+<text class="tm xs b" x="550" y="110">1</text>
+<path class="ln g draw" d="M520 236 H548 V260 H780"></path>
+</g>
+<g data-step="4">
+<text class="tz sm y" x="600" y="196">两个边沿都抓到</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>上拉时，按下是下降沿。P1IES.1 = 1 只认下降沿 → 进入 RTI，点亮 LED1。</li>
+<li>在 RTI 里把 P1IES.1 改成 0，下一次等上升沿。</li>
+<li>松开是上升沿 → 再进 RTI：熄灭 LED1，把 P1IES.1 改回 1。</li>
+<li data-dur="3800">按下、松开都能抓到。建议：总是交替检测两个边沿，即使只关心其中一个。另一个边沿到来时什么都不做，只是为下一次做好准备，这样能减少 <b class="t">rebotes (ES) / bounce (EN)</b>——按键抖动造成的误检。</li>
+</ol>
+</figure>
+<div class="note alert">
+<span class="lbl">小心</span>
+<p><b>写 P1IES 本身也可能把对应的 P1IFG 置 1</b>；改写 P1OUT、P1DIR、P1REN 也可能。这又是一个"配置完先清 flag"的理由。另外，判断边沿时，看 <span class="reg">P1IES</span>（这次是哪个边沿触发的）比看 P1IN 更可靠。</p>
+</div>
+
+</section>
+
+<section class="sec" id="s7">
+<h2><span class="n">§7</span>是谁触发的？ <span class="tag">M21.9</span></h2>
+<p class="hook"><span class="zh">8 个引脚共用一个向量。进了 RTI，第一件事是弄清楚：是谁？</span><span class="es">Identificación de la fuente de interrupción.</span></p>
+<p>做个实验：S2（P1.1）控制红灯 LED1，再在 P1.2 上接一个外部按钮控制绿灯 LED2（P4.7）。<b>按住 S2 不放，再按外部按钮</b>：</p>
+<figure class="stage" data-scene="" id="sc-who">
+<div class="stage-title"><span>Escena 7 · P1IN vs P1IFG vs P1IV</span><b>4 步</b></div>
+<div aria-label="动画：三种判断中断源的方法" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-who-t" role="img" viewbox="0 0 800 290">
+<title id="sc-who-t">按住 P1.1 再按 P1.2：P1IN 两位都是 0；P1IFG 只有第 2 位是 1；P1IV 等于 0x06</title>
+<text class="tz sm m" x="30" y="56">引脚</text>
+<text class="tm sm b mid" x="250" y="56">P1IN</text>
+<text class="tm sm r mid" x="320" y="56">P1IFG</text>
+<text class="tm sm g mid" x="390" y="56">P1IE</text>
+<text class="tz sm w" x="30" y="114">P1.1 · S2（一直按着）</text>
+<text class="tz sm w" x="30" y="164">P1.2 · 外接（刚按下）</text>
+<text class="tm b mid" x="250" y="114">0</text>
+<text class="tm b mid" x="250" y="164">0</text>
+<text class="tm r mid" x="320" y="114">0</text>
+<text class="tm r mid" x="320" y="164">1</text>
+<text class="tm g mid" x="390" y="114">1</text>
+<text class="tm g mid" x="390" y="164">1</text>
+<path class="ln thin m" d="M440 36 V190"></path>
+<g data-step="2">
+<rect class="ln r dash" height="104" rx="6" width="48" x="226" y="80"></rect>
+<text class="tz sm r mid" x="530" y="56">按 P1IN 判断</text>
+<text class="tz sm r mid" x="530" y="114">S2 也"按了" ✗</text>
+<text class="tz sm w mid" x="530" y="164">P1.2 按了 ✓</text>
+<text class="tz sm r mid" x="530" y="196">红灯被误翻转</text>
+</g>
+<g data-step="3">
+<rect class="ln g" height="104" rx="6" width="118" x="296" y="80"></rect>
+<text class="tz sm g mid" x="690" y="56">按 P1IE &amp; P1IFG</text>
+<text class="tz sm g mid" x="690" y="114">不是 S2 ✓</text>
+<text class="tz sm g mid" x="690" y="164">是 P1.2 ✓</text>
+</g>
+<g data-step="4">
+<rect class="bx y" data-hl="4" height="48" rx="6" width="400" x="250" y="222"></rect>
+<text class="tm y mid" x="450" y="252">P1IV = 0x06 → P1.2，并自动清 P1IFG.2</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>P1.1 和 P1.2 共用 47 号向量。进入 RTI 时，两个引脚的电平都是 0（都被按着），但只有 P1.2 刚刚产生了边沿。</li>
+<li data-dur="3800">错误做法：看 <code>P1IN</code>。S2 一直按着，P1IN.1 也是 0，代码以为 S2 又被按了一次，红灯也跟着翻转。电平不等于事件。</li>
+<li data-dur="4200">做法 ①：看 flag。只有真正产生边沿的引脚，P1IFG 才是 1。再与上 <code>P1IE</code>：避免在处理别的源时，误处理一个置了位但没有使能的 flag。</li>
+<li data-dur="5400">做法 ②：读 <code>P1IV</code>。它只报告<b>已使能</b>的源里优先级最高的那个（P1.2 → 0x06），读一次就自动清掉这个 flag。更快；代价是对"产生时还没有使能"的中断少了一点控制（P1IV 本身只看已使能的源）。</li>
+</ol>
+</figure>
+<div class="stack" data-seg="">
+<div class="seg">
+<button aria-pressed="true" data-view="flag" type="button">① P1IE &amp; P1IFG</button>
+<button aria-pressed="false" data-view="iv" type="button">② P1IV</button>
+</div>
+<pre class="code" data-pane="flag"><code><span class="ln-row"><span class="kw">if</span> (<span class="fl">P1IE</span> &amp; <span class="fl">P1IFG</span> &amp; BIT1) {        <span class="cm">// P1.1 有 flag，而且使能了？</span></span><span class="ln-row">    <span class="kw">if</span> (<span class="rg">P1IES</span> &amp; BIT1) { <span class="rg">P1OUT</span> ^= BIT0; <span class="rg">P1IES</span> &amp;= ~BIT1; }  <span class="cm">// 下降沿：翻转灯，改等上升沿</span></span><span class="ln-row">    <span class="kw">else</span>              { <span class="rg">P1IES</span> |= BIT1; }                  <span class="cm">// 上升沿：只改回下降沿</span></span><span class="ln-row">    <span class="fl">P1IFG</span> &amp;= ~BIT1;</span><span class="ln-row">}</span><span class="ln-row"><span class="kw">if</span> (<span class="fl">P1IE</span> &amp; <span class="fl">P1IFG</span> &amp; BIT2) { … <span class="fl">P1IFG</span> &amp;= ~BIT2; }</span></code></pre>
+<pre class="code" data-pane="iv" hidden=""><code><span class="ln-row"><span class="kw">switch</span> (<span class="fn">__even_in_range</span>(<span class="fl">P1IV</span>, P1IV_P1IFG7)) {  <span class="cm">// 读 P1IV 会自动清最高优先级的 flag</span></span><span class="ln-row"><span class="kw">case</span> P1IV_P1IFG1:                            <span class="cm">// 0x04</span></span><span class="ln-row">    <span class="kw">if</span> (<span class="rg">P1IES</span> &amp; BIT1) { <span class="rg">P1OUT</span> ^= BIT0; <span class="rg">P1IES</span> &amp;= ~BIT1; }</span><span class="ln-row">    <span class="kw">else</span>              { <span class="rg">P1IES</span> |= BIT1; }</span><span class="ln-row">    <span class="kw">break</span>;</span><span class="ln-row"><span class="kw">case</span> P1IV_P1IFG2:                            <span class="cm">// 0x06</span></span><span class="ln-row">    …  <span class="kw">break</span>;</span><span class="ln-row"><span class="kw">default</span>: <span class="kw">break</span>;</span><span class="ln-row">}</span></code></pre>
+</div>
+<p class="aside">为什么条件里还要 <code>&amp; P1IE</code>：<a href="#s6">§6</a> 最后那张 Registers 截图里，P1IE = 0x02，P1IFG 却是 0x03——P1.0 的 flag 也是 1，可它的中断根本没使能。flag 不管使能与否都会被置位；只看 P1IFG，RTI 就可能去处理一个不该处理的源。</p>
+<p>P1IV 的值是偶数，而且有规律：</p>
+<div class="formula" data-tex="\class{c-r}{\mathtt{P1IV}} = 2\,(y+1), \qquad y = 0,\dots,7 \qquad (\mathtt{0x00}:\ \text{none})">P1IV = 2·(y+1)，y = 0…7（0x00 = 没有中断）</div>
+<p class="aside">P1.0 → 0x02，优先级最高；P1.7 → 0x10，最低。<code>__even_in_range(x, max)</code> 告诉编译器 x 只会是 0 到 max 之间的偶数，它可以生成更高效的跳转表。多个 flag 同时置位时，读 P1IV 先清最高优先级的那个；RETI 之后，剩下的 flag 会立刻再触发一次中断。</p>
+<div class="note warm">
+<span class="lbl">结论</span>
+<p>即使只打算用一个引脚，也<b>一定要</b>在 RTI 里识别中断源。这能发现其他引脚的配置错误，也能防止 <b class="t">interrupciones espurias (ES) / spurious interrupts (EN)</b>——误触发的中断带来的问题。</p>
+</div>
+<div class="drill" data-drill="piv"></div>
+
+</section>
+
+<section class="sec" id="s8">
+<h2><span class="n">§8</span>RTI 要短 <span class="tag">M21.10</span></h2>
+<p class="hook"><span class="zh">RTI 里多等一会儿，有什么关系？</span><span class="es">Una RTI larga retrasa a todas las demás.</span></p>
+<p>§7 实验用的示例程序 Codigo8，在 RTI 第一行放了 <code>__delay_cycles(30000)</code> 去抖（上面 §7 的代码把这一行省掉了），旁边注明"<i>NO USAR NUNCA EN INTERRUPCION!!</i>"。原因看时间线：</p>
+<figure class="stage" data-ms="3600" data-scene="" id="sc-long">
+<div class="stage-title"><span>Escena 8 · una RTI larga</span><b>4 步</b></div>
+<div aria-label="动画：长 RTI 让另一个中断等待" class="stage-canvas" tabindex="0">
+<svg aria-labelledby="sc-long-t" role="img" viewbox="0 0 800 310">
+<title id="sc-long-t">P2 的长 RTI 执行期间 GIE 为 0，P1 的事件只能挂起，直到 RETI 后才被处理</title>
+<text class="tm sm b" x="24" y="64">main</text>
+<text class="tm sm y" x="24" y="114">RTI P2</text>
+<text class="tm sm y" x="24" y="164">RTI P1</text>
+<text class="tm sm r" x="24" y="214">P1IFG.1</text>
+<text class="tm sm g" x="24" y="264">GIE</text>
+<g data-step="1">
+<rect class="bx b" height="24" rx="3" width="60" x="110" y="48"></rect>
+<path class="ln thin r dash" d="M170 34 V280"></path>
+<text class="tz sm r mid" x="170" y="28">P2 事件</text>
+<rect class="bx y" height="24" rx="3" width="350" x="170" y="98"></rect>
+<text class="tm xs y mid" x="345" y="114">RTI P2 · __delay_cycles(…)</text>
+<path class="ln g draw" d="M110 250 H170 V270 H520"></path>
+</g>
+<g data-step="2">
+<path class="ln thin r dash" d="M290 34 V280"></path>
+<text class="tz sm r mid" x="290" y="28">P1 事件</text>
+<path class="ln r draw" d="M110 220 H290 V200 H520"></path>
+<rect class="ln r dash" height="24" rx="3" width="230" x="290" y="148"></rect>
+<text class="tz sm r mid" x="405" y="166">挂起等待</text>
+</g>
+<g data-step="3">
+<path class="ln g draw" d="M520 270 V250 H524 V270 H584 V250 H780"></path>
+<rect class="bx y" height="24" rx="3" width="60" x="524" y="148"></rect>
+<text class="tm xs y mid" x="554" y="164">P1</text>
+<path class="ln r draw" d="M520 200 H584 V220 H780"></path>
+<rect class="bx b" height="24" rx="3" width="192" x="588" y="48"></rect>
+<path class="ln y" d="M292 186 H522" marker-end="url(#m21-ah-y)" marker-start="url(#m21-ah-y)"></path>
+<text class="tz sm y mid" x="407" y="140">延迟</text>
+</g>
+<g data-step="4">
+<text class="tz sm y mid" x="400" y="300">RTI 只置一个标志位就返回，真正的工作放回 main</text>
+</g>
+</svg>
+</div>
+<ol class="captions">
+<li>main 在运行。P2 的中断来了，它的 RTI 写得很长，比如里面用 <code>__delay_cycles</code> 去抖。进入 RTI 时 GIE 自动变成 0。</li>
+<li data-dur="3800">RTI P2 还没结束，P1 的事件来了：P1IFG.1 置 1，但 GIE = 0，只能<b>挂起</b>等待。</li>
+<li data-dur="4200">RTI P2 终于结束，RETI 恢复 GIE = 1，P1 这才被处理，晚了一大段。RTI 越长，其他中断等得越久。</li>
+<li data-dur="4200">解决办法：RTI 只做最少的事，置一个软件标志位就返回；真正的工作放回主循环里做。这就是 <b class="t">modelo tarea-interrupción (ES)</b>——任务-中断模型。</li>
+</ol>
+</figure>
+<p>任务-中断模型的骨架（示意）：</p>
+<pre class="code"><code><span class="ln-row"><span class="kw">volatile unsigned char</span> evento_p1 = 0;   <span class="cm">// volatile：RTI 会改它，编译器不能优化掉</span></span><span class="ln-row"> </span><span class="ln-row"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {</span><span class="ln-row">    …                                    <span class="cm">// 配置（§5）</span></span><span class="ln-row">    <span class="kw">while</span> (1) {</span><span class="ln-row">        <span class="kw">if</span> (evento_p1) {                 <span class="cm">// 主循环检查标志位</span></span><span class="ln-row">            evento_p1 = 0;</span><span class="ln-row">            <span class="fn">tarea_p1</span>();                 <span class="cm">// 慢的工作在这里做</span></span><span class="ln-row">        }</span><span class="ln-row">        …                                <span class="cm">// 其他任务</span></span><span class="ln-row">    }</span><span class="ln-row">}</span><span class="ln-row"> </span><span class="ln-row"><span class="pp">#pragma vector=PORT1_VECTOR</span></span><span class="ln-row"><span class="kw">__interrupt void</span> <span class="fn">P1_ISR</span>(<span class="kw">void</span>) {</span><span class="ln-row">    <span class="kw">switch</span> (<span class="fn">__even_in_range</span>(<span class="fl">P1IV</span>, P1IV_P1IFG7)) {</span><span class="ln-row">    <span class="kw">case</span> P1IV_P1IFG1: evento_p1 = 1; <span class="kw">break</span>;   <span class="cm">// 只记一笔就走</span></span><span class="ln-row">    <span class="kw">default</span>: <span class="kw">break</span>;</span><span class="ln-row">    }</span><span class="ln-row">}</span></code></pre>
+<div class="panel">
+<h3>RTI 使用建议</h3>
+<ul>
+<li>不用的中断，明确确认它们是关闭的。</li>
+<li>不要拿 GIE 当开关反复开关全部中断（初始化时除外），优先操作各自的使能位。</li>
+<li>中断很多时，把所有没用到的向量都指向一个"无效中断"RTI，调试时能查出是谁误触发。</li>
+<li>RTI 要短：只改标志位或变量，配置改动放回主循环。</li>
+<li>事件不紧急时，轮询（sondeo）有时更合适。</li>
+</ul>
+</div>
+<p class="aside">这个模型的局限（任务多了以后的优先级、时序）引出 M28 的各种程序架构：循环 + 中断、加入低功耗、调度器、RTOS。去抖更好的办法是用定时器，见 Bloque 3。</p>
+
+</section>
+
+<section class="sec" id="practica">
+<h2>随机数值练习 <span class="tag plain">3 种题型</span></h2>
+<p class="aside">按本章的公式随机出数，每次都不一样。答完会显示步骤。</p>
+<div class="drills">
+<div class="drill" data-drill="vec"></div>
+<div class="drill" data-drill="piv"></div>
+<div class="drill" data-drill="sp"></div>
+</div>
+</section>
+
+<section class="sec" id="quiz">
+<h2>自测 <span class="tag plain">13 题</span></h2>
+<p class="aside">根据本章内容编写的练习题。每题只能点一次，答完会显示解析。</p>
+<div class="quiz" data-quiz="M21">
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">01</span>一个可屏蔽中断要真正打断 CPU，需要同时满足哪些条件？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>flag = 1</button>
+<button data-o="b" type="button"><span class="k">B</span>flag = 1 且单独使能位 = 1</button>
+<button data-o="c" type="button"><span class="k">C</span>flag = 1、单独使能位 = 1，且 GIE = 1</button>
+<button data-o="d" type="button"><span class="k">D</span>flag = 1 且 GIE = 1，单独使能位不影响</button>
+</div>
+<p class="why"><b>C。</b>可屏蔽中断有双重控制：外设里的单独使能位，加上 SR 里的 GIE（§1）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">02</span>TI 编译器里，哪种写法能让 P1_ISR 成为 47 号向量的 RTI？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span><code>#pragma vector=PORT1_VECTOR</code> + <code>__interrupt void P1_ISR(void)</code></button>
+<button data-o="b" type="button"><span class="k">B</span><code>#pragma vector=0xFFDE</code> + <code>__interrupt void P1_ISR(void)</code></button>
+<button data-o="c" type="button"><span class="k">C</span><code>#pragma vector=PORT1_VECTOR</code> + <code>__interrupt void P1_ISR(int pin)</code></button>
+<button data-o="d" type="button"><span class="k">D</span><code>#pragma vector=47</code> + <code>__interrupt int P1_ISR(void)</code></button>
+</div>
+<p class="why"><b>A。</b>vector= 后面写向量号（偏移）或 PORT1_VECTOR 标签，不是地址；__interrupt 函数不能有参数，也不能有返回值（§5）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">03</span>关于 NMI（UNMI、SNMI），哪一句是对的？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>GIE = 0 时它们也被挡住</button>
+<button data-o="b" type="button"><span class="k">B</span>它们完全不能被关闭</button>
+<button data-o="c" type="button"><span class="k">C</span>UNMI 比 SNMI 优先</button>
+<button data-o="d" type="button"><span class="k">D</span>不受 GIE 控制，但可以用各自的使能位关闭</button>
+</div>
+<p class="why"><b>D。</b>这就是"(no) enmascarable"的意思。另外 SNMI 比 UNMI 优先，进入 NMI 会自动禁止同类 NMI（§2）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">04</span>BOR、POR、PUC 的关系是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>PUC 一定会引发 POR</button>
+<button data-o="b" type="button"><span class="k">B</span>BOR 一定会引发 POR 和 PUC</button>
+<button data-o="c" type="button"><span class="k">C</span>三者互相独立</button>
+<button data-o="d" type="button"><span class="k">D</span>POR 一定会引发 BOR</button>
+</div>
+<p class="why"><b>B。</b>BOR ⇒ POR ⇒ PUC：上一级发生，下一级必然发生，反过来不成立（§2）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">05</span>为什么 main 的第一行通常是 <code>WDTCTL = WDTPW + WDTHOLD;</code>？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>复位后 GIE = 1，watchdog 中断会立刻打断 main，必须先关掉</button>
+<button data-o="b" type="button"><span class="k">B</span>watchdog 默认是 interval timer 模式，会反复触发 57 号中断</button>
+<button data-o="c" type="button"><span class="k">C</span>复位后 watchdog 已经在计时，不停掉的话约 32 ms 后会触发 PUC 复位</button>
+<button data-o="d" type="button"><span class="k">D</span>不停 watchdog 的话，CPU 会一直停在 LPM4</button>
+</div>
+<p class="why"><b>C。</b>BOR 之后 watchdog 自动开始计 32 ms；不停也不重置，程序会陷入无限复位（§2）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">06</span>CPU 接受中断时，压栈的顺序是？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>先 PC，后 SR</button>
+<button data-o="b" type="button"><span class="k">B</span>先 SR，后 PC</button>
+<button data-o="c" type="button"><span class="k">C</span>只压 PC</button>
+<button data-o="d" type="button"><span class="k">D</span>R4–R15 全部压栈</button>
+</div>
+<p class="why"><b>A。</b>PASO 2 压 PC，PASO 3 压 SR；RETI 反过来，先弹 SR 再弹 PC（§3）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">07</span>进入 RTI 时，SR 被怎样修改？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>不变</button>
+<button data-o="b" type="button"><span class="k">B</span>除 SCG0 以外全部清零，所以 GIE = 0、退出低功耗</button>
+<button data-o="c" type="button"><span class="k">C</span>只把 GIE 置 1，允许嵌套</button>
+<button data-o="d" type="button"><span class="k">D</span>全部置 1</button>
+</div>
+<p class="why"><b>B。</b>PASO 6。GIE = 0 意味着默认不嵌套；CPUOFF 等位清零，CPU 在 RTI 期间保持唤醒（§3）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">08</span>P1 用 47 号向量。它在哪个地址？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>0xFFAF</button>
+<button data-o="b" type="button"><span class="k">B</span>0xFFE0</button>
+<button data-o="c" type="button"><span class="k">C</span>0xFFDE</button>
+<button data-o="d" type="button"><span class="k">D</span>0xFF47</button>
+</div>
+<p class="why"><b>C。</b>0xFF80 + 2 × 47 = 0xFF80 + 0x5E = 0xFFDE。0xFFE0 是 48 号（§4）。</p>
+</div>
+<div class="q" data-a="d">
+<p class="qt"><span class="qn">09</span>哪个向量的 flag 在进入 RTI 时由硬件自动清零？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>47 号 · I/O Port P1</button>
+<button data-o="b" type="button"><span class="k">B</span>46 号 · USCI_A1</button>
+<button data-o="c" type="button"><span class="k">C</span>52 号 · TA0 的 CCR1–4 和 TA0IFG</button>
+<button data-o="d" type="button"><span class="k">D</span>53 号 · TA0 的 CCR0</button>
+</div>
+<p class="why"><b>D。</b>单源向量才自动清：57、53、49、44（还有 TB0 的 59）。其余都是多源（§4）。</p>
+</div>
+<div class="q" data-a="b">
+<p class="qt"><span class="qn">10</span>P1 的 RTI 里忘了清 P1IFG.1，会怎样？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>什么也不会发生，硬件会自动清</button>
+<button data-o="b" type="button"><span class="k">B</span>RETI 后立刻再次进入 RTI，不断循环</button>
+<button data-o="c" type="button"><span class="k">C</span>芯片复位</button>
+<button data-o="d" type="button"><span class="k">D</span>GIE 被永久关闭</button>
+</div>
+<p class="why"><b>B。</b>P1 是多源向量，flag 不会自动清；请求条件一直成立（§6）。</p>
+</div>
+<div class="q" data-a="c">
+<p class="qt"><span class="qn">11</span>按住 S2（P1.1）不放，再按 P1.2 上的按钮。哪种方法<b>不能</b>正确判断中断源？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>检查 <code>P1IE &amp; P1IFG &amp; BITx</code></button>
+<button data-o="b" type="button"><span class="k">B</span>读 <code>P1IV</code></button>
+<button data-o="c" type="button"><span class="k">C</span>检查 <code>P1IN</code></button>
+<button data-o="d" type="button"><span class="k">D</span>A 和 B 都不行</button>
+</div>
+<p class="why"><b>C。</b>P1IN 反映的是电平，不是事件；两个引脚都是 0，代码会误以为 S2 也被按了（§7）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">12</span>为什么不应该在 RTI 里用 <code>__delay_cycles()</code> 去抖？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>RTI 期间 GIE = 0，其他中断只能挂起等待，响应变慢</button>
+<button data-o="b" type="button"><span class="k">B</span>GIE = 0 时 __delay_cycles 不计时，延时会失效</button>
+<button data-o="c" type="button"><span class="k">C</span>RTI 期间 CPU 处于 LPM，__delay_cycles 不会执行</button>
+<button data-o="d" type="button"><span class="k">D</span>__delay_cycles 会把 flag 提前清掉，造成漏检</button>
+</div>
+<p class="why"><b>A。</b>RTI 要短；工作放回主循环，去抖用定时器（§8）。</p>
+</div>
+<div class="q" data-a="a">
+<p class="qt"><span class="qn">13</span>CPUx 接受中断时，PC.19:16 存在哪里？</p>
+<div class="opts">
+<button data-o="a" type="button"><span class="k">A</span>和 SR.11:0 合在 SP 处的同一个字里（占高 4 位）</button>
+<button data-o="b" type="button"><span class="k">B</span>单独再压一个字，中断帧变成 3 个字</button>
+<button data-o="c" type="button"><span class="k">C</span>不保存：RTI 在低 64 KB，所以返回地址也一定在低 64 KB</button>
+<button data-o="d" type="button"><span class="k">D</span>和 PC.15:0 合在 SP + 2 处的同一个字里</button>
+</div>
+<p class="why"><b>A。</b>PC.15:0 在 SP + 2，PC.19:16 借用 SR 没用到的高 4 位存在 SP 处；帧仍是 2 个字，RETI 能恢复完整的 20 位 PC（§3）。</p>
+</div>
+</div>
+<div class="score" data-score=""><span class="val"></span><button class="btn" type="button">重做</button></div>
+</section>
+
+<section class="sec" id="terminos">
+<h2>术语卡 <span class="tag plain">16 张</span></h2>
+<p class="aside">正面是西语或英语原词，点击翻到中文和一句话解释。</p>
+<div class="cards">
+<button class="card" type="button"><span class="front">interrupción<small>interrupt</small></span><span class="back"><b>中断</b><br/>硬件机制：事件打断当前程序，转去执行 RTI，再回来。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RTI<small>Rutina de Tratamiento de Interrupción · ISR</small></span><span class="back"><b>中断服务程序</b><br/>为某个事件写好的响应代码，以 RETI 结尾。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">sondeo<small>polling</small></span><span class="back"><b>轮询</b><br/>CPU 反复读状态来发现事件，占用 CPU、不能睡觉。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">evento<small>fuente / causa de interrupción</small></span><span class="back"><b>事件 / 中断源</b><br/>输入、输出或外设里一个值得检测的变化。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">flag de interrupción<small>interrupt flag · PxIFG</small></span><span class="back"><b>中断标志</b><br/>事件发生时由硬件置 1 的位，记录"发生过"。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">habilitación<small>enable · PxIE</small></span><span class="back"><b>使能</b><br/>单独使能位为 1，这个事件才允许请求中断。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">GIE<small>General Interrupt Enable · SR.3</small></span><span class="back"><b>总中断使能</b><br/>为 0 时挡住所有可屏蔽中断；进入 RTI 时自动清零。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">enmascarable<small>maskable</small></span><span class="back"><b>可屏蔽</b><br/>受单独使能位和 GIE 双重控制的中断。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">NMI<small>(No) enmascarable · UNMI / SNMI</small></span><span class="back"><b>非屏蔽中断</b><br/>不受 GIE 控制，可以用各自的使能位关闭。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">BOR · POR · PUC</span><span class="back"><b>三层复位</b><br/>brownout reset ⇒ power-on reset ⇒ power-up clear（级联；BOR 最彻底，PUC 的起因最多）。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">watchdog<small>WDT</small></span><span class="back"><b>看门狗</b><br/>定时器，计满就复位；防止软件卡死。复位后默认开启，32 ms。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">pila<small>stack · SP</small></span><span class="back"><b>栈</b><br/>后进先出，向低地址增长；中断时保存 PC 和 SR。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">tabla de vectores<small>interrupt vector table</small></span><span class="back"><b>中断向量表</b><br/>0xFF80–0xFFFF，64 个 2 字节向量，存 RTI 入口地址。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">RETI<small>return from interrupt</small></span><span class="back"><b>中断返回</b><br/>先弹 SR，再弹 PC，回到被打断的位置；5 个周期。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">PxIV<small>interrupt vector register</small></span><span class="back"><b>中断向量寄存器</b><br/>给出已使能的待处理源中优先级最高的那个：2·(y+1)；读它会清那个 flag。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">anidamiento<small>nesting</small></span><span class="back"><b>中断嵌套</b><br/>RTI 里再被中断。默认不会，因为进入 RTI 时 GIE = 0。</span><span class="flipcue"></span></button>
+</div>
+</section>
+<nav aria-label="章节翻页" class="pager" data-pager="M21"></nav>
+
+<footer class="community-foot">
+<p><strong>OpenSEEI · 电子与智能系统开放课程</strong> · 由学习者自己整理与编写的社区版互动笔记，不是任何大学或机构的官方资料。动画与练习题均为原创编写。</p>
+<p><a href="../../index.html">← 返回 OpenSEEI 课程主页</a> · <a href="../../index.html#sync">Google 账号进度同步</a> · 内容按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 共享。</p>
+</footer></main>
+<script>window.SeeiSync && SeeiSync.beforeApp();</script>
+<script src="assets/app.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/practice.js"></script>
+<script>
+
+(function () {
+  "use strict";
+  var reduce = window.MICROScene ? window.MICROScene.reduce : false;
+  function $(id) { return document.getElementById(id); }
+
+  
+  var st = { pressed: false, ies: 1, ie: 1, gie: 0, flag: 0, led: 0, busy: false };
+  var pulse = $("m21-pulse"), out = $("m21-out");
+  var SW = { 1: { el: $("m21-sw1"), t: $("m21-sw1t"), x: 420, y: 140 }, 2: { el: $("m21-sw2"), t: $("m21-sw2t"), x: 560, y: 140 } };
+
+  function setSwitch(n, on) {
+    var s = SW[n];
+    s.el.style.transformOrigin = s.x + "px " + s.y + "px";
+    s.el.style.transform = on ? "rotate(0deg)" : "rotate(-30deg)";
+    s.el.setAttribute("class", "ln arm " + (on ? "g" : "m"));
+    s.t.textContent = on ? "闭合" : "断开";
+  }
+  function flash(el, cls, ms) { el.classList.add(cls); setTimeout(function () { el.classList.remove(cls); }, ms || 700); }
+  function render() {
+    $("m21-lvl").textContent = "P1IN.1 = " + (st.pressed ? "0" : "1");
+    $("m21-edgev").textContent = st.ies ? "1 · ↓" : "0 · ↑";
+    $("m21-flagv").textContent = st.flag;
+    $("m21-flag").classList.toggle("glow-r", !!st.flag);
+    setSwitch(1, st.ie); setSwitch(2, st.gie);
+    $("m21-led").setAttribute("class", st.led ? "led-on" : "bx m");
+    $("m21-down").disabled = st.pressed || st.busy;
+    $("m21-up").disabled = !st.pressed || st.busy;
+    ["m21-ies", "m21-ie", "m21-gie", "m21-clr"].forEach(function (id) { $(id).disabled = st.busy; });
+    var ies = $("m21-ies"); ies.setAttribute("aria-pressed", st.ies ? "true" : "false");
+    ies.querySelector(".lab").textContent = st.ies ? "P1IES.1 = 1 · ↓" : "P1IES.1 = 0 · ↑";
+    $("m21-ie").setAttribute("aria-pressed", st.ie ? "true" : "false");
+    $("m21-gie").setAttribute("aria-pressed", st.gie ? "true" : "false");
+  }
+  function say(s) { out.innerHTML = s; }
+  function move(x0, x1, done) {
+    clearTimeout(fadeT);
+    pulse.style.opacity = 1;
+    if (reduce) { pulse.setAttribute("cx", x1); setTimeout(done, 120); return; }
+    var t0 = null, dur = Math.max(250, Math.abs(x1 - x0) * 2.2);
+    function f(ts) {
+      if (t0 == null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur);
+      pulse.setAttribute("cx", (x0 + (x1 - x0) * (1 - Math.pow(1 - k, 2))).toFixed(1));
+      if (k < 1) requestAnimationFrame(f); else done();
+    }
+    requestAnimationFrame(f);
+  }
+  var fadeT;
+  function fade() { clearTimeout(fadeT); fadeT = setTimeout(function () { pulse.style.opacity = 0; }, 350); }
+  function cpuRun(fromPending) {
+    $("m21-cput").textContent = "→ RTI";
+    flash($("m21-cpu"), "glow-y", 900);
+    setTimeout(function () {
+      st.led = st.led ? 0 : 1; st.flag = 0;
+      $("m21-cput").textContent = "main()";
+      st.busy = false; render(); fade();
+      say((fromPending ? "flag 一直挂着是 1，现在条件凑齐了 → <b>立刻</b>进入中断。这就是配置时要先清 flag 的原因（§5）。"
+        : "三个条件都满足 → CPU 执行 RTI：LED1 翻转。") + " 这里假设 RTI 最后清掉了 P1IFG.1（为什么必须清，见 §6）。");
+    }, 800);
+  }
+  
+  function travel(fromPending) {
+    st.busy = true; render();
+    move(328, 420, function () {
+      if (!st.ie) { st.busy = false; render(); fade(); say("flag = 1，事件已经被记下来了；但 <b>P1IE.1 = 0</b>，单独使能没开，不请求中断。flag 会一直挂着。"); return; }
+      move(420, 560, function () {
+        if (!st.gie) { st.busy = false; render(); fade(); say("P1IE.1 = 1，但 <b>GIE = 0</b>：所有可屏蔽中断都被挡住。flag 挂着等待。试试不清 flag，直接打开 GIE。"); return; }
+        move(560, 660, function () { cpuRun(fromPending); });
+      });
+    });
+  }
+  function edge(falling) {
+    st.busy = true; render();
+    pulse.setAttribute("cx", 58);
+    move(58, 176, function () {
+      var match = (falling && st.ies) || (!falling && !st.ies);
+      if (!match) {
+        st.busy = false; render(); fade();
+        say((falling ? "按下 → 下降沿" : "松开 → 上升沿") + "；但 P1IES.1 = " + st.ies + " 只认" + (st.ies ? "下降沿" : "上升沿") + " → flag 不变，什么也没发生。");
+        return;
+      }
+      move(176, 328, function () {
+        st.flag = 1; render();
+        travel(false);
+      });
+    });
+  }
+  $("m21-down").addEventListener("click", function () { if (st.busy) return; st.pressed = true; render(); edge(true); });
+  $("m21-up").addEventListener("click", function () { if (st.busy) return; st.pressed = false; render(); edge(false); });
+  $("m21-ies").addEventListener("click", function () { if (st.busy) return; st.ies = st.ies ? 0 : 1; render(); say("P1IES.1 = " + st.ies + "：现在" + (st.ies ? "下降沿（按下）" : "上升沿（松开）") + "会置 flag。"); });
+  function toggleEnable(key, label) {
+    if (st.busy) return;
+    st[key] = st[key] ? 0 : 1; render();
+    if (st[key] && st.flag && st.ie && st.gie) { pulse.setAttribute("cx", 328); travel(true); return; }
+    say(label + " = " + st[key] + "。" + (st.flag ? "flag 仍然是 1，挂着。" : ""));
+  }
+  $("m21-ie").addEventListener("click", function () { toggleEnable("ie", "P1IE.1"); });
+  $("m21-gie").addEventListener("click", function () { toggleEnable("gie", "GIE"); });
+  $("m21-clr").addEventListener("click", function () { if (st.busy) return; st.flag = 0; render(); say("P1IFG.1 清零（相当于 <code>P1IFG &amp;= ~BIT1;</code>）。"); });
+  render();
+
+  
+  var NS = "http://www.w3.org/2000/svg", strip = $("m21-strip");
+  for (var i = 0; i < 64; i++) {
+    var r = document.createElementNS(NS, "rect");
+    r.setAttribute("x", 40 + i * 11); r.setAttribute("y", 80);
+    r.setAttribute("width", 9); r.setAttribute("height", 40); r.setAttribute("rx", 1.5);
+    r.setAttribute("class", i >= 41 ? "bx b" : "bx hollow m");
+    strip.appendChild(r);
+  }
+
+  
+  var rows = Array.prototype.slice.call(document.querySelectorAll("#m21-vt tr.pick"));
+  var det = $("m21-vtd");
+  function showVec(tr) {
+    rows.forEach(function (x) { x.classList.toggle("on", x === tr); x.querySelector(".vt-pick").setAttribute("aria-pressed", x === tr ? "true" : "false"); });
+    var n = +tr.getAttribute("data-n"), c = tr.children;
+    var addr = 0xFF80 + 2 * n;
+    var single = c[4].classList.contains("single");
+    det.innerHTML = '<span class="big">' + n + " 号 · 0x" + addr.toString(16).toUpperCase() + "</span>" +
+      "<p>" + c[2].textContent + "。类型：" + tr.getAttribute("data-k") + "。flags：<code>" + c[3].textContent + "</code></p>" +
+      "<p>0xFF80 + 2 × " + n + " = 0x" + addr.toString(16).toUpperCase() + "。" +
+      (n === 63 ? "<b>复位向量</b>：不是 RTI。0xFFFE 里存的是程序入口（启动代码）的地址，复位后 CPU 从这里开始执行；想知道复位原因，在程序里读 SYSRSTIV。优先级最高。"
+        : single ? "<b>单源</b>向量：进入 RTI 时 flag 由硬件自动清零。" : "<b>多源</b>向量：flag 不会自动清，要在 RTI 里识别来源并清掉（或读对应的 IV 寄存器）。") + "</p>";
+  }
+  rows.forEach(function (tr) {
+    var td = tr.children[0], b = document.createElement("button");
+    b.type = "button"; b.className = "vt-pick"; b.textContent = td.textContent;
+    b.setAttribute("aria-controls", "m21-vtd");
+    b.setAttribute("aria-pressed", tr.classList.contains("on") ? "true" : "false");
+    td.textContent = ""; td.appendChild(b);
+    tr.addEventListener("click", function () { showVec(tr); });
+  });
+})();
+</script>
+</body>
+</html>
