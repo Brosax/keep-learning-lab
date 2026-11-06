@@ -10,31 +10,36 @@
       "title": "2026 官方课程首页与完整日程",
       "url": "https://cs336.stanford.edu/",
       "type": "website",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2026 官方公开视频播放列表",
       "url": "https://www.youtube.com/watch?v=JuoVZkPBiKk&list=PLoROMvodv4rMqXOcazWaTUHhq-yembLCV",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2026 官方讲义与代码仓库",
       "url": "https://github.com/stanford-cs336/lectures",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2025 历史版本（补充参考，非本路径讲次）",
       "url": "https://cs336.stanford.edu/spring2025/",
       "type": "archive",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "第18/19讲嘉宾日程：Daniel Selsam / Dan Fu（官网未链接讲义）",
       "url": "https://cs336.stanford.edu/#schedule",
       "type": "website",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2026 作业5 可选补充：Safety / RLHF",
@@ -43,7 +48,14 @@
       "local": "materials/cs336_spring2026_assignment5_supplement_safety_rlhf.pdf",
       "status": "downloaded",
       "bytes": 295954,
-      "sha256": "30a2de73c2b95b9302bf31640f5f6016ef884d611cba94c9a0fdb1e505ad07e3"
+      "sha256": "30a2de73c2b95b9302bf31640f5f6016ef884d611cba94c9a0fdb1e505ad07e3",
+      "lesson_references": [
+        {
+          "lesson_id": "15",
+          "title": "2026 作业5 可选补充：Safety / RLHF",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_supplement_safety_rlhf.pdf"
+        }
+      ]
     },
     {
       "title": "2025 Lecture 3 - architecture",
@@ -52,7 +64,8 @@
       "local": "materials/2025 Lecture 3 - architecture.pdf",
       "status": "downloaded",
       "bytes": 5277140,
-      "sha256": "3692b3d25b5605e70930abc81d63241c71c136dfb573029d4544420925e0f9c4"
+      "sha256": "3692b3d25b5605e70930abc81d63241c71c136dfb573029d4544420925e0f9c4",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 4 - MoEs",
@@ -61,7 +74,8 @@
       "local": "materials/2025 Lecture 4 - MoEs.pdf",
       "status": "downloaded",
       "bytes": 4677130,
-      "sha256": "b62ba6416f04c4473834fffa19119317e78542a6b8dc94a5e816790643cb0c4f"
+      "sha256": "b62ba6416f04c4473834fffa19119317e78542a6b8dc94a5e816790643cb0c4f",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 5 - GPUs",
@@ -70,7 +84,8 @@
       "local": "materials/2025 Lecture 5 - GPUs.pdf",
       "status": "downloaded",
       "bytes": 4766673,
-      "sha256": "ff25621de3d3d462a534070a209a8efac1b8410e3da58de08f764e33482bb6ba"
+      "sha256": "ff25621de3d3d462a534070a209a8efac1b8410e3da58de08f764e33482bb6ba",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 7 - Parallelism basics",
@@ -79,7 +94,8 @@
       "local": "materials/2025 Lecture 7 - Parallelism basics.pdf",
       "status": "downloaded",
       "bytes": 5004408,
-      "sha256": "c1868d601380a62d87cbacb91589114e46e3e88e47577d9308dde1788c9cc09a"
+      "sha256": "c1868d601380a62d87cbacb91589114e46e3e88e47577d9308dde1788c9cc09a",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 9 - Scaling laws basics",
@@ -88,7 +104,8 @@
       "local": "materials/2025 Lecture 9 - Scaling laws basics.pdf",
       "status": "downloaded",
       "bytes": 6014047,
-      "sha256": "89f1e78e7c040a463a2f3a22025bcca9836ca1ecdbee88b398b780835e5bf7ce"
+      "sha256": "89f1e78e7c040a463a2f3a22025bcca9836ca1ecdbee88b398b780835e5bf7ce",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 11 - Scaling details",
@@ -97,7 +114,8 @@
       "local": "materials/2025 Lecture 11 - Scaling details.pdf",
       "status": "downloaded",
       "bytes": 6265218,
-      "sha256": "9aab7ba7abb0059170c2626291f7ff4b6f5c81bc6448a52945143008bcc9b887"
+      "sha256": "9aab7ba7abb0059170c2626291f7ff4b6f5c81bc6448a52945143008bcc9b887",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 15 - RLHF Alignment",
@@ -106,7 +124,8 @@
       "local": "materials/2025 Lecture 15 - RLHF Alignment.pdf",
       "status": "downloaded",
       "bytes": 6626049,
-      "sha256": "d16bdb0f22702aba773cb76883b2c9e501c05ebd9e955e403ebbaebe544ece60"
+      "sha256": "d16bdb0f22702aba773cb76883b2c9e501c05ebd9e955e403ebbaebe544ece60",
+      "lesson_references": []
     },
     {
       "title": "2025 Lecture 16 - RLVR",
@@ -115,7 +134,8 @@
       "local": "materials/2025 Lecture 16 - RLVR.pdf",
       "status": "downloaded",
       "bytes": 7079571,
-      "sha256": "6d789153852144d687bd9b068d5e5b5717ea99fd60d8febe8c8b06b6aa86439f"
+      "sha256": "6d789153852144d687bd9b068d5e5b5717ea99fd60d8febe8c8b06b6aa86439f",
+      "lesson_references": []
     },
     {
       "title": "cs336 spring2025 assignment5 alignment",
@@ -124,7 +144,8 @@
       "local": "materials/cs336_spring2025_assignment5_alignment.pdf",
       "status": "downloaded",
       "bytes": 276002,
-      "sha256": "70884cf683cbffb2bff82161fe307756951e6a2452e16ae0fd7b3508ab76f2d7"
+      "sha256": "70884cf683cbffb2bff82161fe307756951e6a2452e16ae0fd7b3508ab76f2d7",
+      "lesson_references": []
     },
     {
       "title": "cs336 assignment1 basics",
@@ -133,7 +154,8 @@
       "local": "materials/cs336_assignment1_basics.pdf",
       "status": "downloaded",
       "bytes": 965629,
-      "sha256": "cf402d1c6d3c66da035bdf33b3e2c1bbc4bb92a78b006ee36577e925a265e328"
+      "sha256": "cf402d1c6d3c66da035bdf33b3e2c1bbc4bb92a78b006ee36577e925a265e328",
+      "lesson_references": []
     },
     {
       "title": "cs336 assignment2 systems",
@@ -142,7 +164,8 @@
       "local": "materials/cs336_assignment2_systems.pdf",
       "status": "downloaded",
       "bytes": 1495177,
-      "sha256": "f5667e3b6fac23c3a6d4ad4a999445b96aab3fb2246904d13ec86b79320b1a84"
+      "sha256": "f5667e3b6fac23c3a6d4ad4a999445b96aab3fb2246904d13ec86b79320b1a84",
+      "lesson_references": []
     },
     {
       "title": "cs336 assignment3 scaling",
@@ -151,7 +174,8 @@
       "local": "materials/cs336_assignment3_scaling.pdf",
       "status": "downloaded",
       "bytes": 182230,
-      "sha256": "121e9d15b1ba508cef437acc764eaa83268b559c4898c10bda3fd56bdde50392"
+      "sha256": "121e9d15b1ba508cef437acc764eaa83268b559c4898c10bda3fd56bdde50392",
+      "lesson_references": []
     },
     {
       "title": "cs336 assignment4 data",
@@ -160,7 +184,8 @@
       "local": "materials/cs336_assignment4_data.pdf",
       "status": "downloaded",
       "bytes": 287362,
-      "sha256": "2b0660d0d1e96366c4688f9606c707c668a1fa76396c563b21a6fc75863fb59e"
+      "sha256": "2b0660d0d1e96366c4688f9606c707c668a1fa76396c563b21a6fc75863fb59e",
+      "lesson_references": []
     },
     {
       "title": "cs336 spring2026 assignment5 alignment",
@@ -169,14 +194,16 @@
       "local": "materials/cs336_spring2026_assignment5_alignment.pdf",
       "status": "downloaded",
       "bytes": 765568,
-      "sha256": "c93d503a69aef4aa7519b7fc664abebbf2ebf5e5e88379a7ed92f4c209a2d26a"
+      "sha256": "c93d503a69aef4aa7519b7fc664abebbf2ebf5e5e88379a7ed92f4c209a2d26a",
+      "lesson_references": []
     },
     {
       "title": "lectures",
       "url": "https://codeload.github.com/stanford-cs336/lectures/zip/refs/heads/main",
       "type": "code",
       "note": "完整仓库已下载归档；大文件通过官方源下载。",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "assignment1-basics",
@@ -185,7 +212,8 @@
       "local": "materials/assignment1-basics.zip",
       "status": "downloaded",
       "bytes": 10635019,
-      "sha256": "8d3f2f0e336ce72e101ac24b6b1a326942199501351a1ac431dd9e6b00c2acdf"
+      "sha256": "8d3f2f0e336ce72e101ac24b6b1a326942199501351a1ac431dd9e6b00c2acdf",
+      "lesson_references": []
     },
     {
       "title": "assignment2-systems",
@@ -194,7 +222,8 @@
       "local": "materials/assignment2-systems.zip",
       "status": "downloaded",
       "bytes": 930362,
-      "sha256": "c092fbdfacf836da5293b67db664f9086bcfe08d66190359f7fd6b6c0d3bc151"
+      "sha256": "c092fbdfacf836da5293b67db664f9086bcfe08d66190359f7fd6b6c0d3bc151",
+      "lesson_references": []
     },
     {
       "title": "assignment3-scaling",
@@ -203,7 +232,8 @@
       "local": "materials/assignment3-scaling.zip",
       "status": "downloaded",
       "bytes": 375175,
-      "sha256": "fe238105e3fc83c0422cfb8bce671bd18cbb5787640afe6b3724c9ca1f37e717"
+      "sha256": "fe238105e3fc83c0422cfb8bce671bd18cbb5787640afe6b3724c9ca1f37e717",
+      "lesson_references": []
     },
     {
       "title": "assignment4-data",
@@ -212,14 +242,16 @@
       "local": "materials/assignment4-data.zip",
       "status": "downloaded",
       "bytes": 343346,
-      "sha256": "d0ce2552b15741305ac3201d400a0d21fdccdcccbd135ebba33e77716e7f923c"
+      "sha256": "d0ce2552b15741305ac3201d400a0d21fdccdcccbd135ebba33e77716e7f923c",
+      "lesson_references": []
     },
     {
       "title": "assignment5-alignment",
       "url": "https://codeload.github.com/stanford-cs336/assignment5-alignment/zip/refs/heads/main",
       "type": "code",
       "note": "完整仓库已下载归档；大文件通过官方源下载。",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "lecture util.py",
@@ -228,13 +260,21 @@
       "local": "materials/lecture_util.py",
       "status": "downloaded",
       "bytes": 364,
-      "sha256": "aa4d0c3c911f072c6a0747c919e812e33adb647298428c9f12eaf36472a88817"
+      "sha256": "aa4d0c3c911f072c6a0747c919e812e33adb647298428c9f12eaf36472a88817",
+      "lesson_references": []
     },
     {
       "title": "2026 第 1 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_01",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "2026 第 1 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_01"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -243,13 +283,27 @@
       "local": "materials/lecture_01.py",
       "status": "downloaded",
       "bytes": 42672,
-      "sha256": "a7d47339eab889679010e926db8beb79f475a0596243f19bb15dbd69223f67e6"
+      "sha256": "a7d47339eab889679010e926db8beb79f475a0596243f19bb15dbd69223f67e6",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "2026第1讲Python源码 · bpe_tokenizer / train_bpe",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_01.py"
+        }
+      ]
     },
     {
       "title": "2026 第 2 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_02",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "2026 第 2 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_02"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -258,7 +312,14 @@
       "local": "materials/lecture_02.py",
       "status": "downloaded",
       "bytes": 35396,
-      "sha256": "f731b3849afc970a062f1fe692d7d80f5952cf82c2a4f6f2803a8fb9a9dabfd6"
+      "sha256": "f731b3849afc970a062f1fe692d7d80f5952cf82c2a4f6f2803a8fb9a9dabfd6",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "2026第2讲Python源码 · tensors_memory / optimizer",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_02.py"
+        }
+      ]
     },
     {
       "title": "2026 第 3 讲官方课件 PDF",
@@ -267,7 +328,14 @@
       "local": "materials/lecture_03.pdf",
       "status": "downloaded",
       "bytes": 5990936,
-      "sha256": "20a953541b41a099bc69b8d809139a4ccdb2aefedaa13e50c766245fe4b5167e"
+      "sha256": "20a953541b41a099bc69b8d809139a4ccdb2aefedaa13e50c766245fe4b5167e",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "2026第3讲 · 第14–23页 RMSNorm 与 SwiGLU",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_03.pdf#page=14"
+        }
+      ]
     },
     {
       "title": "2026 第 4 讲官方课件 PDF",
@@ -276,7 +344,14 @@
       "local": "materials/lecture_04.pdf",
       "status": "downloaded",
       "bytes": 6500834,
-      "sha256": "922da01cee70ed9dc9eef13d8116f1d6f45d663c12e632b3e80954c783bd3ce5"
+      "sha256": "922da01cee70ed9dc9eef13d8116f1d6f45d663c12e632b3e80954c783bd3ce5",
+      "lesson_references": [
+        {
+          "lesson_id": "04",
+          "title": "2026第4讲 · 第26–32页 MoE 路由与 top-k",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_04.pdf#page=26"
+        }
+      ]
     },
     {
       "title": "2026 第 5 讲官方课件 PDF",
@@ -285,13 +360,27 @@
       "local": "materials/lecture_05.pdf",
       "status": "downloaded",
       "bytes": 5200951,
-      "sha256": "a2d5664a3b5a1f246df2fe58b43189215f29931ec05bde4d8a6af4664f55cafe"
+      "sha256": "a2d5664a3b5a1f246df2fe58b43189215f29931ec05bde4d8a6af4664f55cafe",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "2026第5讲 · 第21页起 roofline 与硬件约束",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_05.pdf#page=21"
+        }
+      ]
     },
     {
       "title": "2026 第 6 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_06",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "2026 第 6 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_06"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -300,13 +389,27 @@
       "local": "materials/lecture_06.py",
       "status": "downloaded",
       "bytes": 31366,
-      "sha256": "4be1200d93d1f38963d40d7c46a5be72dd67a230ebf8a48d446f018d5e8fa788"
+      "sha256": "4be1200d93d1f38963d40d7c46a5be72dd67a230ebf8a48d446f018d5e8fa788",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "2026第6讲Python源码 · triton_row_sum_example / triton_matmul_relu_example",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_06.py"
+        }
+      ]
     },
     {
       "title": "2026 第 7 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_07",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "2026 第 7 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_07"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -315,7 +418,14 @@
       "local": "materials/lecture_07.py",
       "status": "downloaded",
       "bytes": 26346,
-      "sha256": "7cdec6c6e2b78afd667c98e2826efea637bb076cd926c45b4f404b0528c42e60"
+      "sha256": "7cdec6c6e2b78afd667c98e2826efea637bb076cd926c45b4f404b0528c42e60",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "2026 官方代码讲义 Python 源文件",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_07.py"
+        }
+      ]
     },
     {
       "title": "2026 第 8 讲官方课件 PDF",
@@ -324,7 +434,14 @@
       "local": "materials/lecture_08.pdf",
       "status": "downloaded",
       "bytes": 6563256,
-      "sha256": "4c4d7674b333693f20f328935d84dd8a073362c9725c5e05302b6650751ad4d1"
+      "sha256": "4c4d7674b333693f20f328935d84dd8a073362c9725c5e05302b6650751ad4d1",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "2026第8讲 · ZeRO分片，PDF第18–28页",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_08.pdf#page=18"
+        }
+      ]
     },
     {
       "title": "2026 第 9 讲官方课件 PDF",
@@ -333,13 +450,32 @@
       "local": "materials/lecture_09.pdf",
       "status": "downloaded",
       "bytes": 6941146,
-      "sha256": "92a5d9e26e65bb0a9d8c79b12ed7ea26d14530bf960dcf44f9ed5fd372f519fa"
+      "sha256": "92a5d9e26e65bb0a9d8c79b12ed7ea26d14530bf960dcf44f9ed5fd372f519fa",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "2026第9讲 · 幂律关系，PDF第13–18页",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=13"
+        },
+        {
+          "lesson_id": "11",
+          "title": "2026第9讲补充 · 联合拟合与IsoFLOPs，PDF第43–49页",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=43"
+        }
+      ]
     },
     {
       "title": "2026 第 10 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_10",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "2026 第 10 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_10"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -348,7 +484,14 @@
       "local": "materials/lecture_10.py",
       "status": "downloaded",
       "bytes": 31289,
-      "sha256": "e79acd9115d75f0b8bf4902d97dc41c1f6b5016778321f19c2dc241a90cfe9b9"
+      "sha256": "e79acd9115d75f0b8bf4902d97dc41c1f6b5016778321f19c2dc241a90cfe9b9",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "2026 官方代码讲义 Python 源文件",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_10.py"
+        }
+      ]
     },
     {
       "title": "2026 第 11 讲官方课件 PDF",
@@ -357,13 +500,27 @@
       "local": "materials/lecture_11.pdf",
       "status": "downloaded",
       "bytes": 6702855,
-      "sha256": "b2148e683b4020f3fa95f5c95f37be55ebf6b2f57382f4c148517e84bf1df890"
+      "sha256": "b2148e683b4020f3fa95f5c95f37be55ebf6b2f57382f4c148517e84bf1df890",
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "2026第11讲 · 规模配方，PDF第26–30页",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_11.pdf#page=26"
+        }
+      ]
     },
     {
       "title": "2026 第 12 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_12",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "2026 第 12 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_12"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -372,13 +529,27 @@
       "local": "materials/lecture_12.py",
       "status": "downloaded",
       "bytes": 21557,
-      "sha256": "93e4049c9ee2665a7e5c883fee2c213e2eaa45aa5d452e447b5a15a5f353fd09"
+      "sha256": "93e4049c9ee2665a7e5c883fee2c213e2eaa45aa5d452e447b5a15a5f353fd09",
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "2026 官方代码讲义 Python 源文件",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_12.py"
+        }
+      ]
     },
     {
       "title": "2026 第 13 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_13",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "13",
+          "title": "2026 第 13 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_13"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -387,13 +558,27 @@
       "local": "materials/lecture_13.py",
       "status": "downloaded",
       "bytes": 33754,
-      "sha256": "321fbab635378c275f65c41487119f3b9b171fc0ddef1454a4c607c9db72163b"
+      "sha256": "321fbab635378c275f65c41487119f3b9b171fc0ddef1454a4c607c9db72163b",
+      "lesson_references": [
+        {
+          "lesson_id": "13",
+          "title": "2026 官方代码讲义 Python 源文件",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_13.py"
+        }
+      ]
     },
     {
       "title": "2026 第 14 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_14",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "2026 第 14 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_14"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -402,7 +587,19 @@
       "local": "materials/lecture_14.py",
       "status": "downloaded",
       "bytes": 24169,
-      "sha256": "8e0e17f868002f2e8f73afed018b2dd787c0a1b371eec599c44d8dbfe555ae9b"
+      "sha256": "8e0e17f868002f2e8f73afed018b2dd787c0a1b371eec599c44d8dbfe555ae9b",
+      "lesson_references": [
+        {
+          "lesson_id": "13",
+          "title": "第14讲 data_mixing() · 采样混合与重复曝光补充",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_14.py"
+        },
+        {
+          "lesson_id": "14",
+          "title": "第14讲 Python源码 · exact_deduplication / jaccard_minhash / data_mixing",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_14.py"
+        }
+      ]
     },
     {
       "title": "2026 第 15 讲官方课件 PDF",
@@ -411,7 +608,14 @@
       "local": "materials/lecture_15.pdf",
       "status": "downloaded",
       "bytes": 6395151,
-      "sha256": "42a4bc02408a96e0b414f789f32780ae1d8461000f872d93aa38c94fe369e862"
+      "sha256": "42a4bc02408a96e0b414f789f32780ae1d8461000f872d93aa38c94fe369e862",
+      "lesson_references": [
+        {
+          "lesson_id": "15",
+          "title": "2026 第 15 讲官方课件 PDF",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_15.pdf"
+        }
+      ]
     },
     {
       "title": "2026 第 16 讲官方课件 PDF",
@@ -420,13 +624,27 @@
       "local": "materials/lecture_16.pdf",
       "status": "downloaded",
       "bytes": 6755659,
-      "sha256": "1a2bea825499f226b1c3fe990606253ad1b4fdbdf2ae90b4d12d7d0c07f2c8b3"
+      "sha256": "1a2bea825499f226b1c3fe990606253ad1b4fdbdf2ae90b4d12d7d0c07f2c8b3",
+      "lesson_references": [
+        {
+          "lesson_id": "16",
+          "title": "第16讲官方PDF · GRPO组归一化与偏差讨论（第18–24页）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_16.pdf#page=18"
+        }
+      ]
     },
     {
       "title": "2026 第 17 讲官方代码讲义 / Trace",
       "url": "https://cs336.stanford.edu/lectures/?trace=lecture_17",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "17",
+          "title": "2026 第 17 讲官方代码讲义 / Trace",
+          "url": "https://cs336.stanford.edu/lectures/?trace=lecture_17"
+        }
+      ]
     },
     {
       "title": "2026 官方代码讲义 Python 源文件",
@@ -435,7 +653,14 @@
       "local": "materials/lecture_17.py",
       "status": "downloaded",
       "bytes": 13890,
-      "sha256": "d8c3054ecce42fda3d92b4f21677a83d65cb525e8b3fbd4361c079f3cd20da52"
+      "sha256": "d8c3054ecce42fda3d92b4f21677a83d65cb525e8b3fbd4361c079f3cd20da52",
+      "lesson_references": [
+        {
+          "lesson_id": "17",
+          "title": "第17讲Python源码 · 多模态输入与长样本损失平衡背景",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_17.py"
+        }
+      ]
     }
   ],
   "discovery": {
@@ -803,5 +1028,19 @@
       "official-0.html"
     ],
     "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  },
+  "lesson_references_updated_at": "2026-11-06T21:08:02.432361+00:00",
+  "local_files_verification": {
+    "verified_at": "2026-11-06T21:08:02.432361+00:00",
+    "algorithm": "SHA-256",
+    "published_files": 37,
+    "published_bytes": 113573651,
+    "verified_historical_downloads": 39,
+    "discovery_only_files": [
+      "lectures.zip",
+      "assignment5-alignment.zip"
+    ],
+    "newly_archived_files": [],
+    "result": "All 37 published files have verified sizes and hashes; 39 historical downloads retain matching metadata. Discovery-only files are not counted as published course resources."
   }
 }

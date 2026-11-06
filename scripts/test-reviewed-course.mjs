@@ -91,6 +91,11 @@ for(const lesson of s.window.COURSE.lessons){
  const options=[...d.querySelectorAll('.code-playground select option')];check(options.length<=1,`${id} does not expose the unrelated global seven-demo menu`);if(options.length)eq(options[0].getAttribute('value'),id,`${id} menu stays on lesson demo`);
  check(d.querySelector('.geometry-lab svg[role="img"][aria-label]'),`${id} has a labeled mathematical diagram`);
  check(Array.isArray(visual.steps)&&visual.steps.length>=2,`${id} includes a real sequence`);
+ for(const key of ['min','max','step','value'])check(typeof visual[key]==='number'&&Number.isFinite(visual[key]),`${id} slider ${key} is finite numeric data`);
+ check(visual.step>0&&visual.max>=visual.min,`${id} slider has ordered bounds and a positive step`);
+ check(visual.value>=visual.min&&visual.value<=visual.max,`${id} slider default lies inside its bounds`);
+ const defaultTicks=(visual.value-visual.min)/visual.step;
+ check(Math.abs(defaultTicks-Math.round(defaultTicks))<1e-7,`${id} slider default is aligned to min plus integer steps`);
  const sampleValues=[visual.min,visual.value,visual.max];
  for(const value of sampleValues){
   for(let step=0;step<visual.steps.length;step++){
