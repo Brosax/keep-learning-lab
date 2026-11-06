@@ -16,12 +16,6 @@ function check(value,label){assert.ok(value,label);assertions++;}
 function equal(actual,expected,label){assert.equal(actual,expected,label);assertions++;}
 function session(seed={},activity={},signedIn=false){
   const {window}=parseHTML(html),{document}=window;
-  // linkedom incorrectly maps digit-containing dataset.i18n to data-i18-n.
-  // Browsers use data-i18n; correct only this emulator discrepancy.
-  for (const el of document.querySelectorAll('[data-i18n]')) {
-    const dataset=el.dataset;
-    Object.defineProperty(el,'dataset',{value:new Proxy(dataset,{get(target,key){return key==='i18n'?el.getAttribute('data-i18n'):Reflect.get(target,key);}})});
-  }
   const saved=new Map(Object.entries(seed));
   const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,String(v)),removeItem:k=>saved.delete(k)};
   window.matchMedia=()=>({matches:false,addEventListener(){}});window.scrollTo=()=>{};
@@ -62,6 +56,7 @@ const originalHeading=d.querySelector('h1').textContent;s.click('#language-toggl
 s.click('#theme-toggle');equal(s.saved.get('open-seei-theme'),'dark','dark theme persisted');s.click('#theme-toggle');equal(s.saved.get('open-seei-theme'),'light','light theme persisted');
 check(d.querySelector('#resume-link').hidden,'no fake resume on empty storage');s.click('#progress-open');check(s.dialog.open,'learning panel opens');s.click('#progress-close');check(!s.dialog.open,'learning panel closes');
 const p=session({'cs336-web-v1':JSON.stringify({obj:{'L01.1':true},resume:'01'})});check(!p.document.querySelector('#resume-link').hidden,'saved course gives resume link');check(p.document.querySelector('#resume-link').getAttribute('href').includes('cs336'),'resume points at saved course');check(p.document.querySelector('#resume-link').getAttribute('href').includes('lesson-01'),'resume points at saved lesson');check(p.document.querySelector('[data-course="cs336"] .progress-label').textContent.trim().length>0,'saved progress visible on course card');p.click('#progress-open');check(p.document.querySelector('#learning-list').textContent.includes('CS336'),'learning panel includes saved course');
+const signed=session({}, {}, true);signed.click('#progress-open');check(!signed.document.querySelector('#sync-now').hidden,'signed-in sync control available');signed.click('#sync-now');await Promise.resolve();equal(signed.calls.sync,1,'sync button calls actual sync API');signed.click('#sign-out');equal(signed.calls.logout,1,'sign out calls actual logout API');check(signed.document.querySelector('#sign-out').hidden,'sign out updates panel state');
 const unsafe=session({}, {last:{slug:'../../https://evil.test',file:'javascript:alert(1)',title:'<img src=x onerror=alert(1)>',lang:'zh',ts:Date.now()}});const resume=unsafe.document.querySelector('#resume-link');check(resume.hidden || !/javascript:|evil\.test/i.test(resume.getAttribute('href')||''),'unrecognized activity cannot create arbitrary resume URL');check(!resume.querySelector('img'),'activity title cannot inject HTML');
 for(const anchor of d.querySelectorAll('a[href]')){
  const href=anchor.getAttribute('href');check(!/^(javascript|data):/i.test(href),'safe anchor URL');
