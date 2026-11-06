@@ -10,25 +10,29 @@
       "title": "2026 官方课程大纲与发布状态",
       "url": "https://cme295.stanford.edu/syllabus/",
       "type": "syllabus",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2025 完整课程大纲",
       "url": "https://cme295.stanford.edu/syllabus/2025/",
       "type": "syllabus",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "教师维护的多语言 Transformer / LLM 速查表仓库",
       "url": "https://github.com/afshinea/stanford-cme-295-transformers-large-language-models",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2026 Stanford Online 官方视频播放列表",
       "url": "https://www.youtube.com/playlist?list=PLakGfbKCei80",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "2026 期中试卷",
@@ -37,7 +41,8 @@
       "local": "materials/fall26-cme295-midterm.pdf",
       "status": "downloaded",
       "bytes": 169111,
-      "sha256": "9e5dad1e270308efb4ee300688e2d33824b059ffc5440b27c2304aa762f13202"
+      "sha256": "9e5dad1e270308efb4ee300688e2d33824b059ffc5440b27c2304aa762f13202",
+      "lesson_references": []
     },
     {
       "title": "2026 期中试卷解析",
@@ -46,7 +51,8 @@
       "local": "materials/fall26-cme295-midterm-solutions.pdf",
       "status": "downloaded",
       "bytes": 177280,
-      "sha256": "04515d1f637d213d8874ac509f38a789ccf475d64777bb1aa4b8aa8fbb18f133"
+      "sha256": "04515d1f637d213d8874ac509f38a789ccf475d64777bb1aa4b8aa8fbb18f133",
+      "lesson_references": []
     },
     {
       "title": "2025 第 1 讲 · Transformer（完整旧版）",
@@ -55,7 +61,14 @@
       "local": "materials/fall25-cme295-lecture1.pdf",
       "status": "downloaded",
       "bytes": 2709737,
-      "sha256": "5dc36dcac9399ed71025f2056d65a846a36eb5235b14ca2ede3625a3ecb9e234"
+      "sha256": "5dc36dcac9399ed71025f2056d65a846a36eb5235b14ca2ede3625a3ecb9e234",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "2025 补充 · 第 1 讲 Transformer",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture1.pdf"
+        }
+      ]
     },
     {
       "title": "2025 第 2 讲 · Transformer-based models & tricks（完整旧版）",
@@ -64,7 +77,19 @@
       "local": "materials/fall25-cme295-lecture2.pdf",
       "status": "downloaded",
       "bytes": 4311026,
-      "sha256": "63cd3d5855567d9358bb34819eed711afe27e14a5de4ae424c9b1d73cfef7433"
+      "sha256": "63cd3d5855567d9358bb34819eed711afe27e14a5de4ae424c9b1d73cfef7433",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "2025 补充 · 第 2 讲 Transformer-based models & tricks",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture2.pdf"
+        },
+        {
+          "lesson_id": "03",
+          "title": "跨学期补充：2025第2讲 · 第101–104页soft-target蒸馏",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture2.pdf#page=101"
+        }
+      ]
     },
     {
       "title": "2025 第 3 讲 · Large Language Models（完整旧版）",
@@ -73,7 +98,19 @@
       "local": "materials/fall25-cme295-lecture3.pdf",
       "status": "downloaded",
       "bytes": 3576122,
-      "sha256": "e4f3420e9d33e7f6e79ff38f460809f25a13d51e929d12c098587b9a33891c11"
+      "sha256": "e4f3420e9d33e7f6e79ff38f460809f25a13d51e929d12c098587b9a33891c11",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "2025 补充 · 第 3 讲 Large Language Models",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture3.pdf"
+        },
+        {
+          "lesson_id": "05",
+          "title": "2025 补充 · 第 3 讲 Large Language Models",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture3.pdf"
+        }
+      ]
     },
     {
       "title": "2025 第 4 讲 · LLM training（完整旧版）",
@@ -82,7 +119,19 @@
       "local": "materials/fall25-cme295-lecture4.pdf",
       "status": "downloaded",
       "bytes": 4425624,
-      "sha256": "7f3a8d20e703ba62f79baca79a75e65d006aee99c79f7549b447a49671610825"
+      "sha256": "7f3a8d20e703ba62f79baca79a75e65d006aee99c79f7549b447a49671610825",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "2025 补充 · 第 4 讲 LLM training",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture4.pdf"
+        },
+        {
+          "lesson_id": "05",
+          "title": "2025补充 · QLoRA/NF4量化背景，PDF第117–127页",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture4.pdf#page=117"
+        }
+      ]
     },
     {
       "title": "2025 第 5 讲 · LLM tuning（完整旧版）",
@@ -91,7 +140,19 @@
       "local": "materials/fall25-cme295-lecture5.pdf",
       "status": "downloaded",
       "bytes": 2125890,
-      "sha256": "8e347d02a83706c92af4e9c122c28faa68534e099f5a467491cb03e37826411d"
+      "sha256": "8e347d02a83706c92af4e9c122c28faa68534e099f5a467491cb03e37826411d",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "2025 补充 · 第 5 讲 LLM tuning",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture5.pdf"
+        },
+        {
+          "lesson_id": "04",
+          "title": "2025 补充 · 第 5 讲 LLM tuning",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture5.pdf"
+        }
+      ]
     },
     {
       "title": "2025 第 6 讲 · LLM reasoning（完整旧版）",
@@ -100,7 +161,19 @@
       "local": "materials/fall25-cme295-lecture6.pdf",
       "status": "downloaded",
       "bytes": 4293461,
-      "sha256": "e60fd83047d73f9d05b9bc1f23f57498849b276ca95b2e02d866260f3ca5b461"
+      "sha256": "e60fd83047d73f9d05b9bc1f23f57498849b276ca95b2e02d866260f3ca5b461",
+      "lesson_references": [
+        {
+          "lesson_id": "04",
+          "title": "2025 补充 · 第 6 讲 LLM reasoning",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture6.pdf"
+        },
+        {
+          "lesson_id": "07",
+          "title": "2025 第6讲 · pass@k评估（PDF第39–47页）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture6.pdf#page=39"
+        }
+      ]
     },
     {
       "title": "2025 第 7 讲 · Agentic LLMs（完整旧版）",
@@ -109,7 +182,14 @@
       "local": "materials/fall25-cme295-lecture7.pdf",
       "status": "downloaded",
       "bytes": 2447092,
-      "sha256": "2772ba9a870a3b7e3666f47696e9af6794489ce169de4a0f3ea1b91ce13e7234"
+      "sha256": "2772ba9a870a3b7e3666f47696e9af6794489ce169de4a0f3ea1b91ce13e7234",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "2025 补充 · 第 7 讲 Agentic LLMs",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture7.pdf"
+        }
+      ]
     },
     {
       "title": "2025 第 8 讲 · LLM evaluation（完整旧版）",
@@ -118,7 +198,14 @@
       "local": "materials/fall25-cme295-lecture8.pdf",
       "status": "downloaded",
       "bytes": 3837744,
-      "sha256": "b63b2ea3734e2da370d4b89e840b53aea95c41acc273cdc167b665d2e40c5f6e"
+      "sha256": "b63b2ea3734e2da370d4b89e840b53aea95c41acc273cdc167b665d2e40c5f6e",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "2025 第8讲 · 模型裁判与pass^k一致性（不同于pass@k）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf"
+        }
+      ]
     },
     {
       "title": "2025 第 9 讲 · Current trends（完整旧版）",
@@ -127,7 +214,19 @@
       "local": "materials/fall25-cme295-lecture9.pdf",
       "status": "downloaded",
       "bytes": 6983081,
-      "sha256": "b6767a5c30fb0ea26c4ec86d2b6b95f212e8b40f46d065872c1b93fc910440ad"
+      "sha256": "b6767a5c30fb0ea26c4ec86d2b6b95f212e8b40f46d065872c1b93fc910440ad",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "2025 第9讲 · 遮罩扩散背景（PDF第90–96页）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=90"
+        },
+        {
+          "lesson_id": "09",
+          "title": "2025 第9讲 · 多模态趋势背景（PDF第100页起）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=100"
+        }
+      ]
     },
     {
       "title": "CME295 速查表 · 阿拉伯语（教师仓库）",
@@ -137,7 +236,8 @@
       "local": "materials/ar-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 869622,
-      "sha256": "d28c5a5e967a1d316df26c670efb6828c6e2b78156a34c5b3d04ef7eb09c6d2c"
+      "sha256": "d28c5a5e967a1d316df26c670efb6828c6e2b78156a34c5b3d04ef7eb09c6d2c",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 捷克语（教师仓库）",
@@ -147,7 +247,8 @@
       "local": "materials/cs-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1498062,
-      "sha256": "e1af68e4a25390fcbb4f3881cc92bea54344db8362f88f652f90b1c56bd2be38"
+      "sha256": "e1af68e4a25390fcbb4f3881cc92bea54344db8362f88f652f90b1c56bd2be38",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 英语（教师仓库）",
@@ -157,7 +258,8 @@
       "local": "materials/en-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1501353,
-      "sha256": "d40144d042a1021c537bca93947e3f599c15964cc5c5e2a0a96ec6935b1a68ce"
+      "sha256": "d40144d042a1021c537bca93947e3f599c15964cc5c5e2a0a96ec6935b1a68ce",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 西班牙语（教师仓库）",
@@ -167,7 +269,8 @@
       "local": "materials/es-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1492861,
-      "sha256": "c447a130a073fa357aa4287d2c3352b73a5de998a573b1ad3e74d93acd587d79"
+      "sha256": "c447a130a073fa357aa4287d2c3352b73a5de998a573b1ad3e74d93acd587d79",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 波斯语（教师仓库）",
@@ -177,7 +280,8 @@
       "local": "materials/fa-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 847019,
-      "sha256": "3b27c5c3524875673e0143a9fa89132f76b2a7131aeffb154485b36080ee7914"
+      "sha256": "3b27c5c3524875673e0143a9fa89132f76b2a7131aeffb154485b36080ee7914",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 法语（教师仓库）",
@@ -187,7 +291,8 @@
       "local": "materials/fr-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1492522,
-      "sha256": "82905c7933e1ac0cc98423ecc743c8de4219c501feced738b3526d4618dd0e19"
+      "sha256": "82905c7933e1ac0cc98423ecc743c8de4219c501feced738b3526d4618dd0e19",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 意大利语（教师仓库）",
@@ -197,7 +302,8 @@
       "local": "materials/it-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1484060,
-      "sha256": "a655e440a486d630570a3047ce444b09141c6a6a3c147fc9bd23bb8327c2e555"
+      "sha256": "a655e440a486d630570a3047ce444b09141c6a6a3c147fc9bd23bb8327c2e555",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 日语（教师仓库）",
@@ -207,7 +313,8 @@
       "local": "materials/ja-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1026005,
-      "sha256": "a997867fe0e733bc19611d6479ec6e85634801b165e05c2aafd5b5d1ad3ceba7"
+      "sha256": "a997867fe0e733bc19611d6479ec6e85634801b165e05c2aafd5b5d1ad3ceba7",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 韩语（教师仓库）",
@@ -217,7 +324,8 @@
       "local": "materials/ko-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 989059,
-      "sha256": "60e64de1f438a1db9adc1af76a03a5a004a317912d3357fa0d12c35f3c2e7100"
+      "sha256": "60e64de1f438a1db9adc1af76a03a5a004a317912d3357fa0d12c35f3c2e7100",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 葡萄牙语（教师仓库）",
@@ -227,7 +335,8 @@
       "local": "materials/pt-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1500424,
-      "sha256": "2c870fcd13ab7ffb28616d07187711f2272c9f7a01a787041fddfecb7249e5a0"
+      "sha256": "2c870fcd13ab7ffb28616d07187711f2272c9f7a01a787041fddfecb7249e5a0",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 俄语（教师仓库）",
@@ -237,7 +346,8 @@
       "local": "materials/ru-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 864587,
-      "sha256": "d7f74b25225845973b9d28f8495dec032d476df2ff6d420ccf5dd6071778fea5"
+      "sha256": "d7f74b25225845973b9d28f8495dec032d476df2ff6d420ccf5dd6071778fea5",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 塞尔维亚语（教师仓库）",
@@ -247,7 +357,8 @@
       "local": "materials/sr-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 865843,
-      "sha256": "3882b4e927f8d12983ea7b5c67b00d9eb213bea02e2a209c1589bf82cce132c7"
+      "sha256": "3882b4e927f8d12983ea7b5c67b00d9eb213bea02e2a209c1589bf82cce132c7",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 泰语（教师仓库）",
@@ -257,7 +368,8 @@
       "local": "materials/th-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 840268,
-      "sha256": "901f2c0de5ced465a60df318608dd222e73de5bdcb914dc7bdbd81d158348f57"
+      "sha256": "901f2c0de5ced465a60df318608dd222e73de5bdcb914dc7bdbd81d158348f57",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 土耳其语（教师仓库）",
@@ -267,7 +379,8 @@
       "local": "materials/tr-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1503230,
-      "sha256": "6a9e2b9d245c9a762a3a5731f2c11a3a8bf35f8dc623072e8df94b120528e4a1"
+      "sha256": "6a9e2b9d245c9a762a3a5731f2c11a3a8bf35f8dc623072e8df94b120528e4a1",
+      "lesson_references": []
     },
     {
       "title": "CME295 速查表 · 中文（教师仓库）",
@@ -277,13 +390,15 @@
       "local": "materials/zh-cheatsheet-transformers-large-language-models.pdf",
       "status": "downloaded",
       "bytes": 1033373,
-      "sha256": "a7f3fad35c1c339aa2d3b98298eb9b62131c7302eafe0413f53141e14106b958"
+      "sha256": "a7f3fad35c1c339aa2d3b98298eb9b62131c7302eafe0413f53141e14106b958",
+      "lesson_references": []
     },
     {
       "title": "教师速查表仓库 MIT 许可",
       "url": "https://github.com/afshinea/stanford-cme-295-transformers-large-language-models/blob/main/LICENSE",
       "type": "license",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "fall25-cme295-midterm",
@@ -292,7 +407,8 @@
       "local": "materials/fall25-cme295-midterm.pdf",
       "status": "downloaded",
       "bytes": 117412,
-      "sha256": "68dbef76658a1a538fc116192537d268f5497f06277c8210e3db8ebed3102e52"
+      "sha256": "68dbef76658a1a538fc116192537d268f5497f06277c8210e3db8ebed3102e52",
+      "lesson_references": []
     },
     {
       "title": "fall25-cme295-midterm-solutions",
@@ -301,7 +417,8 @@
       "local": "materials/fall25-cme295-midterm-solutions.pdf",
       "status": "downloaded",
       "bytes": 145082,
-      "sha256": "4621028b1c050fa853fb092c3ea7db80f7c48dce93a73b3bce39dc049a3c86a8"
+      "sha256": "4621028b1c050fa853fb092c3ea7db80f7c48dce93a73b3bce39dc049a3c86a8",
+      "lesson_references": []
     },
     {
       "title": "fall25-cme295-final",
@@ -310,7 +427,8 @@
       "local": "materials/fall25-cme295-final.pdf",
       "status": "downloaded",
       "bytes": 129702,
-      "sha256": "b72ecf7b2bab594f817b618b9e21e438aa73188740729af658e083964378ab7e"
+      "sha256": "b72ecf7b2bab594f817b618b9e21e438aa73188740729af658e083964378ab7e",
+      "lesson_references": []
     },
     {
       "title": "fall25-cme295-final-solutions",
@@ -319,7 +437,8 @@
       "local": "materials/fall25-cme295-final-solutions.pdf",
       "status": "downloaded",
       "bytes": 151655,
-      "sha256": "889f93157bf7e90c18faddee4a08d80aa6a67f758b446b78e9de65af0a318d43"
+      "sha256": "889f93157bf7e90c18faddee4a08d80aa6a67f758b446b78e9de65af0a318d43",
+      "lesson_references": []
     },
     {
       "title": "stanford-cme-295-transformers-large-language-models",
@@ -328,7 +447,8 @@
       "local": "materials/stanford-cme-295-transformers-large-language-models.zip",
       "status": "downloaded",
       "bytes": 16447012,
-      "sha256": "63be5dc2ad712192fc61be7b12c733588259271f696dc9c15b3b39381cd0466d"
+      "sha256": "63be5dc2ad712192fc61be7b12c733588259271f696dc9c15b3b39381cd0466d",
+      "lesson_references": []
     },
     {
       "title": "2026 第 1 讲官方课件 · Transformers",
@@ -337,13 +457,27 @@
       "local": "materials/fall26-cme295-lecture1.pdf",
       "status": "downloaded",
       "bytes": 4072402,
-      "sha256": "556f3df511a4c2f6f935f1ceb432dff9d4093e8b545e8b840beb355a7c88ca42"
+      "sha256": "556f3df511a4c2f6f935f1ceb432dff9d4093e8b545e8b840beb355a7c88ca42",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "2026 第 1 讲官方课件 · Transformers",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf"
+        }
+      ]
     },
     {
       "title": "2026 第 1 讲官方录像",
       "url": "https://www.youtube.com/watch?v=114i2Kz-LZA",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "2026 第 1 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=114i2Kz-LZA"
+        }
+      ]
     },
     {
       "title": "2026 第 2 讲官方课件 · Large Language Models",
@@ -352,13 +486,32 @@
       "local": "materials/fall26-cme295-lecture2.pdf",
       "status": "downloaded",
       "bytes": 6772522,
-      "sha256": "cd6fb64ada1ac430d362042e32e237149d93ab010ae88a869f1c27dcc4b71af3"
+      "sha256": "cd6fb64ada1ac430d362042e32e237149d93ab010ae88a869f1c27dcc4b71af3",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "跨讲补充：2026第2讲 · 第70–73页 RoPE",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=70"
+        },
+        {
+          "lesson_id": "02",
+          "title": "2026第2讲官方课件 · 第108页起采样策略",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=108"
+        }
+      ]
     },
     {
       "title": "2026 第 2 讲官方录像",
       "url": "https://www.youtube.com/watch?v=GaIeu3npx04",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "2026 第 2 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=GaIeu3npx04"
+        }
+      ]
     },
     {
       "title": "2026 第 3 讲官方课件 · LLM training",
@@ -367,13 +520,32 @@
       "local": "materials/fall26-cme295-lecture3.pdf",
       "status": "downloaded",
       "bytes": 9575268,
-      "sha256": "519f23b9014932a6be0e4e3b899c2a731aa5418c20b285f817fcd5fc7b169a20"
+      "sha256": "519f23b9014932a6be0e4e3b899c2a731aa5418c20b285f817fcd5fc7b169a20",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "2026第3讲官方课件 · 第128–132页on-policy与self-distillation",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=128"
+        },
+        {
+          "lesson_id": "04",
+          "title": "2026 第3讲 · DPO机制背景，PDF第87–88页",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=87"
+        }
+      ]
     },
     {
       "title": "2026 第 3 讲官方录像",
       "url": "https://www.youtube.com/watch?v=S3bCDcJhz4s",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "2026 第 3 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=S3bCDcJhz4s"
+        }
+      ]
     },
     {
       "title": "2026 第 4 讲官方课件 · Reinforcement learning with LLMs",
@@ -382,13 +554,27 @@
       "local": "materials/fall26-cme295-lecture4.pdf",
       "status": "downloaded",
       "bytes": 4270906,
-      "sha256": "a899a12a9610817e8ff9e236d7e35b51bae7cd08621db9d192a73ed1c5dffec9"
+      "sha256": "a899a12a9610817e8ff9e236d7e35b51bae7cd08621db9d192a73ed1c5dffec9",
+      "lesson_references": [
+        {
+          "lesson_id": "04",
+          "title": "2026 第 4 讲官方课件 · Reinforcement learning with LLMs",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf"
+        }
+      ]
     },
     {
       "title": "2026 第 4 讲官方录像",
       "url": "https://www.youtube.com/watch?v=3Vaj0Oka_t4",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "04",
+          "title": "2026 第 4 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=3Vaj0Oka_t4"
+        }
+      ]
     },
     {
       "title": "2026 第 5 讲官方课件 · LLM systems",
@@ -397,13 +583,27 @@
       "local": "materials/fall26-cme295-lecture5.pdf",
       "status": "downloaded",
       "bytes": 5439970,
-      "sha256": "8458b0ccf6391b620c8b9349f737e7834065466f5e7637d96ff688b4ceb8fbe9"
+      "sha256": "8458b0ccf6391b620c8b9349f737e7834065466f5e7637d96ff688b4ceb8fbe9",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "2026 第 5 讲官方课件 · LLM systems",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf"
+        }
+      ]
     },
     {
       "title": "2026 第 5 讲官方录像",
       "url": "https://www.youtube.com/watch?v=25KIyaeI_Fg",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "2026 第 5 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=25KIyaeI_Fg"
+        }
+      ]
     },
     {
       "title": "2026 第 6 讲官方课件 · AI Agents",
@@ -412,7 +612,56 @@
       "local": "materials/fall26-cme295-lecture6.pdf",
       "status": "downloaded",
       "bytes": 3488257,
-      "sha256": "7c6918b22bbb9efc627da8f02c75fe0a78664c1a4ad1e9514f33d81740b8acb0"
+      "sha256": "7c6918b22bbb9efc627da8f02c75fe0a78664c1a4ad1e9514f33d81740b8acb0",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "2026 第 6 讲官方课件 · AI Agents",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf"
+        }
+      ]
+    },
+    {
+      "title": "CLIP 原始论文 · Radford 等 2021（社区扩展参考）",
+      "url": "https://proceedings.mlr.press/v139/radford21a/radford21a.pdf",
+      "type": "paper",
+      "local": "materials/clip-radford2021.pdf",
+      "status": "downloaded",
+      "bytes": 3526772,
+      "sha256": "2a4952960f350e50a3a4a847371b80b8aaa09ba82d1c2a8f6b30450e392a1fe4",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "CLIP原始论文 · Radford等2021，§2.3/Figure 3（社区扩展参考）",
+          "url": "https://proceedings.mlr.press/v139/radford21a/radford21a.pdf"
+        }
+      ]
+    },
+    {
+      "title": "均匀仿射量化背景 · Jacob 等 2018（非NF4）",
+      "url": "https://arxiv.org/abs/1712.05877",
+      "type": "paper",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "均匀仿射量化背景 · Jacob 等 2018（非NF4）",
+          "url": "https://arxiv.org/abs/1712.05877"
+        }
+      ]
+    },
+    {
+      "title": "社区工程参考 · API幂等请求设计（Stripe官方文档）",
+      "url": "https://docs.stripe.com/api/idempotent_requests",
+      "type": "notes",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "社区工程参考 · API幂等请求设计（Stripe官方文档）",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
+        }
+      ]
     }
   ],
   "discovery": {
@@ -740,5 +989,18 @@
       "official-11.html"
     ],
     "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  },
+  "lesson_references_updated_at": "2026-11-06T21:00:23.187231+00:00",
+  "local_files_verification": {
+    "verified_at": "2026-11-06T21:00:23.187231+00:00",
+    "algorithm": "SHA-256",
+    "published_files": 38,
+    "published_bytes": 107001416,
+    "verified_historical_downloads": 37,
+    "discovery_only_files": [],
+    "newly_archived_files": [
+      "materials/clip-radford2021.pdf"
+    ],
+    "result": "All 38 published files have verified sizes and hashes; 37 historical downloads retain matching metadata. Discovery-only files are not counted as published course resources."
   }
 }

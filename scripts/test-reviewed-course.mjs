@@ -121,9 +121,10 @@ check(Math.max(...answerCounts)-Math.min(...answerCounts)<=2,'correct options ar
 // A newly reviewed course cannot accidentally ship another course's entire example.
 for(const other of ['cs229','cs230','cme295','cs336','cs329z'].filter(id=>id!==slug)){
  const data=JSON.parse(fs.readFileSync(path.join(root,`content/${other}.json`),'utf8'));
- if(data.experimentsMode!=='lesson'||!data.experimentScripts?.length)continue;
+ const registrySources=data.experimentScripts||(other==='cs229'?['assets/lab-core.js','assets/labs-01-08.js','assets/labs-09-15.js','assets/labs-16-22.js']:[]);
+ if(data.experimentsMode!=='lesson'||!registrySources.length)continue;
  const w={},ctx=vm.createContext({window:w,console});
- for(const src of data.experimentScripts)vm.runInContext(fs.readFileSync(path.resolve(root,`zh/${other}`,src),'utf8'),ctx,{timeout:2000});
+ for(const src of registrySources)vm.runInContext(fs.readFileSync(path.resolve(root,`zh/${other}`,src),'utf8'),ctx,{timeout:2000});
  for(const [id,example] of Object.entries(w.COURSE_CODE||{})){
   const fingerprint=crypto.createHash('sha256').update(normalizedCode(example.code)).digest('hex');
   check(!hashes.has(fingerprint),`${slug} does not copy the complete executable example ${id}`);
