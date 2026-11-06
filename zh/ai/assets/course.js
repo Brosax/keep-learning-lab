@@ -21,6 +21,7 @@
   const link = (url, text, cls = '') => `<a class="${esc(cls)}" href="${esc(safeUrl(url))}"${/^https?:/.test(String(url)) ? ' target="_blank" rel="noopener noreferrer"' : ''}>${text}</a>`;
   let state = {obj: {}, quiz: {}, notes: {}, resume: ''};
   let storageAvailable = true;
+  let quizUpdated = false;
   try {
     const saved = JSON.parse(localStorage.getItem(key) || '{}');
     if (saved && typeof saved === 'object' && !Array.isArray(saved)) {
@@ -28,10 +29,17 @@
         if (saved[field] && typeof saved[field] === 'object' && !Array.isArray(saved[field])) state[field] = saved[field];
       }
       state.resume = typeof saved.resume === 'string' ? saved.resume : '';
+      if (typeof saved.quizRevision === 'string') state.quizRevision = saved.quizRevision;
     }
   } catch (_) { storageAvailable = false; }
   function save() {
     try { localStorage.setItem(key, JSON.stringify(state)); } catch (_) { storageAvailable = false; }
+  }
+  if (course.quizRevision && state.quizRevision !== course.quizRevision) {
+    quizUpdated = Object.keys(state.quiz).length > 0;
+    state.quiz = {};
+    state.quizRevision = course.quizRevision;
+    save();
   }
   const objectives = lesson => Array.isArray(lesson.objectives) ? lesson.objectives : [];
   const objKey = (lesson, i) => `L${lesson.id}.${i + 1}`;
@@ -43,7 +51,7 @@
   const resources = [];
   const seenResources = new Set();
   [...(course.resources || []), ...lessons.flatMap(lesson => (lesson.resources || []).map(r => ({...r, lessonId: lesson.id})))].forEach(resource => {
-    const id = resource.url || resource.local || resource.title;
+    const id = (course.experimentsMode === 'lesson' && resource.url ? resource.url.split('#')[0] : resource.url) || resource.local || resource.title;
     if (!seenResources.has(id)) { seenResources.add(id); resources.push(resource); }
   });
   const modules = (course.modules || []).map(module => ({...module, lessons: lessons.filter(lesson => lesson.module === module.id)}));
@@ -108,7 +116,7 @@
     return `<footer class="course-footer"><span>OPEN SE EI / ${esc(course.code)}</span><p>${esc(course.notice || '本页为 OpenSEEI 中文社区导学，非 Stanford 官方课程。原始资料版权及许可归原作者；课程安排与要求以官方网站为准。')}</p>${link(course.sourceUrl, '访问官方课程 ↗')}</footer>`;
   }
   function lessonCard(lesson) {
-    return `<a class="lesson-card" href="#lesson-${esc(lesson.id)}"><span class="lesson-index">${esc(lesson.id)}</span><div class="lesson-copy"><h3>${esc(lesson.title)}</h3><p>${esc(lesson.summary)}</p><div class="lesson-tags"><span>${esc(lesson.originalTitle || course.code)}</span><span>${objectives(lesson).length} 个目标</span>${lesson.lab ? '<span>交互实验</span>' : ''}</div></div><span class="status-chip">${done(lesson) ? '已掌握 ✓' : lessonCount(lesson) ? '学习中' : '开始学习'}</span><span class="lesson-arrow" aria-hidden="true">↗</span></a>`;
+    return `<a class="lesson-card" href="#lesson-${esc(lesson.id)}"><span class="lesson-index">${esc(lesson.id)}</span><div class="lesson-copy"><h3>${esc(lesson.title)}</h3><p>${esc(lesson.summary)}</p><div class="lesson-tags"><span>${esc(lesson.originalTitle || course.code)}</span><span>${objectives(lesson).length} 个目标</span>${(lesson.lab || lesson.visual) ? '<span>交互实验</span>' : ''}</div></div><span class="status-chip">${done(lesson) ? '已掌握 ✓' : lessonCount(lesson) ? '学习中' : '开始学习'}</span><span class="lesson-arrow" aria-hidden="true">↗</span></a>`;
   }
   function renderModuleList() {
     const query = lessonSearch.trim().toLocaleLowerCase();
@@ -162,7 +170,7 @@
   }
   function quizMarkup(lesson) {
     if (!lesson.quiz?.length) return '';
-    return `<section class="quiz-panel"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>随堂自测</h2><p class="muted">选择答案查看解析。可以重新作答，检验自己的理解。</p>${lesson.quiz.map((question, qi) => `<div class="quiz-question" data-question="${qi}"><h3><span>${String(qi + 1).padStart(2, '0')}.</span> ${esc(question.question)}</h3><div class="quiz-options" role="group" aria-label="第 ${qi + 1} 题选项">${question.options.map((option, oi) => `<button class="quiz-option" type="button" data-question="${qi}" data-answer="${oi}" aria-pressed="false"><span>${String.fromCharCode(65 + oi)}</span>${esc(option)}</button>`).join('')}</div><div class="quiz-feedback" aria-live="polite"></div></div>`).join('')}</section>`;
+    return `<section class="quiz-panel"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>随堂自测</h2><p class="muted">${quizUpdated ? '题目已更新，请重新自测。' : ''}选择答案查看解析。可以重新作答，检验自己的理解。</p>${lesson.quiz.map((question, qi) => `<div class="quiz-question" data-question="${qi}"><h3><span>${String(qi + 1).padStart(2, '0')}.</span> ${esc(question.question)}</h3><div class="quiz-options" role="group" aria-label="第 ${qi + 1} 题选项">${question.options.map((option, oi) => `<button class="quiz-option" type="button" data-question="${qi}" data-answer="${oi}" aria-pressed="false"><span>${String.fromCharCode(65 + oi)}</span>${esc(option)}</button>`).join('')}</div><div class="quiz-feedback" aria-live="polite"></div></div>`).join('')}</section>`;
   }
   function updateQuiz(lesson, questionIndex, answerIndex) {
     const question = lesson.quiz[questionIndex];
@@ -186,8 +194,8 @@
     const index = lessons.indexOf(lesson);
     const previous = lessons[index - 1]; const next = lessons[index + 1];
     const module = modules.find(item => item.id === lesson.module);
-    main.innerHTML = `<header class="lesson-header"><div class="lesson-breadcrumb"><a href="#overview">课程总览</a><span>/</span><span>${esc(module?.title || course.code)}</span></div><div class="lesson-kicker"><span class="eyebrow">LESSON ${esc(lesson.id)} / ${esc(course.code)}</span><span>${index + 1} / ${lessons.length}</span></div><h1 class="lesson-title">${esc(lesson.title)}</h1><p class="lesson-original">${esc(lesson.originalTitle || '')}</p><p class="lesson-summary">${esc(lesson.summary)}</p><div class="lesson-meta"><span>${objectives(lesson).length} 个学习目标</span><span>${lesson.quiz?.length || 0} 道自测</span>${lesson.lab ? '<span>含交互实验</span>' : ''}<span>中文社区导学</span></div></header>
-      <div class="lesson-body"><div class="lesson-content"><section class="objectives"><span class="eyebrow">LEARNING OBJECTIVES</span><h2>这一讲，要掌握什么？</h2>${objectives(lesson).map((objective, i) => `<label class="objective-item"><input type="checkbox" data-objective="${i}"${state.obj[objKey(lesson, i)] ? ' checked' : ''}><span>${esc(objective)}</span></label>`).join('')}</section>
+    main.innerHTML = `<header class="lesson-header"><div class="lesson-breadcrumb"><a href="#overview">课程总览</a><span>/</span><span>${esc(module?.title || course.code)}</span></div><div class="lesson-kicker"><span class="eyebrow">LESSON ${esc(lesson.id)} / ${esc(course.code)}</span><span>${index + 1} / ${lessons.length}</span></div><h1 class="lesson-title">${esc(lesson.title)}</h1><p class="lesson-original">${esc(lesson.originalTitle || '')}</p><p class="lesson-summary">${esc(lesson.summary)}</p><div class="lesson-meta"><span>${objectives(lesson).length} 个学习目标</span><span>${lesson.quiz?.length || 0} 道自测</span>${(lesson.lab || lesson.visual) ? '<span>含交互实验</span>' : ''}<span>中文社区导学</span></div></header>
+      <div class="lesson-body"><div class="lesson-content" data-lesson-id="${esc(lesson.id)}"><section class="objectives"><span class="eyebrow">LEARNING OBJECTIVES</span><h2>这一讲，要掌握什么？</h2>${objectives(lesson).map((objective, i) => `<label class="objective-item"><input type="checkbox" data-objective="${i}"${state.obj[objKey(lesson, i)] ? ' checked' : ''}><span>${esc(objective)}</span></label>`).join('')}</section>
       ${(lesson.sections || []).map(contentSection).join('')}
       ${lesson.lab ? `<section class="lab-panel"><span class="eyebrow">INTERACTIVE LAB</span><h2>动手观察机制</h2><div data-lab="${esc(lesson.lab)}"></div></section>` : ''}
       ${lesson.exercise ? `<section class="exercise-panel"><span class="eyebrow">PUT IT INTO PRACTICE</span><h2>${esc(lesson.exercise.title || '动手练习')}</h2><ol>${(lesson.exercise.instructions || []).map(item => `<li>${esc(item)}</li>`).join('')}</ol>${lesson.exercise.deliverable ? `<div class="deliverable"><strong>完成标准</strong><p>${esc(lesson.exercise.deliverable)}</p></div>` : ''}</section>` : ''}

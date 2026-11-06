@@ -88,9 +88,13 @@
   function mount(){
     stop();
     const host=document.querySelector('.lesson-content');
-    const config=configs[window.COURSE?.id];
+    const course=window.COURSE;
+    const lesson=course?.lessons?.find(item=>item.id===host?.dataset.lessonId);
+    const scoped=course?.experimentsMode==='lesson';
+    const visualId=scoped?lesson?.visual:course?.id;
+    const config=scoped?window.COURSE_VISUALS?.[visualId]:configs[visualId];
     if(!host||!config||host.querySelector('.geometry-lab'))return;
-    const el=document.createElement('section');el.className='geometry-lab';mounted=el;
+    const el=document.createElement('section');el.className='geometry-lab';el.dataset.visualId=visualId;mounted=el;
     let step=0,value=config.value;
     el.innerHTML=`<div class="geometry-heading"><span class="eyebrow">GEOMETRIC INTUITION / 几何直觉实验</span><h2>${esc(config.title)}</h2><p>先观察，再调整参数，最后把图形对应到公式。</p></div><div class="geometry-canvas"></div><div class="geometry-parameters"><label> ${esc(config.param)} <output>${value}</output><input type="range" min="${config.min}" max="${config.max}" step="${config.step}" value="${value}" aria-label="${esc(config.param)}"></label></div><div class="geometry-controls"><button type="button" data-visual-action="prev">← 上一步</button><button type="button" data-visual-action="play" aria-pressed="false">播放步骤</button><button type="button" data-visual-action="next">下一步 →</button><button type="button" data-visual-action="reset">重置</button><span class="geometry-counter"></span></div><div class="geometry-explanation" aria-live="polite"><h3></h3><div class="geometry-formula"></div><p class="geometry-body"></p><p class="geometry-result"></p></div><p class="geometry-note"></p>`;
     const objective=host.querySelector('.objectives');if(objective)objective.after(el);else host.prepend(el);

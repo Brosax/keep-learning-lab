@@ -87,18 +87,33 @@ function mount() {
  cancelRun('已停止：已切换学习内容');
  const content=document.querySelector('.lesson-content');
  if(!content||content.querySelector('.code-playground'))return;
- let selected=defaults[window.COURSE.id]||'regression';
- const title=document.querySelector('h1')?.textContent||'';
- if(/检索|Retriev|RAG/.test(title))selected='retrieval';
- if(/注意力|Attention|Transformer/i.test(title))selected='attention';
- if(/聚类|K-means/i.test(title))selected='clustering';
- const host=document.createElement('section');host.className='code-playground';
- host.innerHTML=`<p class="eyebrow">CODE LAB / 修改 · 运行 · 解释</p><h2>直接运行一段代码</h2><p>用 JavaScript 数值实验验证机制，无需安装或 API Key。官方 Python / PyTorch 作业请见原始资料。本实验与正式作业独立。</p><label>选择实验 <select class="demo-select">${Object.entries(demos).map(([id,d])=>`<option value="${id}" ${id===selected?'selected':''}>${escape(d.name)}</option>`).join('')}</select></label><label class="sr-only" for="code-editor">可编辑实验代码</label><textarea id="code-editor" spellcheck="false" autocapitalize="off" rows="16"></textarea><div class="code-controls"><button type="button" class="btn primary run-code">运行代码 ▶</button><button type="button" class="btn secondary reset-code">重置示例</button><span class="code-state" role="status">本地沙箱 · 最长 3 秒 · 禁用网络</span></div><pre class="code-output" aria-live="polite">运行结果将显示在这里。</pre>`;
- content.append(host);
+ const course=window.COURSE;
+ const lesson=course.lessons?.find(item=>item.id===content.dataset.lessonId);
+ const scoped=course.experimentsMode==='lesson';
+ let selected;
+ let available;
+ if(scoped){
+   selected=lesson?.codeDemo;
+   const demo=window.COURSE_CODE?.[selected];
+   if(!demo)return;
+   available={[selected]:demo};
+ }else{
+   available=demos;
+   selected=defaults[course.id]||'regression';
+   const title=document.querySelector('h1')?.textContent||'';
+   if(/检索|Retriev|RAG/.test(title))selected='retrieval';
+   if(/注意力|Attention|Transformer/i.test(title))selected='attention';
+   if(/聚类|K-means/i.test(title))selected='clustering';
+ }
+ const demo=available[selected];
+ const host=document.createElement('section');host.className='code-playground';host.dataset.codeId=selected;
+ host.innerHTML=`<p class="eyebrow">CODE LAB / 修改 · 运行 · 解释</p><h2>${scoped?escape(demo.name):'直接运行一段代码'}</h2><p>用 JavaScript 数值实验验证机制，无需安装或 API Key。官方 Python / PyTorch 作业请见原始资料。本实验与正式作业独立。</p>${scoped?'':`<label>选择实验 <select class="demo-select">${Object.entries(available).map(([id,d])=>`<option value="${id}" ${id===selected?'selected':''}>${escape(d.name)}</option>`).join('')}</select></label>`}${scoped&&demo.instructions?.length?`<ol class="code-tasks">${demo.instructions.map(item=>`<li>${escape(item)}</li>`).join('')}</ol>`:''}<label class="sr-only" for="code-editor">可编辑实验代码</label><textarea id="code-editor" spellcheck="false" autocapitalize="off" rows="16"></textarea><div class="code-controls"><button type="button" class="btn primary run-code">运行代码 ▶</button><button type="button" class="btn secondary reset-code">重置示例</button><span class="code-state" role="status">本地沙箱 · 最长 3 秒 · 禁用网络</span></div><pre class="code-output" aria-live="polite">运行结果将显示在这里。</pre>${scoped&&demo.expected?`<details class="code-expected"><summary>参考结果与检验方法</summary><p>${escape(demo.expected)}</p></details>`:''}`;
+ const exercise=content.querySelector('.exercise-panel');
+ if(scoped&&exercise)exercise.before(host);else content.append(host);
  const editor=host.querySelector('textarea'),output=host.querySelector('.code-output'),run=host.querySelector('.run-code'),status=host.querySelector('.code-state');
- editor.value=demos[selected].code;
- host.querySelector('select').addEventListener('change',e=>{cancelRun('已停止：已切换实验');selected=e.target.value;editor.value=demos[selected].code;output.textContent='已切换实验，修改后运行。';});
- host.querySelector('.reset-code').addEventListener('click',()=>{cancelRun('已停止：已重置示例');editor.value=demos[selected].code;output.textContent='已恢复示例。';});
+ editor.value=available[selected].code;
+ host.querySelector('select')?.addEventListener('change',e=>{cancelRun('已停止：已切换实验');selected=e.target.value;editor.value=available[selected].code;output.textContent='已切换实验，修改后运行。';});
+ host.querySelector('.reset-code').addEventListener('click',()=>{cancelRun('已停止：已重置示例');editor.value=available[selected].code;output.textContent='已恢复示例。';});
  run.addEventListener('click',()=>{
   cancelRun('已停止：重新运行');
   const token=Math.random().toString(36).slice(2),frame=document.createElement('iframe');frame.setAttribute('sandbox','allow-scripts');frame.hidden=true;frame.title='代码执行沙箱';

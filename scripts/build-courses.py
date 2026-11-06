@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Build the five community study courses from tracked JSON; no network required."""
-import json, re, html
+import json, re, html, hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 COURSES=['cs329z','cs336','cme295','cs229','cs230']
@@ -19,15 +19,29 @@ for slug in COURSES:
     out=ROOT/'zh'/slug
     out.mkdir(parents=True,exist_ok=True)
     (out/'data.js').write_text('window.COURSE = '+json.dumps(data,ensure_ascii=False).replace('</','<\\/')+';\n')
+    scoped=data.get('experimentsMode')=='lesson'
+    experiment_files={
+        'cs229':['assets/lab-core.js','assets/labs-01-08.js','assets/labs-09-15.js','assets/labs-16-22.js']
+    }.get(slug,[]) if scoped else []
+    if scoped and not experiment_files:
+        raise SystemExit(f'No chapter experiment scripts configured for {slug}')
+    def asset_url(relative):
+        file=out/relative
+        if not file.is_file():
+            raise SystemExit(f'Missing course asset: {file}')
+        return relative+'?v='+hashlib.sha256(file.read_bytes()).hexdigest()[:12] if scoped else relative
+    script_files=['data.js',*experiment_files,'../ai/assets/course.js','../ai/assets/labs.js','../ai/assets/playground.js','../ai/assets/visuals.js']
+    scripts=''.join(f'<script src="{asset_url(file)}"></script>' for file in script_files)
+    stylesheet=asset_url('../ai/assets/course.css')
     title=html.escape(data['title']);desc=html.escape(data['description'],quote=True)
     links=''.join(f'<li><a href="#lesson-{l["id"]}">{html.escape(l["title"])}</a></li>' for l in data['lessons'])
     (out/'index.html').write_text(f'''<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{data['code']} · {title} — OpenSEEI</title><meta name="description" content="{desc}">
 <meta name="theme-color" content="#F4F2EC"><link rel="icon" href="../ai/assets/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../ai/assets/course.css"></head><body>
+<link rel="stylesheet" href="{stylesheet}"></head><body>
 <div id="course-app"></div><noscript><main><h1>{title}</h1><p>{html.escape(data['description'])}</p><p>交互学习需要启用 JavaScript。原始资料仍可从 <a href="{html.escape(data['sourceUrl'],quote=True)}">官方课程站</a> 获取。</p><a href="sources.json">下载资料索引</a><ul>{links}</ul></main></noscript>
-<script src="data.js"></script><script src="../ai/assets/course.js"></script><script src="../ai/assets/labs.js"></script><script src="../ai/assets/playground.js"></script><script src="../ai/assets/visuals.js"></script>
+{scripts}
 </body></html>''')
 # Add courses to the existing catalog, preserving all other data and layout.
 catalog['published']=[c for c in catalog['published'] if c['slug'] not in COURSES]
@@ -36,7 +50,7 @@ for existing in catalog['published']:
     existing.setdefault('en',existing.get('en_title',''))
 for slug in COURSES:
     d=json.loads((ROOT/'content'/f'{slug}.json').read_text()); modules={v['id']:i+1 for i,v in enumerate(d['modules'])}
-    chapters=[{'t':modules[l['module']],'code':'L'+l['id'],'mods':'L'+l['id'],'file':'index.html#lesson-'+l['id'],'es':l['originalTitle'],'zh':l['title'],'obj':'L'+l['id']+'.','n':len(l['objectives']),'scenes':1 if l.get('lab') else 0,'quizzes':len(l['quiz']),'drills':1} for l in d['lessons']]
+    chapters=[{'t':modules[l['module']],'code':'L'+l['id'],'mods':'L'+l['id'],'file':'index.html#lesson-'+l['id'],'es':l['originalTitle'],'zh':l['title'],'obj':'L'+l['id']+'.','n':len(l['objectives']),'scenes':1 if l.get('lab') or l.get('visual') else 0,'quizzes':len(l['quiz']),'drills':1} for l in d['lessons']]
     course={'code':d['code'],'slug':slug,'zh':d['title'],'en':d['subtitle'],'zh_title':d['title'],'en_title':d['subtitle'],'es':d['subtitle'],'subtitle':d['year']+' · 社区中文导学','category':'AI / 人工智能','summary':d['description'],'en_summary':d['description'],'tags':[m['title'] for m in d['modules']],'key':slug+'-web-v1','has_en':False,'temas':[{'t':i+1,'es':v['title']} for i,v in enumerate(d['modules'])],'chapters':chapters,'capitulos':len(chapters),'total':sum(c['n'] for c in chapters),'scenes':sum(c['scenes'] for c in chapters),'quizzes':sum(c['quizzes'] for c in chapters),'drills':len(chapters),'prefijos':[c['obj'] for c in chapters]}
     catalog['published'].append(course)
 text=text[:m.start(2)]+json.dumps(catalog,ensure_ascii=False)+text[m.end(2):]

@@ -29,9 +29,14 @@ npm install --prefix /tmp/openseei-qa --cache /tmp/npm-cache linkedom
 node scripts/test-courses.mjs
 node scripts/test-playground.mjs
 node scripts/test-visuals.mjs
+node scripts/test-cs229.mjs
 ```
 
 浏览器中的新课程进度和笔记默认保存在本机 `localStorage`。原站已有 Google/Neon 同步功能保持原样；新课程阅读器未接入登录同步。交互实验是简化的教学模型，不调用任何付费 API。
+
+CS229 已完成逐章去重修订：22 讲各有独立的数值图解、可编辑代码和手算例题，44 道情境自测；原始讲义共用同一文件时标明对应阅读页码。章节通过 `visual` / `codeDemo` 显式绑定 `zh/cs229/assets/` 中的实验，缺失配置不会回退到通用回归演示。更新题目时递增 `quizRevision`，仅清除旧答题记录，保留目标进度与笔记。其他课程尚未按此标准逐章复核。
+
+`test-cs229.mjs` 检查真实生成数据与全部章节绑定、代码去重和执行、独立数值基准、参数边界、切章清理及答题迁移；使用 DOM 模拟和 Node VM，不代替浏览器排版检查。
 
 ### 来源与许可
 

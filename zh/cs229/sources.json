@@ -13,19 +13,34 @@
       "local": "materials/main_notes.pdf",
       "status": "downloaded",
       "bytes": 5355993,
-      "sha256": "87176d102dbeb431dc61f99f8e13a39b02209a01298eeafccf7ed69f7d69e1f8"
+      "sha256": "87176d102dbeb431dc61f99f8e13a39b02209a01298eeafccf7ed69f7d69e1f8",
+      "lesson_references": [
+        {
+          "lesson_id": "21",
+          "title": "CS229 综合讲义（公开版）",
+          "url": "https://cs229.stanford.edu/main_notes.pdf"
+        }
+      ]
     },
     {
       "title": "经典公开资料页",
       "url": "https://cs229.stanford.edu/materials.html-full",
       "type": "website",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "21",
+          "title": "经典公开资料页",
+          "url": "https://cs229.stanford.edu/materials.html-full"
+        }
+      ]
     },
     {
       "title": "当前官网：Summer 2026，部分课程链接需 Stanford 登录",
       "url": "https://cs229.stanford.edu/",
       "type": "website",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "cs229-gaussian processes",
@@ -34,7 +49,14 @@
       "local": "materials/cs229-gaussian_processes.pdf",
       "status": "downloaded",
       "bytes": 163887,
-      "sha256": "b389b1cb62bf49ec1b040ca3eb9d7267a457daf32bff18eb80ec8ac219dd772f"
+      "sha256": "b389b1cb62bf49ec1b040ca3eb9d7267a457daf32bff18eb80ec8ac219dd772f",
+      "lesson_references": [
+        {
+          "lesson_id": "21",
+          "title": "高斯过程官方补充讲义",
+          "url": "https://cs229.stanford.edu/section/cs229-gaussian_processes.pdf"
+        }
+      ]
     },
     {
       "title": "main notes",
@@ -43,7 +65,8 @@
       "local": "materials/29b32279-main_notes.pdf",
       "status": "downloaded",
       "bytes": 3253492,
-      "sha256": "d04183987f49330d3b4f260f4062fe7713efc4aac827f49d781263786f1f544d"
+      "sha256": "d04183987f49330d3b4f260f4062fe7713efc4aac827f49d781263786f1f544d",
+      "lesson_references": []
     },
     {
       "title": "learning-settings-llms-transformers",
@@ -52,7 +75,8 @@
       "local": "materials/learning-settings-llms-transformers.pdf",
       "status": "downloaded",
       "bytes": 11084215,
-      "sha256": "7dd24d232a97b413f1d026e7b1da89f71137422abe24d0107f6620fa23308514"
+      "sha256": "7dd24d232a97b413f1d026e7b1da89f71137422abe24d0107f6620fa23308514",
+      "lesson_references": []
     },
     {
       "title": "线性代数复习（经典公开版）",
@@ -61,7 +85,14 @@
       "local": "materials/cs229-linalg.pdf",
       "status": "downloaded",
       "bytes": 205269,
-      "sha256": "44cc900706f6d06a972b5cb9eb47d25a59c454d82c763abaf271dadc07f71734"
+      "sha256": "44cc900706f6d06a972b5cb9eb47d25a59c454d82c763abaf271dadc07f71734",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "线性代数复习（经典公开版）",
+          "url": "https://cs229.stanford.edu/section/cs229-linalg.pdf"
+        }
+      ]
     },
     {
       "title": "概率论复习（经典公开版）",
@@ -70,7 +101,14 @@
       "local": "materials/cs229-prob.pdf",
       "status": "downloaded",
       "bytes": 292389,
-      "sha256": "0fa89650dcff1b1b535dd2cac42fd65342c4558fb35e0d721b7d4d8302d69bcc"
+      "sha256": "0fa89650dcff1b1b535dd2cac42fd65342c4558fb35e0d721b7d4d8302d69bcc",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "概率论复习（经典公开版）",
+          "url": "https://cs229.stanford.edu/section/cs229-prob.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 1：监督学习与判别模型",
@@ -79,7 +117,24 @@
       "local": "materials/77f1b14a-cs229-notes1.pdf",
       "status": "downloaded",
       "bytes": 241562,
-      "sha256": "95f5ca658acbf5e2032332d29825730cbc37b7bfb051f329acbbea34482f1f6f"
+      "sha256": "95f5ca658acbf5e2032332d29825730cbc37b7bfb051f329acbbea34482f1f6f",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "讲义1 · PDF第3–15页：线性回归与最小二乘",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=3"
+        },
+        {
+          "lesson_id": "03",
+          "title": "讲义1 · PDF第16–21页：逻辑回归",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=16"
+        },
+        {
+          "lesson_id": "04",
+          "title": "讲义1 · PDF第22–30页：GLM与指数族",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=22"
+        }
+      ]
     },
     {
       "title": "讲义 2：生成式分类器",
@@ -88,7 +143,14 @@
       "local": "materials/8647e864-cs229-notes2.pdf",
       "status": "downloaded",
       "bytes": 885289,
-      "sha256": "7c3766e1332241816ce57cc419a72de07682b1ef67ccd17375a11a1248a824c5"
+      "sha256": "7c3766e1332241816ce57cc419a72de07682b1ef67ccd17375a11a1248a824c5",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "讲义 2：生成式分类器",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes2.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 3：支持向量机",
@@ -97,7 +159,19 @@
       "local": "materials/fd5aa65f-cs229-notes3.pdf",
       "status": "downloaded",
       "bytes": 198060,
-      "sha256": "ad2da36847599c795a42742e5020e360328599216ca30154d5f8bcf1768c5c94"
+      "sha256": "ad2da36847599c795a42742e5020e360328599216ca30154d5f8bcf1768c5c94",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "讲义3 · PDF第14–18页：核函数与特征映射",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf#page=14"
+        },
+        {
+          "lesson_id": "07",
+          "title": "讲义3 · PDF第3–7、19–20页：几何间隔与软间隔",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf#page=3"
+        }
+      ]
     },
     {
       "title": "凸优化 I",
@@ -106,7 +180,14 @@
       "local": "materials/cs229-cvxopt.pdf",
       "status": "downloaded",
       "bytes": 168829,
-      "sha256": "10834925064926131798c9435fe20fe9cdd0cf75791c32e99a6588de903b96d3"
+      "sha256": "10834925064926131798c9435fe20fe9cdd0cf75791c32e99a6588de903b96d3",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "凸优化 I",
+          "url": "https://cs229.stanford.edu/section/cs229-cvxopt.pdf"
+        }
+      ]
     },
     {
       "title": "凸优化 II",
@@ -115,7 +196,14 @@
       "local": "materials/cs229-cvxopt2.pdf",
       "status": "downloaded",
       "bytes": 203872,
-      "sha256": "0354ff5248a8325a872d62312861d9f4f518b4b39c0643454e007f12cad904b6"
+      "sha256": "0354ff5248a8325a872d62312861d9f4f518b4b39c0643454e007f12cad904b6",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "凸优化 II",
+          "url": "https://cs229.stanford.edu/section/cs229-cvxopt2.pdf"
+        }
+      ]
     },
     {
       "title": "深度学习讲义（Summer 2023 目录版）",
@@ -124,7 +212,14 @@
       "local": "materials/cs229-notes-deep_learning.pdf",
       "status": "downloaded",
       "bytes": 484867,
-      "sha256": "1649e5096b1e737a0f1a39b738fed4bef6d16bd0098171ef8004b67e809209b7"
+      "sha256": "1649e5096b1e737a0f1a39b738fed4bef6d16bd0098171ef8004b67e809209b7",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "深度学习讲义（Summer 2023 目录版）",
+          "url": "https://cs229.stanford.edu/summer2023/cs229-notes-deep_learning.pdf"
+        }
+      ]
     },
     {
       "title": "决策树讲义（Summer 2023）",
@@ -133,7 +228,14 @@
       "local": "materials/cs229-notes-decision_trees.pdf",
       "status": "downloaded",
       "bytes": 242394,
-      "sha256": "790f785fada8193738c26a44dce02055ec7d5620a8613651364cb1f242e28483"
+      "sha256": "790f785fada8193738c26a44dce02055ec7d5620a8613651364cb1f242e28483",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "决策树讲义（Summer 2023）",
+          "url": "https://cs229.stanford.edu/summer2023/cs229-notes-decision_trees.pdf"
+        }
+      ]
     },
     {
       "title": "Boosting 补充（Fall 2022）",
@@ -142,7 +244,14 @@
       "local": "materials/boosting.pdf",
       "status": "downloaded",
       "bytes": 2910389,
-      "sha256": "c2793c78da254999e31e58df842d0f2cfe8a94ed047b0bc9e3145fc6cc60ecad"
+      "sha256": "c2793c78da254999e31e58df842d0f2cfe8a94ed047b0bc9e3145fc6cc60ecad",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "Boosting 补充（Fall 2022）",
+          "url": "https://cs229.stanford.edu/notes2022fall/boosting.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 5：正则化与模型选择",
@@ -151,7 +260,19 @@
       "local": "materials/d4b83f80-cs229-notes5.pdf",
       "status": "downloaded",
       "bytes": 89353,
-      "sha256": "869cd47bc3d832813e69305ef2773e1432311d84d737e395aff2bdc861cc80db"
+      "sha256": "869cd47bc3d832813e69305ef2773e1432311d84d737e395aff2bdc861cc80db",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "讲义 5：正则化与模型选择",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf"
+        },
+        {
+          "lesson_id": "22",
+          "title": "讲义 5：正则化与模型选择",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf"
+        }
+      ]
     },
     {
       "title": "机器学习实践建议",
@@ -160,7 +281,19 @@
       "local": "materials/ML-advice.pdf",
       "status": "downloaded",
       "bytes": 320993,
-      "sha256": "69775fc122bc234a69432a7fc54c21dbcf8e99baa481d6f7a3e7f70eb01c4b70"
+      "sha256": "69775fc122bc234a69432a7fc54c21dbcf8e99baa481d6f7a3e7f70eb01c4b70",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "机器学习实践建议",
+          "url": "https://cs229.stanford.edu/materials/ML-advice.pdf"
+        },
+        {
+          "lesson_id": "22",
+          "title": "机器学习实践建议",
+          "url": "https://cs229.stanford.edu/materials/ML-advice.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 4：学习理论",
@@ -169,7 +302,19 @@
       "local": "materials/96b002e7-cs229-notes4.pdf",
       "status": "downloaded",
       "bytes": 112922,
-      "sha256": "6f9b70a0015d65deee53bc25da613ea0f9f672d51a06c65f5fb936149db6137e"
+      "sha256": "6f9b70a0015d65deee53bc25da613ea0f9f672d51a06c65f5fb936149db6137e",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "讲义4 · PDF第1–3页：偏差、方差与泛化误差",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf#page=1"
+        },
+        {
+          "lesson_id": "11",
+          "title": "讲义4 · PDF第4–7页：风险、有限假设类与一致收敛",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf#page=4"
+        }
+      ]
     },
     {
       "title": "讲义 6：在线学习与感知机",
@@ -178,7 +323,14 @@
       "local": "materials/1c180336-cs229-notes6.pdf",
       "status": "downloaded",
       "bytes": 52068,
-      "sha256": "fcc95d3b59057c60ab3996131c9a0cca52a21d095585b5fa01403e77f95a5ca1"
+      "sha256": "fcc95d3b59057c60ab3996131c9a0cca52a21d095585b5fa01403e77f95a5ca1",
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "讲义 6：在线学习与感知机",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes6.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 7a：k-means",
@@ -187,7 +339,14 @@
       "local": "materials/2bdcbb6c-cs229-notes7a.pdf",
       "status": "downloaded",
       "bytes": 271020,
-      "sha256": "2283b7915b8586da94d810536508cb793f54658471177819194eee2f3a5d9ec0"
+      "sha256": "2283b7915b8586da94d810536508cb793f54658471177819194eee2f3a5d9ec0",
+      "lesson_references": [
+        {
+          "lesson_id": "13",
+          "title": "讲义 7a：k-means",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7a.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 7b：高斯混合",
@@ -196,7 +355,14 @@
       "local": "materials/cb71fe7b-cs229-notes7b.pdf",
       "status": "downloaded",
       "bytes": 51763,
-      "sha256": "e6b0621ed557516acfb51200db0b96106f7944e54e48cf08fc3606170e8335a6"
+      "sha256": "e6b0621ed557516acfb51200db0b96106f7944e54e48cf08fc3606170e8335a6",
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "讲义 7b：高斯混合",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7b.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 8：EM 算法",
@@ -205,7 +371,14 @@
       "local": "materials/70e75bb0-cs229-notes8.pdf",
       "status": "downloaded",
       "bytes": 187727,
-      "sha256": "7e4e15024e0a9f53140ee27e3c5084a308086362e1cb47780ea9cf34d17c9c20"
+      "sha256": "7e4e15024e0a9f53140ee27e3c5084a308086362e1cb47780ea9cf34d17c9c20",
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "讲义 8：EM 算法",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes8.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 9：因子分析",
@@ -214,7 +387,14 @@
       "local": "materials/2360a07d-cs229-notes9.pdf",
       "status": "downloaded",
       "bytes": 84501,
-      "sha256": "b53f6463d0c97df3140b3bad702ac47a169ead08334267893a711105b2bb2a63"
+      "sha256": "b53f6463d0c97df3140b3bad702ac47a169ead08334267893a711105b2bb2a63",
+      "lesson_references": [
+        {
+          "lesson_id": "15",
+          "title": "讲义 9：因子分析",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes9.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 10：PCA",
@@ -223,7 +403,14 @@
       "local": "materials/976d7abd-cs229-notes10.pdf",
       "status": "downloaded",
       "bytes": 72012,
-      "sha256": "753e97ddaa24bc94dac552c1f6fb4a7ff38af4aefda7ebc350a33146f8ce8b10"
+      "sha256": "753e97ddaa24bc94dac552c1f6fb4a7ff38af4aefda7ebc350a33146f8ce8b10",
+      "lesson_references": [
+        {
+          "lesson_id": "16",
+          "title": "讲义 10：PCA",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes10.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 11：ICA",
@@ -232,7 +419,14 @@
       "local": "materials/f85805f8-cs229-notes11.pdf",
       "status": "downloaded",
       "bytes": 78012,
-      "sha256": "69e355af81e9d5b592d80b13b1b9fd475e93f4706e7efade5a4807d3443920f4"
+      "sha256": "69e355af81e9d5b592d80b13b1b9fd475e93f4706e7efade5a4807d3443920f4",
+      "lesson_references": [
+        {
+          "lesson_id": "17",
+          "title": "讲义 11：ICA",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes11.pdf"
+        }
+      ]
     },
     {
       "title": "讲义 12：强化学习与控制",
@@ -241,7 +435,19 @@
       "local": "materials/3f9c9127-cs229-notes12.pdf",
       "status": "downloaded",
       "bytes": 170639,
-      "sha256": "07917213b3df20abc226304acfbb95dda18576b5780d9ffb8ef6a82dc8a0d2fc"
+      "sha256": "07917213b3df20abc226304acfbb95dda18576b5780d9ffb8ef6a82dc8a0d2fc",
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "讲义 12：强化学习与控制",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf"
+        },
+        {
+          "lesson_id": "19",
+          "title": "官方讲义12：MDP、模型学习与规划背景（非TD/Q-learning讲义）",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf"
+        }
+      ]
     },
     {
       "title": "隐马尔可夫模型补充",
@@ -250,7 +456,14 @@
       "local": "materials/cs229-hmm.pdf",
       "status": "downloaded",
       "bytes": 202549,
-      "sha256": "9751ccff523d24be4e98d7ba991312a49ee90b75d1496f1aae5119aad7c237ab"
+      "sha256": "9751ccff523d24be4e98d7ba991312a49ee90b75d1496f1aae5119aad7c237ab",
+      "lesson_references": [
+        {
+          "lesson_id": "20",
+          "title": "隐马尔可夫模型补充",
+          "url": "https://cs229.stanford.edu/section/cs229-hmm.pdf"
+        }
+      ]
     },
     {
       "title": "多元高斯分布",
@@ -259,7 +472,14 @@
       "local": "materials/gaussians.pdf",
       "status": "downloaded",
       "bytes": 343164,
-      "sha256": "0e6e90e09669a96eb53615f6f400540f5d3606b846c69dc780de86899cad83fa"
+      "sha256": "0e6e90e09669a96eb53615f6f400540f5d3606b846c69dc780de86899cad83fa",
+      "lesson_references": [
+        {
+          "lesson_id": "21",
+          "title": "多元高斯分布",
+          "url": "https://cs229.stanford.edu/section/gaussians.pdf"
+        }
+      ]
     },
     {
       "title": "高斯分布补充",
@@ -268,7 +488,14 @@
       "local": "materials/more_on_gaussians.pdf",
       "status": "downloaded",
       "bytes": 119533,
-      "sha256": "47794bc0b4a532cdba0307ec949af0b501deda18637b1cb84f32264fd2dda272"
+      "sha256": "47794bc0b4a532cdba0307ec949af0b501deda18637b1cb84f32264fd2dda272",
+      "lesson_references": [
+        {
+          "lesson_id": "21",
+          "title": "高斯分布补充",
+          "url": "https://cs229.stanford.edu/section/more_on_gaussians.pdf"
+        }
+      ]
     },
     {
       "title": "隐私补充（Fall 2022）",
@@ -277,7 +504,28 @@
       "local": "materials/privacy.pdf",
       "status": "downloaded",
       "bytes": 1740994,
-      "sha256": "ee23d182a2342a7ca8035b4677899d2ed7b977569b89e5ad26cb47990d875131"
+      "sha256": "ee23d182a2342a7ca8035b4677899d2ed7b977569b89e5ad26cb47990d875131",
+      "lesson_references": [
+        {
+          "lesson_id": "22",
+          "title": "隐私补充（Fall 2022）",
+          "url": "https://cs229.stanford.edu/notes2022fall/privacy.pdf"
+        }
+      ]
+    },
+    {
+      "title": "Sutton & Barto：Reinforcement Learning, Second Edition（作者官方书站）",
+      "url": "http://incompleteideas.net/book/the-book-2nd.html",
+      "type": "reading",
+      "status": "external_link",
+      "provenance": "community_extension_reference",
+      "lesson_references": [
+        {
+          "lesson_id": "19",
+          "title": "社区扩展参考：Sutton & Barto《Reinforcement Learning》第二版第6章，§6.5 Q-learning",
+          "url": "http://incompleteideas.net/book/the-book-2nd.html"
+        }
+      ]
     }
   ],
   "discovery": {
@@ -704,5 +952,19 @@
       "official-20.html"
     ],
     "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  },
+  "lesson_references_updated_at": "2026-11-06T20:38:30.681851+00:00",
+  "local_files_verification": {
+    "verified_at": "2026-11-06T20:38:30.681867+00:00",
+    "algorithm": "SHA-256",
+    "published_files": 29,
+    "published_bytes": 29587757,
+    "discovery_files": 31,
+    "discovery_bytes": 29679986,
+    "discovery_only_files": [
+      "anonSurvey.pdf",
+      "related-classes.pdf"
+    ],
+    "result": "All 29 published file sizes and hashes match preserved metadata. The two discovery-only files also match their staging copies; they are retained as historical download records and are not published course resources."
   }
 }
