@@ -47,6 +47,26 @@ CS229 与 CS230 已完成逐章去重修订，分别覆盖 22 与 18 讲。每�
 
 ## 主页
 
-主页分为课程、精选文章与交互实验三个入口，默认显示 6 门课程，可分类、搜索及展开全部。精选文章链接到现有课程笔记。学习记录、备份与账号同步位于独立面板；所有 8 门课程均纳入备份。
+主页分为课程、精选文章与交互实验三个入口，默认显示 6 门课程，可分类、搜索及展开全部。精选文章链接到现有课程笔记。学习记录、备份与账号同步位于独立面板；现有课程均纳入本地备份；西班牙语课程的本地记录单独保留，不接入账号云端同步。
 
 `index.html` 保留 `catalog-data` 数据块供课程生成器更新；主页交互与样式位于 `assets/home.js` 和 `assets/home.css`。运行 `node scripts/test-home.mjs` 检查筛选、搜索、语言、主题、续读与导航。
+
+## 西班牙语语法 · 互动入门
+
+入口：`/zh/spanish-grammar/`。中文讲解的基础语法专项课，包含 8 个模块、16 节短课、96 道选择/填空练习和 16 项表达任务。提供先提示后解析、错题独立重练、表达草稿与自评。它以 A1 基础语法为方向，不代表完整 A1 等级认证。
+
+- `content/spanish-grammar/course.json`：原创例句、规则、题目、答案、反馈与任务。
+- `content/spanish-grammar/player.template.html`：课程播放器模板；请编辑源文件再生成。
+- `scripts/build-spanish-course.py`：无网络依赖地生成网页、公开 JSON 与 CSV 题库。
+- `zh/spanish-grammar/materials/`：教师用书和完整离线课程包；修改教学内容时需同步更新这两份下载资料。
+
+```bash
+python scripts/build-spanish-course.py
+node scripts/test-home.mjs
+# 可选：安装 Python playwright 和 Chromium 后运行浏览器集成检查
+python scripts/test-spanish-course.py
+```
+
+学习记录使用 `spanish-grammar-course-v1`，保留首次结果、重练记录和表达草稿，并映射到首页进度与续读。首页导入/导出备份包含本课程，但不将其数据传入原有 Google/Neon 云端同步。表达任务采用自评或教师评阅，无自动口语/作文评分。
+
+课程讲解、题目与代码为原创，沿用本站 CC BY-NC-SA 4.0。调研来源列于课程 JSON 和教师用书，不含第三方课程原文或付费资料。
