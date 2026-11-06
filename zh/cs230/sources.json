@@ -13,7 +13,8 @@
       "local": "materials/section1-project-fall2025.pptx",
       "status": "downloaded",
       "bytes": 6440829,
-      "sha256": "5e536fc35feda9510391bea4328606c46f835281854470f94d00546a4977017e"
+      "sha256": "5e536fc35feda9510391bea4328606c46f835281854470f94d00546a4977017e",
+      "lesson_references": []
     },
     {
       "title": "反向传播课件",
@@ -22,7 +23,19 @@
       "local": "materials/section2-backprop.pdf",
       "status": "downloaded",
       "bytes": 615708,
-      "sha256": "360f7eaaf086d567f22eca2bbfdc79c9820baa073dee7c85db86ed2baf4720e4"
+      "sha256": "360f7eaaf086d567f22eca2bbfdc79c9820baa073dee7c85db86ed2baf4720e4",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "反向传播课件 · 第9–10页双层网络",
+          "url": "https://cs230.stanford.edu/section/2/Section2.pdf#page=9"
+        },
+        {
+          "lesson_id": "03",
+          "title": "反向传播课件 · 第3–10页计算图与网络梯度",
+          "url": "https://cs230.stanford.edu/section/2/Section2.pdf#page=3"
+        }
+      ]
     },
     {
       "title": "梯度与优化手写讲义 · Fall 2021",
@@ -31,7 +44,19 @@
       "local": "materials/backprop-notes-fall2021.pdf",
       "status": "downloaded",
       "bytes": 6078636,
-      "sha256": "c1f441a8161b1dbc632989013438864d0053bf1f8e85f52f6bb1fbe4dcbe3561"
+      "sha256": "c1f441a8161b1dbc632989013438864d0053bf1f8e85f52f6bb1fbe4dcbe3561",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "梯度与优化手写讲义 · Fall 2021",
+          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf"
+        },
+        {
+          "lesson_id": "04",
+          "title": "梯度与优化手写讲义 · Fall 2021",
+          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf"
+        }
+      ]
     },
     {
       "title": "反向传播练习与解析 · Winter 2020",
@@ -40,7 +65,14 @@
       "local": "materials/backprop-exercises-winter2020.pdf",
       "status": "downloaded",
       "bytes": 268797,
-      "sha256": "f0f9ee0d9ce7d4eeb62cb4d8a58d578d5d40db79348b44fb91a3e47aba55896b"
+      "sha256": "f0f9ee0d9ce7d4eeb62cb4d8a58d578d5d40db79348b44fb91a3e47aba55896b",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "反向传播练习与解析 · Winter 2020",
+          "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf"
+        }
+      ]
     },
     {
       "title": "初始化与正则化课件",
@@ -49,7 +81,14 @@
       "local": "materials/section4-initialization.pdf",
       "status": "downloaded",
       "bytes": 2385019,
-      "sha256": "4e9b44174abdd078c66d9d99c98dad95d3f018c63915fd7a03362e8e3e770e59"
+      "sha256": "4e9b44174abdd078c66d9d99c98dad95d3f018c63915fd7a03362e8e3e770e59",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "初始化与正则化课件",
+          "url": "https://cs230.stanford.edu/section/4/Section4.pdf"
+        }
+      ]
     },
     {
       "title": "期中复习 · 2024",
@@ -58,7 +97,8 @@
       "local": "materials/midterm-review-2024.pdf",
       "status": "downloaded",
       "bytes": 2389277,
-      "sha256": "aa8bd100187f52cae6f3502ea81ce030a0b0a90128a224f8eb190bb76f075d73"
+      "sha256": "aa8bd100187f52cae6f3502ea81ce030a0b0a90128a224f8eb190bb76f075d73",
+      "lesson_references": []
     },
     {
       "title": "期中复习 · 2025",
@@ -67,7 +107,8 @@
       "local": "materials/midterm-review-2025.pptx",
       "status": "downloaded",
       "bytes": 4404060,
-      "sha256": "97b206ca64b0a7051502f3f36b3c50c7bef6a5b340a27fef5971f4d69ca3dc74"
+      "sha256": "97b206ca64b0a7051502f3f36b3c50c7bef6a5b340a27fef5971f4d69ca3dc74",
+      "lesson_references": []
     },
     {
       "title": "期中练习 1",
@@ -76,7 +117,8 @@
       "local": "materials/practice-1.pdf",
       "status": "downloaded",
       "bytes": 233703,
-      "sha256": "2b6c676e5192e0e748be6b8a699fb2a09e81fe6a56615c2910647635ecd34dff"
+      "sha256": "2b6c676e5192e0e748be6b8a699fb2a09e81fe6a56615c2910647635ecd34dff",
+      "lesson_references": []
     },
     {
       "title": "期中练习 1 官方解析",
@@ -85,7 +127,8 @@
       "local": "materials/practice-1-solutions.pdf",
       "status": "downloaded",
       "bytes": 294066,
-      "sha256": "24c70bfedbfc24544bb32292394b99de451cd259e5a57f46138d62067d5a2917"
+      "sha256": "24c70bfedbfc24544bb32292394b99de451cd259e5a57f46138d62067d5a2917",
+      "lesson_references": []
     },
     {
       "title": "期中练习 2",
@@ -94,7 +137,8 @@
       "local": "materials/practice-2.pdf",
       "status": "downloaded",
       "bytes": 467896,
-      "sha256": "e91b77ca0599d9ea3f61a40ab5af2ec98c503778e715c4855627ea3e54381503"
+      "sha256": "e91b77ca0599d9ea3f61a40ab5af2ec98c503778e715c4855627ea3e54381503",
+      "lesson_references": []
     },
     {
       "title": "期中练习 2 官方解析",
@@ -103,163 +147,369 @@
       "local": "materials/practice-2-solutions.pdf",
       "status": "downloaded",
       "bytes": 488449,
-      "sha256": "5746d62288380764db246b94497d712f030cf6457e686a6ddf878b42d2f33f98"
+      "sha256": "5746d62288380764db246b94497d712f030cf6457e686a6ddf878b42d2f33f98",
+      "lesson_references": []
     },
     {
       "title": "TA Section 1",
       "url": "https://cs230.stanford.edu/section/1/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "TA Section 1",
+          "url": "https://cs230.stanford.edu/section/1/"
+        }
+      ]
     },
     {
       "title": "TA Section 2",
       "url": "https://cs230.stanford.edu/section/2/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "TA Section 2",
+          "url": "https://cs230.stanford.edu/section/2/"
+        },
+        {
+          "lesson_id": "04",
+          "title": "TA Section 2",
+          "url": "https://cs230.stanford.edu/section/2/"
+        }
+      ]
     },
     {
       "title": "TA Section 3",
       "url": "https://cs230.stanford.edu/section/3/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "TA Section 3",
+          "url": "https://cs230.stanford.edu/section/3/"
+        },
+        {
+          "lesson_id": "13",
+          "title": "TA Section 3 · 项目复现与云环境补充",
+          "url": "https://cs230.stanford.edu/section/3/"
+        }
+      ]
     },
     {
       "title": "TA Section 4",
       "url": "https://cs230.stanford.edu/section/4/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "TA Section 4",
+          "url": "https://cs230.stanford.edu/section/4/"
+        }
+      ]
     },
     {
       "title": "TA Section 5",
       "url": "https://cs230.stanford.edu/section/5/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "TA Section 5",
+          "url": "https://cs230.stanford.edu/section/5/"
+        }
+      ]
     },
     {
       "title": "TA Section 6",
       "url": "https://cs230.stanford.edu/section/6/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "TA Section 7",
       "url": "https://cs230.stanford.edu/section/7/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "TA Section 7",
+          "url": "https://cs230.stanford.edu/section/7/"
+        }
+      ]
     },
     {
       "title": "TA Section 8",
       "url": "https://cs230.stanford.edu/section/8/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "TA Section 8",
+          "url": "https://cs230.stanford.edu/section/8/"
+        },
+        {
+          "lesson_id": "16",
+          "title": "TA Section 8 · 通用评估指标背景",
+          "url": "https://cs230.stanford.edu/section/8/"
+        }
+      ]
     },
     {
       "title": "TA Section 9",
       "url": "https://cs230.stanford.edu/section/9/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "TA Section 9",
+          "url": "https://cs230.stanford.edu/section/9/"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 1 · 课程介绍",
       "url": "https://www.youtube.com/watch?v=PySo_6S4ZAg&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=1",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "Fall 2018 Lecture 1 · 课程介绍",
+          "url": "https://www.youtube.com/watch?v=PySo_6S4ZAg&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=1"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 2 · 深度学习直觉",
       "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "Fall 2018 Lecture 2 · 深度学习直觉",
+          "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 3 · 完整项目周期",
       "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "Fall 2018 Lecture 3 · 完整项目周期",
+          "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3"
+        },
+        {
+          "lesson_id": "13",
+          "title": "Fall 2018 Lecture 3 · 完整项目周期",
+          "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
       "url": "https://www.youtube.com/watch?v=ANszao6YQuM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=4",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
+          "url": "https://www.youtube.com/watch?v=ANszao6YQuM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=4"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 5 · AI 与医疗",
       "url": "https://www.youtube.com/watch?v=IM9ANAbufYM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=5",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "16",
+          "title": "Fall 2018 Lecture 5 · AI 与医疗",
+          "url": "https://www.youtube.com/watch?v=IM9ANAbufYM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=5"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 6 · 项目策略",
       "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "Fall 2018 Lecture 6 · 项目策略",
+          "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6"
+        },
+        {
+          "lesson_id": "13",
+          "title": "Fall 2018 Lecture 6 · 项目策略",
+          "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
       "url": "https://www.youtube.com/watch?v=gCJCgQW_LKc&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=7",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "15",
+          "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
+          "url": "https://www.youtube.com/watch?v=gCJCgQW_LKc&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=7"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 8 · 职业与论文阅读",
       "url": "https://www.youtube.com/watch?v=733m6qBH-jI&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=8",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "Fall 2018 Lecture 8 · 职业与论文阅读",
+          "url": "https://www.youtube.com/watch?v=733m6qBH-jI&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=8"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 9 · 深度强化学习",
       "url": "https://www.youtube.com/watch?v=NP2XqpgTJyo&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=9",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "17",
+          "title": "Fall 2018 Lecture 9 · 深度强化学习",
+          "url": "https://www.youtube.com/watch?v=NP2XqpgTJyo&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=9"
+        }
+      ]
     },
     {
       "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
       "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10",
       "type": "video",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
+          "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10"
+        },
+        {
+          "lesson_id": "12",
+          "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
+          "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10"
+        }
+      ]
     },
     {
       "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
       "url": "https://github.com/cs230-stanford/cs230-code-examples",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
+          "url": "https://github.com/cs230-stanford/cs230-code-examples"
+        }
+      ]
     },
     {
       "title": "PyTorch 项目教程 · 历史版本",
       "url": "https://cs230.stanford.edu/blog/pytorch/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "神经网络与训练示例",
+          "url": "https://cs230.stanford.edu/blog/pytorch/"
+        },
+        {
+          "lesson_id": "07",
+          "title": "PyTorch代码教程（历史）",
+          "url": "https://cs230.stanford.edu/blog/pytorch/"
+        }
+      ]
     },
     {
       "title": "TensorFlow 项目教程 · 历史版本",
       "url": "https://cs230.stanford.edu/blog/tensorflow/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": []
     },
     {
       "title": "数据预处理教程",
       "url": "https://cs230.stanford.edu/blog/datapreprocessing/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "数据预处理",
+          "url": "https://cs230.stanford.edu/blog/datapreprocessing/"
+        }
+      ]
     },
     {
       "title": "项目实施建议",
       "url": "https://cs230.stanford.edu/blog/tips/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "项目实施建议",
+          "url": "https://cs230.stanford.edu/blog/tips/"
+        }
+      ]
     },
     {
       "title": "官方项目要求",
       "url": "https://cs230.stanford.edu/project/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "官方项目要求",
+          "url": "https://cs230.stanford.edu/project/"
+        }
+      ]
     },
     {
       "title": "课程当前主页与访问说明",
       "url": "https://cs230.stanford.edu/",
       "type": "notes",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "CS230课程主页：序列模型背景",
+          "url": "https://cs230.stanford.edu/"
+        }
+      ]
     },
     {
       "title": "12447290",
@@ -268,7 +518,8 @@
       "local": "materials/12447290.pdf",
       "status": "downloaded",
       "bytes": 4383247,
-      "sha256": "d34cf04a8707fcfb17ea6e5e46aa7dd95f3bdba39c83e484f2189ff662b675d8"
+      "sha256": "d34cf04a8707fcfb17ea6e5e46aa7dd95f3bdba39c83e484f2189ff662b675d8",
+      "lesson_references": []
     },
     {
       "title": "12409058",
@@ -277,7 +528,8 @@
       "local": "materials/12409058.pdf",
       "status": "downloaded",
       "bytes": 6193217,
-      "sha256": "64018a8ea8e33c32d4c95472a8eaacfc9a481edc10b43f8d91836adb172fa5b6"
+      "sha256": "64018a8ea8e33c32d4c95472a8eaacfc9a481edc10b43f8d91836adb172fa5b6",
+      "lesson_references": []
     },
     {
       "title": "12449275",
@@ -286,7 +538,8 @@
       "local": "materials/12449275.pdf",
       "status": "downloaded",
       "bytes": 3792925,
-      "sha256": "7e628d766970f83fedc1538991425e5e778a25015f6db81a07c4b5b4426a37a8"
+      "sha256": "7e628d766970f83fedc1538991425e5e778a25015f6db81a07c4b5b4426a37a8",
+      "lesson_references": []
     },
     {
       "title": "12365342",
@@ -295,7 +548,8 @@
       "local": "materials/12365342.pdf",
       "status": "downloaded",
       "bytes": 4257545,
-      "sha256": "cc83139024ea2e9b88344dbda8485de307f34f10a92c6cc6343e5da90c9618bc"
+      "sha256": "cc83139024ea2e9b88344dbda8485de307f34f10a92c6cc6343e5da90c9618bc",
+      "lesson_references": []
     },
     {
       "title": "8289557",
@@ -304,7 +558,8 @@
       "local": "materials/8289557.pdf",
       "status": "downloaded",
       "bytes": 4567682,
-      "sha256": "3aa4b0501eddaacd861c247ab479062caa017e7ff736429ff5f883961ce86003"
+      "sha256": "3aa4b0501eddaacd861c247ab479062caa017e7ff736429ff5f883961ce86003",
+      "lesson_references": []
     },
     {
       "title": "12447446",
@@ -313,7 +568,8 @@
       "local": "materials/12447446.pdf",
       "status": "downloaded",
       "bytes": 4370937,
-      "sha256": "457448038764027c1510a2d98505e4fd46bd5479e01ca74f86f90e8c0d99c3d8"
+      "sha256": "457448038764027c1510a2d98505e4fd46bd5479e01ca74f86f90e8c0d99c3d8",
+      "lesson_references": []
     },
     {
       "title": "1802.03446",
@@ -322,7 +578,8 @@
       "local": "materials/1802.03446.pdf",
       "status": "downloaded",
       "bytes": 7792727,
-      "sha256": "adc31f44152476e321161725cb645d2cd28f1c5a29e967bd49b762db7be7fb84"
+      "sha256": "adc31f44152476e321161725cb645d2cd28f1c5a29e967bd49b762db7be7fb84",
+      "lesson_references": []
     },
     {
       "title": "15811843",
@@ -331,7 +588,8 @@
       "local": "materials/15811843.pdf",
       "status": "downloaded",
       "bytes": 2726735,
-      "sha256": "ecf1f970fd0ab2a9cdfd298c65067640ad5923283aa857a9a5d1c534e0cce0e8"
+      "sha256": "ecf1f970fd0ab2a9cdfd298c65067640ad5923283aa857a9a5d1c534e0cce0e8",
+      "lesson_references": []
     },
     {
       "title": "15811944",
@@ -340,7 +598,8 @@
       "local": "materials/15811944.pdf",
       "status": "downloaded",
       "bytes": 5837061,
-      "sha256": "01ceb49b414bfc769551cf764e40e405cbf333a3926db6f12fb3c0de135f7865"
+      "sha256": "01ceb49b414bfc769551cf764e40e405cbf333a3926db6f12fb3c0de135f7865",
+      "lesson_references": []
     },
     {
       "title": "Matrix derivatives cribsheet",
@@ -349,7 +608,8 @@
       "local": "materials/Matrix_derivatives_cribsheet.pdf",
       "status": "downloaded",
       "bytes": 114016,
-      "sha256": "dcb53f152c04a5dd3795ce43083e22893e3bc2bfeb005702cc197830d7ceb20d"
+      "sha256": "dcb53f152c04a5dd3795ce43083e22893e3bc2bfeb005702cc197830d7ceb20d",
+      "lesson_references": []
     },
     {
       "title": "eval-metrics-bntuw-9802",
@@ -358,7 +618,8 @@
       "local": "materials/eval-metrics-bntuw-9802.pdf",
       "status": "downloaded",
       "bytes": 73216,
-      "sha256": "36a1c57cec09b289d66f331e1b168284951fe211be37bb417dfed51a00dc11f3"
+      "sha256": "36a1c57cec09b289d66f331e1b168284951fe211be37bb417dfed51a00dc11f3",
+      "lesson_references": []
     },
     {
       "title": "1806.07755",
@@ -367,7 +628,8 @@
       "local": "materials/1806.07755.pdf",
       "status": "downloaded",
       "bytes": 879163,
-      "sha256": "857eb1128b3eb061df7649cbe3632349a0b7c0fdf597acd7e87f91fc7b2e377f"
+      "sha256": "857eb1128b3eb061df7649cbe3632349a0b7c0fdf597acd7e87f91fc7b2e377f",
+      "lesson_references": []
     },
     {
       "title": "1711.10337",
@@ -376,7 +638,8 @@
       "local": "materials/1711.10337.pdf",
       "status": "downloaded",
       "bytes": 4634371,
-      "sha256": "baf6f1538f15e883ec1a48bab99c94722819555f566d4eee86c35774053daa1b"
+      "sha256": "baf6f1538f15e883ec1a48bab99c94722819555f566d4eee86c35774053daa1b",
+      "lesson_references": []
     },
     {
       "title": "CS230GithubTutorial",
@@ -385,7 +648,8 @@
       "local": "materials/CS230GithubTutorial.pdf",
       "status": "downloaded",
       "bytes": 328923,
-      "sha256": "dfae8ce32bd255b5919ac0ea3e17f2f03656ff158c22036c85824845dc6a2a6a"
+      "sha256": "dfae8ce32bd255b5919ac0ea3e17f2f03656ff158c22036c85824845dc6a2a6a",
+      "lesson_references": []
     },
     {
       "title": "colab",
@@ -394,7 +658,8 @@
       "local": "materials/colab.pdf",
       "status": "downloaded",
       "bytes": 386807,
-      "sha256": "587f98864704da930e49e62dd7cfeacde96eb625222184d15928fafab0953ffe"
+      "sha256": "587f98864704da930e49e62dd7cfeacde96eb625222184d15928fafab0953ffe",
+      "lesson_references": []
     },
     {
       "title": "1508.06576",
@@ -403,7 +668,8 @@
       "local": "materials/1508.06576.pdf",
       "status": "downloaded",
       "bytes": 6112337,
-      "sha256": "7320dce2d1699f6ba989b9d9da5f627f87db2dc9f364f6c40013f183267915f6"
+      "sha256": "7320dce2d1699f6ba989b9d9da5f627f87db2dc9f364f6c40013f183267915f6",
+      "lesson_references": []
     },
     {
       "title": "1603.08155",
@@ -412,7 +678,8 @@
       "local": "materials/1603.08155.pdf",
       "status": "downloaded",
       "bytes": 10284657,
-      "sha256": "6211443c2f4c92881759b850bee824b1660f53c61315d69e8f9486222bac2a87"
+      "sha256": "6211443c2f4c92881759b850bee824b1660f53c61315d69e8f9486222bac2a87",
+      "lesson_references": []
     },
     {
       "title": "1610.07629",
@@ -421,7 +688,8 @@
       "local": "materials/1610.07629.pdf",
       "status": "downloaded",
       "bytes": 44074805,
-      "sha256": "c81c0d8e1600ff759e5b39ddc7b0a62f789a07e2d3afaddc858158dba572f7da"
+      "sha256": "c81c0d8e1600ff759e5b39ddc7b0a62f789a07e2d3afaddc858158dba572f7da",
+      "lesson_references": []
     },
     {
       "title": "1705.06830",
@@ -430,7 +698,8 @@
       "local": "materials/1705.06830.pdf",
       "status": "downloaded",
       "bytes": 32362781,
-      "sha256": "61c1613060dee873bba2bc57f0e06e5659c71c9111ad0e5500aee8815d3b68e3"
+      "sha256": "61c1613060dee873bba2bc57f0e06e5659c71c9111ad0e5500aee8815d3b68e3",
+      "lesson_references": []
     },
     {
       "title": "cs230-code-examples",
@@ -439,19 +708,121 @@
       "local": "materials/cs230-code-examples.zip",
       "status": "downloaded",
       "bytes": 88854,
-      "sha256": "d0e02802ce4aa5ab4932e077a88ebac63674b35f56730d696c1b777c8cf62f04"
+      "sha256": "d0e02802ce4aa5ab4932e077a88ebac63674b35f56730d696c1b777c8cf62f04",
+      "lesson_references": []
     },
     {
       "title": "官方视觉代码",
       "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/vision",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "官方视觉代码",
+          "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/vision"
+        }
+      ]
     },
     {
       "title": "官方序列标注代码",
       "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/nlp",
       "type": "code",
-      "status": "external_link"
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "官方序列标注代码",
+          "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/nlp"
+        }
+      ]
+    },
+    {
+      "title": "Batch Normalization 原始论文 · Ioffe & Szegedy 2015",
+      "url": "https://proceedings.mlr.press/v37/ioffe15.pdf",
+      "type": "paper",
+      "local": "materials/batch-normalization-ioffe2015.pdf",
+      "status": "downloaded",
+      "bytes": 318669,
+      "sha256": "f2eb20b4e97409aef516a6506ea76c7c051860eeded3006a6d9687c364847b27",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "Batch Normalization 原始论文 · Ioffe & Szegedy 2015",
+          "url": "https://proceedings.mlr.press/v37/ioffe15.pdf"
+        }
+      ]
+    },
+    {
+      "title": "现代神经网络校准 · Guo 等 2017",
+      "url": "https://proceedings.mlr.press/v70/guo17a/guo17a.pdf",
+      "type": "paper",
+      "local": "materials/calibration-guo2017.pdf",
+      "status": "downloaded",
+      "bytes": 828420,
+      "sha256": "df7c93f97204f8a3c2b10f6d5bf5265baac25f00c1ae3b473a3e1dbc102dacb2",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "现代神经网络校准 · Guo 等 2017",
+          "url": "https://proceedings.mlr.press/v70/guo17a/guo17a.pdf"
+        }
+      ]
+    },
+    {
+      "title": "Attention Is All You Need · Vaswani 等 2017",
+      "url": "https://arxiv.org/pdf/1706.03762",
+      "type": "paper",
+      "local": "materials/attention-vaswani2017.pdf",
+      "status": "downloaded",
+      "bytes": 2215244,
+      "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "Attention Is All You Need · Vaswani 等 2017",
+          "url": "https://arxiv.org/pdf/1706.03762"
+        }
+      ]
+    },
+    {
+      "title": "PyTorch BatchNorm1d：训练与推理统计约定",
+      "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html",
+      "type": "notes",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "PyTorch BatchNorm1d：训练与推理统计约定",
+          "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html"
+        }
+      ]
+    },
+    {
+      "title": "CS230 卷积网络速查 · 作者教学资料",
+      "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks/",
+      "type": "notes",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "CS230 卷积网络速查 · 作者教学资料",
+          "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks/"
+        }
+      ]
+    },
+    {
+      "title": "CS230 序列模型速查 · 作者教学资料",
+      "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-recurrent-neural-networks/",
+      "type": "notes",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "CS230 序列模型速查 · 作者教学资料",
+          "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-recurrent-neural-networks/"
+        }
+      ]
     }
   ],
   "discovery": {
@@ -799,5 +1170,22 @@
       "official-2.html"
     ],
     "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  },
+  "lesson_references_updated_at": "2026-11-06T20:55:45.761185+00:00",
+  "local_files_verification": {
+    "verified_at": "2026-11-06T20:55:45.761185+00:00",
+    "algorithm": "SHA-256",
+    "published_files": 34,
+    "published_bytes": 170690779,
+    "verified_historical_downloads": 32,
+    "discovery_only_files": [
+      "honor-code.pdf"
+    ],
+    "newly_archived_files": [
+      "materials/batch-normalization-ioffe2015.pdf",
+      "materials/calibration-guo2017.pdf",
+      "materials/attention-vaswani2017.pdf"
+    ],
+    "result": "All 34 published files have verified sizes and hashes; 32 historical downloads retain matching metadata. Discovery-only files are not counted as published course resources."
   }
 }
