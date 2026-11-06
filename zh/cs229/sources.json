@@ -1,0 +1,708 @@
+{
+  "course": "cs229",
+  "title": "机器学习：从统计原理到可靠实践",
+  "offering": "历年公开讲义整编 · 2026-11 核验",
+  "source_url": "https://cs229.stanford.edu/",
+  "verified_at": "2026-11-06T17:32:06.234114+00:00",
+  "scope": "Official publicly accessible course materials discovered from course pages and official repositories; videos and restricted materials remain source links. See discovery metadata for crawl scope and failures.",
+  "resources": [
+    {
+      "title": "CS229 综合讲义（公开版）",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "type": "notes",
+      "local": "materials/main_notes.pdf",
+      "status": "downloaded",
+      "bytes": 5355993,
+      "sha256": "87176d102dbeb431dc61f99f8e13a39b02209a01298eeafccf7ed69f7d69e1f8"
+    },
+    {
+      "title": "经典公开资料页",
+      "url": "https://cs229.stanford.edu/materials.html-full",
+      "type": "website",
+      "status": "external_link"
+    },
+    {
+      "title": "当前官网：Summer 2026，部分课程链接需 Stanford 登录",
+      "url": "https://cs229.stanford.edu/",
+      "type": "website",
+      "status": "external_link"
+    },
+    {
+      "title": "cs229-gaussian processes",
+      "url": "https://cs229.stanford.edu/section/cs229-gaussian_processes.pdf",
+      "type": "pdf",
+      "local": "materials/cs229-gaussian_processes.pdf",
+      "status": "downloaded",
+      "bytes": 163887,
+      "sha256": "b389b1cb62bf49ec1b040ca3eb9d7267a457daf32bff18eb80ec8ac219dd772f"
+    },
+    {
+      "title": "main notes",
+      "url": "https://cs229.stanford.edu/notes2022fall/main_notes.pdf",
+      "type": "pdf",
+      "local": "materials/29b32279-main_notes.pdf",
+      "status": "downloaded",
+      "bytes": 3253492,
+      "sha256": "d04183987f49330d3b4f260f4062fe7713efc4aac827f49d781263786f1f544d"
+    },
+    {
+      "title": "learning-settings-llms-transformers",
+      "url": "https://cs229.stanford.edu/notes2022fall/learning-settings-llms-transformers.pdf",
+      "type": "pdf",
+      "local": "materials/learning-settings-llms-transformers.pdf",
+      "status": "downloaded",
+      "bytes": 11084215,
+      "sha256": "7dd24d232a97b413f1d026e7b1da89f71137422abe24d0107f6620fa23308514"
+    },
+    {
+      "title": "线性代数复习（经典公开版）",
+      "url": "https://cs229.stanford.edu/section/cs229-linalg.pdf",
+      "type": "notes",
+      "local": "materials/cs229-linalg.pdf",
+      "status": "downloaded",
+      "bytes": 205269,
+      "sha256": "44cc900706f6d06a972b5cb9eb47d25a59c454d82c763abaf271dadc07f71734"
+    },
+    {
+      "title": "概率论复习（经典公开版）",
+      "url": "https://cs229.stanford.edu/section/cs229-prob.pdf",
+      "type": "notes",
+      "local": "materials/cs229-prob.pdf",
+      "status": "downloaded",
+      "bytes": 292389,
+      "sha256": "0fa89650dcff1b1b535dd2cac42fd65342c4558fb35e0d721b7d4d8302d69bcc"
+    },
+    {
+      "title": "讲义 1：监督学习与判别模型",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf",
+      "type": "notes",
+      "local": "materials/77f1b14a-cs229-notes1.pdf",
+      "status": "downloaded",
+      "bytes": 241562,
+      "sha256": "95f5ca658acbf5e2032332d29825730cbc37b7bfb051f329acbbea34482f1f6f"
+    },
+    {
+      "title": "讲义 2：生成式分类器",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes2.pdf",
+      "type": "notes",
+      "local": "materials/8647e864-cs229-notes2.pdf",
+      "status": "downloaded",
+      "bytes": 885289,
+      "sha256": "7c3766e1332241816ce57cc419a72de07682b1ef67ccd17375a11a1248a824c5"
+    },
+    {
+      "title": "讲义 3：支持向量机",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf",
+      "type": "notes",
+      "local": "materials/fd5aa65f-cs229-notes3.pdf",
+      "status": "downloaded",
+      "bytes": 198060,
+      "sha256": "ad2da36847599c795a42742e5020e360328599216ca30154d5f8bcf1768c5c94"
+    },
+    {
+      "title": "凸优化 I",
+      "url": "https://cs229.stanford.edu/section/cs229-cvxopt.pdf",
+      "type": "notes",
+      "local": "materials/cs229-cvxopt.pdf",
+      "status": "downloaded",
+      "bytes": 168829,
+      "sha256": "10834925064926131798c9435fe20fe9cdd0cf75791c32e99a6588de903b96d3"
+    },
+    {
+      "title": "凸优化 II",
+      "url": "https://cs229.stanford.edu/section/cs229-cvxopt2.pdf",
+      "type": "notes",
+      "local": "materials/cs229-cvxopt2.pdf",
+      "status": "downloaded",
+      "bytes": 203872,
+      "sha256": "0354ff5248a8325a872d62312861d9f4f518b4b39c0643454e007f12cad904b6"
+    },
+    {
+      "title": "深度学习讲义（Summer 2023 目录版）",
+      "url": "https://cs229.stanford.edu/summer2023/cs229-notes-deep_learning.pdf",
+      "type": "notes",
+      "local": "materials/cs229-notes-deep_learning.pdf",
+      "status": "downloaded",
+      "bytes": 484867,
+      "sha256": "1649e5096b1e737a0f1a39b738fed4bef6d16bd0098171ef8004b67e809209b7"
+    },
+    {
+      "title": "决策树讲义（Summer 2023）",
+      "url": "https://cs229.stanford.edu/summer2023/cs229-notes-decision_trees.pdf",
+      "type": "notes",
+      "local": "materials/cs229-notes-decision_trees.pdf",
+      "status": "downloaded",
+      "bytes": 242394,
+      "sha256": "790f785fada8193738c26a44dce02055ec7d5620a8613651364cb1f242e28483"
+    },
+    {
+      "title": "Boosting 补充（Fall 2022）",
+      "url": "https://cs229.stanford.edu/notes2022fall/boosting.pdf",
+      "type": "slides",
+      "local": "materials/boosting.pdf",
+      "status": "downloaded",
+      "bytes": 2910389,
+      "sha256": "c2793c78da254999e31e58df842d0f2cfe8a94ed047b0bc9e3145fc6cc60ecad"
+    },
+    {
+      "title": "讲义 5：正则化与模型选择",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf",
+      "type": "notes",
+      "local": "materials/d4b83f80-cs229-notes5.pdf",
+      "status": "downloaded",
+      "bytes": 89353,
+      "sha256": "869cd47bc3d832813e69305ef2773e1432311d84d737e395aff2bdc861cc80db"
+    },
+    {
+      "title": "机器学习实践建议",
+      "url": "https://cs229.stanford.edu/materials/ML-advice.pdf",
+      "type": "slides",
+      "local": "materials/ML-advice.pdf",
+      "status": "downloaded",
+      "bytes": 320993,
+      "sha256": "69775fc122bc234a69432a7fc54c21dbcf8e99baa481d6f7a3e7f70eb01c4b70"
+    },
+    {
+      "title": "讲义 4：学习理论",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf",
+      "type": "notes",
+      "local": "materials/96b002e7-cs229-notes4.pdf",
+      "status": "downloaded",
+      "bytes": 112922,
+      "sha256": "6f9b70a0015d65deee53bc25da613ea0f9f672d51a06c65f5fb936149db6137e"
+    },
+    {
+      "title": "讲义 6：在线学习与感知机",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes6.pdf",
+      "type": "notes",
+      "local": "materials/1c180336-cs229-notes6.pdf",
+      "status": "downloaded",
+      "bytes": 52068,
+      "sha256": "fcc95d3b59057c60ab3996131c9a0cca52a21d095585b5fa01403e77f95a5ca1"
+    },
+    {
+      "title": "讲义 7a：k-means",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7a.pdf",
+      "type": "notes",
+      "local": "materials/2bdcbb6c-cs229-notes7a.pdf",
+      "status": "downloaded",
+      "bytes": 271020,
+      "sha256": "2283b7915b8586da94d810536508cb793f54658471177819194eee2f3a5d9ec0"
+    },
+    {
+      "title": "讲义 7b：高斯混合",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7b.pdf",
+      "type": "notes",
+      "local": "materials/cb71fe7b-cs229-notes7b.pdf",
+      "status": "downloaded",
+      "bytes": 51763,
+      "sha256": "e6b0621ed557516acfb51200db0b96106f7944e54e48cf08fc3606170e8335a6"
+    },
+    {
+      "title": "讲义 8：EM 算法",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes8.pdf",
+      "type": "notes",
+      "local": "materials/70e75bb0-cs229-notes8.pdf",
+      "status": "downloaded",
+      "bytes": 187727,
+      "sha256": "7e4e15024e0a9f53140ee27e3c5084a308086362e1cb47780ea9cf34d17c9c20"
+    },
+    {
+      "title": "讲义 9：因子分析",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes9.pdf",
+      "type": "notes",
+      "local": "materials/2360a07d-cs229-notes9.pdf",
+      "status": "downloaded",
+      "bytes": 84501,
+      "sha256": "b53f6463d0c97df3140b3bad702ac47a169ead08334267893a711105b2bb2a63"
+    },
+    {
+      "title": "讲义 10：PCA",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes10.pdf",
+      "type": "notes",
+      "local": "materials/976d7abd-cs229-notes10.pdf",
+      "status": "downloaded",
+      "bytes": 72012,
+      "sha256": "753e97ddaa24bc94dac552c1f6fb4a7ff38af4aefda7ebc350a33146f8ce8b10"
+    },
+    {
+      "title": "讲义 11：ICA",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes11.pdf",
+      "type": "notes",
+      "local": "materials/f85805f8-cs229-notes11.pdf",
+      "status": "downloaded",
+      "bytes": 78012,
+      "sha256": "69e355af81e9d5b592d80b13b1b9fd475e93f4706e7efade5a4807d3443920f4"
+    },
+    {
+      "title": "讲义 12：强化学习与控制",
+      "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf",
+      "type": "notes",
+      "local": "materials/3f9c9127-cs229-notes12.pdf",
+      "status": "downloaded",
+      "bytes": 170639,
+      "sha256": "07917213b3df20abc226304acfbb95dda18576b5780d9ffb8ef6a82dc8a0d2fc"
+    },
+    {
+      "title": "隐马尔可夫模型补充",
+      "url": "https://cs229.stanford.edu/section/cs229-hmm.pdf",
+      "type": "notes",
+      "local": "materials/cs229-hmm.pdf",
+      "status": "downloaded",
+      "bytes": 202549,
+      "sha256": "9751ccff523d24be4e98d7ba991312a49ee90b75d1496f1aae5119aad7c237ab"
+    },
+    {
+      "title": "多元高斯分布",
+      "url": "https://cs229.stanford.edu/section/gaussians.pdf",
+      "type": "notes",
+      "local": "materials/gaussians.pdf",
+      "status": "downloaded",
+      "bytes": 343164,
+      "sha256": "0e6e90e09669a96eb53615f6f400540f5d3606b846c69dc780de86899cad83fa"
+    },
+    {
+      "title": "高斯分布补充",
+      "url": "https://cs229.stanford.edu/section/more_on_gaussians.pdf",
+      "type": "notes",
+      "local": "materials/more_on_gaussians.pdf",
+      "status": "downloaded",
+      "bytes": 119533,
+      "sha256": "47794bc0b4a532cdba0307ec949af0b501deda18637b1cb84f32264fd2dda272"
+    },
+    {
+      "title": "隐私补充（Fall 2022）",
+      "url": "https://cs229.stanford.edu/notes2022fall/privacy.pdf",
+      "type": "slides",
+      "local": "materials/privacy.pdf",
+      "status": "downloaded",
+      "bytes": 1740994,
+      "sha256": "ee23d182a2342a7ca8035b4677899d2ed7b977569b89e5ad26cb47990d875131"
+    }
+  ],
+  "discovery": {
+    "discovered_at": "2026-11-06",
+    "course": "cs229",
+    "downloaded": 31,
+    "bytes": 29679986,
+    "records": [
+      {
+        "url": "https://cs229.stanford.edu/materials/coverSheet.pdf",
+        "filename": "coverSheet.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes1.pdf",
+        "filename": "cs229-notes1.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes2.pdf",
+        "filename": "cs229-notes2.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes3.pdf",
+        "filename": "cs229-notes3.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes4.pdf",
+        "filename": "cs229-notes4.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes5.pdf",
+        "filename": "cs229-notes5.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes6.pdf",
+        "filename": "cs229-notes6.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes7a.pdf",
+        "filename": "cs229-notes7a.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes7b.pdf",
+        "filename": "cs229-notes7b.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes8.pdf",
+        "filename": "cs229-notes8.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes9.pdf",
+        "filename": "cs229-notes9.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes10.pdf",
+        "filename": "cs229-notes10.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes11.pdf",
+        "filename": "cs229-notes11.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes/cs229-notes12.pdf",
+        "filename": "cs229-notes12.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/cs229-linalg.pdf",
+        "filename": "cs229-linalg.pdf",
+        "local": "materials/cs229-linalg.pdf",
+        "status": "downloaded",
+        "bytes": 205269,
+        "sha256": "44cc900706f6d06a972b5cb9eb47d25a59c454d82c763abaf271dadc07f71734"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/cs229-prob.pdf",
+        "filename": "cs229-prob.pdf",
+        "local": "materials/cs229-prob.pdf",
+        "status": "downloaded",
+        "bytes": 292389,
+        "sha256": "0fa89650dcff1b1b535dd2cac42fd65342c4558fb35e0d721b7d4d8302d69bcc"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/cs229-cvxopt.pdf",
+        "filename": "cs229-cvxopt.pdf",
+        "local": "materials/cs229-cvxopt.pdf",
+        "status": "downloaded",
+        "bytes": 168829,
+        "sha256": "10834925064926131798c9435fe20fe9cdd0cf75791c32e99a6588de903b96d3"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/cs229-cvxopt2.pdf",
+        "filename": "cs229-cvxopt2.pdf",
+        "local": "materials/cs229-cvxopt2.pdf",
+        "status": "downloaded",
+        "bytes": 203872,
+        "sha256": "0354ff5248a8325a872d62312861d9f4f518b4b39c0643454e007f12cad904b6"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/cs229-hmm.pdf",
+        "filename": "cs229-hmm.pdf",
+        "local": "materials/cs229-hmm.pdf",
+        "status": "downloaded",
+        "bytes": 202549,
+        "sha256": "9751ccff523d24be4e98d7ba991312a49ee90b75d1496f1aae5119aad7c237ab"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/gaussians.pdf",
+        "filename": "gaussians.pdf",
+        "local": "materials/gaussians.pdf",
+        "status": "downloaded",
+        "bytes": 343164,
+        "sha256": "0e6e90e09669a96eb53615f6f400540f5d3606b846c69dc780de86899cad83fa"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/more_on_gaussians.pdf",
+        "filename": "more_on_gaussians.pdf",
+        "local": "materials/more_on_gaussians.pdf",
+        "status": "downloaded",
+        "bytes": 119533,
+        "sha256": "47794bc0b4a532cdba0307ec949af0b501deda18637b1cb84f32264fd2dda272"
+      },
+      {
+        "url": "https://cs229.stanford.edu/section/cs229-gaussian_processes.pdf",
+        "filename": "cs229-gaussian_processes.pdf",
+        "local": "materials/cs229-gaussian_processes.pdf",
+        "status": "downloaded",
+        "bytes": 163887,
+        "sha256": "b389b1cb62bf49ec1b040ca3eb9d7267a457daf32bff18eb80ec8ac219dd772f"
+      },
+      {
+        "url": "https://cs229.stanford.edu/materials/ML-advice.pdf",
+        "filename": "ML-advice.pdf",
+        "local": "materials/ML-advice.pdf",
+        "status": "downloaded",
+        "bytes": 320993,
+        "sha256": "69775fc122bc234a69432a7fc54c21dbcf8e99baa481d6f7a3e7f70eb01c4b70"
+      },
+      {
+        "url": "http://www-mdp.eng.cam.ac.uk/web/CD/engapps/octave/octavetut.pdf",
+        "filename": "octavetut.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 503: Service Unavailable"
+      },
+      {
+        "url": "https://cs229.stanford.edu/ps/ps1.pdf",
+        "filename": "ps1.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/projectGuidelines.pdf",
+        "filename": "projectGuidelines.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/ps/ps2.pdf",
+        "filename": "ps2.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/ps1.pdf",
+        "filename": "04d88fe4-ps1.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/materials/practice-midterm.pdf",
+        "filename": "practice-midterm.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/practice-midterm-solutions.pdf",
+        "filename": "practice-midterm-solutions.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/materials/anonSurvey.pdf",
+        "filename": "anonSurvey.pdf",
+        "local": "materials/anonSurvey.pdf",
+        "status": "downloaded",
+        "bytes": 29582,
+        "sha256": "6e2fc8f035fa6e5a40b2da12bef20c99e0c0372a7a0ebdf92ffd807db3db3a46"
+      },
+      {
+        "url": "https://cs229.stanford.edu/materials/ps3.pdf",
+        "filename": "ps3.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/ps2-sol.pdf",
+        "filename": "ps2-sol.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/ps4.pdf",
+        "filename": "ps4.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/midterm2010-solutions.pdf",
+        "filename": "midterm2010-solutions.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/ps3-sol.pdf",
+        "filename": "ps3-sol.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/materials/related-classes.pdf",
+        "filename": "related-classes.pdf",
+        "local": "materials/related-classes.pdf",
+        "status": "downloaded",
+        "bytes": 62647,
+        "sha256": "78665478813b4b5916a372ea0b95799cd6097aac51ac1d3a6af97834ac7459dd"
+      },
+      {
+        "url": "https://cs229.stanford.edu/restricted/ps4-sol.pdf",
+        "filename": "ps4-sol.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://cs229.stanford.edu/main_notes.pdf",
+        "filename": "main_notes.pdf",
+        "local": "materials/main_notes.pdf",
+        "status": "downloaded",
+        "bytes": 5355993,
+        "sha256": "87176d102dbeb431dc61f99f8e13a39b02209a01298eeafccf7ed69f7d69e1f8"
+      },
+      {
+        "url": "https://cs229.stanford.edu/summer2023/cs229-notes-decision_trees.pdf",
+        "filename": "cs229-notes-decision_trees.pdf",
+        "local": "materials/cs229-notes-decision_trees.pdf",
+        "status": "downloaded",
+        "bytes": 242394,
+        "sha256": "790f785fada8193738c26a44dce02055ec7d5620a8613651364cb1f242e28483"
+      },
+      {
+        "url": "https://cs229.stanford.edu/summer2023/cs229-notes-deep_learning.pdf",
+        "filename": "cs229-notes-deep_learning.pdf",
+        "local": "materials/cs229-notes-deep_learning.pdf",
+        "status": "downloaded",
+        "bytes": 484867,
+        "sha256": "1649e5096b1e737a0f1a39b738fed4bef6d16bd0098171ef8004b67e809209b7"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes2022fall/main_notes.pdf",
+        "filename": "29b32279-main_notes.pdf",
+        "local": "materials/29b32279-main_notes.pdf",
+        "status": "downloaded",
+        "bytes": 3253492,
+        "sha256": "d04183987f49330d3b4f260f4062fe7713efc4aac827f49d781263786f1f544d"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes2022fall/privacy.pdf",
+        "filename": "privacy.pdf",
+        "local": "materials/privacy.pdf",
+        "status": "downloaded",
+        "bytes": 1740994,
+        "sha256": "ee23d182a2342a7ca8035b4677899d2ed7b977569b89e5ad26cb47990d875131"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes2022fall/learning-settings-llms-transformers.pdf",
+        "filename": "learning-settings-llms-transformers.pdf",
+        "local": "materials/learning-settings-llms-transformers.pdf",
+        "status": "downloaded",
+        "bytes": 11084215,
+        "sha256": "7dd24d232a97b413f1d026e7b1da89f71137422abe24d0107f6620fa23308514"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf",
+        "filename": "77f1b14a-cs229-notes1.pdf",
+        "local": "materials/77f1b14a-cs229-notes1.pdf",
+        "status": "downloaded",
+        "bytes": 241562,
+        "sha256": "95f5ca658acbf5e2032332d29825730cbc37b7bfb051f329acbbea34482f1f6f"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes2.pdf",
+        "filename": "8647e864-cs229-notes2.pdf",
+        "local": "materials/8647e864-cs229-notes2.pdf",
+        "status": "downloaded",
+        "bytes": 885289,
+        "sha256": "7c3766e1332241816ce57cc419a72de07682b1ef67ccd17375a11a1248a824c5"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf",
+        "filename": "fd5aa65f-cs229-notes3.pdf",
+        "local": "materials/fd5aa65f-cs229-notes3.pdf",
+        "status": "downloaded",
+        "bytes": 198060,
+        "sha256": "ad2da36847599c795a42742e5020e360328599216ca30154d5f8bcf1768c5c94"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf",
+        "filename": "96b002e7-cs229-notes4.pdf",
+        "local": "materials/96b002e7-cs229-notes4.pdf",
+        "status": "downloaded",
+        "bytes": 112922,
+        "sha256": "6f9b70a0015d65deee53bc25da613ea0f9f672d51a06c65f5fb936149db6137e"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf",
+        "filename": "d4b83f80-cs229-notes5.pdf",
+        "local": "materials/d4b83f80-cs229-notes5.pdf",
+        "status": "downloaded",
+        "bytes": 89353,
+        "sha256": "869cd47bc3d832813e69305ef2773e1432311d84d737e395aff2bdc861cc80db"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes6.pdf",
+        "filename": "1c180336-cs229-notes6.pdf",
+        "local": "materials/1c180336-cs229-notes6.pdf",
+        "status": "downloaded",
+        "bytes": 52068,
+        "sha256": "fcc95d3b59057c60ab3996131c9a0cca52a21d095585b5fa01403e77f95a5ca1"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7a.pdf",
+        "filename": "2bdcbb6c-cs229-notes7a.pdf",
+        "local": "materials/2bdcbb6c-cs229-notes7a.pdf",
+        "status": "downloaded",
+        "bytes": 271020,
+        "sha256": "2283b7915b8586da94d810536508cb793f54658471177819194eee2f3a5d9ec0"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7b.pdf",
+        "filename": "cb71fe7b-cs229-notes7b.pdf",
+        "local": "materials/cb71fe7b-cs229-notes7b.pdf",
+        "status": "downloaded",
+        "bytes": 51763,
+        "sha256": "e6b0621ed557516acfb51200db0b96106f7944e54e48cf08fc3606170e8335a6"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes8.pdf",
+        "filename": "70e75bb0-cs229-notes8.pdf",
+        "local": "materials/70e75bb0-cs229-notes8.pdf",
+        "status": "downloaded",
+        "bytes": 187727,
+        "sha256": "7e4e15024e0a9f53140ee27e3c5084a308086362e1cb47780ea9cf34d17c9c20"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes9.pdf",
+        "filename": "2360a07d-cs229-notes9.pdf",
+        "local": "materials/2360a07d-cs229-notes9.pdf",
+        "status": "downloaded",
+        "bytes": 84501,
+        "sha256": "b53f6463d0c97df3140b3bad702ac47a169ead08334267893a711105b2bb2a63"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes10.pdf",
+        "filename": "976d7abd-cs229-notes10.pdf",
+        "local": "materials/976d7abd-cs229-notes10.pdf",
+        "status": "downloaded",
+        "bytes": 72012,
+        "sha256": "753e97ddaa24bc94dac552c1f6fb4a7ff38af4aefda7ebc350a33146f8ce8b10"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes11.pdf",
+        "filename": "f85805f8-cs229-notes11.pdf",
+        "local": "materials/f85805f8-cs229-notes11.pdf",
+        "status": "downloaded",
+        "bytes": 78012,
+        "sha256": "69e355af81e9d5b592d80b13b1b9fd475e93f4706e7efade5a4807d3443920f4"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf",
+        "filename": "3f9c9127-cs229-notes12.pdf",
+        "local": "materials/3f9c9127-cs229-notes12.pdf",
+        "status": "downloaded",
+        "bytes": 170639,
+        "sha256": "07917213b3df20abc226304acfbb95dda18576b5780d9ffb8ef6a82dc8a0d2fc"
+      },
+      {
+        "url": "https://cs229.stanford.edu/notes2022fall/boosting.pdf",
+        "filename": "boosting.pdf",
+        "local": "materials/boosting.pdf",
+        "status": "downloaded",
+        "bytes": 2910389,
+        "sha256": "c2793c78da254999e31e58df842d0f2cfe8a94ed047b0bc9e3145fc6cc60ecad"
+      }
+    ],
+    "discovery_pages": [
+      "official-19.html",
+      "official-21.html",
+      "official-0.html",
+      "official-20.html"
+    ],
+    "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  }
+}

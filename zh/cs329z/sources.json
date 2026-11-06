@@ -1,0 +1,739 @@
+{
+  "course": "cs329z",
+  "title": "AI 智能体工程",
+  "offering": "2026 秋季",
+  "source_url": "https://cs329z.stanford.edu/",
+  "verified_at": "2026-11-06T17:32:06.685932+00:00",
+  "scope": "Official publicly accessible course materials discovered from course pages and official repositories; videos and restricted materials remain source links. See discovery metadata for crawl scope and failures.",
+  "resources": [
+    {
+      "title": "课程官网与完整课表",
+      "url": "https://cs329z.stanford.edu/",
+      "type": "website",
+      "status": "external_link"
+    },
+    {
+      "title": "课程安排与修读说明",
+      "url": "https://cs329z.stanford.edu/logistics",
+      "type": "website",
+      "status": "external_link"
+    },
+    {
+      "title": "学期项目说明",
+      "url": "https://cs329z.stanford.edu/project.html",
+      "type": "assignment",
+      "status": "external_link"
+    },
+    {
+      "title": "HW1 官方作业讲义",
+      "url": "https://raw.githubusercontent.com/cs329z/assignment1-harness/main/cs329z_assignment1_harness.pdf",
+      "type": "pdf",
+      "local": "materials/cs329z_assignment1_harness.pdf",
+      "status": "downloaded",
+      "bytes": 420885,
+      "sha256": "20f29273fb63672f470fd0ecd2499ce95ffcf0a03c5d1e5b1370a36aae53eb8d"
+    },
+    {
+      "title": "HW1 起始代码",
+      "url": "https://github.com/cs329z/assignment1-harness",
+      "type": "code",
+      "local": "materials/assignment1-harness.zip",
+      "status": "downloaded",
+      "bytes": 19892026,
+      "sha256": "abace0aa9068a981d99a39ed68d6eeacffd4a3266e32041a28119b67cac9698e"
+    },
+    {
+      "title": "HW2 官方作业讲义",
+      "url": "https://raw.githubusercontent.com/cs329z/assignment2-evals/main/cs329z_assignment2_evaluation.pdf",
+      "type": "pdf",
+      "local": "materials/cs329z_assignment2_evaluation.pdf",
+      "status": "downloaded",
+      "bytes": 1740882,
+      "sha256": "294491b79a0f8b76f3db7293dcc2ae147a0573a6368693799b7f162552b743b5"
+    },
+    {
+      "title": "HW2 起始代码",
+      "url": "https://github.com/cs329z/assignment2-evals",
+      "type": "code",
+      "local": "materials/assignment2-evals.zip",
+      "status": "downloaded",
+      "bytes": 1813320,
+      "sha256": "13e815a86056d971b09d3c63b72afbe2e1201c07c3b98ffa43201f16d92b5e44"
+    },
+    {
+      "title": "论文视频作业说明",
+      "url": "https://web.stanford.edu/class/cs329z/assignments/paper_video.pdf",
+      "type": "pdf",
+      "local": "materials/paper_video.pdf",
+      "status": "downloaded",
+      "bytes": 253621,
+      "sha256": "f05d53e5e459f6a11ffd0c140845867c69c25e1b62855731f3178f0adb1c6c98"
+    },
+    {
+      "title": "第5讲官方示范代码",
+      "url": "https://github.com/cs329z/lecture5-frameworks",
+      "type": "code",
+      "local": "materials/lecture5-frameworks.zip",
+      "status": "downloaded",
+      "bytes": 158965,
+      "sha256": "0fe9a987697347c4673cd928601797f4e91a4f2dd2caa061bd26250a6309f58b"
+    },
+    {
+      "title": "assignment1-harness",
+      "url": "https://codeload.github.com/cs329z/assignment1-harness/zip/refs/heads/main",
+      "type": "code",
+      "local": "materials/assignment1-harness.zip",
+      "status": "downloaded",
+      "bytes": 19892026,
+      "sha256": "abace0aa9068a981d99a39ed68d6eeacffd4a3266e32041a28119b67cac9698e"
+    },
+    {
+      "title": "assignment2-evals",
+      "url": "https://codeload.github.com/cs329z/assignment2-evals/zip/refs/heads/main",
+      "type": "code",
+      "local": "materials/assignment2-evals.zip",
+      "status": "downloaded",
+      "bytes": 1813320,
+      "sha256": "13e815a86056d971b09d3c63b72afbe2e1201c07c3b98ffa43201f16d92b5e44"
+    },
+    {
+      "title": "lecture5-frameworks",
+      "url": "https://codeload.github.com/cs329z/lecture5-frameworks/zip/refs/heads/main",
+      "type": "code",
+      "local": "materials/lecture5-frameworks.zip",
+      "status": "downloaded",
+      "bytes": 158965,
+      "sha256": "0fe9a987697347c4673cd928601797f4e91a4f2dd2caa061bd26250a6309f58b"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture01.pdf",
+      "type": "pdf",
+      "local": "materials/lecture01.pdf",
+      "status": "downloaded",
+      "bytes": 7832350,
+      "sha256": "c0640befa48fcf8cd7c7a52e25f09849c80ffee70dbaf2a8869f5087265a1125"
+    },
+    {
+      "title": "Zaharia et al. \"The Shift from Models to Compound AI Systems.\" BAIR Blog (2024).",
+      "url": "https://bair.berkeley.edu/blog/2024/02/18/compound-ai-systems/",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Weng. \"LLM Powered Autonomous Agents.\" Lil'Log (2023).",
+      "url": "https://lilianweng.github.io/posts/2023-06-23-agent/",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Kapoor et al. \"AI Agents That Matter.\" TMLR (2025).",
+      "url": "https://arxiv.org/abs/2407.01502",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture02.pdf",
+      "type": "pdf",
+      "local": "materials/lecture02.pdf",
+      "status": "downloaded",
+      "bytes": 17283240,
+      "sha256": "2c0a2253011428b32fcb3663fd0a1a8259be1205ad52f62cd811457be01871c4"
+    },
+    {
+      "title": "Vaswani et al. \"Attention Is All You Need.\" NeurIPS (2017).",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Katharopoulos et al. \"Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention.\" ICML (2020).",
+      "url": "https://arxiv.org/abs/2006.16236",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Rajasekaran et al. \"Effective Context Engineering for AI Agents.\" Anthropic (2025).",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture03.pdf",
+      "type": "pdf",
+      "local": "materials/lecture03.pdf",
+      "status": "downloaded",
+      "bytes": 3742107,
+      "sha256": "7122e4166f03337c4ff9763646506fd25b30979c076b7649fa7fb07117bf5fab"
+    },
+    {
+      "title": "Lewis et al. \"Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.\" NeurIPS (2020).",
+      "url": "https://arxiv.org/abs/2005.11401",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Karpukhin et al. \"Dense Passage Retrieval for Open-Domain Question Answering.\" EMNLP (2020).",
+      "url": "https://arxiv.org/abs/2004.04906",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Khattab & Zaharia. \"ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT.\" SIGIR (2020).",
+      "url": "https://arxiv.org/abs/2004.12832",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture04.pdf",
+      "type": "pdf",
+      "local": "materials/lecture04.pdf",
+      "status": "downloaded",
+      "bytes": 5996989,
+      "sha256": "96ddc3339edb615ff7a8623a88b89db10de1a0acdf0c9a5d3919d9f78a2e4716"
+    },
+    {
+      "title": "Schick et al. \"Toolformer: Language Models Can Teach Themselves to Use Tools.\" NeurIPS (2023).",
+      "url": "https://arxiv.org/abs/2302.04761",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Patil et al. \"Gorilla: Large Language Model Connected with Massive APIs.\" NeurIPS (2024).",
+      "url": "https://arxiv.org/abs/2305.15334",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Model Context Protocol Specification, revision 2025-06-18. modelcontextprotocol.io (2025).",
+      "url": "https://modelcontextprotocol.io/specification/2025-06-18",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture05.pdf",
+      "type": "pdf",
+      "local": "materials/lecture05.pdf",
+      "status": "downloaded",
+      "bytes": 14413415,
+      "sha256": "51c0176f7956e88339e083c5a404d45fea56af66a5c320aff6e1affd1a454055"
+    },
+    {
+      "title": "Khattab et al. \"DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines.\" ICLR (2024).",
+      "url": "https://arxiv.org/abs/2310.03714",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "LangChain. \"LangGraph Overview.\" LangChain Docs.",
+      "url": "https://docs.langchain.com/oss/python/langgraph/overview",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Arena.ai. \"HarnessTax: How Much Does the Harness Matter for Coding Agents?\" Arena Blog (2026).",
+      "url": "https://arena.ai/blog/coding-agents-harness-tax",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture06.pdf",
+      "type": "pdf",
+      "local": "materials/lecture06.pdf",
+      "status": "downloaded",
+      "bytes": 10861442,
+      "sha256": "a2eea4d443d8667bbfdbb972af52ff00f41d9769b8f3e41ab08c61016aa85133"
+    },
+    {
+      "title": "Yao et al. \"ReAct: Synergizing Reasoning and Acting in Language Models.\" ICLR (2023).",
+      "url": "https://arxiv.org/abs/2210.03629",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Schluntz & Zhang. \"Building Effective AI Agents.\" Anthropic (2024).",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "LangChain. \"Context Engineering.\" LangChain Blog (2025).",
+      "url": "https://www.langchain.com/blog/context-engineering-for-agents",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Shinn et al. \"Reflexion: Language Agents with Verbal Reinforcement Learning.\" NeurIPS (2023).",
+      "url": "https://arxiv.org/abs/2303.11366",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Wang et al. \"Executable Code Actions Elicit Better LLM Agents.\" ICML (2024).",
+      "url": "https://arxiv.org/abs/2402.01030",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture07.pdf",
+      "type": "pdf",
+      "local": "materials/lecture07.pdf",
+      "status": "downloaded",
+      "bytes": 21846259,
+      "sha256": "1864e30c516a18a61decf47f0f99958e5d97a14bff32f2cb49beacb668b0f1ed"
+    },
+    {
+      "title": "Sumers et al. \"Cognitive Architectures for Language Agents.\" TMLR (2024).",
+      "url": "https://arxiv.org/abs/2309.02427",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Packer et al. \"MemGPT: Towards LLMs as Operating Systems.\" arXiv (2023).",
+      "url": "https://arxiv.org/abs/2310.08560",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Park et al. \"Generative Agents: Interactive Simulacra of Human Behavior.\" UIST (2023).",
+      "url": "https://arxiv.org/abs/2304.03442",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture08.pdf",
+      "type": "pdf",
+      "local": "materials/lecture08.pdf",
+      "status": "downloaded",
+      "bytes": 25841933,
+      "sha256": "ea66373b66d2697e7258143372109469227fe95b153d8f7ae9041599c47730c9"
+    },
+    {
+      "title": "Wu et al. \"AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation.\" COLM (2024).",
+      "url": "https://arxiv.org/abs/2308.08155",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Cemri et al. \"Why Do Multi-Agent LLM Systems Fail?\" NeurIPS Datasets & Benchmarks (2025).",
+      "url": "https://arxiv.org/abs/2503.13657",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Kim et al. \"Towards a Science of Scaling Agent Systems.\" arXiv (2025).",
+      "url": "https://arxiv.org/abs/2512.08296",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture09.pdf",
+      "type": "pdf",
+      "local": "materials/lecture09.pdf",
+      "status": "downloaded",
+      "bytes": 22801606,
+      "sha256": "f2e56f94091f79d314f1e1650a30fc1c15f55059777fafdfa80bb5ba7f4b8606"
+    },
+    {
+      "title": "Agrawal et al. \"GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning.\" ICLR (2026).",
+      "url": "https://arxiv.org/abs/2507.19457",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Opsahl-Ong et al. \"Optimizing Instructions and Demonstrations for Multi-Stage Language Model Programs.\" EMNLP (2024).",
+      "url": "https://arxiv.org/abs/2406.11695",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Shao et al. \"DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models.\" arXiv (2024).",
+      "url": "https://arxiv.org/abs/2402.03300",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture10.pdf",
+      "type": "pdf",
+      "local": "materials/lecture10.pdf",
+      "status": "downloaded",
+      "bytes": 5088171,
+      "sha256": "500eacde6b67f9120073db8e78f5834e9799914dd122c6c1a2070c0be14e8d14"
+    },
+    {
+      "title": "Terminal-Bench 官方项目",
+      "url": "https://www.tbench.ai/",
+      "type": "website",
+      "status": "external_link"
+    },
+    {
+      "title": "Merrill et al. \"Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces.\" ICLR (2026).",
+      "url": "https://arxiv.org/abs/2601.11868",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture11.pdf",
+      "type": "pdf",
+      "local": "materials/lecture11.pdf",
+      "status": "downloaded",
+      "bytes": 10564179,
+      "sha256": "d6886d3a58c86e65414ee9060d930f28cc050f735026791f6eef168b838223e6"
+    },
+    {
+      "title": "Shankar. \"Data Flywheels for LLM Applications.\" (2024).",
+      "url": "https://www.sh-reya.com/blog/ai-engineering-flywheel/",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Tan et al. \"Large Language Models for Data Annotation and Synthesis: A Survey.\" EMNLP (2024).",
+      "url": "https://aclanthology.org/2024.emnlp-main.54/",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture12.pdf",
+      "type": "pdf",
+      "local": "materials/lecture12.pdf",
+      "status": "downloaded",
+      "bytes": 5718520,
+      "sha256": "53e43ffd6d51e0350910f6c09ba5158ca6898e57f8b857b40d2b8dddeab75ee3"
+    },
+    {
+      "title": "Yang et al. \"SWE-smith: Scaling Data for Software Engineering Agents.\" NeurIPS D&B (2025).",
+      "url": "https://arxiv.org/abs/2504.21798",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Shankar et al. \"Who Validates the Validators? Aligning LLM-Assisted Evaluation with Human Preferences.\" UIST (2024).",
+      "url": "https://arxiv.org/abs/2404.12272",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Zhou et al. \"LIMA: Less Is More for Alignment.\" NeurIPS (2023).",
+      "url": "https://arxiv.org/abs/2305.11206",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "官方课件",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture13.pdf",
+      "type": "pdf",
+      "local": "materials/lecture13.pdf",
+      "status": "downloaded",
+      "bytes": 13232118,
+      "sha256": "d5c3b6da37e0651c2467d886fae68435d9f59b285e07ac6ae868c43f969fe114"
+    },
+    {
+      "title": "Zhu et al. \"Establishing Best Practices for Building Rigorous Agentic Benchmarks.\" (2025).",
+      "url": "https://arxiv.org/abs/2507.02825",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Press. \"How to Build Good Language Modeling Benchmarks.\" (2024).",
+      "url": "https://ofir.io/How-to-Build-Good-Language-Modeling-Benchmarks/",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Polo et al. \"tinyBenchmarks: Evaluating LLMs with Fewer Examples.\" ICML (2024).",
+      "url": "https://arxiv.org/abs/2402.14992",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Grace et al. \"Demystifying Evals for AI Agents.\" Anthropic (2026).",
+      "url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Zheng et al. \"Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena.\" NeurIPS (2023).",
+      "url": "https://arxiv.org/abs/2306.05685",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Ryan et al. \"AutoMetrics: Approximate Human Judgements with Automatically Generated Evaluators.\" ICLR (2026).",
+      "url": "https://arxiv.org/abs/2512.17267",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Zhu et al. \"AutoLibra: Agent Metric Induction from Open-Ended Human Feedback.\" ICLR (2026).",
+      "url": "https://openreview.net/forum?id=4BjGVZ7Bxn",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Jimenez et al. \"SWE-bench: Can Language Models Resolve Real-World GitHub Issues?\" ICLR (2024).",
+      "url": "https://arxiv.org/abs/2310.06770",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Shao et al. \"PrivacyLens: Evaluating Privacy Norm Awareness of LMs in Action.\" NeurIPS D&B (2024).",
+      "url": "https://arxiv.org/abs/2409.00138",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Zhang & Yang. \"Searching for Privacy Risks in LLM Agents via Simulation.\" arXiv (2025).",
+      "url": "https://arxiv.org/abs/2508.10880",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Li. \"Agentic LLMs as Powerful Deanonymizers.\" arXiv (2026).",
+      "url": "https://arxiv.org/abs/2601.05918",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Wen et al. \"Contextualized Privacy Defense for LLM Agents.\" arXiv (2026).",
+      "url": "https://arxiv.org/abs/2603.02983",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "OpenAI. \"Understanding Prompt Injections: A Frontier Security Challenge.\" (2025).",
+      "url": "https://openai.com/index/prompt-injections/",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Anthropic. \"Anthropic's Responsible Scaling Policy.\" (2023).",
+      "url": "https://www.anthropic.com/news/anthropics-responsible-scaling-policy",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Yang et al. \"SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering.\" NeurIPS (2024).",
+      "url": "https://arxiv.org/abs/2405.15793",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Wang et al. \"OpenHands: An Open Platform for AI Software Developers.\" ICLR (2025).",
+      "url": "https://arxiv.org/abs/2407.16741",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Anthropic. \"Claude Code: Best Practices for Agentic Coding.\" (2025).",
+      "url": "https://www.anthropic.com/engineering/claude-code-best-practices",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Young. \"Effective Harnesses for Long-Running Agents.\" Anthropic (2025).",
+      "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Shaikh et al. \"Creating General User Models from Computer Use.\" UIST (2025).",
+      "url": "https://arxiv.org/abs/2505.10831",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Shaikh et al. \"Learning Next Action Predictors from Human-Computer Interaction.\" arXiv (2026).",
+      "url": "https://arxiv.org/abs/2603.05923",
+      "type": "reading",
+      "status": "external_link"
+    },
+    {
+      "title": "Steinberger. \"OpenClaw: Open-source proactive AI agent.\" (2025).",
+      "url": "https://github.com/openclaw/openclaw",
+      "type": "reading",
+      "status": "external_link"
+    }
+  ],
+  "discovery": {
+    "discovered_at": "2026-11-06",
+    "course": "cs329z",
+    "downloaded": 19,
+    "bytes": 189502028,
+    "records": [
+      {
+        "url": "http://blog.pnas.org/iforc.pdf",
+        "filename": "iforc.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture01.pdf",
+        "filename": "lecture01.pdf",
+        "local": "materials/lecture01.pdf",
+        "status": "downloaded",
+        "bytes": 7832350,
+        "sha256": "c0640befa48fcf8cd7c7a52e25f09849c80ffee70dbaf2a8869f5087265a1125"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture02.pdf",
+        "filename": "lecture02.pdf",
+        "local": "materials/lecture02.pdf",
+        "status": "downloaded",
+        "bytes": 17283240,
+        "sha256": "2c0a2253011428b32fcb3663fd0a1a8259be1205ad52f62cd811457be01871c4"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture03.pdf",
+        "filename": "lecture03.pdf",
+        "local": "materials/lecture03.pdf",
+        "status": "downloaded",
+        "bytes": 3742107,
+        "sha256": "7122e4166f03337c4ff9763646506fd25b30979c076b7649fa7fb07117bf5fab"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture04.pdf",
+        "filename": "lecture04.pdf",
+        "local": "materials/lecture04.pdf",
+        "status": "downloaded",
+        "bytes": 5996989,
+        "sha256": "96ddc3339edb615ff7a8623a88b89db10de1a0acdf0c9a5d3919d9f78a2e4716"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture05.pdf",
+        "filename": "lecture05.pdf",
+        "local": "materials/lecture05.pdf",
+        "status": "downloaded",
+        "bytes": 14413415,
+        "sha256": "51c0176f7956e88339e083c5a404d45fea56af66a5c320aff6e1affd1a454055"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture06.pdf",
+        "filename": "lecture06.pdf",
+        "local": "materials/lecture06.pdf",
+        "status": "downloaded",
+        "bytes": 10861442,
+        "sha256": "a2eea4d443d8667bbfdbb972af52ff00f41d9769b8f3e41ab08c61016aa85133"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture07.pdf",
+        "filename": "lecture07.pdf",
+        "local": "materials/lecture07.pdf",
+        "status": "downloaded",
+        "bytes": 21846259,
+        "sha256": "1864e30c516a18a61decf47f0f99958e5d97a14bff32f2cb49beacb668b0f1ed"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture08.pdf",
+        "filename": "lecture08.pdf",
+        "local": "materials/lecture08.pdf",
+        "status": "downloaded",
+        "bytes": 25841933,
+        "sha256": "ea66373b66d2697e7258143372109469227fe95b153d8f7ae9041599c47730c9"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture09.pdf",
+        "filename": "lecture09.pdf",
+        "local": "materials/lecture09.pdf",
+        "status": "downloaded",
+        "bytes": 22801606,
+        "sha256": "f2e56f94091f79d314f1e1650a30fc1c15f55059777fafdfa80bb5ba7f4b8606"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture10.pdf",
+        "filename": "lecture10.pdf",
+        "local": "materials/lecture10.pdf",
+        "status": "downloaded",
+        "bytes": 5088171,
+        "sha256": "500eacde6b67f9120073db8e78f5834e9799914dd122c6c1a2070c0be14e8d14"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture11.pdf",
+        "filename": "lecture11.pdf",
+        "local": "materials/lecture11.pdf",
+        "status": "downloaded",
+        "bytes": 10564179,
+        "sha256": "d6886d3a58c86e65414ee9060d930f28cc050f735026791f6eef168b838223e6"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture12.pdf",
+        "filename": "lecture12.pdf",
+        "local": "materials/lecture12.pdf",
+        "status": "downloaded",
+        "bytes": 5718520,
+        "sha256": "53e43ffd6d51e0350910f6c09ba5158ca6898e57f8b857b40d2b8dddeab75ee3"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/slides/lecture13.pdf",
+        "filename": "lecture13.pdf",
+        "local": "materials/lecture13.pdf",
+        "status": "downloaded",
+        "bytes": 13232118,
+        "sha256": "d5c3b6da37e0651c2467d886fae68435d9f59b285e07ac6ae868c43f969fe114"
+      },
+      {
+        "url": "https://web.stanford.edu/class/cs329z/assignments/paper_video.pdf",
+        "filename": "paper_video.pdf",
+        "local": "materials/paper_video.pdf",
+        "status": "downloaded",
+        "bytes": 253621,
+        "sha256": "f05d53e5e459f6a11ffd0c140845867c69c25e1b62855731f3178f0adb1c6c98"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/cs329z/assignment1-harness/main/cs329z_assignment1_harness.pdf",
+        "filename": "cs329z_assignment1_harness.pdf",
+        "local": "materials/cs329z_assignment1_harness.pdf",
+        "status": "downloaded",
+        "bytes": 420885,
+        "sha256": "20f29273fb63672f470fd0ecd2499ce95ffcf0a03c5d1e5b1370a36aae53eb8d"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/cs329z/assignment2-evals/main/cs329z_assignment2_evaluation.pdf",
+        "filename": "cs329z_assignment2_evaluation.pdf",
+        "local": "materials/cs329z_assignment2_evaluation.pdf",
+        "status": "downloaded",
+        "bytes": 1740882,
+        "sha256": "294491b79a0f8b76f3db7293dcc2ae147a0573a6368693799b7f162552b743b5"
+      },
+      {
+        "url": "https://codeload.github.com/cs329z/assignment1-harness/zip/refs/heads/main",
+        "filename": "assignment1-harness.zip",
+        "local": "materials/assignment1-harness.zip",
+        "status": "downloaded",
+        "bytes": 19892026,
+        "sha256": "abace0aa9068a981d99a39ed68d6eeacffd4a3266e32041a28119b67cac9698e"
+      },
+      {
+        "url": "https://codeload.github.com/cs329z/assignment2-evals/zip/refs/heads/main",
+        "filename": "assignment2-evals.zip",
+        "local": "materials/assignment2-evals.zip",
+        "status": "downloaded",
+        "bytes": 1813320,
+        "sha256": "13e815a86056d971b09d3c63b72afbe2e1201c07c3b98ffa43201f16d92b5e44"
+      },
+      {
+        "url": "https://codeload.github.com/cs329z/lecture5-frameworks/zip/refs/heads/main",
+        "filename": "lecture5-frameworks.zip",
+        "local": "materials/lecture5-frameworks.zip",
+        "status": "downloaded",
+        "bytes": 158965,
+        "sha256": "0fe9a987697347c4673cd928601797f4e91a4f2dd2caa061bd26250a6309f58b"
+      }
+    ],
+    "discovery_pages": [
+      "official-1.html",
+      "official-0.html"
+    ],
+    "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  }
+}

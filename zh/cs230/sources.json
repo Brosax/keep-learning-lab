@@ -1,0 +1,803 @@
+{
+  "course": "cs230",
+  "title": "深度学习：从神经网络到完整项目",
+  "offering": "公开资料合集 · 视频 Fall 2018 / 讲义多学期",
+  "source_url": "https://cs230.stanford.edu/",
+  "verified_at": "2026-11-06T17:32:06.431309+00:00",
+  "scope": "Official publicly accessible course materials discovered from course pages and official repositories; videos and restricted materials remain source links. See discovery metadata for crawl scope and failures.",
+  "resources": [
+    {
+      "title": "项目起步课件 · Fall 2025",
+      "url": "https://cs230.stanford.edu/section/1/Section%201%20%28Fall%202025%29.pptx",
+      "type": "slides",
+      "local": "materials/section1-project-fall2025.pptx",
+      "status": "downloaded",
+      "bytes": 6440829,
+      "sha256": "5e536fc35feda9510391bea4328606c46f835281854470f94d00546a4977017e"
+    },
+    {
+      "title": "反向传播课件",
+      "url": "https://cs230.stanford.edu/section/2/Section2.pdf",
+      "type": "slides",
+      "local": "materials/section2-backprop.pdf",
+      "status": "downloaded",
+      "bytes": 615708,
+      "sha256": "360f7eaaf086d567f22eca2bbfdc79c9820baa073dee7c85db86ed2baf4720e4"
+    },
+    {
+      "title": "梯度与优化手写讲义 · Fall 2021",
+      "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf",
+      "type": "notes",
+      "local": "materials/backprop-notes-fall2021.pdf",
+      "status": "downloaded",
+      "bytes": 6078636,
+      "sha256": "c1f441a8161b1dbc632989013438864d0053bf1f8e85f52f6bb1fbe4dcbe3561"
+    },
+    {
+      "title": "反向传播练习与解析 · Winter 2020",
+      "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf",
+      "type": "assignment",
+      "local": "materials/backprop-exercises-winter2020.pdf",
+      "status": "downloaded",
+      "bytes": 268797,
+      "sha256": "f0f9ee0d9ce7d4eeb62cb4d8a58d578d5d40db79348b44fb91a3e47aba55896b"
+    },
+    {
+      "title": "初始化与正则化课件",
+      "url": "https://cs230.stanford.edu/section/4/Section4.pdf",
+      "type": "slides",
+      "local": "materials/section4-initialization.pdf",
+      "status": "downloaded",
+      "bytes": 2385019,
+      "sha256": "4e9b44174abdd078c66d9d99c98dad95d3f018c63915fd7a03362e8e3e770e59"
+    },
+    {
+      "title": "期中复习 · 2024",
+      "url": "https://cs230.stanford.edu/section/6/Section6.pdf",
+      "type": "slides",
+      "local": "materials/midterm-review-2024.pdf",
+      "status": "downloaded",
+      "bytes": 2389277,
+      "sha256": "aa8bd100187f52cae6f3502ea81ce030a0b0a90128a224f8eb190bb76f075d73"
+    },
+    {
+      "title": "期中复习 · 2025",
+      "url": "https://cs230.stanford.edu/section/6/review.pptx",
+      "type": "slides",
+      "local": "materials/midterm-review-2025.pptx",
+      "status": "downloaded",
+      "bytes": 4404060,
+      "sha256": "97b206ca64b0a7051502f3f36b3c50c7bef6a5b340a27fef5971f4d69ca3dc74"
+    },
+    {
+      "title": "期中练习 1",
+      "url": "https://cs230.stanford.edu/section/6/Practice_1.pdf",
+      "type": "assignment",
+      "local": "materials/practice-1.pdf",
+      "status": "downloaded",
+      "bytes": 233703,
+      "sha256": "2b6c676e5192e0e748be6b8a699fb2a09e81fe6a56615c2910647635ecd34dff"
+    },
+    {
+      "title": "期中练习 1 官方解析",
+      "url": "https://cs230.stanford.edu/section/6/Practice_1_Sol.pdf",
+      "type": "notes",
+      "local": "materials/practice-1-solutions.pdf",
+      "status": "downloaded",
+      "bytes": 294066,
+      "sha256": "24c70bfedbfc24544bb32292394b99de451cd259e5a57f46138d62067d5a2917"
+    },
+    {
+      "title": "期中练习 2",
+      "url": "https://cs230.stanford.edu/section/6/Practice_2.pdf",
+      "type": "assignment",
+      "local": "materials/practice-2.pdf",
+      "status": "downloaded",
+      "bytes": 467896,
+      "sha256": "e91b77ca0599d9ea3f61a40ab5af2ec98c503778e715c4855627ea3e54381503"
+    },
+    {
+      "title": "期中练习 2 官方解析",
+      "url": "https://cs230.stanford.edu/section/6/Practice_2_Sol.pdf",
+      "type": "notes",
+      "local": "materials/practice-2-solutions.pdf",
+      "status": "downloaded",
+      "bytes": 488449,
+      "sha256": "5746d62288380764db246b94497d712f030cf6457e686a6ddf878b42d2f33f98"
+    },
+    {
+      "title": "TA Section 1",
+      "url": "https://cs230.stanford.edu/section/1/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 2",
+      "url": "https://cs230.stanford.edu/section/2/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 3",
+      "url": "https://cs230.stanford.edu/section/3/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 4",
+      "url": "https://cs230.stanford.edu/section/4/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 5",
+      "url": "https://cs230.stanford.edu/section/5/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 6",
+      "url": "https://cs230.stanford.edu/section/6/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 7",
+      "url": "https://cs230.stanford.edu/section/7/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 8",
+      "url": "https://cs230.stanford.edu/section/8/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TA Section 9",
+      "url": "https://cs230.stanford.edu/section/9/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 1 · 课程介绍",
+      "url": "https://www.youtube.com/watch?v=PySo_6S4ZAg&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=1",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 2 · 深度学习直觉",
+      "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 3 · 完整项目周期",
+      "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
+      "url": "https://www.youtube.com/watch?v=ANszao6YQuM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=4",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 5 · AI 与医疗",
+      "url": "https://www.youtube.com/watch?v=IM9ANAbufYM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=5",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 6 · 项目策略",
+      "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
+      "url": "https://www.youtube.com/watch?v=gCJCgQW_LKc&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=7",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 8 · 职业与论文阅读",
+      "url": "https://www.youtube.com/watch?v=733m6qBH-jI&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=8",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 9 · 深度强化学习",
+      "url": "https://www.youtube.com/watch?v=NP2XqpgTJyo&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=9",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
+      "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
+      "url": "https://github.com/cs230-stanford/cs230-code-examples",
+      "type": "code",
+      "status": "external_link"
+    },
+    {
+      "title": "PyTorch 项目教程 · 历史版本",
+      "url": "https://cs230.stanford.edu/blog/pytorch/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "TensorFlow 项目教程 · 历史版本",
+      "url": "https://cs230.stanford.edu/blog/tensorflow/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "数据预处理教程",
+      "url": "https://cs230.stanford.edu/blog/datapreprocessing/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "项目实施建议",
+      "url": "https://cs230.stanford.edu/blog/tips/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "官方项目要求",
+      "url": "https://cs230.stanford.edu/project/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "课程当前主页与访问说明",
+      "url": "https://cs230.stanford.edu/",
+      "type": "notes",
+      "status": "external_link"
+    },
+    {
+      "title": "12447290",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447290.pdf",
+      "type": "pdf",
+      "local": "materials/12447290.pdf",
+      "status": "downloaded",
+      "bytes": 4383247,
+      "sha256": "d34cf04a8707fcfb17ea6e5e46aa7dd95f3bdba39c83e484f2189ff662b675d8"
+    },
+    {
+      "title": "12409058",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12409058.pdf",
+      "type": "pdf",
+      "local": "materials/12409058.pdf",
+      "status": "downloaded",
+      "bytes": 6193217,
+      "sha256": "64018a8ea8e33c32d4c95472a8eaacfc9a481edc10b43f8d91836adb172fa5b6"
+    },
+    {
+      "title": "12449275",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12449275.pdf",
+      "type": "pdf",
+      "local": "materials/12449275.pdf",
+      "status": "downloaded",
+      "bytes": 3792925,
+      "sha256": "7e628d766970f83fedc1538991425e5e778a25015f6db81a07c4b5b4426a37a8"
+    },
+    {
+      "title": "12365342",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12365342.pdf",
+      "type": "pdf",
+      "local": "materials/12365342.pdf",
+      "status": "downloaded",
+      "bytes": 4257545,
+      "sha256": "cc83139024ea2e9b88344dbda8485de307f34f10a92c6cc6343e5da90c9618bc"
+    },
+    {
+      "title": "8289557",
+      "url": "http://cs230.stanford.edu/projects_spring_2018/reports/8289557.pdf",
+      "type": "pdf",
+      "local": "materials/8289557.pdf",
+      "status": "downloaded",
+      "bytes": 4567682,
+      "sha256": "3aa4b0501eddaacd861c247ab479062caa017e7ff736429ff5f883961ce86003"
+    },
+    {
+      "title": "12447446",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447446.pdf",
+      "type": "pdf",
+      "local": "materials/12447446.pdf",
+      "status": "downloaded",
+      "bytes": 4370937,
+      "sha256": "457448038764027c1510a2d98505e4fd46bd5479e01ca74f86f90e8c0d99c3d8"
+    },
+    {
+      "title": "1802.03446",
+      "url": "https://arxiv.org/pdf/1802.03446.pdf",
+      "type": "pdf",
+      "local": "materials/1802.03446.pdf",
+      "status": "downloaded",
+      "bytes": 7792727,
+      "sha256": "adc31f44152476e321161725cb645d2cd28f1c5a29e967bd49b762db7be7fb84"
+    },
+    {
+      "title": "15811843",
+      "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811843.pdf",
+      "type": "pdf",
+      "local": "materials/15811843.pdf",
+      "status": "downloaded",
+      "bytes": 2726735,
+      "sha256": "ecf1f970fd0ab2a9cdfd298c65067640ad5923283aa857a9a5d1c534e0cce0e8"
+    },
+    {
+      "title": "15811944",
+      "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811944.pdf",
+      "type": "pdf",
+      "local": "materials/15811944.pdf",
+      "status": "downloaded",
+      "bytes": 5837061,
+      "sha256": "01ceb49b414bfc769551cf764e40e405cbf333a3926db6f12fb3c0de135f7865"
+    },
+    {
+      "title": "Matrix derivatives cribsheet",
+      "url": "http://www.gatsby.ucl.ac.uk/teaching/courses/sntn/sntn-2017/resources/Matrix_derivatives_cribsheet.pdf",
+      "type": "pdf",
+      "local": "materials/Matrix_derivatives_cribsheet.pdf",
+      "status": "downloaded",
+      "bytes": 114016,
+      "sha256": "dcb53f152c04a5dd3795ce43083e22893e3bc2bfeb005702cc197830d7ceb20d"
+    },
+    {
+      "title": "eval-metrics-bntuw-9802",
+      "url": "https://www.cs.cmu.edu/~roni/papers/eval-metrics-bntuw-9802.pdf",
+      "type": "pdf",
+      "local": "materials/eval-metrics-bntuw-9802.pdf",
+      "status": "downloaded",
+      "bytes": 73216,
+      "sha256": "36a1c57cec09b289d66f331e1b168284951fe211be37bb417dfed51a00dc11f3"
+    },
+    {
+      "title": "1806.07755",
+      "url": "https://arxiv.org/pdf/1806.07755.pdf",
+      "type": "pdf",
+      "local": "materials/1806.07755.pdf",
+      "status": "downloaded",
+      "bytes": 879163,
+      "sha256": "857eb1128b3eb061df7649cbe3632349a0b7c0fdf597acd7e87f91fc7b2e377f"
+    },
+    {
+      "title": "1711.10337",
+      "url": "https://arxiv.org/pdf/1711.10337.pdf",
+      "type": "pdf",
+      "local": "materials/1711.10337.pdf",
+      "status": "downloaded",
+      "bytes": 4634371,
+      "sha256": "baf6f1538f15e883ec1a48bab99c94722819555f566d4eee86c35774053daa1b"
+    },
+    {
+      "title": "CS230GithubTutorial",
+      "url": "https://d1b10bmlvqabco.cloudfront.net/attach/jd9nm7v2drf4bz/j7v7aqkb9194qv/jgic5sc45imn/CS230GithubTutorial.pdf",
+      "type": "pdf",
+      "local": "materials/CS230GithubTutorial.pdf",
+      "status": "downloaded",
+      "bytes": 328923,
+      "sha256": "dfae8ce32bd255b5919ac0ea3e17f2f03656ff158c22036c85824845dc6a2a6a"
+    },
+    {
+      "title": "colab",
+      "url": "https://cs230.stanford.edu/section/2/colab.pdf",
+      "type": "pdf",
+      "local": "materials/colab.pdf",
+      "status": "downloaded",
+      "bytes": 386807,
+      "sha256": "587f98864704da930e49e62dd7cfeacde96eb625222184d15928fafab0953ffe"
+    },
+    {
+      "title": "1508.06576",
+      "url": "https://arxiv.org/pdf/1508.06576.pdf",
+      "type": "pdf",
+      "local": "materials/1508.06576.pdf",
+      "status": "downloaded",
+      "bytes": 6112337,
+      "sha256": "7320dce2d1699f6ba989b9d9da5f627f87db2dc9f364f6c40013f183267915f6"
+    },
+    {
+      "title": "1603.08155",
+      "url": "https://arxiv.org/pdf/1603.08155.pdf",
+      "type": "pdf",
+      "local": "materials/1603.08155.pdf",
+      "status": "downloaded",
+      "bytes": 10284657,
+      "sha256": "6211443c2f4c92881759b850bee824b1660f53c61315d69e8f9486222bac2a87"
+    },
+    {
+      "title": "1610.07629",
+      "url": "https://arxiv.org/pdf/1610.07629.pdf",
+      "type": "pdf",
+      "local": "materials/1610.07629.pdf",
+      "status": "downloaded",
+      "bytes": 44074805,
+      "sha256": "c81c0d8e1600ff759e5b39ddc7b0a62f789a07e2d3afaddc858158dba572f7da"
+    },
+    {
+      "title": "1705.06830",
+      "url": "https://arxiv.org/pdf/1705.06830.pdf",
+      "type": "pdf",
+      "local": "materials/1705.06830.pdf",
+      "status": "downloaded",
+      "bytes": 32362781,
+      "sha256": "61c1613060dee873bba2bc57f0e06e5659c71c9111ad0e5500aee8815d3b68e3"
+    },
+    {
+      "title": "cs230-code-examples",
+      "url": "https://codeload.github.com/cs230-stanford/cs230-code-examples/zip/refs/heads/master",
+      "type": "code",
+      "local": "materials/cs230-code-examples.zip",
+      "status": "downloaded",
+      "bytes": 88854,
+      "sha256": "d0e02802ce4aa5ab4932e077a88ebac63674b35f56730d696c1b777c8cf62f04"
+    },
+    {
+      "title": "官方视觉代码",
+      "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/vision",
+      "type": "code",
+      "status": "external_link"
+    },
+    {
+      "title": "官方序列标注代码",
+      "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/nlp",
+      "type": "code",
+      "status": "external_link"
+    }
+  ],
+  "discovery": {
+    "discovered_at": "2026-11-06",
+    "course": "cs230",
+    "downloaded": 32,
+    "bytes": 167356623,
+    "records": [
+      {
+        "url": "https://cs230.stanford.edu/section/Section4.pdf",
+        "filename": "Section4.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Section 1 (Fall 2025).pptx",
+        "filename": "Section 1 (Fall 2025).pptx",
+        "status": "failed",
+        "reason": "URL can't contain control characters. '/section/Section 1 (Fall 2025).pptx' (found at least ' ')"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Section6.pdf",
+        "filename": "Section6.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/review.pptx",
+        "filename": "review.pptx",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Practice_1.pdf",
+        "filename": "Practice_1.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Practice_1_Sol.pdf",
+        "filename": "Practice_1_Sol.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Practice_2.pdf",
+        "filename": "Practice_2.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Practice_2_Sol.pdf",
+        "filename": "Practice_2_Sol.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447290.pdf",
+        "filename": "12447290.pdf",
+        "local": "materials/12447290.pdf",
+        "status": "downloaded",
+        "bytes": 4383247,
+        "sha256": "d34cf04a8707fcfb17ea6e5e46aa7dd95f3bdba39c83e484f2189ff662b675d8"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12409058.pdf",
+        "filename": "12409058.pdf",
+        "local": "materials/12409058.pdf",
+        "status": "downloaded",
+        "bytes": 6193217,
+        "sha256": "64018a8ea8e33c32d4c95472a8eaacfc9a481edc10b43f8d91836adb172fa5b6"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12449275.pdf",
+        "filename": "12449275.pdf",
+        "local": "materials/12449275.pdf",
+        "status": "downloaded",
+        "bytes": 3792925,
+        "sha256": "7e628d766970f83fedc1538991425e5e778a25015f6db81a07c4b5b4426a37a8"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12365342.pdf",
+        "filename": "12365342.pdf",
+        "local": "materials/12365342.pdf",
+        "status": "downloaded",
+        "bytes": 4257545,
+        "sha256": "cc83139024ea2e9b88344dbda8485de307f34f10a92c6cc6343e5da90c9618bc"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_spring_2018/reports/8289557.pdf",
+        "filename": "8289557.pdf",
+        "local": "materials/8289557.pdf",
+        "status": "downloaded",
+        "bytes": 4567682,
+        "sha256": "3aa4b0501eddaacd861c247ab479062caa017e7ff736429ff5f883961ce86003"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447446.pdf",
+        "filename": "12447446.pdf",
+        "local": "materials/12447446.pdf",
+        "status": "downloaded",
+        "bytes": 4370937,
+        "sha256": "457448038764027c1510a2d98505e4fd46bd5479e01ca74f86f90e8c0d99c3d8"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1802.03446.pdf",
+        "filename": "1802.03446.pdf",
+        "local": "materials/1802.03446.pdf",
+        "status": "downloaded",
+        "bytes": 7792727,
+        "sha256": "adc31f44152476e321161725cb645d2cd28f1c5a29e967bd49b762db7be7fb84"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811843.pdf",
+        "filename": "15811843.pdf",
+        "local": "materials/15811843.pdf",
+        "status": "downloaded",
+        "bytes": 2726735,
+        "sha256": "ecf1f970fd0ab2a9cdfd298c65067640ad5923283aa857a9a5d1c534e0cce0e8"
+      },
+      {
+        "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811944.pdf",
+        "filename": "15811944.pdf",
+        "local": "materials/15811944.pdf",
+        "status": "downloaded",
+        "bytes": 5837061,
+        "sha256": "01ceb49b414bfc769551cf764e40e405cbf333a3926db6f12fb3c0de135f7865"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/Section2.pdf",
+        "filename": "Section2.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf",
+        "filename": "backprop-notes-fall2021.pdf",
+        "local": "materials/backprop-notes-fall2021.pdf",
+        "status": "downloaded",
+        "bytes": 6078636,
+        "sha256": "c1f441a8161b1dbc632989013438864d0053bf1f8e85f52f6bb1fbe4dcbe3561"
+      },
+      {
+        "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf",
+        "filename": "backprop-exercises-winter2020.pdf",
+        "local": "materials/backprop-exercises-winter2020.pdf",
+        "status": "downloaded",
+        "bytes": 268797,
+        "sha256": "f0f9ee0d9ce7d4eeb62cb4d8a58d578d5d40db79348b44fb91a3e47aba55896b"
+      },
+      {
+        "url": "http://www.gatsby.ucl.ac.uk/teaching/courses/sntn/sntn-2017/resources/Matrix_derivatives_cribsheet.pdf",
+        "filename": "Matrix_derivatives_cribsheet.pdf",
+        "local": "materials/Matrix_derivatives_cribsheet.pdf",
+        "status": "downloaded",
+        "bytes": 114016,
+        "sha256": "dcb53f152c04a5dd3795ce43083e22893e3bc2bfeb005702cc197830d7ceb20d"
+      },
+      {
+        "url": "https://cs229.stanford.edu/lectures-spring2022/master.pdf",
+        "filename": "master.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.aclweb.org/anthology/W04-1013.pdf",
+        "filename": "W04-1013.pdf",
+        "status": "failed",
+        "reason": "HTTP Error 418: Unknown"
+      },
+      {
+        "url": "https://www.cs.cmu.edu/~roni/papers/eval-metrics-bntuw-9802.pdf",
+        "filename": "eval-metrics-bntuw-9802.pdf",
+        "local": "materials/eval-metrics-bntuw-9802.pdf",
+        "status": "downloaded",
+        "bytes": 73216,
+        "sha256": "36a1c57cec09b289d66f331e1b168284951fe211be37bb417dfed51a00dc11f3"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1806.07755.pdf",
+        "filename": "1806.07755.pdf",
+        "local": "materials/1806.07755.pdf",
+        "status": "downloaded",
+        "bytes": 879163,
+        "sha256": "857eb1128b3eb061df7649cbe3632349a0b7c0fdf597acd7e87f91fc7b2e377f"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1711.10337.pdf",
+        "filename": "1711.10337.pdf",
+        "local": "materials/1711.10337.pdf",
+        "status": "downloaded",
+        "bytes": 4634371,
+        "sha256": "baf6f1538f15e883ec1a48bab99c94722819555f566d4eee86c35774053daa1b"
+      },
+      {
+        "url": "https://d1b10bmlvqabco.cloudfront.net/attach/jd9nm7v2drf4bz/j7v7aqkb9194qv/jgic5sc45imn/CS230GithubTutorial.pdf",
+        "filename": "CS230GithubTutorial.pdf",
+        "local": "materials/CS230GithubTutorial.pdf",
+        "status": "downloaded",
+        "bytes": 328923,
+        "sha256": "dfae8ce32bd255b5919ac0ea3e17f2f03656ff158c22036c85824845dc6a2a6a"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/2/colab.pdf",
+        "filename": "colab.pdf",
+        "local": "materials/colab.pdf",
+        "status": "downloaded",
+        "bytes": 386807,
+        "sha256": "587f98864704da930e49e62dd7cfeacde96eb625222184d15928fafab0953ffe"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1508.06576.pdf",
+        "filename": "1508.06576.pdf",
+        "local": "materials/1508.06576.pdf",
+        "status": "downloaded",
+        "bytes": 6112337,
+        "sha256": "7320dce2d1699f6ba989b9d9da5f627f87db2dc9f364f6c40013f183267915f6"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1603.08155.pdf",
+        "filename": "1603.08155.pdf",
+        "local": "materials/1603.08155.pdf",
+        "status": "downloaded",
+        "bytes": 10284657,
+        "sha256": "6211443c2f4c92881759b850bee824b1660f53c61315d69e8f9486222bac2a87"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1610.07629.pdf",
+        "filename": "1610.07629.pdf",
+        "local": "materials/1610.07629.pdf",
+        "status": "downloaded",
+        "bytes": 44074805,
+        "sha256": "c81c0d8e1600ff759e5b39ddc7b0a62f789a07e2d3afaddc858158dba572f7da"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1705.06830.pdf",
+        "filename": "1705.06830.pdf",
+        "local": "materials/1705.06830.pdf",
+        "status": "downloaded",
+        "bytes": 32362781,
+        "sha256": "61c1613060dee873bba2bc57f0e06e5659c71c9111ad0e5500aee8815d3b68e3"
+      },
+      {
+        "url": "https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1164/handouts/honor-code.pdf",
+        "filename": "honor-code.pdf",
+        "local": "materials/honor-code.pdf",
+        "status": "downloaded",
+        "bytes": 28177,
+        "sha256": "e8126db36ca28b2ee85c09012a0987a24525f9d9cc0def664c01f809f1397288"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/1/Section%201%20%28Fall%202025%29.pptx",
+        "filename": "section1-project-fall2025.pptx",
+        "local": "materials/section1-project-fall2025.pptx",
+        "status": "downloaded",
+        "bytes": 6440829,
+        "sha256": "5e536fc35feda9510391bea4328606c46f835281854470f94d00546a4977017e"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/2/Section2.pdf",
+        "filename": "section2-backprop.pdf",
+        "local": "materials/section2-backprop.pdf",
+        "status": "downloaded",
+        "bytes": 615708,
+        "sha256": "360f7eaaf086d567f22eca2bbfdc79c9820baa073dee7c85db86ed2baf4720e4"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/4/Section4.pdf",
+        "filename": "section4-initialization.pdf",
+        "local": "materials/section4-initialization.pdf",
+        "status": "downloaded",
+        "bytes": 2385019,
+        "sha256": "4e9b44174abdd078c66d9d99c98dad95d3f018c63915fd7a03362e8e3e770e59"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/6/Section6.pdf",
+        "filename": "midterm-review-2024.pdf",
+        "local": "materials/midterm-review-2024.pdf",
+        "status": "downloaded",
+        "bytes": 2389277,
+        "sha256": "aa8bd100187f52cae6f3502ea81ce030a0b0a90128a224f8eb190bb76f075d73"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/6/review.pptx",
+        "filename": "midterm-review-2025.pptx",
+        "local": "materials/midterm-review-2025.pptx",
+        "status": "downloaded",
+        "bytes": 4404060,
+        "sha256": "97b206ca64b0a7051502f3f36b3c50c7bef6a5b340a27fef5971f4d69ca3dc74"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/6/Practice_1.pdf",
+        "filename": "practice-1.pdf",
+        "local": "materials/practice-1.pdf",
+        "status": "downloaded",
+        "bytes": 233703,
+        "sha256": "2b6c676e5192e0e748be6b8a699fb2a09e81fe6a56615c2910647635ecd34dff"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/6/Practice_1_Sol.pdf",
+        "filename": "practice-1-solutions.pdf",
+        "local": "materials/practice-1-solutions.pdf",
+        "status": "downloaded",
+        "bytes": 294066,
+        "sha256": "24c70bfedbfc24544bb32292394b99de451cd259e5a57f46138d62067d5a2917"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/6/Practice_2.pdf",
+        "filename": "practice-2.pdf",
+        "local": "materials/practice-2.pdf",
+        "status": "downloaded",
+        "bytes": 467896,
+        "sha256": "e91b77ca0599d9ea3f61a40ab5af2ec98c503778e715c4855627ea3e54381503"
+      },
+      {
+        "url": "https://cs230.stanford.edu/section/6/Practice_2_Sol.pdf",
+        "filename": "practice-2-solutions.pdf",
+        "local": "materials/practice-2-solutions.pdf",
+        "status": "downloaded",
+        "bytes": 488449,
+        "sha256": "5746d62288380764db246b94497d712f030cf6457e686a6ddf878b42d2f33f98"
+      },
+      {
+        "url": "https://codeload.github.com/cs230-stanford/cs230-code-examples/zip/refs/heads/master",
+        "filename": "cs230-code-examples.zip",
+        "local": "materials/cs230-code-examples.zip",
+        "status": "downloaded",
+        "bytes": 88854,
+        "sha256": "d0e02802ce4aa5ab4932e077a88ebac63674b35f56730d696c1b777c8cf62f04"
+      }
+    ],
+    "discovery_pages": [
+      "official-1.html",
+      "official-13.html",
+      "official-12.html",
+      "official-10.html",
+      "official-17.html",
+      "official-3.html",
+      "official-16.html",
+      "official-0.html",
+      "official-15.html",
+      "official-11.html",
+      "official-18.html",
+      "official-14.html",
+      "official-2.html"
+    ],
+    "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  }
+}

@@ -1,0 +1,1820 @@
+{
+  "id": "cs230",
+  "code": "CS230",
+  "title": "深度学习：从神经网络到完整项目",
+  "subtitle": "Deep Learning · Community Study Path",
+  "description": "18讲中文自学路径，串联神经网络、优化与调试、CNN/RNN、注意力、生成模型、强化学习和项目实践。保留官网公开讲义、复习题、代码与Fall 2018视频，提供原创讲解、动手任务和自测。",
+  "year": "公开资料合集 · 视频 Fall 2018 / 讲义多学期",
+  "sourceUrl": "https://cs230.stanford.edu/",
+  "instructors": [
+    "Andrew Ng",
+    "Kian Katanforoosh"
+  ],
+  "prerequisites": [
+    "熟悉Python、NumPy与基本编程",
+    "理解向量矩阵、微分与链式法则",
+    "了解概率、统计与训练/验证/测试划分"
+  ],
+  "modules": [
+    {
+      "id": "foundations",
+      "title": "网络与学习基础",
+      "description": "从任务定义、前向反向传播到优化和正则化。"
+    },
+    {
+      "id": "engineering",
+      "title": "实验与系统实践",
+      "description": "构建可复现训练管线，诊断错误并进行可靠评价。"
+    },
+    {
+      "id": "architectures",
+      "title": "视觉、序列与注意力",
+      "description": "理解不同数据结构对应的模型假设，并衔接语言模型课程。"
+    },
+    {
+      "id": "applications",
+      "title": "应用与研究专题",
+      "description": "迁移学习、生成、鲁棒性、解释、医疗与强化学习。"
+    },
+    {
+      "id": "project",
+      "title": "结课项目",
+      "description": "用基线、消融和可重现报告完成学习闭环。"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "01",
+      "module": "foundations",
+      "title": "把一个想法定义成可检验的学习任务",
+      "originalTitle": "Problem formulation & project scope",
+      "summary": "先明确输入、输出、成功标准和数据来源，再决定是否需要深度网络。",
+      "objectives": [
+        "定义任务与预测单位",
+        "建立不泄漏的数据划分",
+        "写出可执行的项目基线"
+      ],
+      "sections": [
+        {
+          "title": "从需求到监督信号",
+          "body": [
+            "“自动整理图片”太宽泛；“对每张图片判断是否有自行车”给出了样本单位与标签。分类输出是类别，回归输出是数值，分割输出是每个像素的标签。输出结构决定模型最后一层与损失。",
+            "先画出一条样本从采集到预测的路径。如果标签在上线时不可获得，训练中把它当作输入就会造成信息泄漏。"
+          ]
+        },
+        {
+          "title": "数据划分表达真实部署",
+          "body": [
+            "同一对象的相似样本不能随意分到训练和测试。例如同一段录像的相邻帧高度相关，应按录像或主体划分。未来预测还需要时间顺序划分。",
+            "训练集学习参数，验证集选择超参数，测试集只用于最终报告。所有归一化统计量都只在训练集拟合，再固定应用到其他集合。"
+          ]
+        },
+        {
+          "title": "基线是实验的坐标",
+          "body": [
+            "在训练网络前，先报告多数类预测、简单线性模型或已有公开实现的结果。若复杂模型改善很小，优先检查标签和评估，而不是继续堆层数。",
+            "例：二分类中95%样本为负，永远预测负即可得到95%准确率。项目应同时报告正类召回率和误报代价，否则数字无法说明实际价值。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "写一页任务卡",
+        "instructions": [
+          "描述输入输出、预测时可用信息。",
+          "制定按主体或时间划分的方案。",
+          "选择一个简单基线和一项主要指标。"
+        ],
+        "deliverable": "任务定义、数据分割图和基线结果表"
+      },
+      "quiz": [
+        {
+          "question": "拟合标准化均值应使用什么数据？",
+          "options": [
+            "全部数据",
+            "仅训练集",
+            "仅测试集"
+          ],
+          "answer": 1,
+          "explanation": "测试分布的统计量参与预处理也会泄漏信息。"
+        },
+        {
+          "question": "95%为负类时，仅95%准确率说明什么？",
+          "options": [
+            "一定有效",
+            "可能只是多数类基线",
+            "证明模型校准良好"
+          ],
+          "answer": 1,
+          "explanation": "需要类别分解和与基线比较。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 1",
+          "url": "https://cs230.stanford.edu/section/1/",
+          "type": "notes"
+        },
+        {
+          "title": "Fall 2018 Lecture 1 · 课程介绍",
+          "url": "https://www.youtube.com/watch?v=PySo_6S4ZAg&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=1",
+          "type": "video"
+        },
+        {
+          "title": "Fall 2018 Lecture 3 · 完整项目周期",
+          "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "module": "foundations",
+      "title": "神经网络：线性变换与非线性表示",
+      "originalTitle": "Neural network intuition",
+      "summary": "从张量形状、激活函数和输出概率理解前向传播。",
+      "objectives": [
+        "追踪批量张量的形状",
+        "解释非线性的必要性",
+        "匹配输出与损失"
+      ],
+      "sections": [
+        {
+          "title": "层是有维度的函数",
+          "body": [
+            "约定一个批次 X 的形状为 B×d。线性层 W 为 d×h，偏置为 h，输出 Z=XW+b 为 B×h；激活逐元素作用，不改变形状。明确约定比死记转置更可靠。",
+            "多层线性变换仍能合并为一个线性变换。ReLU 或 tanh 使网络能够构造分段或弯曲的决策边界，隐藏层学习的是对任务有用的表示。"
+          ],
+          "formula": "H = ReLU(XW₁ + b₁); logits = HW₂ + b₂"
+        },
+        {
+          "title": "分类概率的两种结构",
+          "body": [
+            "互斥多分类使用 softmax，让一行概率和为1。多标签任务中一个样本可以同时属于多个类别，应为各标签独立输出 sigmoid。",
+            "如一张图片同时有猫和狗，互斥 softmax 会强迫二者竞争；独立二元损失能表达两者同时出现。标签的语义必须先于网络选择。"
+          ]
+        },
+        {
+          "title": "损失与评价不是同一件事",
+          "body": [
+            "交叉熵利用预测置信度提供连续训练信号；准确率通常在阈值或argmax后计算，不能直接反映置信度变化。",
+            "在多分类实现中，数值稳定的交叉熵函数通常接收原始 logits。先做 softmax 再传给要求 logits 的函数会改变计算含义。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "手算一个小网络",
+        "instructions": [
+          "设 B=2、d=3、h=4、输出类别数=2，列出所有形状。",
+          "为两组 logits 算 softmax，比较置信度。",
+          "说明把多标签任务误写成互斥分类的后果。"
+        ],
+        "deliverable": "维度表与两组前向传播结果"
+      },
+      "quiz": [
+        {
+          "question": "多个不含激活的线性层合起来是什么？",
+          "options": [
+            "仍是线性/仿射映射",
+            "任意非线性函数",
+            "一定比单层泛化更强"
+          ],
+          "answer": 0,
+          "explanation": "仿射映射复合仍为仿射映射。"
+        },
+        {
+          "question": "图片可同时含猫和狗，输出宜用？",
+          "options": [
+            "互斥二分类 softmax",
+            "每类独立 sigmoid",
+            "只预测一个类别"
+          ],
+          "answer": 1,
+          "explanation": "标签并非互斥。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 2 · 深度学习直觉",
+          "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2",
+          "type": "video"
+        },
+        {
+          "title": "神经网络与训练示例",
+          "url": "https://cs230.stanford.edu/blog/pytorch/",
+          "type": "notes"
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "module": "foundations",
+      "title": "反向传播与梯度检查",
+      "originalTitle": "Gradient descent & backpropagation",
+      "summary": "将复合函数分成局部导数，用链式法则把误差传回每个参数。",
+      "objectives": [
+        "手算局部梯度",
+        "检查梯度形状",
+        "用有限差分验证实现"
+      ],
+      "sections": [
+        {
+          "title": "计算图复用中间量",
+          "body": [
+            "设 a=wx+b，ŷ=a²，L=(ŷ-y)²。前向保存 a 和 ŷ，反向先求∂L/∂ŷ，再乘∂ŷ/∂a和∂a/∂w。一个变量有多条下游路径时，各路径梯度要相加。",
+            "取x=2,w=1,b=0,y=1，可得a=2,ŷ=4,L=9；∂L/∂w=2×3×4×2=48。这个具体数字便于检查自动求导结果。"
+          ]
+        },
+        {
+          "title": "梯度的形状必须匹配参数",
+          "body": [
+            "损失是标量时，对矩阵W的梯度与W同形状。广播的偏置在反向需要沿批次维求和；若损失取批次平均，梯度也要包含1/B。",
+            "梯度下降沿局部最陡下降方向迈一步，但较大步长可能跨过谷底。训练损失是否下降取决于步长、曲率及随机批次噪声。"
+          ],
+          "formula": "θ ← θ − η∇θL"
+        },
+        {
+          "title": "梯度检查是数值实验",
+          "body": [
+            "中心差分用两次前向计算估计某个参数的偏导。选双精度、小网络、固定输入并关闭dropout；对ReLU拐点附近的差异要单独分析。",
+            "epsilon太大会带来截断误差，太小又受浮点舍入影响。先用几个数量级的epsilon对照，而不是把某个阈值当成绝对正确。"
+          ],
+          "formula": "gᵢ ≈ [L(θ+εeᵢ)−L(θ−εeᵢ)]/(2ε)"
+        }
+      ],
+      "exercise": {
+        "title": "梯度核对",
+        "instructions": [
+          "手算上面的标量网络梯度。",
+          "用中心差分验证 w、b。",
+          "实现两层网络，检查每个参数张量的形状。"
+        ],
+        "deliverable": "解析、数值与自动求导三列对照表"
+      },
+      "quiz": [
+        {
+          "question": "变量同时进入两条路径时反向梯度如何合并？",
+          "options": [
+            "相加",
+            "只保留较大值",
+            "相乘"
+          ],
+          "answer": 0,
+          "explanation": "多变量链式法则要求对路径贡献求和。"
+        },
+        {
+          "question": "梯度检查时为何关闭dropout？",
+          "options": [
+            "减小网络层数",
+            "保证两次前向比较同一函数",
+            "避免softmax"
+          ],
+          "answer": 1,
+          "explanation": "随机掩码变化会淹没有限差分信号。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 2",
+          "url": "https://cs230.stanford.edu/section/2/",
+          "type": "notes"
+        },
+        {
+          "title": "反向传播课件",
+          "url": "https://cs230.stanford.edu/section/2/Section2.pdf",
+          "type": "slides",
+          "local": "materials/section2-backprop.pdf"
+        },
+        {
+          "title": "梯度与优化手写讲义 · Fall 2021",
+          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf",
+          "type": "notes",
+          "local": "materials/backprop-notes-fall2021.pdf"
+        },
+        {
+          "title": "反向传播练习与解析 · Winter 2020",
+          "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf",
+          "type": "assignment",
+          "local": "materials/backprop-exercises-winter2020.pdf"
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "module": "foundations",
+      "title": "优化：学习率、动量与 Adam",
+      "originalTitle": "Optimization",
+      "summary": "区分梯度估计、更新规则与实验预算，读懂训练曲线。",
+      "objectives": [
+        "解释mini-batch噪声",
+        "比较SGD与Adam",
+        "设计学习率对照实验"
+      ],
+      "sections": [
+        {
+          "title": "批次是梯度的估计器",
+          "body": [
+            "全量梯度昂贵，mini-batch用部分样本估计方向。更大批次通常降低方差，但一次更新也更耗计算；比较方法时应同时记录样本数、步数和实际时间。",
+            "训练曲线震荡可能是批次噪声，也可能是步长过大。先绘制平滑趋势，再检查梯度范数与异常样本。"
+          ]
+        },
+        {
+          "title": "动量与自适应缩放",
+          "body": [
+            "动量对历史梯度做平滑，帮助沿持续一致的方向前进。Adam进一步用二阶矩估计按坐标缩放更新，且包含初期偏差校正。",
+            "Adam并不保证免调参。极端学习率、错误损失缩放或坏数据都能令其发散。权重衰减与自适应优化器下的L2项也不总是等价。"
+          ],
+          "formula": "mₜ=β₁mₜ₋₁+(1−β₁)gₜ; vₜ=β₂vₜ₋₁+(1−β₂)gₜ²"
+        },
+        {
+          "title": "一次只回答一个实验问题",
+          "body": [
+            "先选择几个对数间隔的学习率，如0.0001、0.001、0.01；固定种子和训练预算，比较验证集表现及收敛速度。",
+            "若每次同时换网络、优化器与数据，无法解释提升来源。保存配置、代码版本和曲线，比只记录一个最好分数更有价值。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "学习率诊断",
+        "instructions": [
+          "固定网络，对三个学习率分别训练相同步数。",
+          "记录loss、梯度范数与验证指标。",
+          "解释哪个现象支持步长过大或过小。"
+        ],
+        "deliverable": "三条训练曲线与受控结论"
+      },
+      "quiz": [
+        {
+          "question": "更大batch在相同步数下意味着什么？",
+          "options": [
+            "处理样本通常更多",
+            "总计算必定相同",
+            "噪声必定为零"
+          ],
+          "answer": 0,
+          "explanation": "比较时必须注明预算口径。"
+        },
+        {
+          "question": "Adam无需调学习率吗？",
+          "options": [
+            "是",
+            "否",
+            "仅在分类时是"
+          ],
+          "answer": 1,
+          "explanation": "其更新仍依赖学习率及其他超参数。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 2",
+          "url": "https://cs230.stanford.edu/section/2/",
+          "type": "notes"
+        },
+        {
+          "title": "梯度与优化手写讲义 · Fall 2021",
+          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf",
+          "type": "notes",
+          "local": "materials/backprop-notes-fall2021.pdf"
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "module": "foundations",
+      "title": "初始化、正则化与 BatchNorm",
+      "originalTitle": "Initialization & regularization",
+      "summary": "让信号在深层网络中传播，同时控制过拟合。",
+      "objectives": [
+        "解释对称性问题",
+        "选用适当初始化",
+        "区分训练与推理行为"
+      ],
+      "sections": [
+        {
+          "title": "从方差理解初始化",
+          "body": [
+            "相同权重会让同层神经元收到相同梯度，难以学出不同特征。随机初始化打破对称性；方差又不能过大或过小，否则激活和梯度会逐层膨胀或衰减。",
+            "对ReLU层，常用He初始化使权重方差约为2/fan_in；对近似线性的激活，Xavier类规则考虑输入输出宽度。它们依赖近似假设，不是所有架构的唯一答案。"
+          ]
+        },
+        {
+          "title": "限制模型如何适应训练数据",
+          "body": [
+            "L2惩罚较大的权重，数据增强提供任务保持的变体，dropout在训练时随机屏蔽部分激活。每种方法都注入了假设。",
+            "水平翻转对普通物体分类常有帮助，对文字方向或左右侧诊断任务则可能改变标签。增强策略必须遵守任务语义。"
+          ]
+        },
+        {
+          "title": "训练和推理是两种状态",
+          "body": [
+            "BatchNorm训练时利用批次统计，推理时通常使用累计统计；dropout在推理时关闭。忘记切换eval模式会令评估随批次或随机掩码变化。",
+            "早停以验证集表现选取checkpoint。反复用测试集决定停止位置会使最终测试结果偏乐观。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "过拟合小数据",
+        "instructions": [
+          "先让小网络拟合一个很小训练集。",
+          "分别加入权重衰减与合理数据增强。",
+          "对比train/eval模式下重复预测的一致性。"
+        ],
+        "deliverable": "训练/验证差距表和推理模式检查清单"
+      },
+      "quiz": [
+        {
+          "question": "隐藏层权重全相同的主要问题是什么？",
+          "options": [
+            "神经元难以打破对称性",
+            "参数总数减少",
+            "损失无法定义"
+          ],
+          "answer": 0,
+          "explanation": "相同神经元可能得到相同更新。"
+        },
+        {
+          "question": "BatchNorm推理一般使用什么？",
+          "options": [
+            "每个样本的标签",
+            "累计统计量",
+            "测试集最优标签统计"
+          ],
+          "answer": 1,
+          "explanation": "常规BatchNorm使用训练阶段累计的均值方差。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 4",
+          "url": "https://cs230.stanford.edu/section/4/",
+          "type": "notes"
+        },
+        {
+          "title": "初始化与正则化课件",
+          "url": "https://cs230.stanford.edu/section/4/Section4.pdf",
+          "type": "slides",
+          "local": "materials/section4-initialization.pdf"
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "module": "engineering",
+      "title": "数据管线与可复现实验",
+      "originalTitle": "Data pipeline & reproducibility",
+      "summary": "把样本读取、变换、批处理和配置管理做成可靠的实验基础。",
+      "objectives": [
+        "识别预处理泄漏",
+        "验证数据与标签对齐",
+        "保存完整运行状态"
+      ],
+      "sections": [
+        {
+          "title": "先看数据，再看损失",
+          "body": [
+            "训练脚本运行不代表样本正确。随机可视化输入与标签，检查像素范围、通道顺序、缺失值、文本编码和类别映射。",
+            "一种常见错误是训练与验证的类别编号不一致：网络学得很认真，评估却在比较不同含义的数字。标签字典必须共享并保存。"
+          ]
+        },
+        {
+          "title": "把随机性写入实验记录",
+          "body": [
+            "记录划分方式、随机种子、库版本、硬件和数据版本。固定种子有助于比较，但不同设备或算法实现仍可能产生差异。",
+            "对关键结论运行多个种子，报告均值与波动。只挑最好的一次，会把运气误认为算法能力。"
+          ]
+        },
+        {
+          "title": "恢复训练需要完整状态",
+          "body": [
+            "模型参数只是checkpoint的一部分。优化器动量、学习率调度器状态、当前epoch与随机数状态会影响续训轨迹。",
+            "把训练和评估入口分离；评估应能从保存的配置与权重独立重现，不依赖交互notebook里曾执行过的隐藏单元。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "构造可复现基线",
+        "instructions": [
+          "可视化10条训练和验证样本。",
+          "保存数据划分、配置及类别字典。",
+          "中断再恢复一次训练，对比连续运行。"
+        ],
+        "deliverable": "独立可执行评估脚本和实验记录"
+      },
+      "quiz": [
+        {
+          "question": "归一化参数由全数据计算会有什么问题？",
+          "options": [
+            "可能泄漏测试分布信息",
+            "必定更公平",
+            "减少数据规模"
+          ],
+          "answer": 0,
+          "explanation": "预处理参数也属于训练过程。"
+        },
+        {
+          "question": "只保存模型权重能严格恢复Adam训练轨迹吗？",
+          "options": [
+            "总能",
+            "一般不能",
+            "只取决于batch大小"
+          ],
+          "answer": 1,
+          "explanation": "还需要优化器状态等信息。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 3",
+          "url": "https://cs230.stanford.edu/section/3/",
+          "type": "notes"
+        },
+        {
+          "title": "数据预处理",
+          "url": "https://cs230.stanford.edu/blog/datapreprocessing/",
+          "type": "notes"
+        },
+        {
+          "title": "项目实施建议",
+          "url": "https://cs230.stanford.edu/blog/tips/",
+          "type": "notes"
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "module": "engineering",
+      "title": "用 PyTorch 搭建训练闭环",
+      "originalTitle": "Training loop & framework semantics",
+      "summary": "把前向、损失、反向、更新与验证连成可以调试的程序。",
+      "objectives": [
+        "理解自动微分与参数更新分工",
+        "正确清除梯度",
+        "区分eval和no_grad"
+      ],
+      "sections": [
+        {
+          "title": "一次训练步有哪些职责",
+          "body": [
+            "模型把输入变成输出，损失函数比较输出与标签，backward累积梯度，optimizer.step更新参数。它们不是同一个动作。",
+            "例如忘记step会看到梯度存在却参数不变；忘记清零则会将多个批次梯度相加。梯度累积可以有意使用，但必须相应处理损失缩放。"
+          ]
+        },
+        {
+          "title": "现代API与历史教程",
+          "body": [
+            "课程公开代码是历史教学资产，阅读结构仍有价值，但其中Variable等旧API不应原样当成当前写法。现代Tensor通过requires_grad参与自动求导。",
+            "对互斥类别，可使用CrossEntropyLoss接收logits与整数类别标签。检查标签dtype与取值范围，不要靠广播让错误形状悄悄通过。"
+          ],
+          "code": "optimizer.zero_grad(set_to_none=True)\nlogits = model(inputs)\nloss = loss_fn(logits, targets)\nloss.backward()\noptimizer.step()"
+        },
+        {
+          "title": "评估模式与梯度记录独立",
+          "body": [
+            "model.eval()改变dropout和BatchNorm等层的行为；torch.no_grad()关闭梯度记录以减少开销。前者不会自动替代后者。",
+            "验证循环既应切换eval，也应避免更新参数，计算批次指标时按样本数加权，防止最后一个小批次被过度计权。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "训练一个小分类器",
+        "instructions": [
+          "打印一个批次的输入、logits和标签形状。",
+          "确认一次更新后参数改变。",
+          "独立重载checkpoint并评估。"
+        ],
+        "deliverable": "最小训练循环与参数更新检查"
+      },
+      "quiz": [
+        {
+          "question": "loss.backward()会自动更新参数吗？",
+          "options": [
+            "会",
+            "不会",
+            "只更新偏置"
+          ],
+          "answer": 1,
+          "explanation": "它计算并累积梯度，更新由optimizer.step执行。"
+        },
+        {
+          "question": "model.eval()等价于no_grad()吗？",
+          "options": [
+            "等价",
+            "不等价",
+            "仅CPU上等价"
+          ],
+          "answer": 1,
+          "explanation": "二者控制不同机制。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 5",
+          "url": "https://cs230.stanford.edu/section/5/",
+          "type": "notes"
+        },
+        {
+          "title": "PyTorch代码教程（历史）",
+          "url": "https://cs230.stanford.edu/blog/pytorch/",
+          "type": "notes"
+        },
+        {
+          "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
+          "url": "https://github.com/cs230-stanford/cs230-code-examples",
+          "type": "code"
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "module": "engineering",
+      "title": "误差分析与项目调试",
+      "originalTitle": "Error analysis & debugging",
+      "summary": "从可重复的错误样例出发，决定下一次实验应该改什么。",
+      "objectives": [
+        "先验证小样本可拟合",
+        "区分偏差与方差问题",
+        "按错误类型分配改进预算"
+      ],
+      "sections": [
+        {
+          "title": "先让最小系统工作",
+          "body": [
+            "完整数据集训练失败时，把问题缩到十几个样本、关闭复杂增强、固定随机性。若仍无法拟合，优先检查标签、损失、梯度和更新，而不是增加数据。",
+            "只有当最小闭环通过后，才逐步恢复批处理、多进程、增强与大模型。每次恢复一个组件便能定位故障来源。"
+          ]
+        },
+        {
+          "title": "读懂三种差距",
+          "body": [
+            "训练误差高可能提示容量或优化不足；训练好而验证差可能提示过拟合；开发集好而新场景差可能提示分布变化。",
+            "这些是诊断方向而非证明。标签噪声、评估代码错误和泄漏也会制造类似曲线，需要结合样例检查。"
+          ]
+        },
+        {
+          "title": "错误表指导下一步",
+          "body": [
+            "随机抽取一批误判样本，按模糊图像、罕见类别、标签错误等类别统计；对比最有希望的修复能覆盖多少错误。",
+            "若大部分误差来自标签定义冲突，增加模型层数不会解决根因。记录每次干预后的同一评估切片，让改进可归因。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "建立错误账本",
+        "instructions": [
+          "收集20个错误样本并分类。",
+          "设计一个只针对最大错误类别的改动。",
+          "固定评估集比较改动前后。"
+        ],
+        "deliverable": "错误类型频数表、单因素实验与结论"
+      },
+      "quiz": [
+        {
+          "question": "小样本都拟合不了时优先做什么？",
+          "options": [
+            "立刻收更多数据",
+            "检查训练闭环和标签",
+            "换更贵GPU"
+          ],
+          "answer": 1,
+          "explanation": "先排除实现或任务定义问题。"
+        },
+        {
+          "question": "每轮同时改五项超参数会怎样？",
+          "options": [
+            "更容易归因",
+            "难以解释结果来源",
+            "等同受控实验"
+          ],
+          "answer": 1,
+          "explanation": "多个变量变化会混淆因果解释。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 7",
+          "url": "https://cs230.stanford.edu/section/7/",
+          "type": "notes"
+        },
+        {
+          "title": "Fall 2018 Lecture 6 · 项目策略",
+          "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "module": "engineering",
+      "title": "评价：阈值、分布与不确定性",
+      "originalTitle": "Evaluation metrics",
+      "summary": "用与任务代价一致的指标评估模型，避免被单一数字误导。",
+      "objectives": [
+        "计算precision/recall/F1",
+        "解释IoU与AP",
+        "报告分组表现与置信区间"
+      ],
+      "sections": [
+        {
+          "title": "阈值决定错误的分配",
+          "body": [
+            "precision衡量预测为正的样本中有多少为真，recall衡量真实正例中找回多少。降低阈值一般提高召回，也可能增加误报。",
+            "TP=18、FP=6、FN=2时precision=0.75、recall=0.90，F1约0.818。选择阈值应在验证集上按业务代价完成，不能事后追逐测试最优点。"
+          ],
+          "formula": "F1 = 2TP / (2TP + FP + FN)"
+        },
+        {
+          "title": "检测与生成需要任务专用指标",
+          "body": [
+            "IoU比较预测框与真实框的交并比；检测AP汇总按置信度排序后的精确率-召回率关系，并依赖匹配和插值约定。报告mAP时要注明IoU阈值、类别平均方式与实现。",
+            "语言生成的词面重合不能完全描述事实正确性；感知生成指标也不保证个体样本安全或有用。自动分数最好结合任务样例与人工协议。"
+          ]
+        },
+        {
+          "title": "有限测试集会波动",
+          "body": [
+            "在100条独立任务上观察到80次成功，并不意味着总体成功率恰好80%。置信区间反映抽样不确定性，分组评估则暴露总体均值掩盖的问题。",
+            "同一用户的多个样本往往相关，不能机械地把它们当独立试验。按用户或时间分组bootstrap，比无视相关性更合理。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "做一份评估报告",
+        "instructions": [
+          "由混淆矩阵手算三项指标。",
+          "比较两个阈值在验证集上的结果。",
+          "按类别或数据来源报告样本量与表现。"
+        ],
+        "deliverable": "带分母、阈值和不确定性说明的评估表"
+      },
+      "quiz": [
+        {
+          "question": "TP=18、FP=6时precision是多少？",
+          "options": [
+            "0.75",
+            "0.90",
+            "0.50"
+          ],
+          "answer": 0,
+          "explanation": "18/(18+6)=0.75。"
+        },
+        {
+          "question": "相同平均准确率是否意味着各群体表现一致？",
+          "options": [
+            "是",
+            "否",
+            "样本量大就一定一致"
+          ],
+          "answer": 1,
+          "explanation": "总体平均可能掩盖分组差异。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 8",
+          "url": "https://cs230.stanford.edu/section/8/",
+          "type": "notes"
+        }
+      ],
+      "lab": "evaluation"
+    },
+    {
+      "id": "10",
+      "module": "architectures",
+      "title": "卷积网络与视觉任务",
+      "originalTitle": "Convolutional networks",
+      "summary": "理解局部感受野、参数共享和从分类到分割的结构变化。",
+      "objectives": [
+        "计算卷积输出尺寸",
+        "解释参数共享",
+        "选择分类或分割输出"
+      ],
+      "sections": [
+        {
+          "title": "卷积把局部模式复用到空间各处",
+          "body": [
+            "同一卷积核滑过整张图，学习“某种局部模式是否出现”。这使参数数量不随图像面积直接增长，也利用了图像中局部结构重复出现的特点。",
+            "一个3×3、输入通道3、输出通道16的卷积层，含偏置时有3×3×3×16+16=448个参数。通道数和核尺寸共同决定容量。"
+          ]
+        },
+        {
+          "title": "尺寸与感受野逐层变化",
+          "body": [
+            "无膨胀卷积的输出宽度由输入宽、padding、kernel和stride决定。stride或pooling降低空间分辨率，后续单元可以汇总更大区域。",
+            "输入32、核3、padding1、stride1得到32；stride2得到16。写出每层尺寸能及早发现跳接无法相加的问题。"
+          ],
+          "formula": "out = floor((in + 2p − k)/s) + 1"
+        },
+        {
+          "title": "分类、检测和分割的输出不同",
+          "body": [
+            "分类为整张图输出类别；检测还需定位多个对象；语义分割对每个像素输出标签。分割常用编码器提取抽象信息，再逐步恢复空间分辨率。",
+            "若一个像素允许多个标签，应使用独立通道的二元目标；若每像素只属于一个类别，则用互斥分类损失。不要只看张量形状而忽略标签语义。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "卷积维度练习",
+        "instructions": [
+          "手算三层卷积的输出形状与参数数量。",
+          "画出分类网络改为分割网络需要变动的部分。",
+          "在官方视觉代码里找到输入归一化和输出层。"
+        ],
+        "deliverable": "网络尺寸表和任务输出说明"
+      },
+      "quiz": [
+        {
+          "question": "3×3核、3输入通道、16输出通道有多少权重（不含偏置）？",
+          "options": [
+            "144",
+            "432",
+            "448"
+          ],
+          "answer": 1,
+          "explanation": "3×3×3×16=432。"
+        },
+        {
+          "question": "参数共享主要意味着什么？",
+          "options": [
+            "不同位置使用同一组核权重",
+            "所有通道只用一个数",
+            "不再需要训练"
+          ],
+          "answer": 0,
+          "explanation": "空间位置复用同一卷积核。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 7",
+          "url": "https://cs230.stanford.edu/section/7/",
+          "type": "notes"
+        },
+        {
+          "title": "官方视觉代码",
+          "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/vision",
+          "type": "code"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "module": "architectures",
+      "title": "序列模型、RNN 与 LSTM",
+      "originalTitle": "Sequence models",
+      "summary": "把变长序列、隐状态和时间上的反向传播联系起来。",
+      "objectives": [
+        "解释隐状态递推",
+        "处理padding与mask",
+        "理解长程依赖困难"
+      ],
+      "sections": [
+        {
+          "title": "序列有顺序，也有长度",
+          "body": [
+            "RNN按位置更新隐状态，把历史信息压缩到一个向量。共享转移参数允许处理不同长度序列，但也形成较长的依赖链。",
+            "序列分类读取整体表示，序列标注为每个位置输出标签。批处理时通常补齐长度，补齐位置不应计入损失或准确率。"
+          ],
+          "formula": "hₜ = tanh(Wₓxₜ + Wₕhₜ₋₁ + b)"
+        },
+        {
+          "title": "时间上的链式法则",
+          "body": [
+            "反向传播穿过多步状态转移，重复乘雅可比可能使梯度变小或变大。梯度裁剪能限制爆炸，但不能凭空恢复丢失的长期信息。",
+            "LSTM使用门控控制信息写入、遗忘和输出，让状态更容易保留重要内容。门控是一种可学习的选择，而非固定记忆长度。"
+          ]
+        },
+        {
+          "title": "训练目标决定可见信息",
+          "body": [
+            "双向编码器适合读取完整句子的标注任务；自回归生成在预测下一词时只能使用前缀。把未来词泄漏到训练输入会使离线分数很好但实际生成失败。",
+            "命名实体识别可检查每类F1及边界错误，不能只报告包含大量“O”标签的总体准确率。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "序列标签管线",
+        "instructions": [
+          "构造两条不同长度序列并补齐。",
+          "写出损失mask。",
+          "比较包含padding与忽略padding的指标。"
+        ],
+        "deliverable": "长度、mask、标签对齐的示例表"
+      },
+      "quiz": [
+        {
+          "question": "padding位置应如何处理？",
+          "options": [
+            "通常从有效损失和指标中排除",
+            "当作真实标签训练",
+            "只在测试时计分"
+          ],
+          "answer": 0,
+          "explanation": "padding是批处理结构，不是原始任务样本。"
+        },
+        {
+          "question": "自回归生成训练可看到未来真实词吗？",
+          "options": [
+            "可以",
+            "不可以",
+            "只要加dropout就可以"
+          ],
+          "answer": 1,
+          "explanation": "未来信息会造成训练与推理不一致。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "官方序列标注代码",
+          "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/nlp",
+          "type": "code"
+        },
+        {
+          "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
+          "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "module": "architectures",
+      "title": "从序列到注意力",
+      "originalTitle": "Attention mechanisms · 社区衔接专题",
+      "summary": "用查询、键和值理解按内容读取信息，为 CME295 和 CS336 做准备。",
+      "objectives": [
+        "解释Q/K/V的作用",
+        "理解缩放与因果mask",
+        "区分注意力权重和因果解释"
+      ],
+      "sections": [
+        {
+          "title": "把一个固定向量改成内容寻址",
+          "body": [
+            "注意力允许当前位置根据query与各key的相似度，选择性组合value。它保留多个位置的信息入口，而不是把整个序列压缩为唯一向量。",
+            "例如问题中询问“日期”，对应查询可更强调包含时间表达的片段。权重反映该模型此处如何混合表示，不必然等于人类理解的证据强度。"
+          ]
+        },
+        {
+          "title": "分数、归一化与遮罩",
+          "body": [
+            "QK转置得到每对位置的匹配分数，除以sqrt(dₖ)控制尺度，再经过softmax转成归一化权重。mask把禁止访问的位置在softmax前排除。",
+            "生成任务中未来位置必须被遮住；padding mask解决另一个问题：无效补齐位置不能被当成上下文。两类mask可能同时需要。"
+          ],
+          "formula": "Attention(Q,K,V)=softmax(QKᵀ/√dₖ + mask)V"
+        },
+        {
+          "title": "注意力也有工程代价",
+          "body": [
+            "普通自注意力的分数矩阵随序列长度平方增长。长序列不仅需要更多算力，还会带来显存压力。",
+            "本讲是连接CS230序列主题与后续LLM课程的社区补充，不宣称对应当前官方CS230的一堂独立课。进一步训练机制请进入CME295或CS336。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "观察注意力",
+        "instructions": [
+          "调节温度并比较最大权重。",
+          "切换因果mask，记录未来token的变化。",
+          "解释为什么注意力权重不能单独证明因果关系。"
+        ],
+        "deliverable": "概率表与一段机制解释"
+      },
+      "quiz": [
+        {
+          "question": "因果mask主要防止什么？",
+          "options": [
+            "未来token信息泄漏",
+            "权重被训练",
+            "所有长序列"
+          ],
+          "answer": 0,
+          "explanation": "预测当前位置时只允许合法前缀信息。"
+        },
+        {
+          "question": "普通自注意力分数矩阵对长度L的空间增长约为？",
+          "options": [
+            "L",
+            "L²",
+            "log L"
+          ],
+          "answer": 1,
+          "explanation": "每个位置与所有位置配对。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
+          "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10",
+          "type": "video"
+        },
+        {
+          "title": "CS230课程主页：序列模型背景",
+          "url": "https://cs230.stanford.edu/",
+          "type": "notes"
+        }
+      ],
+      "lab": "attention"
+    },
+    {
+      "id": "13",
+      "module": "applications",
+      "title": "迁移学习与完整项目周期",
+      "originalTitle": "Transfer learning & full-cycle projects",
+      "summary": "从预训练表示出发，选择微调策略并验证上线条件。",
+      "objectives": [
+        "选择冻结或微调方案",
+        "检查目标域差异",
+        "设计上线监控与回退"
+      ],
+      "sections": [
+        {
+          "title": "预训练提供一个起点",
+          "body": [
+            "冻结骨干只训练新分类头，成本低且较不易破坏原表示；全量微调更灵活，但数据少时更易过拟合。分阶段解冻可在二者间折中。",
+            "学习率通常需要按参数组调整，但不存在所有任务通用的固定比例。以验证集与小预算实验决定策略。"
+          ]
+        },
+        {
+          "title": "域差异会改变有效特征",
+          "body": [
+            "预训练图像可能来自自然场景，目标数据却来自显微镜或工业相机。输入统计、标签体系及错误代价都可能不同。",
+            "不仅要看总分，还应检查新设备、新地区或低质量输入等切片。对训练集中没有覆盖的场景明确记录范围。"
+          ]
+        },
+        {
+          "title": "离线模型只是系统的一部分",
+          "body": [
+            "上线还包括输入检查、模型版本、延迟预算、监控和回退。数据分布变化时，训练时看起来稳定的阈值可能不再合适。",
+            "先做影子评估或有限场景试运行，持续收集失败案例；重新训练时仍需保留独立评估，防止被反馈循环带偏。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "规划迁移实验",
+        "instructions": [
+          "定义冻结骨干和全量微调两条基线。",
+          "固定数据划分和预算比较。",
+          "列出三种部署变化及检测信号。"
+        ],
+        "deliverable": "微调对照表和上线检查文档"
+      },
+      "quiz": [
+        {
+          "question": "小数据任务一定应全量微调吗？",
+          "options": [
+            "是",
+            "否",
+            "只取决于GPU"
+          ],
+          "answer": 1,
+          "explanation": "冻结或部分微调可能更稳，应实验验证。"
+        },
+        {
+          "question": "离线准确率高是否足以直接上线？",
+          "options": [
+            "足够",
+            "不够",
+            "只要模型大就足够"
+          ],
+          "answer": 1,
+          "explanation": "还需验证延迟、分布、系统可靠性等。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 3 · 完整项目周期",
+          "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3",
+          "type": "video"
+        },
+        {
+          "title": "Fall 2018 Lecture 6 · 项目策略",
+          "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6",
+          "type": "video"
+        },
+        {
+          "title": "TA Section 3",
+          "url": "https://cs230.stanford.edu/section/3/",
+          "type": "notes"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "module": "applications",
+      "title": "生成对抗网络与鲁棒性",
+      "originalTitle": "GANs & adversarial examples",
+      "summary": "分清生成分布学习与输入扰动攻击，建立可验证的评价方式。",
+      "objectives": [
+        "解释GAN双模型博弈",
+        "识别模式崩溃",
+        "区分鲁棒性与普通泛化"
+      ],
+      "sections": [
+        {
+          "title": "生成器与判别器互相提供信号",
+          "body": [
+            "生成器把随机噪声映射到样本，判别器区分真实与生成样本。两者交替更新，因此一个模型的目标也会随对手变化。",
+            "生成结果看起来逼真不代表覆盖真实分布。若反复生成少数模板，即模式崩溃，样本质量与多样性应同时检查。"
+          ]
+        },
+        {
+          "title": "评价生成结果需要多把尺",
+          "body": [
+            "对随机样本盲评、检查重复度和任务可用性，比挑几张最好看的图更诚实。某些分布指标依赖特征提取器，不能自动覆盖所有语义失败。",
+            "固定采样协议、样本量与预处理再比较模型，避免把挑图策略的差异当成模型改进。"
+          ]
+        },
+        {
+          "title": "微小扰动也可能改变预测",
+          "body": [
+            "对抗样本选择能显著改变模型输出的输入扰动。扰动大小的约束、攻击可访问的信息和攻击步数共同定义威胁模型。",
+            "防御评估不能只对单一弱攻击有效；还要检查梯度遮蔽等让攻击失效的假象。鲁棒性结论必须附带具体攻击条件。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "写一个鲁棒性评估协议",
+        "instructions": [
+          "定义允许的输入扰动及其范围。",
+          "区分自然噪声测试与对抗测试。",
+          "为生成样本列出质量、多样性、重复度三项检查。"
+        ],
+        "deliverable": "明确威胁模型与采样流程的报告模板"
+      },
+      "quiz": [
+        {
+          "question": "GAN生成的少数图片很逼真能证明什么？",
+          "options": [
+            "已覆盖所有模式",
+            "只能提供有限样例证据",
+            "模型无偏"
+          ],
+          "answer": 1,
+          "explanation": "还需评估多样性与分布覆盖。"
+        },
+        {
+          "question": "鲁棒性结果应附带什么？",
+          "options": [
+            "仅参数量",
+            "攻击条件与威胁模型",
+            "仅训练时间"
+          ],
+          "answer": 1,
+          "explanation": "不同攻击能力下结果不可直接比较。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
+          "url": "https://www.youtube.com/watch?v=ANszao6YQuM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=4",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "module": "applications",
+      "title": "可解释性：证据与边界",
+      "originalTitle": "Interpretability",
+      "summary": "把可视化当成待验证的诊断线索，而不是模型可信度的自动证明。",
+      "objectives": [
+        "区分局部与全局解释",
+        "检验解释方法的稳定性",
+        "避免把相关解释当因果"
+      ],
+      "sections": [
+        {
+          "title": "解释可以回答不同问题",
+          "body": [
+            "局部解释分析一次预测，全局分析研究模型整体行为。梯度显著图显示输出对输入的局部敏感性，但并不直接揭示人类意义上的推理步骤。",
+            "如果目标类别换了，热图是否变化？模型参数随机化后，图案是否仍相似？这类对照可以检验解释是否真正依赖模型。"
+          ]
+        },
+        {
+          "title": "反事实需要合法输入",
+          "body": [
+            "遮挡或修改输入可测试模型对某一部分的依赖，但修改也可能制造训练分布外的样本。分数下降不一定只因为移除了目标信息。",
+            "例如把图像区域涂成纯黑，同时改变纹理与边缘。比较多种替代方式，并记录哪些因素无法分离。"
+          ]
+        },
+        {
+          "title": "解释服务于可检验的决策",
+          "body": [
+            "发现模型依赖背景后，可以建立同对象不同背景的对照集，测试并修复这种依赖。解释的价值来自促成可验证改进。",
+            "部署信任还依赖校准、性能切片、数据质量和系统监控，不能被一张漂亮热图替代。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "解释方法的对照实验",
+        "instructions": [
+          "选择一种显著性方法。",
+          "比较原模型与随机参数模型的输出。",
+          "设计一个验证背景依赖的对照数据集。"
+        ],
+        "deliverable": "解释可视化、反例与可验证假设"
+      },
+      "quiz": [
+        {
+          "question": "注意力图或显著图能直接证明因果推理吗？",
+          "options": [
+            "能",
+            "不能",
+            "只要颜色明显就能"
+          ],
+          "answer": 1,
+          "explanation": "其含义依赖方法，需干预和对照验证。"
+        },
+        {
+          "question": "模型随机化后解释几乎不变，提示什么？",
+          "options": [
+            "解释可能不敏感于模型",
+            "模型已完美",
+            "数据无需检查"
+          ],
+          "answer": 0,
+          "explanation": "这削弱了它解释模型行为的证据。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
+          "url": "https://www.youtube.com/watch?v=gCJCgQW_LKc&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=7",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "module": "applications",
+      "title": "AI 与医疗：任务定义和外部验证",
+      "originalTitle": "AI + healthcare",
+      "summary": "借医疗场景学习高要求评估，重点理解数据划分与真实工作流。",
+      "objectives": [
+        "按患者级别划分数据",
+        "区分预测指标与临床效益",
+        "设计外部验证"
+      ],
+      "sections": [
+        {
+          "title": "患者是比图像更重要的划分单位",
+          "body": [
+            "同一患者可有多张扫描或多个时间点，图像随机划分会让模型在测试集遇到训练中已见过的主体特征。按患者、机构或时间划分更接近实际部署挑战。",
+            "标签可能来自后续检查或医生流程，需确认预测时这些信息是否已经存在，防止时间泄漏。"
+          ]
+        },
+        {
+          "title": "模型分数不等于工作流收益",
+          "body": [
+            "一个高召回筛查器可能产生大量误报，增加复核负担；一个高精确率模型可能漏掉稀少但重要的病例。评价必须说明阈值对应的资源与错误代价。",
+            "训练数据患病比例与部署环境不同会影响阳性预测值。单一数据集上的准确率不能替代外部验证。"
+          ]
+        },
+        {
+          "title": "用外部验证界定适用范围",
+          "body": [
+            "在另一机构、设备或时间段测试，有助于发现模型依赖的环境线索。报告样本量、亚组表现和不确定性，而不是只给合并总分。",
+            "本讲讨论机器学习研究方法，不提供诊断规则。实际临床使用需要领域专家、验证流程和适用监管要求。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "审查一个研究设计",
+        "instructions": [
+          "画出患者、图像、机构三层关系。",
+          "提出一个避免身份与时间泄漏的划分方案。",
+          "列出外部验证应报告的分组与指标。"
+        ],
+        "deliverable": "研究设计审查表"
+      },
+      "quiz": [
+        {
+          "question": "同一患者多张图像随机分到训练测试，风险是什么？",
+          "options": [
+            "主体信息泄漏",
+            "模型一定欠拟合",
+            "标签自动更可靠"
+          ],
+          "answer": 0,
+          "explanation": "共享主体特征可能使测试偏乐观。"
+        },
+        {
+          "question": "高准确率能直接证明临床效益吗？",
+          "options": [
+            "能",
+            "不能",
+            "数据量大就能"
+          ],
+          "answer": 1,
+          "explanation": "还需阈值、工作流、外部验证等证据。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 5 · AI 与医疗",
+          "url": "https://www.youtube.com/watch?v=IM9ANAbufYM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=5",
+          "type": "video"
+        },
+        {
+          "title": "TA Section 8",
+          "url": "https://cs230.stanford.edu/section/8/",
+          "type": "notes"
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "module": "applications",
+      "title": "深度强化学习：从标签到回报",
+      "originalTitle": "Deep reinforcement learning",
+      "summary": "理解环境交互、长期回报和离线监督学习之间的差别。",
+      "objectives": [
+        "定义状态动作奖励",
+        "理解价值与策略",
+        "检查奖励设计与评估"
+      ],
+      "sections": [
+        {
+          "title": "决策会改变之后看到的数据",
+          "body": [
+            "监督学习通常面对固定样本；强化学习中的动作会改变未来状态，因此探索和学习彼此影响。即时奖励高的动作不一定带来长期好结果。",
+            "用一个网格导航例子区分状态、动作和终止条件。若每步奖励定义不当，智能体可能学到停留或绕路等意外策略。"
+          ],
+          "formula": "Gₜ = Σₖ γᵏ rₜ₊ₖ₊₁"
+        },
+        {
+          "title": "价值与策略回答不同问题",
+          "body": [
+            "价值估计某状态或动作的未来收益，策略决定如何选动作。Q学习利用目标估计更新动作价值；策略梯度直接调整动作概率以提升期望回报。",
+            "深度网络可以表示二者，但引入函数逼近后，训练稳定性、相关样本和目标变化需要额外处理。"
+          ]
+        },
+        {
+          "title": "把奖励漏洞当成系统问题",
+          "body": [
+            "代理可能利用奖励定义中的漏洞，获得高分却违背任务意图。评价要使用独立的任务成功标准，并检查失败轨迹。",
+            "比较方法时固定环境版本、训练步数和评估协议，多个随机种子尤其重要。不要把训练中的探索回报与评估策略表现混为一谈。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "设计一个小环境",
+        "instructions": [
+          "写出网格任务的状态、动作和奖励。",
+          "找出奖励设计可能被利用的方式。",
+          "规定固定种子的独立评估回合。"
+        ],
+        "deliverable": "环境定义、奖励漏洞分析与评估协议"
+      },
+      "quiz": [
+        {
+          "question": "即时奖励最高的动作总是长期最优吗？",
+          "options": [
+            "是",
+            "否",
+            "只在神经网络中是"
+          ],
+          "answer": 1,
+          "explanation": "动作影响未来状态，需考虑长期回报。"
+        },
+        {
+          "question": "训练回报很高但任务失败应首先检查什么？",
+          "options": [
+            "奖励与真实目标是否一致",
+            "页面样式",
+            "参数命名"
+          ],
+          "answer": 0,
+          "explanation": "代理可能优化了错误的代理目标。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Fall 2018 Lecture 9 · 深度强化学习",
+          "url": "https://www.youtube.com/watch?v=NP2XqpgTJyo&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=9",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "module": "project",
+      "title": "完成一个可复现的深度学习项目",
+      "originalTitle": "Capstone: report, papers & presentation",
+      "summary": "把问题、证据、局限和可复现代码组织成完整交付。",
+      "objectives": [
+        "读懂论文的实验主张",
+        "设计消融与对照",
+        "提交可重现项目报告"
+      ],
+      "sections": [
+        {
+          "title": "阅读论文先抓可验证主张",
+          "body": [
+            "先识别问题设定、主要基线、数据划分和提升指标，再读方法细节。论文中的某个结果可能只在特定预算或数据上成立。",
+            "做复现时先运行官方或简化基线，明确哪些条件与原论文不同。未达到原分数时保留失败记录，比只展示成功片段更有研究价值。"
+          ]
+        },
+        {
+          "title": "消融实验回答组件是否必要",
+          "body": [
+            "移除或替换一个组件，并保持其他因素与预算尽量一致。若组件带来更多参数或训练时间，应增加匹配预算的对照。",
+            "报告最好模型之外，还应保留负结果和误差分析，让读者看到结论支持到哪里。"
+          ]
+        },
+        {
+          "title": "最终交付让陌生人能够重跑",
+          "body": [
+            "报告包含任务、数据许可与划分、方法、基线、实验设置、指标、局限。代码应提供安装说明、配置、训练和评估入口以及checkpoint来源。",
+            "本社区课程的自设练习用于自学，不替代Stanford或Coursera提交要求。正式作业和项目截止日期以你所参加学期的官方系统为准。"
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "结课项目：小规模分类或序列标注",
+        "instructions": [
+          "选一个公开许可数据集，建立简单基线。",
+          "实现一个深度网络，完成至少一项受控消融。",
+          "提供独立评估命令、错误案例和局限说明。",
+          "录制三分钟演示，明确数据和代码来源。"
+        ],
+        "deliverable": "可运行仓库、实验配置、结果表与4–6页报告"
+      },
+      "quiz": [
+        {
+          "question": "组件增加了计算量，如何更公平比较？",
+          "options": [
+            "只比较最终最高分",
+            "加入匹配预算的对照",
+            "删掉基线"
+          ],
+          "answer": 1,
+          "explanation": "需要区分方法收益和额外资源收益。"
+        },
+        {
+          "question": "一个可复现交付最需要什么？",
+          "options": [
+            "只给截图",
+            "数据划分、配置、代码和评估入口",
+            "只给最高准确率"
+          ],
+          "answer": 1,
+          "explanation": "他人需要重建实验条件和测量过程。"
+        }
+      ],
+      "resources": [
+        {
+          "title": "TA Section 9",
+          "url": "https://cs230.stanford.edu/section/9/",
+          "type": "notes"
+        },
+        {
+          "title": "Fall 2018 Lecture 8 · 职业与论文阅读",
+          "url": "https://www.youtube.com/watch?v=733m6qBH-jI&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=8",
+          "type": "video"
+        },
+        {
+          "title": "官方项目要求",
+          "url": "https://cs230.stanford.edu/project/",
+          "type": "notes"
+        }
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "title": "社区结课项目",
+      "url": "#lesson-18",
+      "description": "使用公开数据完成分类或序列标注，提供基线、消融、误差分析与独立评估。"
+    },
+    {
+      "title": "官方项目要求",
+      "url": "https://cs230.stanford.edu/project/",
+      "description": "正式课程的要求与截止时间以所参加学期为准。"
+    },
+    {
+      "title": "官方期中练习与解析",
+      "url": "https://cs230.stanford.edu/section/6/",
+      "description": "公开复习资料可用于自测；先做题再看官方解析。"
+    }
+  ],
+  "resources": [
+    {
+      "title": "项目起步课件 · Fall 2025",
+      "url": "https://cs230.stanford.edu/section/1/Section%201%20%28Fall%202025%29.pptx",
+      "type": "slides",
+      "local": "materials/section1-project-fall2025.pptx"
+    },
+    {
+      "title": "反向传播课件",
+      "url": "https://cs230.stanford.edu/section/2/Section2.pdf",
+      "type": "slides",
+      "local": "materials/section2-backprop.pdf"
+    },
+    {
+      "title": "梯度与优化手写讲义 · Fall 2021",
+      "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf",
+      "type": "notes",
+      "local": "materials/backprop-notes-fall2021.pdf"
+    },
+    {
+      "title": "反向传播练习与解析 · Winter 2020",
+      "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf",
+      "type": "assignment",
+      "local": "materials/backprop-exercises-winter2020.pdf"
+    },
+    {
+      "title": "初始化与正则化课件",
+      "url": "https://cs230.stanford.edu/section/4/Section4.pdf",
+      "type": "slides",
+      "local": "materials/section4-initialization.pdf"
+    },
+    {
+      "title": "期中复习 · 2024",
+      "url": "https://cs230.stanford.edu/section/6/Section6.pdf",
+      "type": "slides",
+      "local": "materials/midterm-review-2024.pdf"
+    },
+    {
+      "title": "期中复习 · 2025",
+      "url": "https://cs230.stanford.edu/section/6/review.pptx",
+      "type": "slides",
+      "local": "materials/midterm-review-2025.pptx"
+    },
+    {
+      "title": "期中练习 1",
+      "url": "https://cs230.stanford.edu/section/6/Practice_1.pdf",
+      "type": "assignment",
+      "local": "materials/practice-1.pdf"
+    },
+    {
+      "title": "期中练习 1 官方解析",
+      "url": "https://cs230.stanford.edu/section/6/Practice_1_Sol.pdf",
+      "type": "notes",
+      "local": "materials/practice-1-solutions.pdf"
+    },
+    {
+      "title": "期中练习 2",
+      "url": "https://cs230.stanford.edu/section/6/Practice_2.pdf",
+      "type": "assignment",
+      "local": "materials/practice-2.pdf"
+    },
+    {
+      "title": "期中练习 2 官方解析",
+      "url": "https://cs230.stanford.edu/section/6/Practice_2_Sol.pdf",
+      "type": "notes",
+      "local": "materials/practice-2-solutions.pdf"
+    },
+    {
+      "title": "TA Section 1",
+      "url": "https://cs230.stanford.edu/section/1/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 2",
+      "url": "https://cs230.stanford.edu/section/2/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 3",
+      "url": "https://cs230.stanford.edu/section/3/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 4",
+      "url": "https://cs230.stanford.edu/section/4/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 5",
+      "url": "https://cs230.stanford.edu/section/5/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 6",
+      "url": "https://cs230.stanford.edu/section/6/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 7",
+      "url": "https://cs230.stanford.edu/section/7/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 8",
+      "url": "https://cs230.stanford.edu/section/8/",
+      "type": "notes"
+    },
+    {
+      "title": "TA Section 9",
+      "url": "https://cs230.stanford.edu/section/9/",
+      "type": "notes"
+    },
+    {
+      "title": "Fall 2018 Lecture 1 · 课程介绍",
+      "url": "https://www.youtube.com/watch?v=PySo_6S4ZAg&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=1",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 2 · 深度学习直觉",
+      "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 3 · 完整项目周期",
+      "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
+      "url": "https://www.youtube.com/watch?v=ANszao6YQuM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=4",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 5 · AI 与医疗",
+      "url": "https://www.youtube.com/watch?v=IM9ANAbufYM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=5",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 6 · 项目策略",
+      "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
+      "url": "https://www.youtube.com/watch?v=gCJCgQW_LKc&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=7",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 8 · 职业与论文阅读",
+      "url": "https://www.youtube.com/watch?v=733m6qBH-jI&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=8",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 9 · 深度强化学习",
+      "url": "https://www.youtube.com/watch?v=NP2XqpgTJyo&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=9",
+      "type": "video"
+    },
+    {
+      "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
+      "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10",
+      "type": "video"
+    },
+    {
+      "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
+      "url": "https://github.com/cs230-stanford/cs230-code-examples",
+      "type": "code"
+    },
+    {
+      "title": "PyTorch 项目教程 · 历史版本",
+      "url": "https://cs230.stanford.edu/blog/pytorch/",
+      "type": "notes"
+    },
+    {
+      "title": "TensorFlow 项目教程 · 历史版本",
+      "url": "https://cs230.stanford.edu/blog/tensorflow/",
+      "type": "notes"
+    },
+    {
+      "title": "数据预处理教程",
+      "url": "https://cs230.stanford.edu/blog/datapreprocessing/",
+      "type": "notes"
+    },
+    {
+      "title": "项目实施建议",
+      "url": "https://cs230.stanford.edu/blog/tips/",
+      "type": "notes"
+    },
+    {
+      "title": "官方项目要求",
+      "url": "https://cs230.stanford.edu/project/",
+      "type": "notes"
+    },
+    {
+      "title": "课程当前主页与访问说明",
+      "url": "https://cs230.stanford.edu/",
+      "type": "notes"
+    },
+    {
+      "title": "12447290",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447290.pdf",
+      "type": "pdf",
+      "local": "materials/12447290.pdf"
+    },
+    {
+      "title": "12409058",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12409058.pdf",
+      "type": "pdf",
+      "local": "materials/12409058.pdf"
+    },
+    {
+      "title": "12449275",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12449275.pdf",
+      "type": "pdf",
+      "local": "materials/12449275.pdf"
+    },
+    {
+      "title": "12365342",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12365342.pdf",
+      "type": "pdf",
+      "local": "materials/12365342.pdf"
+    },
+    {
+      "title": "8289557",
+      "url": "http://cs230.stanford.edu/projects_spring_2018/reports/8289557.pdf",
+      "type": "pdf",
+      "local": "materials/8289557.pdf"
+    },
+    {
+      "title": "12447446",
+      "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447446.pdf",
+      "type": "pdf",
+      "local": "materials/12447446.pdf"
+    },
+    {
+      "title": "1802.03446",
+      "url": "https://arxiv.org/pdf/1802.03446.pdf",
+      "type": "pdf",
+      "local": "materials/1802.03446.pdf"
+    },
+    {
+      "title": "15811843",
+      "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811843.pdf",
+      "type": "pdf",
+      "local": "materials/15811843.pdf"
+    },
+    {
+      "title": "15811944",
+      "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811944.pdf",
+      "type": "pdf",
+      "local": "materials/15811944.pdf"
+    },
+    {
+      "title": "Matrix derivatives cribsheet",
+      "url": "http://www.gatsby.ucl.ac.uk/teaching/courses/sntn/sntn-2017/resources/Matrix_derivatives_cribsheet.pdf",
+      "type": "pdf",
+      "local": "materials/Matrix_derivatives_cribsheet.pdf"
+    },
+    {
+      "title": "eval-metrics-bntuw-9802",
+      "url": "https://www.cs.cmu.edu/~roni/papers/eval-metrics-bntuw-9802.pdf",
+      "type": "pdf",
+      "local": "materials/eval-metrics-bntuw-9802.pdf"
+    },
+    {
+      "title": "1806.07755",
+      "url": "https://arxiv.org/pdf/1806.07755.pdf",
+      "type": "pdf",
+      "local": "materials/1806.07755.pdf"
+    },
+    {
+      "title": "1711.10337",
+      "url": "https://arxiv.org/pdf/1711.10337.pdf",
+      "type": "pdf",
+      "local": "materials/1711.10337.pdf"
+    },
+    {
+      "title": "CS230GithubTutorial",
+      "url": "https://d1b10bmlvqabco.cloudfront.net/attach/jd9nm7v2drf4bz/j7v7aqkb9194qv/jgic5sc45imn/CS230GithubTutorial.pdf",
+      "type": "pdf",
+      "local": "materials/CS230GithubTutorial.pdf"
+    },
+    {
+      "title": "colab",
+      "url": "https://cs230.stanford.edu/section/2/colab.pdf",
+      "type": "pdf",
+      "local": "materials/colab.pdf"
+    },
+    {
+      "title": "1508.06576",
+      "url": "https://arxiv.org/pdf/1508.06576.pdf",
+      "type": "pdf",
+      "local": "materials/1508.06576.pdf"
+    },
+    {
+      "title": "1603.08155",
+      "url": "https://arxiv.org/pdf/1603.08155.pdf",
+      "type": "pdf",
+      "local": "materials/1603.08155.pdf"
+    },
+    {
+      "title": "1610.07629",
+      "url": "https://arxiv.org/pdf/1610.07629.pdf",
+      "type": "pdf",
+      "local": "materials/1610.07629.pdf"
+    },
+    {
+      "title": "1705.06830",
+      "url": "https://arxiv.org/pdf/1705.06830.pdf",
+      "type": "pdf",
+      "local": "materials/1705.06830.pdf"
+    },
+    {
+      "title": "cs230-code-examples",
+      "url": "https://codeload.github.com/cs230-stanford/cs230-code-examples/zip/refs/heads/master",
+      "type": "code",
+      "local": "materials/cs230-code-examples.zip"
+    }
+  ],
+  "notice": "OpenSEEI原创中文社区导学，非Stanford官方课程或逐句翻译。18讲为自学重组；注意力是社区衔接专题。原课公开视频为Fall 2018，section资料含2020、2021、2024与2025等版本，见各来源标注。当前Canvas录播仅向注册学生开放，Coursera课程/作业需相应权限，本站未下载或冒称包含这些受限内容。原始材料版权和许可归原作者，旧框架示例需按当前API调整。核实日期：2026-11-06。"
+}

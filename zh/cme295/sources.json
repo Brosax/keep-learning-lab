@@ -1,0 +1,744 @@
+{
+  "course": "cme295",
+  "title": "Transformer 与大语言模型",
+  "offering": "2026 秋季 · 2025 完整资料补充",
+  "source_url": "https://cme295.stanford.edu/syllabus/",
+  "verified_at": "2026-11-06T17:32:06.192150+00:00",
+  "scope": "Official publicly accessible course materials discovered from course pages and official repositories; videos and restricted materials remain source links. See discovery metadata for crawl scope and failures.",
+  "resources": [
+    {
+      "title": "2026 官方课程大纲与发布状态",
+      "url": "https://cme295.stanford.edu/syllabus/",
+      "type": "syllabus",
+      "status": "external_link"
+    },
+    {
+      "title": "2025 完整课程大纲",
+      "url": "https://cme295.stanford.edu/syllabus/2025/",
+      "type": "syllabus",
+      "status": "external_link"
+    },
+    {
+      "title": "教师维护的多语言 Transformer / LLM 速查表仓库",
+      "url": "https://github.com/afshinea/stanford-cme-295-transformers-large-language-models",
+      "type": "code",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 Stanford Online 官方视频播放列表",
+      "url": "https://www.youtube.com/playlist?list=PLakGfbKCei80",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 期中试卷",
+      "url": "https://cme295.stanford.edu/exams/fall26-cme295-midterm.pdf",
+      "type": "exam",
+      "local": "materials/fall26-cme295-midterm.pdf",
+      "status": "downloaded",
+      "bytes": 169111,
+      "sha256": "9e5dad1e270308efb4ee300688e2d33824b059ffc5440b27c2304aa762f13202"
+    },
+    {
+      "title": "2026 期中试卷解析",
+      "url": "https://cme295.stanford.edu/exams/fall26-cme295-midterm-solutions.pdf",
+      "type": "exam",
+      "local": "materials/fall26-cme295-midterm-solutions.pdf",
+      "status": "downloaded",
+      "bytes": 177280,
+      "sha256": "04515d1f637d213d8874ac509f38a789ccf475d64777bb1aa4b8aa8fbb18f133"
+    },
+    {
+      "title": "2025 第 1 讲 · Transformer（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture1.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture1.pdf",
+      "status": "downloaded",
+      "bytes": 2709737,
+      "sha256": "5dc36dcac9399ed71025f2056d65a846a36eb5235b14ca2ede3625a3ecb9e234"
+    },
+    {
+      "title": "2025 第 2 讲 · Transformer-based models & tricks（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture2.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture2.pdf",
+      "status": "downloaded",
+      "bytes": 4311026,
+      "sha256": "63cd3d5855567d9358bb34819eed711afe27e14a5de4ae424c9b1d73cfef7433"
+    },
+    {
+      "title": "2025 第 3 讲 · Large Language Models（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture3.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture3.pdf",
+      "status": "downloaded",
+      "bytes": 3576122,
+      "sha256": "e4f3420e9d33e7f6e79ff38f460809f25a13d51e929d12c098587b9a33891c11"
+    },
+    {
+      "title": "2025 第 4 讲 · LLM training（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture4.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture4.pdf",
+      "status": "downloaded",
+      "bytes": 4425624,
+      "sha256": "7f3a8d20e703ba62f79baca79a75e65d006aee99c79f7549b447a49671610825"
+    },
+    {
+      "title": "2025 第 5 讲 · LLM tuning（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture5.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture5.pdf",
+      "status": "downloaded",
+      "bytes": 2125890,
+      "sha256": "8e347d02a83706c92af4e9c122c28faa68534e099f5a467491cb03e37826411d"
+    },
+    {
+      "title": "2025 第 6 讲 · LLM reasoning（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture6.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture6.pdf",
+      "status": "downloaded",
+      "bytes": 4293461,
+      "sha256": "e60fd83047d73f9d05b9bc1f23f57498849b276ca95b2e02d866260f3ca5b461"
+    },
+    {
+      "title": "2025 第 7 讲 · Agentic LLMs（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture7.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture7.pdf",
+      "status": "downloaded",
+      "bytes": 2447092,
+      "sha256": "2772ba9a870a3b7e3666f47696e9af6794489ce169de4a0f3ea1b91ce13e7234"
+    },
+    {
+      "title": "2025 第 8 讲 · LLM evaluation（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture8.pdf",
+      "status": "downloaded",
+      "bytes": 3837744,
+      "sha256": "b63b2ea3734e2da370d4b89e840b53aea95c41acc273cdc167b665d2e40c5f6e"
+    },
+    {
+      "title": "2025 第 9 讲 · Current trends（完整旧版）",
+      "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf",
+      "type": "slides",
+      "local": "materials/fall25-cme295-lecture9.pdf",
+      "status": "downloaded",
+      "bytes": 6983081,
+      "sha256": "b6767a5c30fb0ea26c4ec86d2b6b95f212e8b40f46d065872c1b93fc910440ad"
+    },
+    {
+      "title": "CME295 速查表 · 阿拉伯语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ar/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "ar",
+      "local": "materials/ar-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 869622,
+      "sha256": "d28c5a5e967a1d316df26c670efb6828c6e2b78156a34c5b3d04ef7eb09c6d2c"
+    },
+    {
+      "title": "CME295 速查表 · 捷克语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/cs/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "cs",
+      "local": "materials/cs-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1498062,
+      "sha256": "e1af68e4a25390fcbb4f3881cc92bea54344db8362f88f652f90b1c56bd2be38"
+    },
+    {
+      "title": "CME295 速查表 · 英语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/en/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "en",
+      "local": "materials/en-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1501353,
+      "sha256": "d40144d042a1021c537bca93947e3f599c15964cc5c5e2a0a96ec6935b1a68ce"
+    },
+    {
+      "title": "CME295 速查表 · 西班牙语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/es/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "es",
+      "local": "materials/es-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1492861,
+      "sha256": "c447a130a073fa357aa4287d2c3352b73a5de998a573b1ad3e74d93acd587d79"
+    },
+    {
+      "title": "CME295 速查表 · 波斯语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/fa/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "fa",
+      "local": "materials/fa-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 847019,
+      "sha256": "3b27c5c3524875673e0143a9fa89132f76b2a7131aeffb154485b36080ee7914"
+    },
+    {
+      "title": "CME295 速查表 · 法语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/fr/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "fr",
+      "local": "materials/fr-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1492522,
+      "sha256": "82905c7933e1ac0cc98423ecc743c8de4219c501feced738b3526d4618dd0e19"
+    },
+    {
+      "title": "CME295 速查表 · 意大利语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/it/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "it",
+      "local": "materials/it-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1484060,
+      "sha256": "a655e440a486d630570a3047ce444b09141c6a6a3c147fc9bd23bb8327c2e555"
+    },
+    {
+      "title": "CME295 速查表 · 日语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ja/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "ja",
+      "local": "materials/ja-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1026005,
+      "sha256": "a997867fe0e733bc19611d6479ec6e85634801b165e05c2aafd5b5d1ad3ceba7"
+    },
+    {
+      "title": "CME295 速查表 · 韩语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ko/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "ko",
+      "local": "materials/ko-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 989059,
+      "sha256": "60e64de1f438a1db9adc1af76a03a5a004a317912d3357fa0d12c35f3c2e7100"
+    },
+    {
+      "title": "CME295 速查表 · 葡萄牙语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/pt/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "pt",
+      "local": "materials/pt-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1500424,
+      "sha256": "2c870fcd13ab7ffb28616d07187711f2272c9f7a01a787041fddfecb7249e5a0"
+    },
+    {
+      "title": "CME295 速查表 · 俄语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ru/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "ru",
+      "local": "materials/ru-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 864587,
+      "sha256": "d7f74b25225845973b9d28f8495dec032d476df2ff6d420ccf5dd6071778fea5"
+    },
+    {
+      "title": "CME295 速查表 · 塞尔维亚语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/sr/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "sr",
+      "local": "materials/sr-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 865843,
+      "sha256": "3882b4e927f8d12983ea7b5c67b00d9eb213bea02e2a209c1589bf82cce132c7"
+    },
+    {
+      "title": "CME295 速查表 · 泰语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/th/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "th",
+      "local": "materials/th-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 840268,
+      "sha256": "901f2c0de5ced465a60df318608dd222e73de5bdcb914dc7bdbd81d158348f57"
+    },
+    {
+      "title": "CME295 速查表 · 土耳其语（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/tr/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "tr",
+      "local": "materials/tr-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1503230,
+      "sha256": "6a9e2b9d245c9a762a3a5731f2c11a3a8bf35f8dc623072e8df94b120528e4a1"
+    },
+    {
+      "title": "CME295 速查表 · 中文（教师仓库）",
+      "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/zh/cheatsheet-transformers-large-language-models.pdf",
+      "type": "notes",
+      "language": "zh",
+      "local": "materials/zh-cheatsheet-transformers-large-language-models.pdf",
+      "status": "downloaded",
+      "bytes": 1033373,
+      "sha256": "a7f3fad35c1c339aa2d3b98298eb9b62131c7302eafe0413f53141e14106b958"
+    },
+    {
+      "title": "教师速查表仓库 MIT 许可",
+      "url": "https://github.com/afshinea/stanford-cme-295-transformers-large-language-models/blob/main/LICENSE",
+      "type": "license",
+      "status": "external_link"
+    },
+    {
+      "title": "fall25-cme295-midterm",
+      "url": "https://cme295.stanford.edu/exams/fall25-cme295-midterm.pdf",
+      "type": "pdf",
+      "local": "materials/fall25-cme295-midterm.pdf",
+      "status": "downloaded",
+      "bytes": 117412,
+      "sha256": "68dbef76658a1a538fc116192537d268f5497f06277c8210e3db8ebed3102e52"
+    },
+    {
+      "title": "fall25-cme295-midterm-solutions",
+      "url": "https://cme295.stanford.edu/exams/fall25-cme295-midterm-solutions.pdf",
+      "type": "pdf",
+      "local": "materials/fall25-cme295-midterm-solutions.pdf",
+      "status": "downloaded",
+      "bytes": 145082,
+      "sha256": "4621028b1c050fa853fb092c3ea7db80f7c48dce93a73b3bce39dc049a3c86a8"
+    },
+    {
+      "title": "fall25-cme295-final",
+      "url": "https://cme295.stanford.edu/exams/fall25-cme295-final.pdf",
+      "type": "pdf",
+      "local": "materials/fall25-cme295-final.pdf",
+      "status": "downloaded",
+      "bytes": 129702,
+      "sha256": "b72ecf7b2bab594f817b618b9e21e438aa73188740729af658e083964378ab7e"
+    },
+    {
+      "title": "fall25-cme295-final-solutions",
+      "url": "https://cme295.stanford.edu/exams/fall25-cme295-final-solutions.pdf",
+      "type": "pdf",
+      "local": "materials/fall25-cme295-final-solutions.pdf",
+      "status": "downloaded",
+      "bytes": 151655,
+      "sha256": "889f93157bf7e90c18faddee4a08d80aa6a67f758b446b78e9de65af0a318d43"
+    },
+    {
+      "title": "stanford-cme-295-transformers-large-language-models",
+      "url": "https://codeload.github.com/afshinea/stanford-cme-295-transformers-large-language-models/zip/refs/heads/main",
+      "type": "code",
+      "local": "materials/stanford-cme-295-transformers-large-language-models.zip",
+      "status": "downloaded",
+      "bytes": 16447012,
+      "sha256": "63be5dc2ad712192fc61be7b12c733588259271f696dc9c15b3b39381cd0466d"
+    },
+    {
+      "title": "2026 第 1 讲官方课件 · Transformers",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture1.pdf",
+      "status": "downloaded",
+      "bytes": 4072402,
+      "sha256": "556f3df511a4c2f6f935f1ceb432dff9d4093e8b545e8b840beb355a7c88ca42"
+    },
+    {
+      "title": "2026 第 1 讲官方录像",
+      "url": "https://www.youtube.com/watch?v=114i2Kz-LZA",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 第 2 讲官方课件 · Large Language Models",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture2.pdf",
+      "status": "downloaded",
+      "bytes": 6772522,
+      "sha256": "cd6fb64ada1ac430d362042e32e237149d93ab010ae88a869f1c27dcc4b71af3"
+    },
+    {
+      "title": "2026 第 2 讲官方录像",
+      "url": "https://www.youtube.com/watch?v=GaIeu3npx04",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 第 3 讲官方课件 · LLM training",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture3.pdf",
+      "status": "downloaded",
+      "bytes": 9575268,
+      "sha256": "519f23b9014932a6be0e4e3b899c2a731aa5418c20b285f817fcd5fc7b169a20"
+    },
+    {
+      "title": "2026 第 3 讲官方录像",
+      "url": "https://www.youtube.com/watch?v=S3bCDcJhz4s",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 第 4 讲官方课件 · Reinforcement learning with LLMs",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture4.pdf",
+      "status": "downloaded",
+      "bytes": 4270906,
+      "sha256": "a899a12a9610817e8ff9e236d7e35b51bae7cd08621db9d192a73ed1c5dffec9"
+    },
+    {
+      "title": "2026 第 4 讲官方录像",
+      "url": "https://www.youtube.com/watch?v=3Vaj0Oka_t4",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 第 5 讲官方课件 · LLM systems",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture5.pdf",
+      "status": "downloaded",
+      "bytes": 5439970,
+      "sha256": "8458b0ccf6391b620c8b9349f737e7834065466f5e7637d96ff688b4ceb8fbe9"
+    },
+    {
+      "title": "2026 第 5 讲官方录像",
+      "url": "https://www.youtube.com/watch?v=25KIyaeI_Fg",
+      "type": "video",
+      "status": "external_link"
+    },
+    {
+      "title": "2026 第 6 讲官方课件 · AI Agents",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture6.pdf",
+      "status": "downloaded",
+      "bytes": 3488257,
+      "sha256": "7c6918b22bbb9efc627da8f02c75fe0a78664c1a4ad1e9514f33d81740b8acb0"
+    }
+  ],
+  "discovery": {
+    "discovered_at": "2026-11-06",
+    "course": "cme295",
+    "downloaded": 37,
+    "bytes": 103474644,
+    "records": [
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture1.pdf",
+        "filename": "fall25-cme295-lecture1.pdf",
+        "local": "materials/fall25-cme295-lecture1.pdf",
+        "status": "downloaded",
+        "bytes": 2709737,
+        "sha256": "5dc36dcac9399ed71025f2056d65a846a36eb5235b14ca2ede3625a3ecb9e234"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture2.pdf",
+        "filename": "fall25-cme295-lecture2.pdf",
+        "local": "materials/fall25-cme295-lecture2.pdf",
+        "status": "downloaded",
+        "bytes": 4311026,
+        "sha256": "63cd3d5855567d9358bb34819eed711afe27e14a5de4ae424c9b1d73cfef7433"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture3.pdf",
+        "filename": "fall25-cme295-lecture3.pdf",
+        "local": "materials/fall25-cme295-lecture3.pdf",
+        "status": "downloaded",
+        "bytes": 3576122,
+        "sha256": "e4f3420e9d33e7f6e79ff38f460809f25a13d51e929d12c098587b9a33891c11"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture4.pdf",
+        "filename": "fall25-cme295-lecture4.pdf",
+        "local": "materials/fall25-cme295-lecture4.pdf",
+        "status": "downloaded",
+        "bytes": 4425624,
+        "sha256": "7f3a8d20e703ba62f79baca79a75e65d006aee99c79f7549b447a49671610825"
+      },
+      {
+        "url": "https://cme295.stanford.edu/exams/fall25-cme295-midterm.pdf",
+        "filename": "fall25-cme295-midterm.pdf",
+        "local": "materials/fall25-cme295-midterm.pdf",
+        "status": "downloaded",
+        "bytes": 117412,
+        "sha256": "68dbef76658a1a538fc116192537d268f5497f06277c8210e3db8ebed3102e52"
+      },
+      {
+        "url": "https://cme295.stanford.edu/exams/fall25-cme295-midterm-solutions.pdf",
+        "filename": "fall25-cme295-midterm-solutions.pdf",
+        "local": "materials/fall25-cme295-midterm-solutions.pdf",
+        "status": "downloaded",
+        "bytes": 145082,
+        "sha256": "4621028b1c050fa853fb092c3ea7db80f7c48dce93a73b3bce39dc049a3c86a8"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture5.pdf",
+        "filename": "fall25-cme295-lecture5.pdf",
+        "local": "materials/fall25-cme295-lecture5.pdf",
+        "status": "downloaded",
+        "bytes": 2125890,
+        "sha256": "8e347d02a83706c92af4e9c122c28faa68534e099f5a467491cb03e37826411d"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture6.pdf",
+        "filename": "fall25-cme295-lecture6.pdf",
+        "local": "materials/fall25-cme295-lecture6.pdf",
+        "status": "downloaded",
+        "bytes": 4293461,
+        "sha256": "e60fd83047d73f9d05b9bc1f23f57498849b276ca95b2e02d866260f3ca5b461"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture7.pdf",
+        "filename": "fall25-cme295-lecture7.pdf",
+        "local": "materials/fall25-cme295-lecture7.pdf",
+        "status": "downloaded",
+        "bytes": 2447092,
+        "sha256": "2772ba9a870a3b7e3666f47696e9af6794489ce169de4a0f3ea1b91ce13e7234"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf",
+        "filename": "fall25-cme295-lecture8.pdf",
+        "local": "materials/fall25-cme295-lecture8.pdf",
+        "status": "downloaded",
+        "bytes": 3837744,
+        "sha256": "b63b2ea3734e2da370d4b89e840b53aea95c41acc273cdc167b665d2e40c5f6e"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf",
+        "filename": "fall25-cme295-lecture9.pdf",
+        "local": "materials/fall25-cme295-lecture9.pdf",
+        "status": "downloaded",
+        "bytes": 6983081,
+        "sha256": "b6767a5c30fb0ea26c4ec86d2b6b95f212e8b40f46d065872c1b93fc910440ad"
+      },
+      {
+        "url": "https://cme295.stanford.edu/exams/fall25-cme295-final.pdf",
+        "filename": "fall25-cme295-final.pdf",
+        "local": "materials/fall25-cme295-final.pdf",
+        "status": "downloaded",
+        "bytes": 129702,
+        "sha256": "b72ecf7b2bab594f817b618b9e21e438aa73188740729af658e083964378ab7e"
+      },
+      {
+        "url": "https://cme295.stanford.edu/exams/fall25-cme295-final-solutions.pdf",
+        "filename": "fall25-cme295-final-solutions.pdf",
+        "local": "materials/fall25-cme295-final-solutions.pdf",
+        "status": "downloaded",
+        "bytes": 151655,
+        "sha256": "889f93157bf7e90c18faddee4a08d80aa6a67f758b446b78e9de65af0a318d43"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf",
+        "filename": "fall26-cme295-lecture1.pdf",
+        "local": "materials/fall26-cme295-lecture1.pdf",
+        "status": "downloaded",
+        "bytes": 4072402,
+        "sha256": "556f3df511a4c2f6f935f1ceb432dff9d4093e8b545e8b840beb355a7c88ca42"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf",
+        "filename": "fall26-cme295-lecture2.pdf",
+        "local": "materials/fall26-cme295-lecture2.pdf",
+        "status": "downloaded",
+        "bytes": 6772522,
+        "sha256": "cd6fb64ada1ac430d362042e32e237149d93ab010ae88a869f1c27dcc4b71af3"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf",
+        "filename": "fall26-cme295-lecture3.pdf",
+        "local": "materials/fall26-cme295-lecture3.pdf",
+        "status": "downloaded",
+        "bytes": 9575268,
+        "sha256": "519f23b9014932a6be0e4e3b899c2a731aa5418c20b285f817fcd5fc7b169a20"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf",
+        "filename": "fall26-cme295-lecture4.pdf",
+        "local": "materials/fall26-cme295-lecture4.pdf",
+        "status": "downloaded",
+        "bytes": 4270906,
+        "sha256": "a899a12a9610817e8ff9e236d7e35b51bae7cd08621db9d192a73ed1c5dffec9"
+      },
+      {
+        "url": "https://cme295.stanford.edu/exams/fall26-cme295-midterm.pdf",
+        "filename": "fall26-cme295-midterm.pdf",
+        "local": "materials/fall26-cme295-midterm.pdf",
+        "status": "downloaded",
+        "bytes": 169111,
+        "sha256": "9e5dad1e270308efb4ee300688e2d33824b059ffc5440b27c2304aa762f13202"
+      },
+      {
+        "url": "https://cme295.stanford.edu/exams/fall26-cme295-midterm-solutions.pdf",
+        "filename": "fall26-cme295-midterm-solutions.pdf",
+        "local": "materials/fall26-cme295-midterm-solutions.pdf",
+        "status": "downloaded",
+        "bytes": 177280,
+        "sha256": "04515d1f637d213d8874ac509f38a789ccf475d64777bb1aa4b8aa8fbb18f133"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf",
+        "filename": "fall26-cme295-lecture5.pdf",
+        "local": "materials/fall26-cme295-lecture5.pdf",
+        "status": "downloaded",
+        "bytes": 5439970,
+        "sha256": "8458b0ccf6391b620c8b9349f737e7834065466f5e7637d96ff688b4ceb8fbe9"
+      },
+      {
+        "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf",
+        "filename": "fall26-cme295-lecture6.pdf",
+        "local": "materials/fall26-cme295-lecture6.pdf",
+        "status": "downloaded",
+        "bytes": 3488257,
+        "sha256": "7c6918b22bbb9efc627da8f02c75fe0a78664c1a4ad1e9514f33d81740b8acb0"
+      },
+      {
+        "url": "https://codeload.github.com/afshinea/stanford-cme-295-transformers-large-language-models/zip/refs/heads/main",
+        "filename": "stanford-cme-295-transformers-large-language-models.zip",
+        "local": "materials/stanford-cme-295-transformers-large-language-models.zip",
+        "status": "downloaded",
+        "bytes": 16447012,
+        "sha256": "63be5dc2ad712192fc61be7b12c733588259271f696dc9c15b3b39381cd0466d"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ar/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "ar-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/ar-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 869622,
+        "sha256": "d28c5a5e967a1d316df26c670efb6828c6e2b78156a34c5b3d04ef7eb09c6d2c",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/cs/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "cs-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/cs-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1498062,
+        "sha256": "e1af68e4a25390fcbb4f3881cc92bea54344db8362f88f652f90b1c56bd2be38",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/en/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "en-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/en-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1501353,
+        "sha256": "d40144d042a1021c537bca93947e3f599c15964cc5c5e2a0a96ec6935b1a68ce",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/es/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "es-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/es-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1492861,
+        "sha256": "c447a130a073fa357aa4287d2c3352b73a5de998a573b1ad3e74d93acd587d79",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/fa/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "fa-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/fa-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 847019,
+        "sha256": "3b27c5c3524875673e0143a9fa89132f76b2a7131aeffb154485b36080ee7914",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/fr/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "fr-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/fr-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1492522,
+        "sha256": "82905c7933e1ac0cc98423ecc743c8de4219c501feced738b3526d4618dd0e19",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/it/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "it-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/it-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1484060,
+        "sha256": "a655e440a486d630570a3047ce444b09141c6a6a3c147fc9bd23bb8327c2e555",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ja/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "ja-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/ja-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1026005,
+        "sha256": "a997867fe0e733bc19611d6479ec6e85634801b165e05c2aafd5b5d1ad3ceba7",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ko/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "ko-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/ko-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 989059,
+        "sha256": "60e64de1f438a1db9adc1af76a03a5a004a317912d3357fa0d12c35f3c2e7100",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/pt/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "pt-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/pt-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1500424,
+        "sha256": "2c870fcd13ab7ffb28616d07187711f2272c9f7a01a787041fddfecb7249e5a0",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/ru/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "ru-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/ru-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 864587,
+        "sha256": "d7f74b25225845973b9d28f8495dec032d476df2ff6d420ccf5dd6071778fea5",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/sr/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "sr-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/sr-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 865843,
+        "sha256": "3882b4e927f8d12983ea7b5c67b00d9eb213bea02e2a209c1589bf82cce132c7",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/th/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "th-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/th-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 840268,
+        "sha256": "901f2c0de5ced465a60df318608dd222e73de5bdcb914dc7bdbd81d158348f57",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/tr/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "tr-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/tr-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1503230,
+        "sha256": "6a9e2b9d245c9a762a3a5731f2c11a3a8bf35f8dc623072e8df94b120528e4a1",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/afshinea/stanford-cme-295-transformers-large-language-models/main/zh/cheatsheet-transformers-large-language-models.pdf",
+        "filename": "zh-cheatsheet-transformers-large-language-models.pdf",
+        "local": "materials/zh-cheatsheet-transformers-large-language-models.pdf",
+        "status": "downloaded",
+        "bytes": 1033373,
+        "sha256": "a7f3fad35c1c339aa2d3b98298eb9b62131c7302eafe0413f53141e14106b958",
+        "archive": "stanford-cme-295-transformers-large-language-models.zip"
+      }
+    ],
+    "discovery_pages": [
+      "official-1.html",
+      "official-10.html",
+      "official-0.html",
+      "official-11.html"
+    ],
+    "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
+  }
+}
