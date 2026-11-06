@@ -33,13 +33,14 @@ node scripts/test-cs229.mjs
 node scripts/test-reviewed-course.mjs cs230
 node scripts/test-reviewed-course.mjs cme295
 node scripts/test-reviewed-course.mjs cs336
+node scripts/test-reviewed-course.mjs cs329z
 ```
 
 浏览器中的新课程进度和笔记默认保存在本机 `localStorage`。原站已有 Google/Neon 同步功能保持原样；新课程阅读器未接入登录同步。交互实验是简化的教学模型，不调用任何付费 API。
 
-CS229、CS230、CME295 与 CS336 已完成逐章去重修订，分别覆盖 22、18、9 与 17 讲。每讲有独立数值图解、可编辑代码、完整算例及两道情境自测；共用讲义保留各讲阅读引用。章节通过 `visual` / `codeDemo` 显式绑定本课程实验，缺失配置不会回退到通用演示。新课程用 `experimentScripts` 声明脚本，公共绘图原语在 `zh/ai/assets/lab-core.js`。更新题目时递增 `quizRevision`，仅清除旧答题记录，保留目标进度与笔记。CS329Z 正在逐章复核。
+五门 AI 课程均已完成逐章去重修订：CS229 22 讲、CS230 18 讲、CME295 9 讲、CS336 17 讲、CS329Z 19 讲，共 85 讲。每讲有独立数值图解、可编辑代码、完整算例及两道情境自测；共用讲义保留各讲阅读引用。章节通过 `visual` / `codeDemo` 显式绑定本课程实验，缺失配置不会回退到通用演示。新课程用 `experimentScripts` 声明脚本，公共绘图原语在 `zh/ai/assets/lab-core.js`。更新题目时递增 `quizRevision`，仅清除旧答题记录，保留目标进度与笔记。资料库按归档文件路径去重，保留各讲具体引用及文件的多个来源。
 
-`test-cs229.mjs` 检查真实生成数据与全部章节绑定、代码去重和执行、独立数值基准、参数边界、切章清理及答题迁移；使用 DOM 模拟和 Node VM，不代替浏览器排版检查。
+`test-cs229.mjs` 与 `test-reviewed-course.mjs <课程>` 检查真实生成数据、章节绑定、跨课程代码去重、独立数值基准、参数边界、切章清理、资料库去重及答题迁移；各课数值检查在 `scripts/oracles/`。使用 DOM 模拟和 Node VM，不代替浏览器排版检查。
 
 ### 来源与许可
 

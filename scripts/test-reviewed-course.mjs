@@ -156,6 +156,25 @@ migrated.go('01');check(migrated.document.querySelector('[data-objective="0"]').
 const answer=s.window.COURSE.lessons[0].quiz[0].answer;migrated.click(`.quiz-option[data-question="0"][data-answer="${answer}"]`);saved=JSON.parse(migrated.storage.get(storageKey));eq(saved.quiz.L01.answers[0],answer,'new answer is saved under current revision');
 const restored=createSession({initialStorage:[...migrated.storage]});restored.go('01');eq(restored.document.querySelector(`.quiz-option[data-question="0"][data-answer="${answer}"]`).getAttribute('aria-pressed'),'true','current-revision answer survives reload');eq(restored.document.querySelector('#lesson-note').value,legacyState.notes['01'],'note survives revised quiz reload');
 
+// A source library represents unique archived files; chapter readings keep their own URLs.
+const resourceFixture=createSession({mutateCourse:course=>{
+ course.resources=[
+  {title:'Local A',type:'notes',local:'materials/shared.pdf',url:'https://one.example/shared.pdf'},
+  {title:'Local B alias',type:'notes',local:'materials/shared.pdf',url:'https://two.example/download.pdf'},
+  {title:'Remote page one',type:'notes',url:'https://one.example/remote.pdf#page=1'},
+  {title:'Remote page nine',type:'notes',url:'https://one.example/remote.pdf#page=9'},
+  {title:'Different local A',type:'notes',local:'materials/distinct-a.pdf',url:'https://one.example/same-url.pdf'},
+  {title:'Different local B',type:'notes',local:'materials/distinct-b.pdf',url:'https://one.example/same-url.pdf'}
+ ];
+ for(const lesson of course.lessons)lesson.resources=[];
+ course.lessons[0].resources=[{title:'Chapter-specific reading',type:'notes',local:'materials/shared.pdf',url:'https://chapter.example/shared.pdf#page=7'}];
+}});
+resourceFixture.go('#resources');
+const resourceTitles=[...resourceFixture.document.querySelectorAll('.resource-grid .resource-card h3')].map(element=>element.textContent).sort();
+assert.deepEqual(resourceTitles,['Local A','Remote page one','Different local A','Different local B'].sort(),'source library deduplicates local aliases and remote page anchors while preserving distinct local files');checks++;
+resourceFixture.go('01');
+eq(resourceFixture.document.querySelector('.lesson-aside .resource-link a').getAttribute('href'),'https://chapter.example/shared.pdf#page=7','chapter reading retains its precise original URL');
+
 const oraclePath=path.join(root,'scripts/oracles',`${slug}.mjs`);
 check(fs.existsSync(oraclePath),`${slug} has an independent numerical oracle module`);
 const {default:verify}=await import(pathToFileURL(oraclePath).href);

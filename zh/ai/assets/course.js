@@ -51,7 +51,9 @@
   const resources = [];
   const seenResources = new Set();
   [...(course.resources || []), ...lessons.flatMap(lesson => (lesson.resources || []).map(r => ({...r, lessonId: lesson.id})))].forEach(resource => {
-    const id = (course.experimentsMode === 'lesson' && resource.url ? resource.url.split('#')[0] : resource.url) || resource.local || resource.title;
+    const id = course.experimentsMode === 'lesson'
+      ? resource.local || (resource.url && resource.url.split('#')[0]) || resource.title
+      : resource.url || resource.local || resource.title;
     if (!seenResources.has(id)) { seenResources.add(id); resources.push(resource); }
   });
   const modules = (course.modules || []).map(module => ({...module, lessons: lessons.filter(lesson => lesson.module === module.id)}));
