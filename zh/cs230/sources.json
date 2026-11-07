@@ -14,7 +14,18 @@
       "status": "downloaded",
       "bytes": 6440829,
       "sha256": "5e536fc35feda9510391bea4328606c46f835281854470f94d00546a4977017e",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "Section 1 课件 · 项目起步（Fall 2025）",
+          "url": "https://cs230.stanford.edu/section/1/Section%201%20%28Fall%202025%29.pptx"
+        },
+        {
+          "lesson_id": "18",
+          "title": "Section 1 课件 · 项目起步（Fall 2025）",
+          "url": "https://cs230.stanford.edu/section/1/Section%201%20%28Fall%202025%29.pptx"
+        }
+      ]
     },
     {
       "title": "反向传播课件",
@@ -26,13 +37,8 @@
       "sha256": "360f7eaaf086d567f22eca2bbfdc79c9820baa073dee7c85db86ed2baf4720e4",
       "lesson_references": [
         {
-          "lesson_id": "02",
-          "title": "反向传播课件 · 第9–10页双层网络",
-          "url": "https://cs230.stanford.edu/section/2/Section2.pdf#page=9"
-        },
-        {
           "lesson_id": "03",
-          "title": "反向传播课件 · 第3–10页计算图与网络梯度",
+          "title": "Section 2 课件 · 前向/反向传播",
           "url": "https://cs230.stanford.edu/section/2/Section2.pdf#page=3"
         }
       ]
@@ -48,13 +54,8 @@
       "lesson_references": [
         {
           "lesson_id": "03",
-          "title": "梯度与优化手写讲义 · Fall 2021",
-          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf"
-        },
-        {
-          "lesson_id": "04",
-          "title": "梯度与优化手写讲义 · Fall 2021",
-          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf"
+          "title": "反向传播手写讲义（Fall 2021）",
+          "url": "https://cs230.stanford.edu/syllabus/fall_2021/section3_hand_notes.pdf#page=1"
         }
       ]
     },
@@ -69,8 +70,8 @@
       "lesson_references": [
         {
           "lesson_id": "03",
-          "title": "反向传播练习与解析 · Winter 2020",
-          "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf"
+          "title": "Section 3 练习与解答（Winter 2020）",
+          "url": "https://cs230.stanford.edu/winter2020/section3_exercises.pdf#page=1"
         }
       ]
     },
@@ -85,8 +86,8 @@
       "lesson_references": [
         {
           "lesson_id": "05",
-          "title": "初始化与正则化课件",
-          "url": "https://cs230.stanford.edu/section/4/Section4.pdf"
+          "title": "Section 4 课件 · 初始化与正则化",
+          "url": "https://cs230.stanford.edu/section/4/Section4.pdf#page=2"
         }
       ]
     },
@@ -98,7 +99,18 @@
       "status": "downloaded",
       "bytes": 2389277,
       "sha256": "aa8bd100187f52cae6f3502ea81ce030a0b0a90128a224f8eb190bb76f075d73",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "期中复习课件（2024）· Accuracy + Tuning",
+          "url": "https://cs230.stanford.edu/section/6/Section6.pdf#page=19"
+        },
+        {
+          "lesson_id": "13",
+          "title": "期中复习课件（2024）· Accuracy + Tuning",
+          "url": "https://cs230.stanford.edu/section/6/Section6.pdf#page=16"
+        }
+      ]
     },
     {
       "title": "期中复习 · 2025",
@@ -108,7 +120,23 @@
       "status": "downloaded",
       "bytes": 4404060,
       "sha256": "97b206ca64b0a7051502f3f36b3c50c7bef6a5b340a27fef5971f4d69ca3dc74",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "期中复习课件（2025）· Batch Normalization",
+          "url": "https://cs230.stanford.edu/section/6/review.pptx"
+        },
+        {
+          "lesson_id": "10",
+          "title": "期中复习课件（2025）· CNN 练习",
+          "url": "https://cs230.stanford.edu/section/6/review.pptx"
+        },
+        {
+          "lesson_id": "13",
+          "title": "期中复习课件（2025）· Accuracy + Tuning",
+          "url": "https://cs230.stanford.edu/section/6/review.pptx"
+        }
+      ]
     },
     {
       "title": "期中练习 1",
@@ -118,7 +146,18 @@
       "status": "downloaded",
       "bytes": 233703,
       "sha256": "2b6c676e5192e0e748be6b8a699fb2a09e81fe6a56615c2910647635ecd34dff",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "Winter 2020 期中试题（练习 1）",
+          "url": "https://cs230.stanford.edu/section/6/Practice_1.pdf#page=14"
+        },
+        {
+          "lesson_id": "16",
+          "title": "Winter 2020 期中试题（练习 1）",
+          "url": "https://cs230.stanford.edu/section/6/Practice_1.pdf#page=14"
+        }
+      ]
     },
     {
       "title": "期中练习 1 官方解析",
@@ -128,7 +167,18 @@
       "status": "downloaded",
       "bytes": 294066,
       "sha256": "24c70bfedbfc24544bb32292394b99de451cd259e5a57f46138d62067d5a2917",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "Winter 2020 期中试题解答 · 第 6 题",
+          "url": "https://cs230.stanford.edu/section/6/Practice_1_Sol.pdf#page=22"
+        },
+        {
+          "lesson_id": "16",
+          "title": "Winter 2020 期中试题解答 · 第 5 题",
+          "url": "https://cs230.stanford.edu/section/6/Practice_1_Sol.pdf#page=20"
+        }
+      ]
     },
     {
       "title": "期中练习 2",
@@ -155,75 +205,35 @@
       "url": "https://cs230.stanford.edu/section/1/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "01",
-          "title": "TA Section 1",
-          "url": "https://cs230.stanford.edu/section/1/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 2",
       "url": "https://cs230.stanford.edu/section/2/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "03",
-          "title": "TA Section 2",
-          "url": "https://cs230.stanford.edu/section/2/"
-        },
-        {
-          "lesson_id": "04",
-          "title": "TA Section 2",
-          "url": "https://cs230.stanford.edu/section/2/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 3",
       "url": "https://cs230.stanford.edu/section/3/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "06",
-          "title": "TA Section 3",
-          "url": "https://cs230.stanford.edu/section/3/"
-        },
-        {
-          "lesson_id": "13",
-          "title": "TA Section 3 · 项目复现与云环境补充",
-          "url": "https://cs230.stanford.edu/section/3/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 4",
       "url": "https://cs230.stanford.edu/section/4/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "05",
-          "title": "TA Section 4",
-          "url": "https://cs230.stanford.edu/section/4/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 5",
       "url": "https://cs230.stanford.edu/section/5/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "07",
-          "title": "TA Section 5",
-          "url": "https://cs230.stanford.edu/section/5/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 6",
@@ -237,44 +247,21 @@
       "url": "https://cs230.stanford.edu/section/7/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "08",
-          "title": "TA Section 7",
-          "url": "https://cs230.stanford.edu/section/7/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 8",
       "url": "https://cs230.stanford.edu/section/8/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "09",
-          "title": "TA Section 8",
-          "url": "https://cs230.stanford.edu/section/8/"
-        },
-        {
-          "lesson_id": "16",
-          "title": "TA Section 8 · 通用评估指标背景",
-          "url": "https://cs230.stanford.edu/section/8/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "TA Section 9",
       "url": "https://cs230.stanford.edu/section/9/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "18",
-          "title": "TA Section 9",
-          "url": "https://cs230.stanford.edu/section/9/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "Fall 2018 Lecture 1 · 课程介绍",
@@ -284,7 +271,7 @@
       "lesson_references": [
         {
           "lesson_id": "01",
-          "title": "Fall 2018 Lecture 1 · 课程介绍",
+          "title": "Fall 2018 Lecture 1 · 课程介绍（公开视频）",
           "url": "https://www.youtube.com/watch?v=PySo_6S4ZAg&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=1"
         }
       ]
@@ -294,31 +281,14 @@
       "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2",
       "type": "video",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "02",
-          "title": "Fall 2018 Lecture 2 · 深度学习直觉",
-          "url": "https://www.youtube.com/watch?v=AwQHqWyHRpU&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=2"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "Fall 2018 Lecture 3 · 完整项目周期",
       "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3",
       "type": "video",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "01",
-          "title": "Fall 2018 Lecture 3 · 完整项目周期",
-          "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3"
-        },
-        {
-          "lesson_id": "13",
-          "title": "Fall 2018 Lecture 3 · 完整项目周期",
-          "url": "https://www.youtube.com/watch?v=JUJNGv_sb4Y&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=3"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
@@ -328,7 +298,7 @@
       "lesson_references": [
         {
           "lesson_id": "14",
-          "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN",
+          "title": "Fall 2018 Lecture 4 · 对抗攻击与 GAN（公开视频）",
           "url": "https://www.youtube.com/watch?v=ANszao6YQuM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=4"
         }
       ]
@@ -341,7 +311,7 @@
       "lesson_references": [
         {
           "lesson_id": "16",
-          "title": "Fall 2018 Lecture 5 · AI 与医疗",
+          "title": "Fall 2018 Lecture 5 · AI 与医疗（公开视频）",
           "url": "https://www.youtube.com/watch?v=IM9ANAbufYM&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=5"
         }
       ]
@@ -351,18 +321,7 @@
       "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6",
       "type": "video",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "08",
-          "title": "Fall 2018 Lecture 6 · 项目策略",
-          "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6"
-        },
-        {
-          "lesson_id": "13",
-          "title": "Fall 2018 Lecture 6 · 项目策略",
-          "url": "https://www.youtube.com/watch?v=G5FNYxbW_Qw&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=6"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
@@ -372,7 +331,7 @@
       "lesson_references": [
         {
           "lesson_id": "15",
-          "title": "Fall 2018 Lecture 7 · 神经网络可解释性",
+          "title": "Fall 2018 Lecture 7 · 神经网络可解释性（公开视频）",
           "url": "https://www.youtube.com/watch?v=gCJCgQW_LKc&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=7"
         }
       ]
@@ -385,7 +344,7 @@
       "lesson_references": [
         {
           "lesson_id": "18",
-          "title": "Fall 2018 Lecture 8 · 职业与论文阅读",
+          "title": "Fall 2018 Lecture 8 · 职业建议与论文阅读（公开视频）",
           "url": "https://www.youtube.com/watch?v=733m6qBH-jI&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=8"
         }
       ]
@@ -398,7 +357,7 @@
       "lesson_references": [
         {
           "lesson_id": "17",
-          "title": "Fall 2018 Lecture 9 · 深度强化学习",
+          "title": "Fall 2018 Lecture 9 · 深度强化学习（公开视频）",
           "url": "https://www.youtube.com/watch?v=NP2XqpgTJyo&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=9"
         }
       ]
@@ -408,18 +367,7 @@
       "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10",
       "type": "video",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "11",
-          "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
-          "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10"
-        },
-        {
-          "lesson_id": "12",
-          "title": "Fall 2018 Lecture 10 · 聊天机器人与总结",
-          "url": "https://www.youtube.com/watch?v=IFLstgCNOA4&list=PLoROMvodv4rOABXSygHTsbvUz4G_YQhOb&index=10"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
@@ -429,7 +377,7 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "官方项目代码 · 历史 PyTorch / TensorFlow 示例",
+          "title": "官方项目代码 · GitHub 仓库",
           "url": "https://github.com/cs230-stanford/cs230-code-examples"
         }
       ]
@@ -441,13 +389,8 @@
       "status": "external_link",
       "lesson_references": [
         {
-          "lesson_id": "02",
-          "title": "神经网络与训练示例",
-          "url": "https://cs230.stanford.edu/blog/pytorch/"
-        },
-        {
           "lesson_id": "07",
-          "title": "PyTorch代码教程（历史）",
+          "title": "官方 PyTorch 项目教程（历史版本）",
           "url": "https://cs230.stanford.edu/blog/pytorch/"
         }
       ]
@@ -464,26 +407,14 @@
       "url": "https://cs230.stanford.edu/blog/datapreprocessing/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "06",
-          "title": "数据预处理",
-          "url": "https://cs230.stanford.edu/blog/datapreprocessing/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "项目实施建议",
       "url": "https://cs230.stanford.edu/blog/tips/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "06",
-          "title": "项目实施建议",
-          "url": "https://cs230.stanford.edu/blog/tips/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "官方项目要求",
@@ -503,13 +434,7 @@
       "url": "https://cs230.stanford.edu/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "12",
-          "title": "CS230课程主页：序列模型背景",
-          "url": "https://cs230.stanford.edu/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "12447290",
@@ -519,7 +444,13 @@
       "status": "downloaded",
       "bytes": 4383247,
       "sha256": "d34cf04a8707fcfb17ea6e5e46aa7dd95f3bdba39c83e484f2189ff662b675d8",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "CS230 往届项目报告 · Realistic Image Synthesis and Classification",
+          "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447290.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "12409058",
@@ -539,7 +470,13 @@
       "status": "downloaded",
       "bytes": 3792925,
       "sha256": "7e628d766970f83fedc1538991425e5e778a25015f6db81a07c4b5b4426a37a8",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "16",
+          "title": "CS230 往届项目报告 · Human Protein Atlas Image Classification",
+          "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12449275.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "12365342",
@@ -549,7 +486,13 @@
       "status": "downloaded",
       "bytes": 4257545,
       "sha256": "cc83139024ea2e9b88344dbda8485de307f34f10a92c6cc6343e5da90c9618bc",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "CS230 往届项目报告 · Human Portrait Super Resolution Using GANs",
+          "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12365342.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "8289557",
@@ -559,7 +502,13 @@
       "status": "downloaded",
       "bytes": 4567682,
       "sha256": "3aa4b0501eddaacd861c247ab479062caa017e7ff736429ff5f883961ce86003",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "CS230 往届项目报告 · Image-to-Image Translation with Conditional-GAN",
+          "url": "http://cs230.stanford.edu/projects_spring_2018/reports/8289557.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "12447446",
@@ -569,7 +518,13 @@
       "status": "downloaded",
       "bytes": 4370937,
       "sha256": "457448038764027c1510a2d98505e4fd46bd5479e01ca74f86f90e8c0d99c3d8",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "CS230 往届项目报告 · Photorealistic Neural Style Transfer",
+          "url": "http://cs230.stanford.edu/projects_fall_2018/reports/12447446.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "1802.03446",
@@ -579,7 +534,13 @@
       "status": "downloaded",
       "bytes": 7792727,
       "sha256": "adc31f44152476e321161725cb645d2cd28f1c5a29e967bd49b762db7be7fb84",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "Pros and Cons of GAN Evaluation Measures · Borji 2018",
+          "url": "https://arxiv.org/pdf/1802.03446.pdf#page=3"
+        }
+      ]
     },
     {
       "title": "15811843",
@@ -589,7 +550,13 @@
       "status": "downloaded",
       "bytes": 2726735,
       "sha256": "ecf1f970fd0ab2a9cdfd298c65067640ad5923283aa857a9a5d1c534e0cce0e8",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "CS230 往届项目报告 · Transfer Learning-based CNN Classification for Simpsons Characters",
+          "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811843.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "15811944",
@@ -599,7 +566,13 @@
       "status": "downloaded",
       "bytes": 5837061,
       "sha256": "01ceb49b414bfc769551cf764e40e405cbf333a3926db6f12fb3c0de135f7865",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "18",
+          "title": "CS230 往届项目报告 · Deep Architectural Style Classification",
+          "url": "http://cs230.stanford.edu/projects_winter_2019/reports/15811944.pdf#page=1"
+        }
+      ]
     },
     {
       "title": "Matrix derivatives cribsheet",
@@ -629,7 +602,13 @@
       "status": "downloaded",
       "bytes": 879163,
       "sha256": "857eb1128b3eb061df7649cbe3632349a0b7c0fdf597acd7e87f91fc7b2e377f",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "An empirical study on evaluation metrics of GANs · Xu 等 2018",
+          "url": "https://arxiv.org/pdf/1806.07755.pdf#page=3"
+        }
+      ]
     },
     {
       "title": "1711.10337",
@@ -639,7 +618,13 @@
       "status": "downloaded",
       "bytes": 4634371,
       "sha256": "baf6f1538f15e883ec1a48bab99c94722819555f566d4eee86c35774053daa1b",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "14",
+          "title": "Are GANs Created Equal? · Lucic 等 2018",
+          "url": "https://arxiv.org/pdf/1711.10337.pdf#page=2"
+        }
+      ]
     },
     {
       "title": "CS230GithubTutorial",
@@ -669,7 +654,13 @@
       "status": "downloaded",
       "bytes": 6112337,
       "sha256": "7320dce2d1699f6ba989b9d9da5f627f87db2dc9f364f6c40013f183267915f6",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "A Neural Algorithm of Artistic Style · Gatys 等 2015",
+          "url": "https://arxiv.org/pdf/1508.06576.pdf#page=9"
+        }
+      ]
     },
     {
       "title": "1603.08155",
@@ -679,7 +670,13 @@
       "status": "downloaded",
       "bytes": 10284657,
       "sha256": "6211443c2f4c92881759b850bee824b1660f53c61315d69e8f9486222bac2a87",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "Perceptual Losses for Real-Time Style Transfer · Johnson 等 2016",
+          "url": "https://arxiv.org/pdf/1603.08155.pdf#page=4"
+        }
+      ]
     },
     {
       "title": "1610.07629",
@@ -709,33 +706,27 @@
       "status": "downloaded",
       "bytes": 88854,
       "sha256": "d0e02802ce4aa5ab4932e077a88ebac63674b35f56730d696c1b777c8cf62f04",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "官方项目代码 · cs230-code-examples（存档 zip）",
+          "url": "https://codeload.github.com/cs230-stanford/cs230-code-examples/zip/refs/heads/master"
+        }
+      ]
     },
     {
       "title": "官方视觉代码",
       "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/vision",
       "type": "code",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "10",
-          "title": "官方视觉代码",
-          "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/vision"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "官方序列标注代码",
       "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/nlp",
       "type": "code",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "11",
-          "title": "官方序列标注代码",
-          "url": "https://github.com/cs230-stanford/cs230-code-examples/tree/master/pytorch/nlp"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "Batch Normalization 原始论文 · Ioffe & Szegedy 2015",
@@ -745,13 +736,7 @@
       "status": "downloaded",
       "bytes": 318669,
       "sha256": "f2eb20b4e97409aef516a6506ea76c7c051860eeded3006a6d9687c364847b27",
-      "lesson_references": [
-        {
-          "lesson_id": "05",
-          "title": "Batch Normalization 原始论文 · Ioffe & Szegedy 2015",
-          "url": "https://proceedings.mlr.press/v37/ioffe15.pdf"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "现代神经网络校准 · Guo 等 2017",
@@ -761,13 +746,7 @@
       "status": "downloaded",
       "bytes": 828420,
       "sha256": "df7c93f97204f8a3c2b10f6d5bf5265baac25f00c1ae3b473a3e1dbc102dacb2",
-      "lesson_references": [
-        {
-          "lesson_id": "09",
-          "title": "现代神经网络校准 · Guo 等 2017",
-          "url": "https://proceedings.mlr.press/v70/guo17a/guo17a.pdf"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "Attention Is All You Need · Vaswani 等 2017",
@@ -781,7 +760,7 @@
         {
           "lesson_id": "12",
           "title": "Attention Is All You Need · Vaswani 等 2017",
-          "url": "https://arxiv.org/pdf/1706.03762"
+          "url": "https://arxiv.org/pdf/1706.03762#page=3"
         }
       ]
     },
@@ -790,39 +769,21 @@
       "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "05",
-          "title": "PyTorch BatchNorm1d：训练与推理统计约定",
-          "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "CS230 卷积网络速查 · 作者教学资料",
       "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "10",
-          "title": "CS230 卷积网络速查 · 作者教学资料",
-          "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "CS230 序列模型速查 · 作者教学资料",
       "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-recurrent-neural-networks/",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "11",
-          "title": "CS230 序列模型速查 · 作者教学资料",
-          "url": "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-recurrent-neural-networks/"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "模块讲义 C1M1 · Introduction to deep learning",
@@ -834,7 +795,18 @@
       "sha256": "66012141cb2502f716bf5d8231d481498bb78f9a993c6b90a07808b6f5584fbd",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "模块讲义 C1M1 · What is a Neural Network?",
+          "url": "https://cs230.stanford.edu/files/C1M1.pdf#page=5"
+        },
+        {
+          "lesson_id": "01",
+          "title": "模块讲义 C1M1 · Why is Deep Learning taking off?",
+          "url": "https://cs230.stanford.edu/files/C1M1.pdf#page=13"
+        }
+      ]
     },
     {
       "title": "模块讲义 C1M2 · Neural Network Basics",
@@ -846,7 +818,18 @@
       "sha256": "38df98aec897ad1f90282557145f8fe1b5b9e0963a83f6a9f77ae3df7534fa91",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "模块讲义 C1M2 · Binary classification 与逻辑回归",
+          "url": "https://cs230.stanford.edu/files/C1M2.pdf#page=2"
+        },
+        {
+          "lesson_id": "03",
+          "title": "模块讲义 C1M2 · 计算图与逻辑回归的梯度",
+          "url": "https://cs230.stanford.edu/files/C1M2.pdf#page=17"
+        }
+      ]
     },
     {
       "title": "模块讲义 C1M3 · Shallow Neural Network",
@@ -858,7 +841,23 @@
       "sha256": "e018a9657fa2fe9418689a0dd63cffd750b6f8b749b3d3aa4f38df5729cbff85",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "模块讲义 C1M3 · 单隐藏层网络",
+          "url": "https://cs230.stanford.edu/files/C1M3.pdf#page=2"
+        },
+        {
+          "lesson_id": "03",
+          "title": "模块讲义 C1M3 · 神经网络的梯度下降与反向传播",
+          "url": "https://cs230.stanford.edu/files/C1M3.pdf#page=26"
+        },
+        {
+          "lesson_id": "05",
+          "title": "模块讲义 C1M3 · Random Initialization",
+          "url": "https://cs230.stanford.edu/files/C1M3.pdf#page=34"
+        }
+      ]
     },
     {
       "title": "模块讲义 C1M4 · Deep Neural Networks",
@@ -870,7 +869,18 @@
       "sha256": "f3b48b193e003fc521235ee3155ee80e52ea456d9855d144af0d3809472de46b",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "模块讲义 C1M4 · 深层网络与矩阵维度",
+          "url": "https://cs230.stanford.edu/files/C1M4.pdf#page=2"
+        },
+        {
+          "lesson_id": "03",
+          "title": "模块讲义 C1M4 · 前向与反向的积木",
+          "url": "https://cs230.stanford.edu/files/C1M4.pdf#page=13"
+        }
+      ]
     },
     {
       "title": "模块讲义 C2M1 · Practical aspects of deep learning",
@@ -882,7 +892,28 @@
       "sha256": "111639352b8d575e9ce2702c1f753b4dac59e695c2b658928bcc925f55987f36",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "模块讲义 C2M1 · 数值梯度与梯度检查",
+          "url": "https://cs230.stanford.edu/files/C2M1.pdf#page=33"
+        },
+        {
+          "lesson_id": "05",
+          "title": "模块讲义 C2M1 · Regularization / Dropout",
+          "url": "https://cs230.stanford.edu/files/C2M1.pdf#page=12"
+        },
+        {
+          "lesson_id": "05",
+          "title": "模块讲义 C2M1 · Vanishing/exploding gradients 与初始化",
+          "url": "https://cs230.stanford.edu/files/C2M1.pdf#page=30"
+        },
+        {
+          "lesson_id": "06",
+          "title": "模块讲义 C2M1 · Train/dev/test sets 与 Bias/Variance",
+          "url": "https://cs230.stanford.edu/files/C2M1.pdf#page=2"
+        }
+      ]
     },
     {
       "title": "模块讲义 C2M2 · Optimization algorithms",
@@ -894,7 +925,18 @@
       "sha256": "64992c2b9a8777836c340425210aa72291a544af633cf24a95f41409cd2d8274",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "04",
+          "title": "模块讲义 C2M2 · Optimization algorithms",
+          "url": "https://cs230.stanford.edu/files/C2M2.pdf#page=2"
+        },
+        {
+          "lesson_id": "04",
+          "title": "模块讲义 C2M2 · Momentum / RMSprop / Adam",
+          "url": "https://cs230.stanford.edu/files/C2M2.pdf#page=18"
+        }
+      ]
     },
     {
       "title": "模块讲义 C2M3 · Hyperparameter Tuning, Batch Normalization",
@@ -906,7 +948,28 @@
       "sha256": "18d52371832701c09c5f3e66eef1b8ad040db83a0a9d4059c8d53c59d39e2c0c",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "模块讲义 C2M3 · Softmax regression",
+          "url": "https://cs230.stanford.edu/files/C2M3.pdf#page=24"
+        },
+        {
+          "lesson_id": "04",
+          "title": "模块讲义 C2M3 · Hyperparameter tuning",
+          "url": "https://cs230.stanford.edu/files/C2M3.pdf#page=2"
+        },
+        {
+          "lesson_id": "05",
+          "title": "模块讲义 C2M3 · Batch Normalization",
+          "url": "https://cs230.stanford.edu/files/C2M3.pdf#page=13"
+        },
+        {
+          "lesson_id": "07",
+          "title": "模块讲义 C2M3 · Deep Learning frameworks",
+          "url": "https://cs230.stanford.edu/files/C2M3.pdf#page=28"
+        }
+      ]
     },
     {
       "title": "模块讲义 C3M1 · ML Strategy (1)",
@@ -918,7 +981,33 @@
       "sha256": "bfbecf41cc9d112fe14e7a24e6cdee393b0fd248ed83ceea63d71f64d42c440c",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "模块讲义 C3M1 · Train/dev/test distributions 与 Size of dev and test sets",
+          "url": "https://cs230.stanford.edu/files/C3M1.pdf#page=12"
+        },
+        {
+          "lesson_id": "08",
+          "title": "模块讲义 C3M1 · Comparing to human-level performance",
+          "url": "https://cs230.stanford.edu/files/C3M1.pdf#page=24"
+        },
+        {
+          "lesson_id": "09",
+          "title": "模块讲义 C3M1 · Why ML Strategy / Orthogonalization",
+          "url": "https://cs230.stanford.edu/files/C3M1.pdf#page=2"
+        },
+        {
+          "lesson_id": "09",
+          "title": "模块讲义 C3M1 · Setting up your goal",
+          "url": "https://cs230.stanford.edu/files/C3M1.pdf#page=7"
+        },
+        {
+          "lesson_id": "16",
+          "title": "模块讲义 C3M1 · 医疗影像的人类水平误差",
+          "url": "https://cs230.stanford.edu/files/C3M1.pdf#page=32"
+        }
+      ]
     },
     {
       "title": "模块讲义 C3M2 · ML Strategy (2)",
@@ -930,7 +1019,28 @@
       "sha256": "56774fc71d9321b9835a57b733e67f0a600edfedc7cde3a18ad367c07b3a7c2c",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "模块讲义 C3M2 · Error analysis",
+          "url": "https://cs230.stanford.edu/files/C3M2.pdf#page=2"
+        },
+        {
+          "lesson_id": "08",
+          "title": "模块讲义 C3M2 · Mismatched training and dev/test data",
+          "url": "https://cs230.stanford.edu/files/C3M2.pdf#page=11"
+        },
+        {
+          "lesson_id": "13",
+          "title": "模块讲义 C3M2 · Learning from multiple tasks",
+          "url": "https://cs230.stanford.edu/files/C3M2.pdf#page=22"
+        },
+        {
+          "lesson_id": "13",
+          "title": "模块讲义 C3M2 · End-to-end deep learning",
+          "url": "https://cs230.stanford.edu/files/C3M2.pdf#page=29"
+        }
+      ]
     },
     {
       "title": "模块讲义 C4M1 · Foundations of Convolutional Neural Networks",
@@ -942,7 +1052,13 @@
       "sha256": "f68b16760291f2110c5becd7e33b73d23b552dabda6aca71b200962dc3195df8",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "模块讲义 C4M1 · 卷积网络基础",
+          "url": "https://cs230.stanford.edu/files/C4M1.pdf#page=5"
+        }
+      ]
     },
     {
       "title": "模块讲义 C4M2 · Deep Convolutional Models: case studies",
@@ -954,7 +1070,18 @@
       "sha256": "b3bfa15a2278f784c2367f9fe3a8dc9326a7320a6ce9ae4015d9ffe8656840a9",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "模块讲义 C4M2 · 经典网络案例",
+          "url": "https://cs230.stanford.edu/files/C4M2.pdf#page=2"
+        },
+        {
+          "lesson_id": "13",
+          "title": "模块讲义 C4M2 · Transfer Learning",
+          "url": "https://cs230.stanford.edu/files/C4M2.pdf#page=42"
+        }
+      ]
     },
     {
       "title": "模块讲义 C4M3 · ConvNets Applications (1): Object detection",
@@ -966,7 +1093,18 @@
       "sha256": "15f6747ace9de9fad1ad9a5f40310c2c461a1ef092da5fb2750c5cd0da873337",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "模块讲义 C4M3 · 目标检测与 U-Net",
+          "url": "https://cs230.stanford.edu/files/C4M3.pdf#page=2"
+        },
+        {
+          "lesson_id": "16",
+          "title": "模块讲义 C4M3 · U-Net 的医学影像动机",
+          "url": "https://cs230.stanford.edu/files/C4M3.pdf#page=39"
+        }
+      ]
     },
     {
       "title": "模块讲义 C4M4 · ConvNets Applications (2): Face recognition & neural style transfer",
@@ -978,7 +1116,23 @@
       "sha256": "ddb8bf8d475f788326064f2bc532bbf89ae91b1ca3500b920767aa0f9f4b51dc",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "模块讲义 C4M4 · 人脸识别与神经风格迁移",
+          "url": "https://cs230.stanford.edu/files/C4M4.pdf#page=2"
+        },
+        {
+          "lesson_id": "15",
+          "title": "模块讲义 C4M4 · What are deep ConvNets learning?",
+          "url": "https://cs230.stanford.edu/files/C4M4.pdf#page=21"
+        },
+        {
+          "lesson_id": "16",
+          "title": "模块讲义 C4M4 · 一维与三维卷积",
+          "url": "https://cs230.stanford.edu/files/C4M4.pdf#page=41"
+        }
+      ]
     },
     {
       "title": "模块讲义 C5M1 · Recurrent Neural Networks",
@@ -990,7 +1144,18 @@
       "sha256": "1bd88f9fccdcd1c40cab2915ea218041a1ce2989edd92e644a69b21039d9af4c",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "模块讲义 C5M1 · Recurrent Neural Networks",
+          "url": "https://cs230.stanford.edu/files/C5M1.pdf#page=2"
+        },
+        {
+          "lesson_id": "11",
+          "title": "模块讲义 C5M1 · GRU 与 LSTM",
+          "url": "https://cs230.stanford.edu/files/C5M1.pdf#page=31"
+        }
+      ]
     },
     {
       "title": "模块讲义 C5M2 · Natural Language Processing and Word Embeddings",
@@ -1002,7 +1167,13 @@
       "sha256": "d0752ac39113b571b103f4a1a242c790032c8aa05da4ab428536507548c1362a",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "模块讲义 C5M2 · Word embeddings",
+          "url": "https://cs230.stanford.edu/files/C5M2.pdf#page=2"
+        }
+      ]
     },
     {
       "title": "模块讲义 C5M3 · Sequence models & Attention mechanism",
@@ -1014,7 +1185,18 @@
       "sha256": "99e3d9499a54007fb42593045d0d8eaad840e96668237e10a24aea4448202598",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "模块讲义 C5M3 · Sequence to sequence 与 beam search",
+          "url": "https://cs230.stanford.edu/files/C5M3.pdf#page=2"
+        },
+        {
+          "lesson_id": "12",
+          "title": "模块讲义 C5M3 · Attention model",
+          "url": "https://cs230.stanford.edu/files/C5M3.pdf#page=25"
+        }
+      ]
     },
     {
       "title": "模块讲义 C5M4 · Transformer network",
@@ -1026,7 +1208,13 @@
       "sha256": "2112490dc0e4b05ef2dffe5306ec9543bc30c74badae64bc830a87cf1a85ae70",
       "downloaded_at": "2026-11-07T11:41:02.985613+00:00",
       "note": "CS230 2026 课表公开链接的在线模块幻灯片（DeepLearning.AI 深度学习专项课程）。版权归原作者，按原许可使用。",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "12",
+          "title": "模块讲义 C5M4 · Transformer network",
+          "url": "https://cs230.stanford.edu/syllabus/fall_2025/10/C5_W4.pdf#page=2"
+        }
+      ]
     }
   ],
   "discovery": {
