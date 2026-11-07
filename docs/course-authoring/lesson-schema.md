@@ -41,7 +41,7 @@
 | `sections` | ✅ | 正文段落，顺序跟随讲义，数量不固定 |
 | `quiz` | ✅ | 至少 2 题 |
 | `resources` | ✅* | 本讲讲义链接，带 `#page=` 锚点。*没有讲义时可以为空，但必须写 `sourceStatus` |
-| `sourceStatus` | 按需 | 讲义没公开、不完整，或者用的是往年讲义时**必须**写，会作为提示框显示在讲次页头。有替代资料时，各段仍然要写 `source` |
+| `sourceStatus` | 按需 | 讲义没公开、不完整，或者用的是往年讲义时**必须**写，会作为提示框显示在讲次页头。要写成给读者看的完整句子；讲义已正常发布时**不要写这个字段**（不要写 `"published"` 这类标记）。有替代资料时，各段仍然要写 `source` |
 | `visual` | 按需 | 交互图示的键，固定为 `"<课程>-<id>"` |
 | `codeDemo` | 按需 | 可运行代码的键，固定为 `"<课程>-<id>"` |
 | `exercise` | 按需 | 课后动手练习：`{title, instructions[], deliverable}` |
@@ -69,6 +69,16 @@
 - 讲稿是 `.py` 文件时，写函数名，例如 `lecture_06.py · triton_softmax()`
 - 引用考试题时写清楚，例如 `Midterm (2026) · II.5`
 - 往年讲义要写年份，例如 `Lecture 8 (2025) · p.157（pass^k）`
+- 不连续的页码用逗号分隔，例如 `p.18, 22, 24`
+- 一段引用多份文件时用 `；` 分隔，例如 `cs229-notes3 · p.1–13；cs229-cvxopt · p.7–11`
+- **页码一律用 PDF 的页序**（第几页文件页，也就是 `#page=` 用的数字），不用幻灯片角上印的编号；两者可能差 1
+- `.pptx` 没有 `#page=` 锚点，写幻灯片序号，例如 `Section 1 (2025) · 幻灯片 18–22`
+- 引用代码文件写函数和行号，例如 `train.py · train()（第 40–72 行）`
+- 引用考试题写题号；有官方答案时可以附上答案页，例如 `Midterm (2024) · Q5（答案 Solutions p.6）`
+- 引用作业、官方代码仓库时写清楚位置，例如 `HW1 讲义 · Problem 7`、`lecture5-frameworks · lecture5.ipynb · Part 1`
+- 讲义未发布、只能依据课表和阅读材料的讲次，例如 `课表 · 2026-11-09 条目`、`阅读材料 · Zheng et al. 2023 §3`；嘉宾讲座注明讲者，例如 `Guest lecture slides（讲者姓名）· p.12`
+
+`resources` 链接 PDF 讲义时带 `#page=` 锚点；`.py` 讲稿没有页码，链接源码或官方 trace 页即可。
 
 ## 交互图示（`visual`）
 
@@ -100,8 +110,15 @@ C['cme295-03'] = {
 };
 ```
 
-代码在隔离的 iframe + worker 里运行，1 秒超时，不能联网。
+代码在隔离的 iframe + worker 里运行，1 秒超时，不能联网。测试会在 Node 的 `vm` 里再跑一遍，只提供 `console`：**不要用** `TextEncoder`、`fetch`、`setTimeout`、DOM 等全局对象，需要时自己实现（例如手写 UTF-8 编码）。只能写纯 JS，不能用 PyTorch / NumPy。
 
 ## 数值校验（`scripts/oracles/<课程>.mjs`）
 
 每个带 `visual` 或 `codeDemo` 的讲次都要有一段 `mark('<id>')`，用**独立推导出的数值**核对 `metrics(...)` 和 `logged(...)`，不能复用被测代码。没有模块的讲次不要 `mark`。
+
+"独立"的优先顺序：
+1. 讲义上印出来的数字
+2. 闭式解或手算结果
+3. 用另一种语言（例如 Python）单独重新实现、算出数值后**写死**在 oracle 里
+
+不能在 oracle 里 `import` 或复制 labs 里的函数。

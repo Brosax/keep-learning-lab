@@ -6,7 +6,8 @@
 - [ ] 没有跨讲预支内容；补充内容都标了"补充："
 - [ ] 使用的是老师的例子、记号和术语（英文原词保留）
 - [ ] 讲义未公开的讲次写了 `sourceStatus`，没有编造内容
-- [ ] `resources` 带 `#page=` 锚点，指向本讲讲义
+- [ ] `resources` 带 `#page=` 锚点（PDF 页序），指向本讲讲义；`.py` 讲稿链接源码即可
+- [ ] 已发布讲义的讲次没有 `sourceStatus`
 - [ ] 运行了 `python scripts/sync-lesson-references.py <课程>`
 - [ ] 补充的数字标了"补充"；从截图读出来的标了"补充（读图推断）"
 

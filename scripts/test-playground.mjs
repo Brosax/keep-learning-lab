@@ -5,7 +5,7 @@ const source=fs.readFileSync(new URL('../zh/ai/assets/playground.js',import.meta
 const examples=[...source.matchAll(/code:`([\s\S]*?)`}/g)].map(m=>m[1]);
 assert.equal(examples.length,7);
 for(const code of examples){const logs=[];vm.runInNewContext(code,{console:{log:(...v)=>logs.push(v)}},{timeout:1000});assert.ok(logs.length);assert.ok(!JSON.stringify(logs).includes('null'),'No NaN/Infinity in numerical examples');}
-const {parseHTML}=await import('/tmp/openseei-qa/node_modules/linkedom/esm/index.js');
+const {parseHTML}=await import(process.env.OPENSEEI_QA_MODULE || '/tmp/openseei-qa/node_modules/linkedom/esm/index.js');
 const {window}=parseHTML('<html><body><h1>注意力</h1><div class="lesson-content"></div></body></html>');
 window.COURSE={id:'cme295'};
 let timeout;const ctx=vm.createContext({window,document:window.document,console,setTimeout:fn=>{timeout=fn;return 1},clearTimeout:()=>{}});
