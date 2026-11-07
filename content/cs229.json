@@ -2050,5 +2050,11 @@
   ],
   "notice": "Keep Learning Lab中文社区课程，非Stanford官方授课。课程按历年公开讲义重新编排；第19讲TD与Q-learning明确标为社区扩展。每讲数值例子、练习与交互均为原创教学材料，原始课件遵循各自来源许可。",
   "experimentsMode": "lesson",
+  "experimentScripts": [
+    "assets/lab-core.js",
+    "assets/labs-01-08.js",
+    "assets/labs-09-15.js",
+    "assets/labs-16-22.js"
+  ],
   "quizRevision": "cs229-2026-11-06-v2"
 }

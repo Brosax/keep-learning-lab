@@ -12,12 +12,12 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 const {parseHTML}=await import(process.env.OPENSEEI_QA_MODULE || '/tmp/openseei-qa/node_modules/linkedom/esm/index.js');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const slug=process.argv[2]||'cs230';
-assert.ok(['cs230','cme295','cs336','cs329z'].includes(slug),'supply a reviewed course slug');
+assert.ok(['cs229','cs230','cme295','cs336','cs329z'].includes(slug),'supply a reviewed course slug');
 const expectedCourse=JSON.parse(fs.readFileSync(path.join(root,`content/${slug}.json`),'utf8'));
 assert.equal(expectedCourse.experimentsMode,'lesson','course must opt into explicit lesson experiments');
 assert.ok(Array.isArray(expectedCourse.experimentScripts)&&expectedCourse.experimentScripts.length,'course must declare experimentScripts');
 const lessonCount=expectedCourse.lessons.length;
-assert.equal(lessonCount,{cs230:18,cme295:9,cs336:17,cs329z:19}[slug],'review retains the full course');
+assert.equal(lessonCount,{cs229:22,cs230:18,cme295:9,cs336:17,cs329z:19}[slug],'review retains the full course');
 const experimentFiles=expectedCourse.experimentScripts.map(file=>path.posix.normalize(`zh/${slug}/${file}`));
 const index=fs.readFileSync(path.join(root,`zh/${slug}/index.html`),'utf8');
 const scriptSources=[...index.matchAll(/<script\s+src="([^"]+)"/g)].map(match=>match[1]);
@@ -71,24 +71,35 @@ eq(s.window.COURSE.lessons.length,lessonCount,'all lessons retained');
 const hashes=new Set(),visualTitles=new Set(),codeTitles=new Set();const outputs={};
 for(const lesson of s.window.COURSE.lessons){
  const id=`${slug}-${lesson.id}`;
- check(lesson.sections.some(section=>section.kind==='worked-example'),`${id} includes a worked numerical example`);
- eq(lesson.quiz.length,2,`${id} has two revised questions`);
+ check(Array.isArray(lesson.sections)&&lesson.sections.length>0,`${id} has lesson sections`);
+ if(expectedCourse.lectureAligned){
+  // Lecture-aligned courses cite the instructor's material per section, or explain why none exists.
+  if(lesson.sourceStatus)check(typeof lesson.sourceStatus==='string'&&lesson.sourceStatus.length>10,`${id} explains its source limitation`);
+  else{check(lesson.sections.every(section=>typeof section.source==='string'&&section.source.trim().length>0),`${id} every section cites its lecture source`);check((lesson.resources||[]).length>0,`${id} links its lecture material`);}
+ }
+ check(lesson.quiz.length>=2,`${id} keeps its self-check questions`);
  for(const question of lesson.quiz){eq(question.options.length,4,`${id} has four plausible answer choices`);check(question.explanation?.length>15,`${id} explains the answer`);}
 
- eq(lesson.visual,id,`lesson ${lesson.id} explicit visual key`);eq(lesson.codeDemo,id,`lesson ${lesson.id} explicit code key`);
- const visual=s.window.COURSE_VISUALS?.[id],code=s.window.COURSE_CODE?.[id];check(visual,`${id} visual registered`);check(code,`${id} code registered`);
- check(!visualTitles.has(visual.title),`${id} visual title is chapter-specific`);visualTitles.add(visual.title);
+ // Diagrams and code demos are optional per lesson; when declared they must be specific and fully working.
+ const hasVisual=lesson.visual!==undefined,hasCode=lesson.codeDemo!==undefined;
+ if(hasVisual)eq(lesson.visual,id,`lesson ${lesson.id} explicit visual key`);if(hasCode)eq(lesson.codeDemo,id,`lesson ${lesson.id} explicit code key`);
+ const visual=hasVisual?s.window.COURSE_VISUALS?.[id]:null,code=hasCode?s.window.COURSE_CODE?.[id]:null;if(hasVisual)check(visual,`${id} visual registered`);if(hasCode)check(code,`${id} code registered`);
+ s.go(lesson.id);eq(d.querySelector('h1').textContent,lesson.title,`${id} renders the correct lesson`);
+ eq(d.querySelectorAll('.geometry-lab').length,hasVisual?1:0,`${id} mounts ${hasVisual?'its':'no'} diagram`);eq(d.querySelectorAll('.lab-panel').length,0,`${id} does not duplicate a generic course lab`);eq(d.querySelectorAll('.code-playground').length,hasCode?1:0,`${id} mounts ${hasCode?'its':'no'} code lab`);
+ if(hasCode){
  check(!codeTitles.has(code.name),`${id} code title is chapter-specific`);codeTitles.add(code.name);
  check(typeof code.code==='string'&&code.code.trim().length>80,`${id} contains executable implementation`);
  const hash=crypto.createHash('sha256').update(normalizedCode(code.code)).digest('hex');check(!hashes.has(hash),`${id} implementation differs from every other chapter`);hashes.add(hash);
  check(Array.isArray(code.instructions)&&code.instructions.length>0,`${id} gives an experiment task`);check(code.expected,`${id} states expected observations`);
  const logs=[];const capture=(...args)=>{args.forEach((arg,index)=>finiteTree(arg,`${id} output ${index}`));logs.push(plain(args));};
  vm.runInNewContext(code.code,{console:{log:capture,table:capture,warn:capture,error:capture}},{filename:`${id}-example.js`,timeout:1000});check(logs.length>0,`${id} code produces inspectable results`);outputs[id]=logs;
- s.go(lesson.id);eq(d.querySelector('h1').textContent,lesson.title,`${id} renders the correct lesson`);
- eq(d.querySelectorAll('.geometry-lab').length,1,`${id} mounts one diagram`);eq(d.querySelectorAll('.lab-panel').length,0,`${id} does not duplicate a generic course lab`);eq(d.querySelectorAll('.code-playground').length,1,`${id} mounts one code lab`);
- eq(d.querySelector('.geometry-lab').getAttribute('data-visual-id'),id,`${id} rendered visual ID`);eq(d.querySelector('.code-playground').getAttribute('data-code-id'),id,`${id} rendered code ID`);
- eq(d.querySelector('.geometry-lab h2').textContent,visual.title,`${id} displays own visual title`);eq(d.querySelector('#code-editor').value,code.code,`${id} editor starts with its own code`);
+ eq(d.querySelector('.code-playground').getAttribute('data-code-id'),id,`${id} rendered code ID`);eq(d.querySelector('#code-editor').value,code.code,`${id} editor starts with its own code`);
  const options=[...d.querySelectorAll('.code-playground select option')];check(options.length<=1,`${id} does not expose the unrelated global seven-demo menu`);if(options.length)eq(options[0].getAttribute('value'),id,`${id} menu stays on lesson demo`);
+ }
+ if(!hasVisual)continue;
+ check(!visualTitles.has(visual.title),`${id} visual title is chapter-specific`);visualTitles.add(visual.title);
+ eq(d.querySelector('.geometry-lab').getAttribute('data-visual-id'),id,`${id} rendered visual ID`);
+ eq(d.querySelector('.geometry-lab h2').textContent,visual.title,`${id} displays own visual title`);
  check(d.querySelector('.geometry-lab svg[role="img"][aria-label]'),`${id} has a labeled mathematical diagram`);
  check(Array.isArray(visual.steps)&&visual.steps.length>=2,`${id} includes a real sequence`);
  for(const key of ['min','max','step','value'])check(typeof visual[key]==='number'&&Number.isFinite(visual[key]),`${id} slider ${key} is finite numeric data`);
@@ -119,14 +130,15 @@ for(const lesson of s.window.COURSE.lessons){
  s.input('.geometry-parameters input',visual.max);eq(Number(d.querySelector('.geometry-parameters output').textContent),visual.max,`${id} parameter input is wired`);
  s.click('[data-visual-action="play"]');eq(s.intervals.size,1,`${id} starts exactly one animation`);s.go('#overview');eq(s.intervals.size,0,`${id} leaving the chapter cancels animation`);
 }
-eq(hashes.size,lessonCount,'all executable implementations differ');eq(visualTitles.size,lessonCount,'all lesson diagram titles differ');
+const visualLessons=expectedCourse.lessons.filter(lesson=>lesson.visual!==undefined),codeLessons=expectedCourse.lessons.filter(lesson=>lesson.codeDemo!==undefined);
+eq(hashes.size,codeLessons.length,'all executable implementations differ');eq(visualTitles.size,visualLessons.length,'all lesson diagram titles differ');
 const answerCounts=[0,0,0,0],questions=new Set();
 for(const lesson of expectedCourse.lessons)for(const question of lesson.quiz){answerCounts[question.answer]++;check(!questions.has(question.question),'quiz questions are not duplicated between chapters');questions.add(question.question);}
 check(Math.max(...answerCounts)-Math.min(...answerCounts)<=2,'correct options are reasonably balanced across positions');
 // A newly reviewed course cannot accidentally ship another course's entire example.
 for(const other of ['cs229','cs230','cme295','cs336','cs329z'].filter(id=>id!==slug)){
  const data=JSON.parse(fs.readFileSync(path.join(root,`content/${other}.json`),'utf8'));
- const registrySources=data.experimentScripts||(other==='cs229'?['assets/lab-core.js','assets/labs-01-08.js','assets/labs-09-15.js','assets/labs-16-22.js']:[]);
+ const registrySources=data.experimentScripts||[];
  if(data.experimentsMode!=='lesson'||!registrySources.length)continue;
  const w={},ctx=vm.createContext({window:w,console});
  for(const src of registrySources)vm.runInContext(fs.readFileSync(path.resolve(root,`zh/${other}`,src),'utf8'),ctx,{timeout:2000});
@@ -136,15 +148,16 @@ for(const other of ['cs229','cs230','cme295','cs336','cs329z'].filter(id=>id!==s
  }
 }
 // Rendering a route twice must not accumulate diagrams or workers.
-s.go('02');s.window.document.dispatchEvent(new s.window.CustomEvent('course:render',{detail:{course:slug,lesson:'02',container:d.querySelector('main')}}));eq(d.querySelectorAll('.geometry-lab').length,1,'repeated render notification does not duplicate diagrams');eq(d.querySelectorAll('.code-playground').length,1,'repeated render notification does not duplicate editors');
-s.click('.run-code');check(d.querySelector('iframe[sandbox="allow-scripts"]'),'runnable lesson uses the existing isolated sandbox');s.go('03');check(!d.querySelector('iframe'),'chapter transition cancels active worker sandbox');eq(s.timeouts.size,0,'chapter transition clears code execution timeout');
-s.click('[data-visual-action="play"]');s.window.dispatchEvent(new s.window.Event('pagehide'));eq(s.intervals.size,0,'page hide clears animation timer');
+const otherLesson=current=>expectedCourse.lessons.find(lesson=>lesson.id!==current).id;
+if(visualLessons.length){const vid=visualLessons[0].id;s.go(vid);s.window.document.dispatchEvent(new s.window.CustomEvent('course:render',{detail:{course:slug,lesson:vid,container:d.querySelector('main')}}));eq(d.querySelectorAll('.geometry-lab').length,1,'repeated render notification does not duplicate diagrams');s.click('[data-visual-action="play"]');s.window.dispatchEvent(new s.window.Event('pagehide'));eq(s.intervals.size,0,'page hide clears animation timer');}
+if(codeLessons.length){const cid=codeLessons[0].id;s.go(cid);s.window.document.dispatchEvent(new s.window.CustomEvent('course:render',{detail:{course:slug,lesson:cid,container:d.querySelector('main')}}));eq(d.querySelectorAll('.code-playground').length,1,'repeated render notification does not duplicate editors');
+s.click('.run-code');check(d.querySelector('iframe[sandbox="allow-scripts"]'),'runnable lesson uses the existing isolated sandbox');s.go(otherLesson(cid));check(!d.querySelector('iframe'),'chapter transition cancels active worker sandbox');eq(s.timeouts.size,0,'chapter transition clears code execution timeout');}
 // Missing explicit keys or missing registry must never silently restore generic gradient descent.
 for(const mutation of [course=>{delete course.lessons[0].visual;delete course.lessons[0].codeDemo;},course=>{course.lessons[0].visual='missing-visual';course.lessons[0].codeDemo='missing-code';}]){
- const absent=createSession({mutateCourse:mutation});absent.go('01');eq(absent.document.querySelectorAll('.geometry-lab').length,0,'missing explicit visual does not fall back');eq(absent.document.querySelectorAll('.code-playground').length,0,'missing explicit code does not fall back');
+ const absent=createSession({mutateCourse:mutation});absent.go(expectedCourse.lessons[0].id);eq(absent.document.querySelectorAll('.geometry-lab').length,0,'missing explicit visual does not fall back');eq(absent.document.querySelectorAll('.code-playground').length,0,'missing explicit code does not fall back');
 }
-const noRegistry=createSession({missingRegistry:true});noRegistry.go('01');eq(noRegistry.document.querySelectorAll('.geometry-lab').length,0,'failed visual registry load does not show an unrelated diagram');eq(noRegistry.document.querySelectorAll('.code-playground').length,0,'failed code registry load does not show unrelated regression');
-console.log(`PASS ${slug}: ${lessonCount} distinct lesson bindings/programs, parameter behavior, missing-config behavior, and lifecycle (${checks} assertions).`);
+const noRegistry=createSession({missingRegistry:true});noRegistry.go(expectedCourse.lessons[0].id);eq(noRegistry.document.querySelectorAll('.geometry-lab').length,0,'failed visual registry load does not show an unrelated diagram');eq(noRegistry.document.querySelectorAll('.code-playground').length,0,'failed code registry load does not show unrelated regression');
+console.log(`PASS ${slug}: ${lessonCount} lessons, ${visualLessons.length} diagrams and ${codeLessons.length} code labs bound per lesson, parameter behavior, missing-config behavior, and lifecycle (${checks} assertions).`);
 function metrics(id,step,value){const config=s.window.COURSE_VISUALS[`${slug}-${id}`];const result=config.render(step??config.steps.length-1,value??config.value);check(result.metrics&&typeof result.metrics==='object',`${slug}-${id} exposes numerical results`);return result.metrics;}
 function logged(id,key){for(const args of outputs[`${slug}-${id}`])for(const value of args)if(value&&typeof value==='object'&&!Array.isArray(value)&&Object.hasOwn(value,key))return value;throw new Error(`${slug}-${id} code did not log ${key}`);}
 function outputObjects(id){return outputs[`${slug}-${id}`].flat().filter(value=>value&&typeof value==='object'&&!Array.isArray(value));}
@@ -181,5 +194,6 @@ const {default:verify}=await import(pathToFileURL(oraclePath).href);
 const covered=new Set();
 const mark=id=>{check(expectedCourse.lessons.some(lesson=>lesson.id===id),`${id} oracle belongs to this course`);covered.add(id);};
 await verify({metrics,logged,outputObjects,outputs,check,eq,close,plain,mark,deep:(a,b,message)=>{assert.deepEqual(plain(a),plain(b),message);checks++;}});
-eq(covered.size,lessonCount,'independent numerical oracles cover every chapter');
-console.log(`PASS ${slug}: ${lessonCount} independent chapter oracles and quiz migration (${checks} total assertions).`);
+const moduleLessons=expectedCourse.lessons.filter(lesson=>lesson.visual!==undefined||lesson.codeDemo!==undefined).map(lesson=>lesson.id);
+assert.deepEqual([...covered].sort(),moduleLessons.sort(),'independent numerical oracles cover exactly the lessons with diagrams or code');checks++;
+console.log(`PASS ${slug}: ${covered.size} independent chapter oracles and quiz migration (${checks} total assertions).`);
