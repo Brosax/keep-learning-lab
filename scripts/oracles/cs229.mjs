@@ -1,88 +1,110 @@
-/** Independent numerical checks for CS229's lesson-scoped labs (moved from test-cs229.mjs).
- * Expected values come from fixed textbook examples, never from the implementation under test. */
-export default function verify({metrics,logged,outputObjects,check,eq,close,plain,mark,deep}){
+/** Independent numerical checks for CS229's lecture-aligned modules:
+ * 02 visual (notes1 batch LMS), 06 code (main_notes §5.3 kernel LMS), 07 visual (notes3 margins), 12 code (notes6 perceptron bound),
+ * 13 code (notes7a k-means), 14 visual (notes7b/8 EM), 16 visual (notes10 PCA), 18 code (notes12 value/policy iteration).
+ * Expected values are derived by hand or separately in NumPy, never by re-running the lab code. */
+export default function verify({metrics,logged,outputObjects,check,eq,close,deep,mark}){
  let m;
-// 01: an independent population table: 100 diseased / 9,900 healthy.
-mark('01');
-m=metrics('01');close(m.truePositive,90,1e-10,'01 true positives');close(m.falsePositive,495,1e-10,'01 false positives');close(m.posterior,2/13,1e-12,'01 Bayes posterior');close(logged('01','posterior').posterior,2/13,1e-12,'01 executable Bayes posterior');
-close(metrics('01',undefined,10).posterior,2/3,1e-12,'01 posterior responds to a larger base rate');
-// 02: residuals [-1,-3,-5] imply grad_w=-13/3, grad_b=-3.
-mark('02');
-m=metrics('02',3,.1);close(m.w,13/30,1e-12,'02 first simultaneous weight update');close(m.b,.3,1e-12,'02 first simultaneous bias update');close(m.loss,3.387037037037037,1e-12,'02 first-step half mean squared loss');
-const regressionLogs=outputObjects('02');const firstRegression=regressionLogs.find(value=>value.step===1);check(firstRegression,'02 prints first update');close(firstRegression.w,13/30,1e-12,'02 executable simultaneous update');check(regressionLogs.find(value=>value.step===20).loss<firstRegression.loss,'02 further fitting lowers loss');
-// 03: sigmoid(log 3)=3/4; changing a decision threshold is not retraining.
-mark('03');
-m=metrics('03');close(m.probability,.75,1e-12,'03 sigmoid probability');close(m.loss,Math.log(4/3),1e-12,'03 Bernoulli log loss');close(m.gradient,-.25,1e-12,'03 logit gradient');eq(m.prediction,1,'03 default threshold predicts positive');
-m=metrics('03',undefined,.8);close(m.probability,.75,1e-12,'03 threshold does not change probability');eq(m.prediction,0,'03 higher threshold changes only decision');close(logged('03','probability').probability,.75,1e-12,'03 code probability');
-// 04: Poisson natural-parameter gradient e^theta-y is 2-3=-1.
-mark('04');
-m=metrics('04');close(m.theta,Math.log(2),1e-12,'04 initial natural parameter');close(m.gradient,-1,1e-12,'04 Poisson gradient');close(m.nextTheta,Math.log(2)+.1,1e-12,'04 natural parameter update');close(m.nextMean,2*Math.exp(.1),1e-12,'04 recomputed count mean');close(logged('04','nextMean').nextMean,2*Math.exp(.1),1e-12,'04 code log-link update');
-// 05: equal-variance Gaussian log density ratio at x=1.5 is one.
-mark('05');
-m=metrics('05');close(m.posteriorOne,1/(1+Math.exp(-1)),1e-12,'05 Gaussian class posterior');close(metrics('05',undefined,1).posteriorOne,.5,1e-12,'05 class midpoint posterior');close(logged('05','posteriorOne').posteriorOne,1/(1+Math.exp(-1)),1e-12,'05 code posterior');
-// 06: (1*3+2*4)^2=121 and feature products are 9,48,64.
-mark('06');
-m=metrics('06');close(m.linearDot,11,1e-12,'06 original-space inner product');close(m.kernel,121,1e-10,'06 quadratic kernel');close(m.explicit,121,1e-10,'06 explicit feature inner product');m.contributions.forEach((value,i)=>close(value,[9,48,64][i],1e-10,`06 feature contribution ${i}`));
-const kernelLog=logged('06','direct');close(kernelLog.direct,121,1e-10,'06 code direct kernel');close(kernelLog.absoluteError,0,1e-10,'06 code explicit/kernel equivalence');
-// 07: points +/-2 are always two units from the boundary x=0; norm cost changes.
-mark('07');
-m=metrics('07');close(m.functionalMargin,1,1e-12,'07 canonical functional margin');close(m.geometricMargin,2,1e-12,'07 geometric distance');close(m.objective,.125,1e-12,'07 canonical objective');
-close(metrics('07',undefined,1).geometricMargin,2,1e-12,'07 geometric distance is scale invariant');close(metrics('07',undefined,.2).hinge,.6,1e-12,'07 correct classification can still violate margin');close(logged('07','bestWeight').bestWeight,.5,1e-10,'07 code finds the minimum-norm separating solution');
-// 08: central difference is compared with an independent chain-rule calculation.
-mark('08');
-const sigmoidValue=1/(1+Math.exp(-.4)),chain=4*(sigmoidValue-1)*sigmoidValue*(1-sigmoidValue);
-m=metrics('08');close(m.activation,sigmoidValue,1e-12,'08 activation');close(m.loss,(sigmoidValue-1)**2,1e-12,'08 unscaled square loss');close(m.analytic,chain,1e-12,'08 chain rule');close(m.numeric,chain,1e-8,'08 independent central difference');close(logged('08','analytic').analytic,chain,1e-12,'08 executable chain rule');
-// 09: splitting 3/3 produces two 2:1 nodes; a 2/4 split gives gain 1/4.
-mark('09');
-m=metrics('09');close(m.parentGini,.5,1e-12,'09 balanced parent Gini');close(m.weightedGini,4/9,1e-12,'09 weighted child Gini');close(m.gain,1/18,1e-12,'09 default Gini improvement');eq(m.bestSplit,2,'09 ties choose the leftmost optimum');
-close(metrics('09',undefined,2).gain,.25,1e-12,'09 best split gain');close(metrics('09',undefined,4).gain,.25,1e-12,'09 symmetric optimum has equal gain');close(logged('09','selected').selected.gain,1/18,1e-12,'09 executable default split');
-// 10: the ridge stationary condition is (1+lambda)w=2.
-mark('10');
-m=metrics('10');close(m.weight,1,1e-12,'10 ridge optimum');close(m.dataLoss,.5,1e-12,'10 fit cost at optimum');close(m.penalty,.5,1e-12,'10 regularizer cost');close(m.total,1,1e-12,'10 total objective');
-close(metrics('10',undefined,0).weight,2,1e-12,'10 unregularized optimum');close(metrics('10',undefined,4).weight,.4,1e-12,'10 larger penalty shrinks weight');close(logged('10','gradient').gradient,0,1e-12,'10 executable stationary point');
-// 11: 2H exp(-2m epsilon^2) <= delta first holds at m=415.
-mark('11');
-m=metrics('11');eq(m.required,415,'11 sample bound rounds upward');close(m.unionBound,200*Math.exp(-8.3),1e-12,'11 union bound includes hypothesis count');check(metrics('11',undefined,414).unionBound>.05,'11 414 samples do not meet the guarantee');check(m.unionBound<=.05,'11 415 samples meet the guarantee');
-eq(logged('11','required').required,415,'11 executable sample complexity');const boundLogs=outputObjects('11').filter(value=>Object.hasOwn(value,'failureBound'));eq(boundLogs.length,2,'11 prints both sides of the integer boundary');check(boundLogs[0].failureBound>.05&&boundLogs[1].failureBound<=.05,'11 executable bound brackets target');
-// 12: at the second point, zero margin must trigger an update.
-mark('12');
-m=metrics('12');eq(m.secondScore,0,'12 second point lies on current boundary');eq(m.updatedSecond,1,'12 zero margin updates');deep(m.weights,[3,-1],'12 two updates give exact weights');close(m.positiveMargin,5,1e-12,'12 retained first-point margin');close(m.negativeMargin,5,1e-12,'12 corrected second-point margin');
-const noUpdate=metrics('12',undefined,4);eq(noUpdate.updatedSecond,0,'12 positive signed margin skips update');deep(noUpdate.weights,[4,1],'12 skipped update preserves weights');deep(logged('12','finalWeights').finalWeights,[3,-1],'12 executable update trace');
-// 13: centroid means 1 and 9 reduce four squared errors from 8 to 4.
-mark('13');
-m=metrics('13');deep(m.centers,[1,9],'13 final centers are cluster means');deep(m.labels,[0,0,1,1],'13 final partition');close(metrics('13',0).sse,8,1e-12,'13 initial assignment objective');close(m.sse,4,1e-12,'13 minimized within-cluster SSE');
-const kmeansLogs=outputObjects('13').filter(value=>Object.hasOwn(value,'sse'));check(kmeansLogs.length>=2,'13 code shows alternating phases');kmeansLogs.slice(1).forEach((value,index)=>check(value.sse<=kmeansLogs[index].sse+1e-12,'13 assignment and mean updates never increase SSE'));close(kmeansLogs.at(-1).sse,4,1e-12,'13 executable converged SSE');
-// 14: the middle point's log odds are 3/2; endpoints have log odds +/-9/2.
-mark('14');
-m=metrics('14');const leftResponsibility=1/(1+Math.exp(-4.5)),middleResponsibility=1/(1+Math.exp(-1.5));
-close(m.responsibilities[0][0],leftResponsibility,1e-12,'14 left-point responsibility');close(m.responsibilities[1][0],middleResponsibility,1e-12,'14 middle-point responsibility');close(m.responsibilities[2][0],1-leftResponsibility,1e-12,'14 right-point responsibility');
-m.responsibilities.forEach((row,index)=>close(row[0]+row[1],1,1e-12,`14 responsibilities normalize for point ${index}`));close(m.weights[0]+m.weights[1],1,1e-12,'14 mixture weights normalize');close(m.weights[0]*m.means[0]+m.weights[1]*m.means[1],1/3,1e-12,'14 updated mixture preserves empirical mean');
-close(m.means[0],-.532049269383,1e-10,'14 first weighted mean');close(m.means[1],1.66356284815,1e-10,'14 second weighted mean');close(m.variances[0],.285241870249,1e-10,'14 variance centers on updated first mean');close(m.variances[1],.587559952442,1e-10,'14 variance centers on updated second mean');close(m.logLikelihoodBefore,-5.112748373614,1e-10,'14 initial observed likelihood');close(m.logLikelihoodAfter,-4.07626334746,1e-10,'14 complete M-step observed likelihood');check(m.improvement>1,'14 complete EM improves likelihood');
-const emCode=logged('14','responsibilities');close(emCode.responsibilities[1][0],middleResponsibility,1e-12,'14 executable responsibilities');close(emCode.after,-4.07626334746,1e-10,'14 executable complete M-step');
-// 15: Lambda=(2,1), Psi=diag(1,4) gives posterior precision 21/4.
-mark('15');
-m=metrics('15');deep(m.covariance,[[5,2],[2,5]],'15 correlated observations from diagonal noise plus rank-one factor');close(m.posteriorMean,17/21,1e-12,'15 latent posterior mean');close(m.posteriorVariance,4/21,1e-12,'15 latent posterior uncertainty');close(metrics('15',undefined,9).posteriorMean,25/61,1e-12,'15 noisier first coordinate receives less weight');close(metrics('15',undefined,9).posteriorVariance,36/61,1e-12,'15 noisier measurement increases uncertainty');close(logged('15','posteriorPrecision').posteriorPrecision,21/4,1e-12,'15 executable posterior precision');
-// 16: diagonal covariance diag(2,1/2) has total variance 5/2.
-mark('16');
-m=metrics('16');close(m.projectedVariance,2,1e-12,'16 principal-axis variance');close(m.reconstructionMSE,.5,1e-12,'16 rank-one reconstruction error');close(m.retainedFraction,.8,1e-12,'16 explained-variance fraction');const orthogonal=metrics('16',undefined,90);close(orthogonal.projectedVariance,.5,1e-12,'16 orthogonal direction variance');close(orthogonal.reconstructionMSE,2,1e-12,'16 orthogonal reconstruction error');close(logged('16','projectedVariance').projectedVariance,2,1e-12,'16 executable PCA geometry');
-// 17: a 45-degree rotation has zero covariance but never both coordinates nonzero.
-mark('17');
-m=metrics('17');close(m.varianceU,1,1e-12,'17 whitened first variance');close(m.varianceV,1,1e-12,'17 whitened second variance');close(m.covariance,0,1e-12,'17 whitened covariance');close(m.fourthCrossMoment,0,1e-12,'17 higher-order dependence is visible');close(m.kurtosisU,-1,1e-12,'17 mixed-signal excess kurtosis');close(m.contrast,2,1e-12,'17 mixed-signal kurtosis contrast');
-const independent=metrics('17',undefined,0);close(independent.fourthCrossMoment,1,1e-12,'17 original independent coordinates factorize fourth moment');close(independent.contrast,4,1e-12,'17 independent directions maximize this contrast');close(logged('17','fourthCrossMoment').fourthCrossMoment,0,1e-12,'17 executable non-independence witness');
-// 18: Bellman updates are synchronous; A does not see B's new value immediately.
-mark('18');
-m=metrics('18',2);close(m.currentA,2.5,1e-12,'18 first synchronous A update');close(m.currentB,2,1e-12,'18 first synchronous B update');m=metrics('18',3);close(m.currentA,2.5,1e-12,'18 second update uses old B');close(m.currentB,3,1e-12,'18 second B update');m=metrics('18');close(m.fixedA,3,1e-12,'18 optimal A value');close(m.fixedB,4,1e-12,'18 geometric-series B value');close(metrics('18',undefined,.2).fixedA,2.5,1e-12,'18 smaller discount switches to immediate reward');close(logged('18','fixedA').A,3,1e-8,'18 executable Bellman iteration converges');
-// 19: distinguish max backup, sampled-action backup, and terminal reward.
-mark('19');
-m=metrics('19');close(m.target,4.6,1e-12,'19 Q-learning target');close(m.tdError,2.6,1e-12,'19 temporal difference');close(m.qNew,3.3,1e-12,'19 half-step Q update');close(m.sarsaTarget,3.7,1e-12,'19 SARSA follows selected action');close(m.sarsaNew,2.85,1e-12,'19 SARSA update');close(m.terminalNew,1.5,1e-12,'19 terminal state suppresses bootstrap');close(metrics('19',undefined,0).qNew,2,1e-12,'19 zero learning rate preserves value');close(metrics('19',undefined,1).qNew,4.6,1e-12,'19 full learning rate reaches target');close(logged('19','qNew').qNew,3.3,1e-12,'19 executable off-policy update');
-// 20: enumerate the four state paths independently: .021, .054, .0016, .0144.
-mark('20');
-m=metrics('20');close(m.alpha10,.3,1e-12,'20 first forward component');close(m.alpha11,.04,1e-12,'20 second forward component');close(m.alpha20,.0226,1e-12,'20 summed paths ending in state zero');close(m.alpha21,.0684,1e-12,'20 summed paths ending in state one');close(m.sequenceProbability,.021+.054+.0016+.0144,1e-12,'20 forward probability sums all paths');close(m.viterbiProbability,.054,1e-12,'20 Viterbi selects one best path');eq(m.bestStart,0,'20 best path begins in zero');eq(m.bestEnd,1,'20 best path ends in one');check(m.sequenceProbability>m.viterbiProbability,'20 sum and max produce different quantities');eq(metrics('20',undefined,.9).bestEnd,0,'20 changing transition probability changes best path');close(logged('20','sequenceProbability').sequenceProbability,.091,1e-12,'20 executable forward recursion');close(logged('20','viterbi').viterbi.probability,.054,1e-12,'20 executable Viterbi enumeration');
-// 21: conditioning a joint Gaussian uses a Schur complement, then adds new noise.
-mark('21');
-m=metrics('21');close(m.posteriorMean,.64,1e-12,'21 GP conditional mean');close(m.latentVariance,.488,1e-12,'21 latent-function uncertainty');close(m.observationVariance,.738,1e-12,'21 new observation includes noise');close(m.observationVariance-m.latentVariance,.25,1e-12,'21 variance difference equals noise variance');const noisyGP=metrics('21',undefined,1);close(noisyGP.posteriorMean,.4,1e-12,'21 noisier observation shrinks conditional mean');close(noisyGP.latentVariance,.68,1e-12,'21 noisier observation increases latent uncertainty');close(logged('21','observationVariance').observationVariance,.738,1e-12,'21 executable predictive variance');
-// 22: rare-event evaluation must distinguish accuracy, precision, recall and cost.
-mark('22');
-m=metrics('22');for(const [key,value] of Object.entries({TP:8,FN:2,FP:4,TN:86,accuracy:.94,precision:2/3,recall:.8,cost:14}))close(m[key],value,1e-12,`22 default ${key}`);
-const strictThreshold=metrics('22',undefined,.9);eq(strictThreshold.TP,2,'22 threshold equality counts positive');eq(strictThreshold.FP,1,'22 stricter threshold removes false positives');eq(strictThreshold.cost,41,'22 strict threshold increases asymmetric cost despite fewer false positives');close(logged('22','precision').precision,2/3,1e-12,'22 executable precision');eq(logged('22','cost').cost,14,'22 executable error cost');
+
+ // 02. cs229-notes1 p.4–11: batch LMS on the five Portland rows (x in 1000 ft², y in $1000).
+ // Reference values computed separately in NumPy via θ_k = θ* + (I − αXᵀX)^k (θ₀ − θ*), not by the lab loop:
+ // XᵀX = [[5, 10.52], [10.52, 23.751872]], Xᵀy = [1871, 4203.712], θ* = (26.78988053, 165.11887808), J* = 3124.46216868.
+ mark('02');m=metrics('02');
+ close(m.thetaStar[0],26.78988053,1e-6,'02 normal-equation intercept');close(m.thetaStar[1],165.11887808,1e-6,'02 normal-equation slope');
+ close(m.jStar,3124.46216868,1e-6,'02 least-squares cost at θ*');
+ close(m.lambdaMax,28.46772708,1e-6,'02 largest eigenvalue of XᵀX');close(m.lambdaMin,0.28414492,1e-6,'02 smallest eigenvalue of XᵀX');
+ // α = 0.03: first step = α·Xᵀy = (56.13, 126.11136); within 0.1% of J* first at k = 260.
+ close(m.first[0],56.13,1e-9,'02 first batch step θ₀');close(m.first[1],126.11136,1e-9,'02 first batch step θ₁');
+ eq(m.diverged,false,'02 α = 0.03 converges');eq(m.firstNear,260,'02 α = 0.03 reaches 0.1% of J* at step 260');eq(m.zigzag,false,'02 α < 1/λ_max does not zig-zag');
+ close(m.last[0],26.7974095,1e-6,'02 θ₀ after 1000 steps');close(m.last[1],165.11550302,1e-6,'02 θ₁ after 1000 steps');
+ m=metrics('02',undefined,.005);eq(m.firstNear,-1,'02 α = 0.005 is still outside 0.1% after 1000 steps');close(m.last[0],36.27909663,1e-6,'02 slow θ₀ after 1000 steps');close(m.lastCost,3139.82586574,1e-6,'02 slow cost after 1000 steps');
+ m=metrics('02',undefined,.07);eq(m.zigzag,true,'02 α > 1/λ_max overshoots the valley');eq(m.firstNear,803,'02 α = 0.07 converges slowly while oscillating');close(m.first[1],294.25984,1e-9,'02 α = 0.07 first step overshoots');
+ m=metrics('02',undefined,.075);eq(m.diverged,true,'02 α > 2/λ_max ≈ 0.07025 diverges');eq(m.divergedAt,70,'02 |θ| exceeds 10⁶ at step 70');
+ // 06. main_notes §5.3: θ after 200 batch steps, computed separately in NumPy via β_{t+1} = (I − αK)β_t + αy and θ = Φᵀβ.
+ mark('06');
+m=logged('06','theta');
+ [0.72379447,-0.46565941,-0.30913824,0.41455895].forEach((v,i)=>close(m.theta[i],v,1e-6,`06 θ_${i} after 200 steps`));
+ [1.02233182,0.43399076,-0.451857,-0.66108886,0.38041775].forEach((v,i)=>close(m.beta[i],v,1e-6,`06 β_${i} after 200 steps`));
+ close(m.J,0.09489991874942509,1e-6,'06 training cost after 200 steps');
+ m=logged('06','maxGap');check(m.maxGap<1e-12,'06 θ = Σβᵢφ(x⁽ⁱ⁾) holds to rounding error');
+ close(m.predExplicit,0.37555170767970225,1e-9,'06 explicit prediction at x = 0.75');close(m.predKernel,0.37555170767970225,1e-9,'06 kernel prediction Σβᵢ K(x⁽ⁱ⁾, x) at x = 0.75');
+ // ⟨x, z⟩ = 0.5 + 2 − 2 = 0.5 ⇒ 1 + 0.5 + 0.25 + 0.125 = 1.875; 1 + 3 + 9 + 27 = 40 features.
+ m=logged('06','featureDim');close(m.featureDim,40,0,'06 1 + d + d² + d³ monomials');close(m.explicitInner,1.875,1e-12,'06 explicit 40-dim inner product');close(m.kernelInner,1.875,1e-12,'06 kernel (5.9) inner product');
+ // 07. cs229-notes3 p.3–7. Hand derivation: the closest opposite pair is +1 = (2, 2) and −4 = (0, 0.5), difference (2, 1.5) ∝ (4, 3).
+ // With u = (0.8, 0.6): positive projections 2.8, 4.1, 3.7; negative 0.3, −0.2, −0.2 ⇒ γ* = (2.8 − 0.3)/2 = 1.25, b = −1.55,
+ // canonical ‖w‖ = 1/γ* = 0.8 and ½‖w‖² = 0.32. The optimum direction is atan(3/4) = 36.8699°.
+ mark('07');m=metrics('07');
+ close(m.optimalGamma,1.25,1e-6,'07 optimal geometric margin');close(m.optimalDegree,36.87,0.006,'07 optimal direction atan(3/4)');close(m.optimalObjective,.32,1e-5,'07 half squared norm at the optimum');
+ // 45°: u = (1, 1)/√2; positive projections 4/√2, 6/√2, 5/√2; negative 0.5/√2, −0.5/√2, 0 ⇒ γ = 3.5/(2√2).
+ close(m.gamma,3.5/(2*Math.SQRT2),1e-12,'07 geometric margin at 45 degrees');close(m.b,-4.5/(2*Math.SQRT2),1e-12,'07 best offset at 45 degrees');
+ deep(m.support,[0,3],'07 closest points at 45 degrees are +1 and -4');
+ close(Math.min(...m.functional),1,1e-12,'07 canonical functional margin');m.functional.forEach((v,i)=>close(m.functional2[i],2*v,1e-12,`07 doubling (w,b) doubles functional margin ${i}`));
+ close(m.normW,2*Math.SQRT2/3.5,1e-12,'07 canonical norm equals 1/gamma');
+ // 0°: positive x₁ min 2, negative x₁ max 0.5 ⇒ γ = 0.75. 180°: projections −x₁ ⇒ γ = (−3.5 − 1)/2 = −2.25 (not separable).
+ m=metrics('07',undefined,0);close(m.gamma,.75,1e-12,'07 margin at 0 degrees');eq(m.separable,true,'07 0 degrees separates');
+ m=metrics('07',undefined,180);close(m.gamma,-2.25,1e-12,'07 margin at 180 degrees is negative');eq(m.separable,false,'07 reversed direction misclassifies');
+ m=metrics('07',undefined,90);close(m.gamma,.25,1e-12,'07 margin at 90 degrees');
+ check(metrics('07',undefined,35).gamma<1.25&&metrics('07',undefined,40).gamma<1.25,'07 grid directions stay below the optimum');
+ // 12. cs229-notes6 p.1–3. Hand simulation (θ starts at 0, g(0) = 1):
+ // pass 1: mistakes on (1,−2), (−2,−1), (−3,1) → θ = (−1,2), (1,3), (4,2); pass 2: mistake on (1,−2) → θ = (3,4); pass 3: none.
+ // ‖x‖ ≤ √10, u = (0.6, 0.8) gives margins 2, 1, 1, 2, 1, 1 ⇒ γ = 1 and (D/γ)² = 10.
+ mark('12');
+m=logged('12','bound');close(m.D,Math.sqrt(10),1e-4,'12 D = max norm');close(m.gamma,1,1e-12,'12 margin of u');close(m.bound,10,1e-4,'12 mistake bound (D/γ)²');
+ m=logged('12','totalMistakes');eq(m.totalMistakes,4,'12 perceptron makes four mistakes');deep(m.perPass,[3,1,0],'12 mistakes per pass');deep(m.finalTheta,[3,4],'12 final θ');eq(m.withinBound,true,'12 mistakes stay within the bound');
+ const rows=outputObjects('12').filter(row=>Object.hasOwn(row,'thetaU'));
+ eq(rows.length,4,'12 one trace row per mistake');
+ deep(rows.map(r=>r.thetaU),[1,3,4,5],'12 θᵀu after each mistake');deep(rows.map(r=>r.normSq),[5,10,20,25],'12 ‖θ‖² after each mistake');
+ rows.forEach(r=>{check(r.thetaU>=r.kGamma-1e-9,`12 inequality (3) θᵀu ≥ kγ at k=${r.k}`);check(r.normSq<=r.kD2+1e-9,`12 inequality (5) ‖θ‖² ≤ kD² at k=${r.k}`);});
+ // 13. cs229-notes7a p.1–3. Hand derivation:
+ // init {0,3,6} = (0,0),(8,0),(4,7): every point already goes to its own blob; J = 1+1 + 1+1 + 1+1 = 6, means (1/3,1/3), (25/3,1/3), (13/3,22/3)
+ // each blob then contributes 2/9 + 5/9 + 5/9 = 4/3, so J = 4, and the next assignment is unchanged.
+ // init {0,1,5} = (0,0),(1,0),(8,1): blob A splits {(0,0),(0,1)} / {(1,0)}, (8,1) takes blobs B and C:
+ // J₀ = 0+0+1 + 1+2+0 + 52+45+65 = 166; means (0,.5), (1,0), (38/6, 23/6) give J = .5 + 302/3 − .5 = 302/3 ≈ 100.6667.
+ mark('13');
+ const runs=outputObjects('13').filter(r=>Object.hasOwn(r,'initIndex'));
+ eq(runs.length,2,'13 two initialisations');
+ const [good,bad]=runs;
+ deep(good.initIndex,[0,3,6],'13 first run uses one point per blob');
+ deep(good.history.map(h=>[h.Jassign,h.Jupdate]),[[6,4],[4,4]],'13 good run distortion trace');
+ close(good.finalJ,4,1e-9,'13 good run converges to J = 4');deep(good.assignment,[0,0,0,1,1,1,2,2,2],'13 good run recovers the three blobs');
+ deep(bad.history.map(h=>[h.Jassign,h.Jupdate]),[[166,100.6667],[100.6667,100.6667]],'13 bad run distortion trace');
+ close(bad.finalJ,302/3,1e-4,'13 bad run is stuck in a local optimum');deep(bad.assignment,[0,1,0,2,2,2,2,2,2],'13 bad run merges two blobs');
+ deep(bad.centroids[2],[6.3333,3.8333],'13 merged centroid is the mean of six points');
+ eq(good.nonIncreasing,true,'13 J never increases (good run)');eq(bad.nonIncreasing,true,'13 J never increases (bad run)');
+ const best=logged('13','best');deep(best.best,[0,3,6],'13 keep the run with the lowest distortion');close(best.bestJ,4,1e-9,'13 best distortion');
+ // 14. cs229-notes7b p.2–3 and cs229-notes8 p.5–8. Reference values computed separately in NumPy.
+ // At θ⁽⁰⁾ the two components share σ² = 1 and φ = ½, so w₁⁽ⁱ⁾ = σ(−x⁽ⁱ⁾) (log-ratio −x): e.g. x = −2 gives σ(2) = 0.880797.
+ mark('14');m=metrics('14',undefined,0);
+ [0.880797,0.817574,0.731059,0.622459,0.182426,0.119203,0.075858,0.029312].forEach((v,i)=>close(m.w1[i],v,1e-6,`14 initial responsibility ${i}`));
+ close(m.loglik,-21.219024,1e-6,'14 initial log-likelihood');
+ close(m.next.phi[0],0.432336,1e-6,'14 first M-step mixing weight');close(m.next.mu[0],-0.932712,1e-6,'14 first M-step mean 1');close(m.next.mu[1],1.701262,1e-6,'14 first M-step mean 2');
+ close(m.next.v[0],1.434349,1e-6,'14 first M-step variance 1');close(m.next.v[1],2.45221,1e-6,'14 first M-step variance 2');
+ m=metrics('14');eq(m.t,1,'14 default shows one completed iteration');close(m.loglik,-15.930212,1e-6,'14 log-likelihood after one iteration');
+ m=metrics('14',undefined,3);close(m.mu[0],-1.276333,1e-6,'14 mean 1 after three iterations');close(m.v[0],0.33708,1e-6,'14 variance 1 after three iterations');close(m.loglik,-13.971744,1e-6,'14 log-likelihood after three iterations');
+ m=metrics('14',undefined,12);close(m.loglik,-13.362287,1e-6,'14 converged log-likelihood');close(m.mu[1],2.374261,1e-6,'14 converged mean 2');close(m.phi[0],0.499873,1e-6,'14 converged mixing weight');
+ m.loglikPath.forEach((l,i)=>{if(i)check(l>=m.loglikPath[i-1]-1e-12,`14 EM never decreases ℓ (${i})`);});
+ // 16. cs229-notes10 p.2–5. Reference values computed separately in NumPy:
+ // mean (5.5, 2.9125), σ = (√5.25, 0.8823796), correlation ρ = 0.8686628109; for a 2×2 correlation matrix the eigenvalues are 1 ± ρ
+ // with eigenvectors at 45° and 135°, and uᵀΣu = 1 + ρ·sin(2·angle).
+ mark('16');const rho=0.8686628109217006;m=metrics('16');
+ close(m.mean[0],5.5,1e-12,'16 mean of x1');close(m.mean[1],2.9125,1e-12,'16 mean of x2');close(m.sd[0],Math.sqrt(5.25),1e-12,'16 sd of x1');close(m.sd[1],0.8823796,1e-6,'16 sd of x2');
+ close(m.Sigma[0][0],1,1e-12,'16 normalised variance 1');close(m.Sigma[1][1],1,1e-12,'16 normalised variance 2');close(m.Sigma[0][1],rho,1e-9,'16 correlation');
+ close(m.lambda[0],1+rho,1e-9,'16 top eigenvalue 1 + ρ');close(m.lambda[1],1-rho,1e-9,'16 second eigenvalue 1 − ρ');close(m.principalDeg,45,1e-6,'16 principal direction at 45 degrees');
+ close(m.projectedVariance,1,1e-12,'16 variance along x1 axis');close(m.residual,1,1e-12,'16 residual along x1 axis');
+ m=metrics('16',undefined,45);close(m.projectedVariance,1+rho,1e-9,'16 variance along the principal eigenvector');close(m.residual,1-rho,1e-9,'16 minimum reconstruction error');
+ m=metrics('16',undefined,30);close(m.projectedVariance,1+rho*Math.sin(Math.PI/3),1e-9,'16 variance at 30 degrees');
+ m=metrics('16',undefined,135);close(m.projectedVariance,1-rho,1e-9,'16 variance along the minor direction');
+ for(const d of [0,20,60,90,120,180])check(metrics('16',undefined,d).projectedVariance<=1+rho+1e-12,`16 no direction beats λ₁ (${d})`);
+ // 18. cs229-notes12 p.2–6. Closed form for the optimal "always →" policy (γ = 0.9, slip 0.2):
+ // V(4) = 10, V(3) = γ(0.8·10 + 0.2·V(3)) ⇒ V(3) = 7.2/0.82; V(s) = 0.72·V(s+1)/0.82 for s = 2, 1; V(0) = 1, V(5) = 0.
+ // Iteration counts (22 synchronous sweeps, 19 right-to-left asynchronous sweeps, tolerance 1e−10) were reproduced separately in NumPy.
+ mark('18');
+ const v3=7.2/0.82,v2=0.72*v3/0.82,v1=0.72*v2/0.82,expected=[1,v1,v2,v3,10,0];
+m=logged('18','Vsync');eq(m.gamma,.9,'18 default discount');
+ m.Vsync.forEach((v,s)=>close(v,expected[s],1e-4,`18 synchronous value iteration V*(${s})`));
+ m.Vasync.forEach((v,s)=>close(v,expected[s],1e-4,`18 asynchronous value iteration V*(${s})`));
+ eq(m.syncIters,22,'18 synchronous sweeps to converge');eq(m.asyncIters,19,'18 right-to-left asynchronous sweeps to converge');
+ check(m.asyncIters<m.syncIters,'18 asynchronous updates reuse fresh values');
+ m=logged('18','Vpi');m.Vpi.forEach((v,s)=>close(v,expected[s],1e-4,`18 policy iteration V^π(${s})`));
+ eq(m.piIters,4,'18 policy evaluations until the policy is stable');deep(m.policyHistory,['←←←','←←→','←→→','→→→'],'18 greedy improvements spread from the big reward');
+ deep(m.optimalPolicy,['→','→','→'],'18 optimal policy heads to the reward 10');check(m.maxGap<1e-9,'18 value and policy iteration agree');
 }

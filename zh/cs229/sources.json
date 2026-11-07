@@ -16,9 +16,9 @@
       "sha256": "87176d102dbeb431dc61f99f8e13a39b02209a01298eeafccf7ed69f7d69e1f8",
       "lesson_references": [
         {
-          "lesson_id": "21",
-          "title": "CS229 综合讲义（公开版）",
-          "url": "https://cs229.stanford.edu/main_notes.pdf"
+          "lesson_id": "06",
+          "title": "综合讲义 · PDF第50–60页：第5章 核方法",
+          "url": "https://cs229.stanford.edu/main_notes.pdf#page=50"
         }
       ]
     },
@@ -27,13 +27,7 @@
       "url": "https://cs229.stanford.edu/materials.html-full",
       "type": "website",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "21",
-          "title": "经典公开资料页",
-          "url": "https://cs229.stanford.edu/materials.html-full"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "当前官网：Summer 2026，部分课程链接需 Stanford 登录",
@@ -53,8 +47,8 @@
       "lesson_references": [
         {
           "lesson_id": "21",
-          "title": "高斯过程官方补充讲义",
-          "url": "https://cs229.stanford.edu/section/cs229-gaussian_processes.pdf"
+          "title": "高斯过程讲义 · PDF第1–14页",
+          "url": "https://cs229.stanford.edu/section/cs229-gaussian_processes.pdf#page=1"
         }
       ]
     },
@@ -89,8 +83,8 @@
       "lesson_references": [
         {
           "lesson_id": "01",
-          "title": "线性代数复习（经典公开版）",
-          "url": "https://cs229.stanford.edu/section/cs229-linalg.pdf"
+          "title": "线性代数复习 · PDF第1–26页",
+          "url": "https://cs229.stanford.edu/section/cs229-linalg.pdf#page=1"
         }
       ]
     },
@@ -105,8 +99,8 @@
       "lesson_references": [
         {
           "lesson_id": "01",
-          "title": "概率论复习（经典公开版）",
-          "url": "https://cs229.stanford.edu/section/cs229-prob.pdf"
+          "title": "概率论复习 · PDF第1–11页",
+          "url": "https://cs229.stanford.edu/section/cs229-prob.pdf#page=1"
         }
       ]
     },
@@ -121,17 +115,17 @@
       "lesson_references": [
         {
           "lesson_id": "02",
-          "title": "讲义1 · PDF第3–15页：线性回归与最小二乘",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=3"
+          "title": "讲义1 · PDF第1–15页：Part I 线性回归",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=1"
         },
         {
           "lesson_id": "03",
-          "title": "讲义1 · PDF第16–21页：逻辑回归",
+          "title": "讲义1 · PDF第16–21页：Part II 分类与逻辑回归",
           "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=16"
         },
         {
           "lesson_id": "04",
-          "title": "讲义1 · PDF第22–30页：GLM与指数族",
+          "title": "讲义1 · PDF第22–30页：Part III 广义线性模型",
           "url": "https://cs229.stanford.edu/notes_archive/cs229-notes1.pdf#page=22"
         }
       ]
@@ -147,8 +141,8 @@
       "lesson_references": [
         {
           "lesson_id": "05",
-          "title": "讲义 2：生成式分类器",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes2.pdf"
+          "title": "讲义2 · PDF第1–14页：Part IV 生成式学习算法",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes2.pdf#page=1"
         }
       ]
     },
@@ -162,14 +156,9 @@
       "sha256": "ad2da36847599c795a42742e5020e360328599216ca30154d5f8bcf1768c5c94",
       "lesson_references": [
         {
-          "lesson_id": "06",
-          "title": "讲义3 · PDF第14–18页：核函数与特征映射",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf#page=14"
-        },
-        {
           "lesson_id": "07",
-          "title": "讲义3 · PDF第3–7、19–20页：几何间隔与软间隔",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf#page=3"
+          "title": "讲义3 · PDF第1–13、19–25页：Part V 支持向量机",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes3.pdf#page=1"
         }
       ]
     },
@@ -184,8 +173,8 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "凸优化 I",
-          "url": "https://cs229.stanford.edu/section/cs229-cvxopt.pdf"
+          "title": "凸优化复习 I · PDF第7–11、13页：凸优化问题",
+          "url": "https://cs229.stanford.edu/section/cs229-cvxopt.pdf#page=7"
         }
       ]
     },
@@ -200,8 +189,8 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "凸优化 II",
-          "url": "https://cs229.stanford.edu/section/cs229-cvxopt2.pdf"
+          "title": "凸优化复习 II · PDF第1–7页：拉格朗日对偶与 KKT",
+          "url": "https://cs229.stanford.edu/section/cs229-cvxopt2.pdf#page=1"
         }
       ]
     },
@@ -216,8 +205,8 @@
       "lesson_references": [
         {
           "lesson_id": "08",
-          "title": "深度学习讲义（Summer 2023 目录版）",
-          "url": "https://cs229.stanford.edu/summer2023/cs229-notes-deep_learning.pdf"
+          "title": "深度学习讲义 · PDF第1–15页",
+          "url": "https://cs229.stanford.edu/summer2023/cs229-notes-deep_learning.pdf#page=1"
         }
       ]
     },
@@ -232,8 +221,8 @@
       "lesson_references": [
         {
           "lesson_id": "09",
-          "title": "决策树讲义（Summer 2023）",
-          "url": "https://cs229.stanford.edu/summer2023/cs229-notes-decision_trees.pdf"
+          "title": "决策树讲义 · PDF第1–11页",
+          "url": "https://cs229.stanford.edu/summer2023/cs229-notes-decision_trees.pdf#page=1"
         }
       ]
     },
@@ -248,8 +237,8 @@
       "lesson_references": [
         {
           "lesson_id": "09",
-          "title": "Boosting 补充（Fall 2022）",
-          "url": "https://cs229.stanford.edu/notes2022fall/boosting.pdf"
+          "title": "Boosting 幻灯片（Fall 2022）· PDF第2–49页",
+          "url": "https://cs229.stanford.edu/notes2022fall/boosting.pdf#page=2"
         }
       ]
     },
@@ -264,13 +253,8 @@
       "lesson_references": [
         {
           "lesson_id": "10",
-          "title": "讲义 5：正则化与模型选择",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf"
-        },
-        {
-          "lesson_id": "22",
-          "title": "讲义 5：正则化与模型选择",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf"
+          "title": "讲义5 · PDF第1–8页：Part VII 正则化与模型选择",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes5.pdf#page=1"
         }
       ]
     },
@@ -284,14 +268,9 @@
       "sha256": "69775fc122bc234a69432a7fc54c21dbcf8e99baa481d6f7a3e7f70eb01c4b70",
       "lesson_references": [
         {
-          "lesson_id": "10",
-          "title": "机器学习实践建议",
-          "url": "https://cs229.stanford.edu/materials/ML-advice.pdf"
-        },
-        {
           "lesson_id": "22",
-          "title": "机器学习实践建议",
-          "url": "https://cs229.stanford.edu/materials/ML-advice.pdf"
+          "title": "Advice for applying Machine Learning（Andrew Ng）· PDF第1–30页",
+          "url": "https://cs229.stanford.edu/materials/ML-advice.pdf#page=1"
         }
       ]
     },
@@ -306,13 +285,13 @@
       "lesson_references": [
         {
           "lesson_id": "10",
-          "title": "讲义4 · PDF第1–3页：偏差、方差与泛化误差",
+          "title": "讲义4 · PDF第1–2页：偏差与方差",
           "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf#page=1"
         },
         {
           "lesson_id": "11",
-          "title": "讲义4 · PDF第4–7页：风险、有限假设类与一致收敛",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf#page=4"
+          "title": "讲义4 · PDF第2–11页：Part VI 学习理论",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes4.pdf#page=2"
         }
       ]
     },
@@ -327,8 +306,8 @@
       "lesson_references": [
         {
           "lesson_id": "12",
-          "title": "讲义 6：在线学习与感知机",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes6.pdf"
+          "title": "讲义6 · PDF第1–3页：在线学习与感知机",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes6.pdf#page=1"
         }
       ]
     },
@@ -343,8 +322,8 @@
       "lesson_references": [
         {
           "lesson_id": "13",
-          "title": "讲义 7a：k-means",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7a.pdf"
+          "title": "讲义7a · PDF第1–3页：k-means 聚类",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7a.pdf#page=1"
         }
       ]
     },
@@ -359,8 +338,8 @@
       "lesson_references": [
         {
           "lesson_id": "14",
-          "title": "讲义 7b：高斯混合",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7b.pdf"
+          "title": "讲义7b · PDF第1–4页：高斯混合与 EM",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes7b.pdf#page=1"
         }
       ]
     },
@@ -375,8 +354,8 @@
       "lesson_references": [
         {
           "lesson_id": "14",
-          "title": "讲义 8：EM 算法",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes8.pdf"
+          "title": "讲义8 · PDF第1–8页：Part IX EM 算法",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes8.pdf#page=1"
         }
       ]
     },
@@ -391,8 +370,8 @@
       "lesson_references": [
         {
           "lesson_id": "15",
-          "title": "讲义 9：因子分析",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes9.pdf"
+          "title": "讲义9 · PDF第1–9页：Part X 因子分析",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes9.pdf#page=1"
         }
       ]
     },
@@ -407,8 +386,8 @@
       "lesson_references": [
         {
           "lesson_id": "16",
-          "title": "讲义 10：PCA",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes10.pdf"
+          "title": "讲义10 · PDF第1–6页：Part XI 主成分分析",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes10.pdf#page=1"
         }
       ]
     },
@@ -423,8 +402,8 @@
       "lesson_references": [
         {
           "lesson_id": "17",
-          "title": "讲义 11：ICA",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes11.pdf"
+          "title": "讲义11 · PDF第1–6页：Part XII 独立成分分析",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes11.pdf#page=1"
         }
       ]
     },
@@ -439,13 +418,13 @@
       "lesson_references": [
         {
           "lesson_id": "18",
-          "title": "讲义 12：强化学习与控制",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf"
+          "title": "讲义12 · PDF第1–6页：MDP、价值迭代与策略迭代",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf#page=1"
         },
         {
           "lesson_id": "19",
-          "title": "官方讲义12：MDP、模型学习与规划背景（非TD/Q-learning讲义）",
-          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf"
+          "title": "讲义12 · PDF第6–15页：学习 MDP 模型与连续状态 MDP",
+          "url": "https://cs229.stanford.edu/notes_archive/cs229-notes12.pdf#page=6"
         }
       ]
     },
@@ -460,8 +439,8 @@
       "lesson_references": [
         {
           "lesson_id": "20",
-          "title": "隐马尔可夫模型补充",
-          "url": "https://cs229.stanford.edu/section/cs229-hmm.pdf"
+          "title": "隐马尔可夫模型补充讲义 · PDF第1–13页",
+          "url": "https://cs229.stanford.edu/section/cs229-hmm.pdf#page=1"
         }
       ]
     },
@@ -476,8 +455,8 @@
       "lesson_references": [
         {
           "lesson_id": "21",
-          "title": "多元高斯分布",
-          "url": "https://cs229.stanford.edu/section/gaussians.pdf"
+          "title": "多元高斯分布 · PDF第1–10页",
+          "url": "https://cs229.stanford.edu/section/gaussians.pdf#page=1"
         }
       ]
     },
@@ -492,8 +471,8 @@
       "lesson_references": [
         {
           "lesson_id": "21",
-          "title": "高斯分布补充",
-          "url": "https://cs229.stanford.edu/section/more_on_gaussians.pdf"
+          "title": "高斯分布补充 · PDF第1–11页：封闭性质",
+          "url": "https://cs229.stanford.edu/section/more_on_gaussians.pdf#page=1"
         }
       ]
     },
@@ -508,8 +487,8 @@
       "lesson_references": [
         {
           "lesson_id": "22",
-          "title": "隐私补充（Fall 2022）",
-          "url": "https://cs229.stanford.edu/notes2022fall/privacy.pdf"
+          "title": "隐私与机器学习幻灯片（Fall 2022）· PDF第1–27页",
+          "url": "https://cs229.stanford.edu/notes2022fall/privacy.pdf#page=1"
         }
       ]
     },
@@ -519,13 +498,7 @@
       "type": "reading",
       "status": "external_link",
       "provenance": "community_extension_reference",
-      "lesson_references": [
-        {
-          "lesson_id": "19",
-          "title": "社区扩展参考：Sutton & Barto《Reinforcement Learning》第二版第6章，§6.5 Q-learning",
-          "url": "http://incompleteideas.net/book/the-book-2nd.html"
-        }
-      ]
+      "lesson_references": []
     }
   ],
   "discovery": {
