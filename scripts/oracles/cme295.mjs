@@ -1,29 +1,41 @@
-/** Independent numerical/behavioral checks for CME295's explicitly scoped labs. */
+/** Independent numerical checks for CME295's lecture-aligned modules (02 visual, 04 visual, 05 code).
+ * Expected values are derived by hand / separately in Python, not by re-running the lab code. */
 export default function verify({metrics,logged,check,eq,close,deep,mark}){
  const near=(a,b,message,tolerance=1e-10)=>close(a,b,tolerance,message);
  let m;
- // 01. q dot R(delta*pi/2)k = 4 cos(angle) + 3 sin(angle).
- mark('01');m=metrics('01');m.rotQ.forEach((v,i)=>near(v,[1,2][i],`01 query component ${i}`));m.rotK.forEach((v,i)=>near(v,[-1,2][i],`01 rotated key component ${i}`));near(m.score,3,'01 relative-position score');near(m.shiftedScore,3,'01 common shift preserves pair score');near(m.normQSquared,5,'01 rotary query norm');near(m.normKSquared,5,'01 rotary key norm');near(metrics('01',undefined,0).score,4,'01 coincident-position dot product');near(metrics('01',undefined,2).score,-4,'01 half-turn negates dot product');near(logged('01','score').score,3,'01 executable rotary dot product');
- // 02. Keep the shortest sorted prefix whose probability mass reaches .8.
- mark('02');m=metrics('02');m.distribution.forEach((v,i)=>near(v,[.6,.25,.1,.05][i],`02 temperature-one probability ${i}`));deep(m.topPIndices,[0,1],'02 nucleus retains the threshold-crossing token');near(m.retainedMass,.85,'02 retained mass may exceed the threshold');m.topPDistribution.forEach((v,i)=>near(v,[12/17,5/17,0,0][i],`02 renormalized nucleus probability ${i}`));const cold=metrics('02',undefined,.5);near(cold.distribution[0],24/29,'02 half temperature squares unnormalized probabilities');deep(cold.topPIndices,[0],'02 concentrated distribution needs one nucleus token');deep(metrics('02',undefined,2).topPIndices,[0,1,2],'02 warmer distribution needs three nucleus tokens');near(logged('02','retainedMass').retainedMass,.85,'02 executable nucleus mass');
- // 03. KL rather than cross entropy is scaled by T²; logits have an extra 1/T Jacobian.
- mark('03');m=metrics('03');near(m.kl,.8*Math.log(1.6)+.2*Math.log(.4),'03 teacher-to-student KL');near(m.loss,m.kl,'03 unit-temperature scaled loss');m.numericGradient.forEach((v,i)=>near(v,[-.3,.3][i],`03 independent central difference ${i}`,1e-8));near(m.nextStudentProb[0],1/(1+Math.exp(-.3)),'03 half-step updates both student logits');check(m.nextLoss<m.loss,'03 local distillation update lowers the defined loss');m.gradient.forEach((v,i)=>near(v,[-.3,.3][i],`03 student logit gradient ${i}`));const warm=metrics('03',undefined,2),warmKL=(2/3)*Math.log(4/3)+(1/3)*Math.log(2/3);near(warm.loss,4*warmKL,'03 temperature-two KL scale');warm.gradient.forEach((v,i)=>near(v,[-1/3,1/3][i],`03 chain rule retains one temperature factor ${i}`));logged('03','gradient').gradient.forEach((v,i)=>near(v,[-.3,.3][i],`03 executable distillation gradient ${i}`));
- // 04. Preference improvement is policy log odds minus reference log odds.
- mark('04');m=metrics('04');near(m.policyLogRatio,Math.log(3),'04 policy preference log ratio');near(m.referenceLogRatio,Math.log(1.5),'04 reference preference log ratio');near(m.relativeLogRatio,Math.log(2),'04 reference-adjusted log ratio');near(m.preferenceProbability,2/3,'04 DPO preference model');near(m.loss,Math.log(1.5),'04 binary preference negative log likelihood');near(m.gradientLogRatio,-1/3,'04 derivative with respect to relative log ratio');near(metrics('04',undefined,0).loss,Math.log(2),'04 beta-zero objective is constant');near(metrics('04',undefined,0).gradientLogRatio,0,'04 beta-zero objective has no learning signal');near(metrics('04',undefined,2).loss,Math.log(1.25),'04 beta-two margin gives preference probability .8');near(metrics('04',undefined,2).gradientLogRatio,-.4,'04 beta scales the loss gradient');near(logged('04','loss').loss,Math.log(1.5),'04 executable preference loss');
- // 05. Four affine-quantized numbers need a payload and scale/zero-point metadata.
- mark('05');m=metrics('05');near(m.scale,1,'05 two-bit scale');eq(m.zeroPoint,1,'05 zero is represented exactly');deep(m.codes,[0,1,2,3],'05 packed quantized codes');deep(m.reconstructed,[-1,0,1,2],'05 reconstructed values');near(m.mse,(.2**2+.34**2)/4,'05 two-bit average squared error');eq(m.packedWeightBytes,1,'05 four two-bit weights fit in one payload byte');eq(m.totalBytes,6,'05 metadata dominates this tiny group');near(m.compression,16/6,'05 complete representation compression');near(metrics('05',undefined,4).mse,.0009,'05 four-bit reconstruction error');near(metrics('05',undefined,8).mse,((56/85)-.66)**2/4,'05 eight-bit reconstruction error');near(logged('05','mse').mse,.0389,'05 executable affine quantization');
- // 06. Losing an acknowledgement occurs after the effect, so retries need an operation identity.
- mark('06');m=metrics('06');eq(m.attempts,2,'06 one lost acknowledgement causes two requests');eq(m.unprotectedBalance,120,'06 retry without deduplication repeats the effect');eq(m.idempotentBalance,110,'06 repeated key returns the previously committed result');eq(m.unprotectedEffects,2,'06 unprotected effect count');eq(m.idempotentEffects,1,'06 deduplicated effect count');eq(m.duplicateRequests,1,'06 duplicate request is observable');eq(m.completed,true,'06 final acknowledgement completes the simulation');const retries=metrics('06',undefined,3);eq(retries.attempts,4,'06 three lost replies cause four attempts');eq(retries.unprotectedBalance,140,'06 repeated unprotected side effects accumulate');eq(retries.idempotentBalance,110,'06 deduplication is stable across retries');eq(metrics('06',undefined,0).unprotectedBalance,110,'06 no retry needs no repeated effect');eq(logged('06','idempotentBalance').idempotentBalance,110,'06 executable idempotency simulation');
- // 07. Exhaustively enumerate all subsets instead of reusing the combination formula.
- mark('07');m=metrics('07');eq(m.n,10,'07 pool size');eq(m.correct,3,'07 three observed successes');near(m.estimate,17/24,'07 pass@3 without replacement');near(m.iidApprox,1-.7**3,'07 IID plug-in approximation is a different number');eq(m.budgetTokens,240,'07 hypothetical three-attempt budget');
- for(let k=1;k<=10;k++){
-  let total=0,success=0;
-  for(let mask=0;mask<1024;mask++)if(mask.toString(2).replaceAll('0','').length===k){total++;if(mask&7)success++;}
-  const result=metrics('07',undefined,k);near(result.estimate,success/total,`07 exhaustive size-${k} subset success rate`);
- }
- near(logged('07','estimate').estimate,17/24,'07 executable pass@k estimator');
- // 08. A confidence-ranked, scripted fill schedule can lock a wrong early prediction.
- mark('08');m=metrics('08');deep(m.firstLockedPositions,[1,2],'08 first round locks its two most confident candidates');deep(m.wrongPositions,[2],'08 an early wrong token remains locked');near(m.maskedAccuracy,.75,'08 three of four originally masked positions correct');eq(m.modelPasses,2,'08 remaining masks require a second scripted pass');eq(m.positionEvaluations,12,'08 declared full-sequence position proxy counts 2 times 6');near(metrics('08',undefined,1).maskedAccuracy,1,'08 leaving the wrong candidate unlocked allows replacement');near(metrics('08',undefined,3).maskedAccuracy,.75,'08 an additional correct lock leaves the same early error');near(metrics('08',undefined,4).maskedAccuracy,.5,'08 locking every first-round candidate retains both errors');eq(metrics('08',undefined,4).modelPasses,1,'08 all positions locked ends after one pass');eq(metrics('08',undefined,4).positionEvaluations,6,'08 one pass uses the declared six-position proxy');near(logged('08','maskedAccuracy').maskedAccuracy,.75,'08 executable scripted schedule');
- // 09. Symmetric two-way InfoNCE averages two directional means, not their sum.
- mark('09');m=metrics('09');const correct=1/(1+Math.exp(-2));near(m.imageToTextLoss,Math.log1p(Math.exp(-2)),'09 row-normalized contrastive loss');near(m.textToImageLoss,Math.log1p(Math.exp(-2)),'09 column-normalized contrastive loss');near(m.loss,Math.log1p(Math.exp(-2)),'09 two-way mean avoids doubling the loss');m.similarityGradient.forEach((row,i)=>row.forEach((v,j)=>near(v,(i===j?correct-1:1-correct)/.2,`09 symmetric similarity derivative ${i},${j}`)));near(metrics('09',undefined,1).loss,Math.log1p(Math.exp(-.2)),'09 warmer contrastive probabilities are less sharp');near(metrics('09',undefined,.05).loss,Math.log1p(Math.exp(-4)),'09 lower temperature emphasizes positive similarity gap');near(logged('09','loss').loss,Math.log1p(Math.exp(-2)),'09 executable symmetric contrastive loss');
+ // 02. Lecture 2 (2026) p.107–114: temperature, then top-p (p = 0.8) as the smallest prefix reaching the threshold.
+ mark('02');m=metrics('02');
+ m.distribution.forEach((v,i)=>near(v,[.6,.25,.1,.05][i],`02 temperature-one probability ${i}`));
+ deep(m.topPIndices,[0,1],'02 top-p keeps the token that crosses the threshold');
+ near(m.retainedMass,.85,'02 retained mass may exceed p');
+ m.topPDistribution.forEach((v,i)=>near(v,[12/17,5/17,0,0][i],`02 renormalized top-p probability ${i}`));
+ m.topKDistribution.forEach((v,i)=>near(v,[12/17,5/17,0,0][i],`02 top-k=2 coincides with top-p at T=1 ${i}`));
+ // T = 0.5 squares the probabilities: .36/.435 = 24/29.
+ const cold=metrics('02',undefined,.5);near(cold.distribution[0],24/29,'02 half temperature squares unnormalized probabilities');deep(cold.topPIndices,[0],'02 sharp distribution keeps one token');
+ // T = 2 takes square roots: sqrt(.6)+sqrt(.25) < .8·Σ sqrt(p), so a third token is needed.
+ const warm=metrics('02',undefined,2),roots=[.6,.25,.1,.05].map(Math.sqrt),rootSum=roots.reduce((a,b)=>a+b,0);
+ deep(warm.topPIndices,[0,1,2],'02 flatter distribution keeps three tokens');near(warm.distribution[0],roots[0]/rootSum,'02 temperature-two first probability');
+ near(warm.topKDistribution[0],roots[0]/(roots[0]+roots[1]),'02 top-k still keeps exactly two tokens');
+ // 04. Lecture 4 (2026) p.34–36: g = (R − b)·∇log π with ∇log π(good)=+.5, ∇log π(bad)=−.5.
+ mark('04');m=metrics('04');
+ near(m.gGood,50.5,'04 no-baseline good gradient (slide value)');near(m.gBad,-50,'04 no-baseline bad gradient (slide value)');
+ near(m.mean,.25,'04 expected gradient without baseline');near(m.variance,50.25**2,'04 variance without baseline');
+ const slide=metrics('04',undefined,100.5);
+ near(slide.goodMinusBaseline,.5,'04 R(good) − b on slide p.35');near(slide.badMinusBaseline,-.5,'04 R(bad) − b on slide p.35');
+ near(slide.gGood,.25,'04 baseline good gradient (slide value)');near(slide.gBad,.25,'04 baseline bad gradient (slide value)');
+ near(slide.mean,.25,'04 baseline keeps the expected gradient');near(slide.variance,0,'04 baseline 100.5 removes the variance');
+ const atHundred=metrics('04',undefined,100);near(atHundred.gBad,0,'04 bad sample has no gradient at b = R(bad)');near(atHundred.variance,.0625,'04 variance at b = 100');
+ const atMax=metrics('04',undefined,101);near(atMax.gGood,0,'04 good sample has no gradient at b = R(good)');near(atMax.gBad,.5,'04 bad gradient changes sign past b = 100');near(atMax.mean,.25,'04 expectation is independent of b');
+ eq(m.sameSign,false,'04 without baseline the two samples push θ in opposite directions');eq(slide.sameSign,true,'04 with baseline 100.5 both samples push θ the same way');
+ // 05. Lecture 5 (2026) p.30–47: online softmax with running max. Reference values computed separately:
+ // (10e^{-2} + 20 + 30e^{-1}) / (e^{-2} + 1 + e^{-1}) = 21.54697897884417.
+ mark('05');m=logged('05','online');
+ near(m.online,21.54697897884417,'05 online softmax output equals the max-shifted reference',1e-9);
+ eq(m.naiveOverflow,true,'05 e^{1001} overflows double precision');
+ eq(m.trace.length,3,'05 one update per score');
+ deep(m.trace.map(row=>row.m),[1001,1003,1003],'05 running maximum');
+ deep(m.trace.map(row=>row.alpha),[0,.1353,1],'05 rescaling factor α_t = e^{m_t − m_{t+1}}');
+ deep(m.trace.map(row=>row.N),[10,21.3534,32.3897],'05 running numerator');
+ deep(m.trace.map(row=>row.D),[1,1.1353,1.5032],'05 running denominator');
+ check(Math.abs(m.trace[2].N/m.trace[2].D-21.54697897884417)<1e-3,'05 final N/D matches the rounded trace');
 }

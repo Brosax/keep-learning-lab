@@ -15,7 +15,7 @@ const slug=process.argv[2]||'cs230';
 assert.ok(['cs229','cs230','cme295','cs336','cs329z'].includes(slug),'supply a reviewed course slug');
 const expectedCourse=JSON.parse(fs.readFileSync(path.join(root,`content/${slug}.json`),'utf8'));
 assert.equal(expectedCourse.experimentsMode,'lesson','course must opt into explicit lesson experiments');
-assert.ok(Array.isArray(expectedCourse.experimentScripts)&&expectedCourse.experimentScripts.length,'course must declare experimentScripts');
+assert.ok(Array.isArray(expectedCourse.experimentScripts),'course must declare experimentScripts (empty when no lesson has a diagram or code demo)');
 const lessonCount=expectedCourse.lessons.length;
 assert.equal(lessonCount,{cs229:22,cs230:18,cme295:9,cs336:17,cs329z:19}[slug],'review retains the full course');
 const experimentFiles=expectedCourse.experimentScripts.map(file=>path.posix.normalize(`zh/${slug}/${file}`));

@@ -23,15 +23,17 @@ for slug in COURSES:
     experiment_files=data.get('experimentScripts') or {
         'cs229':['assets/lab-core.js','assets/labs-01-08.js','assets/labs-09-15.js','assets/labs-16-22.js']
     }.get(slug,[]) if scoped else []
-    if scoped and not experiment_files:
-        raise SystemExit(f'No chapter experiment scripts configured for {slug}')
     if scoped:
         if not isinstance(experiment_files,list) or any(not isinstance(file,str) or not file.endswith('.js') for file in experiment_files):
             raise SystemExit(f'Invalid chapter experiment scripts for {slug}')
         for lesson in data['lessons']:
             expected=f'{slug}-{lesson["id"]}'
-            if lesson.get('visual')!=expected or lesson.get('codeDemo')!=expected:
-                raise SystemExit(f'Missing explicit chapter experiment: {expected}')
+            # Diagrams and code demos are optional per lesson, but a declared one must use the lesson's own key.
+            for key in ('visual','codeDemo'):
+                if key in lesson and lesson[key]!=expected:
+                    raise SystemExit(f'Invalid explicit chapter experiment: {expected} {key}')
+            if any(key in lesson for key in ('visual','codeDemo')) and not experiment_files:
+                raise SystemExit(f'No chapter experiment scripts configured for {slug}')
     def asset_url(relative):
         file=out/relative
         if not file.is_file():

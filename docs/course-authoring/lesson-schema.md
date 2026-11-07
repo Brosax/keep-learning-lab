@@ -37,14 +37,16 @@
 | `title` | ✅ | 中文标题，反映讲义主题 |
 | `originalTitle` | ✅ | 课表上的英文原标题 |
 | `summary` | ✅ | 一句话：这一讲解决什么问题 |
-| `objectives` | ✅ | 3 条左右学习目标，学习者可以勾选 |
+| `objectives` | ✅ | 学习目标，学习者可以勾选。新课 3–4 条；修订已有课程时**保持原有数量** |
 | `sections` | ✅ | 正文段落，顺序跟随讲义，数量不固定 |
 | `quiz` | ✅ | 至少 2 题 |
 | `resources` | ✅* | 本讲讲义链接，带 `#page=` 锚点。*没有讲义时可以为空，但必须写 `sourceStatus` |
-| `sourceStatus` | 按需 | 讲义没公开或不完整时**必须**写，会作为提示框显示在讲次页头 |
+| `sourceStatus` | 按需 | 讲义没公开、不完整，或者用的是往年讲义时**必须**写，会作为提示框显示在讲次页头。有替代资料时，各段仍然要写 `source` |
 | `visual` | 按需 | 交互图示的键，固定为 `"<课程>-<id>"` |
 | `codeDemo` | 按需 | 可运行代码的键，固定为 `"<课程>-<id>"` |
-| `exercise` | 按需 | 课后动手练习 |
+| `exercise` | 按需 | 课后动手练习：`{title, instructions[], deliverable}` |
+
+`visual`、`codeDemo`、`exercise` 都是按需字段：构建脚本、`validate-courses.py` 和 `test-reviewed-course.mjs` 只在字段存在时校验它们。
 
 ## 段落（`sections[]`）
 
@@ -62,7 +64,11 @@
 }
 ```
 
-`source` 的写法是 `<讲义名> · p.<页码>（<讲义里的小节名>）`。讲稿是 `.py` 文件时，写函数名，例如 `lecture_06.py · triton_softmax()`。
+`source` 的写法是 `<讲义名> · p.<页码>（<讲义里的小节名>）`：
+- 一段跨越多个小节标题时，用 ` / ` 连接，例如 `Lecture 4 (2026) · p.41–66（PPO computes advantages / PPO prevents large updates）`
+- 讲稿是 `.py` 文件时，写函数名，例如 `lecture_06.py · triton_softmax()`
+- 引用考试题时写清楚，例如 `Midterm (2026) · II.5`
+- 往年讲义要写年份，例如 `Lecture 8 (2025) · p.157（pass^k）`
 
 ## 交互图示（`visual`）
 

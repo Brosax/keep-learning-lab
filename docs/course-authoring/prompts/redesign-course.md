@@ -27,11 +27,22 @@
    - 不需要的就删掉，包括 `labs-*.js` 里的注册和 oracle 里的 `mark`
    - 需要的就重写，让它对应讲义内容
    - 不同讲次的模块组合**可以不一样**
-4. **自测题。** 已有题目保留；只有和新内容矛盾时才修改，修改后要更新 `quizRevision`。
-5. **收尾。** 在课程 JSON 里设置 `"lectureAligned": true`。运行 `python scripts/build-courses.py`、`node scripts/test-reviewed-course.mjs <slug>`、`node scripts/test-courses.mjs`、`python scripts/validate-courses.py`，全部通过。
+4. **自测题。** 已有题目保留；只有和讲义矛盾，或者考的是本讲讲义没讲的内容时才修改，修改后要更新 `quizRevision`。全课程正确答案的位置要均衡。
+5. **收尾。** 在课程 JSON 里设置 `"lectureAligned": true`，然后运行以下命令，全部通过：
+   - `python scripts/sync-lesson-references.py <slug>`
+   - `python scripts/build-courses.py`
+   - `node scripts/test-reviewed-course.mjs <slug>`
+   - `node scripts/test-courses.mjs`
+   - `python scripts/validate-courses.py`
+6. **浏览器检查。** 用 `python -m http.server` 打开以下页面，确认没有横向溢出：
+   - 一讲有模块的
+   - 一讲没有模块的
+   - 一讲有 `sourceStatus` 的
+   - 手机宽度 375px
 
 **硬性约束：**
-- 讲次 `id` 和顺序不变，`objectives` 数量不减少
+- 讲次 `id` 和顺序不变，`objectives` 数量和修订前一致
+- 不自创 JSON 字段
 - 不要编造讲义里没有的"老师观点"；没有资料就明说
 - 不修改其他课程的文件，也不修改共享渲染器 `zh/ai/assets/*`（如果确实需要，先说明理由）
 - 不提交、不推送，除非被明确要求

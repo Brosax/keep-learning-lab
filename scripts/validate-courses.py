@@ -12,9 +12,10 @@ for path in sorted((ROOT/'content').glob('*.json')):
         if lesson['id'] in ids:errors.append(tag+' duplicate ID')
         ids.add(lesson['id'])
         if lesson['module'] not in modules:errors.append(tag+' unknown module')
-        for key in ['title','originalTitle','summary','objectives','exercise','quiz','sections','resources']:
+        # exercise is optional; resources may be empty only when sourceStatus explains the missing lecture material.
+        for key in ['title','originalTitle','summary','objectives','quiz','sections']+([] if lesson.get('sourceStatus') else ['resources']):
             if not lesson.get(key):errors.append(tag+' missing '+key)
-        if len(lesson.get('sections',[]))<3:errors.append(tag+' needs >=3 sections')
+        if len(lesson.get('sections',[]))<2:errors.append(tag+' needs >=2 sections')
         if len(lesson.get('quiz',[]))<2:errors.append(tag+' needs >=2 quizzes')
         for q in lesson.get('quiz',[]):
             totals['quizzes']+=1

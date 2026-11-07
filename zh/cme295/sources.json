@@ -83,11 +83,6 @@
           "lesson_id": "02",
           "title": "2025 补充 · 第 2 讲 Transformer-based models & tricks",
           "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture2.pdf"
-        },
-        {
-          "lesson_id": "03",
-          "title": "跨学期补充：2025第2讲 · 第101–104页soft-target蒸馏",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture2.pdf#page=101"
         }
       ]
     },
@@ -104,11 +99,6 @@
           "lesson_id": "02",
           "title": "2025 补充 · 第 3 讲 Large Language Models",
           "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture3.pdf"
-        },
-        {
-          "lesson_id": "05",
-          "title": "2025 补充 · 第 3 讲 Large Language Models",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture3.pdf"
         }
       ]
     },
@@ -120,18 +110,7 @@
       "status": "downloaded",
       "bytes": 4425624,
       "sha256": "7f3a8d20e703ba62f79baca79a75e65d006aee99c79f7549b447a49671610825",
-      "lesson_references": [
-        {
-          "lesson_id": "03",
-          "title": "2025 补充 · 第 4 讲 LLM training",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture4.pdf"
-        },
-        {
-          "lesson_id": "05",
-          "title": "2025补充 · QLoRA/NF4量化背景，PDF第117–127页",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture4.pdf#page=117"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "2025 第 5 讲 · LLM tuning（完整旧版）",
@@ -141,18 +120,7 @@
       "status": "downloaded",
       "bytes": 2125890,
       "sha256": "8e347d02a83706c92af4e9c122c28faa68534e099f5a467491cb03e37826411d",
-      "lesson_references": [
-        {
-          "lesson_id": "03",
-          "title": "2025 补充 · 第 5 讲 LLM tuning",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture5.pdf"
-        },
-        {
-          "lesson_id": "04",
-          "title": "2025 补充 · 第 5 讲 LLM tuning",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture5.pdf"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "2025 第 6 讲 · LLM reasoning（完整旧版）",
@@ -162,18 +130,7 @@
       "status": "downloaded",
       "bytes": 4293461,
       "sha256": "e60fd83047d73f9d05b9bc1f23f57498849b276ca95b2e02d866260f3ca5b461",
-      "lesson_references": [
-        {
-          "lesson_id": "04",
-          "title": "2025 补充 · 第 6 讲 LLM reasoning",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture6.pdf"
-        },
-        {
-          "lesson_id": "07",
-          "title": "2025 第6讲 · pass@k评估（PDF第39–47页）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture6.pdf#page=39"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "2025 第 7 讲 · Agentic LLMs（完整旧版）",
@@ -183,13 +140,7 @@
       "status": "downloaded",
       "bytes": 2447092,
       "sha256": "2772ba9a870a3b7e3666f47696e9af6794489ce169de4a0f3ea1b91ce13e7234",
-      "lesson_references": [
-        {
-          "lesson_id": "06",
-          "title": "2025 补充 · 第 7 讲 Agentic LLMs",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture7.pdf"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "2025 第 8 讲 · LLM evaluation（完整旧版）",
@@ -202,8 +153,18 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "2025 第8讲 · 模型裁判与pass^k一致性（不同于pass@k）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf"
+          "title": "2025 第 8 讲官方课件 · LLM evaluation（agenda）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=8"
+        },
+        {
+          "lesson_id": "07",
+          "title": "2025 第 8 讲官方课件 · LLM-as-a-Judge",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=39"
+        },
+        {
+          "lesson_id": "07",
+          "title": "2025 第 8 讲官方课件 · τ-bench 与 pass^k",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=153"
         }
       ]
     },
@@ -218,12 +179,27 @@
       "lesson_references": [
         {
           "lesson_id": "08",
-          "title": "2025 第9讲 · 遮罩扩散背景（PDF第90–96页）",
+          "title": "2025 第 9 讲官方课件 · Diffusion LLMs：自回归的局限（第 71 页起）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=71"
+        },
+        {
+          "lesson_id": "08",
+          "title": "2025 第 9 讲官方课件 · 文本扩散与 MDM（第 90 页起）",
           "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=90"
         },
         {
           "lesson_id": "09",
-          "title": "2025 第9讲 · 多模态趋势背景（PDF第100页起）",
+          "title": "2025 第 9 讲官方课件 · Beyond Transformer-based LLMs：ViT（第 43 页起）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=43"
+        },
+        {
+          "lesson_id": "09",
+          "title": "2025 第 9 讲官方课件 · VLM 的两种做法（第 63 页起）",
+          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=63"
+        },
+        {
+          "lesson_id": "09",
+          "title": "2025 第 9 讲官方课件 · Closing thoughts（第 100 页起）",
           "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=100"
         }
       ]
@@ -461,8 +437,18 @@
       "lesson_references": [
         {
           "lesson_id": "01",
-          "title": "2026 第 1 讲官方课件 · Transformers",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf"
+          "title": "2026 第 1 讲官方课件 · Transformers（分词）",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf#page=24"
+        },
+        {
+          "lesson_id": "01",
+          "title": "2026 第 1 讲官方课件 · 自注意力",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf#page=57"
+        },
+        {
+          "lesson_id": "01",
+          "title": "2026 第 1 讲官方课件 · 端到端例子",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture1.pdf#page=80"
         }
       ]
     },
@@ -489,14 +475,19 @@
       "sha256": "cd6fb64ada1ac430d362042e32e237149d93ab010ae88a869f1c27dcc4b71af3",
       "lesson_references": [
         {
-          "lesson_id": "01",
-          "title": "跨讲补充：2026第2讲 · 第70–73页 RoPE",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=70"
+          "lesson_id": "02",
+          "title": "2026 第 2 讲官方课件 · 第 5 页 agenda",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=5"
         },
         {
           "lesson_id": "02",
-          "title": "2026第2讲官方课件 · 第108页起采样策略",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=108"
+          "title": "2026 第 2 讲官方课件 · 第 52 页起 架构优化（位置编码、注意力、归一化）",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=52"
+        },
+        {
+          "lesson_id": "02",
+          "title": "2026 第 2 讲官方课件 · 第 90 页起 解码策略",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture2.pdf#page=90"
         }
       ]
     },
@@ -524,13 +515,18 @@
       "lesson_references": [
         {
           "lesson_id": "03",
-          "title": "2026第3讲官方课件 · 第128–132页on-policy与self-distillation",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=128"
+          "title": "2026 第 3 讲官方课件 · 预训练目标、teacher forcing 与 BPB",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=19"
         },
         {
-          "lesson_id": "04",
-          "title": "2026 第3讲 · DPO机制背景，PDF第87–88页",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=87"
+          "lesson_id": "03",
+          "title": "2026 第 3 讲官方课件 · 偏好调优：RLHF 与 DPO",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=70"
+        },
+        {
+          "lesson_id": "03",
+          "title": "2026 第 3 讲官方课件 · 蒸馏：off-policy、on-policy 与 OPD",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture3.pdf#page=126"
         }
       ]
     },
@@ -558,8 +554,18 @@
       "lesson_references": [
         {
           "lesson_id": "04",
-          "title": "2026 第 4 讲官方课件 · Reinforcement learning with LLMs",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf"
+          "title": "2026 第 4 讲官方课件 · Policy gradients 与 REINFORCE",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf#page=24"
+        },
+        {
+          "lesson_id": "04",
+          "title": "2026 第 4 讲官方课件 · GRPO",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf#page=67"
+        },
+        {
+          "lesson_id": "04",
+          "title": "2026 第 4 讲官方课件 · On-policy distillation",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture4.pdf#page=119"
         }
       ]
     },
@@ -587,8 +593,18 @@
       "lesson_references": [
         {
           "lesson_id": "05",
-          "title": "2026 第 5 讲官方课件 · LLM systems",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf"
+          "title": "2026 第 5 讲官方课件 · FlashAttention 的在线 softmax",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf#page=30"
+        },
+        {
+          "lesson_id": "05",
+          "title": "2026 第 5 讲官方课件 · 数据并行与 ZeRO",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf#page=71"
+        },
+        {
+          "lesson_id": "05",
+          "title": "2026 第 5 讲官方课件 · KV 缓存与推理优化",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture5.pdf#page=104"
         }
       ]
     },
@@ -616,8 +632,18 @@
       "lesson_references": [
         {
           "lesson_id": "06",
-          "title": "2026 第 6 讲官方课件 · AI Agents",
-          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf"
+          "title": "2026 第 6 讲官方课件 · RAG：检索、增强、生成",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf#page=17"
+        },
+        {
+          "lesson_id": "06",
+          "title": "2026 第 6 讲官方课件 · 工具调用三步",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf#page=55"
+        },
+        {
+          "lesson_id": "06",
+          "title": "2026 第 6 讲官方课件 · Harness 与 ReAct",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf#page=103"
         }
       ]
     },
@@ -629,39 +655,21 @@
       "status": "downloaded",
       "bytes": 3526772,
       "sha256": "2a4952960f350e50a3a4a847371b80b8aaa09ba82d1c2a8f6b30450e392a1fe4",
-      "lesson_references": [
-        {
-          "lesson_id": "09",
-          "title": "CLIP原始论文 · Radford等2021，§2.3/Figure 3（社区扩展参考）",
-          "url": "https://proceedings.mlr.press/v139/radford21a/radford21a.pdf"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "均匀仿射量化背景 · Jacob 等 2018（非NF4）",
       "url": "https://arxiv.org/abs/1712.05877",
       "type": "paper",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "05",
-          "title": "均匀仿射量化背景 · Jacob 等 2018（非NF4）",
-          "url": "https://arxiv.org/abs/1712.05877"
-        }
-      ]
+      "lesson_references": []
     },
     {
       "title": "社区工程参考 · API幂等请求设计（Stripe官方文档）",
       "url": "https://docs.stripe.com/api/idempotent_requests",
       "type": "notes",
       "status": "external_link",
-      "lesson_references": [
-        {
-          "lesson_id": "06",
-          "title": "社区工程参考 · API幂等请求设计（Stripe官方文档）",
-          "url": "https://docs.stripe.com/api/idempotent_requests"
-        }
-      ]
+      "lesson_references": []
     }
   ],
   "discovery": {
