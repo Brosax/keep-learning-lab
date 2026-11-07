@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Browser integration checks. Requires Python playwright and Chromium.
 
-Run: python scripts/test-spanish-course.py
+Run: python scripts/test-spanish-course.py  (set CHROMIUM_PATH to use a system Chromium)
 The server binds to localhost only and exits after the test.
 """
 import json
+import os
+import tempfile
 import threading
 from functools import partial
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
@@ -25,7 +27,12 @@ origin = f'http://127.0.0.1:{server.server_port}'
 
 try:
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path='/usr/bin/chromium', headless=True, args=['--no-sandbox'])
+        # CHROMIUM_PATH points at a system Chromium (e.g. /usr/bin/chromium); unset, Playwright's own download is used.
+        launch = {'headless': True, 'args': ['--no-sandbox']}
+        if os.environ.get('CHROMIUM_PATH'):
+            launch['executable_path'] = os.environ['CHROMIUM_PATH']
+        browser = p.chromium.launch(**launch)
+        shots = Path(tempfile.gettempdir())
         context = browser.new_context(viewport={'width': 1440, 'height': 1000}, reduced_motion='reduce')
         page = context.new_page()
         errors = []
@@ -64,16 +71,18 @@ try:
         page.locator('[data-filter=language]').click()
         expect(page.locator('.course-card:visible')).to_have_count(1)
         card = page.locator('[data-course=spanish-grammar]')
-        expect(card.locator('.progress-label')).to_contain_text('%')
+        page.locator('#progress-open').click()
+        expect(page.locator('#learning-list')).to_contain_text(f'1 / {total}')
+        page.locator('#progress-close').click()
         expect(page.locator('#resume-link')).to_have_attribute('href', 'zh/spanish-grammar/index.html#lesson-m6-l2')
-        page.screenshot(path='/tmp/openseei-spanish-home.png', full_page=False)
+        page.screenshot(path=str(shots / 'openseei-spanish-home.png'), full_page=False)
         page.locator('#resume-link').click()
         expect(page.locator('#lesson-heading')).to_contain_text('谁喜欢')
         page.locator('[data-lesson-id=m1-l1]').click()
         assert page.url.endswith('#lesson-m1-l1')
         page.set_viewport_size({'width': 390, 'height': 844})
         assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
-        page.screenshot(path='/tmp/openseei-spanish-mobile.png')
+        page.screenshot(path=str(shots / 'openseei-spanish-mobile.png'))
         for file in ['teacher-guide.docx','course-package.zip','course.json','exercises.csv']:
             response = context.request.get(origin + '/zh/spanish-grammar/materials/' + file)
             assert response.status == 200, file

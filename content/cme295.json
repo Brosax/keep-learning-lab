@@ -48,7 +48,7 @@
       "objectives": [
         "比较词级、字符级、子词级分词的取舍，并说出 [UNK]、[BOS]、[EOS]、[PAD] 各自的用途。",
         "说明 one-hot、Word2vec 嵌入和 RNN/LSTM 各解决了什么问题、又留下了什么问题（词序、上下文、长距离依赖）。",
-        "用 query、key、value 解释 softmax(QKᵀ/√d_k)V，并按讲义例句写出 Q、K、QKᵀ 与注意力输出的形状。",
+        "用 query、key、value 解释 \\(\\mathrm{softmax}(QK^\\top/\\sqrt{d_k})V\\)，并按讲义例句写出 Q、K、\\(QK^\\top\\) 与注意力输出的形状。",
         "沿英译法的端到端例子，说出编码器、解码器各层的作用，以及位置编码、残差、层归一化、遮罩等技巧的目的。"
       ],
       "sections": [
@@ -109,17 +109,17 @@
         {
           "title": "从 one-hot 到学出来的嵌入：Word2vec",
           "body": [
-            "最朴素的表示是 one-hot：每个词占一个坐标，例如 soft = (1, 0, 0)。问题是任意两个不同的词都互相正交，⟨teddy bear, soft⟩ = 0，⟨teddy bear, book⟩ 也是 0，模型看不出泰迪熊和“柔软”更相关。学出来的嵌入（learned embedding）把词放进稠密空间，例如 soft = (0.95, 0.32, 0.01)，这时 ⟨teddy bear, soft⟩ ≈ 1，⟨teddy bear, book⟩ ≈ 0，内积开始反映语义相近程度。",
+            "最朴素的表示是 one-hot：每个词占一个坐标，例如 \\(\\text{soft}=(1,0,0)\\)。问题是任意两个不同的词都互相正交，\\(\\langle\\text{teddy bear},\\text{soft}\\rangle=0\\)，\\(\\langle\\text{teddy bear},\\text{book}\\rangle\\) 也是 0，模型看不出泰迪熊和“柔软”更相关。学出来的嵌入（learned embedding）把词放进稠密空间，例如 \\(\\text{soft}=(0.95,0.32,0.01)\\)，这时 \\(\\langle\\text{teddy bear},\\text{soft}\\rangle\\approx 1\\)，\\(\\langle\\text{teddy bear},\\text{book}\\rangle\\approx 0\\)，内积开始反映语义相近程度。",
             "Word2vec 的思路是设一个代理任务（proxy task），在数十亿词的文本上训练一个小网络，真正要的是网络中间学到的嵌入层。代理任务有两种：CBOW（continuous bag of words）用周围的 A、cute、is、reading 预测中间的 teddy bear；Skip-gram 反过来，用 teddy bear 预测周围的词。网络结构是 V 维输入 → d 维隐藏层 → V 维输出。",
-            "讲义用“预测下一个词”演示了一步：输入 A 的 one-hot [1,0,0,0,0,0]（V = 6），隐藏层得到 [0.2, 0.9]（d = 2），输出 6 个词的预测概率 [0.2, 0.4, 0.1, 0.1, 0.1, 0.1]；正确答案 cute 的 one-hot 是 [0,1,0,0,0,0]，模型给它 0.4。窗口右移一格，输入 cute 得到隐藏层 [0.8, 0.4]，输出 [0.2, 0.2, 0.2, 0.1, 0.2, 0.1]，正确答案 teddy bear 那一格只有 0.2。训练让正确词的概率变大；训练结束后，每个词经过隐藏层得到的 d 维向量就是它的嵌入。讲义的示意图里，teddy bear→soft 和 Persian poetry→art 的位移方向相近。"
+            "讲义用“预测下一个词”演示了一步：输入 A 的 one-hot [1,0,0,0,0,0]（\\(V=6\\)），隐藏层得到 [0.2, 0.9]（\\(d=2\\)），输出 6 个词的预测概率 [0.2, 0.4, 0.1, 0.1, 0.1, 0.1]；正确答案 cute 的 one-hot 是 [0,1,0,0,0,0]，模型给它 0.4。窗口右移一格，输入 cute 得到隐藏层 [0.8, 0.4]，输出 [0.2, 0.2, 0.2, 0.1, 0.2, 0.1]，正确答案 teddy bear 那一格只有 0.2。训练让正确词的概率变大；训练结束后，每个词经过隐藏层得到的 d 维向量就是它的嵌入。讲义的示意图里，teddy bear→soft 和 Persian poetry→art 的位移方向相近。"
           ],
           "source": "Lecture 1 (2026) · p.33–44（Token representations / Word2vec）"
         },
         {
           "title": "RNN 与 LSTM：考虑了词序，但又慢又记不住长句",
           "body": [
-            "Word2vec 有两个缺陷：词序不起作用，而且每个词只有一个固定向量，不随上下文变化（not context aware）。循环神经网络（RNN，1980 年代提出）按时间顺序处理序列：读入 A 预测 cute，再把隐藏状态 a<t> 传给下一步，读入 cute 预测 teddy bear，依此类推。讲义列了 RNN 的三类用法：分类（读完评论给一个评分）、逐词“多分类”（给每个词打标签）和生成（翻译）。",
-            "LSTM（1997）在 RNN 单元里加入了更有结构的隐藏状态：一条细胞状态 c<t> 加上几个门（Γf、Γu、Γr、Γo）控制信息的保留和更新。总结来说，RNN 一类方法考虑了词序，在当时效果最好，但有梯度消失（vanishing gradient）问题，而且必须一步一步算，速度慢。",
+            "Word2vec 有两个缺陷：词序不起作用，而且每个词只有一个固定向量，不随上下文变化（not context aware）。循环神经网络（RNN，1980 年代提出）按时间顺序处理序列：读入 A 预测 cute，再把隐藏状态 \\(a^{\\langle t\\rangle}\\) 传给下一步，读入 cute 预测 teddy bear，依此类推。讲义列了 RNN 的三类用法：分类（读完评论给一个评分）、逐词“多分类”（给每个词打标签）和生成（翻译）。",
+            "LSTM（1997）在 RNN 单元里加入了更有结构的隐藏状态：一条细胞状态 \\(c^{\\langle t\\rangle}\\) 加上几个门（\\(\\Gamma_f\\)、\\(\\Gamma_u\\)、\\(\\Gamma_r\\)、\\(\\Gamma_o\\)）控制信息的保留和更新。总结来说，RNN 一类方法考虑了词序，在当时效果最好，但有梯度消失（vanishing gradient）问题，而且必须一步一步算，速度慢。",
             "注意力（attention）在 2014 年为翻译任务提出。问题出在长距离依赖：seq2seq 模型要把整句原文压进一个状态，句子一长就“记不住”原句说了什么。讲义的例子里，把 A cute teddy bear is reading 译成 Un ours en peluche mignon 之后，生成第四个词时，解码器直接回头看原句中的 reading（还有 teddy bear），于是得到 lit。Transformer 把这种“直接回看”的想法推到了整个模型。"
           ],
           "table": {
@@ -147,17 +147,33 @@
           "title": "自注意力：query、key、value",
           "body": [
             "Transformer 出自 2017 年的 Attention Is All You Need，核心是自注意力（self-attention）：句中每个 token 都直接和句中所有 token（包括它自己）建立联系，不必像 RNN 那样把信息一步步往后传。讲义以 teddy bear 为例，画出它连向 a、cute、teddy bear、is、reading 和句号的连线。",
-            "具体做法借用了检索的说法。teddy bear 发出一个查询（query）q_teddy bear；每个 token 都提供一个键（key）k 和一个值（value）v。用 q_teddy bear 和每个 kᵀ 做内积，得到 teddy bear 应该关注各个 token 的程度，再按这个程度把各 token 的 v 加权合起来，作为 teddy bear 新的表示。内积决定“看哪里”，value 决定“带回什么”。",
-            "把所有 token 的 q、k、v 叠成矩阵 Q、K、V，整句可以一次算完：softmax(QKᵀ/√d_k)V。论文的示意图把它拆成 MatMul → Scale（除以 √d_k，d_k 是 key 的维度）→ Mask（可选）→ SoftMax → 与 V 做 MatMul。讲义只给出了缩放这一步，没有展开为什么是 √d_k。可选的 Mask 用在解码器里，下文“遮罩”会讲。多头注意力（multi-head attention）把 Q、K、V 各做 h 组线性映射，并行算 h 次再拼接，最后再过一层线性层。"
+            "具体做法借用了检索的说法。teddy bear 发出一个查询（query）\\(q_{\\text{teddy bear}}\\)；每个 token 都提供一个键（key）k 和一个值（value）v。用 \\(q_{\\text{teddy bear}}\\) 和每个 \\(k^\\top\\) 做内积，得到 teddy bear 应该关注各个 token 的程度，再按这个程度把各 token 的 v 加权合起来，作为 teddy bear 新的表示。内积决定“看哪里”，value 决定“带回什么”。",
+            "把所有 token 的 q、k、v 叠成矩阵 Q、K、V，整句可以一次算完：\\(\\mathrm{softmax}(QK^\\top/\\sqrt{d_k})V\\)。论文的示意图把它拆成 MatMul → Scale（除以 \\(\\sqrt{d_k}\\)，\\(d_k\\) 是 key 的维度）→ Mask（可选）→ SoftMax → 与 V 做 MatMul。讲义只给出了缩放这一步，没有展开为什么是 \\(\\sqrt{d_k}\\)。可选的 Mask 用在解码器里，下文“遮罩”会讲。多头注意力（multi-head attention）把 Q、K、V 各做 h 组线性映射，并行算 h 次再拼接，最后再过一层线性层。"
           ],
-          "formula": "Attention(Q, K, V) = softmax(QKᵀ / √d_k) V",
-          "source": "Lecture 1 (2026) · p.57–62（Self-attention mechanism）"
+          "math": [
+            "\\mathrm{Attention}(Q,K,V)=\\mathrm{softmax}\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V"
+          ],
+          "source": "Lecture 1 (2026) · p.57–62（Self-attention mechanism）",
+          "figures": [
+            {
+              "src": "figures/l01-qkv-attention.webp",
+              "alt": "例句 a cute teddy bear is reading . 中，teddy bear 的 query 向量 q 分别连到每个 token 的 key（k 的转置），每个 token 上方标着它的 value 向量 v。",
+              "caption": "teddy bear 发出的 \\(q_{\\text{teddy bear}}\\) 和句中每个 token（包括它自己）的 \\(k^\\top\\) 各做一次内积，连线的数量就是要算的分数个数；上面一排 \\(v\\) 是按这些分数加权合起来的内容。",
+              "source": "Lecture 1 (2026) · p.61"
+            },
+            {
+              "src": "figures/l01-attention-blocks.webp",
+              "alt": "左：缩放点积注意力，自下而上依次是 Q、K 的 MatMul、Scale、可选的 Mask、SoftMax，再与 V 做 MatMul。右：多头注意力，V、K、Q 各经过 Linear，h 个缩放点积注意力并行计算，Concat 后再过一层 Linear。",
+              "caption": "左图就是 \\(\\mathrm{softmax}(QK^\\top/\\sqrt{d_k})V\\) 的计算顺序，Mask 一步只在解码器里使用；右图里层叠的方块表示 h 个头，各自的结果拼接后再做一次线性变换。",
+              "source": "Lecture 1 (2026) · p.62"
+            }
+          ]
         },
         {
           "title": "Transformer 架构：编码器、解码器与输入输出",
           "body": [
             "原论文用翻译任务说明架构：输入英文 “A cute teddy bear is reading.”，输出法文 “Un ours en peluche mignon lit.”。左边的编码器（encoder）负责“算出有意义的嵌入”，右边的解码器（decoder）负责“生成下一个 token”。",
-            "编码器的输入是分词后每个 token 的学习嵌入（参数：词表大小 V、嵌入维度 d_model），再加上一个技巧：位置编码（positional encoding），也就是把位置信息加到输入上。位置编码可以学出来，也可以直接写死（hardcoded）。讲义的两张热图里，一张显示各位置在各维度上的取值（介于 −1 和 +1 之间的条纹），另一张显示两个位置编码的内积：同一位置最大，离对角线越远越小。这里讲的是“加到输入上”的位置信息，相对位置的做法第 2 讲才讲。",
+            "编码器的输入是分词后每个 token 的学习嵌入（参数：词表大小 V、嵌入维度 \\(d_{\\text{model}}\\)），再加上一个技巧：位置编码（positional encoding），也就是把位置信息加到输入上。位置编码可以学出来，也可以直接写死（hardcoded）。讲义的两张热图里，一张显示各位置在各维度上的取值（介于 −1 和 +1 之间的条纹），另一张显示两个位置编码的内积：同一位置最大，离对角线越远越小。这里讲的是“加到输入上”的位置信息，相对位置的做法第 2 讲才讲。",
             "编码器层由自注意力、前馈神经网络（Feed Forward Neural Network）和归一化层组成，堆叠 N 层。解码器的输入是输出端 token 的嵌入加位置信息，翻译时从 [BOS] 开始（图中写作 outputs shifted right）。解码器层除了自注意力和前馈网络，还多一个编码器—解码器注意力（Encoder-Decoder attention），编码器的结果从这里进入解码器。最后的输出层先做线性投影再做 softmax，相当于一个分类问题，每个类别就是词表中的一个词。"
           ],
           "table": {
@@ -173,7 +189,7 @@
                 "编码器输入、解码器输入、输出层"
               ],
               [
-                "d_model",
+                "\\(d_{\\text{model}}\\)",
                 "嵌入维度",
                 "各处"
               ],
@@ -188,22 +204,30 @@
                 "编码器、解码器"
               ],
               [
-                "d_FF、d_key、d_value",
+                "\\(d_{\\text{FF}}\\)、\\(d_{\\text{key}}\\)、\\(d_{\\text{value}}\\)",
                 "子层（前馈、key、value）的维度",
                 "编码器、解码器"
               ]
             ]
           },
-          "source": "Lecture 1 (2026) · p.64–72（Transformer architecture）"
+          "source": "Lecture 1 (2026) · p.64–72（Transformer architecture）",
+          "figure": {
+            "src": "figures/l01-transformer-architecture.webp",
+            "alt": "原论文的 Transformer 结构图：左侧编码器（Multi-Head Attention、Add & Norm、Feed Forward，堆叠 N 层），右侧解码器（Masked Multi-Head Attention、接收编码器输出的 Multi-Head Attention、Feed Forward，堆叠 N 层），顶部是 Linear 和 Softmax；旁边标注英文句子 A cute teddy bear is reading. 被翻译成法文 Un ours en peluche mignon lit.",
+            "caption": "左边一列是编码器，右边一列是解码器；从编码器顶部伸出的连线进入解码器中间那层注意力，这就是编码器—解码器注意力。两边的输入都先加上位置编码，解码器输入是右移一位的输出（shifted right）。",
+            "source": "Lecture 1 (2026) · p.64"
+          }
         },
         {
           "title": "让模型训得动、训得好的几个技巧",
           "body": [
-            "残差连接（residual connection）来自 ResNet：把子层的输入与输出逐元素相加，即 F(x) + x。讲义列出的好处是让网络每一层的特征更丰富，并帮助梯度传播。层归一化（layer normalization）在一个隐藏层的所有神经元上做归一化，让各层激活值的尺度保持一致，实际训练中收敛更快、更稳。架构图里每个子层后面的 Add & Norm 就是这两步。",
+            "残差连接（residual connection）来自 ResNet：把子层的输入与输出逐元素相加，即 \\(F(x)+x\\)。讲义列出的好处是让网络每一层的特征更丰富，并帮助梯度传播。层归一化（layer normalization）在一个隐藏层的所有神经元上做归一化，让各层激活值的尺度保持一致，实际训练中收敛更快、更稳。架构图里每个子层后面的 Add & Norm 就是这两步。",
             "遮罩（masking）用在解码器的自注意力里，也叫“因果”（causal）自注意力。训练时整句译文都已知，但解码第 t 个词时不能看到它后面的词，于是给每个解码步构造一个遮罩矩阵（下三角形），把未来位置挡住。好处是所有位置可以向量化地一次算完，不用像 RNN 那样逐步计算。多头注意力（multi-head attention）并行运行多个自注意力，捕捉不同的关注模式，讲义把它类比为卷积层里的多个滤波器。dropout 以小概率随机丢弃连接或神经元，提升泛化能力。",
-            "标签平滑（label smoothing）来自 2015 年一篇视觉论文，出发点是模型过度自信不好，于是在真实标签里掺一点噪声：把 one-hot 目标 δ_{k,y} 换成 (1 − ε)δ_{k,y} + εu(k)。讲义说它能防止过拟合，并提高准确率和 BLEU 分数。补充（帮助理解公式，ε 和 u 的取值不是讲义给的）：沿用 Word2vec 例子 V = 6 个词，取 ε = 0.1、u 为均匀分布 1/6，正确词的目标概率从 1 变为 0.9 + 0.1/6 ≈ 0.9167，其余 5 个词各为 0.1/6 ≈ 0.0167，总和仍为 1。"
+            "标签平滑（label smoothing）来自 2015 年一篇视觉论文，出发点是模型过度自信不好，于是在真实标签里掺一点噪声：把 one-hot 目标 \\(\\delta_{k,y}\\) 换成 \\((1-\\varepsilon)\\delta_{k,y}+\\varepsilon u(k)\\)。讲义说它能防止过拟合，并提高准确率和 BLEU 分数。补充（帮助理解公式，\\(\\varepsilon\\) 和 \\(u\\) 的取值不是讲义给的）：沿用 Word2vec 例子 \\(V=6\\) 个词，取 \\(\\varepsilon=0.1\\)、\\(u\\) 为均匀分布 \\(1/6\\)，正确词的目标概率从 1 变为 \\(0.9+0.1/6\\approx0.9167\\)，其余 5 个词各为 \\(0.1/6\\approx0.0167\\)，总和仍为 1。"
           ],
-          "formula": "q(k|x) = δ_{k,y}  →  q′(k|x) = (1 − ε) δ_{k,y} + ε u(k)",
+          "math": [
+            "q(k\\mid x)=\\delta_{k,y}\\;\\longrightarrow\\;q'(k\\mid x)=(1-\\varepsilon)\\,\\delta_{k,y}+\\varepsilon\\,u(k)"
+          ],
           "table": {
             "columns": [
               "技巧",
@@ -213,7 +237,7 @@
             "rows": [
               [
                 "残差连接",
-                "子层输入与输出逐元素相加 F(x)+x",
+                "子层输入与输出逐元素相加 \\(F(x)+x\\)",
                 "丰富各层特征；帮助梯度传播"
               ],
               [
@@ -248,17 +272,17 @@
         {
           "title": "端到端例子（上）：编码器把句子变成上下文相关的嵌入",
           "body": [
-            "讲义把前面的零件串起来走一遍。句子先分词，两端加上 [BOS] 和 [EOS]，得到 [BOS] A cute teddy bear is reading . [EOS] 共 8 个 token。每个 token 的嵌入加上位置嵌入，得到“位置感知”的嵌入（position-aware embedding），8 个向量堆成一个矩阵，再分别乘 W_Q、W_K、W_V 得到 Q、K、V。",
-            "QKᵀ 的每个元素是一对内积，例如第一行是 ⟨q_[BOS], k_[BOS]⟩、⟨q_[BOS], k_A⟩、⟨q_[BOS], k_cute⟩……；再乘 V，第一行就是用这些内积给 v_[BOS]、v_A、v_cute……加权求和。加上缩放和 softmax 后，讲义的总结是：输出是 value 的加权平均，权重是 ⟨q, k⟩ 的函数。h 个头的结果拼接后乘 W_O，然后经过前馈网络，得到“上下文相关”的编码嵌入（context-aware encoded embeddings）。",
+            "讲义把前面的零件串起来走一遍。句子先分词，两端加上 [BOS] 和 [EOS]，得到 [BOS] A cute teddy bear is reading . [EOS] 共 8 个 token。每个 token 的嵌入加上位置嵌入，得到“位置感知”的嵌入（position-aware embedding），8 个向量堆成一个矩阵，再分别乘 \\(W_Q\\)、\\(W_K\\)、\\(W_V\\) 得到 Q、K、V。",
+            "\\(QK^\\top\\) 的每个元素是一对内积，例如第一行是 \\(\\langle q_{\\text{[BOS]}},k_{\\text{[BOS]}}\\rangle\\)、\\(\\langle q_{\\text{[BOS]}},k_{\\text{A}}\\rangle\\)、\\(\\langle q_{\\text{[BOS]}},k_{\\text{cute}}\\rangle\\)……；再乘 V，第一行就是用这些内积给 \\(v_{\\text{[BOS]}}\\)、\\(v_{\\text{A}}\\)、\\(v_{\\text{cute}}\\)……加权求和。加上缩放和 softmax 后，讲义的总结是：输出是 value 的加权平均，权重是 \\(\\langle q,k\\rangle\\) 的函数。h 个头的结果拼接后乘 \\(W_O\\)，然后经过前馈网络，得到“上下文相关”的编码嵌入（context-aware encoded embeddings）。",
             "和 Word2vec 对照：Word2vec 里 teddy bear 只有一个固定向量；这里 teddy bear 的输出混入了句中其他 token 的 value，换一个句子，它的编码结果也会跟着变。这正好补上了前面总结表里“嵌入不随上下文变化”的缺点。"
           ],
           "flow": [
             "分词：A | cute | teddy bear | is | reading | .",
-            "两端加 [BOS]、[EOS]，共 n = 8 个 token",
+            "两端加 [BOS]、[EOS]，共 \\(n=8\\) 个 token",
             "token 嵌入 ⊕ 位置嵌入 → 位置感知嵌入",
-            "堆成 n × d_model 矩阵",
-            "乘 W_Q、W_K、W_V 得 Q、K、V",
-            "h 个头各算 softmax(QKᵀ/√d_k)V，拼接后乘 W_O",
+            "堆成 \\(n\\times d_{\\text{model}}\\) 矩阵",
+            "乘 \\(W_Q\\)、\\(W_K\\)、\\(W_V\\) 得 Q、K、V",
+            "h 个头各算 \\(\\mathrm{softmax}(QK^\\top/\\sqrt{d_k})V\\)，拼接后乘 \\(W_O\\)",
             "前馈网络",
             "上下文相关的编码嵌入"
           ],
@@ -267,12 +291,14 @@
         {
           "title": "手算：用例句把各矩阵的形状走一遍",
           "body": [
-            "已知（讲义 p.82、p.91）：句子共 n = 8 个 token（[BOS]、A、cute、teddy bear、is、reading、句号、[EOS]）；位置感知嵌入矩阵 X 是 8 × d_model；W_Q、W_K、W_V 分别是 d_model × d_q、d_model × d_k、d_model × d_v。于是 Q = XW_Q 是 8 × d_q，K 是 8 × d_k，V 是 8 × d_v，每一行对应一个 token。",
-            "QKᵀ 要求 q 和 k 的维数相同（d_q = d_k），结果是 8 × 8，共 64 个内积，第 i 行第 j 列是 ⟨q_i, k_j⟩，第 1 行就是 [BOS] 对 8 个 token 的打分。它的大小只由 token 数 n 决定，与 d_k 无关。除以 √d_k、对每一行做 softmax 后，每行是 8 个非负且和为 1 的权重；再乘 V（8 × d_v），得到 8 × d_v，每行是 8 个 value 的加权平均。",
-            "多头：h 个头各得到一个 8 × d_v，拼接成 8 × (h·d_v)，再乘 W_O。补充：讲义没有标 W_O 的形状，为了让输出回到 d_model 维（才能与输入做残差相加），它应是 (h·d_v) × d_model。补充：代入原论文基础模型的设置 d_model = 512、h = 8、d_k = d_v = 64，可得 Q、K、V 各为 8 × 64，QKᵀ 为 8 × 8，缩放因子 √64 = 8，单头输出 8 × 64，拼接后 8 × 512，W_O 为 512 × 512，最终输出 8 × 512，和输入形状相同。"
+            "已知（讲义 p.82、p.91）：句子共 \\(n=8\\) 个 token（[BOS]、A、cute、teddy bear、is、reading、句号、[EOS]）；位置感知嵌入矩阵 \\(X\\) 是 \\(8\\times d_{\\text{model}}\\)；\\(W_Q\\)、\\(W_K\\)、\\(W_V\\) 分别是 \\(d_{\\text{model}}\\times d_q\\)、\\(d_{\\text{model}}\\times d_k\\)、\\(d_{\\text{model}}\\times d_v\\)。于是 \\(Q=XW_Q\\) 是 \\(8\\times d_q\\)，\\(K\\) 是 \\(8\\times d_k\\)，\\(V\\) 是 \\(8\\times d_v\\)，每一行对应一个 token。",
+            "\\(QK^\\top\\) 要求 q 和 k 的维数相同（\\(d_q=d_k\\)），结果是 \\(8\\times 8\\)，共 64 个内积，第 i 行第 j 列是 \\(\\langle q_i,k_j\\rangle\\)，第 1 行就是 [BOS] 对 8 个 token 的打分。它的大小只由 token 数 n 决定，与 \\(d_k\\) 无关。除以 \\(\\sqrt{d_k}\\)、对每一行做 softmax 后，每行是 8 个非负且和为 1 的权重；再乘 V（\\(8\\times d_v\\)），得到 \\(8\\times d_v\\)，每行是 8 个 value 的加权平均。",
+            "多头：h 个头各得到一个 \\(8\\times d_v\\)，拼接成 \\(8\\times(h\\cdot d_v)\\)，再乘 \\(W_O\\)。补充：讲义没有标 \\(W_O\\) 的形状，为了让输出回到 \\(d_{\\text{model}}\\) 维（才能与输入做残差相加），它应是 \\((h\\cdot d_v)\\times d_{\\text{model}}\\)。补充：代入原论文基础模型的设置 \\(d_{\\text{model}}=512\\)、\\(h=8\\)、\\(d_k=d_v=64\\)，可得 Q、K、V 各为 \\(8\\times 64\\)，\\(QK^\\top\\) 为 \\(8\\times 8\\)，缩放因子 \\(\\sqrt{64}=8\\)，单头输出 \\(8\\times 64\\)，拼接后 \\(8\\times 512\\)，\\(W_O\\) 为 \\(512\\times 512\\)，最终输出 \\(8\\times 512\\)，和输入形状相同。"
           ],
           "kind": "worked-example",
-          "formula": "X: 8×d_model → Q: 8×d_q, K: 8×d_k, V: 8×d_v → QKᵀ: 8×8 → softmax(QKᵀ/√d_k)V: 8×d_v → Concat: 8×(h·d_v) → ·W_O",
+          "math": [
+            "\\begin{aligned}X&:\\ 8\\times d_{\\text{model}}\\\\Q&:\\ 8\\times d_q,\\quad K:\\ 8\\times d_k,\\quad V:\\ 8\\times d_v\\\\QK^\\top&:\\ 8\\times 8\\\\\\mathrm{softmax}\\left(QK^\\top/\\sqrt{d_k}\\right)V&:\\ 8\\times d_v\\\\\\mathrm{Concat}&:\\ 8\\times(h\\cdot d_v)\\;\\to\\;\\cdot\\,W_O\\end{aligned}"
+          ],
           "source": "Lecture 1 (2026) · p.82–101（Stitching all the pieces together with an example）"
         },
         {
@@ -307,15 +333,15 @@
           "explanation": "tedi 不在词表里，只能映射成表示“未知”的 [UNK]，bear 在词表里，保持不变（讲义 p.28）。分词器不会自动纠正拼写，所以不会变成 teddy；拆成字符是字符级分词的做法，而且这个词表里也没有单个字母；[PAD] 用来补齐长度，不表示未知词。"
         },
         {
-          "question": "讲义的端到端例子中，编码器输入为 [BOS] A cute teddy bear is reading . [EOS]。单个注意力头里 QKᵀ 的形状是？",
+          "question": "讲义的端到端例子中，编码器输入为 [BOS] A cute teddy bear is reading . [EOS]。单个注意力头里 \\(QK^\\top\\) 的形状是？",
           "options": [
-            "8 × d_k",
-            "d_k × d_k",
-            "8 × d_v",
-            "8 × 8，第 i 行第 j 列是 ⟨q_i, k_j⟩"
+            "\\(8\\times d_k\\)",
+            "\\(d_k\\times d_k\\)",
+            "\\(8\\times d_v\\)",
+            "\\(8\\times 8\\)，第 i 行第 j 列是 \\(\\langle q_i,k_j\\rangle\\)"
           ],
           "answer": 3,
-          "explanation": "共 8 个 token，Q 是 8 × d_q（d_q = d_k），Kᵀ 是 d_k × 8，相乘得到 8 × 8，每个元素是一对 token 的 query 与 key 的内积（p.91–96）。8 × d_k 是 Q 或 K 本身的形状；d_k × d_k 对应的是 KᵀK，不是注意力分数；8 × d_v 是再乘上 V 之后注意力输出的形状。"
+          "explanation": "共 8 个 token，Q 是 \\(8\\times d_q\\)（\\(d_q=d_k\\)），\\(K^\\top\\) 是 \\(d_k\\times 8\\)，相乘得到 \\(8\\times 8\\)，每个元素是一对 token 的 query 与 key 的内积（p.91–96）。\\(8\\times d_k\\) 是 Q 或 K 本身的形状；\\(d_k\\times d_k\\) 对应的是 \\(K^\\top K\\)，不是注意力分数；\\(8\\times d_v\\) 是再乘上 V 之后注意力输出的形状。"
         }
       ],
       "resources": [
@@ -358,7 +384,7 @@
       "summary": "从原始 Transformer 出发，看今天的大语言模型怎样选择结构，怎样按 scaling law 和 MoE 扩大规模，用哪些架构改进处理位置与归一化，以及推理时怎样通过解码策略和提示得到输出。",
       "objectives": [
         "说出 encoder-only（BERT）、decoder-only（GPT）与 encoder-decoder 在注意力方向和用途上的区别，以及今天 LLM 的典型结构。",
-        "读懂 scaling law 的幂律和 Chinchilla 的“tokens ≈ 20 × 参数”，并解释 sparse MoE 怎样逐 token 路由、为什么需要辅助损失防止 routing collapse。",
+        "读懂 scaling law 的幂律和 Chinchilla 的“\\(\\text{tokens}\\approx20\\times\\text{参数}\\)”，并解释 sparse MoE 怎样逐 token 路由、为什么需要辅助损失防止 routing collapse。",
         "比较正弦位置编码、T5 bias、ALiBi、RoPE，以及 SWA、MQA/GQA、Pre-Norm + RMSNorm 各自改动了 Transformer 的哪一部分。",
         "用 greedy、beam search、top-k/top-p 和温度推演下一个 token 的选择，并说明 guided decoding、few-shot、CoT 与 self-consistency 的收益和代价。"
       ],
@@ -425,12 +451,16 @@
         {
           "title": "Scaling laws：更大的模型、更多的数据、更多的算力",
           "body": [
-            "Kaplan 等人（2020）的三张图显示：测试损失随算力（PF-days）、数据量（tokens）和参数量（不计 embedding）增加而下降，在对数坐标上近似一条直线，也就是幂律（power law）。三个指数都很小：由 p.23 的公式，参数量翻倍时损失乘以 2^−0.076≈0.949，约下降 5%；数据量翻倍时乘以 2^−0.095≈0.936；算力增加 10 倍时乘以 10^−0.05≈0.891。",
-            "第二个结论是样本效率（sample efficiency）：在处理同样多 token 的情况下，大模型的损失下降得更快。图中从 10³ 到 10⁹ 参数的一族曲线，模型越大曲线越低，也就是“更省 token”。",
-            "讲义区分了两个容易混淆的记号。FLOPs 是浮点运算的总次数，训练所需的 FLOPs 是 token 数和参数量的函数，量级大约是：小型神经网络 ~10⁷，大型 RNN ~10¹⁴，LLM ~10²⁵。FLOPS（FLOP/s）是每秒能完成的浮点运算次数，衡量硬件：手机约 10¹²，电脑约 10¹⁴，超级计算机约 10¹⁸。",
-            "补充：把两者相除可以粗估训练时间。10²⁵ FLOPs ÷ 10¹⁸ FLOP/s = 10⁷ 秒，约 116 天；这里假设机器始终满负荷运行，实际利用率更低，所以需要很多 GPU 并行。"
+            "Kaplan 等人（2020）的三张图显示：测试损失随算力（PF-days）、数据量（tokens）和参数量（不计 embedding）增加而下降，在对数坐标上近似一条直线，也就是幂律（power law）。三个指数都很小：由 p.23 的公式，参数量翻倍时损失乘以 \\(2^{-0.076}\\approx0.949\\)，约下降 5%；数据量翻倍时乘以 \\(2^{-0.095}\\approx0.936\\)；算力增加 10 倍时乘以 \\(10^{-0.05}\\approx0.891\\)。",
+            "第二个结论是样本效率（sample efficiency）：在处理同样多 token 的情况下，大模型的损失下降得更快。图中从 \\(10^{3}\\) 到 \\(10^{9}\\) 参数的一族曲线，模型越大曲线越低，也就是“更省 token”。",
+            "讲义区分了两个容易混淆的记号。FLOPs 是浮点运算的总次数，训练所需的 FLOPs 是 token 数和参数量的函数，量级大约是：小型神经网络 ~\\(10^{7}\\)，大型 RNN ~\\(10^{14}\\)，LLM ~\\(10^{25}\\)。FLOPS（FLOP/s）是每秒能完成的浮点运算次数，衡量硬件：手机约 \\(10^{12}\\)，电脑约 \\(10^{14}\\)，超级计算机约 \\(10^{18}\\)。",
+            "补充：把两者相除可以粗估训练时间。\\(10^{25}\\,\\text{FLOPs}\\div10^{18}\\,\\text{FLOP/s}=10^{7}\\,\\text{秒}\\)，约 116 天；这里假设机器始终满负荷运行，实际利用率更低，所以需要很多 GPU 并行。"
           ],
-          "formula": "L = (N / 8.8·10¹³)^−0.076；L = (D / 5.4·10¹³)^−0.095；L = (C_min / 2.3·10⁸)^−0.050",
+          "math": [
+            "L=\\left(\\frac{N}{8.8\\times10^{13}}\\right)^{-0.076}",
+            "L=\\left(\\frac{D}{5.4\\times10^{13}}\\right)^{-0.095}",
+            "L=\\left(\\frac{C_{\\min}}{2.3\\times10^{8}}\\right)^{-0.050}"
+          ],
           "source": "Lecture 2 (2026) · p.23–26（Scaling laws · Better performance with bigger models and more data; Notations）"
         },
         {
@@ -441,9 +471,13 @@
             "反过来用：一个 10B 参数的模型，按这条经验法则应该训练约 200B tokens（表中 205.1B）。如果只给它 20B tokens，按左图的 U 形曲线，同样的算力换一个更小、看更多数据的模型会得到更低的损失。"
           ],
           "kind": "worked-example",
-          "formula": "tokens / 参数：8.0B/400M = 20；20.2B/1B = 20.2；216.2T/10T ≈ 21.6",
+          "math": [
+            "\\frac{\\text{tokens}}{\\text{参数}}=\\frac{8.0\\text{B}}{400\\text{M}}=20",
+            "\\frac{\\text{tokens}}{\\text{参数}}=\\frac{20.2\\text{B}}{1\\text{B}}=20.2",
+            "\\frac{\\text{tokens}}{\\text{参数}}=\\frac{216.2\\text{T}}{10\\text{T}}\\approx21.6"
+          ],
           "bullets": [
-            "补充：表中 FLOPs 列与 6 × 参数 × tokens 吻合，例如 6 × 4×10⁸ × 8×10⁹ = 1.92×10¹⁹。讲义只写 FLOPs = f(#tokens, #parameters)，没有给出这个公式，这里只用来核对表格。",
+            "补充：表中 FLOPs 列与 \\(6\\times\\text{参数}\\times\\text{tokens}\\) 吻合，例如 \\(6\\times4\\times10^{8}\\times8\\times10^{9}=1.92\\times10^{19}\\)。讲义只写 \\(\\text{FLOPs}=f(\\#\\text{tokens},\\#\\text{parameters})\\)，没有给出这个公式，这里只用来核对表格。",
             "误区：20 倍是算力最优训练的经验比例，不是说训练到 20 倍 tokens 后就不能再继续训练。"
           ],
           "source": "Lecture 2 (2026) · p.27–28（Scaling laws · Takeaways on compute-optimal training / Chinchilla law）"
@@ -459,28 +493,38 @@
         {
           "title": "Mixture of Experts：每个 token 只用一部分权重",
           "body": [
-            "动机是：一次前向传播并不需要用到巨大模型的全部权重。MoE（Mixture of Experts）用一个门控网络（gating network）G 读取输入 x，决定交给哪些专家（expert）E_i 处理。dense MoE 把所有专家的输出按 G(x)_i 加权平均（图中权重为 0.1、0.8、0.05），并没有省下计算；sparse MoE 用 top-k 只选出专家集合 𝓘_k，只对这些专家求加权和，其余专家完全不用计算。",
-            "放进 Transformer 时，被替换的是 block 里的前馈层：一个 feed forward 变成 FFNN₁…FFNN_n，并且路由对每个 token 单独进行（routing done for each token），同一句话里的不同 token 可以去不同的专家。Mixtral 的例子把一段代码里的每个 token 按它被分到的专家着色，可以直观看到这种逐 token 的分配。",
-            "训练中的一个难点是 routing collapse：同一个专家在大多数时候都被选中，其他专家几乎得不到训练。补救办法是加辅助损失（auxiliary loss），强迫其他专家也“参与进来”。式中 f_i 是被路由到专家 i 的 token 比例，P_i 是专家 i 的平均路由概率；当少数专家既接收了大部分 token、又拿到很高的路由概率时，这一项最大，路由越均匀这一项越小。"
+            "动机是：一次前向传播并不需要用到巨大模型的全部权重。MoE（Mixture of Experts）用一个门控网络（gating network）G 读取输入 x，决定交给哪些专家（expert）\\(E_i\\) 处理。dense MoE 把所有专家的输出按 \\(G(x)_i\\) 加权平均（图中权重为 0.1、0.8、0.05），并没有省下计算；sparse MoE 用 top-k 只选出专家集合 \\(\\mathcal{I}_k\\)，只对这些专家求加权和，其余专家完全不用计算。",
+            "放进 Transformer 时，被替换的是 block 里的前馈层：一个 feed forward 变成 \\(\\text{FFNN}_1\\ldots\\text{FFNN}_n\\)，并且路由对每个 token 单独进行（routing done for each token），同一句话里的不同 token 可以去不同的专家。Mixtral 的例子把一段代码里的每个 token 按它被分到的专家着色，可以直观看到这种逐 token 的分配。",
+            "训练中的一个难点是 routing collapse：同一个专家在大多数时候都被选中，其他专家几乎得不到训练。补救办法是加辅助损失（auxiliary loss），强迫其他专家也“参与进来”。式中 \\(f_i\\) 是被路由到专家 i 的 token 比例，\\(P_i\\) 是专家 i 的平均路由概率；当少数专家既接收了大部分 token、又拿到很高的路由概率时，这一项最大，路由越均匀这一项越小。"
           ],
-          "formula": "Dense：ŷ = Σ_{i=1}^{n} G(x)_i E_i(x)；Sparse：ŷ = Σ_{i∈𝓘_k} G(x)_i E_i(x)；辅助损失 loss = α · N · Σ_{i=1}^{N} f_i · P_i",
+          "math": [
+            "\\text{Dense：}\\quad\\hat{y}=\\sum_{i=1}^{n}G(x)_i\\,E_i(x)",
+            "\\text{Sparse：}\\quad\\hat{y}=\\sum_{i\\in\\mathcal{I}_k}G(x)_i\\,E_i(x)",
+            "\\text{辅助损失：}\\quad\\text{loss}=\\alpha\\cdot N\\cdot\\sum_{i=1}^{N}f_i\\cdot P_i"
+          ],
           "flow": [
             "token x 进入门控 G",
             "G 为每个专家打分",
-            "top-k 选出专家集合 𝓘_k",
+            "top-k 选出专家集合 \\(\\mathcal{I}_k\\)",
             "只计算被选中的 FFNN",
-            "按 G(x)_i 加权求和得到 ŷ"
+            "按 \\(G(x)_i\\) 加权求和得到 \\(\\hat{y}\\)"
           ],
           "bullets": [
-            "补充（讲义只给公式，数字是自设的）：取 N=8、α=0.01，并为简化假设每个专家的 P_i 恰好等于 f_i。路由完全均匀时 f_i=P_i=1/8，Σ f_i·P_i = 8 × 1/64 = 1/8，loss = 0.01 × 8 × 1/8 = 0.01，恰好等于 α。",
-            "同样设定下，若一半 token 都去专家 1（f_1=P_1=0.5），其余 7 个专家均分另一半，则 Σ = 0.25 + 7 × (0.5/7)² ≈ 0.2857，loss ≈ 0.0229；若全部 token 都去专家 1（f_1=P_1=1），Σ = 1，loss = α·N = 0.08，是均匀时的 8 倍。"
+            "补充（讲义只给公式，数字是自设的）：取 \\(N=8\\)、\\(\\alpha=0.01\\)，并为简化假设每个专家的 \\(P_i\\) 恰好等于 \\(f_i\\)。路由完全均匀时 \\(f_i=P_i=1/8\\)，\\(\\sum f_i\\cdot P_i=8\\times1/64=1/8\\)，\\(\\text{loss}=0.01\\times8\\times1/8=0.01\\)，恰好等于 \\(\\alpha\\)。",
+            "同样设定下，若一半 token 都去专家 1（\\(f_1=P_1=0.5\\)），其余 7 个专家均分另一半，则 \\(\\sum=0.25+7\\times(0.5/7)^2\\approx0.2857\\)，\\(\\text{loss}\\approx0.0229\\)；若全部 token 都去专家 1（\\(f_1=P_1=1\\)），\\(\\sum=1\\)，\\(\\text{loss}=\\alpha\\cdot N=0.08\\)，是均匀时的 8 倍。"
           ],
-          "source": "Lecture 2 (2026) · p.36–45（Expert routing · Motivation; Overview of MoEs; Training challenges include routing collapse）"
+          "source": "Lecture 2 (2026) · p.36–45（Expert routing · Motivation; Overview of MoEs; Training challenges include routing collapse）",
+          "figure": {
+            "src": "figures/l02-sparse-moe.webp",
+            "alt": "稀疏 MoE 示意图：输入 x 进入门控 G，G 对专家 E1、E2 … En 打分；只有通往 E2 的连线打勾，其余打叉，E2 的输出得到 ŷ。",
+            "caption": "门控 \\(G\\) 为每个专家打分，但只有 top-k 选中的专家（图中只有 \\(E_2\\)）真正参与计算，灰掉的专家完全不算，这就是 sparse MoE 省计算的地方。",
+            "source": "Lecture 2 (2026) · p.41"
+          }
         },
         {
           "title": "MoE 的新趋势：共享专家、细粒度专家与前沿模型的量级",
           "body": [
-            "第一个趋势是共享专家（shared experts），目的是减少专家之间的冗余信息。DeepSeekMoE 的图从传统的 top-2 路由出发：先把专家切得更细（N 个变成 2N 个，每个 token 选 K=4 个），再单独隔离出一个所有 token 都会经过的共享专家，路由专家改为选 K=3 个。",
+            "第一个趋势是共享专家（shared experts），目的是减少专家之间的冗余信息。DeepSeekMoE 的图从传统的 top-2 路由出发：先把专家切得更细（N 个变成 2N 个，每个 token 选 \\(K=4\\) 个），再单独隔离出一个所有 token 都会经过的共享专家，路由专家改为选 \\(K=3\\) 个。",
             "第二个趋势是细粒度专家（fine-grained experts），每个 token 选的专家数 k 大于 1。DeepSeekMoE 比较了四种配置：0 个共享 + 16 选 2（GShard）、1 个共享 + 15 选 1、1 个共享 + 31 选 3、1 个共享 + 63 选 7。最后一种在六个基准上都最好，在 TriviaQA 和 NaturalQuestions 上差距最明显，GShard 的归一化得分只有约 0.6。",
             "第三张图看量级：前沿开源模型普遍采用 MoE，专家总数达到几百个，每个 token 只路由到 6–8 个，模型规模在 0.5T–1T 参数左右。下表是讲义给出的三个例子，属于 2026 年 9 月制作讲义时的快照，以后会变化。"
           ],
@@ -522,23 +566,32 @@
           "title": "位置信息：从可学习的位置向量到正弦编码",
           "body": [
             "注意力让 teddy bear 的 query 直接与每个 key 相连，这种直连本身不带位置信息：词序打乱后，各对 token 之间的得分不变。最直接的办法是给每个位置学一个位置向量（learned position-specific embedding），加到 token 向量上。缺点是训练时没见过的更长序列没有对应的向量，需要重新训练。",
-            "第二种办法是把位置向量的值写死（hardcoded）。老师用时钟作比喻：时针慢、分针快、秒针更快，几根针合起来唯一确定一个时刻。正弦位置编码的每一对维度 (2i, 2i+1) 就像一根针，以频率 ω_i 用 sin、cos 随位置转动；i 越小，ω_i 越大，转得越快。",
-            "这种写法的好处可以从 cos(a−b) = cos a cos b + sin a sin b 看出：两个位置向量的内积，每对维度贡献 cos(ω_i(m−n))，整体只依赖相对距离 m−n。相似度热图因此呈对角带状，相邻位置最相似。而且公式对任何位置 m 都能计算，可以延伸到任意序列长度。"
+            "第二种办法是把位置向量的值写死（hardcoded）。老师用时钟作比喻：时针慢、分针快、秒针更快，几根针合起来唯一确定一个时刻。正弦位置编码的每一对维度 \\((2i,2i+1)\\) 就像一根针，以频率 \\(\\omega_i\\) 用 sin、cos 随位置转动；i 越小，\\(\\omega_i\\) 越大，转得越快。",
+            "这种写法的好处可以从 \\(\\cos(a-b)=\\cos a\\cos b+\\sin a\\sin b\\) 看出：两个位置向量的内积，每对维度贡献 \\(\\cos(\\omega_i(m-n))\\)，整体只依赖相对距离 \\(m-n\\)。相似度热图因此呈对角带状，相邻位置最相似。而且公式对任何位置 m 都能计算，可以延伸到任意序列长度。"
           ],
-          "formula": "PE_{m,2i} = sin(ω_i·m)，PE_{m,2i+1} = cos(ω_i·m)，ω_i = 10000^(−2i/d_model)；⟨PE_m, PE_n⟩ = Σ_i cos(ω_i(m−n)) = f(m−n)",
+          "math": [
+            "PE_{m,2i}=\\sin(\\omega_i\\cdot m),\\quad PE_{m,2i+1}=\\cos(\\omega_i\\cdot m)",
+            "\\omega_i=10000^{-2i/d_{\\text{model}}}",
+            "\\langle PE_m,PE_n\\rangle=\\sum_i\\cos\\big(\\omega_i(m-n)\\big)=f(m-n)"
+          ],
           "bullets": [
-            "补充（自设小维度）：取 d_model=4，则 ω_0=1、ω_1=10000^(−1/2)=0.01，⟨PE_m, PE_n⟩ = cos(m−n) + cos(0.01(m−n))。位置 3 与 1、位置 12 与 10 的内积都是 cos 2 + cos 0.02 ≈ 0.5837；距离为 1 时 ≈ 1.5403，距离为 0 时等于 2。"
+            "补充（自设小维度）：取 \\(d_{\\text{model}}=4\\)，则 \\(\\omega_0=1\\)、\\(\\omega_1=10000^{-1/2}=0.01\\)，\\(\\langle PE_m,PE_n\\rangle=\\cos(m-n)+\\cos(0.01(m-n))\\)。位置 3 与 1、位置 12 与 10 的内积都是 \\(\\cos2+\\cos0.02\\approx0.5837\\)；距离为 1 时 \\(\\approx1.5403\\)，距离为 0 时等于 2。"
           ],
           "source": "Lecture 2 (2026) · p.52–65（Architecture optimizations · Need for position information; Hardcoded position embeddings）"
         },
         {
           "title": "把相对位置放进注意力层：T5 bias、ALiBi 与 RoPE",
           "body": [
-            "老师接着指出：在注意力层里，我们真正关心的是相对位置。所以与其修改输入向量，不如直接修改注意力层。第一类做法是在 query-key 得分上加偏置 bias(m,n)：T5 bias 把距离 m−n 分桶，每个注意力头为每个桶学一个偏置值；ALiBi 用固定斜率 μ 乘以 (n−m)，不需要学习，随距离线性变化，并且没有上界。补充：因果注意力中 n≤m，若 μ>0，则距离越远，加上的负偏置越大。",
-            "今天的默认选择是 RoPE（Rotary Position Embeddings）：用旋转矩阵把位置 m 的 query 转过 mθ，把位置 n 的 key 转过 nθ。维度大于 2 时，把向量切成 d_k/2 个二维块，第 i 块按自己的角度 θ_i 旋转。两个旋转相乘后只剩 R_{θ,n−m}，因此得分只依赖相对距离 n−m，讲义的说法是“相对距离被很好地捕捉”。",
-            "讲义还展示了 RoPE 的一个性质：注意力得分的相对上界随 |m−n| 增大而衰减（long-term decay，曲线带轻微振荡），即距离越远的 token，得分能达到的上限越低。"
+            "老师接着指出：在注意力层里，我们真正关心的是相对位置。所以与其修改输入向量，不如直接修改注意力层。第一类做法是在 query-key 得分上加偏置 \\(\\mathrm{bias}(m,n)\\)：T5 bias 把距离 \\(m-n\\) 分桶，每个注意力头为每个桶学一个偏置值；ALiBi 用固定斜率 \\(\\mu\\) 乘以 \\((n-m)\\)，不需要学习，随距离线性变化，并且没有上界。补充：因果注意力中 \\(n\\le m\\)，若 \\(\\mu>0\\)，则距离越远，加上的负偏置越大。",
+            "今天的默认选择是 RoPE（Rotary Position Embeddings）：用旋转矩阵把位置 m 的 query 转过 \\(m\\theta\\)，把位置 n 的 key 转过 \\(n\\theta\\)。维度大于 2 时，把向量切成 \\(d_k/2\\) 个二维块，第 i 块按自己的角度 \\(\\theta_i\\) 旋转。两个旋转相乘后只剩 \\(R_{\\theta,n-m}\\)，因此得分只依赖相对距离 \\(n-m\\)，讲义的说法是“相对距离被很好地捕捉”。",
+            "讲义还展示了 RoPE 的一个性质：注意力得分的相对上界随 \\(|m-n|\\) 增大而衰减（long-term decay，曲线带轻微振荡），即距离越远的 token，得分能达到的上限越低。"
           ],
-          "formula": "softmax(⟨q_m, k_n⟩/√d_k + bias(m,n))；T5：bias = β_bucket(m−n)；ALiBi：bias = μ×(n−m)；RoPE：q_m k_nᵀ = x_m W_q R_{θ,n−m} W_kᵀ x_nᵀ",
+          "math": [
+            "\\mathrm{softmax}\\left(\\frac{\\langle q_m,k_n\\rangle}{\\sqrt{d_k}}+\\mathrm{bias}(m,n)\\right)",
+            "\\text{T5：}\\quad\\mathrm{bias}=\\beta_{\\text{bucket}(m-n)}",
+            "\\text{ALiBi：}\\quad\\mathrm{bias}=\\mu\\times(n-m)",
+            "\\text{RoPE：}\\quad q_m k_n^\\top=x_m W_q R_{\\theta,n-m} W_k^\\top x_n^\\top"
+          ],
           "table": {
             "columns": [
               "方法",
@@ -556,25 +609,25 @@
               [
                 "Hardcoded（正弦）",
                 "输入的 token 向量",
-                "sin/cos，频率 ω_i",
+                "sin/cos，频率 \\(\\omega_i\\)",
                 "可以延伸到任意长度"
               ],
               [
                 "T5 bias",
                 "注意力得分",
-                "β_bucket(m−n)",
+                "\\(\\beta_{\\text{bucket}(m-n)}\\)",
                 "每个头单独学习"
               ],
               [
                 "ALiBi",
                 "注意力得分",
-                "μ×(n−m)",
+                "\\(\\mu\\times(n-m)\\)",
                 "线性、确定、无上界"
               ],
               [
                 "RoPE",
                 "query 和 key 向量",
-                "旋转矩阵 R_{θ,m}",
+                "旋转矩阵 \\(R_{\\theta,m}\\)",
                 "相对距离被很好地捕捉；今天的默认选择"
               ]
             ]
@@ -586,7 +639,7 @@
           "body": [
             "全注意力让每个 token 看所有 token。Longformer 改用稀疏模式：大多数 token 只看自己附近的一条对角带（局部），少数特殊 token（如 [CLS]）能看到全部，也被全部 token 看到（全局）。",
             "滑动窗口注意力（SWA，Sliding Window Attention）只保留宽度为一个窗口的带状区域。单独一层只能看窗口内的 token，但层层堆叠后，上层的位置可以间接获得更远处的信息，这和计算机视觉里的感受野（receptive field）类似；讲义用 Mistral 7B 的图说明了这一点。变体还会让局部注意力层和全局注意力层交替出现。",
-            "另一种改法是共享注意力头：把 h 个 query 头分成 G 组，同一组里的 query 头共用一组 key 和 value。G=h 就是标准的多头注意力（MHA）；G=1 时所有 query 头共用一组 K/V，叫 MQA；介于两者之间的是 GQA。补充：例如 h=8、G=4 时，每 2 个 query 头共享 1 组 K/V，只需计算 4 组 K/V，而不是 8 组。讲义在这里只给出结构上的定义，没有展开它在推理时带来的效率收益。"
+            "另一种改法是共享注意力头：把 h 个 query 头分成 G 组，同一组里的 query 头共用一组 key 和 value。\\(G=h\\) 就是标准的多头注意力（MHA）；\\(G=1\\) 时所有 query 头共用一组 K/V，叫 MQA；介于两者之间的是 GQA。补充：例如 \\(h=8\\)、\\(G=4\\) 时，每 2 个 query 头共享 1 组 K/V，只需计算 4 组 K/V，而不是 8 组。讲义在这里只给出结构上的定义，没有展开它在推理时带来的效率收益。"
           ],
           "table": {
             "columns": [
@@ -597,35 +650,45 @@
             ],
             "rows": [
               [
-                "G = 1",
+                "\\(G=1\\)",
                 "Multi-Query Attention（MQA）",
                 "1",
                 "h"
               ],
               [
-                "1 < G < h",
+                "\\(1<G<h\\)",
                 "Group-Query Attention（GQA）",
                 "G",
-                "h/G"
+                "\\(h/G\\)"
               ],
               [
-                "G = h",
+                "\\(G=h\\)",
                 "Multi-Head Attention（MHA）",
                 "h",
                 "1"
               ]
             ]
           },
-          "source": "Lecture 2 (2026) · p.75–83（Architecture optimizations · Sparse attention: Longformer; Leveraging local and global attention; Sharing attention heads）"
+          "source": "Lecture 2 (2026) · p.75–83（Architecture optimizations · Sparse attention: Longformer; Leveraging local and global attention; Sharing attention heads）",
+          "figure": {
+            "src": "figures/l02-sliding-window.webp",
+            "alt": "左：滑动窗口注意力的遮罩矩阵，行和列都是 [CLS]、A、cute、teddy bear…，只有对角线附近一条带状区域被着色。右：Mistral 7B 的示意图，四层 token 自下而上堆叠，连线显示上层位置通过下层窗口间接看到更远的 token。",
+            "caption": "左图着色的格子是每个 token 能看到的位置，宽度就是窗口；右图从顶层一个位置往下追连线，每下一层就能多覆盖一个窗口的距离，层数越多，间接看到的范围越大（类似感受野）。",
+            "source": "Lecture 2 (2026) · p.78"
+          }
         },
         {
           "title": "归一化：从 Post-Norm + LayerNorm 到 Pre-Norm + RMSNorm",
           "body": [
-            "归一化层放在哪里有两种做法。原始 Transformer 是 Post-Norm：先把子层输出和残差相加，再做 LayerNorm，即 LayerNorm(x + SubLayer(x))。Pre-Norm 则在进入子层之前先归一化，即 x + SubLayer(LayerNorm(x))；这样残差主干上的 x 不经过归一化，直接与子层输出相加。",
-            "LayerNorm 对一个 token 的 d 个特征求均值 μ 和方差 σ²，先标准化得到 x̂，再用可学习的 γ、β 缩放和平移，好处是帮助训练稳定和收敛。RMSNorm 把它简化为 x 除以 RMS(x) 再乘 γ：不减均值，也没有 β。",
-            "讲义的总结是：以前常用 Post-Norm + LayerNorm，现在常用 Pre-Norm + RMSNorm。补充：讲义没有写出 RMS 的定义，通常指 RMS(x) = √((1/d)Σx_i²)。"
+            "归一化层放在哪里有两种做法。原始 Transformer 是 Post-Norm：先把子层输出和残差相加，再做 LayerNorm，即 \\(\\mathrm{LayerNorm}(x+\\mathrm{SubLayer}(x))\\)。Pre-Norm 则在进入子层之前先归一化，即 \\(x+\\mathrm{SubLayer}(\\mathrm{LayerNorm}(x))\\)；这样残差主干上的 x 不经过归一化，直接与子层输出相加。",
+            "LayerNorm 对一个 token 的 d 个特征求均值 \\(\\mu\\) 和方差 \\(\\sigma^2\\)，先标准化得到 \\(\\hat{x}\\)，再用可学习的 \\(\\gamma\\)、\\(\\beta\\) 缩放和平移，好处是帮助训练稳定和收敛。RMSNorm 把它简化为 \\(x\\) 除以 \\(\\mathrm{RMS}(x)\\) 再乘 \\(\\gamma\\)：不减均值，也没有 \\(\\beta\\)。",
+            "讲义的总结是：以前常用 Post-Norm + LayerNorm，现在常用 Pre-Norm + RMSNorm。补充：讲义没有写出 RMS 的定义，通常指 \\(\\mathrm{RMS}(x)=\\sqrt{\\tfrac{1}{d}\\sum_i x_i^2}\\)。"
           ],
-          "formula": "LN(x) = γ·x̂ + β，x̂ = (x−μ)/√(σ²+ε)，μ = (1/d)Σx_i，σ² = (1/d)Σ(x_i−μ)²；RMSNorm(x) = γ·x / RMS(x)",
+          "math": [
+            "\\mathrm{LN}(x)=\\gamma\\cdot\\hat{x}+\\beta,\\quad\\hat{x}=\\frac{x-\\mu}{\\sqrt{\\sigma^2+\\varepsilon}}",
+            "\\mu=\\frac{1}{d}\\sum_i x_i,\\quad\\sigma^2=\\frac{1}{d}\\sum_i(x_i-\\mu)^2",
+            "\\mathrm{RMSNorm}(x)=\\frac{\\gamma\\cdot x}{\\mathrm{RMS}(x)}"
+          ],
           "table": {
             "columns": [
               "",
@@ -635,13 +698,13 @@
             "rows": [
               [
                 "放在哪里",
-                "Post-Norm：LayerNorm(x + SubLayer(x))，在残差相加之后",
-                "Pre-Norm：x + SubLayer(LayerNorm(x))，在残差相加之前"
+                "Post-Norm：\\(\\mathrm{LayerNorm}(x+\\mathrm{SubLayer}(x))\\)，在残差相加之后",
+                "Pre-Norm：\\(x+\\mathrm{SubLayer}(\\mathrm{LayerNorm}(x))\\)，在残差相加之前"
               ],
               [
                 "怎样归一化",
-                "LayerNorm：减均值、除以标准差，再乘 γ 加 β",
-                "RMSNorm：除以 RMS(x)，再乘 γ"
+                "LayerNorm：减均值、除以标准差，再乘 \\(\\gamma\\) 加 \\(\\beta\\)",
+                "RMSNorm：除以 \\(\\mathrm{RMS}(x)\\)，再乘 \\(\\gamma\\)"
               ]
             ]
           },
@@ -650,13 +713,13 @@
         {
           "title": "逐个生成 token：greedy 与 beam search",
           "body": [
-            "LLM 每次只生成一个 token：从 [BOS] 开始预测出 A，把 A 接到输入后面再预测 teddy，然后是 bear、is……每一步模型输出的是整张词表上的分布 P(w_{t+1}=w | C)，C 是当前上下文。解码策略（decoding strategy）决定怎样从这个分布里取出下一个 token。",
+            "LLM 每次只生成一个 token：从 [BOS] 开始预测出 A，把 A 接到输入后面再预测 teddy，然后是 bear、is……每一步模型输出的是整张词表上的分布 \\(P(w_{t+1}=w\\mid C)\\)，C 是当前上下文。解码策略（decoding strategy）决定怎样从这个分布里取出下一个 token。",
             "第一种想法是贪心解码（greedy decoding）：每一步取概率最高的 token，图中就是 kind。问题在于局部最优不等于全局最优：这一步最可能的词，不一定通向整体概率最高的句子。",
             "第二种想法是 beam search：每一步保留最可能的 k 条路径，把它们都向后扩展一步，再从所有候选里留下 k 条，直到生成 [EOS]。它能修正部分贪心的错误，但计算量更大，而且同一输入总给出同一输出，仍然缺乏创造性（creativity）。"
           ],
           "flow": [
             "当前前缀 C",
-            "LLM 输出 P(w_{t+1} | C)",
+            "LLM 输出 \\(P(w_{t+1}\\mid C)\\)",
             "按解码策略选出一个 token",
             "接到前缀末尾",
             "重复直到 [EOS]"
@@ -666,34 +729,50 @@
         {
           "title": "手算：beam search 找回贪心错过的句子",
           "body": [
-            "讲义 p.100 的树给出了这些数字：第一步 P(a)=0.2，P(the)=0.6（候选 cute 已被剪掉）；第二步 P(cute | a)=0.7，P(fluffy | the)=0.2。一条路径的概率是各步条件概率的乘积。",
-            "贪心解码第一步比较 0.6 和 0.2，选 the；第二步沿 the 走到 fluffy，整条路径概率为 0.6 × 0.2 = 0.12。宽度 k=2 的 beam search 同时保留 a 和 the，扩展后比较整条路径：a cute = 0.2 × 0.7 = 0.14，大于 the fluffy 的 0.12。第一步看起来较差的 a，两步之后反而领先，这就是“局部最优不等于全局最优”。",
+            "讲义 p.100 的树给出了这些数字：第一步 \\(P(\\text{a})=0.2\\)，\\(P(\\text{the})=0.6\\)（候选 cute 已被剪掉）；第二步 \\(P(\\text{cute}\\mid\\text{a})=0.7\\)，\\(P(\\text{fluffy}\\mid\\text{the})=0.2\\)。一条路径的概率是各步条件概率的乘积。",
+            "贪心解码第一步比较 0.6 和 0.2，选 the；第二步沿 the 走到 fluffy，整条路径概率为 \\(0.6\\times0.2=0.12\\)。宽度 \\(k=2\\) 的 beam search 同时保留 a 和 the，扩展后比较整条路径：a cute \\(=0.2\\times0.7=0.14\\)，大于 the fluffy 的 0.12。第一步看起来较差的 a，两步之后反而领先，这就是“局部最优不等于全局最优”。",
             "图上没有给出 sleepy、dog、teddy、bear 等其他分支的概率；beam 在六个候选里只留下 a cute 和 the fluffy，说明其余路径的概率都不超过 0.12，也说明 fluffy 确实是 the 后面贪心会选的词。p.102 最终保留的 a cute teddy 和 a cute bear 都是从 a cute 延伸出来的。"
           ],
           "kind": "worked-example",
-          "formula": "greedy：0.6 × 0.2 = 0.12；beam（k=2）：0.2 × 0.7 = 0.14 > 0.12",
-          "source": "Lecture 2 (2026) · p.97–102（Decoding strategies · Predicting next token with greedy decoding / beam search）"
+          "math": [
+            "\\text{greedy：}\\quad0.6\\times0.2=0.12",
+            "\\text{beam}\\ (k=2)\\text{：}\\quad0.2\\times0.7=0.14>0.12"
+          ],
+          "source": "Lecture 2 (2026) · p.97–102（Decoding strategies · Predicting next token with greedy decoding / beam search）",
+          "figure": {
+            "src": "figures/l02-beam-search.webp",
+            "alt": "beam search 的两步树：[BOS] 分出 a（0.2）和 the（0.6），候选 cute 被剪掉；a 之后选 cute（0.7），the 之后选 fluffy（0.2），teddy、bear、sleepy、dog 等分支呈灰色。",
+            "caption": "贪心只看第一步，会走 the（0.6）再到 fluffy，整条路径 \\(0.6\\times0.2=0.12\\)；beam search 同时保留 a 和 the，比较整条路径后发现 a cute 的 \\(0.2\\times0.7=0.14\\) 更高。",
+            "source": "Lecture 2 (2026) · p.100"
+          }
         },
         {
           "title": "采样：top-k、top-p 与温度",
           "body": [
-            "确定性方案的问题：三个人都问 “Hey, how are you?”，确定性解码每次都回答 “Good, and you?”；我们更希望回答有变化，比如 “Awesome, thanks for asking!” 或 “All good today!”。第三种想法因此是按分布采样：ŵ_{t+1} ~ P(w_{t+1} | C)。",
-            "讲义介绍了两种只在分布头部采样的策略。top-k 在概率最高的 k 个 token 中采样，k=4 时保留 fluffy、gentle、kind、smart。top-p 在累计概率 ⩾ p 的最小 token 集合中随机采样，p=90% 时保留 8 个，去掉 airplane、is、poet、where。两者的区别是：top-k 保留的个数固定，top-p 保留的个数随分布形状变化。",
-            "概率从哪里来？最后一层 Linear 把 d_model 维的向量映射成 |V| 个 logits（图中为 −0.45、−0.75、…、+0.15），softmax 再把它们变成概率（0.92%、0.71%、…、1.51%，图中数字是示意值）。温度 T 在 softmax 之前把每个 logit 除以 T：T 小时分布变尖，几乎全部概率集中在 kind，接近贪心；T 大时分布变平，各个词接近均匀。除以同一个正数不改变 logits 的大小顺序，所以概率最高的 token 不随温度改变。",
+            "确定性方案的问题：三个人都问 “Hey, how are you?”，确定性解码每次都回答 “Good, and you?”；我们更希望回答有变化，比如 “Awesome, thanks for asking!” 或 “All good today!”。第三种想法因此是按分布采样：\\(\\hat{w}_{t+1}\\sim P(w_{t+1}\\mid C)\\)。",
+            "讲义介绍了两种只在分布头部采样的策略。top-k 在概率最高的 k 个 token 中采样，\\(k=4\\) 时保留 fluffy、gentle、kind、smart。top-p 在累计概率 \\(\\geqslant p\\) 的最小 token 集合中随机采样，\\(p=90\\%\\) 时保留 8 个，去掉 airplane、is、poet、where。两者的区别是：top-k 保留的个数固定，top-p 保留的个数随分布形状变化。",
+            "概率从哪里来？最后一层 Linear 把 \\(d_{\\text{model}}\\) 维的向量映射成 \\(|V|\\) 个 logits（图中为 −0.45、−0.75、…、+0.15），softmax 再把它们变成概率（0.92%、0.71%、…、1.51%，图中数字是示意值）。温度 T 在 softmax 之前把每个 logit 除以 T：T 小时分布变尖，几乎全部概率集中在 kind，接近贪心；T 大时分布变平，各个词接近均匀。除以同一个正数不改变 logits 的大小顺序，所以概率最高的 token 不随温度改变。",
             "讲义还提醒，即使不采样，LLM 也很难做到完全确定：模型本身对固定输入是确定的，但实际服务时你的请求会和其他用户的请求一起送进模型，从单个用户的角度看，整个系统是非确定的。补充：讲义没有规定温度与 top-k/top-p 同时使用时的先后顺序，也没写截断之后怎样处理；常见实现是先按温度算出概率，再截断，并把保留下来的概率除以它们的总和重新归一化。不同的库可能顺序不同。"
           ],
-          "formula": "P_adj(w_{t+1} = w_i | C) = exp(x_i / T) / Σ_{j=1}^{n} exp(x_j / T)",
+          "math": [
+            "P_{\\text{adj}}(w_{t+1}=w_i\\mid C)=\\frac{\\exp(x_i/T)}{\\sum_{j=1}^{n}\\exp(x_j/T)}"
+          ],
           "source": "Lecture 2 (2026) · p.103–116（Decoding strategies · Problem with deterministic schemes; Sampling strategies; Probability computation; Temperature; LLM determinism is hard）"
         },
         {
           "title": "手算：温度改变 top-p 保留的候选个数",
           "body": [
-            "补充：讲义的 top-k、top-p 和温度只有定性图，没有数值，这里借用 2026 官方期中试卷第 II.5 题的数字。在 “The teddy bear is” 之后，soft、brown、small、worn 的概率为 0.60、0.25、0.10、0.05（T=1），取 p=0.8。按概率从高到低累加：0.60 还不到 0.8，加上 brown 后为 0.85，首次达到阈值，所以保留 soft 和 brown。重新归一化后为 0.60/0.85 = 12/17 ≈ 0.706 和 0.25/0.85 = 5/17 ≈ 0.294。这时结果恰好和 top-k=2 相同。",
-            "再改温度。把这组概率的自然对数当作 logits 代入温度公式，得到 p_i(T) ∝ p_i^(1/T)。T=0.5 相当于把概率平方后再归一化：soft 变为 0.36/0.435 = 24/29 ≈ 0.828，单独一个 token 就超过 0.8，top-p 只保留 soft，效果等同贪心。T=2 相当于开平方后再归一化，约为 [0.427, 0.276, 0.174, 0.123]，前两项之和约 0.702，还要加上 small（累计约 0.877）才达到阈值，保留 3 个。",
+            "补充：讲义的 top-k、top-p 和温度只有定性图，没有数值，这里借用 2026 官方期中试卷第 II.5 题的数字。在 “The teddy bear is” 之后，soft、brown、small、worn 的概率为 0.60、0.25、0.10、0.05（\\(T=1\\)），取 \\(p=0.8\\)。按概率从高到低累加：0.60 还不到 0.8，加上 brown 后为 0.85，首次达到阈值，所以保留 soft 和 brown。重新归一化后为 \\(0.60/0.85=12/17\\approx0.706\\) 和 \\(0.25/0.85=5/17\\approx0.294\\)。这时结果恰好和 top-k=2 相同。",
+            "再改温度。把这组概率的自然对数当作 logits 代入温度公式，得到 \\(p_i(T)\\propto p_i^{1/T}\\)。\\(T=0.5\\) 相当于把概率平方后再归一化：soft 变为 \\(0.36/0.435=24/29\\approx0.828\\)，单独一个 token 就超过 0.8，top-p 只保留 soft，效果等同贪心。\\(T=2\\) 相当于开平方后再归一化，约为 [0.427, 0.276, 0.174, 0.123]，前两项之和约 0.702，还要加上 small（累计约 0.877）才达到阈值，保留 3 个。",
             "对照来看：top-k=2 在任何温度下都保留 2 个；温度从 0.5 升到 2，概率最高的始终是 soft，变化的只是分布的形状，以及 top-p 截出的候选个数。"
           ],
           "kind": "worked-example",
-          "formula": "p_i(T) ∝ p_i^(1/T)；T=1：保留 {soft, brown} → [12/17, 5/17, 0, 0]；T=0.5：保留 {soft}；T=2：保留 {soft, brown, small}",
+          "math": [
+            "p_i(T)\\propto p_i^{1/T}",
+            "T=1\\text{：保留 }\\{\\text{soft},\\text{brown}\\}\\;\\to\\;\\left[\\tfrac{12}{17},\\tfrac{5}{17},0,0\\right]",
+            "T=0.5\\text{：保留 }\\{\\text{soft}\\}",
+            "T=2\\text{：保留 }\\{\\text{soft},\\text{brown},\\text{small}\\}"
+          ],
           "bullets": [
             "误区：阈值 p 是保留集合的累计概率，不是要求每个 token 的概率都大于 p。",
             "首次让累计概率达到 p 的那个 token 也要保留，不能只保留累计仍低于 p 的那些。"
@@ -718,8 +797,8 @@
         {
           "title": "上下文长度与 context rot",
           "body": [
-            "两个术语：上下文长度（context length）指模型这一次读入的全部 token，输出 token（output tokens）指模型生成的部分。按讲义截取的 2026 年 9 月 API 页面，主流模型的上下文窗口是 O(1M) tokens，最大输出是 O(100k)，并且已经有模型把输出上限提到 1M。",
-            "讲义给了一个估算方法：1 个 token 约 0.75 个英文单词，一页 12 号字的 US Letter 约 400 词，所以一页约 500 个 token（400 ÷ 0.75 ≈ 533）。按这个量级，1 万 token 约是一份技术报告，10 万 token 约是一本书，100 万 token 约是一部百科全书。",
+            "两个术语：上下文长度（context length）指模型这一次读入的全部 token，输出 token（output tokens）指模型生成的部分。按讲义截取的 2026 年 9 月 API 页面，主流模型的上下文窗口是 \\(O(1\\text{M})\\) tokens，最大输出是 \\(O(100\\text{k})\\)，并且已经有模型把输出上限提到 1M。",
+            "讲义给了一个估算方法：1 个 token 约 0.75 个英文单词，一页 12 号字的 US Letter 约 400 词，所以一页约 500 个 token（\\(400\\div0.75\\approx533\\)）。按这个量级，1 万 token 约是一份技术报告，10 万 token 约是一本书，100 万 token 约是一部百科全书。",
             "但 token 越多不一定越好，要当心 context rot。needle-in-a-haystack 测试把一个事实藏在长文档的不同深度，让 GPT-4 128K 去找：上下文较短时全部找到；从约 73K token 起，当事实放在文档 10%–50% 深度时，检索准确率开始下降，部分情况降到 0%。"
           ],
           "source": "Lecture 2 (2026) · p.125–132（Prompting and reasoning · Terminology; Orders of magnitude; Discussion; Prompting: risk of context rot）"
@@ -775,7 +854,7 @@
           "explanation": "前两项累计.85首次达到.8，保留后需除以.85使总和恢复1。"
         },
         {
-          "question": "同一组logits先用T=.5调温度，首项概率变成24/29≈.8276。top-p=.8会保留几项？",
+          "question": "同一组logits先用\\(T=.5\\)调温度，首项概率变成\\(24/29\\approx.8276\\)。top-p=.8会保留几项？",
           "options": [
             "一项，因为首项已达到累计阈值",
             "固定两项，因为原始分布保留两项",
@@ -857,20 +936,24 @@
           "body": [
             "预训练的目标是学习语言和代码的模式。老师给的语料既有英文（“My cute teddy bear is reading by the window…”），也有法语、波斯语等多语种文本，以及 teddy_bear.py、teddy_bear.go 这样的代码。目标函数（objective function）只有一条：预测下一个 token。",
             "以 “A teddy bear is reading Persian poetry…” 为例，分词后加上 [BOS]，模型看到 [BOS] 要预测 A，看到 [BOS] A 要预测 teddy，依此类推。生成时必须一个个往后走，但训练时不必：因为整段真实文本已经在手里，可以把它整体作为输入，借助带掩码的自注意力（masked self-attention）保证每个位置只能看到它之前的 token，一次前向就得到所有位置的预测，再和右移一位的真实 token（ground truth）比较。这就是 teacher forcing，也是预训练能高度并行的原因。",
-            "损失是所有位置上“目标 token 的预测概率”取对数、求平均再取负，也就是交叉熵（cross-entropy）。这里的 T 是 token 个数，x_t 是目标 token，x_<t 是它之前的 token。"
+            "损失是所有位置上“目标 token 的预测概率”取对数、求平均再取负，也就是交叉熵（cross-entropy）。这里的 \\(T\\) 是 token 个数，\\(x_t\\) 是目标 token，\\(x_{<t}\\) 是它之前的 token。"
           ],
-          "formula": "ℒ_CE = −(1/T) Σ_{t=1}^{T} log p_θ(x_t | x_<t)　（T：token 个数）",
+          "math": [
+            "\\mathcal{L}_{\\text{CE}} = -\\frac{1}{T}\\sum_{t=1}^{T}\\log p_\\theta(x_t \\mid x_{<t})\\quad\\text{（T：token 个数）}"
+          ],
           "source": "Lecture 3 (2026) · p.11–21（Pretraining overview / Pretraining is highly parallelizable via teacher forcing）"
         },
         {
           "title": "手算：用 BPB 让损失不再依赖分词器",
           "body": [
-            "ℒ_CE 是“每个 token 平均多少 nats”。不同分词器把同一段文本切成的 token 数不同，所以两个模型的 ℒ_CE 不能直接比较。讲义给出的修正是 bits per byte（BPB）：先乘 1/log(2) 把 nats 换成 bits，再乘 T/B 把“每 token”换成“每字节”，B 是文本的字节数。",
-            "补充（讲义只给公式，没有数字，以下数值为自拟）：一段 4000 字节的文本，分词器甲切成 T = 1000 个 token，模型的 ℒ_CE = 2 ln 2 ≈ 1.3863 nats/token。换成 bits 是 1.3863 / 0.6931 = 2 bits/token，再乘 T/B = 1000/4000 = 0.25，得到 BPB = 0.5 bits/byte。",
-            "分词器乙把同一段文本切成 T = 800 个 token。若模型给整段文本的总概率不变（总共 1000 × 1.3863 ≈ 1386.29 nats），平均到每个 token 就是 1386.29 / 800 ≈ 1.7329 nats/token，看上去比甲“差”；但 BPB = 1.7329 / 0.6931 × 800/4000 = 2.5 × 0.2 = 0.5，与甲完全相同。BPB 衡量的是“编码这段文本平均每字节要多少比特”，因此能在分词器不同的模型之间比较。"
+            "\\(\\mathcal{L}_{\\text{CE}}\\) 是“每个 token 平均多少 nats”。不同分词器把同一段文本切成的 token 数不同，所以两个模型的 \\(\\mathcal{L}_{\\text{CE}}\\) 不能直接比较。讲义给出的修正是 bits per byte（BPB）：先乘 \\(1/\\log(2)\\) 把 nats 换成 bits，再乘 \\(T/B\\) 把“每 token”换成“每字节”，\\(B\\) 是文本的字节数。",
+            "补充（讲义只给公式，没有数字，以下数值为自拟）：一段 4000 字节的文本，分词器甲切成 \\(T = 1000\\) 个 token，模型的 \\(\\mathcal{L}_{\\text{CE}} = 2\\ln 2 \\approx 1.3863\\) nats/token。换成 bits 是 \\(1.3863 / 0.6931 = 2\\) bits/token，再乘 \\(T/B = 1000/4000 = 0.25\\)，得到 \\(\\mathrm{BPB} = 0.5\\) bits/byte。",
+            "分词器乙把同一段文本切成 \\(T = 800\\) 个 token。若模型给整段文本的总概率不变（总共 \\(1000 \\times 1.3863 \\approx 1386.29\\) nats），平均到每个 token 就是 \\(1386.29 / 800 \\approx 1.7329\\) nats/token，看上去比甲“差”；但 \\(\\mathrm{BPB} = 1.7329 / 0.6931 \\times 800/4000 = 2.5 \\times 0.2 = 0.5\\)，与甲完全相同。BPB 衡量的是“编码这段文本平均每字节要多少比特”，因此能在分词器不同的模型之间比较。"
           ],
           "kind": "worked-example",
-          "formula": "BPB = ℒ_CE × 1/log(2) × T/B　（T：token 数，B：字节数）",
+          "math": [
+            "\\mathrm{BPB} = \\mathcal{L}_{\\text{CE}} \\times \\frac{1}{\\log(2)} \\times \\frac{T}{B}\\quad\\text{（T：token 数，B：字节数）}"
+          ],
           "source": "Lecture 3 (2026) · p.22（Making the loss less dependent on choice of tokenizer）"
         },
         {
@@ -912,28 +995,38 @@
           "title": "SFT 与指令微调：在给定输入的条件下预测输出",
           "body": [
             "SFT（Supervised FineTuning，监督微调）的想法是通过调整权重来改变模型行为：收集体现期望行为的输入/输出对（SFT 数据），仍用下一词预测目标训练，但“以输入为条件”。用指令跟随数据做 SFT 的特例叫指令微调（instruction tuning），目标是让模型“毕业”成为有用的助手。讲义的例子都围绕泰迪熊：写一个爱读诗的泰迪熊故事、为泰迪熊写首诗、列出雨天的三项活动、解释泰迪熊为什么是好朋友。",
-            "和预训练相比，变化在条件部分。输入 “[BOS] Do X .” 只作为条件，模型只需要在回答 “Sure …” 的位置上预测下一个 token。公式里 x 是输入提示，y_t 是回答中的目标 token，y_<t 是回答里已经出现的 token，T 是回答的 token 数。",
+            "和预训练相比，变化在条件部分。输入 “[BOS] Do X .” 只作为条件，模型只需要在回答 “Sure …” 的位置上预测下一个 token。公式里 \\(x\\) 是输入提示，\\(y_t\\) 是回答中的目标 token，\\(y_{<t}\\) 是回答里已经出现的 token，\\(T\\) 是回答的 token 数。",
             "数据可以是人写的，也可以是合成的：助手对话、合成指令、数学/推理/代码、安全对齐等，规模从数千到数百万条。经过指令微调后，同一个洗衣机问题的回答变成 “No, it might get damaged. Try hand washing instead.”"
           ],
-          "formula": "ℒ_SFT = −(1/T) Σ_{t=1}^{T} log p_θ(y_t | x, y_<t)",
+          "math": [
+            "\\mathcal{L}_{\\text{SFT}} = -\\frac{1}{T}\\sum_{t=1}^{T}\\log p_\\theta(y_t \\mid x, y_{<t})"
+          ],
           "source": "Lecture 3 (2026) · p.42–50（Supervised finetuning / Instruction tuning overview）"
         },
         {
           "title": "SFT 的难点与 LoRA：只训练一个低秩增量",
           "body": [
             "SFT 有五个挑战：需要质量非常高的数据；对提示分布敏感；泛化难以保证；难以评估；计算代价高。老师用最后一条引出参数高效微调（parameter-efficient finetuning）。",
-            "LoRA（Low-Rank Adaptation）冻结原权重 W₀，只学两个“瘦”矩阵 B 和 A，用它们的乘积近似需要的改动：W = W₀ + BA。只有一小部分参数需要训练，效果却相近；同类方法还有 prefix tuning 和 adapters（讲义只点名）。补充（讲义没给维度，以下为自拟）：若 W₀ 是 d×k，B 是 d×r，A 是 r×k，可训练参数是 r(d+k)；d = k = 4096、r = 8 时为 65,536 个，只占原矩阵 16,777,216 个参数的约 0.39%。",
-            "LoRA 的另一个好处是“换矩阵 = 换任务”：同一个 W₀ 配上 B_spam A_spam 做垃圾邮件检测，换成 B_sentiment A_sentiment 做情感抽取，换成 B_translation A_translation 做翻译。至于加在哪里：原论文只在注意力层上实验；如今的建议（LoRA Without Regret, 2025）是前馈层（feed forward）才是最重要的位置。"
+            "LoRA（Low-Rank Adaptation）冻结原权重 \\(W_0\\)，只学两个“瘦”矩阵 \\(B\\) 和 \\(A\\)，用它们的乘积近似需要的改动：\\(W = W_0 + BA\\)。只有一小部分参数需要训练，效果却相近；同类方法还有 prefix tuning 和 adapters（讲义只点名）。补充（讲义没给维度，以下为自拟）：若 \\(W_0\\) 是 \\(d\\times k\\)，\\(B\\) 是 \\(d\\times r\\)，\\(A\\) 是 \\(r\\times k\\)，可训练参数是 \\(r(d+k)\\)；\\(d = k = 4096\\)、\\(r = 8\\) 时为 65,536 个，只占原矩阵 16,777,216 个参数的约 0.39%。",
+            "LoRA 的另一个好处是“换矩阵 = 换任务”：同一个 \\(W_0\\) 配上 \\(B_{\\text{spam}}A_{\\text{spam}}\\) 做垃圾邮件检测，换成 \\(B_{\\text{sentiment}}A_{\\text{sentiment}}\\) 做情感抽取，换成 \\(B_{\\text{translation}}A_{\\text{translation}}\\) 做翻译。至于加在哪里：原论文只在注意力层上实验；如今的建议（LoRA Without Regret, 2025）是前馈层（feed forward）才是最重要的位置。"
           ],
-          "formula": "W = W₀ + B A　（W₀ 冻结，只训练 B、A）",
-          "source": "Lecture 3 (2026) · p.51–56（Challenges / Parameter-efficient finetuning with LoRA）"
+          "math": [
+            "W = W_0 + BA\\quad\\text{（}W_0\\text{ 冻结，只训练 }B\\text{、}A\\text{）}"
+          ],
+          "source": "Lecture 3 (2026) · p.51–56（Challenges / Parameter-efficient finetuning with LoRA）",
+          "figure": {
+            "src": "figures/l03-lora-swap.webp",
+            "alt": "三行示意图：同一个冻结的大矩阵 W0 分别加上一对细长的低秩矩阵 B_spam×A_spam、B_sentiment×A_sentiment、B_translation×A_translation，箭头分别指向垃圾邮件检测、情感抽取和翻译任务",
+            "caption": "每一行的大矩阵都是同一个 \\(W_0\\)，只有右边细长的 \\(B\\)、\\(A\\) 不同：\\(B\\) 只有 \\(r\\) 列、\\(A\\) 只有 \\(r\\) 行，所以要训练和存储的参数很少；换一对 \\(B, A\\) 就换一个任务。",
+            "source": "Lecture 3 (2026) · p.54"
+          }
         },
         {
           "title": "为什么还要偏好调优，以及偏好数据长什么样",
           "body": [
             "SFT 之后的模型仍可能“胡来”。问 “Suggest a new activity I could do with my teddy bear.”，它可能答 “I'd suggest you do not spend much time with your teddy bear at all.” 这时需要注入负面信号：收集偏好对（preference pairs），告诉模型“看电影这个回答比劝你别陪泰迪熊更好”。",
             "为什么不继续堆 SFT 数据？讲义给了三点：比较（A 比 B 好）比从零生成 A 容易；SFT 很依赖数据分布，容易“搞砸”；SFT 不好扩展，高质量数据难获得。同时老师提醒：模型出错也是检查 SFT 数据质量的好时机。",
-            "一条观测是（提示 x，回答 ŷ）。偏好可以逐点打分、成对比较或整体排序，讲义后面都用成对数据。获取成对数据分两步：先对同一个 x 生成两个回答（x 来自日志或参考分布；ŷ 来自温度 T > 0 的 SFT 模型采样、合成或改写——注意这里的 T 是采样温度，不是 token 数），再给两条打标签（人工评分，或 LLM-as-a-judge、BLEU、ROUGE 等代理；可以是二元“更好/更差”，也可以是更细的量表）。"
+            "一条观测是（提示 \\(x\\)，回答 \\(\\hat y\\)）。偏好可以逐点打分、成对比较或整体排序，讲义后面都用成对数据。获取成对数据分两步：先对同一个 \\(x\\) 生成两个回答（\\(x\\) 来自日志或参考分布；\\(\\hat y\\) 来自温度 \\(T > 0\\) 的 SFT 模型采样、合成或改写——注意这里的 \\(T\\) 是采样温度，不是 token 数），再给两条打标签（人工评分，或 LLM-as-a-judge、BLEU、ROUGE 等代理；可以是二元“更好/更差”，也可以是更细的量表）。"
           ],
           "table": {
             "columns": [
@@ -964,34 +1057,46 @@
         {
           "title": "RLHF：先训练奖励模型，再用强化学习对齐",
           "body": [
-            "RLHF（Reinforcement Learning from Human Feedback）分两步。第 1 步奖励建模（reward modeling）：输入（x，ŷ），输出一个分数 r(x, ŷ)，用来区分好坏回答。它基于 Bradley–Terry 形式：y_i 胜过 y_j 的概率被定义为 σ(r_i − r_j)。训练时把成对数据中的胜者 ŷ_w 和败者 ŷ_l 分别送进奖励模型，最小化 −log σ(r_w − r_l)。数据约 O(10,000) 条，标签来自人工评分——这就是 RLHF 里“HF”的来源。模型通常是带分类头的预训练 LLM（不再做下一词预测），也可以是 BERT 一类 encoder-only 模型用 [CLS] 投影打分。",
-            "第 2 步强化学习：冻结奖励模型，从 SFT 模型初始化策略（policy，即 LLM），让它对提示生成回答、由奖励模型打分，再通过 RL 调整权重，惩罚坏回答、鼓励好回答。数据约 O(100,000) 条，标签是奖励模型给的分数。目标由两部分组成：最大化奖励，同时不要偏离基座模型太远——后一项用来避免“奖励投机”（reward hacking）和训练不稳定。",
+            "RLHF（Reinforcement Learning from Human Feedback）分两步。第 1 步奖励建模（reward modeling）：输入（\\(x\\)，\\(\\hat y\\)），输出一个分数 \\(r(x, \\hat y)\\)，用来区分好坏回答。它基于 Bradley–Terry 形式：\\(y_i\\) 胜过 \\(y_j\\) 的概率被定义为 \\(\\sigma(r_i - r_j)\\)。训练时把成对数据中的胜者 \\(\\hat y_w\\) 和败者 \\(\\hat y_l\\) 分别送进奖励模型，最小化 \\(-\\log\\sigma(r_w - r_l)\\)。数据约 \\(O(10{,}000)\\) 条，标签来自人工评分——这就是 RLHF 里“HF”的来源。模型通常是带分类头的预训练 LLM（不再做下一词预测），也可以是 BERT 一类 encoder-only 模型用 [CLS] 投影打分。",
+            "第 2 步强化学习：冻结奖励模型，从 SFT 模型初始化策略（policy，即 LLM），让它对提示生成回答、由奖励模型打分，再通过 RL 调整权重，惩罚坏回答、鼓励好回答。数据约 \\(O(100{,}000)\\) 条，标签是奖励模型给的分数。目标由两部分组成：最大化奖励，同时不要偏离基座模型太远——后一项用来避免“奖励投机”（reward hacking）和训练不稳定。",
             "讲义在这里明确声明：基于 RL 的方法技术性强、数学较重，推导放到第 4 讲。所以本讲只需要掌握两步结构和奖励模型的损失。"
           ],
-          "formula": "p(y_i > y_j) = e^{r_i} / (e^{r_i} + e^{r_j}) = σ(r_i − r_j)；ℒ(θ) = −𝔼[log σ(r(x, ŷ_w) − r(x, ŷ_l))]",
+          "math": [
+            "p(y_i > y_j) = \\frac{e^{r_i}}{e^{r_i} + e^{r_j}} = \\sigma(r_i - r_j)",
+            "\\mathcal{L}(\\theta) = -\\mathbb{E}\\left[\\log\\sigma\\big(r(x, \\hat y_w) - r(x, \\hat y_l)\\big)\\right]"
+          ],
           "flow": [
-            "成对偏好数据（人工标注，约 O(10,000)）",
-            "第 1 步：训练奖励模型 r(x, ŷ)",
+            "成对偏好数据（人工标注，约 \\(O(10{,}000)\\)）",
+            "第 1 步：训练奖励模型 \\(r(x, \\hat y)\\)",
             "策略从 SFT 模型初始化",
-            "第 2 步：RL，奖励模型冻结打分（约 O(100,000)）",
+            "第 2 步：RL，奖励模型冻结打分（约 \\(O(100{,}000)\\)）",
             "目标：更高奖励 + 不偏离基座"
           ],
-          "source": "Lecture 3 (2026) · p.70–86（RLHF overview / Step 1: Reward modeling / Step 2: Reinforcement learning）"
+          "source": "Lecture 3 (2026) · p.70–86（RLHF overview / Step 1: Reward modeling / Step 2: Reinforcement learning）",
+          "figure": {
+            "src": "figures/l03-rlhf-rl-step.webp",
+            "alt": "RLHF 第 2 步示意图：提示 Suggest a new activity I could do with my teddy bear 输入标为 Trained 的 LLM，LLM 生成“I'd suggest you do not spend much time with your teddy bear at all”，该回答送入标为 Frozen 的奖励模型 RM，RM 给出差评（拇指向下），差评经 via RL 箭头回到 LLM",
+            "caption": "看两个标签：被更新的只有 LLM（Trained），奖励模型 RM 是冻结的（Frozen），只负责打分；分数沿下方的 via RL 箭头回传，改的是 LLM 的权重。",
+            "source": "Lecture 3 (2026) · p.81"
+          }
         },
         {
           "title": "手算：Bradley–Terry 概率与奖励模型损失",
           "body": [
-            "补充（讲义只给公式，以下数值为自拟）：用讲义的泰迪熊提示 “Suggest a new activity I could do with my teddy bear.”。假设奖励模型给“一起看电影”（ŷ_w）打 1.5 分，给“别陪泰迪熊”（ŷ_l）打 −0.5 分，奖励差 Δ = r_w − r_l = 2。按 Bradley–Terry，模型认为 ŷ_w 更好的概率 σ(2) = 1/(1 + e^{−2}) ≈ 0.8808，这一对的损失 −log 0.8808 ≈ 0.1269。",
-            "如果奖励模型把两者打成平手（Δ = 0），概率是 0.5，损失是 ln 2 ≈ 0.6931；如果它把顺序弄反了（Δ = −2），概率只有 0.1192，损失升到 2.1269。可见损失只关心“胜者比败者高多少”，不关心绝对分数：把两个分数同时加 10，结果不变。",
-            "补充：损失对 Δ 的导数是 −(1 − σ(Δ))。Δ = 2 时约为 −0.1192，Δ = −2 时约为 −0.8808。也就是说，排错的样本推动最大，已经排对且拉开差距的样本几乎不再推动。"
+            "补充（讲义只给公式，以下数值为自拟）：用讲义的泰迪熊提示 “Suggest a new activity I could do with my teddy bear.”。假设奖励模型给“一起看电影”（\\(\\hat y_w\\)）打 1.5 分，给“别陪泰迪熊”（\\(\\hat y_l\\)）打 −0.5 分，奖励差 \\(\\Delta = r_w - r_l = 2\\)。按 Bradley–Terry，模型认为 \\(\\hat y_w\\) 更好的概率 \\(\\sigma(2) = 1/(1 + e^{-2}) \\approx 0.8808\\)，这一对的损失 \\(-\\log 0.8808 \\approx 0.1269\\)。",
+            "如果奖励模型把两者打成平手（\\(\\Delta = 0\\)），概率是 0.5，损失是 \\(\\ln 2 \\approx 0.6931\\)；如果它把顺序弄反了（\\(\\Delta = -2\\)），概率只有 0.1192，损失升到 2.1269。可见损失只关心“胜者比败者高多少”，不关心绝对分数：把两个分数同时加 10，结果不变。",
+            "补充：损失对 \\(\\Delta\\) 的导数是 \\(-(1 - \\sigma(\\Delta))\\)。\\(\\Delta = 2\\) 时约为 −0.1192，\\(\\Delta = -2\\) 时约为 −0.8808。也就是说，排错的样本推动最大，已经排对且拉开差距的样本几乎不再推动。"
           ],
           "kind": "worked-example",
-          "formula": "Δ = r(x, ŷ_w) − r(x, ŷ_l)；ℒ = −log σ(Δ)",
+          "math": [
+            "\\Delta = r(x, \\hat y_w) - r(x, \\hat y_l)",
+            "\\mathcal{L} = -\\log\\sigma(\\Delta)"
+          ],
           "table": {
             "columns": [
-              "Δ",
-              "σ(Δ)",
-              "−log σ(Δ)"
+              "\\(\\Delta\\)",
+              "\\(\\sigma(\\Delta)\\)",
+              "\\(-\\log\\sigma(\\Delta)\\)"
             ],
             "rows": [
               [
@@ -1016,11 +1121,13 @@
         {
           "title": "DPO：把偏好调优改写成监督学习",
           "body": [
-            "DPO（Direct Preference Optimization）把损失改写成监督学习的形式，直接在偏好数据上训练，不需要单独训练奖励模型。它的损失和奖励模型的 Bradley–Terry 损失长得一样，只是把奖励换成一种特殊的“隐式奖励”：r_θ(x, y) = β log[π_θ(y|x) / π_ref(y|x)]，即当前策略相对参考（基座）模型把这个回答的概率提高了多少。β 越大，同样的概率比带来的奖励差越大。",
+            "DPO（Direct Preference Optimization）把损失改写成监督学习的形式，直接在偏好数据上训练，不需要单独训练奖励模型。它的损失和奖励模型的 Bradley–Terry 损失长得一样，只是把奖励换成一种特殊的“隐式奖励”：\\(r_\\theta(x, y) = \\beta \\log[\\pi_\\theta(y\\mid x) / \\pi_{\\text{ref}}(y\\mid x)]\\)，即当前策略相对参考（基座）模型把这个回答的概率提高了多少。\\(\\beta\\) 越大，同样的概率比带来的奖励差越大。",
             "RLHF 还是 DPO？从实现难度看，RLHF 是多阶段训练，需要奖励模型、价值模型（value model）、基座模型等额外模型；DPO 是监督学习，唯一需要的额外模型是基座模型。至于效果，讲义的结论是没有公认的绝对优劣，随任务而变，并且对实现细节敏感。讲义只给出了 DPO 的最终形式，推导不在本讲。",
             "经过预训练、指令微调和偏好调优后，洗衣机问题的回答变成 “It's better not to. Your teddy could get hurt! A gentle hand wash is safer.”——语气更友好，也给出了替代做法。"
           ],
-          "formula": "ℒ_DPO(π_θ; π_ref) = −𝔼_{(x,y_w,y_l)∼𝒟}[log σ(β log π_θ(y_w|x)/π_ref(y_w|x) − β log π_θ(y_l|x)/π_ref(y_l|x))]",
+          "math": [
+            "\\mathcal{L}_{\\text{DPO}}(\\pi_\\theta; \\pi_{\\text{ref}}) = -\\mathbb{E}_{(x, y_w, y_l)\\sim\\mathcal{D}}\\left[\\log\\sigma\\left(\\beta\\log\\frac{\\pi_\\theta(y_w\\mid x)}{\\pi_{\\text{ref}}(y_w\\mid x)} - \\beta\\log\\frac{\\pi_\\theta(y_l\\mid x)}{\\pi_{\\text{ref}}(y_l\\mid x)}\\right)\\right]"
+          ],
           "table": {
             "columns": [
               "",
@@ -1065,15 +1172,15 @@
         {
           "title": "可验证的推理任务与 GRPO 训练流程",
           "body": [
-            "推理训练和评测偏爱“答案可以自动核对”的任务。代码：例如“在一排泰迪熊里找出比最大那只小的最大的一只”，写出 second_biggest_bear 后用一组测试用例验证，代表基准有 HumanEval、CodeForces、SWE-bench。数学：例如“熊生于 2020 年，现在几岁”，推理写出 2026 − 2020 = 6，把最终答案 6 和标准答案比对，代表基准有 AIME、GSM8K。",
+            "推理训练和评测偏爱“答案可以自动核对”的任务。代码：例如“在一排泰迪熊里找出比最大那只小的最大的一只”，写出 second_biggest_bear 后用一组测试用例验证，代表基准有 HumanEval、CodeForces、SWE-bench。数学：例如“熊生于 2020 年，现在几岁”，推理写出 \\(2026 - 2020 = 6\\)，把最终答案 6 和标准答案比对，代表基准有 AIME、GSM8K。",
             "推理输出通常有固定格式：<think> … </think> 之间是思考过程（“Let's think step by step… First… Wait…”），之后才是答案。DeepSeek-R1 的样例里甚至出现了 “Wait, wait. Wait. That's an aha moment I can flag here.”",
-            "用于推理训练的 GRPO（Group Relative Policy Optimization）流程是：对一个问题 q，策略模型采样一组 G 个输出 o_1…o_G；奖励模型给出 r_1…r_G；“组内计算”得到每个输出的优势（advantage）A_1…A_G，用来更新策略；同时通过与参考模型的 KL 约束，不让策略偏离旧模型或基座太远。目标仍是两部分：最大化优势 + 不要偏离太多。DeepSeek-R1-Zero 在 RL 阶段 AIME 准确率持续上升，平均回答长度也从几百 token 增长到上万 token——推理能力是在 RL 阶段“涌现”的。GRPO 的公式和细节留到第 4 讲。"
+            "用于推理训练的 GRPO（Group Relative Policy Optimization）流程是：对一个问题 \\(q\\)，策略模型采样一组 \\(G\\) 个输出 \\(o_1\\ldots o_G\\)；奖励模型给出 \\(r_1\\ldots r_G\\)；“组内计算”得到每个输出的优势（advantage）\\(A_1\\ldots A_G\\)，用来更新策略；同时通过与参考模型的 KL 约束，不让策略偏离旧模型或基座太远。目标仍是两部分：最大化优势 + 不要偏离太多。DeepSeek-R1-Zero 在 RL 阶段 AIME 准确率持续上升，平均回答长度也从几百 token 增长到上万 token——推理能力是在 RL 阶段“涌现”的。GRPO 的公式和细节留到第 4 讲。"
           ],
           "flow": [
-            "问题 q",
-            "策略模型采样 o_1…o_G",
-            "奖励模型打分 r_1…r_G",
-            "组内计算优势 A_1…A_G",
+            "问题 \\(q\\)",
+            "策略模型采样 \\(o_1\\ldots o_G\\)",
+            "奖励模型打分 \\(r_1\\ldots r_G\\)",
+            "组内计算优势 \\(A_1\\ldots A_G\\)",
             "更新策略（并用参考模型的 KL 约束）"
           ],
           "bullets": [
@@ -1086,7 +1193,7 @@
           "body": [
             "这一节从数据从哪里来讲起。off-policy：观测不是模型自己生成的，例如 SFT——好处是信号密集（每个 token 都有目标），坏处是这些文本不来自模型本身。on-policy：观测由模型自己生成，例如 RLHF——好处是来自模型自己的分布，坏处是信号稀疏（往往整段回答只有一个分数）。",
             "on-policy 蒸馏（on-policy distillation, OPD）想两头兼得：让学生模型自己生成轨迹，再让更强的教师模型在这条轨迹的每个 token 上给出条件概率，用来修正学生。讲义的例子是 “What is 5 + (2 × 3)?”：学生写出 “5 + 2 is 7, and 7 × 3 is 21.”（先算加法，错了），教师对 “5” 只给 40%，对 “2” 只给 5%、“is” 只给 15%，而对后面顺理成章的 “21” 给 99%。这样，学生在自己真实会走到的状态上，逐 token 得到教师的反馈。OPD 背后的数学留到第 4 讲。",
-            "两个变体：on-policy 自蒸馏（self-distillation）不找更强的教师，而是用同一个模型当教师，只是在教师的提示里附上参考解答（如“f(x) = 3x² + 2x − 5，先求 f′(x) = 6x + 2，再得 f′(2) = 14”），学生提示里没有；多教师 on-policy 蒸馏（MOPD）先 SFT，再训练数学、指令跟随、软件工程、搜索、安全等领域专家，最后让学生生成、多个专家教师给出分布，用来优化学生。"
+            "两个变体：on-policy 自蒸馏（self-distillation）不找更强的教师，而是用同一个模型当教师，只是在教师的提示里附上参考解答（如“\\(f(x) = 3x^2 + 2x - 5\\)，先求 \\(f'(x) = 6x + 2\\)，再得 \\(f'(2) = 14\\)”），学生提示里没有；多教师 on-policy 蒸馏（MOPD）先 SFT，再训练数学、指令跟随、软件工程、搜索、安全等领域专家，最后让学生生成、多个专家教师给出分布，用来优化学生。"
           ],
           "table": {
             "columns": [
@@ -1163,7 +1270,7 @@
           "explanation": "讲义 p.126–128：off-policy（如 SFT）信号密集但数据不来自模型；on-policy（如 RLHF）来自模型但信号稀疏。OPD 让学生自己生成（on-policy），再用教师在每个 token 上的条件概率作反馈（密集），例如 “5 + (2 × 3)” 中教师只给错误 token “2” 5% 的概率。“轨迹由教师模型生成、学生模仿”那一项属于 off-policy，数据并不来自学生自身；“只按最终答案给一个分数”那一项正是 on-policy 的稀疏信号；“直接用人工标注的成对偏好数据”那一项描述的是偏好训练（如 DPO），不是蒸馏。"
         },
         {
-          "question": "某模型在一段文本上的平均交叉熵 ℒ_CE = 2 ln 2 ≈ 1.386 nats/token，这段文本被切成 T = 1000 个 token，共 B = 4000 字节。按讲义 BPB = ℒ_CE × 1/log(2) × T/B，BPB 是多少？",
+          "question": "某模型在一段文本上的平均交叉熵 \\(\\mathcal{L}_{\\text{CE}} = 2\\ln 2 \\approx 1.386\\) nats/token，这段文本被切成 \\(T = 1000\\) 个 token，共 \\(B = 4000\\) 字节。按讲义 \\(\\mathrm{BPB} = \\mathcal{L}_{\\text{CE}} \\times 1/\\log(2) \\times T/B\\)，BPB 是多少？",
           "options": [
             "2",
             "0.347",
@@ -1171,7 +1278,7 @@
             "8"
           ],
           "answer": 2,
-          "explanation": "1.386 / 0.693 = 2 bits/token，再乘 T/B = 1000/4000 = 0.25，得 0.5 bits/byte。2 是忘了乘 T/B，得到的是“每 token 的比特数”；0.347 是忘了除以 log 2（1.386 × 0.25，仍是 nats）；8 是把 T/B 写反成 B/T（2 × 4）。"
+          "explanation": "\\(1.386 / 0.693 = 2\\) bits/token，再乘 \\(T/B = 1000/4000 = 0.25\\)，得 0.5 bits/byte。2 是忘了乘 \\(T/B\\)，得到的是“每 token 的比特数”；0.347 是忘了除以 \\(\\log 2\\)（\\(1.386 \\times 0.25\\)，仍是 nats）；8 是把 \\(T/B\\) 写反成 \\(B/T\\)（\\(2 \\times 4\\)）。"
         }
       ],
       "resources": [
@@ -1216,16 +1323,16 @@
         {
           "title": "把语言模型生成写成强化学习问题",
           "body": [
-            "经典强化学习里，智能体（agent）在状态 s_t 下按策略 π_θ(a_t|s_t) 选一个动作 a_t，环境返回奖励 r_t，循环往复。讲义特意注明这里的 agent 是 RL 意义上的，和后面讲的「AI 智能体」不是一回事。套到 LLM 上：智能体就是 LLM，状态是「到目前为止的输入」，动作是下一个 token，环境就是不断变长的 token 序列，策略就是模型给出的下一 token 概率。",
+            "经典强化学习里，智能体（agent）在状态 \\(s_t\\) 下按策略 \\(\\pi_\\theta(a_t\\mid s_t)\\) 选一个动作 \\(a_t\\)，环境返回奖励 \\(r_t\\)，循环往复。讲义特意注明这里的 agent 是 RL 意义上的，和后面讲的「AI 智能体」不是一回事。套到 LLM 上：智能体就是 LLM，状态是「到目前为止的输入」，动作是下一个 token，环境就是不断变长的 token 序列，策略就是模型给出的下一 token 概率。",
             "也可以把粒度放大：状态是提示（prompt），动作是整段回答（response），策略是「给定提示时这段回答的概率」。本讲后面的公式会在这两种粒度之间切换：奖励通常对整段回答打分，而梯度最终落在每个 token 的对数概率上。",
             "为什么需要 RL：前几讲的预训练和监督微调（SFT）都有现成的交叉熵损失；而偏好调优（对齐人类偏好）和推理（学会更好地推理）只给出「这个回答好不好」的信号，损失写不成逐 token 的标准答案，这正是本讲要解决的问题。",
-            "讲义还专门提醒这个领域的记号很乱：「r」可能是奖励（reward），也可能是概率比（ratio）ρ = π_θ/π_old；「π_old」可能是上一批次的策略，也可能是参考策略 π_ref；「ℒ(θ)」可能是要最小化的损失，也可能是要最大化的目标 J(θ)。本页统一用 R 表示奖励、ρ 表示概率比、π_old 表示上一批次策略、π_ref 表示参考策略、J(θ) 表示要最大化的目标。"
+            "讲义还专门提醒这个领域的记号很乱：「\\(r\\)」可能是奖励（reward），也可能是概率比（ratio）\\(\\rho = \\pi_\\theta/\\pi_{\\text{old}}\\)；「\\(\\pi_{\\text{old}}\\)」可能是上一批次的策略，也可能是参考策略 \\(\\pi_{\\text{ref}}\\)；「\\(\\mathcal{L}(\\theta)\\)」可能是要最小化的损失，也可能是要最大化的目标 \\(J(\\theta)\\)。本页统一用 \\(R\\) 表示奖励、\\(\\rho\\) 表示概率比、\\(\\pi_{\\text{old}}\\) 表示上一批次策略、\\(\\pi_{\\text{ref}}\\) 表示参考策略、\\(J(\\theta)\\) 表示要最大化的目标。"
           ],
           "flow": [
-            "LLM（智能体）读入到目前为止的输入 s_t",
-            "按 π_θ(a_t|s_t) 采样下一个 token a_t",
-            "a_t 追加到 token 序列（环境）",
-            "奖励 r_t 反馈给 LLM"
+            "LLM（智能体）读入到目前为止的输入 \\(s_t\\)",
+            "按 \\(\\pi_\\theta(a_t\\mid s_t)\\) 采样下一个 token \\(a_t\\)",
+            "\\(a_t\\) 追加到 token 序列（环境）",
+            "奖励 \\(r_t\\) 反馈给 LLM"
           ],
           "source": "Lecture 4 (2026) · p.8–20（Important note on conventions / RL formulation for LLMs）"
         },
@@ -1265,16 +1372,19 @@
         {
           "title": "策略梯度与 REINFORCE：让高奖励的生成更常出现",
           "body": [
-            "目标是改模型权重，让高奖励的生成更多出现。讲义用两个例子说明：偏好调优中，对提示「Suggest a new activity I could do with my teddy bear.」，被训练的 LLM 回答「建议你别在泰迪熊上花太多时间」，冻结的奖励模型（RM）给出差评，再通过 RL 回传；推理 RL 中，对「The bear was born in 2020. How old is the bear now?」，模型算出 2026−2020=6，答案被判为正确。",
-            "形式化地，要最大化目标函数 J(θ) = E_{τ∼π_θ}[R(τ)]：轨迹 τ 由策略 π_θ 采样，R(τ) 是累积奖励。问题是怎么求 ∇_θ J(θ)——期望里的分布本身依赖 θ。利用对数函数的性质整理后得到策略梯度：∇_θ J(θ) = E_{τ∼π_θ}[R(τ) ∇_θ log π_θ(τ)]。直观含义：沿着「提高这条轨迹对数概率」的方向走，步长按它拿到的奖励加权。对 LLM 来说，轨迹的期望就是先从提示集 D 抽提示 x，再从模型的回答分布 π_θ(·|x) 抽回答 y。",
-            "最朴素的实现是 REINFORCE（Williams, 1992），一种 Monte-Carlo 算法：给定提示采样一个回答，评估完整回答得到 R，计算 g = R ∇_θ log π_θ(y|x)，再按 θ ← θ + αg 更新。讲义特别指出第一步「采样」最贵——每次更新都要让模型真的生成完整回答。"
+            "目标是改模型权重，让高奖励的生成更多出现。讲义用两个例子说明：偏好调优中，对提示「Suggest a new activity I could do with my teddy bear.」，被训练的 LLM 回答「建议你别在泰迪熊上花太多时间」，冻结的奖励模型（RM）给出差评，再通过 RL 回传；推理 RL 中，对「The bear was born in 2020. How old is the bear now?」，模型算出 \\(2026-2020=6\\)，答案被判为正确。",
+            "形式化地，要最大化目标函数 \\(J(\\theta) = \\mathbb{E}_{\\tau\\sim\\pi_\\theta}[R(\\tau)]\\)：轨迹 \\(\\tau\\) 由策略 \\(\\pi_\\theta\\) 采样，\\(R(\\tau)\\) 是累积奖励。问题是怎么求 \\(\\nabla_\\theta J(\\theta)\\)——期望里的分布本身依赖 \\(\\theta\\)。利用对数函数的性质整理后得到策略梯度：\\(\\nabla_\\theta J(\\theta) = \\mathbb{E}_{\\tau\\sim\\pi_\\theta}[R(\\tau)\\,\\nabla_\\theta\\log\\pi_\\theta(\\tau)]\\)。直观含义：沿着「提高这条轨迹对数概率」的方向走，步长按它拿到的奖励加权。对 LLM 来说，轨迹的期望就是先从提示集 \\(D\\) 抽提示 \\(x\\)，再从模型的回答分布 \\(\\pi_\\theta(\\cdot\\mid x)\\) 抽回答 \\(y\\)。",
+            "最朴素的实现是 REINFORCE（Williams, 1992），一种 Monte-Carlo 算法：给定提示采样一个回答，评估完整回答得到 R，计算 \\(g = R\\,\\nabla_\\theta\\log\\pi_\\theta(y\\mid x)\\)，再按 \\(\\theta \\leftarrow \\theta + \\alpha g\\) 更新。讲义特别指出第一步「采样」最贵——每次更新都要让模型真的生成完整回答。"
           ],
-          "formula": "∇_θ J(θ) = E_{τ∼π_θ}[ R(τ) ∇_θ log π_θ(τ) ]；LLM 情形：E_{x∼D}[ E_{y∼π_θ(·|x)}[ · ] ]",
+          "math": [
+            "\\nabla_\\theta J(\\theta) = \\mathbb{E}_{\\tau\\sim\\pi_\\theta}\\left[R(\\tau)\\,\\nabla_\\theta\\log\\pi_\\theta(\\tau)\\right]",
+            "\\text{LLM 情形：}\\ \\mathbb{E}_{x\\sim D}\\left[\\mathbb{E}_{y\\sim\\pi_\\theta(\\cdot\\mid x)}[\\,\\cdot\\,]\\right]"
+          ],
           "flow": [
-            "Step 1 采样：y ∼ π_θ(·|x)（最贵）",
-            "Step 2 评估：R = R(x, y)",
-            "Step 3 梯度：g = R ∇_θ log π_θ(y|x)",
-            "Step 4 更新：θ ← θ + αg"
+            "Step 1 采样：\\(y \\sim \\pi_\\theta(\\cdot\\mid x)\\)（最贵）",
+            "Step 2 评估：\\(R = R(x, y)\\)",
+            "Step 3 梯度：\\(g = R\\,\\nabla_\\theta\\log\\pi_\\theta(y\\mid x)\\)",
+            "Step 4 更新：\\(\\theta \\leftarrow \\theta + \\alpha g\\)"
           ],
           "source": "Lecture 4 (2026) · p.24–33（Policy gradients / (Vanilla) REINFORCE）"
         },
@@ -1295,19 +1405,23 @@
         {
           "title": "手算：基线怎样把梯度方差压下来（讲义玩具例子）",
           "body": [
-            "设定：只有一个参数 θ，π_θ(good)=σ(θ)=0.5，π_θ(bad)=1−σ(θ)=0.5。对数概率的导数分别是 ∇_θ log σ(θ)=1−σ(θ)=+0.5 和 ∇_θ log(1−σ(θ))=−σ(θ)=−0.5。奖励 R(good)=101，R(bad)=100。",
-            "不用基线：g_good = 101×0.5 = +50.5，g_bad = 100×(−0.5) = −50。两次采样给出的梯度方向相反、数值巨大，这就是讲义说的高方差。用基线 b=100.5：g_good = (101−100.5)×0.5 = +0.25，g_bad = (100−100.5)×(−0.5) = +0.25，两个样本给出完全相同的梯度。",
-            "补充（验证「基线只降方差、不改期望」）：两个回答各以 0.5 的概率被采到。不用基线时 E[g] = 0.5×50.5 + 0.5×(−50) = 0.25，方差 = 50.25² = 2525.0625；用基线时 E[g] = 0.25，方差 = 0。期望梯度没变，噪声消失了。"
+            "设定：只有一个参数 \\(\\theta\\)，\\(\\pi_\\theta(\\text{good})=\\sigma(\\theta)=0.5\\)，\\(\\pi_\\theta(\\text{bad})=1-\\sigma(\\theta)=0.5\\)。对数概率的导数分别是 \\(\\nabla_\\theta\\log\\sigma(\\theta)=1-\\sigma(\\theta)=+0.5\\) 和 \\(\\nabla_\\theta\\log(1-\\sigma(\\theta))=-\\sigma(\\theta)=-0.5\\)。奖励 \\(R(\\text{good})=101\\)，\\(R(\\text{bad})=100\\)。",
+            "不用基线：\\(g_{\\text{good}} = 101\\times0.5 = +50.5\\)，\\(g_{\\text{bad}} = 100\\times(-0.5) = -50\\)。两次采样给出的梯度方向相反、数值巨大，这就是讲义说的高方差。用基线 \\(b=100.5\\)：\\(g_{\\text{good}} = (101-100.5)\\times0.5 = +0.25\\)，\\(g_{\\text{bad}} = (100-100.5)\\times(-0.5) = +0.25\\)，两个样本给出完全相同的梯度。",
+            "补充（验证「基线只降方差、不改期望」）：两个回答各以 0.5 的概率被采到。不用基线时 \\(\\mathbb{E}[g] = 0.5\\times50.5 + 0.5\\times(-50) = 0.25\\)，方差 \\(= 50.25^2 = 2525.0625\\)；用基线时 \\(\\mathbb{E}[g] = 0.25\\)，方差 \\(= 0\\)。期望梯度没变，噪声消失了。"
           ],
           "kind": "worked-example",
-          "formula": "g = (R(y) − b) ∇_θ log π_θ(y)；b=0：(g_good, g_bad)=(+50.5, −50)；b=100.5：(+0.25, +0.25)",
+          "math": [
+            "g = (R(y) - b)\\,\\nabla_\\theta\\log\\pi_\\theta(y)",
+            "b=0\\text{：}\\ (g_{\\text{good}}, g_{\\text{bad}}) = (+50.5,\\ -50)",
+            "b=100.5\\text{：}\\ (g_{\\text{good}}, g_{\\text{bad}}) = (+0.25,\\ +0.25)"
+          ],
           "table": {
             "columns": [
               "",
-              "g_good",
-              "g_bad",
-              "E[g]（补充）",
-              "Var[g]（补充）"
+              "\\(g_{\\text{good}}\\)",
+              "\\(g_{\\text{bad}}\\)",
+              "\\(\\mathbb{E}[g]\\)（补充）",
+              "\\(\\mathrm{Var}[g]\\)（补充）"
             ],
             "rows": [
               [
@@ -1318,7 +1432,7 @@
                 "2525.0625"
               ],
               [
-                "With baseline b=100.5",
+                "With baseline \\(b=100.5\\)",
                 "+0.25",
                 "+0.25",
                 "0.25",
@@ -1327,8 +1441,8 @@
             ]
           },
           "bullets": [
-            "误区：带基线后 g_bad 为正，并不是在奖励坏答案。g 是对 θ 的梯度，θ 增大会提高 π(good)、降低 π(bad)；坏答案的 R−b=−0.5 乘上负的 ∇log π(bad)，正好也是在压低坏答案。",
-            "两个样本现在把 θ 往同一个方向推同样的量，所以方差为 0；这是玩具例子的特殊情况，一般情况下基线只是让方差变小。"
+            "误区：带基线后 \\(g_{\\text{bad}}\\) 为正，并不是在奖励坏答案。\\(g\\) 是对 \\(\\theta\\) 的梯度，\\(\\theta\\) 增大会提高 \\(\\pi(\\text{good})\\)、降低 \\(\\pi(\\text{bad})\\)；坏答案的 \\(R-b=-0.5\\) 乘上负的 \\(\\nabla\\log\\pi(\\text{bad})\\)，正好也是在压低坏答案。",
+            "两个样本现在把 \\(\\theta\\) 往同一个方向推同样的量，所以方差为 0；这是玩具例子的特殊情况，一般情况下基线只是让方差变小。"
           ],
           "source": "Lecture 4 (2026) · p.34–36（Challenge 1: High variance gradients (toy example)）"
         },
@@ -1336,25 +1450,31 @@
           "title": "PPO：最大化优势，而不只是奖励",
           "body": [
             "PPO（Proximal Policy Optimization，Schulman 等，2017）把目标写成两部分：最大化优势（advantage），加上「不要偏离之前太远」——名字里的 Proximal 指的就是第二部分。奖励回答的是「这个有多好」，优势回答的是「和预期相比，这个有多好」，这正是前面基线思想的推广。",
-            "预期从哪来？PPO 训练一个价值函数 V^π(x, y_{<t}) = E_π[R_future | x, y_{<t}]，即给定输入和部分回答时预期的未来奖励。它和策略一起训练，用一个回归头输出，标签是整段回答的奖励，并且是逐 token 的。讲义的例子：输入「Teddy is in a box. Where is Teddy?」，输出「In the box .」，四个前缀的价值依次是 0.6、0.7、0.95、1.0，最终奖励 +1。token「box」的优势 = 0.95 − 0.70 = +0.25：写出 box 之后，预期奖励上升了 0.25。",
-            "于是目标从 E_t[R_t] 变成 E_t[A_t]。实际上 PPO 会拿同一批采样做多次更新：样本是旧策略 π_old 生成的，而被优化的是当前策略 π_θ，所以每一项要乘上概率比 ρ_t(θ) = π_θ(a_t|s_t)/π_old(a_t|s_t)，讲义称之为重要性采样（importance sampling）比率。"
+            "预期从哪来？PPO 训练一个价值函数 \\(V^\\pi(x, y_{<t}) = \\mathbb{E}_\\pi[R_{\\text{future}} \\mid x, y_{<t}]\\)，即给定输入和部分回答时预期的未来奖励。它和策略一起训练，用一个回归头输出，标签是整段回答的奖励，并且是逐 token 的。讲义的例子：输入「Teddy is in a box. Where is Teddy?」，输出「In the box .」，四个前缀的价值依次是 0.6、0.7、0.95、1.0，最终奖励 +1。token「box」的优势 \\(= 0.95 - 0.70 = +0.25\\)：写出 box 之后，预期奖励上升了 0.25。",
+            "于是目标从 \\(\\mathbb{E}_t[R_t]\\) 变成 \\(\\mathbb{E}_t[A_t]\\)。实际上 PPO 会拿同一批采样做多次更新：样本是旧策略 \\(\\pi_{\\text{old}}\\) 生成的，而被优化的是当前策略 \\(\\pi_\\theta\\)，所以每一项要乘上概率比 \\(\\rho_t(\\theta) = \\pi_\\theta(a_t\\mid s_t)/\\pi_{\\text{old}}(a_t\\mid s_t)\\)，讲义称之为重要性采样（importance sampling）比率。"
           ],
-          "formula": "A^π(x, y_{<t}, y_t) = V^π(x, y_{≤t}) − V^π(x, y_{<t})；J(θ) = E_t[ ρ_t(θ) A_t ]，ρ_t(θ) = π_θ(a_t|s_t) / π_old(a_t|s_t)",
+          "math": [
+            "A^\\pi(x, y_{<t}, y_t) = V^\\pi(x, y_{\\le t}) - V^\\pi(x, y_{<t})",
+            "J(\\theta) = \\mathbb{E}_t\\left[\\rho_t(\\theta)A_t\\right],\\quad \\rho_t(\\theta) = \\frac{\\pi_\\theta(a_t\\mid s_t)}{\\pi_{\\text{old}}(a_t\\mid s_t)}"
+          ],
           "bullets": [
             "讲义注明：真实的优势估计比「前后两个价值相减」更复杂（GAE），不作考试要求。",
-            "补充：沿用讲义数字，A(the) = 0.7 − 0.6 = +0.10，A(.) = 1.0 − 0.95 = +0.05；A(In) 需要只有输入时的价值 V(x)，讲义没给，不能算。"
+            "补充：沿用讲义数字，\\(A(\\text{the}) = 0.7 - 0.6 = +0.10\\)，\\(A(\\text{.}) = 1.0 - 0.95 = +0.05\\)；\\(A(\\text{In})\\) 需要只有输入时的价值 \\(V(x)\\)，讲义没给，不能算。"
           ],
           "source": "Lecture 4 (2026) · p.41–55（PPO actually computes advantages (and not just rewards)）"
         },
         {
           "title": "PPO 不让策略走太远：裁剪与 KL 惩罚",
           "body": [
-            "第一个办法是裁剪新旧策略的概率比：J(θ) = E_t[min(ρ_t(θ)A_t, clip(ρ_t(θ), 1−ε, 1+ε)A_t)]。讲义的两张图说明了效果：A>0 时，目标随 ρ 线性上升，越过 1+ε 后变平——这个 token 的概率已经提高够了，不再有动力继续推；A<0 时，ρ 低于 1−ε 后变平——已经压得够低，不再继续压。",
-            "第二个办法是直接惩罚两个分布的差异，用 KL 散度衡量：离散形式 KL(P‖Q) = Σ p_i log(p_i/q_i)，连续形式是 E_{x∼p}[log(p(x)/q(x))]。目标变成 J(θ) = E_t[ρ_t(θ)A_t − β KL(π_θ(·|s_t) ‖ π_ref(·|s_t))]，把策略拉在参考策略附近。讲义顺带把它和上周的 DPO 联系起来：DPO 的损失里也是 β log(π_θ/π_ref) 这种「相对参考模型」的量（细节见第 3 讲）。",
-            "如今的 PPO：用价值函数做基线来最大化优势；用裁剪约束当前策略相对旧策略（例如上一批次）的变化，用 KL 惩罚约束相对参考策略的偏离。讲义还提醒读原论文时注意：论文里的 L^CLIP(θ) 是要最大化的目标，不是损失；其中的 r_t(θ) 指概率比，不是奖励。",
+            "第一个办法是裁剪新旧策略的概率比：\\(J(\\theta) = \\mathbb{E}_t[\\min(\\rho_t(\\theta)A_t, \\mathrm{clip}(\\rho_t(\\theta), 1-\\varepsilon, 1+\\varepsilon)A_t)]\\)。讲义的两张图说明了效果：\\(A>0\\) 时，目标随 \\(\\rho\\) 线性上升，越过 \\(1+\\varepsilon\\) 后变平——这个 token 的概率已经提高够了，不再有动力继续推；\\(A<0\\) 时，\\(\\rho\\) 低于 \\(1-\\varepsilon\\) 后变平——已经压得够低，不再继续压。",
+            "第二个办法是直接惩罚两个分布的差异，用 KL 散度衡量：离散形式 \\(\\mathrm{KL}(P\\,\\|\\,Q) = \\sum p_i\\log(p_i/q_i)\\)，连续形式是 \\(\\mathbb{E}_{x\\sim p}[\\log(p(x)/q(x))]\\)。目标变成 \\(J(\\theta) = \\mathbb{E}_t[\\rho_t(\\theta)A_t - \\beta\\,\\mathrm{KL}(\\pi_\\theta(\\cdot\\mid s_t)\\,\\|\\,\\pi_{\\text{ref}}(\\cdot\\mid s_t))]\\)，把策略拉在参考策略附近。讲义顺带把它和上周的 DPO 联系起来：DPO 的损失里也是 \\(\\beta\\log(\\pi_\\theta/\\pi_{\\text{ref}})\\) 这种「相对参考模型」的量（细节见第 3 讲）。",
+            "如今的 PPO：用价值函数做基线来最大化优势；用裁剪约束当前策略相对旧策略（例如上一批次）的变化，用 KL 惩罚约束相对参考策略的偏离。讲义还提醒读原论文时注意：论文里的 \\(L^{\\text{CLIP}}(\\theta)\\) 是要最大化的目标，不是损失；其中的 \\(r_t(\\theta)\\) 指概率比，不是奖励。",
             "回到三个难题：优势配合价值函数同时缓解了①梯度噪声和②token 级归因，裁剪和/或 KL 惩罚解决③更新幅度。但核心局限是：训练一个价值函数非常麻烦。"
           ],
-          "formula": "J(θ) = E_t[ min( ρ_t(θ)A_t, clip(ρ_t(θ), 1−ε, 1+ε) A_t ) ]；J(θ) = E_t[ ρ_t(θ)A_t − β KL(π_θ(·|s_t) ‖ π_ref(·|s_t)) ]",
+          "math": [
+            "J(\\theta) = \\mathbb{E}_t\\left[\\min\\left(\\rho_t(\\theta)A_t,\\ \\mathrm{clip}(\\rho_t(\\theta), 1-\\varepsilon, 1+\\varepsilon)A_t\\right)\\right]",
+            "J(\\theta) = \\mathbb{E}_t\\left[\\rho_t(\\theta)A_t - \\beta\\,\\mathrm{KL}\\left(\\pi_\\theta(\\cdot\\mid s_t)\\,\\|\\,\\pi_{\\text{ref}}(\\cdot\\mid s_t)\\right)\\right]"
+          ],
           "table": {
             "columns": [
               "约束手段",
@@ -1364,35 +1484,43 @@
             "rows": [
               [
                 "Clipping（裁剪）",
-                "π_θ 与 π_old（如上一批次）",
+                "\\(\\pi_\\theta\\) 与 \\(\\pi_{\\text{old}}\\)（如上一批次）",
                 "单步更新不要太大"
               ],
               [
                 "KL penalty（KL 惩罚）",
-                "π_θ 与 π_ref（参考策略）",
+                "\\(\\pi_\\theta\\) 与 \\(\\pi_{\\text{ref}}\\)（参考策略）",
                 "整体不要偏离起点太远"
               ]
             ]
           },
-          "source": "Lecture 4 (2026) · p.56–66（PPO prevents large updates / PPO stays close to original policy）"
+          "source": "Lecture 4 (2026) · p.56–66（PPO prevents large updates / PPO stays close to original policy）",
+          "figure": {
+            "src": "figures/l04-ppo-clip.webp",
+            "alt": "两张折线图，横轴为概率比 ρ(θ)，纵轴为目标 J(θ)。左图 A>0：从原点线性上升，在 1+ε 处转为水平；右图 A<0：在 1−ε 左侧是水平线，越过 1−ε 后向下倾斜；两图各有一个红点标出 ρ=1 附近的当前位置",
+            "caption": "左图（\\(A>0\\)）：\\(\\rho\\) 超过 \\(1+\\varepsilon\\) 后目标变平，不再继续推高这个 token；右图（\\(A<0\\)）：\\(\\rho\\) 低于 \\(1-\\varepsilon\\) 后变平，不再继续压低，但 \\(\\rho>1\\) 一侧没有平台。平的部分梯度为 0。",
+            "source": "Lecture 4 (2026) · p.57–58"
+          }
         },
         {
           "title": "手算：PPO 裁剪什么时候让梯度消失",
           "body": [
-            "补充：讲义没有给 ε 的数值，这里取 ε=0.2，裁剪区间是 [0.8, 1.2]。优势沿用上面「box」的 A=+0.25，再看一个 A=−0.25 的 token。逐项计算未裁剪项 ρA、裁剪项 clip(ρ,0.8,1.2)·A，取二者较小者。",
-            "A=+0.25：ρ=1.1 时两项都是 0.275，目标对 ρ 的斜率是 0.25，仍在推高这个 token 的概率；ρ=1.5 时未裁剪项 0.375、裁剪项 1.2×0.25=0.3，取 0.3，处在平台上，斜率为 0——对应讲义 A>0 图里 1+ε 右边的水平段。",
-            "A=−0.25：ρ=0.7 时未裁剪项 −0.175、裁剪项 0.8×(−0.25)=−0.2，取 −0.2，斜率为 0，不再继续压低；ρ=1.5 时未裁剪项 −0.375、裁剪项 −0.3，取较小的 −0.375，裁剪不起作用，斜率 −0.25，仍会把这个概率往回拉——对应讲义 A<0 图里 ρ>1 一侧继续下降的直线。min 让目标总是取更保守的那一项。"
+            "补充：讲义没有给 \\(\\varepsilon\\) 的数值，这里取 \\(\\varepsilon=0.2\\)，裁剪区间是 \\([0.8, 1.2]\\)。优势沿用上面「box」的 \\(A=+0.25\\)，再看一个 \\(A=-0.25\\) 的 token。逐项计算未裁剪项 \\(\\rho A\\)、裁剪项 \\(\\mathrm{clip}(\\rho,0.8,1.2)\\cdot A\\)，取二者较小者。",
+            "\\(A=+0.25\\)：\\(\\rho=1.1\\) 时两项都是 0.275，目标对 \\(\\rho\\) 的斜率是 0.25，仍在推高这个 token 的概率；\\(\\rho=1.5\\) 时未裁剪项 0.375、裁剪项 \\(1.2\\times0.25=0.3\\)，取 0.3，处在平台上，斜率为 0——对应讲义 \\(A>0\\) 图里 \\(1+\\varepsilon\\) 右边的水平段。",
+            "\\(A=-0.25\\)：\\(\\rho=0.7\\) 时未裁剪项 −0.175、裁剪项 \\(0.8\\times(-0.25)=-0.2\\)，取 −0.2，斜率为 0，不再继续压低；\\(\\rho=1.5\\) 时未裁剪项 −0.375、裁剪项 −0.3，取较小的 −0.375，裁剪不起作用，斜率 −0.25，仍会把这个概率往回拉——对应讲义 \\(A<0\\) 图里 \\(\\rho>1\\) 一侧继续下降的直线。min 让目标总是取更保守的那一项。"
           ],
           "kind": "worked-example",
-          "formula": "J_t = min(ρ_t A_t, clip(ρ_t, 1−ε, 1+ε) A_t)，补充取 ε = 0.2",
+          "math": [
+            "J_t = \\min\\left(\\rho_t A_t,\\ \\mathrm{clip}(\\rho_t, 1-\\varepsilon, 1+\\varepsilon)A_t\\right),\\quad\\text{补充取 }\\varepsilon = 0.2"
+          ],
           "table": {
             "columns": [
-              "A_t",
-              "ρ_t",
-              "ρ_t·A_t",
-              "clip·A_t",
-              "J_t = min",
-              "对 ρ 的斜率"
+              "\\(A_t\\)",
+              "\\(\\rho_t\\)",
+              "\\(\\rho_t A_t\\)",
+              "\\(\\mathrm{clip}\\cdot A_t\\)",
+              "\\(J_t = \\min\\)",
+              "对 \\(\\rho\\) 的斜率"
             ],
             "rows": [
               [
@@ -1434,22 +1562,25 @@
         {
           "title": "GRPO：不用价值函数也能算优势",
           "body": [
-            "GRPO（Group Relative Policy Optimization，出自 DeepSeekMath，Shao 等，2024）保留 PPO「最大化优势 + 不偏离太远」的结构，但优势不再靠价值函数。做法是：对同一个提示 x 采样 G 个输出 o_1,…,o_G，各自打分，再在组内归一化——减去组均值、除以组标准差，得到每个输出的优势 Â_i。",
-            "完整目标对组内每个输出、输出内每个 token 求平均：花括号里第一部分是和 PPO 相同的裁剪项，保证「相邻更新不要相差太远」；第二部分 −β KL(π_θ‖π_ref) 直接写在目标里，保证「离参考模型足够近」。注意 Â_i 只依赖第 i 个输出的总奖励，所以同一个输出里的每个 token 拿到的是同一个优势。"
+            "GRPO（Group Relative Policy Optimization，出自 DeepSeekMath，Shao 等，2024）保留 PPO「最大化优势 + 不偏离太远」的结构，但优势不再靠价值函数。做法是：对同一个提示 x 采样 \\(G\\) 个输出 \\(o_1,\\ldots,o_G\\)，各自打分，再在组内归一化——减去组均值、除以组标准差，得到每个输出的优势 \\(\\hat A_i\\)。",
+            "完整目标对组内每个输出、输出内每个 token 求平均：花括号里第一部分是和 PPO 相同的裁剪项，保证「相邻更新不要相差太远」；第二部分 \\(-\\beta\\,\\mathrm{KL}(\\pi_\\theta\\,\\|\\,\\pi_{\\text{ref}})\\) 直接写在目标里，保证「离参考模型足够近」。注意 \\(\\hat A_i\\) 只依赖第 \\(i\\) 个输出的总奖励，所以同一个输出里的每个 token 拿到的是同一个优势。"
           ],
-          "formula": "Â_i = ( R(x,o_i) − mean{R(x,o_1),…,R(x,o_G)} ) / std{R(x,o_1),…,R(x,o_G)}；J(θ) = E[ (1/G) Σ_i (1/|o_i|) Σ_t { min[ρ_{i,t}Â_i, clip(ρ_{i,t}, 1−ε, 1+ε)Â_i] − β KL(π_θ‖π_ref) } ]",
+          "math": [
+            "\\hat A_i = \\frac{R(x, o_i) - \\mathrm{mean}\\{R(x, o_1), \\ldots, R(x, o_G)\\}}{\\mathrm{std}\\{R(x, o_1), \\ldots, R(x, o_G)\\}}",
+            "\\begin{aligned}J(\\theta) = \\mathbb{E}\\Bigg[\\frac{1}{G}\\sum_i\\frac{1}{|o_i|}\\sum_t\\Big\\{&\\min\\left[\\rho_{i,t}\\hat A_i,\\ \\mathrm{clip}(\\rho_{i,t}, 1-\\varepsilon, 1+\\varepsilon)\\hat A_i\\right]\\\\&-\\beta\\,\\mathrm{KL}(\\pi_\\theta\\,\\|\\,\\pi_{\\text{ref}})\\Big\\}\\Bigg]\\end{aligned}"
+          ],
           "source": "Lecture 4 (2026) · p.67–72（Proposed solution: GRPO / GRPO computes advantages without value function）"
         },
         {
           "title": "GRPO 与 PPO 并排比较",
           "body": [
-            "GRPO 的流水线：提示 q 进入策略模型，生成 o_1…o_G；奖励模型给出 r_1…r_G；组内计算得到 A_1…A_G，回传给策略模型；参考模型通过 KL 直接作用在策略上。PPO 的流水线：提示 q 只生成一个输出 o；参考模型与奖励模型的输出经 KL 合成奖励 r，价值模型给出 v；r 和 v 经 GAE 得到优势 A 回传给策略，价值模型本身也要更新。",
+            "GRPO 的流水线：提示 \\(q\\) 进入策略模型，生成 \\(o_1\\ldots o_G\\)；奖励模型给出 \\(r_1\\ldots r_G\\)；组内计算得到 \\(A_1\\ldots A_G\\)，回传给策略模型；参考模型通过 KL 直接作用在策略上。PPO 的流水线：提示 \\(q\\) 只生成一个输出 \\(o\\)；参考模型与奖励模型的输出经 KL 合成奖励 \\(r\\)，价值模型给出 \\(v\\)；\\(r\\) 和 \\(v\\) 经 GAE 得到优势 \\(A\\) 回传给策略，价值模型本身也要更新。",
             "两者都冻结参考模型和奖励模型；但 GRPO 只训练策略模型，PPO 要同时训练策略模型和价值模型——这正是 GRPO 省掉的麻烦。公式层面，相同点是概率比和裁剪；不同点是 KL 惩罚放的位置（GRPO 在目标里，PPO 在讲义的图里合进奖励）以及优势怎么估计。"
           ],
           "flow": [
-            "q → 策略模型 → o_1 … o_G",
-            "奖励模型 → r_1 … r_G",
-            "组内计算 → A_1 … A_G",
+            "\\(q\\) → 策略模型 → \\(o_1 \\ldots o_G\\)",
+            "奖励模型 → \\(r_1 \\ldots r_G\\)",
+            "组内计算 → \\(A_1 \\ldots A_G\\)",
             "回传更新策略模型（参考模型经 KL 约束）"
           ],
           "table": {
@@ -1461,18 +1592,18 @@
             "rows": [
               [
                 "每个提示的输出数",
-                "1 个 o",
-                "G 个 o_1 … o_G"
+                "1 个 \\(o\\)",
+                "\\(G\\) 个 \\(o_1 \\ldots o_G\\)"
               ],
               [
                 "优势估计",
-                "价值模型 v + GAE → A_t",
-                "组内 (r_i − mean)/std → Â_i"
+                "价值模型 \\(v\\) + GAE → \\(A_t\\)",
+                "组内 \\((r_i - \\text{mean})/\\text{std}\\) → \\(\\hat A_i\\)"
               ],
               [
                 "KL 惩罚的位置",
-                "与奖励模型输出合成 r",
-                "直接写进目标 −βD_KL[π_θ‖π_ref]"
+                "与奖励模型输出合成 \\(r\\)",
+                "直接写进目标 \\(-\\beta D_{\\text{KL}}[\\pi_\\theta\\,\\|\\,\\pi_{\\text{ref}}]\\)"
               ],
               [
                 "冻结的模型",
@@ -1486,74 +1617,82 @@
               ],
               [
                 "相同点",
-                "概率比 ρ、clip(ρ, 1−ε, 1+ε)",
-                "概率比 ρ、clip(ρ, 1−ε, 1+ε)"
+                "概率比 \\(\\rho\\)、\\(\\mathrm{clip}(\\rho, 1-\\varepsilon, 1+\\varepsilon)\\)",
+                "概率比 \\(\\rho\\)、\\(\\mathrm{clip}(\\rho, 1-\\varepsilon, 1+\\varepsilon)\\)"
               ]
             ]
           },
-          "source": "Lecture 4 (2026) · p.73–94（Comparison between GRPO and PPO）"
+          "source": "Lecture 4 (2026) · p.73–94（Comparison between GRPO and PPO）",
+          "figure": {
+            "src": "figures/l04-grpo-vs-ppo.webp",
+            "alt": "上下两条流水线。GRPO：q 进入 Policy Model，生成 o_1…o_G，经 Reward Model 得到 r_1…r_G，再经 Group Computation 得到 A_1…A_G 回传给 Policy Model，Reference Model 通过 KL 连回 Policy Model。PPO：q 进入 Policy Model 生成一个 o，Reference Model 与 Reward Model 的输出经 KL 合成 r，Value Model 给出 v，r 和 v 经 GAE 得到 A 回传，Value Model 也被更新",
+            "caption": "黄色框是要训练的模型，蓝色框是冻结的模型：PPO 多一个黄色的 Value Model，并用 GAE 算优势；GRPO 改为每个提示采样 \\(G\\) 个输出、在组内计算优势，KL 直接连回策略模型。",
+            "source": "Lecture 4 (2026) · p.79, 87"
+          }
         },
         {
           "title": "输出越来越长：1/|o_i| 带来的激励偏差",
           "body": [
-            "讲义展示了 DeepSeek-R1-Zero 的现象：随着 RL 训练，平均回答长度从几百个 token 一路涨到接近一万（约 8,000 步），AIME 准确率也同时上升。长度上涨部分来自 GRPO 目标里的 1/|o_i|：同一个输出的所有 token 先在输出内平均，于是输出越长，每个 token 分到的权重越小。",
-            "这在 A>0 时意味着短的正确回答每个 token 被推得更多；在 A<0 时意味着长的错误回答每个 token 被罚得更少——讲义称之为「坏激励」：答错时写得越长，受罚越轻。补救思路是让每个 token 的贡献相等：DAPO 改用 1/Σ_i|o_i| 对全组 token 统一平均；Dr. GRPO 直接去掉 1/|o_i|，只保留 1/G。讲义引用的图显示 Dr. GRPO 用更短的输出达到相近甚至略高的奖励，错误回答的长度不再一路上涨（GRPO 约涨到 2k token，Dr. GRPO 回落到约 1k）。",
-            "讲义还列了其他调整：分母里的 std 会带来与题目难度相关的偏差；把对称裁剪 clip(ρ, 1−ε, 1+ε) 改成 clip(ρ, 1−ε_low, 1+ε_high) 以鼓励多样性（DAPO），「等等」。补充（直观示意，不是讲义原话）：同样 4 个样本，2 对 2 错时 Â=±1；若只有 1 个答对（R=[1,0,0,0]），总体 std≈0.433，答对者 Â≈+1.732——组内差异越小，除以 std 后的优势被放大得越多。"
+            "讲义展示了 DeepSeek-R1-Zero 的现象：随着 RL 训练，平均回答长度从几百个 token 一路涨到接近一万（约 8,000 步），AIME 准确率也同时上升。长度上涨部分来自 GRPO 目标里的 \\(1/|o_i|\\)：同一个输出的所有 token 先在输出内平均，于是输出越长，每个 token 分到的权重越小。",
+            "这在 \\(A>0\\) 时意味着短的正确回答每个 token 被推得更多；在 \\(A<0\\) 时意味着长的错误回答每个 token 被罚得更少——讲义称之为「坏激励」：答错时写得越长，受罚越轻。补救思路是让每个 token 的贡献相等：DAPO 改用 \\(1/\\sum_i|o_i|\\) 对全组 token 统一平均；Dr. GRPO 直接去掉 \\(1/|o_i|\\)，只保留 \\(1/G\\)。讲义引用的图显示 Dr. GRPO 用更短的输出达到相近甚至略高的奖励，错误回答的长度不再一路上涨（GRPO 约涨到 2k token，Dr. GRPO 回落到约 1k）。",
+            "讲义还列了其他调整：分母里的 std 会带来与题目难度相关的偏差；把对称裁剪 \\(\\mathrm{clip}(\\rho, 1-\\varepsilon, 1+\\varepsilon)\\) 改成 \\(\\mathrm{clip}(\\rho, 1-\\varepsilon_{\\text{low}}, 1+\\varepsilon_{\\text{high}})\\) 以鼓励多样性（DAPO），「等等」。补充（直观示意，不是讲义原话）：同样 4 个样本，2 对 2 错时 \\(\\hat A=\\pm1\\)；若只有 1 个答对（\\(R=[1,0,0,0]\\)），总体 \\(\\text{std}\\approx0.433\\)，答对者 \\(\\hat A\\approx+1.732\\)——组内差异越小，除以 std 后的优势被放大得越多。"
           ],
           "table": {
             "columns": [
               "归一化方式",
               "公式",
-              "补充：短输出 |o_1|=10 每 token 权重",
-              "补充：长输出 |o_2|=100 每 token 权重"
+              "补充：短输出 \\(|o_1|=10\\) 每 token 权重",
+              "补充：长输出 \\(|o_2|=100\\) 每 token 权重"
             ],
             "rows": [
               [
                 "GRPO",
-                "(1/G) Σ_i (1/|o_i|) Σ_t",
-                "1/(2×10) = 0.05",
-                "1/(2×100) = 0.005"
+                "\\((1/G)\\sum_i (1/|o_i|)\\sum_t\\)",
+                "\\(1/(2\\times10) = 0.05\\)",
+                "\\(1/(2\\times100) = 0.005\\)"
               ],
               [
                 "DAPO",
-                "(1/Σ_i|o_i|) Σ_i Σ_t",
-                "1/110 ≈ 0.00909",
-                "1/110 ≈ 0.00909"
+                "\\((1/\\sum_i|o_i|)\\sum_i\\sum_t\\)",
+                "\\(1/110 \\approx 0.00909\\)",
+                "\\(1/110 \\approx 0.00909\\)"
               ],
               [
                 "Dr. GRPO",
-                "(1/G) Σ_i Σ_t",
-                "1/2 = 0.5",
-                "1/2 = 0.5"
+                "\\((1/G)\\sum_i\\sum_t\\)",
+                "\\(1/2 = 0.5\\)",
+                "\\(1/2 = 0.5\\)"
               ]
             ]
           },
           "bullets": [
-            "表中 G=2、长度 10 和 100 是补充的示例数字；要比较的是同一行内长短输出的权重是否相等，而不是不同行之间的绝对大小。"
+            "表中 \\(G=2\\)、长度 10 和 100 是补充的示例数字；要比较的是同一行内长短输出的权重是否相等，而不是不同行之间的绝对大小。"
           ],
           "source": "Lecture 4 (2026) · p.95–108（\"Increasing output length\" phenomenon / Mitigating / Exploration of other adjustments）"
         },
         {
           "title": "手算：泰迪熊盒子题的 GRPO 优势",
           "body": [
-            "提示：「Teddy is in a sealed box. The box moves to the kitchen. Where is Teddy?」组内 G=4 个输出见下表。补充：讲义用绿/红标出答案对错，这里把它写成可验证奖励 R=1（Kitchen）和 R=0（Room）。",
-            "R = [1, 1, 0, 0]，组均值 0.5。补充：讲义没有说明 std 用总体还是样本标准差，这里用总体标准差 √(4×0.25/4) = 0.5，得到 Â = [+1, +1, −1, −1]。若用样本标准差 √(1/3) ≈ 0.577，则 Â ≈ ±0.866，符号和相对大小不变。",
-            "对照三个难题，GRPO 用组平均算优势解决了①梯度噪声，用裁剪和/或 KL 惩罚解决了③更新幅度，但②没有解决，问题出在 token 级别：o_2 推理全错（泰迪熊爬出了密封的盒子）却因答对拿到 +1，它的每个 token 都被同等鼓励；o_3 第一步「Teddy stays in the box」其实是对的，却因最终答错，每个 token 都拿 −1。讲义的结论是：短期看，每个 token 拿到同一个优势，信号有噪声；长期看，GRPO 只能在大量组上「平均地」学到好步骤，学得慢。"
+            "提示：「Teddy is in a sealed box. The box moves to the kitchen. Where is Teddy?」组内 \\(G=4\\) 个输出见下表。补充：讲义用绿/红标出答案对错，这里把它写成可验证奖励 \\(R=1\\)（Kitchen）和 \\(R=0\\)（Room）。",
+            "\\(R = [1, 1, 0, 0]\\)，组均值 0.5。补充：讲义没有说明 std 用总体还是样本标准差，这里用总体标准差 \\(\\sqrt{4\\times0.25/4} = 0.5\\)，得到 \\(\\hat A = [+1, +1, -1, -1]\\)。若用样本标准差 \\(\\sqrt{1/3} \\approx 0.577\\)，则 \\(\\hat A \\approx \\pm0.866\\)，符号和相对大小不变。",
+            "对照三个难题，GRPO 用组平均算优势解决了①梯度噪声，用裁剪和/或 KL 惩罚解决了③更新幅度，但②没有解决，问题出在 token 级别：\\(o_2\\) 推理全错（泰迪熊爬出了密封的盒子）却因答对拿到 +1，它的每个 token 都被同等鼓励；\\(o_3\\) 第一步「Teddy stays in the box」其实是对的，却因最终答错，每个 token 都拿 −1。讲义的结论是：短期看，每个 token 拿到同一个优势，信号有噪声；长期看，GRPO 只能在大量组上「平均地」学到好步骤，学得慢。"
           ],
           "kind": "worked-example",
-          "formula": "Â_i = (R_i − 0.5) / 0.5 → Â = [+1, +1, −1, −1]（总体 std，补充约定）",
+          "math": [
+            "\\hat A_i = \\frac{R_i - 0.5}{0.5} \\rightarrow \\hat A = [+1, +1, -1, -1]\\quad\\text{（总体 std，补充约定）}"
+          ],
           "table": {
             "columns": [
               "输出",
               "Step 1",
               "Step 2",
               "Answer",
-              "R（补充）",
-              "Â_i"
+              "\\(R\\)（补充）",
+              "\\(\\hat A_i\\)"
             ],
             "rows": [
               [
-                "o_1",
+                "\\(o_1\\)",
                 "Teddy stays in the box ✓",
                 "The box moves to the kitchen ✓",
                 "Kitchen",
@@ -1561,7 +1700,7 @@
                 "+1"
               ],
               [
-                "o_2",
+                "\\(o_2\\)",
                 "Teddy climbs out of the box ✗",
                 "Teddy walks to the kitchen ✗",
                 "Kitchen",
@@ -1569,7 +1708,7 @@
                 "+1"
               ],
               [
-                "o_3",
+                "\\(o_3\\)",
                 "Teddy stays in the box ✓",
                 "The box stays in the room ✗",
                 "Room",
@@ -1577,7 +1716,7 @@
                 "−1"
               ],
               [
-                "o_4",
+                "\\(o_4\\)",
                 "Teddy climbs out of the box ✗",
                 "Teddy stays in the room ✗",
                 "Room",
@@ -1591,7 +1730,7 @@
         {
           "title": "能不能改成过程监督？",
           "body": [
-            "一个自然的想法是改成「过程监督（process supervision）」：让目标里的 Â_{i,t} 按推理步骤给分，而不是整段共享。讲义列出三个问题：需要逐步骤的标注；每个推理步骤可能带有同样的归因歧义（一步整体对，不代表其中每个 token 都好）；还需要专门训练一个奖励模型。",
+            "一个自然的想法是改成「过程监督（process supervision）」：让目标里的 \\(\\hat A_{i,t}\\) 按推理步骤给分，而不是整段共享。讲义列出三个问题：需要逐步骤的标注；每个推理步骤可能带有同样的归因歧义（一步整体对，不代表其中每个 token 都好）；还需要专门训练一个奖励模型。",
             "这三个问题直接引出下一部分的愿望清单：仍然要在线训练、要逐 token 的归因信号，但不想为此再做逐步标注或再训练一个模型。讲义给出的答案是借用一个现成的教师模型，也就是 on-policy distillation。"
           ],
           "source": "Lecture 4 (2026) · p.116–118（Switch to \"Process Supervision\"?）"
@@ -1600,12 +1739,14 @@
           "title": "On-policy distillation：让教师给每个 token 打分",
           "body": [
             "讲义先列出愿望清单：要在线（on-policy）训练——用模型自己生成的回答来训练；要对每个 token 显式归因——在下一 token 预测上计算损失；不想要任何额外训练——直接用一个现成的教师模型。on-policy distillation 同时满足这三条：学生自己生成回答，教师在这些回答的每个位置上给出下一 token 分布，学生逐 token 向教师靠拢。",
-            "衡量「靠拢」用的是 KL 散度。KL(P‖Q) 可以理解为：在一个由 P 支配的世界里，用 Q 去近似 P 有多糟。这里用的是 reverse KL：KL(S‖T) = Σ_i s_i log(s_i/t_i)，以学生分布 S 加权。它的性质：学生在教师有概率的地方给得少（s_i 低、t_i 高），罚得轻——对漏掉教师的某些区域比较宽容；学生在教师几乎不给概率的地方给得多（s_i 高、t_i 低），罚得很重。于是学生倾向于集中在教师认可的主要模式上，讲义称之为「mode seeking」。",
-            "回到泰迪熊例子：教师会在 o_2、o_4 第一步的「climbs」和 o_3、o_4 第二步的「stays」处给出惩罚，正是推理开始出错的那个 token。讲义的说明是：学生的预测 p_S(x_{t+1} | x_1,…,x_t) 以前文为条件，所以通常在开始出错的那一刻受罚，而句子剩下的部分往往没问题，因为下一 token 预测本来就以已有上下文为前提。"
+            "衡量「靠拢」用的是 KL 散度。\\(\\mathrm{KL}(P\\,\\|\\,Q)\\) 可以理解为：在一个由 \\(P\\) 支配的世界里，用 \\(Q\\) 去近似 \\(P\\) 有多糟。这里用的是 reverse KL：\\(\\mathrm{KL}(S\\,\\|\\,T) = \\sum_i s_i\\log(s_i/t_i)\\)，以学生分布 \\(S\\) 加权。它的性质：学生在教师有概率的地方给得少（\\(s_i\\) 低、\\(t_i\\) 高），罚得轻——对漏掉教师的某些区域比较宽容；学生在教师几乎不给概率的地方给得多（\\(s_i\\) 高、\\(t_i\\) 低），罚得很重。于是学生倾向于集中在教师认可的主要模式上，讲义称之为「mode seeking」。",
+            "回到泰迪熊例子：教师会在 \\(o_2\\)、\\(o_4\\) 第一步的「climbs」和 \\(o_3\\)、\\(o_4\\) 第二步的「stays」处给出惩罚，正是推理开始出错的那个 token。讲义的说明是：学生的预测 \\(p_S(x_{t+1}\\mid x_1,\\ldots,x_t)\\) 以前文为条件，所以通常在开始出错的那一刻受罚，而句子剩下的部分往往没问题，因为下一 token 预测本来就以已有上下文为前提。"
           ],
-          "formula": "KL(S‖T) = Σ_i s_i log(s_i / t_i)（S：学生，T：教师）",
+          "math": [
+            "\\mathrm{KL}(S\\,\\|\\,T) = \\sum_i s_i\\log\\frac{s_i}{t_i}\\quad\\text{（S：学生，T：教师）}"
+          ],
           "bullets": [
-            "补充（数值示意）：教师 T=[0.5, 0.49, 0.01]。学生 S1=[0.98, 0.01, 0.01] 几乎漏掉教师的第二个模式，KL(S1‖T)≈0.621；学生 S2=[0.4, 0.1, 0.5] 把一半概率放在教师只给 0.01 的位置，仅这一项就是 0.5·ln50≈1.956，总计≈1.708。后者罚得重得多。",
+            "补充（数值示意）：教师 \\(T=[0.5, 0.49, 0.01]\\)。学生 \\(S_1=[0.98, 0.01, 0.01]\\) 几乎漏掉教师的第二个模式，\\(\\mathrm{KL}(S_1\\,\\|\\,T)\\approx0.621\\)；学生 \\(S_2=[0.4, 0.1, 0.5]\\) 把一半概率放在教师只给 0.01 的位置，仅这一项就是 \\(0.5\\cdot\\ln 50\\approx1.956\\)，总计 \\(\\approx1.708\\)。后者罚得重得多。",
             "与 GRPO 对照：GRPO 让整段回答共享一个优势，on-policy distillation 则在每个 token 位置都有教师信号，而且不需要奖励模型。"
           ],
           "source": "Lecture 4 (2026) · p.119–125（Wish list recap / Reverse KL / On-policy distillation）"
@@ -1651,7 +1792,7 @@
       },
       "quiz": [
         {
-          "question": "讲义的玩具例子：π_θ(good)=σ(θ)=0.5，R(good)=101，R(bad)=100，基线 b=100.5。用 g=(R(y)−b)∇_θ log π_θ(y)，两个样本的梯度 (g_good, g_bad) 是多少？",
+          "question": "讲义的玩具例子：\\(\\pi_\\theta(\\text{good})=\\sigma(\\theta)=0.5\\)，\\(R(\\text{good})=101\\)，\\(R(\\text{bad})=100\\)，基线 \\(b=100.5\\)。用 \\(g=(R(y)-b)\\nabla_\\theta\\log\\pi_\\theta(y)\\)，两个样本的梯度 \\((g_{\\text{good}}, g_{\\text{bad}})\\) 是多少？",
           "options": [
             "(+50.5, −50)",
             "(+0.5, −0.5)",
@@ -1659,18 +1800,18 @@
             "(+0.25, +0.25)"
           ],
           "answer": 3,
-          "explanation": "∇_θ log π(good)=1−σ(θ)=+0.5，∇_θ log π(bad)=−σ(θ)=−0.5。g_good=(101−100.5)×0.5=+0.25，g_bad=(100−100.5)×(−0.5)=+0.25。(+50.5, −50) 是没有减基线的结果；(+0.5, −0.5) 只算了 R−b，漏乘了对数概率梯度；(+0.25, −0.25) 漏掉了 ∇log π(bad) 的负号——实际上压低坏答案和抬高好答案都是增大 θ，所以两个梯度同号。"
+          "explanation": "\\(\\nabla_\\theta\\log\\pi(\\text{good})=1-\\sigma(\\theta)=+0.5\\)，\\(\\nabla_\\theta\\log\\pi(\\text{bad})=-\\sigma(\\theta)=-0.5\\)。\\(g_{\\text{good}}=(101-100.5)\\times0.5=+0.25\\)，\\(g_{\\text{bad}}=(100-100.5)\\times(-0.5)=+0.25\\)。(+50.5, −50) 是没有减基线的结果；(+0.5, −0.5) 只算了 \\(R-b\\)，漏乘了对数概率梯度；(+0.25, −0.25) 漏掉了 \\(\\nabla\\log\\pi(\\text{bad})\\) 的负号——实际上压低坏答案和抬高好答案都是增大 \\(\\theta\\)，所以两个梯度同号。"
         },
         {
-          "question": "泰迪熊盒子题中，GRPO 对同一提示采样 4 个输出：o_1、o_2 答 Kitchen（R=1），o_3、o_4 答 Room（R=0）。o_2 的推理步骤是错的（爬出密封的盒子）。按 Â_i=(R_i−mean)/std（用总体标准差），o_2 拿到的优势是什么？",
+          "question": "泰迪熊盒子题中，GRPO 对同一提示采样 4 个输出：\\(o_1\\)、\\(o_2\\) 答 Kitchen（\\(R=1\\)），\\(o_3\\)、\\(o_4\\) 答 Room（\\(R=0\\)）。\\(o_2\\) 的推理步骤是错的（爬出密封的盒子）。按 \\(\\hat A_i=(R_i-\\text{mean})/\\text{std}\\)（用总体标准差），\\(o_2\\) 拿到的优势是什么？",
           "options": [
-            "+1，并且 o_2 的每个 token 都拿到这同一个 +1",
-            "+0.5，并且 o_2 的每个 token 都拿到这同一个 +0.5",
-            "0，因为 GRPO 会识别出 o_2 的推理步骤是错的",
+            "+1，并且 \\(o_2\\) 的每个 token 都拿到这同一个 +1",
+            "+0.5，并且 \\(o_2\\) 的每个 token 都拿到这同一个 +0.5",
+            "0，因为 GRPO 会识别出 \\(o_2\\) 的推理步骤是错的",
             "只有答案 token「Kitchen」拿到 +1，推理步骤的 token 拿到 0"
           ],
           "answer": 0,
-          "explanation": "均值 0.5，总体标准差 0.5，Â_2=(1−0.5)/0.5=+1。GRPO 的优势只看整段输出的奖励，同一输出内每个 token 共享同一个 Â_i（讲义 p.115：every token gets the same advantage）。+0.5 是只减了均值、忘了除以 std；GRPO 不检查推理步骤，所以不会给 0——这正是它缺少 token 级归因的局限；只给答案 token 记分属于讲义说的过程监督或 on-policy distillation 才有的逐 token 信号，GRPO 没有。"
+          "explanation": "均值 0.5，总体标准差 0.5，\\(\\hat A_2=(1-0.5)/0.5=+1\\)。GRPO 的优势只看整段输出的奖励，同一输出内每个 token 共享同一个 \\(\\hat A_i\\)（讲义 p.115：every token gets the same advantage）。+0.5 是只减了均值、忘了除以 std；GRPO 不检查推理步骤，所以不会给 0——这正是它缺少 token 级归因的局限；只给答案 token 记分属于讲义说的过程监督或 on-policy distillation 才有的逐 token 信号，GRPO 没有。"
         }
       ],
       "resources": [
@@ -1708,7 +1849,7 @@
       "summary": "大模型的权重放不进一张 GPU，训练和推理又都很慢：这一讲围绕“放得下（fit）”和“跑得快（fast）”两个问题，依次讲 FlashAttention、分布式训练和推理优化。",
       "objectives": [
         "说出 GPU 的计算吞吐、显存容量和显存带宽各限制什么，并算出 100B 参数、每参数 2 字节的权重（200 GB）为什么放不进一张 141 GB 的 H200。",
-        "用分子 N、分母 D、运行最大值 m_t 和重缩放因子 α_t 解释在线 softmax，并说明 FlashAttention 为什么计算量更多却更快。",
+        "用分子 \\(N\\)、分母 \\(D\\)、运行最大值 \\(m_t\\) 和重缩放因子 \\(\\alpha_t\\) 解释在线 softmax，并说明 FlashAttention 为什么计算量更多却更快。",
         "区分数据并行（含 ZeRO-1/2/3）与张量、流水线、上下文、专家四种模型并行各自切分的对象。",
         "用 TTFT、TPOT 和算术强度描述推理瓶颈，并说明 KV 缓存、PagedAttention、GQA、MLA、推测解码和 MTP 各解决什么问题。"
       ],
@@ -1716,11 +1857,13 @@
         {
           "title": "动机：模型要放得下，也要跑得快",
           "body": [
-            "大模型有数十亿到上万亿参数，训练数据动辄上千亿 token。解码器里的前馈层和带掩码的多头注意力，本质上都是大量矩阵乘法，所以必须依靠 GPU，而且要用得“聪明”。讲义先区分两个容易混淆的记号：FLOPs（floating-point operations，浮点运算次数）衡量一项任务的总计算量，是 token 数和参数量的函数，训练一个 LLM 约 10²⁵ 次；FLOPS 或 FLOP/s（每秒浮点运算数）衡量硬件速度，手机约 10¹²，超级计算机约 10¹⁸。",
-            "以 NVIDIA H200 为例，规格表里最关键的是三行：计算速度（例如 BF16 约 1,979 TFLOPS）、显存容量（GPU Memory 141 GB，用来存放中间计算结果）、显存带宽（4.8 TB/s，即数据搬运速度）。显存只有 O(100 GB) 量级：一个 1000 亿参数的模型，每个参数用 2 字节（例如 FP16）存储，光权重就是 200 GB，已经超过一张卡的容量。训练时还要再放梯度（gradients）、优化器状态（optimizer states）和激活（activations）。",
+            "大模型有数十亿到上万亿参数，训练数据动辄上千亿 token。解码器里的前馈层和带掩码的多头注意力，本质上都是大量矩阵乘法，所以必须依靠 GPU，而且要用得“聪明”。讲义先区分两个容易混淆的记号：FLOPs（floating-point operations，浮点运算次数）衡量一项任务的总计算量，是 token 数和参数量的函数，训练一个 LLM 约 \\(10^{25}\\) 次；FLOPS 或 FLOP/s（每秒浮点运算数）衡量硬件速度，手机约 \\(10^{12}\\)，超级计算机约 \\(10^{18}\\)。",
+            "以 NVIDIA H200 为例，规格表里最关键的是三行：计算速度（例如 BF16 约 1,979 TFLOPS）、显存容量（GPU Memory 141 GB，用来存放中间计算结果）、显存带宽（4.8 TB/s，即数据搬运速度）。显存只有 \\(O(100\\ \\text{GB})\\) 量级：一个 1000 亿参数的模型，每个参数用 2 字节（例如 FP16）存储，光权重就是 200 GB，已经超过一张卡的容量。训练时还要再放梯度（gradients）、优化器状态（optimizer states）和激活（activations）。",
             "另一方面，训练和推理的计算都非常昂贵。于是全讲围绕两个问题展开：怎样让模型放得下（How do we make it fit?），怎样让它跑得快（How do we make it fast?）。后面的 FlashAttention、分布式训练和推理优化，每一部分的小结都会回到这两个问题。"
           ],
-          "formula": "100×10⁹ 参数 × 2 bytes = 200 GB > 141 GB（H200 显存）",
+          "math": [
+            "100\\times10^{9}\\ \\text{参数}\\times 2\\ \\text{bytes} = 200\\ \\text{GB} > 141\\ \\text{GB}\\quad\\text{（H200 显存）}"
+          ],
           "bullets": [
             "FLOPs（次数，衡量任务）和 FLOPS（每秒次数，衡量硬件）只差一个大小写，含义不同。"
           ],
@@ -1729,40 +1872,49 @@
         {
           "title": "标准自注意力为什么慢：HBM 与 SRAM 之间的往返",
           "body": [
-            "注意力 softmax(QKᵀ/√d_k)V 的中间结果是一个 n×n 的矩阵（n 为序列长度），序列一长就非常大。GPU 内部有两级存储：HBM（高带宽显存）容量大但慢，SRAM 紧挨计算单元，很快但很小。FlashAttention 的出发点是：减少数据进出 HBM 的次数。",
-            "softmax 的分母要对整行求和，必须看完整行才能归一化（p.18）。所以标准实现分三步走，每一步都要和 HBM 打交道：分块读入 Q、K，算出 S = QKᵀ 并把 S 写回 HBM；再把 S 读回来算 P = softmax(S)，把 P 写回 HBM；最后分块读入 P 和 V，算出 O = PV 并写回。S 和 P 都是 n×n，被完整写出又读回，这些搬运才是慢的主要原因。"
+            "注意力 \\(\\mathrm{softmax}(QK^\\top/\\sqrt{d_k})V\\) 的中间结果是一个 \\(n\\times n\\) 的矩阵（\\(n\\) 为序列长度），序列一长就非常大。GPU 内部有两级存储：HBM（高带宽显存）容量大但慢，SRAM 紧挨计算单元，很快但很小。FlashAttention 的出发点是：减少数据进出 HBM 的次数。",
+            "softmax 的分母要对整行求和，必须看完整行才能归一化（p.18）。所以标准实现分三步走，每一步都要和 HBM 打交道：分块读入 Q、K，算出 \\(S = QK^\\top\\) 并把 S 写回 HBM；再把 S 读回来算 \\(P = \\mathrm{softmax}(S)\\)，把 P 写回 HBM；最后分块读入 P 和 V，算出 \\(O = PV\\) 并写回。\\(S\\) 和 \\(P\\) 都是 \\(n\\times n\\)，被完整写出又读回，这些搬运才是慢的主要原因。"
           ],
           "flow": [
             "从 HBM 分块读 Q、K",
-            "算 S = QKᵀ",
+            "算 \\(S = QK^\\top\\)",
             "把 S 写回 HBM",
             "从 HBM 读回 S",
-            "算 P = softmax(S)",
+            "算 \\(P = \\mathrm{softmax}(S)\\)",
             "把 P 写回 HBM",
             "分块读 P、V",
-            "算 O = PV",
+            "算 \\(O = PV\\)",
             "把 O 写回 HBM"
           ],
-          "source": "Lecture 5 (2026) · p.14–29（Standard self-attention computation）"
+          "source": "Lecture 5 (2026) · p.14–29（Standard self-attention computation）",
+          "figure": {
+            "src": "figures/l05-hbm-sram.webp",
+            "alt": "GPU 内部示意图：左边是大块的 HBM，标注“Big and slow”；右边是紧挨计算单元 CU 的小块 SRAM，标注“Small and fast”，两者之间有双向箭头。",
+            "caption": "数据要先从 HBM 搬进 SRAM 才能被计算单元使用。HBM 容量大但慢，SRAM 快但小；标准注意力把 \\(n\\times n\\) 的 \\(S\\)、\\(P\\) 来回写进读出 HBM，慢就慢在这条箭头上。",
+            "source": "Lecture 5 (2026) · p.16"
+          }
         },
         {
           "title": "在线 softmax：增量计算分子和分母",
           "body": [
-            "讲义先把问题简化成一行：给定分数 s = (s₁ … sₙ) 和 v = (v₁ … vₙ)，要算 softmax(s)v = Σᵢ e^{sᵢ}vᵢ / Σⱼ e^{sⱼ}。把它写成分子 N 除以分母 D 之后，技巧是增量地累加：N_{t+1} = N_t + e^{s_{t+1}}v_{t+1}，D_{t+1} = D_t + e^{s_{t+1}}，读完最后一个元素再做一次除法 N_n/D_n。这样既不必先算完整行 softmax，也不必存下整行概率。",
-            "问题在于 e^{sᵢ} 可能非常大，造成数值不稳定（p.40）。因为 N/D = (C·N)/(C·D)，可以给分子分母同乘一个常数 C，理想的选择是 C = e^{−max sᵢ}，也就是所有指数先减去最大值。但增量计算时最大值事先未知，于是维护一个运行最大值 m_t：每读入一个新分数，就更新 m_{t+1} = max(m_t, s_{t+1})。",
-            "如果最大值变了，之前按旧的 m_t 缩放的 N_t 和 D_t 就和新元素“标准不一致”，要先乘以 α_t = e^{m_t − m_{t+1}} 换算到新标准，再加上新元素的贡献 e^{s_{t+1} − m_{t+1}}。最大值不变时 α_t = 1，相当于不用重缩放。全部读完后，N_n/D_n 与先求整行最大值再做 softmax 的结果完全相同，所以这是精确计算，不是近似。"
+            "讲义先把问题简化成一行：给定分数 \\(s = (s_1 \\dots s_n)\\) 和 \\(v = (v_1 \\dots v_n)\\)，要算 \\(\\mathrm{softmax}(s)v = \\sum_i e^{s_i}v_i / \\sum_j e^{s_j}\\)。把它写成分子 \\(N\\) 除以分母 \\(D\\) 之后，技巧是增量地累加：\\(N_{t+1} = N_t + e^{s_{t+1}}v_{t+1}\\)，\\(D_{t+1} = D_t + e^{s_{t+1}}\\)，读完最后一个元素再做一次除法 \\(N_n/D_n\\)。这样既不必先算完整行 softmax，也不必存下整行概率。",
+            "问题在于 \\(e^{s_i}\\) 可能非常大，造成数值不稳定（p.40）。因为 \\(N/D = (C\\cdot N)/(C\\cdot D)\\)，可以给分子分母同乘一个常数 \\(C\\)，理想的选择是 \\(C = e^{-\\max_i s_i}\\)，也就是所有指数先减去最大值。但增量计算时最大值事先未知，于是维护一个运行最大值 \\(m_t\\)：每读入一个新分数，就更新 \\(m_{t+1} = \\max(m_t, s_{t+1})\\)。",
+            "如果最大值变了，之前按旧的 \\(m_t\\) 缩放的 \\(N_t\\) 和 \\(D_t\\) 就和新元素“标准不一致”，要先乘以 \\(\\alpha_t = e^{m_t - m_{t+1}}\\) 换算到新标准，再加上新元素的贡献 \\(e^{s_{t+1} - m_{t+1}}\\)。最大值不变时 \\(\\alpha_t = 1\\)，相当于不用重缩放。全部读完后，\\(N_n/D_n\\) 与先求整行最大值再做 softmax 的结果完全相同，所以这是精确计算，不是近似。"
           ],
-          "formula": "m_{t+1} = max(m_t, s_{t+1})；α_t = e^{m_t − m_{t+1}}；N_{t+1} = α_t N_t + e^{s_{t+1} − m_{t+1}} v_{t+1}；D_{t+1} = α_t D_t + e^{s_{t+1} − m_{t+1}}；softmax(s)v = N_n / D_n",
+          "math": [
+            "\\begin{aligned} m_{t+1} &= \\max(m_t, s_{t+1}) \\\\ \\alpha_t &= e^{m_t - m_{t+1}} \\\\ N_{t+1} &= \\alpha_t N_t + e^{s_{t+1} - m_{t+1}}\\, v_{t+1} \\\\ D_{t+1} &= \\alpha_t D_t + e^{s_{t+1} - m_{t+1}} \\end{aligned}",
+            "\\mathrm{softmax}(s)v = N_n / D_n"
+          ],
           "bullets": [
-            "第一步没有旧的累积量：m₁ = s₁，N₁ = e^{s₁−m₁}v₁ = v₁，D₁ = e^{s₁−m₁} = 1。",
-            "常见错误：最大值变大后只给新元素减去新最大值，却忘了用 α_t 重缩放旧的 N_t 和 D_t，结果就错了。"
+            "第一步没有旧的累积量：\\(m_1 = s_1\\)，\\(N_1 = e^{s_1-m_1}v_1 = v_1\\)，\\(D_1 = e^{s_1-m_1} = 1\\)。",
+            "常见错误：最大值变大后只给新元素减去新最大值，却忘了用 \\(\\alpha_t\\) 重缩放旧的 \\(N_t\\) 和 \\(D_t\\)，结果就错了。"
           ],
           "source": "Lecture 5 (2026) · p.30–47（Flash Attention trick on a simple example）"
         },
         {
           "title": "分块计算、重计算与实测效果",
           "body": [
-            "第一个想法是借助 SRAM 做“分块”（tiling），减少对 HBM 的读写。Q、V、O 按行切块，Kᵀ 按列切块。每次把 Q 的一块和 K、V 的一块载入 SRAM，在 SRAM 里算出这一小块分数，用上一段的在线 softmax 规则更新这些行的输出；扫完所有 K、V 块后，把 O 的这一块写回 HBM，再换下一块 Q。整个过程中，n×n 的 S 和 P 从不完整地写入 HBM。",
+            "第一个想法是借助 SRAM 做“分块”（tiling），减少对 HBM 的读写。Q、V、O 按行切块，\\(K^\\top\\) 按列切块。每次把 Q 的一块和 K、V 的一块载入 SRAM，在 SRAM 里算出这一小块分数，用上一段的在线 softmax 规则更新这些行的输出；扫完所有 K、V 块后，把 O 的这一块写回 HBM，再换下一块 Q。整个过程中，\\(n\\times n\\) 的 \\(S\\) 和 \\(P\\) 从不完整地写入 HBM。",
             "第二个想法用在训练时：有时重算比存储更划算。标准做法把 S、P 存在 HBM 里，留给反向传播使用；FlashAttention 改为在反向传播时借助 SRAM 分块重算 S 和 P。重算本身要多花计算，但 SRAM 足够快，整体仍然更快。",
             "论文结果（p.60）：FlashAttention 的计算量反而更多（75.2 对 66.6 GFLOPs），但 HBM 读写从 40.3 GB 降到 4.4 GB（约少 9 倍），运行时间从 41.7 ms 降到 7.3 ms（约快 5.7 倍），而且是精确计算。这说明注意力的瓶颈在数据搬运，而不在浮点运算次数。之后还有针对新 GPU 的 FlashAttention 2、3（Hopper）、4（Blackwell），讲义只列了名字。"
           ],
@@ -1791,29 +1943,39 @@
             ]
           },
           "bullets": [
-            "放得下：不物化 n×n 的注意力矩阵。",
+            "放得下：不物化 \\(n\\times n\\) 的注意力矩阵。",
             "跑得快：尽量减少对 HBM 的读写。"
           ],
-          "source": "Lecture 5 (2026) · p.48–62（Flash Attention in action）"
+          "source": "Lecture 5 (2026) · p.48–62（Flash Attention in action）",
+          "figure": {
+            "src": "figures/l05-flash-tiling.webp",
+            "alt": "FlashAttention 分块示意：Q、V、O 按行切成小块，K 转置后按列切块；Q 的第一块和 K、V 的最后一块用绿色标出，O 的第一块用蓝色标出。",
+            "caption": "绿色是当前载入 SRAM 的块：固定 \\(Q\\) 的一块（也就是 \\(O\\) 的同一块，蓝色），依次扫过 \\(K^\\top\\)、\\(V\\) 的各块并用在线 softmax 更新；扫完才把 \\(O\\) 的这一块写回 HBM。",
+            "source": "Lecture 5 (2026) · p.53"
+          }
         },
         {
           "title": "训练一步要在显存里放什么",
           "body": [
-            "训练需要模型、数据和（很多）GPU。一次迭代分三步：前向传播计算损失 𝓛(θ_t)，并保存激活，供后面计算损失和梯度使用，激活的大小取决于模型大小、batch 大小和上下文长度；反向传播计算梯度 ∇𝓛(θ_t)；最后由优化器更新权重。",
-            "以 Adam 为例，它为每个参数额外维护两份状态：一阶矩 m_t 和二阶矩 v_t，所以优化器状态本身就比参数还多。一张卡上要同时容纳参数、梯度、优化器状态和激活，而单卡显存只有 O(100 GB)，这就是训练的显存瓶颈。讲义只给了权重的字节数（每参数 2 字节），没有给其余几项的具体字节数。"
+            "训练需要模型、数据和（很多）GPU。一次迭代分三步：前向传播计算损失 \\(\\mathcal{L}(\\theta_t)\\)，并保存激活，供后面计算损失和梯度使用，激活的大小取决于模型大小、batch 大小和上下文长度；反向传播计算梯度 \\(\\nabla\\mathcal{L}(\\theta_t)\\)；最后由优化器更新权重。",
+            "以 Adam 为例，它为每个参数额外维护两份状态：一阶矩 \\(m_t\\) 和二阶矩 \\(v_t\\)，所以优化器状态本身就比参数还多。一张卡上要同时容纳参数、梯度、优化器状态和激活，而单卡显存只有 \\(O(100\\ \\text{GB})\\)，这就是训练的显存瓶颈。讲义只给了权重的字节数（每参数 2 字节），没有给其余几项的具体字节数。"
           ],
-          "formula": "θ_{t+1} ← θ_t − α·m_t/(√v_t + ε)；m_t ← β₁m_{t−1} + (1−β₁)∇𝓛(θ_t)；v_t ← β₂v_{t−1} + (1−β₂)(∇𝓛(θ_t))²",
+          "math": [
+            "\\theta_{t+1} \\leftarrow \\theta_t - \\alpha\\cdot\\frac{m_t}{\\sqrt{v_t} + \\varepsilon}",
+            "m_t \\leftarrow \\beta_1 m_{t-1} + (1-\\beta_1)\\nabla\\mathcal{L}(\\theta_t)",
+            "v_t \\leftarrow \\beta_2 v_{t-1} + (1-\\beta_2)\\left(\\nabla\\mathcal{L}(\\theta_t)\\right)^2"
+          ],
           "flow": [
             "前向传播：算损失，保存激活",
             "反向传播：算梯度",
-            "权重更新：用优化器状态（Adam 的 m_t、v_t）"
+            "权重更新：用优化器状态（Adam 的 \\(m_t\\)、\\(v_t\\)）"
           ],
           "source": "Lecture 5 (2026) · p.64–70（Setup of LLM training）"
         },
         {
           "title": "数据并行与 ZeRO",
           "body": [
-            "数据并行（Data Parallelism, DP）把一个 batch 的数据分给多张卡，每张卡各算一部分样本。代价是每张卡都保存完整的参数、梯度和优化器状态，同样的内容存了 n 份。",
+            "数据并行（Data Parallelism, DP）把一个 batch 的数据分给多张卡，每张卡各算一部分样本。代价是每张卡都保存完整的参数、梯度和优化器状态，同样的内容存了 \\(n\\) 份。",
             "ZeRO（Zero Redundancy Optimizer）的目标是消除这种跨设备冗余，分三个级别：ZeRO-1 只把优化器状态切分到各卡；ZeRO-2 再切分梯度；ZeRO-3 连参数也切分。级别越高，每张卡保存的越少。"
           ],
           "table": {
@@ -1855,11 +2017,14 @@
         {
           "title": "手算：ZeRO 各级每张卡要存几份数值",
           "body": [
-            "补充：讲义的 ZeRO 图只是示意，这里按“每个参数要存几份数值”来计数，不涉及字节数，因为讲义没有给出梯度和优化器状态的精度。记参数个数为 P：权重 1 份、梯度 1 份、Adam 的 m_t 和 v_t 共 2 份，所以 DP 下每张卡存 4P 份数值。取 n = 8 张卡：ZeRO-1 只切分优化器状态，每卡 P + P + 2P/8 = 2.25P；ZeRO-2 再切分梯度，每卡 P + 3P/8 = 1.375P；ZeRO-3 全部切分，每卡 4P/8 = 0.5P。",
-            "再接上讲义 p.9 的数字：100B 参数、每参数 2 字节，仅权重就有 200 GB。ZeRO-1 和 ZeRO-2 下每张卡都保留完整参数，单这一项就超过 141 GB，无论加多少张卡都放不下；只有 ZeRO-3 把参数本身切开，8 张卡时每卡只放 200/8 = 25 GB 权重。这也说明了为什么还需要下一节的模型并行。"
+            "补充：讲义的 ZeRO 图只是示意，这里按“每个参数要存几份数值”来计数，不涉及字节数，因为讲义没有给出梯度和优化器状态的精度。记参数个数为 \\(P\\)：权重 1 份、梯度 1 份、Adam 的 \\(m_t\\) 和 \\(v_t\\) 共 2 份，所以 DP 下每张卡存 \\(4P\\) 份数值。取 \\(n = 8\\) 张卡：ZeRO-1 只切分优化器状态，每卡 \\(P + P + 2P/8 = 2.25P\\)；ZeRO-2 再切分梯度，每卡 \\(P + 3P/8 = 1.375P\\)；ZeRO-3 全部切分，每卡 \\(4P/8 = 0.5P\\)。",
+            "再接上讲义 p.9 的数字：100B 参数、每参数 2 字节，仅权重就有 200 GB。ZeRO-1 和 ZeRO-2 下每张卡都保留完整参数，单这一项就超过 141 GB，无论加多少张卡都放不下；只有 ZeRO-3 把参数本身切开，8 张卡时每卡只放 \\(200/8 = 25\\) GB 权重。这也说明了为什么还需要下一节的模型并行。"
           ],
           "kind": "worked-example",
-          "formula": "每卡数值份数：DP = 4P；ZeRO-1 = 2P + 2P/n；ZeRO-2 = P + 3P/n；ZeRO-3 = 4P/n（n = 8 时依次为 4P、2.25P、1.375P、0.5P）",
+          "math": [
+            "\\text{每卡数值份数：}\\quad \\begin{aligned} \\text{DP} &= 4P \\\\ \\text{ZeRO-1} &= 2P + 2P/n \\\\ \\text{ZeRO-2} &= P + 3P/n \\\\ \\text{ZeRO-3} &= 4P/n \\end{aligned}",
+            "\\text{（}n = 8\\text{ 时依次为 }4P\\text{、}2.25P\\text{、}1.375P\\text{、}0.5P\\text{）}"
+          ],
           "bullets": [
             "这里没有计入激活；激活大小取决于模型大小、batch 大小和上下文长度（p.66）。"
           ],
@@ -1868,7 +2033,7 @@
         {
           "title": "模型并行：TP、PP、CP、EP",
           "body": [
-            "模型并行把模型的计算本身拆到多台设备上，讲义介绍了四种。张量并行（Tensor Parallelism, TP）切开一层内部的矩阵乘法：自注意力按头切（Q = [Q₁, Q₂]，K、V 同理），前馈层把第一个权重矩阵按列切成 A = [A₁, A₂]、第二个按行切成 B = [B₁; B₂]，各设备算完一部分再合并。流水线并行（Pipeline Parallelism, PP）把不同的层放到不同设备上，前向依次经过 F₀ 到 F₃，反向依次经过 B₃ 到 B₀；把 batch 切成微批能让设备交替工作，但开头和结尾仍有设备在空等，图中称为气泡（bubble）。",
+            "模型并行把模型的计算本身拆到多台设备上，讲义介绍了四种。张量并行（Tensor Parallelism, TP）切开一层内部的矩阵乘法：自注意力按头切（\\(Q = [Q_1, Q_2]\\)，K、V 同理），前馈层把第一个权重矩阵按列切成 \\(A = [A_1, A_2]\\)、第二个按行切成 \\(B = [B_1; B_2]\\)，各设备算完一部分再合并。流水线并行（Pipeline Parallelism, PP）把不同的层放到不同设备上，前向依次经过 \\(F_0\\) 到 \\(F_3\\)，反向依次经过 \\(B_3\\) 到 \\(B_0\\)；把 batch 切成微批能让设备交替工作，但开头和结尾仍有设备在空等，图中称为气泡（bubble）。",
             "上下文并行（Context Parallelism, CP）沿序列切分：每台设备持有一段 query，key/value 块在设备之间环形传递（Ring Attention）。专家并行（Expert Parallelism, EP）针对 MoE（第 2 讲讲过：路由按 token 进行，每个 token 只走被选中的前馈专家）：不同专家放在不同设备上，注意力层在本地计算，进入 MoE 层时用 All-to-All 把 token 分发（dispatch）到对应专家所在设备，算完再用 All-to-All 收回（combine）。",
             "为什么不把并行开到最大？讲义给了三个原因：利用率低、GPU 很贵、通信开销大。小结：放得下，靠把参数、激活、梯度和优化器状态分布到多张 GPU；跑得快，靠并行处理不同 batch（数据并行）和并行执行模型计算（模型并行）。"
           ],
@@ -1912,20 +2077,26 @@
           "title": "一次请求的时间：TTFT 与 TPOT",
           "body": [
             "讲义用两个请求引出问题：① 10 个 token 的提示“给我的泰迪熊讲个睡前故事”，输出 10,000 个 token；② 10,000 个 token 的泰迪熊长描述，只输出 10 个 token（“This teddy bear is soft, sweet, and cuddly”）。哪个更快？",
-            "一个请求的总时间 T_request = T_queue + T_prefill + (O − 1)·T_per output token，其中 O 是输出 token 数。prefill（一次性处理整段输入）被标为“快”，之后逐个生成输出 token 的部分被标为“慢”。由此定义三个指标：TTFT（Time To First Token，排队加 prefill）、TPOT（Time Per Output Token）、TTLT（Time To Last Token），前两个是核心指标。②的输入虽长，但只走一次较快的 prefill；①却要走将近一万次较慢的生成步，所以②更快。",
-            "各家 API 的定价也体现了这种差别：讲义截图中输出 token 的单价普遍是输入的 5 倍（例如每百万 token 输入 $10、输出 $50）。系统优化的目标可以写成：快（TTFT < τ₁，TPOT < τ₂）、质量够好（Quality > Q_min）、便宜（每个生成 token 的成本 < C_max），本节关注的是快和便宜。"
+            "一个请求的总时间 \\(T_{\\text{request}} = T_{\\text{queue}} + T_{\\text{prefill}} + (O - 1)\\cdot T_{\\text{per output token}}\\)，其中 \\(O\\) 是输出 token 数。prefill（一次性处理整段输入）被标为“快”，之后逐个生成输出 token 的部分被标为“慢”。由此定义三个指标：TTFT（Time To First Token，排队加 prefill）、TPOT（Time Per Output Token）、TTLT（Time To Last Token），前两个是核心指标。②的输入虽长，但只走一次较快的 prefill；①却要走将近一万次较慢的生成步，所以②更快。",
+            "各家 API 的定价也体现了这种差别：讲义截图中输出 token 的单价普遍是输入的 5 倍（例如每百万 token 输入 $10、输出 $50）。系统优化的目标可以写成：快（\\(\\text{TTFT} < \\tau_1\\)，\\(\\text{TPOT} < \\tau_2\\)）、质量够好（\\(\\text{Quality} > Q_{\\min}\\)）、便宜（每个生成 token 的成本 \\(< C_{\\max}\\)），本节关注的是快和便宜。"
           ],
-          "formula": "T_request = T_queue + T_prefill + (O − 1)·T_per output token；TTFT = T_queue + T_prefill；TPOT = T_per output token",
+          "math": [
+            "T_{\\text{request}} = T_{\\text{queue}} + T_{\\text{prefill}} + (O - 1)\\cdot T_{\\text{per output token}}",
+            "\\text{TTFT} = T_{\\text{queue}} + T_{\\text{prefill}}",
+            "\\text{TPOT} = T_{\\text{per output token}}"
+          ],
           "source": "Lecture 5 (2026) · p.90–96（Overview）"
         },
         {
           "title": "手算：两个泰迪熊请求的费用",
           "body": [
-            "用讲义截图里 gpt-6-astra 的价格（每百万 token：输入 $10，输出 $50，缓存命中的输入 $1）。① 输入 10、输出 10,000：10 × $10/10⁶ + 10,000 × $50/10⁶ = $0.0001 + $0.5 = $0.5001。② 输入 10,000、输出 10：10,000 × $10/10⁶ + 10 × $50/10⁶ = $0.1 + $0.0005 = $0.1005。两个请求的总 token 数相同（都是 10,010 个），①却贵约 5 倍，费用几乎全部来自输出。",
-            "补充（读图推断：讲义截图没有解释“30m write”这一列，这里按“每百万 token 的缓存写入价”理解）：如果②这段 10,000 token 的描述会被反复使用，可以用提示缓存（prompt caching，p.110）。截图中“30m write”（写入缓存、保留 30 分钟）的价格是每百万 token $12.50，命中价是 $1：第一次请求写缓存，输入部分花 10,000 × $12.50/10⁶ = $0.125，比不用缓存多 $0.025；之后每次命中，输入只花 10,000 × $1/10⁶ = $0.01，比原来的 $0.1 省 $0.09。所以从第二次请求起就开始划算。"
+            "用讲义截图里 gpt-6-astra 的价格（每百万 token：输入 $10，输出 $50，缓存命中的输入 $1）。① 输入 10、输出 10,000：\\(10\\times\\$10/10^{6} + 10{,}000\\times\\$50/10^{6} = \\$0.0001 + \\$0.5 = \\$0.5001\\)。② 输入 10,000、输出 10：\\(10{,}000\\times\\$10/10^{6} + 10\\times\\$50/10^{6} = \\$0.1 + \\$0.0005 = \\$0.1005\\)。两个请求的总 token 数相同（都是 10,010 个），①却贵约 5 倍，费用几乎全部来自输出。",
+            "补充（读图推断：讲义截图没有解释“30m write”这一列，这里按“每百万 token 的缓存写入价”理解）：如果②这段 10,000 token 的描述会被反复使用，可以用提示缓存（prompt caching，p.110）。截图中“30m write”（写入缓存、保留 30 分钟）的价格是每百万 token $12.50，命中价是 $1：第一次请求写缓存，输入部分花 \\(10{,}000\\times\\$12.50/10^{6} = \\$0.125\\)，比不用缓存多 $0.025；之后每次命中，输入只花 \\(10{,}000\\times\\$1/10^{6} = \\$0.01\\)，比原来的 $0.1 省 $0.09。所以从第二次请求起就开始划算。"
           ],
           "kind": "worked-example",
-          "formula": "费用 = 输入 token 数 × 输入单价 + 输出 token 数 × 输出单价",
+          "math": [
+            "\\text{费用} = \\text{输入 token 数}\\times\\text{输入单价} + \\text{输出 token 数}\\times\\text{输出单价}"
+          ],
           "bullets": [
             "价格取自讲义截图（2026 年 10 月 26 日），只用来比较量级。"
           ],
@@ -1935,28 +2106,37 @@
           "title": "算力、带宽与算术强度",
           "body": [
             "衡量 GPU 有三个量：计算吞吐（每秒能做多少计算）、显存带宽（每秒能搬多少数据）、算术强度（arithmetic intensity，每搬一个字节做多少计算，等于计算量除以搬运的数据量）。讲义给出由 H200 推出的量级：HBM 约 100 GB，HBM 与 SRAM 之间约 1 TB/s，SRAM 约 100 MB，计算单元约 1,000 TFLOPS。",
-            "把这些量画在一起就是 roofline 图：横轴是算术强度 I，纵轴是能达到的计算吞吐。I 较小时，计算单元在等数据，吞吐随 I 线性上升，称为 memory bound；I 超过脊点（ridge point）I* = P_max / B_HBM 之后，吞吐碰到算力上限 P_max，称为 compute bound。按上面的量级，I* ≈ 1,000 TFLOPS ÷ 1 TB/s = 1,000 FLOP/byte，也就是每读一个字节要做上千次运算，才能把算力用满。",
-            "补充：用 p.60 的数字粗算，标准注意力约 66.6 GFLOP ÷ 40.3 GB ≈ 1.7 FLOP/byte，FlashAttention 约 75.2 ÷ 4.4 ≈ 17 FLOP/byte。两者都远低于 1,000，都在 memory bound 区域，所以减少搬运比减少运算更有效，这和 FlashAttention“计算更多却更快”的结果一致。"
+            "把这些量画在一起就是 roofline 图：横轴是算术强度 \\(I\\)，纵轴是能达到的计算吞吐。\\(I\\) 较小时，计算单元在等数据，吞吐随 \\(I\\) 线性上升，称为 memory bound；\\(I\\) 超过脊点（ridge point）\\(I^* = P_{\\max} / B_{\\text{HBM}}\\) 之后，吞吐碰到算力上限 \\(P_{\\max}\\)，称为 compute bound。按上面的量级，\\(I^* \\approx 1{,}000\\ \\text{TFLOPS} \\div 1\\ \\text{TB/s} = 1{,}000\\ \\text{FLOP/byte}\\)，也就是每读一个字节要做上千次运算，才能把算力用满。",
+            "补充：用 p.60 的数字粗算，标准注意力约 \\(66.6\\ \\text{GFLOP} \\div 40.3\\ \\text{GB} \\approx 1.7\\ \\text{FLOP/byte}\\)，FlashAttention 约 \\(75.2 \\div 4.4 \\approx 17\\ \\text{FLOP/byte}\\)。两者都远低于 1,000，都在 memory bound 区域，所以减少搬运比减少运算更有效，这和 FlashAttention“计算更多却更快”的结果一致。"
           ],
-          "formula": "算术强度 I = 计算量 / 搬运的数据量；I* = P_max / B_HBM ≈ 1,000 TFLOPS ÷ 1 TB/s = 1,000 FLOP/byte",
+          "math": [
+            "\\text{算术强度 } I = \\frac{\\text{计算量}}{\\text{搬运的数据量}}",
+            "I^* = \\frac{P_{\\max}}{B_{\\text{HBM}}} \\approx \\frac{1{,}000\\ \\text{TFLOPS}}{1\\ \\text{TB/s}} = 1{,}000\\ \\text{FLOP/byte}"
+          ],
           "source": "Lecture 5 (2026) · p.97–102（Compute vs. memory）"
         },
         {
           "title": "KV 缓存与 PagedAttention",
           "body": [
-            "生成新 token 时，它要和之前所有 token 做注意力，需要它们的 key 和 value。讲义的例子是逐步生成 “a cute teddy bear”：算 “cute” 这一步只需新算 q_cute、k_cute、v_cute，k_a 和 v_a 直接从缓存里取；到 “teddy bear” 时，前两个 token 的 k、v 都来自缓存。这就是 KV 缓存（Key-Value caching）：用显存换计算，避免每一步都重算历史 token 的 key 和 value。各家 API 对缓存命中的输入收费低得多（p.110），也是这种复用的体现。",
+            "生成新 token 时，它要和之前所有 token 做注意力，需要它们的 key 和 value。讲义的例子是逐步生成 “a cute teddy bear”：算 “cute” 这一步只需新算 \\(q_{\\text{cute}}\\)、\\(k_{\\text{cute}}\\)、\\(v_{\\text{cute}}\\)，\\(k_a\\) 和 \\(v_a\\) 直接从缓存里取；到 “teddy bear” 时，前两个 token 的 k、v 都来自缓存。这就是 KV 缓存（Key-Value caching）：用显存换计算，避免每一步都重算历史 token 的 key 和 value。各家 API 对缓存命中的输入收费低得多（p.110），也是这种复用的体现。",
             "但朴素的缓存管理很浪费：每个请求在显存里预留“提示 + 最大输出长度”的一整段连续空间，实际输出往往更短，剩下的空间别的请求也用不了；很多请求放在一起时，显存里到处都是碎片。",
-            "PagedAttention 用查找表来管理：把缓存切成固定大小 B 的块，每个请求用一张表记录自己的块放在哪里，块不必连续，用到时才分配。块大小是一个权衡：B 小，碎片少，但计算开销大；B 大，开销小，但浪费更多。典型取值是 B = 16。"
+            "PagedAttention 用查找表来管理：把缓存切成固定大小 \\(B\\) 的块，每个请求用一张表记录自己的块放在哪里，块不必连续，用到时才分配。块大小是一个权衡：\\(B\\) 小，碎片少，但计算开销大；\\(B\\) 大，开销小，但浪费更多。典型取值是 \\(B = 16\\)。"
           ],
           "bullets": [
             "KV 缓存只存历史 token 的 key 和 value，不存 query：每一步只需要当前 token 的 query。"
           ],
-          "source": "Lecture 5 (2026) · p.103–120（KV cache storage efficiency）"
+          "source": "Lecture 5 (2026) · p.103–120（KV cache storage efficiency）",
+          "figure": {
+            "src": "figures/l05-kv-fragmentation.webp",
+            "alt": "一行连续的缓存格子：左侧三格是 prompt，右侧六格是 reserved for output；其中前三格是实际输出（actual output），后三格用红色标为 unusable!。",
+            "caption": "朴素管理为每个请求预留“提示 + 最大输出长度”的连续空间。实际输出更短时，剩下的预留格子既没被用上，也不能分给别的请求。",
+            "source": "Lecture 5 (2026) · p.113"
+          }
         },
         {
           "title": "GQA 与 MLA：更少、更短的 KV 向量",
           "body": [
-            "缓存管理好了，向量本身仍然太多：多头注意力中，每个 token 在每个头上都有一个 key 和一个 value，query、key、value 的头数都是 h。分组查询注意力（Grouped-Query Attention, GQA）让一组 query 头共享同一个 key/value 头：分成 G 组，每组 h/G 个 query 头。G = 1 时所有 query 头共享一组 K/V，即多查询注意力（MQA）；G = h 时就是普通的多头注意力（MHA）。GQA 在第 2 讲出现过，这里从缓存大小的角度再看一次。",
+            "缓存管理好了，向量本身仍然太多：多头注意力中，每个 token 在每个头上都有一个 key 和一个 value，query、key、value 的头数都是 \\(h\\)。分组查询注意力（Grouped-Query Attention, GQA）让一组 query 头共享同一个 key/value 头：分成 \\(G\\) 组，每组 \\(h/G\\) 个 query 头。\\(G = 1\\) 时所有 query 头共享一组 K/V，即多查询注意力（MQA）；\\(G = h\\) 时就是普通的多头注意力（MHA）。GQA 在第 2 讲出现过，这里从缓存大小的角度再看一次。",
             "向量还太长：MLA（DeepSeek-V2）把原来每个头各自的大投影拆成两段：先用一个所有头共享的投影，把 token 表示压缩成一个短向量；再由每个头自己的投影，把它展开成 key 或 value。缓存里只需要存这个共享的压缩向量。",
             "合起来看：PagedAttention 解决“向量碎片化”，GQA 解决“向量太多”，MLA 解决“向量太长”。前者改进存储方式，后两者减少要存的数据量。"
           ],
@@ -1968,19 +2148,19 @@
             ],
             "rows": [
               [
-                "G = 1",
+                "\\(G = 1\\)",
                 "Multi-Query Attention (MQA)",
                 "1"
               ],
               [
-                "1 < G < h",
+                "\\(1 < G < h\\)",
                 "Grouped-Query Attention (GQA)",
-                "G"
+                "\\(G\\)"
               ],
               [
-                "G = h",
+                "\\(G = h\\)",
                 "Multi-Head Attention (MHA)",
-                "h"
+                "\\(h\\)"
               ]
             ]
           },
@@ -1989,37 +2169,46 @@
         {
           "title": "手算：h = 24、G = 2 为什么省下九成以上",
           "body": [
-            "讲义 p.125 给出的量级是：h = 24 个 query 头、G = 2 组 key/value 头，可以节省 90% 以上。在每个头的维度不变的前提下，每个 token 在每一层要缓存的 key 向量从 24 个变成 2 个，value 也一样，所以 KV 缓存变成原来的 2/24 = 1/12，节省 1 − 2/24 = 22/24 ≈ 91.7%，确实超过 90%。每组 key/value 由 24/2 = 12 个 query 头共享。",
-            "对照：若取 G = 1（MQA），节省 1 − 1/24 ≈ 95.8%；取 G = 24 就是 MHA，不节省。注意 GQA 只减少 key/value 头的个数，query 头仍是 24 个。PagedAttention 不改变要存的数据量，只减少浪费；MLA 则进一步缩短每个缓存向量。"
+            "讲义 p.125 给出的量级是：\\(h = 24\\) 个 query 头、\\(G = 2\\) 组 key/value 头，可以节省 90% 以上。在每个头的维度不变的前提下，每个 token 在每一层要缓存的 key 向量从 24 个变成 2 个，value 也一样，所以 KV 缓存变成原来的 \\(2/24 = 1/12\\)，节省 \\(1 - 2/24 = 22/24 \\approx 91.7\\%\\)，确实超过 90%。每组 key/value 由 \\(24/2 = 12\\) 个 query 头共享。",
+            "对照：若取 \\(G = 1\\)（MQA），节省 \\(1 - 1/24 \\approx 95.8\\%\\)；取 \\(G = 24\\) 就是 MHA，不节省。注意 GQA 只减少 key/value 头的个数，query 头仍是 24 个。PagedAttention 不改变要存的数据量，只减少浪费；MLA 则进一步缩短每个缓存向量。"
           ],
           "kind": "worked-example",
-          "formula": "KV 缓存比例 = G / h = 2 / 24 ≈ 0.083；节省 = 1 − G/h ≈ 91.7%",
+          "math": [
+            "\\text{KV 缓存比例} = G/h = 2/24 \\approx 0.083",
+            "\\text{节省} = 1 - G/h \\approx 91.7\\%"
+          ],
           "source": "Lecture 5 (2026) · p.122–125（Sharing attention heads）"
         },
         {
           "title": "推测解码：小模型起草，大模型验证",
           "body": [
-            "前面的技巧让缓存放得下；要跑得快，就要一次多产出几个 token。推测解码（speculative decoding）先用一个小而快的草稿模型（draft LLM），接着 “[BOS] my teddy bear” 依次生成 k 个候选 token（例如 “is cute and smart”），并记下每个位置的概率 D₁ … D_k；再把这些候选一起送进目标模型（target LLM），一次前向就得到每个位置上目标模型的分布 T₁ … T_k，外加下一个位置的 T_{k+1}。",
-            "然后逐个检查候选 token：如果目标模型给它的概率不低于草稿模型（T_i(token) ≥ D_i(token)），直接接受；否则以概率 T_i/D_i 接受，以 1 − T_i/D_i 拒绝。一旦拒绝，就从归一化后的残差分布 [T_i − D_i]₊ 中重新采样这个位置的 token，并结束本轮。如果 k 个都被接受，还能“免费”得到 T_{k+1} 给出的下一个 token。",
+            "前面的技巧让缓存放得下；要跑得快，就要一次多产出几个 token。推测解码（speculative decoding）先用一个小而快的草稿模型（draft LLM），接着 “[BOS] my teddy bear” 依次生成 \\(k\\) 个候选 token（例如 “is cute and smart”），并记下每个位置的概率 \\(D_1 \\dots D_k\\)；再把这些候选一起送进目标模型（target LLM），一次前向就得到每个位置上目标模型的分布 \\(T_1 \\dots T_k\\)，外加下一个位置的 \\(T_{k+1}\\)。",
+            "然后逐个检查候选 token：如果目标模型给它的概率不低于草稿模型（\\(T_i(\\text{token}) \\ge D_i(\\text{token})\\)），直接接受；否则以概率 \\(T_i/D_i\\) 接受，以 \\(1 - T_i/D_i\\) 拒绝。一旦拒绝，就从归一化后的残差分布 \\([T_i - D_i]_+\\) 中重新采样这个位置的 token，并结束本轮。如果 \\(k\\) 个都被接受，还能“免费”得到 \\(T_{k+1}\\) 给出的下一个 token。",
             "要让它真正加速，需要两个条件：草稿模型要明显比目标模型快；草稿模型的下一 token 分布要和目标模型对齐，而对齐正是知识蒸馏能做的事。"
           ],
-          "formula": "T_i(x) ≥ D_i(x)：接受；否则以概率 T_i(x)/D_i(x) 接受、以 1 − T_i(x)/D_i(x) 拒绝；拒绝后按 [T_i − D_i]₊（归一化）重采样并结束本轮",
+          "math": [
+            "T_i(x) \\ge D_i(x)\\text{：接受}",
+            "\\text{否则以概率 } T_i(x)/D_i(x) \\text{ 接受、以 } 1 - T_i(x)/D_i(x) \\text{ 拒绝}",
+            "\\text{拒绝后按 } [T_i - D_i]_+ \\text{（归一化）重采样并结束本轮}"
+          ],
           "flow": [
-            "草稿模型依次生成 k 个候选 token",
-            "目标模型一次前向，得到 T₁ … T_{k+1}",
-            "逐个按 T_i/D_i 规则接受或拒绝",
-            "出现拒绝：从 [T_i − D_i]₊ 重采样并结束本轮",
-            "全部接受：再得到 T_{k+1} 的 token"
+            "草稿模型依次生成 \\(k\\) 个候选 token",
+            "目标模型一次前向，得到 \\(T_1 \\dots T_{k+1}\\)",
+            "逐个按 \\(T_i/D_i\\) 规则接受或拒绝",
+            "出现拒绝：从 \\([T_i - D_i]_+\\) 重采样并结束本轮",
+            "全部接受：再得到 \\(T_{k+1}\\) 的 token"
           ],
           "source": "Lecture 5 (2026) · p.138–147（Speeding up inference with speculative decoding）"
         },
         {
           "title": "知识蒸馏与多 token 预测（MTP）",
           "body": [
-            "知识蒸馏（knowledge distillation，第 3 讲讲过）让小的学生模型学习大的教师模型“知道的东西”：对同一输入 x，让学生的输出分布 ŷˢ 去逼近教师的 ŷᵀ，损失用 KL 散度。放到推测解码里，就是用蒸馏让草稿模型的分布和目标模型对齐。",
-            "多 token 预测（Multi-Token Prediction, MTP）换一种思路：不另外准备草稿模型，而是在同一个模型的主干上训练 k 个预测头，分别预测第 t+1、t+2 … t+k 个位置的 token。这样草稿模型和目标模型是同一个模型，一次前向就能给出多个 token。"
+            "知识蒸馏（knowledge distillation，第 3 讲讲过）让小的学生模型学习大的教师模型“知道的东西”：对同一输入 x，让学生的输出分布 \\(\\hat y^{S}\\) 去逼近教师的 \\(\\hat y^{T}\\)，损失用 KL 散度。放到推测解码里，就是用蒸馏让草稿模型的分布和目标模型对齐。",
+            "多 token 预测（Multi-Token Prediction, MTP）换一种思路：不另外准备草稿模型，而是在同一个模型的主干上训练 \\(k\\) 个预测头，分别预测第 \\(t+1\\)、\\(t+2\\) … \\(t+k\\) 个位置的 token。这样草稿模型和目标模型是同一个模型，一次前向就能给出多个 token。"
           ],
-          "formula": "KL(ŷᵀ‖ŷˢ) = Σᵢ ŷᵀ₍ᵢ₎ log(ŷᵀ₍ᵢ₎ / ŷˢ₍ᵢ₎)",
+          "math": [
+            "\\mathrm{KL}(\\hat y^{T}\\,\\|\\,\\hat y^{S}) = \\sum_i \\hat y^{T}_{(i)} \\log\\frac{\\hat y^{T}_{(i)}}{\\hat y^{S}_{(i)}}"
+          ],
           "source": "Lecture 5 (2026) · p.148–151（Knowledge distillation）"
         },
         {
@@ -2037,7 +2226,7 @@
             "rows": [
               [
                 "FlashAttention",
-                "不物化 n×n 注意力矩阵",
+                "不物化 \\(n\\times n\\) 注意力矩阵",
                 "尽量减少 HBM 读写"
               ],
               [
@@ -2061,22 +2250,22 @@
           "options": [
             "它只对一部分 token 计算注意力，是一种近似算法，所以更快",
             "它减少了浮点运算次数，算得更少自然更快",
-            "对 HBM 的读写从 40.3 GB 降到 4.4 GB：分块在 SRAM 里计算，不把 n×n 的 S、P 完整写回 HBM",
+            "对 HBM 的读写从 40.3 GB 降到 4.4 GB：分块在 SRAM 里计算，不把 \\(n\\times n\\) 的 \\(S\\)、\\(P\\) 完整写回 HBM",
             "它把 S 和 P 一直存在 HBM 里，反向传播时直接读取，省掉了重算"
           ],
           "answer": 2,
-          "explanation": "注意力的瓶颈在 HBM 与 SRAM 之间的数据搬运；FlashAttention 用分块和在线 softmax 避免物化 n×n 矩阵，HBM 读写减少约 9 倍。它是精确计算，不跳过任何 token；它的 GFLOPs 反而更多（75.2 > 66.6）；训练时它恰恰选择在反向传播中重算 S、P，而不是把它们存在 HBM 里。"
+          "explanation": "注意力的瓶颈在 HBM 与 SRAM 之间的数据搬运；FlashAttention 用分块和在线 softmax 避免物化 \\(n\\times n\\) 矩阵，HBM 读写减少约 9 倍。它是精确计算，不跳过任何 token；它的 GFLOPs 反而更多（\\(75.2 > 66.6\\)）；训练时它恰恰选择在反向传播中重算 S、P，而不是把它们存在 HBM 里。"
         },
         {
-          "question": "在线 softmax 增量计算 softmax(s)v 时，读入新分数 s_{t+1} 后发现它比当前的运行最大值 m_t 更大。正确的更新是哪一个？",
+          "question": "在线 softmax 增量计算 \\(\\mathrm{softmax}(s)v\\) 时，读入新分数 \\(s_{t+1}\\) 后发现它比当前的运行最大值 \\(m_t\\) 更大。正确的更新是哪一个？",
           "options": [
-            "丢弃之前累积的 N_t、D_t，从当前位置重新开始累加",
-            "令 m_{t+1} = s_{t+1}，先把已有的 N_t、D_t 乘以 α_t = e^{m_t − m_{t+1}}，再分别加上 e^{s_{t+1} − m_{t+1}}v_{t+1} 和 e^{s_{t+1} − m_{t+1}}",
-            "只给新元素减去新最大值，旧的 N_t、D_t 保持不变，因为最后 N/D 会自动抵消",
-            "只更新分母 D_t，分子 N_t 保持不变，因为最大值只影响归一化"
+            "丢弃之前累积的 \\(N_t\\)、\\(D_t\\)，从当前位置重新开始累加",
+            "令 \\(m_{t+1} = s_{t+1}\\)，先把已有的 \\(N_t\\)、\\(D_t\\) 乘以 \\(\\alpha_t = e^{m_t - m_{t+1}}\\)，再分别加上 \\(e^{s_{t+1} - m_{t+1}}v_{t+1}\\) 和 \\(e^{s_{t+1} - m_{t+1}}\\)",
+            "只给新元素减去新最大值，旧的 \\(N_t\\)、\\(D_t\\) 保持不变，因为最后 \\(N/D\\) 会自动抵消",
+            "只更新分母 \\(D_t\\)，分子 \\(N_t\\) 保持不变，因为最大值只影响归一化"
           ],
           "answer": 1,
-          "explanation": "旧的 N_t、D_t 是按 e^{−m_t} 缩放的，新元素按 e^{−m_{t+1}} 缩放，必须用 α_t 把旧量换算到同一标准（p.46–47）。丢弃旧量会丢掉前面 token 的贡献；不重缩放会让新旧两部分的比例不一致，N/D 不会自动抵消；分子和分母必须同乘同一个因子，只改一个会改变结果。"
+          "explanation": "旧的 \\(N_t\\)、\\(D_t\\) 是按 \\(e^{-m_t}\\) 缩放的，新元素按 \\(e^{-m_{t+1}}\\) 缩放，必须用 \\(\\alpha_t\\) 把旧量换算到同一标准（p.46–47）。丢弃旧量会丢掉前面 token 的贡献；不重缩放会让新旧两部分的比例不一致，\\(N/D\\) 不会自动抵消；分子和分母必须同乘同一个因子，只改一个会改变结果。"
         }
       ],
       "resources": [
@@ -2192,19 +2381,31 @@
         {
           "title": "量化检索效果：NDCG@k、RR、Recall@k、Precision@k",
           "body": [
-            "评估的问题是：检索出来的 chunk 是否相关？做法是把所有 chunk 按分数排成 1, 2, …, n，只看前 k 个。讲义的示意图有 30 个 chunk，其中 3 个被标为相关；Top k 框住了 6 个 chunk，里面有 2 个相关的。",
-            "四个指标各看一个侧面。Recall@k 问“全部相关 chunk 中有多少进了前 k”，分母是相关总数；Precision@k 问“前 k 个里有多少是相关的”，分母是 k。RR（Reciprocal Rank）只看第一个相关 chunk 的名次，取倒数。NDCG@k 给每个相关 chunk 按名次打折扣（第 i 名除以 log₂(i+1)），再除以“完美排序时的 DCG@k”（IDCG@k）做归一化，所以它对顺序最敏感，取值在 0 到 1 之间。讲义里相关性只取 0 或 1。",
+            "评估的问题是：检索出来的 chunk 是否相关？做法是把所有 chunk 按分数排成 \\(1, 2, \\dots, n\\)，只看前 \\(k\\) 个。讲义的示意图有 30 个 chunk，其中 3 个被标为相关；Top k 框住了 6 个 chunk，里面有 2 个相关的。",
+            "四个指标各看一个侧面。Recall@k 问“全部相关 chunk 中有多少进了前 \\(k\\)”，分母是相关总数；Precision@k 问“前 \\(k\\) 个里有多少是相关的”，分母是 \\(k\\)。RR（Reciprocal Rank）只看第一个相关 chunk 的名次，取倒数。NDCG@k 给每个相关 chunk 按名次打折扣（第 \\(i\\) 名除以 \\(\\log_2(i+1)\\)），再除以“完美排序时的 DCG@k”（IDCG@k）做归一化，所以它对顺序最敏感，取值在 0 到 1 之间。讲义里相关性只取 0 或 1。",
             "最后讲义提到代码检索的特例：grep（global regular expression print）。`grep [options] \"search_term\" file_name` 直接列出某个词出现的所有代码位置。补充：代码里的函数名、变量名本来就是精确字符串，适合这种精确匹配；后面 coding agent 一节里的 agentic retrieval 就是让 Agent 自己调用这类工具去找代码。"
           ],
-          "formula": "DCG@k = Σ_{i=1}^{k} rel_i / log₂(i+1)，rel_i ∈ {0,1}；NDCG@k = DCG@k / IDCG@k；RR = 1 / rank（第一个相关 chunk 的名次）；Recall@k = |relevant in top k| / |relevant|；Precision@k = |relevant in top k| / k",
-          "source": "Lecture 6 (2026) · p.41–49（Quantify performance of retrieval）"
+          "math": [
+            "\\mathrm{DCG@}k = \\sum_{i=1}^{k} \\frac{\\mathrm{rel}_i}{\\log_2(i+1)},\\quad \\mathrm{rel}_i \\in \\{0,1\\}",
+            "\\mathrm{NDCG@}k = \\frac{\\mathrm{DCG@}k}{\\mathrm{IDCG@}k}",
+            "\\mathrm{RR} = \\frac{1}{\\text{rank}}\\quad\\text{（第一个相关 chunk 的名次）}",
+            "\\mathrm{Recall@}k = \\frac{|\\text{relevant in top }k|}{|\\text{relevant}|}",
+            "\\mathrm{Precision@}k = \\frac{|\\text{relevant in top }k|}{k}"
+          ],
+          "source": "Lecture 6 (2026) · p.41–49（Quantify performance of retrieval）",
+          "figure": {
+            "src": "figures/l06-topk-relevant.webp",
+            "alt": "30 个 chunk 排成 6 列 5 行，其中 3 个用深蓝色标为 Relevant；左上方一个“Top k”方框圈住 6 个 chunk，框内有 2 个深蓝色。",
+            "caption": "按分数排序后只看框里的前 \\(k = 6\\) 个：框内 2 个相关，全部相关的有 3 个。Recall 用 3 作分母，Precision 用 6 作分母。",
+            "source": "Lecture 6 (2026) · p.43"
+          }
         },
         {
           "title": "手算：同一组候选，重排前后的指标",
           "body": [
-            "先用讲义示意图上的数字：30 个 chunk 中 3 个相关，Top 6 里有 2 个相关。Recall@6 = 2/3 ≈ 0.667；Precision@6 = 2/6 = 1/3 ≈ 0.333。两个指标的分子相同，分母不同：召回除以相关总数 3，精确度除以 k = 6。",
-            "补充：再用 Re-Ranker 示意图（d、b、a、c → a、b、c、d）算排序类指标。图上颜色深浅只是示意，这里假设 a、b 相关，c、d 不相关，用来演示计算。重排前相关 chunk 排在第 2、3 名：RR = 1/2；Recall@2 = 1/2，Precision@2 = 1/2；DCG@4 = 1/log₂3 + 1/log₂4 = 0.6309 + 0.5 = 1.1309；完美排序应把两个相关的放在第 1、2 名，IDCG@4 = 1 + 0.6309 = 1.6309；NDCG@4 = 1.1309 / 1.6309 ≈ 0.693。",
-            "重排后 a、b 排在第 1、2 名：RR = 1，Recall@2 = Precision@2 = 1，NDCG@4 = 1。但 Recall@4 在重排前后都是 2/2 = 1：重排只改变候选的顺序，不会加入新的候选。如果第一步就漏掉了某个相关 chunk，第二步再精细也找不回来。这就是讲义要求第一步最大化召回、第二步最大化精确度的原因。"
+            "先用讲义示意图上的数字：30 个 chunk 中 3 个相关，Top 6 里有 2 个相关。\\(\\mathrm{Recall@}6 = 2/3 \\approx 0.667\\)；\\(\\mathrm{Precision@}6 = 2/6 = 1/3 \\approx 0.333\\)。两个指标的分子相同，分母不同：召回除以相关总数 3，精确度除以 \\(k = 6\\)。",
+            "补充：再用 Re-Ranker 示意图（d、b、a、c → a、b、c、d）算排序类指标。图上颜色深浅只是示意，这里假设 a、b 相关，c、d 不相关，用来演示计算。重排前相关 chunk 排在第 2、3 名：\\(\\mathrm{RR} = 1/2\\)；\\(\\mathrm{Recall@}2 = 1/2\\)，\\(\\mathrm{Precision@}2 = 1/2\\)；\\(\\mathrm{DCG@}4 = 1/\\log_2 3 + 1/\\log_2 4 = 0.6309 + 0.5 = 1.1309\\)；完美排序应把两个相关的放在第 1、2 名，\\(\\mathrm{IDCG@}4 = 1 + 0.6309 = 1.6309\\)；\\(\\mathrm{NDCG@}4 = 1.1309 / 1.6309 \\approx 0.693\\)。",
+            "重排后 a、b 排在第 1、2 名：\\(\\mathrm{RR} = 1\\)，\\(\\mathrm{Recall@}2 = \\mathrm{Precision@}2 = 1\\)，\\(\\mathrm{NDCG@}4 = 1\\)。但 Recall@4 在重排前后都是 \\(2/2 = 1\\)：重排只改变候选的顺序，不会加入新的候选。如果第一步就漏掉了某个相关 chunk，第二步再精细也找不回来。这就是讲义要求第一步最大化召回、第二步最大化精确度的原因。"
           ],
           "kind": "worked-example",
           "table": {
@@ -2223,7 +2424,7 @@
                 "1/2",
                 "1/2",
                 "1",
-                "≈0.693"
+                "\\(\\approx 0.693\\)"
               ],
               [
                 "重排后 a, b, c, d",
@@ -2235,7 +2436,13 @@
               ]
             ]
           },
-          "source": "Lecture 6 (2026) · p.40–48（Quantify performance of retrieval）"
+          "source": "Lecture 6 (2026) · p.40–48（Quantify performance of retrieval）",
+          "figure": {
+            "src": "figures/l06-reranker.webp",
+            "alt": "Re-Ranker 示意图：左边候选按 Chunk d、b、a、c 的顺序进入，中间的 Re-Ranker 同时接收 User prompt，右边输出顺序为 Chunk a、b、c、d，并标上名次 1 到 4。",
+            "caption": "重排只改变候选的顺序，不增加新的候选：左右两边是同样的四个 chunk。所以排序类指标（RR、NDCG）会变，Recall@4 不会变。",
+            "source": "Lecture 6 (2026) · p.40"
+          }
         },
         {
           "title": "工具调用：RAG 也回答不了“Find a bear near me!”",
@@ -2397,7 +2604,13 @@
             "Tool Result 回到 Agent Loop",
             "State & Persistence：Load / Persist"
           ],
-          "source": "Lecture 6 (2026) · p.138–146（Overview of a coding agent）"
+          "source": "Lecture 6 (2026) · p.138–146（Overview of a coding agent）",
+          "figure": {
+            "src": "figures/l06-coding-agent.webp",
+            "alt": "Coding agent 结构图：User 经 Interfaces 把请求交给 Agent Loop；Agent Loop 提出动作，经 Permission System（Allow/Ask/Deny）后交给 Tools，Tools 在 Execution Environment（Files/Shell/Web/MCP）中执行并把结果返回；Agent Loop 下方连着 State & Persistence（Load / Persist）。",
+            "caption": "看 Agent Loop 周围的三条路径：动作先过权限系统才能到工具；工具结果回到循环；状态从持久化层加载、再写回。讲义把 auto-approval、agentic retrieval、AGENTS.md、Skills 分别标在这几块上。",
+            "source": "Lecture 6 (2026) · p.138"
+          }
         },
         {
           "title": "讨论：编排模式、成果与风险",
@@ -2436,13 +2649,13 @@
         {
           "question": "讲义的检索示意图中共有 30 个 chunk，其中 3 个相关；检索返回的 Top 6 里含 2 个相关 chunk。Recall@6 和 Precision@6 分别是多少？",
           "options": [
-            "Recall@6 = 1/3，Precision@6 = 2/3",
-            "Recall@6 = 2/3，Precision@6 = 2/3",
-            "Recall@6 = 2/30，Precision@6 = 1/3",
-            "Recall@6 = 2/3，Precision@6 = 1/3"
+            "\\(\\mathrm{Recall@}6 = 1/3\\)，\\(\\mathrm{Precision@}6 = 2/3\\)",
+            "\\(\\mathrm{Recall@}6 = 2/3\\)，\\(\\mathrm{Precision@}6 = 2/3\\)",
+            "\\(\\mathrm{Recall@}6 = 2/30\\)，\\(\\mathrm{Precision@}6 = 1/3\\)",
+            "\\(\\mathrm{Recall@}6 = 2/3\\)，\\(\\mathrm{Precision@}6 = 1/3\\)"
           ],
           "answer": 3,
-          "explanation": "Recall@k = 返回的前 k 个里相关 chunk 数 / 相关 chunk 总数 = 2/3；Precision@k = 返回的前 k 个里相关 chunk 数 / k = 2/6 = 1/3。“Recall 1/3、Precision 2/3”把两个分母弄反了；“两者都是 2/3”把精确度的分母也当成了相关总数 3；“Recall 2/30”把召回的分母当成了全部 chunk 数 30，而召回只除以相关 chunk 的总数（p.41–48）。"
+          "explanation": "Recall@k = 返回的前 \\(k\\) 个里相关 chunk 数 / 相关 chunk 总数 = 2/3；Precision@k = 返回的前 \\(k\\) 个里相关 chunk 数 / \\(k\\) = \\(2/6 = 1/3\\)。“Recall 1/3、Precision 2/3”把两个分母弄反了；“两者都是 2/3”把精确度的分母也当成了相关总数 3；“Recall 2/30”把召回的分母当成了全部 chunk 数 30，而召回只除以相关 chunk 的总数（p.41–48）。"
         },
         {
           "question": "讲义把检索分成两步：Step 1 候选检索、Step 2 排序。下列哪种说法与讲义一致？",
@@ -2485,10 +2698,10 @@
       "sourceStatus": "2026 年第 7 讲讲义尚未公开。本讲依据 2025 年第 8 讲（LLM evaluation）讲义整理，2026 年这一讲的内容和顺序可能会有变化。",
       "summary": "模型输出的是自由文本，很难打分：本讲从人工评分出发，依次讲规则指标、LLM-as-a-Judge 及其偏差、Agent 工具调用的失败模式，最后讨论常用基准、pass^k 和基准的局限。",
       "objectives": [
-        "解释人工评分为什么被视为「金标准」却又主观、慢、贵，并能说明 Cohen's κ 如何把观察一致率与偶然一致区分开。",
+        "解释人工评分为什么被视为「金标准」却又主观、慢、贵，并能说明 Cohen's \\(\\kappa\\) 如何把观察一致率与偶然一致区分开。",
         "说明 BLEU、ROUGE、METEOR 等规则指标的思路与局限，以及 LLM-as-a-Judge 的形式（pointwise / pairwise）、位置/冗长/自我增强偏差和最佳实践。",
         "用「事实拆分 + 重要性加权」给一段输出计算事实性分数，并按工具调用的三个步骤定位 Agent 的失败模式和补救办法。",
-        "说出知识、推理、编码、安全、Agent 各类基准的代表与判分方式，会计算 pass^k，并解释数据污染和 Goodhart 定律对读基准成绩的提醒。"
+        "说出知识、推理、编码、安全、Agent 各类基准的代表与判分方式，会计算 \\(\\text{pass}^k\\)，并解释数据污染和 Goodhart 定律对读基准成绩的提醒。"
       ],
       "sections": [
         {
@@ -2504,20 +2717,29 @@
           "title": "人工评分的局限：主观、慢、贵，以及 Cohen's κ",
           "body": [
             "第一个问题是主观性（subjectivity）。讲义的例子：用户问「What birthday gift should I get?」，模型回答「泰迪熊几乎总是贴心的礼物，挑一个你觉得合适的就好」，评判标准是有用性（usefulness）。评分者 1 觉得不错，评分者 2 觉得没帮上忙——同一条回答，两个人给出相反的判断。",
-            "衡量评分者之间是否一致，最直接的是观察到的一致率 p_o（o 表示 observed）。但它有漏洞：如果两个人都是随手乱打，也会有一部分碰巧一致。于是要问：我们的一致程度比「纯靠运气、按评分者实际使用各类别的频率」预期的一致程度好多少？这就是 κ 系数：分子是观察一致率超出偶然一致率 p_e（e 表示 expected）的部分，分母是可能超出的最大空间 1 − p_e。",
-            "κ 有多个变体：Cohen's Kappa、Fleiss' Kappa、Krippendorff's alpha（讲义只列出名字，没有展开它们的区别和 p_e 的算法）。此外，人工评分还慢（slow）、贵（expensive），没法在每次改模型后都重做一遍。"
+            "衡量评分者之间是否一致，最直接的是观察到的一致率 \\(p_o\\)（o 表示 observed）。但它有漏洞：如果两个人都是随手乱打，也会有一部分碰巧一致。于是要问：我们的一致程度比「纯靠运气、按评分者实际使用各类别的频率」预期的一致程度好多少？这就是 \\(\\kappa\\) 系数：分子是观察一致率超出偶然一致率 \\(p_e\\)（e 表示 expected）的部分，分母是可能超出的最大空间 \\(1 - p_e\\)。",
+            "\\(\\kappa\\) 有多个变体：Cohen's Kappa、Fleiss' Kappa、Krippendorff's alpha（讲义只列出名字，没有展开它们的区别和 \\(p_e\\) 的算法）。此外，人工评分还慢（slow）、贵（expensive），没法在每次改模型后都重做一遍。"
           ],
-          "formula": "κ = (p_o − p_e) / (1 − p_e)；p_o：观察到的一致率，p_e：偶然情况下预期的一致率",
+          "math": [
+            "\\kappa = \\frac{p_o - p_e}{1 - p_e}",
+            "p_o\\text{：观察到的一致率，}\\quad p_e\\text{：偶然情况下预期的一致率}"
+          ],
           "source": "Lecture 8 (2025) · p.14–25（Limitations）"
         },
         {
           "title": "基于规则的指标：METEOR、BLEU、ROUGE 及其局限",
           "body": [
             "第一种替代思路：人只写一次标签（labels），把它当作参考答案（reference），以后每次都用规则化的指标比较模型输出和参考答案的重合程度，不用再找人。讲义列了三种常见指标，都来自机器翻译或摘要评测。",
-            "METEOR 把精确率 P 和召回率 R 合成 F_mean，再乘上 (1 − p) 的惩罚项；BLEU 把 1 到 N 元的 n-gram 精确率 p_n 取对数平均后指数化，再乘以简短惩罚 BP——候选句比参考短时 BP 小于 1；ROUGE 是偏重召回（recall-oriented）的一组指标，有 ROUGE-N、ROUGE-L 等多个变体。讲义只给出公式，没有给出 α、β、γ、N 等参数的取值，也没有数值例子。补充：按 METEOR 原论文，P、R 是一元词（unigram）的精确率与召回率，c 是匹配片段（chunk）数，u_m 是匹配的一元词数；这里只为帮助读公式，不作计算要求。",
+            "METEOR 把精确率 \\(P\\) 和召回率 \\(R\\) 合成 \\(F_{\\text{mean}}\\)，再乘上 \\((1 - p)\\) 的惩罚项；BLEU 把 1 到 \\(N\\) 元的 n-gram 精确率 \\(p_n\\) 取对数平均后指数化，再乘以简短惩罚 \\(\\mathrm{BP}\\)——候选句比参考短时 \\(\\mathrm{BP}\\) 小于 1；ROUGE 是偏重召回（recall-oriented）的一组指标，有 ROUGE-N、ROUGE-L 等多个变体。讲义只给出公式，没有给出 \\(\\alpha\\)、\\(\\beta\\)、\\(\\gamma\\)、\\(N\\) 等参数的取值，也没有数值例子。补充：按 METEOR 原论文，\\(P\\)、\\(R\\) 是一元词（unigram）的精确率与召回率，\\(c\\) 是匹配片段（chunk）数，\\(u_m\\) 是匹配的一元词数；这里只为帮助读公式，不作计算要求。",
             "局限有三条。其一，不考虑风格差异：讲义给了三句意思几乎相同的话——「A plush teddy bear can comfort a child during bedtime.」「Soft stuffed bears often help kids feel safe as they fall asleep.」以及一句用 youngsters、toy companion 改写的句子——它们和彼此几乎没有共同的 n-gram，规则指标会判它们差别很大。其二，和人工评分的相关性并不高。其三，仍然需要人写参考答案。"
           ],
-          "formula": "METEOR = F_mean × (1 − p)，F_mean = P×R / (αP + (1−α)R)，p = γ × (c / u_m)^β；BLEU = BP × exp((1/N) Σₙ log pₙ)，BP = min(1, exp(1 − n_ref / n_pred))",
+          "math": [
+            "\\mathrm{METEOR} = F_{\\text{mean}} \\times (1 - p)",
+            "F_{\\text{mean}} = \\frac{P\\times R}{\\alpha P + (1-\\alpha)R}",
+            "p = \\gamma \\times \\left(\\frac{c}{u_m}\\right)^{\\beta}",
+            "\\mathrm{BLEU} = \\mathrm{BP} \\times \\exp\\left(\\frac{1}{N}\\sum_{n} \\log p_n\\right)",
+            "\\mathrm{BP} = \\min\\left(1,\\ \\exp\\left(1 - \\frac{n_{\\text{ref}}}{n_{\\text{pred}}}\\right)\\right)"
+          ],
           "source": "Lecture 8 (2025) · p.27–37（Rule-based metrics）"
         },
         {
@@ -2533,6 +2755,12 @@
             "输出：先写 Rationale（理由），再给 Score（分数）"
           ],
           "code": "class Response:\n    rationale: str\n    score: Literal[0, 1]\n\nresponse = client.responses.parse(\n    model=model,\n    input=input,\n    text_format=Response,\n)",
+          "figure": {
+            "src": "figures/l07-llm-as-judge.webp",
+            "alt": "LLM-as-a-Judge 示意图：Prompt「Why are teddy bears comforting?」、模型回答和评判标准 Relevance 三个输入汇入 LLM-as-a-Judge，输出 Rationale「Direct explanation, is on topic」和 Score「PASS」。",
+            "caption": "看箭头的方向：三样输入（提示、被评回答、评判标准）进入裁判，裁判输出两样东西——理由和分数，而且不需要参考答案。",
+            "source": "Lecture 8 (2025) · p.45"
+          },
           "source": "Lecture 8 (2025) · p.39–55（Overview of LLM-as-a-Judge / Enforce output format in practice / Benefits）"
         },
         {
@@ -2587,17 +2815,20 @@
           "title": "手算：把一句话拆成事实，加权得到事实性分数",
           "body": [
             "目标是给一段输出的事实性打一个分。讲义的原文是：「Teddy bears, first created in the 1920s, were named after President Theodore Roosevelt after he proudly wanted to shoot a captured bear on a hunting trip.」这句话有对有错（讲义标红了「1920s」和「proudly wanted to」），整句判对或判错都不合适——老师提出的开放问题是：怎样量化这种细微差别？",
-            "做法（Wei et al., 2024）是先做事实拆分（fact decomposition），把原文拆成四条独立事实，逐条判定真假，再给每条一个重要性权重 α_i：① 泰迪熊最早出现在 1920 年代，✗，α=0.3；② 泰迪熊以罗斯福总统命名，✓，α=0.4；③ 罗斯福在一次打猎中遇到一只被捉住的熊，✓，α=0.2；④ 罗斯福得意地想射杀那只熊，✗，α=0.1。",
-            "代入公式，正确事实 score_i=1，错误事实 score_i=0：score = 0.3×0 + 0.4×1 + 0.2×1 + 0.1×0 = 0.60，与讲义 p.95 的结果一致。若不加权、只数对错，会得到 2/4 = 0.5；加权让「命名来源」这种核心事实比细枝末节的措辞更重要。"
+            "做法（Wei et al., 2024）是先做事实拆分（fact decomposition），把原文拆成四条独立事实，逐条判定真假，再给每条一个重要性权重 \\(\\alpha_i\\)：① 泰迪熊最早出现在 1920 年代，✗，\\(\\alpha=0.3\\)；② 泰迪熊以罗斯福总统命名，✓，\\(\\alpha=0.4\\)；③ 罗斯福在一次打猎中遇到一只被捉住的熊，✓，\\(\\alpha=0.2\\)；④ 罗斯福得意地想射杀那只熊，✗，\\(\\alpha=0.1\\)。",
+            "代入公式，正确事实 \\(\\text{score}_i=1\\)，错误事实 \\(\\text{score}_i=0\\)：\\(\\text{score} = 0.3\\times0 + 0.4\\times1 + 0.2\\times1 + 0.1\\times0 = 0.60\\)，与讲义 p.95 的结果一致。若不加权、只数对错，会得到 \\(2/4 = 0.5\\)；加权让「命名来源」这种核心事实比细枝末节的措辞更重要。"
+          ],
+          "math": [
+            "\\text{score} = \\sum_i \\alpha_i \\times \\text{score}_i = 0.4 + 0.2 = 0.60",
+            "\\alpha_i\\text{：第 }i\\text{ 条事实的重要性}"
           ],
           "kind": "worked-example",
-          "formula": "score = Σᵢ αᵢ × scoreᵢ（αᵢ 为第 i 条事实的重要性）= 0.4 + 0.2 = 0.60",
           "table": {
             "columns": [
               "拆出的事实",
               "判定",
-              "权重 α_i",
-              "α_i × score_i"
+              "权重 \\(\\alpha_i\\)",
+              "\\(\\alpha_i \\times \\text{score}_i\\)"
             ],
             "rows": [
               [
@@ -2738,12 +2969,15 @@
         {
           "title": "Agent 基准 τ-bench 与 pass^k：只看平均成功率会高估稳定性",
           "body": [
-            "τ-bench（Tool-Agent-User Interaction Benchmark）给定数据库结构、API 和业务规则，覆盖两个领域：航空客服（500 个用户、300 个航班、2000 条预订，约 10 个工具、50 个任务）和零售客服（500 个用户、50 种商品、1000 个订单，约 10 个工具、115 个任务）。样例里用户要改签，Agent 先查预订、发现是基本经济舱不能改，但在 24 小时内可以取消重订，征得用户同意后执行 cancel_reservation，数据库状态变为 cancelled。评价标准是最大化奖励并报告 pass^k。",
-            "pass^k 衡量一致性/可靠性：「k 次尝试全部成功的概率」。对同一任务做 n 次尝试，其中 c 次成功、n − c 次失败；从这 n 次里随机取 k 次，全部落在成功那 c 次里的取法有 C(c, k) 种，总取法有 C(n, k) 种，于是 pass^k = C(c, k) / C(n, k)。",
-            "补充：讲义没有给数值。示意图里画了 4 个方块（2 绿 2 红，编号写作 #1 #2 … #n），这里姑且取 n=4、c=2 来算。k=1：C(2,1)/C(4,1) = 2/4 = 0.5，就是平均成功率；k=2：C(2,2)/C(4,2) = 1/6 ≈ 0.1667；k=3：C(2,3) = 0（从 2 次成功里取不出 3 次），所以 pass^3 = 0。平均成功率 0.5 看起来还行，但要求连续多次都成功时，可靠性迅速下降——这正是 Agent 场景要单独报告 pass^k 的原因。"
+            "τ-bench（Tool-Agent-User Interaction Benchmark）给定数据库结构、API 和业务规则，覆盖两个领域：航空客服（500 个用户、300 个航班、2000 条预订，约 10 个工具、50 个任务）和零售客服（500 个用户、50 种商品、1000 个订单，约 10 个工具、115 个任务）。样例里用户要改签，Agent 先查预订、发现是基本经济舱不能改，但在 24 小时内可以取消重订，征得用户同意后执行 cancel_reservation，数据库状态变为 cancelled。评价标准是最大化奖励并报告 \\(\\text{pass}^k\\)。",
+            "\\(\\text{pass}^k\\) 衡量一致性/可靠性：「\\(k\\) 次尝试全部成功的概率」。对同一任务做 \\(n\\) 次尝试，其中 \\(c\\) 次成功、\\(n - c\\) 次失败；从这 \\(n\\) 次里随机取 \\(k\\) 次，全部落在成功那 c 次里的取法有 \\(\\binom{c}{k}\\) 种，总取法有 \\(\\binom{n}{k}\\) 种，于是 \\(\\text{pass}^k = \\binom{c}{k} / \\binom{n}{k}\\)。",
+            "补充：讲义没有给数值。示意图里画了 4 个方块（2 绿 2 红，编号写作 #1 #2 … #n），这里姑且取 \\(n=4\\)、\\(c=2\\) 来算。\\(k=1\\)：\\(\\binom{2}{1}/\\binom{4}{1} = 2/4 = 0.5\\)，就是平均成功率；\\(k=2\\)：\\(\\binom{2}{2}/\\binom{4}{2} = 1/6 \\approx 0.1667\\)；\\(k=3\\)：\\(\\binom{2}{3} = 0\\)（从 2 次成功里取不出 3 次），所以 \\(\\text{pass}^3 = 0\\)。平均成功率 0.5 看起来还行，但要求连续多次都成功时，可靠性迅速下降——这正是 Agent 场景要单独报告 \\(\\text{pass}^k\\) 的原因。"
+          ],
+          "math": [
+            "\\text{pass}^k = \\frac{\\binom{c}{k}}{\\binom{n}{k}}",
+            "n=4,\\ c=2\\text{ 时：}\\quad \\text{pass}^1 = 0.5,\\quad \\text{pass}^2 = \\frac{1}{6} \\approx 0.1667,\\quad \\text{pass}^3 = 0"
           ],
           "kind": "worked-example",
-          "formula": "pass^k = C(c, k) / C(n, k)；n=4，c=2 时 pass^1 = 0.5，pass^2 = 1/6 ≈ 0.1667，pass^3 = 0",
           "source": "Lecture 8 (2025) · p.152–157（What about agents? / Metric for consistency/reliability）"
         },
         {
@@ -2763,15 +2997,15 @@
       ],
       "quiz": [
         {
-          "question": "在 τ-bench 上让 Agent 对同一任务尝试 n=5 次，其中 c=4 次成功。按讲义的定义，pass^2 是多少？",
+          "question": "在 τ-bench 上让 Agent 对同一任务尝试 \\(n=5\\) 次，其中 \\(c=4\\) 次成功。按讲义的定义，\\(\\text{pass}^2\\) 是多少？",
           "options": [
-            "c/n = 4/5 = 0.8",
-            "C(4,2)/C(5,2) = 6/10 = 0.6",
-            "(4/5)² = 0.64",
+            "\\(c/n = 4/5 = 0.8\\)",
+            "\\(\\binom{4}{2}/\\binom{5}{2} = 6/10 = 0.6\\)",
+            "\\((4/5)^2 = 0.64\\)",
             "1"
           ],
           "answer": 1,
-          "explanation": "pass^k 是「k 次尝试全部成功」的概率：从 5 次里取 2 次共 C(5,2)=10 种取法，两次都落在 4 次成功里的有 C(4,2)=6 种，所以是 0.6。0.8 是 k=1 的情形，即平均成功率，没有体现「每次都要成功」；0.64 是把 4/5 当作独立成功概率再平方，不是讲义 p.157 的组合公式（从已有的 n 次结果中不放回地取）；1 对应的是「两次里至少一次成功」——唯一的失败不可能同时占两个位置——这不是 pass^k 的含义。"
+          "explanation": "\\(\\text{pass}^k\\) 是「\\(k\\) 次尝试全部成功」的概率：从 5 次里取 2 次共 \\(\\binom{5}{2}=10\\) 种取法，两次都落在 4 次成功里的有 \\(\\binom{4}{2}=6\\) 种，所以是 0.6。0.8 是 \\(k=1\\) 的情形，即平均成功率，没有体现「每次都要成功」；0.64 是把 \\(4/5\\) 当作独立成功概率再平方，不是讲义 p.157 的组合公式（从已有的 n 次结果中不放回地取）；1 对应的是「两次里至少一次成功」——唯一的失败不可能同时占两个位置——这不是 \\(\\text{pass}^k\\) 的含义。"
         },
         {
           "question": "用 LLM 做 pairwise 评判时，把两条回答按 A、B 的顺序给出，裁判选 A；交换成 B、A 后，裁判改选 B。这最可能是哪种偏差，讲义建议怎么补救？",
@@ -2824,7 +3058,7 @@
           "title": "现状：自回归模型推理时只能一步一步走",
           "body": [
             "老师先回到大家熟悉的生成方式：把 [BOS] 送进 LLM，得到第一个 token “A”；再把 “A” 接到输入后面做一次前向计算，得到 “teddy”；接着是 “bear”、“is”……每做一次前向计算（forward pass），只多出一个新 token。这种方式叫自回归建模（AutoRegressive Modeling，ARM），前几讲的 LLM 都属于这一范式。",
-            "讲义指出的问题是：推理时的生成不能并行（inference-time generation is not parallelizable）。原因在于第 k 个 token 的输入里包含前 k−1 个刚生成的 token，必须等前一步结束才能开始下一步。要生成 5 个 token，就要按顺序做 5 次前向计算。",
+            "讲义指出的问题是：推理时的生成不能并行（inference-time generation is not parallelizable）。原因在于第 \\(k\\) 个 token 的输入里包含前 \\(k-1\\) 个刚生成的 token，必须等前一步结束才能开始下一步。要生成 5 个 token，就要按顺序做 5 次前向计算。",
             "讲义特别补了一句“although training is”：训练时整句目标文本已经给定，所有位置的“预测下一个 token”任务可以在同一次前向计算里一起完成（第 1 讲里解码器的 masked self-attention 保证每个位置只能看到它前面的内容）。所以瓶颈在推理阶段，不在训练阶段。"
           ],
           "flow": [
@@ -2861,25 +3095,34 @@
         {
           "title": "图像扩散：前向加噪，反向去噪",
           "body": [
-            "扩散分两步。第一步是前向过程（forward process）：从原图 x₀ 开始，每一步按 q(x_t | x_{t−1}) 加一点噪声，经过 x_{t−1}、x_t……一直加到 x_T，图片变成纯噪声。这一步不需要学习。",
-            "第二步是反向过程（reverse process）：训练一个带参数 θ 的模型 p_θ(x_{t−1} | x_t)，学会把“稍微更吵”的 x_t 变回“稍微更干净”的 x_{t−1}。生成时从一张随机噪声 x_T 出发，反复应用这个去噪步骤，最后得到 x₀。讲义的配图（人脸逐渐变成噪声，再从噪声恢复）引自 Ho et al., 2020 的 DDPM 论文。",
+            "扩散分两步。第一步是前向过程（forward process）：从原图 \\(x_0\\) 开始，每一步按 \\(q(x_t \\mid x_{t-1})\\) 加一点噪声，经过 \\(x_{t-1}\\)、\\(x_t\\)……一直加到 \\(x_T\\)，图片变成纯噪声。这一步不需要学习。",
+            "第二步是反向过程（reverse process）：训练一个带参数 \\(\\theta\\) 的模型 \\(p_\\theta(x_{t-1} \\mid x_t)\\)，学会把“稍微更吵”的 \\(x_t\\) 变回“稍微更干净”的 \\(x_{t-1}\\)。生成时从一张随机噪声 \\(x_T\\) 出发，反复应用这个去噪步骤，最后得到 \\(x_0\\)。讲义的配图（人脸逐渐变成噪声，再从噪声恢复）引自 Ho et al., 2020 的 DDPM 论文。",
             "讲义只讲了这两步的直觉和记号，没有展开噪声的具体公式或训练损失；本讲也只需要理解“前向破坏、反向学习恢复”这个结构。"
           ],
-          "formula": "前向：q(x_t | x_{t−1})，x₀ → … → x_T（加噪）；反向：p_θ(x_{t−1} | x_t)，x_T → … → x₀（去噪）",
-          "flow": [
-            "x₀ 原图",
-            "逐步加噪 q(x_t | x_{t−1})",
-            "x_T 纯噪声",
-            "逐步去噪 p_θ(x_{t−1} | x_t)",
-            "x₀ 生成图像"
+          "math": [
+            "\\text{前向：}\\ q(x_t \\mid x_{t-1}),\\quad x_0 \\to \\cdots \\to x_T\\ \\text{（加噪）}",
+            "\\text{反向：}\\ p_\\theta(x_{t-1} \\mid x_t),\\quad x_T \\to \\cdots \\to x_0\\ \\text{（去噪）}"
           ],
+          "flow": [
+            "\\(x_0\\) 原图",
+            "逐步加噪 \\(q(x_t \\mid x_{t-1})\\)",
+            "\\(x_T\\) 纯噪声",
+            "逐步去噪 \\(p_\\theta(x_{t-1} \\mid x_t)\\)",
+            "\\(x_0\\) 生成图像"
+          ],
+          "figure": {
+            "src": "figures/l08-image-diffusion.webp",
+            "alt": "图像扩散的两行链条：上行 1. Add noise to image（forward process），x₀ 的人脸照片经 q(x_t|x_{t−1}) 一步步变成 x_T 的噪声图；下行 2. Learn to denoise it（reverse process），从 x_T 的噪声经 p_θ(x_{t−1}|x_t) 逐步恢复成 x₀ 的人脸。",
+            "caption": "两行方向相反：上行的加噪 \\(q\\) 是固定的、不用学；下行的去噪 \\(p_\\theta\\) 才是要训练的模型，生成时就从噪声 \\(x_T\\) 沿下行走回 \\(x_0\\)。",
+            "source": "Lecture 9 (2025) · p.88–89"
+          },
           "source": "Lecture 9 (2025) · p.88–89（Intuition behind diffusion for images）"
         },
         {
           "title": "从图像到文本：用 MASK 充当噪声",
           "body": [
             "文本由离散的 token 组成，没法像像素那样“加一点噪声”。讲义的做法是把图像里的噪声对应到文本里的 MASK：图像被噪声完全覆盖，对应句子里的每个 token 都被换成 MASK。",
-            "前向过程变成：以一定概率把 token 换成 MASK（mask tokens with some probability）。以 x₀ = “A teddy bear is reading” 为例，中间某一步可能是 x_t = “A MASK bear is MASK”，到 x_T 时五个位置全是 MASK。反向过程则是学习把 MASK 还原成 token（learn to unmask tokens）：从全 MASK 出发，经过 “A MASK bear is MASK” 这样的中间状态，最终恢复出整句话。记号仍是 q(x_t | x_{t−1}) 和 p_θ(x_{t−1} | x_t)。",
+            "前向过程变成：以一定概率把 token 换成 MASK（mask tokens with some probability）。以 \\(x_0\\) = “A teddy bear is reading” 为例，中间某一步可能是 \\(x_t\\) = “A MASK bear is MASK”，到 \\(x_T\\) 时五个位置全是 MASK。反向过程则是学习把 MASK 还原成 token（learn to unmask tokens）：从全 MASK 出发，经过 “A MASK bear is MASK” 这样的中间状态，最终恢复出整句话。记号仍是 \\(q(x_t \\mid x_{t-1})\\) 和 \\(p_\\theta(x_{t-1} \\mid x_t)\\)。",
             "讲义没有给出遮罩概率的具体数值，也没有规定反向过程每一步解开几个 token，图中用省略号表示中间步数。补充：MASK 这个符号在第 2 讲 BERT 的掩码语言模型（MLM）里出现过，但讲义没有讨论两者的关系，这里不展开。"
           ],
           "table": {
@@ -2900,7 +3143,7 @@
                 "以一定概率把 token 换成 MASK"
               ],
               [
-                "x_T（终点）",
+                "\\(x_T\\)（终点）",
                 "纯噪声图",
                 "MASK MASK MASK MASK MASK"
               ],
@@ -2910,6 +3153,12 @@
                 "学习把 MASK 还原成 token（unmask）"
               ]
             ]
+          },
+          "figure": {
+            "src": "figures/l08-text-unmasking.webp",
+            "alt": "文本扩散的两行链条：前向过程把 “A teddy bear is reading” 以一定概率逐步换成 MASK，中间状态是 A MASK bear is MASK，终点 x_T 五个位置全是 MASK；反向过程从全 MASK 出发，经 A MASK bear is MASK，恢复成完整句子。",
+            "caption": "和上一节的图像扩散逐格对照：噪声换成了 MASK，记号 \\(q(x_t \\mid x_{t-1})\\)、\\(p_\\theta(x_{t-1} \\mid x_t)\\) 不变；反向过程每一步可以同时解开多个位置。",
+            "source": "Lecture 9 (2025) · p.91–92"
           },
           "source": "Lecture 9 (2025) · p.90–92（From image to text / Intuition behind diffusion for text）"
         },
@@ -2954,15 +3203,19 @@
         {
           "title": "手算：生成 “A teddy bear is reading” 要几次前向计算",
           "body": [
-            "自回归：讲义 p.71–81 的动画里，每次前向只新增一个 token。依次输入 [BOS]、[BOS] A、[BOS] A teddy、[BOS] A teddy bear、[BOS] A teddy bear is，分别得到 A、teddy、bear、is、reading，一共 5 次前向计算，并且必须按顺序进行。一般地，生成 L 个 token 需要 L 次前向计算。",
-            "遮罩扩散：按 p.94–95 的示意图，5 个 MASK 一次前向就全部填好，只需 1 次。补充：如果反向过程按 p.92 图中画出的三个状态分两步走（全 MASK → “A MASK bear is MASK” → 完整句子），第一次前向解开 A、bear、is 三个 token，第二次解开 teddy、reading 两个，共 2 次。一般地，若用 S 步去噪生成 L 个 token，前向次数是 S，平均每次解开 L/S 个 token。",
+            "自回归：讲义 p.71–81 的动画里，每次前向只新增一个 token。依次输入 [BOS]、[BOS] A、[BOS] A teddy、[BOS] A teddy bear、[BOS] A teddy bear is，分别得到 A、teddy、bear、is、reading，一共 5 次前向计算，并且必须按顺序进行。一般地，生成 \\(L\\) 个 token 需要 \\(L\\) 次前向计算。",
+            "遮罩扩散：按 p.94–95 的示意图，5 个 MASK 一次前向就全部填好，只需 1 次。补充：如果反向过程按 p.92 图中画出的三个状态分两步走（全 MASK → “A MASK bear is MASK” → 完整句子），第一次前向解开 A、bear、is 三个 token，第二次解开 teddy、reading 两个，共 2 次。一般地，若用 \\(S\\) 步去噪生成 \\(L\\) 个 token，前向次数是 \\(S\\)，平均每次解开 \\(L/S\\) 个 token。",
             "比较：5 次 对 2 次，前向次数少了 2.5 倍；5 次 对 1 次，少了 5 倍。但前向次数之比不等于速度之比。讲义 p.97 写的 “10x output tokens per second” 和 p.82 Seed Diffusion 的 “2,146 token/s、5.4 倍” 都是具体系统实测或自报的结果，不能只靠数前向次数推出来。"
           ],
+          "math": [
+            "\\text{ARM：}\\ L\\text{ 个 token} \\to L\\text{ 次前向}",
+            "\\text{MDM：}\\ S\\text{ 步去噪} \\to S\\text{ 次前向，平均每次 } L/S\\text{ 个 token}",
+            "\\text{本例 } L=5\\text{：ARM } 5\\text{ 次；MDM } 2\\text{ 次（补充假设）或 } 1\\text{ 次（p.95 示意）}"
+          ],
           "kind": "worked-example",
-          "formula": "ARM：L 个 token → L 次前向；MDM：S 步去噪 → S 次前向，平均每次 L/S 个 token。本例 L=5：ARM 5 次；MDM 2 次（补充假设）或 1 次（p.95 示意）",
           "bullets": [
             "两步方案只是按 p.92 图中画出的状态做的补充假设；讲义用省略号表示中间步数，没有规定步数。",
-            "按 Seed Diffusion 公告的两个数字反推，同规模自回归模型约为 2,146 ÷ 5.4 ≈ 397 token/s。"
+            "按 Seed Diffusion 公告的两个数字反推，同规模自回归模型约为 \\(2{,}146 \\div 5.4 \\approx 397\\) token/s。"
           ],
           "source": "Lecture 9 (2025) · p.71–95（Current approach and limitations / Diffusion in LLMs）"
         },
@@ -3020,7 +3273,7 @@
             "前向：学习把 MASK 还原成 token；反向：随机遮住 token 制造训练数据"
           ],
           "answer": 0,
-          "explanation": "p.91–92：前向过程是 mask tokens with some probability（x₀ → “A MASK bear is MASK” → 全 MASK），反向过程是 learn to unmask tokens。讲义用 MASK，而不是在嵌入上加高斯噪声；“从 [BOS] 开始逐个生成”是自回归方式；说“前向是学习还原 MASK”的选项把两个过程弄反了，需要学习的是反向过程。"
+          "explanation": "p.91–92：前向过程是 mask tokens with some probability（\\(x_0\\) → “A MASK bear is MASK” → 全 MASK），反向过程是 learn to unmask tokens。讲义用 MASK，而不是在嵌入上加高斯噪声；“从 [BOS] 开始逐个生成”是自回归方式；说“前向是学习还原 MASK”的选项把两个过程弄反了，需要学习的是反向过程。"
         }
       ],
       "resources": [
@@ -3056,7 +3309,7 @@
           "title": "Transformer 能用在文本以外吗？",
           "body": [
             "老师先回顾 Transformer 的出身：2017 年为机器翻译提出，核心是自注意力（self-attention）以及 query、key、value 的概念。讲义认为它能推广到别的领域，是因为两点好处：归纳偏置更弱（weaker inductive biases），因而更容易泛化（more generalizability）。",
-            "接着用第 1 讲的例句 “a cute teddy bear is reading .” 复习注意力：teddy bear 的 query 和每个 token 的 key 比较，再对各自的 value 加权求和。随后讲义把字去掉，只剩下一组 k、v 向量和一个 q 向量，说明注意力的计算只看向量，并不关心向量来自文字。下一页把每个位置换成泰迪熊照片的一小块，同一套机制就可以用在图像上（attention mechanism...for images!）。",
+            "接着用第 1 讲的例句 “a cute teddy bear is reading .” 复习注意力：teddy bear 的 query 和每个 token 的 key 比较，再对各自的 value 加权求和。随后讲义把字去掉，只剩下一组 \\(k\\)、\\(v\\) 向量和一个 \\(q\\) 向量，说明注意力的计算只看向量，并不关心向量来自文字。下一页把每个位置换成泰迪熊照片的一小块，同一套机制就可以用在图像上（attention mechanism...for images!）。",
             "那么怎样让 Transformer 做图像理解（image understanding）？讲义的回答是：拿掉解码器，只保留编码器，在编码器顶部接一个投影层（Projection），输出各类别的概率（class probabilities）。"
           ],
           "source": "Lecture 9 (2025) · p.43–50（Can we use Transformers for other things? / Adapting Transformer architecture for images）"
@@ -3064,31 +3317,43 @@
         {
           "title": "Vision Transformer：把图片变成一串 patch",
           "body": [
-            "这种只用编码器做图像分类的模型就是 ViT（Vision Transformer，Dosovitskiy et al., 2020，论文标题是 “An Image is Worth 16x16 Words”）。图片被切成若干块，每块展平后经线性投影变成向量；序列最前面加一个可学习的 [class] 向量；再加上位置嵌入，送进 Transformer 编码器；最后由 MLP head 输出类别。编码器块的结构是：Norm → 多头注意力 → 残差相加，Norm → MLP → 残差相加，重复 L 层。",
-            "讲义用泰迪熊照片走了一遍完整流程：照片切成 3×3 共 9 个 patch；每个 patch 大小为 P×P、有 C 个通道，经一个线性层（Linear）变成 D 维向量；9 个 patch 排成一个序列，最前面加上 [CLS]；每个位置的嵌入（embedding）加上位置嵌入（position embedding），得到带位置信息的嵌入（position-aware embedding）。",
+            "这种只用编码器做图像分类的模型就是 ViT（Vision Transformer，Dosovitskiy et al., 2020，论文标题是 “An Image is Worth 16x16 Words”）。图片被切成若干块，每块展平后经线性投影变成向量；序列最前面加一个可学习的 [class] 向量；再加上位置嵌入，送进 Transformer 编码器；最后由 MLP head 输出类别。编码器块的结构是：Norm → 多头注意力 → 残差相加，Norm → MLP → 残差相加，重复 \\(L\\) 层。",
+            "讲义用泰迪熊照片走了一遍完整流程：照片切成 \\(3\\times3\\) 共 9 个 patch；每个 patch 大小为 \\(P\\times P\\)、有 \\(C\\) 个通道，经一个线性层（Linear）变成 \\(D\\) 维向量；9 个 patch 排成一个序列，最前面加上 [CLS]；每个位置的嵌入（embedding）加上位置嵌入（position embedding），得到带位置信息的嵌入（position-aware embedding）。",
             "这 10 个向量经过编码器后得到 10 个编码后的嵌入（encoded embeddings）。分类时只取 [CLS] 位置的输出，接一个 FFN 分类头，得到类别 “teddy bear”。[CLS] 的用法和第 2 讲 BERT 做句子分类时一样：它本身不对应任何 patch，靠注意力汇总整张图的信息。"
           ],
-          "formula": "patch（P × P × C 个数）—Linear→ D 维向量；输入 = [CLS] + 9 个 patch，各自 embedding ⊕ position embedding",
+          "math": [
+            "\\text{patch（}P\\times P\\times C\\text{ 个数）}\\xrightarrow{\\ \\text{Linear}\\ } D\\text{ 维向量}",
+            "\\text{输入} = \\text{[CLS]} + 9\\text{ 个 patch，各自 embedding} \\oplus \\text{position embedding}"
+          ],
           "flow": [
-            "图片切成 3×3 个 patch",
-            "每个 P×P×C 的 patch 经 Linear 变成 D 维",
+            "图片切成 \\(3\\times3\\) 个 patch",
+            "每个 \\(P\\times P\\times C\\) 的 patch 经 Linear 变成 \\(D\\) 维",
             "最前面加 [CLS]",
             "加 position embedding",
             "ENCODER",
             "取 [CLS] 的输出 → FFN → teddy bear"
           ],
+          "figure": {
+            "src": "figures/l09-vit-cls-classification.webp",
+            "alt": "ViT 端到端示意：最下面是 [CLS] 和泰迪熊照片切出的 9 个 patch，各自变成一个嵌入向量，送入标有 ViT architecture 的 ENCODER；上方得到 10 个 encoded embeddings，只有最左边 [CLS] 位置的输出接到 Class FFN，输出 “teddy bear”。",
+            "caption": "数一数向量：输入是 1 个 [CLS] 加 9 个 patch，共 10 个；编码器输出也是 10 个，但只有 [CLS] 那一个（颜色最深的）进入分类头，其余 9 个在分类时不用。",
+            "source": "Lecture 9 (2025) · p.62"
+          },
           "source": "Lecture 9 (2025) · p.51–62（Vision Transformer / End-to-end example using ViT）"
         },
         {
           "title": "手算：老师的泰迪熊照片变成几个向量",
           "body": [
-            "讲义 p.52 把照片切成 3 行 3 列，共 3 × 3 = 9 个 patch。p.55 在前面加上 [CLS]，所以编码器的输入序列长度是 9 + 1 = 10，每个位置都是 D 维的 position-aware embedding。编码器输出同样是 10 个 encoded embeddings（p.61），但 p.62 只把 [CLS] 那 1 个送进 FFN 分类头，另外 9 个在分类时不直接使用。",
-            "每个 patch 在线性投影之前有 P × P × C 个数（p.53）。补充：讲义没有给 P 和 C 的取值；如果取论文标题里的 16×16 patch、RGB 三通道（C = 3），那么每个 patch 展平后有 16 × 16 × 3 = 768 个数，Linear 层把这 768 个数映射成 D 维向量。这里的 P = 16、C = 3 只是演示用的假设。"
+            "讲义 p.52 把照片切成 3 行 3 列，共 \\(3 \\times 3 = 9\\) 个 patch。p.55 在前面加上 [CLS]，所以编码器的输入序列长度是 \\(9 + 1 = 10\\)，每个位置都是 \\(D\\) 维的 position-aware embedding。编码器输出同样是 10 个 encoded embeddings（p.61），但 p.62 只把 [CLS] 那 1 个送进 FFN 分类头，另外 9 个在分类时不直接使用。",
+            "每个 patch 在线性投影之前有 \\(P \\times P \\times C\\) 个数（p.53）。补充：讲义没有给 P 和 C 的取值；如果取论文标题里的 16×16 patch、RGB 三通道（\\(C = 3\\)），那么每个 patch 展平后有 \\(16 \\times 16 \\times 3 = 768\\) 个数，Linear 层把这 768 个数映射成 \\(D\\) 维向量。这里的 \\(P = 16\\)、\\(C = 3\\) 只是演示用的假设。"
+          ],
+          "math": [
+            "\\text{序列长度} = 3\\times3 + 1 = 10",
+            "\\text{每个 patch 的输入维度} = P\\cdot P\\cdot C\\quad\\text{（补充：}P=16\\text{、}C=3\\text{ 时为 }768\\text{）}"
           ],
           "kind": "worked-example",
-          "formula": "序列长度 = 3 × 3 + 1 = 10；每个 patch 的输入维度 = P·P·C（补充：P=16、C=3 时为 768）",
           "bullets": [
-            "patch 数量取决于图片怎样切；讲义例子是 3×3，真实模型通常切得更细。",
+            "patch 数量取决于图片怎样切；讲义例子是 \\(3\\times3\\)，真实模型通常切得更细。",
             "分类只用 [CLS] 的输出，这是讲义 p.62 画法所示。"
           ],
           "source": "Lecture 9 (2025) · p.52–62（End-to-end example using ViT）"
@@ -3097,7 +3362,7 @@
           "title": "视觉语言模型（VLM）：图片加问题，输出文字",
           "body": [
             "VLM（Vision Language Model）要同时读图片和文字，并生成文字。讲义的例子是：输入泰迪熊照片和问题 “How cute is this teddy bear?”，模型回答 “Very cute!”。问题在于中间这个模型该怎么搭。",
-            "方法 1：复用 decoder-only 架构（recycle decoder-only architecture）。把图片转成一串向量，和问题的 token 向量放在一起，送进一个“普通”的 LLM，由它自回归地生成回答。讲义以 LLaVA（“Visual Instruction Tuning”, Liu et al., 2023）为例：图片 X_v 经视觉编码器（Vision Encoder）得到 Z_v，再经投影矩阵 W 变成 H_v；文字指令 X_q 变成 H_q；两者一起输入语言模型 f_φ，输出回答 X_a。",
+            "方法 1：复用 decoder-only 架构（recycle decoder-only architecture）。把图片转成一串向量，和问题的 token 向量放在一起，送进一个“普通”的 LLM，由它自回归地生成回答。讲义以 LLaVA（“Visual Instruction Tuning”, Liu et al., 2023）为例：图片 \\(X_v\\) 经视觉编码器（Vision Encoder）得到 \\(Z_v\\)，再经投影矩阵 \\(W\\) 变成 \\(H_v\\)；文字指令 \\(X_q\\) 变成 \\(H_q\\)；两者一起输入语言模型 \\(f_\\phi\\)，输出回答 \\(X_a\\)。",
             "方法 2：利用 cross-attention 层（leverage cross-attention layer）。讲义在原始 Transformer 解码器里圈出那层接收编码器输出的注意力：图像向量不放进输入序列，而是从侧面通过 cross-attention 接入解码器。Llama 3（“The Llama 3 Herd of Models”, 2024）就是这样：图像编码器（Linear transform + 自注意力 + 前馈网络）产生图像表示，大约每 4 层接入一次语言模型的 cross-attention；视频先经过一个用 cross-attention 汇总的 video aggregator；同一张图里，语音则经 Conformer 编码器和 speech adapter 接到 token embedding 一侧。"
           ],
           "table": {
@@ -3124,6 +3389,12 @@
               ]
             ]
           },
+          "figure": {
+            "src": "figures/l09-vlm-two-methods.webp",
+            "alt": "两种 VLM 做法并排：左图（方法 1）泰迪熊照片和问题 “How cute is this teddy bear?” 都变成一列向量，一起送进 “Typical” LLM，输出 “Very cute!”；右图（方法 2）只有问题的向量从下方进入 Decoder with cross-attention，图片的向量从上方侧面接入，输出 “Very cute!”。",
+            "caption": "对比图像向量进入模型的位置：左边和文字向量排在同一个输入序列里（LLaVA 的做法）；右边从侧面经 cross-attention 接入解码器（Llama 3 的做法）。",
+            "source": "Lecture 9 (2025) · p.64, 67"
+          },
           "source": "Lecture 9 (2025) · p.63–68（VLM = Vision Language Model / Method 1 / Method 2）"
         },
         {
@@ -3143,9 +3414,9 @@
         {
           "title": "趋势一：模态之间互相借鉴",
           "body": [
-            "讲义总结的第一个趋势是：不同模态会互相借用有效的想法（modalities trade ideas on concepts that work）。架构层面有两个方向相反的例子：文本借用了图像领域的扩散训练来生成文字（Nie et al., 2025，即第 8 讲的扩散 LLM）；图像生成则借用了 Transformer，比如 DiT（Peebles et al., 2022）把加噪的 latent（图中为 32×32×4）切成 patch（Patchify），和时间步 t、类别标签 y 的嵌入一起送进 N 个 DiT block，最后输出预测的噪声。",
+            "讲义总结的第一个趋势是：不同模态会互相借用有效的想法（modalities trade ideas on concepts that work）。架构层面有两个方向相反的例子：文本借用了图像领域的扩散训练来生成文字（Nie et al., 2025，即第 8 讲的扩散 LLM）；图像生成则借用了 Transformer，比如 DiT（Peebles et al., 2022）把加噪的 latent（图中为 \\(32\\times32\\times4\\)）切成 patch（Patchify），和时间步 \\(t\\)、类别标签 \\(y\\) 的嵌入一起送进 \\(N\\) 个 DiT block，最后输出预测的噪声。",
             "输入表示层面，讲义举了 DeepSeek-OCR（论文标题为 “Contexts Optical Compression”）。从标题看，它的思路是用视觉方式压缩文本上下文；讲义只给出了名字，没有展开具体做法。",
-            "技巧层面是 RoPE 的变体。讲义引用 Qwen-Image 技术报告中的 Multimodal Scalable RoPE（MSRoPE），用一张 3×3 patch 的猫图加文本 “a cute cat” 比较了三种位置编号方式（见下表）。MSRoPE 让图像使用以中心为原点的二维坐标，文本则沿对角线排列；讲义没有给出它的公式。"
+            "技巧层面是 RoPE 的变体。讲义引用 Qwen-Image 技术报告中的 Multimodal Scalable RoPE（MSRoPE），用一张 \\(3\\times3\\) patch 的猫图加文本 “a cute cat” 比较了三种位置编号方式（见下表）。MSRoPE 让图像使用以中心为原点的二维坐标，文本则沿对角线排列；讲义没有给出它的公式。"
           ],
           "table": {
             "columns": [
@@ -3198,7 +3469,7 @@
           "title": "趋势四：为注意力定制硬件",
           "body": [
             "现在的 GPU 擅长矩阵—向量、矩阵—矩阵运算，但 Transformer 有特殊需求：注意力需要频繁读写 KV（attention requires frequent KV reads/writes），而在 GPU 上，数据搬运才是主要开销（memory movement dominates cost on GPUs）。第 5 讲讲 FlashAttention 时也是从“减少进出 HBM 的数据搬运”入手的。",
-            "讲义介绍的思路是在硬件里“原生”支持注意力：把 KV cache 存在专用的存储单元里，用模拟信号完成计算。引用的 Leroux et al., 2025 的电路图里，一个增益单元阵列（gain-cell array）存储 K，计算 S = Q·Kᵀ；经过 HardSigmoid 电路得到 φ(S)；另一个阵列存储 V，计算 φ(S)·V。报告的结果是：相对 Nvidia H100，延迟最多降低约 100 倍，能耗最多降低约 70,000 倍。"
+            "讲义介绍的思路是在硬件里“原生”支持注意力：把 KV cache 存在专用的存储单元里，用模拟信号完成计算。引用的 Leroux et al., 2025 的电路图里，一个增益单元阵列（gain-cell array）存储 K，计算 \\(S = Q\\cdot K^\\top\\)；经过 HardSigmoid 电路得到 \\(\\phi(S)\\)；另一个阵列存储 \\(V\\)，计算 \\(\\phi(S)\\cdot V\\)。报告的结果是：相对 Nvidia H100，延迟最多降低约 100 倍，能耗最多降低约 70,000 倍。"
           ],
           "table": {
             "columns": [
@@ -3295,7 +3566,7 @@
       ],
       "quiz": [
         {
-          "question": "在讲义的 ViT 端到端例子中，泰迪熊照片被切成 3×3 个 patch。编码器输出后，用哪个向量来预测类别 “teddy bear”？",
+          "question": "在讲义的 ViT 端到端例子中，泰迪熊照片被切成 \\(3\\times3\\) 个 patch。编码器输出后，用哪个向量来预测类别 “teddy bear”？",
           "options": [
             "9 个 patch 输出向量中位于正中间、含有熊脸的那一个",
             "最后一个 patch 的输出向量，因为它已经看过前面所有 patch",
@@ -3314,7 +3585,7 @@
             "方法 2 不需要图像编码器，图片像素直接作为 cross-attention 的输入"
           ],
           "answer": 1,
-          "explanation": "p.64–65：方法 1 复用 decoder-only 架构，LLaVA 用 Vision Encoder + Projection W 得到 H_v，与文本的 H_q 一起输入语言模型；p.66–68：方法 2 利用 cross-attention 层，Llama 3 的图像表示通过语言模型中的 cross-attention 接入。说“方法 1 用 cross-attention”的选项把两种方法说反了；讲义没有“先把图片转成文字描述”的做法；Llama 3 的图中有独立的图像编码器，并不是把像素直接送进 cross-attention。"
+          "explanation": "p.64–65：方法 1 复用 decoder-only 架构，LLaVA 用 Vision Encoder + Projection W 得到 \\(H_v\\)，与文本的 \\(H_q\\) 一起输入语言模型；p.66–68：方法 2 利用 cross-attention 层，Llama 3 的图像表示通过语言模型中的 cross-attention 接入。说“方法 1 用 cross-attention”的选项把两种方法说反了；讲义没有“先把图片转成文字描述”的做法；Llama 3 的图中有独立的图像编码器，并不是把像素直接送进 cross-attention。"
         }
       ],
       "resources": [

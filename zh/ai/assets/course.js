@@ -118,7 +118,7 @@
     return `<footer class="course-footer"><span>KEEP LEARNING LAB / ${esc(course.code)}</span><p>${esc(course.notice || '本页为 Keep Learning Lab 中文社区导学，非 Stanford 官方课程。原始资料版权及许可归原作者；课程安排与要求以官方网站为准。')}</p>${link(course.sourceUrl, '访问官方课程 ↗')}</footer>`;
   }
   function lessonCard(lesson) {
-    return `<a class="lesson-card" href="#lesson-${esc(lesson.id)}"><span class="lesson-index">${esc(lesson.id)}</span><div class="lesson-copy"><h3>${esc(lesson.title)}</h3><p>${esc(lesson.summary)}</p><div class="lesson-tags"><span>${esc(lesson.originalTitle || course.code)}</span><span>${objectives(lesson).length} 个目标</span>${(lesson.lab || lesson.visual) ? '<span>交互实验</span>' : ''}</div></div><span class="status-chip">${done(lesson) ? '已掌握 ✓' : lessonCount(lesson) ? '学习中' : '开始学习'}</span><span class="lesson-arrow" aria-hidden="true">↗</span></a>`;
+    return `<a class="lesson-card" href="#lesson-${esc(lesson.id)}"><span class="lesson-index">${esc(lesson.id)}</span><div class="lesson-copy"><h3>${esc(lesson.title)}</h3><p>${rich(lesson.summary)}</p><div class="lesson-tags"><span>${esc(lesson.originalTitle || course.code)}</span><span>${objectives(lesson).length} 个目标</span>${(lesson.lab || lesson.visual) ? '<span>交互实验</span>' : ''}</div></div><span class="status-chip">${done(lesson) ? '已掌握 ✓' : lessonCount(lesson) ? '学习中' : '开始学习'}</span><span class="lesson-arrow" aria-hidden="true">↗</span></a>`;
   }
   function renderModuleList() {
     const query = lessonSearch.trim().toLocaleLowerCase();
@@ -188,7 +188,7 @@
     const paragraphs = Array.isArray(section.body) ? section.body : section.body ? String(section.body).split(/\n\n+/) : [];
     const figures = (Array.isArray(section.figures) ? section.figures : section.figure ? [section.figure] : []).map(figureMarkup).join('');
     // Optional static aids: flow (ordered steps drawn as a chain) and table ({columns, rows}).
-    const flow = Array.isArray(section.flow) && section.flow.length ? `<ol class="section-flow" aria-label="${esc(section.title)}：流程">${section.flow.map(step => `<li>${rich(step)}</li>`).join('')}</ol>` : '';
+    const flow = Array.isArray(section.flow) && section.flow.length ? `<ol class="section-flow" aria-label="${esc(String(section.title).replace(/\\\(|\\\)/g, ''))}：流程">${section.flow.map(step => `<li>${rich(step)}</li>`).join('')}</ol>` : '';
     const math = Array.isArray(section.math) && section.math.length ? `<div class="math-block">${section.math.map(line => `<div class="math-line">${tex(line, true)}</div>`).join('')}</div>` : '';
     const table = section.table?.columns?.length ? `<div class="section-table"><table><thead><tr>${section.table.columns.map(cell => `<th scope="col">${rich(cell)}</th>`).join('')}</tr></thead><tbody>${(section.table.rows || []).map(row => `<tr>${row.map(cell => `<td>${rich(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
     const source = section.source ? `<p class="section-source"><span>讲义出处</span>${esc(section.source)}</p>` : '';

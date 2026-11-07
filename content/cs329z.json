@@ -76,6 +76,12 @@
             "把这些部件画成一张图：LLM 核心在中间，上方是规划与推理和记忆，下方是工具（检索、计算器、代码、搜索、文件操作……）；智能体的动作（agent actions）包括工具调用、与环境交互、回复用户；外部世界（桌面操作系统、浏览器、手机应用、游戏、数据库等）通过“观察（observe）”把信息送回来。讲义也指出，Lilian Weng 的博客和 Sumers 与 Yao 的 Cognitive Language Agents 给出的定义大体相同。",
             "这张图是后面各讲的目录：规划与推理对应智能体设计模式，记忆对应记忆架构一讲，工具对应 RAG 和工具调用两讲，环境和评测对应 Terminal-Bench 与评测各讲。本讲接下来逐个部件举例。"
           ],
+          "figure": {
+            "src": "figures/l01-agent-components.webp",
+            "alt": "智能体关键部件示意图：规划与推理、记忆两个模块指向 LLM 核心，LLM 核心调用工具（检索、计算器、代码、搜索、文件操作），再产生智能体动作作用于外部环境；环境的观察返回给智能体",
+            "caption": "先看箭头：规划与推理、记忆和工具都围绕 LLM 核心，智能体用“动作”作用于右侧的外部环境，再通过“观察”拿回结果。正文的五个部件就是图中的五块，环境是智能体之外的那一块。",
+            "source": "Lecture 1 · p.30"
+          },
           "flow": [
             "观察（Obs）",
             "推理（Think）",
@@ -101,6 +107,12 @@
             "更有意思的是失败类型分析。CoT 的失败中 56% 是幻觉（编造推理或事实），ReAct 是 0%；但 ReAct 有 47% 的失败是推理错误（包括在重复步骤里出不来），还有 23% 是搜索结果为空或没用。成功样本中，CoT 有 14% 是“假阳性”——推理或事实是编的，答案碰巧对了，ReAct 只有 6%。讲义的结论是：幻觉是 CoT 的严重问题，ReAct 借助外部观察能缓解它，但会引入新的失败方式。",
             "Self-Consistency（Wang et al., 2023）是另一种提升推理的方法：用 CoT 提示采样多条不同的推理路径，最后选择在答案集合里最一致（出现最多）的答案，而不是只取一次贪心解码的结果。"
           ],
+          "figure": {
+            "src": "figures/l01-react-cot-error-analysis.webp",
+            "alt": "两张结果表：上表列出 Standard、CoT、CoT-SC、Act、ReAct 及两种组合在 HotpotQA 和 Fever 上的分数；下表按成功与失败类型比较 ReAct 和 CoT 在 HotpotQA 上的比例",
+            "caption": "上表对应正文的分数；下表是错误分析：CoT 的失败里幻觉占 56%，ReAct 是 0%，但 ReAct 的推理错误（47%）和检索结果为空（23%）更多。这说明两者失败的方式不同，组合起来才有表中最好的成绩。讲义引用的是 ReAct 论文（Yao et al., 2023）的结果。",
+            "source": "Lecture 1 · p.37"
+          },
           "table": {
             "columns": [
               "失败/成功类型",
@@ -234,7 +246,7 @@
         {
           "title": "构建智能体的关键挑战",
           "body": [
-            "讲义列出五个挑战：可靠性（错误在智能体流程中会累积）、训练（奖励稀疏、时间跨度长、rollout 昂贵）、长程任务（上下文不断增长并发生漂移）、安全（任务成功不等于行为安全）、评测（评什么、怎样评）。补充：如果一个任务要连续做对 10 步、每步独立地以 0.95 的概率成功，整条链成功的概率只有 0.95¹⁰ ≈ 0.60，这就是“错误累积”的直观含义。",
+            "讲义列出五个挑战：可靠性（错误在智能体流程中会累积）、训练（奖励稀疏、时间跨度长、rollout 昂贵）、长程任务（上下文不断增长并发生漂移）、安全（任务成功不等于行为安全）、评测（评什么、怎样评）。补充：如果一个任务要连续做对 10 步、每步独立地以 0.95 的概率成功，整条链成功的概率只有 \\(0.95^{10} \\approx 0.60\\)，这就是“错误累积”的直观含义。",
             "可靠性不等于一次评测的准确率。讲义引用普林斯顿 HAL 的可靠性仪表盘，提出三个维度：跨次运行的一致性（同一任务做两次，结果是否相同）、对扰动的鲁棒性（提示、工具等发生小的现实变化时表现如何）、失败是否可预测（失败时是以可读、可恢复的方式失败，还是不可预测地失败）。仪表盘显示模型的准确率和可靠性分数之间存在差距（capability-reliability gap）。",
             "其余例子各对应一个风险：HarnessAudit Bench 显示任务完成率和安全合规率并不同步；一位用户让 OpenAI Operator 买菜，它没有先问住在哪、常去哪家店、要买什么，就直接打开 Instacart，在爱荷华州得梅因的商店里搜索牛奶，说明智能体缺少协作意识；弹窗攻击能让计算机使用智能体以约 87% 的成功率偏离原任务（OSWorld 上点击弹窗的比例为 92.7%，VisualWebArena 上为 73.1%）；PrivacyLens 的例子里，智能体给经理写周报时把“与 TechAdvance 招聘人员共进午餐”这样的日程也写了进去；此外还有奖励篡改与谄媚（sycophancy）等未对齐行为，以及多智能体之间的串通。"
           ],
@@ -351,17 +363,19 @@
         {
           "title": "语言模型就是序列的概率",
           "body": [
-            "语言模型给一个词元（token）序列赋概率。按链式法则，P(x₁:T) 等于从第一个到最后一个词元，逐个乘上“当前词元在给定前面所有词元时的条件概率”。讲义用“The class was about agents .”演示：P(The) = 0.0377，P(class | The) = 0.0001，P(was | The, class) = 0.0344，……，P(. | The, class, was, about, agents) = 0.0252，全部相乘只有约 1.2×10⁻¹⁷。正因为乘积会小到下溢，实践中通常改为对概率取对数后相加。",
-            "讲义的知识检查问：这样建模序列概率的语言模型是生成式还是判别式？判别式模型（如逻辑回归、SVM）学习区分类别的边界；生成式模型（如朴素贝叶斯、扩散模型）学习数据本身的分布。左边的 P(x₁:T) 就是整个序列的联合分布 P(x₁, x₂, …, x_T)，所以语言模型是生成式的——这意味着可以从中采样。"
+            "语言模型给一个词元（token）序列赋概率。按链式法则，\\(P(x_{1:T})\\) 等于从第一个到最后一个词元，逐个乘上“当前词元在给定前面所有词元时的条件概率”。讲义用“The class was about agents .”演示：\\(P(\\text{The}) = 0.0377\\)，\\(P(\\text{class} \\mid \\text{The}) = 0.0001\\)，\\(P(\\text{was} \\mid \\text{The, class}) = 0.0344\\)，……，\\(P(\\text{.} \\mid \\text{The, class, was, about, agents}) = 0.0252\\)，全部相乘只有约 \\(1.2\\times10^{-17}\\)。正因为乘积会小到下溢，实践中通常改为对概率取对数后相加。",
+            "讲义的知识检查问：这样建模序列概率的语言模型是生成式还是判别式？判别式模型（如逻辑回归、SVM）学习区分类别的边界；生成式模型（如朴素贝叶斯、扩散模型）学习数据本身的分布。左边的 \\(P(x_{1:T})\\) 就是整个序列的联合分布 \\(P(x_1, x_2, \\dots, x_T)\\)，所以语言模型是生成式的——这意味着可以从中采样。"
           ],
-          "formula": "P(x₁:T) = ∏_{t=1}^{T} P(x_t | x_<t)",
+          "math": [
+            "P(x_{1:T}) = \\prod_{t=1}^{T} P(x_t \\mid x_{<t})"
+          ],
           "source": "Lecture 2 · p.6–13（What is a Language Model? / Generative vs. Discriminative Models / Knowledge Check）"
         },
         {
           "title": "采样（解码）策略",
           "body": [
             "给定“The class was about”，模型对下一个词元给出一个分布：to 0.3171、as 0.0491、the 0.036、a 0.033、two 0.0147、how 0.0124……选了 to 之后，下一步的分布变成 be 0.1501、begin 0.0855、go 0.0627……讲义特意选了不是最可能的 begin，最后生成“The class was about to begin.”——不一定每一步都要选最可能的词元，这就是各种采样（解码）策略。",
-            "讲义列出的策略有：贪心（greedy，每步取概率最大者）、核采样（nucleus / top-p，只在累计概率达到 p 的最小候选集合里采样）、top-k（只在概率最高的 k 个候选里采样）、温度（temperature）和束搜索（beam search，同时保留若干条最有希望的部分序列）。讲义对温度的描述是“把所有概率除以温度 T 再归一化”；补充：更准确的写法是把 logits 除以 T 再做 softmax，等价于把概率取 1/T 次方后归一化——T 越小分布越尖，T 越大越平。讲义的四张柱状图（T = 0.1、0.5、1.0、2.0）正显示了这一点。",
+            "讲义列出的策略有：贪心（greedy，每步取概率最大者）、核采样（nucleus / top-p，只在累计概率达到 p 的最小候选集合里采样）、top-k（只在概率最高的 k 个候选里采样）、温度（temperature）和束搜索（beam search，同时保留若干条最有希望的部分序列）。讲义对温度的描述是“把所有概率除以温度 T 再归一化”；补充：更准确的写法是把 logits 除以 T 再做 softmax，等价于把概率取 \\(1/T\\) 次方后归一化——T 越小分布越尖，T 越大越平。讲义的四张柱状图（T = 0.1、0.5、1.0、2.0）正显示了这一点。",
             "怎么选？每种策略各有取舍：温度和 top-p/top-k 有助于多样性；数学和代码更可预测，适合低温度；创意写作可能受益于更高的多样性；还要看预算——束搜索的时间和内存复杂度更高。"
           ],
           "table": {
@@ -404,10 +418,13 @@
           "title": "解码器 Transformer：一步步搭起来",
           "body": [
             "讲义先简述架构史：N-gram 模型（2010 年代以前）、第一个神经语言模型（2003）、RNN 语言模型（2010）、LSTM（1997 年提出，2014 年起在语言模型中流行），然后是 2017 年的 Transformer（Attention Is All You Need）。今天的 LLM 大多是只有解码器（decoder-only）的 Transformer。",
-            "讲义用“The class was about”逐层搭建：每个词元先查嵌入（embedding），再加上位置嵌入（positional embedding）；经过层归一化（Layer Norm）后，乘以 W_Q、W_K、W_V 三个矩阵得到 Q、K、V；Q 乘 Kᵀ 得到注意力分数，加上因果注意力掩码（causal attention mask，让每个位置只能看到它之前的词元），除以 √d_k，做 softmax，再乘 V；最后乘 W_O 投影回模型维度，并通过残差连接（residual connection）加回输入。讲义在这里特别提示“重点注意，跟丢了后面会很难懂”。",
-            "多头注意力（multi-head attention）就是：用多组 W_Q、W_K、W_V 各自算一遍注意力，把各头的输出拼接起来，再用一个更大的 W_O 投影。之后再经过一次层归一化和前馈层（feed forward），同样带残差连接，这就是一个 Transformer 块；块重复 N 次，最后经过层归一化、语言模型头（LM Head）和 softmax，在每个位置输出下一个词元的分布。"
+            "讲义用“The class was about”逐层搭建：每个词元先查嵌入（embedding），再加上位置嵌入（positional embedding）；经过层归一化（Layer Norm）后，乘以 \\(W_Q\\)、\\(W_K\\)、\\(W_V\\) 三个矩阵得到 Q、K、V；Q 乘 \\(K^\\top\\) 得到注意力分数，加上因果注意力掩码（causal attention mask，让每个位置只能看到它之前的词元），除以 \\(\\sqrt{d_k}\\)，做 softmax，再乘 V；最后乘 \\(W_O\\) 投影回模型维度，并通过残差连接（residual connection）加回输入。讲义在这里特别提示“重点注意，跟丢了后面会很难懂”。",
+            "多头注意力（multi-head attention）就是：用多组 \\(W_Q\\)、\\(W_K\\)、\\(W_V\\) 各自算一遍注意力，把各头的输出拼接起来，再用一个更大的 \\(W_O\\) 投影。之后再经过一次层归一化和前馈层（feed forward），同样带残差连接，这就是一个 Transformer 块；块重复 N 次，最后经过层归一化、语言模型头（LM Head）和 softmax，在每个位置输出下一个词元的分布。"
           ],
-          "formula": "Attention(Q, K, V) = softmax(QKᵀ / √d_k + 因果掩码) · V，再乘 W_O 并加残差",
+          "math": [
+            "\\mathrm{Attention}(Q, K, V) = \\mathrm{softmax}\\left(\\frac{QK^\\top}{\\sqrt{d_k}} + \\text{因果掩码}\\right) \\cdot V",
+            "\\text{再乘 } W_O \\text{ 并加残差}"
+          ],
           "flow": [
             "词元嵌入 + 位置嵌入",
             "LayerNorm → 多头因果自注意力 → 残差",
@@ -418,17 +435,17 @@
           "source": "Lecture 2 · p.24–60（A brief history of Language Model Architectures / Decoder-only Transformer / Attention Layer / Multi-Head Attention Layer）"
         },
         {
-          "title": "注意力 vs 循环：并行训练与 O(n²) 的代价",
+          "title": "注意力 vs 循环：并行训练与 \\(O(n^2)\\) 的代价",
           "body": [
-            "讲义引用 Attention Is All You Need 的对比表：自注意力层的顺序操作数是 O(1)，循环层是 O(n)。O(1) 的顺序操作意味着整段序列可以在 GPU 上并行训练，这是 Transformer 胜出的关键；原论文的结果表也显示它在翻译任务上更好、训练成本更低。",
-            "代价是每层的计算量随序列长度 n 呈 O(n²) 增长：每个词元都要和之前所有词元算注意力，所以长上下文会变得昂贵。这正是接下来线性注意力要解决的问题。"
+            "讲义引用 Attention Is All You Need 的对比表：自注意力层的顺序操作数是 \\(O(1)\\)，循环层是 \\(O(n)\\)。\\(O(1)\\) 的顺序操作意味着整段序列可以在 GPU 上并行训练，这是 Transformer 胜出的关键；原论文的结果表也显示它在翻译任务上更好、训练成本更低。",
+            "代价是每层的计算量随序列长度 n 呈 \\(O(n^2)\\) 增长：每个词元都要和之前所有词元算注意力，所以长上下文会变得昂贵。这正是接下来线性注意力要解决的问题。"
           ],
           "source": "Lecture 2 · p.61–62（Attention vs Recurrence / Transformers were better and cheaper）"
         },
         {
           "title": "线性注意力与混合架构",
           "body": [
-            "线性注意力（linear attention）的第一步是“去掉 softmax”。去掉之后，Q·Kᵀ·V 全是线性运算，可以改变结合顺序：先算 Kᵀ·V，而不是先算 Q·Kᵀ。于是可以维护一个固定大小的状态矩阵 S：每来一个新词元，就把它的 kᵀv 加到状态上（S₁ → S₂ → S₃ → S₄），再用当前的 q 去读这个状态。讲义还展示了更新规则里的“清除不重要的记忆（clear unimportant memory）”一步——这类改进（如 DeltaNet）在写入新信息前先擦掉部分旧信息。",
+            "线性注意力（linear attention）的第一步是“去掉 softmax”。去掉之后，\\(QK^\\top V\\) 全是线性运算，可以改变结合顺序：先算 \\(K^\\top V\\)，而不是先算 \\(QK^\\top\\)。于是可以维护一个固定大小的状态矩阵 S：每来一个新词元，就把它的 \\(k^\\top v\\) 加到状态上（\\(S_1 \\to S_2 \\to S_3 \\to S_4\\)），再用当前的 q 去读这个状态。讲义还展示了更新规则里的“清除不重要的记忆（clear unimportant memory）”一步——这类改进（如 DeltaNet）在写入新信息前先擦掉部分旧信息。",
             "结果是：线性注意力快得多、显存占用更小（Transformers are RNNs 论文的图），但在长上下文上更吃力（RULER 基准的图）。讲义还补了一个关于上下文长度的说明：Transformer 和线性注意力本身都没有强制规定上下文长度，限制来自模型处理位置嵌入的方式——模型要学会使用位置嵌入，所以实际上受限于训练时用的上下文长度。",
             "实践中人们把全局（softmax）注意力和线性注意力混合使用。讲义举的例子是 Kimi K3：部分层是多头（潜在）注意力加前馈层，部分层是线性注意力加前馈层。讲义最后说明为什么这对智能体重要：智能体要处理极长的上下文；推理效率是设计时要考虑的因素；了解底层架构有助于为应用选择合适的模型；围绕模型的长处和短处设计 harness 和脚手架，才是好的智能体工程师。"
           ],
@@ -441,8 +458,8 @@
             "rows": [
               [
                 "对上下文长度的复杂度",
-                "O(n²)",
-                "O(n)"
+                "\\(O(n^2)\\)",
+                "\\(O(n)\\)"
               ],
               [
                 "新词元如何使用历史",
@@ -466,19 +483,21 @@
         {
           "title": "训练目标：交叉熵损失",
           "body": [
-            "训练时，模型看到训练文本“The class was about how agents work…”。给定“The class was about”，模型预测的分布里 to 最高（0.3171），而训练数据里真正的下一个词元是 how，模型只给了 0.0124。损失就是这个真实词元概率的负对数：讲义写的是 −log(0.0124) = 1.907。",
+            "训练时，模型看到训练文本“The class was about how agents work…”。给定“The class was about”，模型预测的分布里 to 最高（0.3171），而训练数据里真正的下一个词元是 how，模型只给了 0.0124。损失就是这个真实词元概率的负对数：讲义写的是 \\(-\\log(0.0124) = 1.907\\)。",
             "推广到一般形式就是交叉熵损失：对词表中的每个词元求和，真实词元对应的指示量为 1、其余为 0，乘上该词元的对数概率再取负。由于只有真实词元一项不为零，交叉熵就退化成“真实词元的负对数概率”。模型给真实词元的概率越高，损失越小。"
           ],
-          "formula": "L = −Σ_{w∈V} 1[w = 数据中的词元] · log P(w | x_<t) = −log P(x_t | x_<t)",
+          "math": [
+            "\\begin{aligned} L &= -\\sum_{w \\in V} \\mathbf{1}[w = \\text{数据中的词元}] \\cdot \\log P(w \\mid x_{<t}) \\\\ &= -\\log P(x_t \\mid x_{<t}) \\end{aligned}"
+          ],
           "source": "Lecture 2 · p.92–100（Defining the Loss / Cross Entropy Loss）"
         },
         {
           "title": "手算：序列概率与损失",
           "kind": "worked-example",
           "body": [
-            "第一步，序列概率取对数。讲义 p.8 的乘积约为 1.2×10⁻¹⁷，取以 10 为底的对数约为 −16.9。补充：哪怕只看讲义列出的四个因子 0.0377 × 0.0001 × 0.0344 × 0.0252，乘积也已是约 3.27×10⁻⁹，相当于 log₁₀ 依次相加 −1.424 − 4 − 1.463 − 1.599 ≈ −8.49。句子再长一些，直接相乘就会逼近浮点数能表示的下限，这就是讲义说“实践中取对数求和”的原因。",
-            "第二步，交叉熵。真实下一个词元 how 的概率是 0.0124。讲义 p.99 的 1.907 是以 10 为底的对数：−log₁₀(0.0124) ≈ 1.907。补充：训练框架里通常用自然对数，同一个值是 −ln(0.0124) ≈ 4.39；两者只差一个常数因子 ln 10 ≈ 2.303，不影响优化方向。",
-            "第三步，对比。补充：如果模型给 how 的概率和给 to 一样高（0.3171），损失会是 −ln(0.3171) ≈ 1.15，远小于 4.39。训练就是不断提高数据中真实词元的概率。"
+            "第一步，序列概率取对数。讲义 p.8 的乘积约为 \\(1.2\\times10^{-17}\\)，取以 10 为底的对数约为 −16.9。补充：哪怕只看讲义列出的四个因子 \\(0.0377 \\times 0.0001 \\times 0.0344 \\times 0.0252\\)，乘积也已是约 \\(3.27\\times10^{-9}\\)，相当于 \\(\\log_{10}\\) 依次相加 \\(-1.424 - 4 - 1.463 - 1.599 \\approx -8.49\\)。句子再长一些，直接相乘就会逼近浮点数能表示的下限，这就是讲义说“实践中取对数求和”的原因。",
+            "第二步，交叉熵。真实下一个词元 how 的概率是 0.0124。讲义 p.99 的 1.907 是以 10 为底的对数：\\(-\\log_{10}(0.0124) \\approx 1.907\\)。补充：训练框架里通常用自然对数，同一个值是 \\(-\\ln(0.0124) \\approx 4.39\\)；两者只差一个常数因子 \\(\\ln 10 \\approx 2.303\\)，不影响优化方向。",
+            "第三步，对比。补充：如果模型给 how 的概率和给 to 一样高（0.3171），损失会是 \\(-\\ln(0.3171) \\approx 1.15\\)，远小于 4.39。训练就是不断提高数据中真实词元的概率。"
           ],
           "table": {
             "columns": [
@@ -489,27 +508,27 @@
             "rows": [
               [
                 "四个因子的乘积",
-                "0.0377 × 0.0001 × 0.0344 × 0.0252",
-                "≈ 3.27×10⁻⁹"
+                "\\(0.0377 \\times 0.0001 \\times 0.0344 \\times 0.0252\\)",
+                "\\(\\approx 3.27\\times10^{-9}\\)"
               ],
               [
                 "同上，以对数相加",
-                "−1.424 − 4 − 1.463 − 1.599",
+                "\\(-1.424 - 4 - 1.463 - 1.599\\)",
                 "≈ −8.49"
               ],
               [
-                "讲义的损失（log₁₀）",
-                "−log₁₀(0.0124)",
+                "讲义的损失（\\(\\log_{10}\\)）",
+                "\\(-\\log_{10}(0.0124)\\)",
                 "≈ 1.907"
               ],
               [
                 "自然对数下的损失",
-                "−ln(0.0124)",
+                "\\(-\\ln(0.0124)\\)",
                 "≈ 4.39"
               ],
               [
                 "若真实词元概率为 0.3171",
-                "−ln(0.3171)",
+                "\\(-\\ln(0.3171)\\)",
                 "≈ 1.15"
               ]
             ]
@@ -549,6 +568,12 @@
             "用屋顶线模型（roofline model）看：横轴是算术强度（每字节数据做多少次浮点运算），纵轴是可达到的 FLOP/s。prefill 一次处理很多词元，算术强度高，落在受算力限制（compute-bound）的区域；decode 每步只处理一个词元却要读完整的权重和 KV 缓存，算术强度低，落在受带宽限制（bandwidth-bound）的区域。对应的两个指标是首词元延迟（time to first token，主要由 prefill 决定）和每个输出词元的时间（time per output token，由 decode 决定）。",
             "投机解码（speculative decoding）利用 decode 受带宽限制这一点：一个小的草稿模型（draft model）先连续猜几个词元（“upon a time there”），大的目标模型（target model）一次并行验证，接受前面猜对的“upon a time”，在第一个不一致处（there）改用自己的结果。讲义引用的图显示，有些领域更可预测（代码类的 HumanEval 接受率高于摘要类的 XSum），加速效果也因此不同。"
           ],
+          "figure": {
+            "src": "figures/l02-prefill-decode.webp",
+            "alt": "预填充与解码示意图：提示词 The quick brown fox 的四个词元一次性并行计算出 KV 向量（prefill），之后每步解码只为新生成的 jumps、over 计算一个 KV 向量，之前的 KV 向量被缓存复用",
+            "caption": "橙色是预填充：整段提示并行处理，一次算出全部 KV 向量；蓝色是解码：每步只处理一个新词元，并读取上方虚线表示的 KV 缓存。这就是预填充偏算力受限、解码偏带宽受限的原因。原图出自 Hugging Face 博客（tngtech）。",
+            "source": "Lecture 2 · p.123"
+          },
           "table": {
             "columns": [
               "",
@@ -583,11 +608,14 @@
         {
           "title": "测试时扩展：思维链、推理模型与重复采样",
           "body": [
-            "推理时扩展（test-time scaling）指用更多推理计算换更好的结果。最早的形式是思维链（chain of thought）提示：在示例里写出推理过程，模型也会先推理再作答。推理模型则把这种能力训练进模型。讲义的例子：夹克原价 80 美元，先涨价 25%，再在新价格上打七五折，最终多少钱？传统模型直接算出 100 × 0.75 = 75；推理模型先以为加减 25% 会抵消、得到 80，接着“Wait…”发现两个百分比的基数不同，改正为 75 美元，比原价少 5 美元。讲义还展示了推理模型的“aha 时刻”：在思考中发现“这不对”并自我纠正。",
-            "推理强度可以控制：GPT-OSS 在系统提示里写“Reasoning: low / medium / high”；Inkling（Thinking Machines）把奖励写成 R(e) = R_task − λ(e)·N_tokens，低强度用更大的 λ 惩罚长输出；Kimi K3 的奖励是答对 1、答错 0、答错且超出预算 −1，再用多个高/中/低强度的教师模型蒸馏出一个学生模型。",
+            "推理时扩展（test-time scaling）指用更多推理计算换更好的结果。最早的形式是思维链（chain of thought）提示：在示例里写出推理过程，模型也会先推理再作答。推理模型则把这种能力训练进模型。讲义的例子：夹克原价 80 美元，先涨价 25%，再在新价格上打七五折，最终多少钱？传统模型直接算出 \\(100 \\times 0.75 = 75\\)；推理模型先以为加减 25% 会抵消、得到 80，接着“Wait…”发现两个百分比的基数不同，改正为 75 美元，比原价少 5 美元。讲义还展示了推理模型的“aha 时刻”：在思考中发现“这不对”并自我纠正。",
+            "推理强度可以控制：GPT-OSS 在系统提示里写“Reasoning: low / medium / high”；Inkling（Thinking Machines）把奖励写成 \\(R(e) = R_{\\text{task}} - \\lambda(e)\\cdot N_{\\text{tokens}}\\)，低强度用更大的 \\(\\lambda\\) 惩罚长输出；Kimi K3 的奖励是答对 1、答错 0、答错且超出预算 −1，再用多个高/中/低强度的教师模型蒸馏出一个学生模型。",
             "另一种扩展方式是重复采样（Large Language Monkeys）：先生成很多候选解，再用验证器（单元测试、证明检查器、多数投票等）选出最终答案。这引出两个问题：覆盖率——能否生成至少一个正确解；精度——能否从候选中认出正确解。讲义的图显示覆盖率随样本数持续上升。没有验证器怎么办？可以用 Self-Consistency：采样多条推理路径、对最终答案多数投票，讲义的 ARC 图上它随采样路径数增加明显优于单路径贪心解码。"
           ],
-          "formula": "Inkling：R(e) = R_task − λ(e)·N_tokens（λ 大 → 低推理强度）",
+          "math": [
+            "\\text{Inkling：}\\; R(e) = R_{\\text{task}} - \\lambda(e)\\cdot N_{\\text{tokens}}",
+            "\\lambda \\text{ 大} \\;\\Rightarrow\\; \\text{低推理强度}"
+          ],
           "source": "Lecture 2 · p.138–148（Inference Time Scaling / Chain of Thought / Reasoning LLM / Setting the Reasoning Level / Scaling with Repeated Sampling / Self-Consistency）"
         },
         {
@@ -643,13 +671,13 @@
         {
           "question": "与全 softmax 注意力相比，线性注意力的特点是什么？",
           "options": [
-            "复杂度仍是 O(n²)，但长上下文表现更好",
-            "复杂度 O(n)、状态占常数内存，但长上下文更吃力",
+            "复杂度仍是 \\(O(n^2)\\)，但长上下文表现更好",
+            "复杂度 \\(O(n)\\)、状态占常数内存，但长上下文更吃力",
             "必须配合束搜索才能使用",
             "取消了位置嵌入，因此没有任何上下文长度限制"
           ],
           "answer": 1,
-          "explanation": "去掉 softmax 后可以先算 KᵀV，维护一个固定大小的状态，因此对上下文长度是 O(n)、内存为常数；代价是新词元只能和压缩状态交互，长上下文更难（讲义 p.83–87）。说仍是 O(n²) 且长上下文更好与讲义相反；线性注意力与束搜索无关；讲义 p.85 指出上下文长度的实际限制来自训练时如何使用位置嵌入，并非线性注意力带来的变化。"
+          "explanation": "去掉 softmax 后可以先算 \\(K^\\top V\\)，维护一个固定大小的状态，因此对上下文长度是 \\(O(n)\\)、内存为常数；代价是新词元只能和压缩状态交互，长上下文更难（讲义 p.83–87）。说仍是 \\(O(n^2)\\) 且长上下文更好与讲义相反；线性注意力与束搜索无关；讲义 p.85 指出上下文长度的实际限制来自训练时如何使用位置嵌入，并非线性注意力带来的变化。"
         }
       ],
       "resources": [
@@ -703,16 +731,25 @@
             "思路是：不要求模型记住一切，而是在需要时（just-in-time）把相关、有用的内容提供给它。检索系统有两个好处：动态——文档容易更新和添加；可解释——模型可以给出指向检索文档的引用，方便人核查。",
             "检索最早大量用于开放域问答。DrQA（Chen et al., 2017）的检索器—阅读器框架：输入一个大文档集合和问题，检索器（一个固定的 TF-IDF 稀疏模型）返回前 K 篇（例如 100 篇），阅读器（一个神经阅读理解模型，可以在 SQuAD 上训练，今天也可以是零样本 LLM）从中读出答案，例如“1933 年华沙有多少居民讲波兰语？”→ 833,500。Lewis et al.（2021）的 RAG 把检索器和生成器连成一个可以端到端训练的模型。"
           ],
+          "figure": {
+            "src": "figures/l03-rag-architecture.webp",
+            "alt": "RAG 架构图：查询编码器把问题编码为 q(x)，经最大内积搜索（MIPS）从文档索引取出前 K 个段落 z，生成器 p_θ 以问题和段落为条件生成答案，再对各段落边缘化；整条链路端到端反向传播到 q 和 p_θ",
+            "caption": "从左到右读：查询编码 → MIPS 检索 → 生成器 → 边缘化。顶部的虚线箭头说明检索器的查询编码器和生成器是联合训练的（文档编码器和索引保持不变）。左右两侧是开放域问答、事实核查、问题生成等任务的例子。原图出自 Lewis et al.（RAG 论文）。",
+            "source": "Lecture 3 · p.14"
+          },
           "source": "Lecture 3 · p.10–14（Why Retrieval? / Using Retrieval to Overcome LMs' Shortcomings / Retriever-Reader Framework / Retrieval Augmented Generation (RAG)）"
         },
         {
           "title": "深入 RAG：检索器、生成器与边缘化",
           "body": [
-            "RAG 由两部分组成：检索器 p(z|x) 为查询 x 返回前 K 个段落 z；生成器 p(y|x,z) 在给定查询和一个检索段落时逐词元写出答案。最终答案的概率是对前 K 个段落边缘化：每个段落给出的答案，按检索器对该段落的打分加权。RAG-Sequence 选一个段落、用它生成整个答案；RAG-Token 则在答案的每个词元处重新选择段落。训练时联合训练检索器和生成器，最小化负的边缘对数似然 Σ_j −log p(y_j|x_j)。",
-            "检索器用 DPR：p(z|x) ∝ exp(d(z)ᵀq(x))，其中 d(z) 和 q(x) 分别由两个 BERT 编码段落和查询；取得分最高的 k 个段落是一个最大内积搜索（MIPS）问题。生成器可以是任意编码器—解码器，原论文用 BART，生成时把 x 和 z 拼接起来输入。讲义的结果表显示 RAG 在 NQ、TriviaQA、WebQuestions、CuratedTrec 上的精确匹配分数超过了闭卷的 T5 和开卷的 REALM、DPR；在 Jeopardy 问题生成的人工评测中，RAG 在事实性和具体性上都更常被判为更好。",
+            "RAG 由两部分组成：检索器 \\(p(z \\mid x)\\) 为查询 x 返回前 K 个段落 z；生成器 \\(p(y \\mid x, z)\\) 在给定查询和一个检索段落时逐词元写出答案。最终答案的概率是对前 K 个段落边缘化：每个段落给出的答案，按检索器对该段落的打分加权。RAG-Sequence 选一个段落、用它生成整个答案；RAG-Token 则在答案的每个词元处重新选择段落。训练时联合训练检索器和生成器，最小化负的边缘对数似然 \\(\\sum_j -\\log p(y_j \\mid x_j)\\)。",
+            "检索器用 DPR：\\(p(z \\mid x) \\propto \\exp\\big(d(z)^\\top q(x)\\big)\\)，其中 \\(d(z)\\) 和 \\(q(x)\\) 分别由两个 BERT 编码段落和查询；取得分最高的 k 个段落是一个最大内积搜索（MIPS）问题。生成器可以是任意编码器—解码器，原论文用 BART，生成时把 x 和 z 拼接起来输入。讲义的结果表显示 RAG 在 NQ、TriviaQA、WebQuestions、CuratedTrec 上的精确匹配分数超过了闭卷的 T5 和开卷的 REALM、DPR；在 Jeopardy 问题生成的人工评测中，RAG 在事实性和具体性上都更常被判为更好。",
             "讲义最后引用 Gao et al.（2024）的综述，把 RAG 分成三代：Naive RAG（索引→检索→提示冻结的 LLM）、Advanced RAG（加上检索前的查询改写和检索后的重排、摘要等），以及 Modular RAG（检索、改写、重排、记忆、路由等模块自由组合）。"
           ],
-          "formula": "p(y|x) ≈ Σ_{z∈top-K} p(z|x) · p(y|x,z)；DPR：p(z|x) ∝ exp(d(z)ᵀ q(x))",
+          "math": [
+            "p(y \\mid x) \\approx \\sum_{z \\in \\text{top-}K} p(z \\mid x) \\cdot p(y \\mid x, z)",
+            "\\text{DPR：}\\; p(z \\mid x) \\propto \\exp\\big(d(z)^\\top q(x)\\big)"
+          ],
           "source": "Lecture 3 · p.16–21（Deep Dive into RAG / Retriever: DPR / Generator: BART / RAG Performance on Open-Domain QA / Different Variants of RAG）"
         },
         {
@@ -785,24 +822,33 @@
         {
           "title": "向量搜索与 HNSW",
           "body": [
-            "向量搜索的任务是：给定查询向量，从 N 个块向量中返回前 k 个。精确搜索是暴力扫描，每次查询 O(N)。近似最近邻（ANN）用一点召回率换大量速度：倒排文件索引（IVF）先对索引聚类，只探查最近的几个聚类中心；乘积量化（PQ）把每个向量压缩成短码；HNSW 用多层近邻图，从粗的上层开始贪心下降。",
-            "HNSW（Hierarchical Navigable Small World）：所有向量都在最底层，越往上层节点越稀疏。搜索从最顶层开始，贪心地跳向离查询更近的邻居，走不动时下降一层，大约 log N 跳就能到达，召回率高。建图时一次插入一个向量，随机决定它最高能到哪一层（多数节点只在第 0 层，很少到顶层），在每一层连接 M 个最近邻，再加一条通往其他簇的启发式连接，避免贪心游走被困住。"
+            "向量搜索的任务是：给定查询向量，从 N 个块向量中返回前 k 个。精确搜索是暴力扫描，每次查询 \\(O(N)\\)。近似最近邻（ANN）用一点召回率换大量速度：倒排文件索引（IVF）先对索引聚类，只探查最近的几个聚类中心；乘积量化（PQ）把每个向量压缩成短码；HNSW 用多层近邻图，从粗的上层开始贪心下降。",
+            "HNSW（Hierarchical Navigable Small World）：所有向量都在最底层，越往上层节点越稀疏。搜索从最顶层开始，贪心地跳向离查询更近的邻居，走不动时下降一层，大约 \\(\\log N\\) 跳就能到达，召回率高。建图时一次插入一个向量，随机决定它最高能到哪一层（多数节点只在第 0 层，很少到顶层），在每一层连接 M 个最近邻，再加一条通往其他簇的启发式连接，避免贪心游走被困住。"
           ],
+          "figure": {
+            "src": "figures/l03-hnsw-layers.webp",
+            "alt": "HNSW 三层图示意：Layer=2 只有少数节点，Layer=1 稍多，Layer=0 包含全部向量；红色箭头表示搜索从顶层的入口点贪心地走向离查询更近的节点，到局部最优后沿虚线下降一层，直到在底层找到最近邻",
+            "caption": "纵向看层：越往上节点越稀疏、连边越长，适合“大步跳”；底层包含所有向量，用来精细查找。红色路径就是正文说的“贪心跳向更近的邻居，走不动时下降一层”，所以只需约 \\(\\log N\\) 跳。",
+            "source": "Lecture 3 · p.37"
+          },
           "source": "Lecture 3 · p.36–38（Vector Search / HNSW）"
         },
         {
           "title": "BM25：至今最常用的检索函数",
           "body": [
-            "检索器大致分三类：词重叠（BM25）、向量检索（DPR、句向量）和其他神经系统（ColBERT）。BM25 对查询中的每个词 q_i 累加一项：IDF(q_i) 衡量这个词有多罕见（N 是文档总数，n(q_i) 是包含它的文档数）；中间的分式衡量它在文档 D 中出现多频繁，f(q_i, D) 在分子分母同时出现，所以出现次数越多增益越小（词频饱和）；分母里的 |D|/avgdl 把文档长度和平均长度相比，长文档会被惩罚。k₁ 控制饱和速度，b 控制长度归一化的强度。",
-            "讲义的两张图分别展示了 IDF 随文档频率的变化（BM25 的 IDF 在词出现于超过一半文档时变成负数）和词频饱和曲线（k₁ 越小越早饱和）。补充：HW1 第 3 题要求从零实现 BM25 倒排索引，并指定 k₁ = 1.5、b = 0.75，IDF 采用 Lucene 的版本 ln(1 + (N − n + 0.5)/(n + 0.5))——括号里的 +1 让 IDF 始终为正，所以分数会和用原始公式的库不同。下面的代码演示比较这两种 IDF。"
+            "检索器大致分三类：词重叠（BM25）、向量检索（DPR、句向量）和其他神经系统（ColBERT）。BM25 对查询中的每个词 \\(q_i\\) 累加一项：\\(\\mathrm{IDF}(q_i)\\) 衡量这个词有多罕见（N 是文档总数，\\(n(q_i)\\) 是包含它的文档数）；中间的分式衡量它在文档 D 中出现多频繁，\\(f(q_i, D)\\) 在分子分母同时出现，所以出现次数越多增益越小（词频饱和）；分母里的 \\(|D|/\\mathrm{avgdl}\\) 把文档长度和平均长度相比，长文档会被惩罚。\\(k_1\\) 控制饱和速度，b 控制长度归一化的强度。",
+            "讲义的两张图分别展示了 IDF 随文档频率的变化（BM25 的 IDF 在词出现于超过一半文档时变成负数）和词频饱和曲线（\\(k_1\\) 越小越早饱和）。补充：HW1 第 3 题要求从零实现 BM25 倒排索引，并指定 \\(k_1 = 1.5\\)、\\(b = 0.75\\)，IDF 采用 Lucene 的版本 \\(\\ln\\big(1 + (N - n + 0.5)/(n + 0.5)\\big)\\)——括号里的 +1 让 IDF 始终为正，所以分数会和用原始公式的库不同。下面的代码演示比较这两种 IDF。"
           ],
-          "formula": "score(D,Q) = Σ_{i=1}^{n} IDF(q_i) · f(q_i,D)·(k₁+1) / ( f(q_i,D) + k₁·(1 − b + b·|D|/avgdl) )；IDF(q_i) = ln( (N − n(q_i) + 0.5) / (n(q_i) + 0.5) )",
+          "math": [
+            "\\mathrm{score}(D,Q) = \\sum_{i=1}^{n} \\mathrm{IDF}(q_i) \\cdot \\frac{f(q_i,D) \\cdot (k_1+1)}{f(q_i,D) + k_1 \\cdot \\left(1 - b + b \\cdot \\frac{|D|}{\\mathrm{avgdl}}\\right)}",
+            "\\mathrm{IDF}(q_i) = \\ln\\frac{N - n(q_i) + 0.5}{n(q_i) + 0.5}"
+          ],
           "source": "Lecture 3 · p.40–42（Different Types of Retrievers / BM25: the most widely used (even today) / IDF Comparison and Term Frequency Saturation）"
         },
         {
           "title": "DPR：稠密段落检索",
           "body": [
-            "DPR（Karpukhin et al., 2020）分离线和在线两部分：离线时用段落编码器 E_P 把所有段落编码成向量，存进向量索引；在线时用查询编码器 E_Q 编码问题，与段落向量做点积，取前 k 个。训练用对比损失：让问题与正确段落的内积 s(q, p⁺) 高于与负例段落的内积，负例来自同一批次里其他问题的正例（in-batch negatives），再加上 BM25 找出的难负例（hard negatives）。",
+            "DPR（Karpukhin et al., 2020）分离线和在线两部分：离线时用段落编码器 \\(E_P\\) 把所有段落编码成向量，存进向量索引；在线时用查询编码器 \\(E_Q\\) 编码问题，与段落向量做点积，取前 k 个。训练用对比损失：让问题与正确段落的内积 \\(s(q, p^+)\\) 高于与负例段落的内积，负例来自同一批次里其他问题的正例（in-batch negatives），再加上 BM25 找出的难负例（hard negatives）。",
             "讲义的结果表：在 Top-20 检索准确率上，DPR 在 5 个数据集中的 4 个上超过 BM25（例如 NQ 上 BM25 为 59.1，DPR 为 78.4），例外是 SQuAD——补充：SQuAD 的问题是看着段落写的，与段落词汇重叠很高，正是 BM25 擅长的情形。另一张图显示，只用 1,000 个问答对训练，DPR 就已经超过 BM25；而且不需要额外预训练，端到端效果也超过 ORQA 和 REALM。"
           ],
           "source": "Lecture 3 · p.43–44, 47–48（DPR: dense passage retrieval / DPR beats BM25 on 4 of 5 datasets / 1,000 QA pairs are enough to beat BM25）"
@@ -810,58 +856,67 @@
         {
           "title": "给检索器打分：Hit@k、Failed@k、MRR@k、Recall@k、nDCG@k",
           "body": [
-            "讲义定义了五个指标，都对查询集合 Q 取平均。Hit@k：前 k 里只要有一个相关段落就记 1，名次无所谓。Failed@k：前 k 里一个相关段落都没有的查询比例，等于 1 − Hit@k。MRR@k：第一个相关段落名次的倒数，不在前 k 里记 0。Recall@k：前 k 里找到的相关段落占该查询全部相关段落的比例。nDCG@k：按名次折扣累加相关度（第 i 名除以 log₂(i+1)），再除以理想排序的 DCG 做归一化。",
+            "讲义定义了五个指标，都对查询集合 Q 取平均。Hit@k：前 k 里只要有一个相关段落就记 1，名次无所谓。Failed@k：前 k 里一个相关段落都没有的查询比例，等于 \\(1 - \\mathrm{Hit@}k\\)。MRR@k：第一个相关段落名次的倒数，不在前 k 里记 0。Recall@k：前 k 里找到的相关段落占该查询全部相关段落的比例。nDCG@k：按名次折扣累加相关度（第 i 名除以 \\(\\log_2(i+1)\\)），再除以理想排序的 DCG 做归一化。",
             "这些指标回答的问题不同：Hit@k 和 Failed@k 只关心“有没有”，适合判断后续阅读器是否有机会答对；MRR 关心第一个相关结果有多靠前；Recall@k 关心多跳问题需要的所有证据是否都被找到；nDCG@k 对整个排序最敏感。"
           ],
-          "formula": "Hit@k = (1/|Q|) Σ_q 1[R_q ∩ Top_k(q) ≠ ∅]；Failed@k = 1 − Hit@k；MRR@k = (1/|Q|) Σ_q 1/rank_q；Recall@k = (1/|Q|) Σ_q |R_q ∩ Top_k(q)| / |R_q|；nDCG@k = (1/|Q|) Σ_q DCG_q@k / IDCG_q@k，DCG@k = Σ_{i=1}^{k} rel_i / log₂(i+1)",
+          "math": [
+            "\\mathrm{Hit@}k = \\frac{1}{|Q|} \\sum_q \\mathbf{1}\\big[R_q \\cap \\mathrm{Top}_k(q) \\ne \\varnothing\\big]",
+            "\\mathrm{Failed@}k = 1 - \\mathrm{Hit@}k",
+            "\\mathrm{MRR@}k = \\frac{1}{|Q|} \\sum_q \\frac{1}{\\mathrm{rank}_q}",
+            "\\mathrm{Recall@}k = \\frac{1}{|Q|} \\sum_q \\frac{|R_q \\cap \\mathrm{Top}_k(q)|}{|R_q|}",
+            "\\mathrm{nDCG@}k = \\frac{1}{|Q|} \\sum_q \\frac{\\mathrm{DCG}_q@k}{\\mathrm{IDCG}_q@k}",
+            "\\mathrm{DCG@}k = \\sum_{i=1}^{k} \\frac{\\mathrm{rel}_i}{\\log_2(i+1)}"
+          ],
           "source": "Lecture 3 · p.45–46（Scoring a Retriever: Hit@k, Failed@k, nDCG@k / Scoring a Retriever: MRR@k, Recall@k）"
         },
         {
           "title": "手算：一次查询的指标与 RRF 融合",
           "kind": "worked-example",
           "body": [
-            "补充：下面的数字是为演示讲义 p.45–46 和 p.49 的公式而设的。某查询有两个相关段落 A、C。稠密检索器返回 [B, A, D, C, E]。Hit@1 = 0（第 1 名 B 不相关），Hit@3 = 1；第一个相关段落 A 在第 2 名，MRR@5 = 1/2；Recall@3 = 1/2（只找到 A），Recall@5 = 2/2 = 1。nDCG@5：DCG = 1/log₂3 + 1/log₂5 = 0.6309 + 0.4307 = 1.0616；理想排序把 A、C 放在前两名，IDCG = 1 + 0.6309 = 1.6309；nDCG@5 = 1.0616 / 1.6309 ≈ 0.651。",
-            "再看混合检索。讲义说 BM25 会漏掉换了说法的段落，稠密检索会漏掉罕见字面量（错误码、产品编号），二者失败方式不同，所以同时运行两者，再用倒数排名融合（RRF）合并名次而不是原始分数，k = 60。设 BM25 返回 [C, B, E, A]，稠密检索返回 [B, A, D, C]。RRF(B) = 1/62 + 1/61 ≈ 0.03252；RRF(C) = 1/61 + 1/64 ≈ 0.03202；RRF(A) = 1/64 + 1/62 ≈ 0.03175；D、E 各只出现一次，都是 1/63 ≈ 0.01587。融合后的顺序是 B、C、A、D/E：两个相关段落 A、C 都进了前 3，而单看 BM25 时 A 在第 4 名，单看稠密检索时 C 在第 4 名。",
+            "补充：下面的数字是为演示讲义 p.45–46 和 p.49 的公式而设的。某查询有两个相关段落 A、C。稠密检索器返回 [B, A, D, C, E]。\\(\\mathrm{Hit@}1 = 0\\)（第 1 名 B 不相关），\\(\\mathrm{Hit@}3 = 1\\)；第一个相关段落 A 在第 2 名，\\(\\mathrm{MRR@}5 = 1/2\\)；\\(\\mathrm{Recall@}3 = 1/2\\)（只找到 A），\\(\\mathrm{Recall@}5 = 2/2 = 1\\)。nDCG@5：\\(\\mathrm{DCG} = 1/\\log_2 3 + 1/\\log_2 5 = 0.6309 + 0.4307 = 1.0616\\)；理想排序把 A、C 放在前两名，\\(\\mathrm{IDCG} = 1 + 0.6309 = 1.6309\\)；\\(\\mathrm{nDCG@}5 = 1.0616 / 1.6309 \\approx 0.651\\)。",
+            "再看混合检索。讲义说 BM25 会漏掉换了说法的段落，稠密检索会漏掉罕见字面量（错误码、产品编号），二者失败方式不同，所以同时运行两者，再用倒数排名融合（RRF）合并名次而不是原始分数，\\(k = 60\\)。设 BM25 返回 [C, B, E, A]，稠密检索返回 [B, A, D, C]。\\(\\mathrm{RRF}(B) = 1/62 + 1/61 \\approx 0.03252\\)；\\(\\mathrm{RRF}(C) = 1/61 + 1/64 \\approx 0.03202\\)；\\(\\mathrm{RRF}(A) = 1/64 + 1/62 \\approx 0.03175\\)；D、E 各只出现一次，都是 \\(1/63 \\approx 0.01587\\)。融合后的顺序是 B、C、A、D/E：两个相关段落 A、C 都进了前 3，而单看 BM25 时 A 在第 4 名，单看稠密检索时 C 在第 4 名。",
             "RRF 只用名次，所以两个检索器的分数尺度完全不同也没关系，不需要按语料调参，也能合并任意多个检索器——这正是讲义列出的优点。"
           ],
-          "formula": "RRF(d) = Σ_{r∈R} 1 / (k + rank_r(d))，k = 60",
+          "math": [
+            "\\mathrm{RRF}(d) = \\sum_{r \\in R} \\frac{1}{k + \\mathrm{rank}_r(d)}, \\quad k = 60"
+          ],
           "table": {
             "columns": [
               "段落",
               "BM25 名次",
               "稠密检索名次",
-              "RRF 分数（k=60）"
+              "RRF 分数（\\(k=60\\)）"
             ],
             "rows": [
               [
                 "B",
                 "2",
                 "1",
-                "1/62 + 1/61 ≈ 0.03252"
+                "\\(1/62 + 1/61 \\approx 0.03252\\)"
               ],
               [
                 "C（相关）",
                 "1",
                 "4",
-                "1/61 + 1/64 ≈ 0.03202"
+                "\\(1/61 + 1/64 \\approx 0.03202\\)"
               ],
               [
                 "A（相关）",
                 "4",
                 "2",
-                "1/64 + 1/62 ≈ 0.03175"
+                "\\(1/64 + 1/62 \\approx 0.03175\\)"
               ],
               [
                 "D",
                 "—",
                 "3",
-                "1/63 ≈ 0.01587"
+                "\\(1/63 \\approx 0.01587\\)"
               ],
               [
                 "E",
                 "3",
                 "—",
-                "1/63 ≈ 0.01587"
+                "\\(1/63 \\approx 0.01587\\)"
               ]
             ]
           },
@@ -873,7 +928,15 @@
             "双编码器（bi-encoder，用于检索）把查询和段落分别编码；交叉编码器（cross-encoder，用于重排）把查询和段落一起送进模型，两者之间做完整的注意力，更准但无法预先计算。ColBERT 的晚交互（late interaction）介于两者之间：查询和段落仍独立编码，但每个词元保留一个向量，只在打分时交互——对查询的每个词元，找段落中内积最大的词元（MaxSim），再把这些最大值相加。",
             "讲义用一张表总结速度与适用场景（延迟来自 MS MARCO 上的论文数据，DPR 在不同硬件上测得）。补充：这张表解释了为什么实践中常常先用快的检索器从全库里取候选，再用慢而准的模型在短名单上重排。"
           ],
-          "formula": "ColBERT：S_{q,d} = Σ_{i∈q} max_j q_i · d_j",
+          "math": [
+            "\\text{ColBERT：}\\; S_{q,d} = \\sum_{i \\in q} \\max_j \\, q_i \\cdot d_j"
+          ],
+          "figure": {
+            "src": "figures/l03-late-interaction.webp",
+            "alt": "四种检索打分范式对比：(a) 查询和文档各编码成一个向量后比较相似度；(b) 查询—文档交互矩阵；(c) 查询与文档拼接后全连接交互（如 BERT 交叉编码器）；(d) 晚交互：查询和文档各自逐词元编码，再用 MaxSim 求和打分（ColBERT）",
+            "caption": "(a) 就是 DPR 这类双编码器，文档可以离线编码但交互最弱；(c) 是交叉编码器，交互最充分但每对查询—文档都要重新跑模型；(d) ColBERT 介于两者之间：文档的词元向量可以离线存好，打分时才对每个查询词元取最大相似度再求和。原图出自 ColBERT 论文（Khattab & Zaharia, 2020）。",
+            "source": "Lecture 3 · p.51"
+          },
           "table": {
             "columns": [
               "检索器",
@@ -975,21 +1038,21 @@
           "explanation": "讲义 p.49：BM25 靠词重叠，换一种说法就匹配不上；稠密向量把语义压在一起，错误码、产品 ID 这类罕见字面量容易丢。把两者对调与讲义相反；讲义没有说它们只在长文档上失败；正因为失败方式不同，才值得用 RRF 融合。"
         },
         {
-          "question": "用 RRF（k = 60）融合两个检索器时，某段落在一个列表中排第 1、在另一个列表中没出现。它的 RRF 分数是多少？",
+          "question": "用 RRF（\\(k = 60\\)）融合两个检索器时，某段落在一个列表中排第 1、在另一个列表中没出现。它的 RRF 分数是多少？",
           "options": [
-            "1 + 0 = 1",
-            "1/61",
-            "1/60",
+            "\\(1 + 0 = 1\\)",
+            "\\(1/61\\)",
+            "\\(1/60\\)",
             "需要知道两个检索器的原始分数才能算"
           ],
           "answer": 1,
-          "explanation": "RRF(d) = Σ 1/(k + rank)，排第 1 贡献 1/(60+1) = 1/61，没出现的列表不贡献。直接用 1 是把名次倒数和 RRF 混淆了；1/60 漏掉了 rank 本身；RRF 只用名次，不需要原始分数，这正是它不必按语料调参的原因。"
+          "explanation": "\\(\\mathrm{RRF}(d) = \\sum 1/(k + \\mathrm{rank})\\)，排第 1 贡献 \\(1/(60+1) = 1/61\\)，没出现的列表不贡献。直接用 1 是把名次倒数和 RRF 混淆了；\\(1/60\\) 漏掉了 rank 本身；RRF 只用名次，不需要原始分数，这正是它不必按语料调参的原因。"
         },
         {
           "question": "按讲义，智能体式 RAG（agentic RAG）在普通 RAG 之外要做哪三个决策？",
           "options": [
             "选嵌入模型、选向量库、选块大小",
-            "选 BM25 的 k₁、b 和 IDF 公式",
+            "选 BM25 的 \\(k_1\\)、\\(b\\) 和 IDF 公式",
             "是否检索、发出什么查询、结果是否够好",
             "选 RAG-Sequence 还是 RAG-Token、是否联合训练、是否用 BART"
           ],
@@ -1031,7 +1094,7 @@
       "objectives": [
         "按“算不了、没见过、够不着”三类说明 LLM 为什么需要工具，写出 Toolformer 的采样—执行—过滤流程，并能用讲义数字手算一次 API 调用的有用性分数。",
         "比较 Toolformer、ToolkenGPT、ToolLLM、Gorilla 的训练方式和规模，说明 REST、函数调用、MCP 三代接口的区别，以及 MCP 的 tools/list 与 tools/call。",
-        "说出 BFCL、ToolBench、τ-bench 各测什么，能从 c/n 次成功手算 pass^k 与 pass@k，并按单次调用、多步链、对话三类归纳工具使用的失败模式。"
+        "说出 BFCL、ToolBench、τ-bench 各测什么，能从 \\(c/n\\) 次成功手算 \\(\\mathrm{pass}^k\\) 与 \\(\\mathrm{pass@}k\\)，并按单次调用、多步链、对话三类归纳工具使用的失败模式。"
       ],
       "sections": [
         {
@@ -1045,7 +1108,7 @@
         {
           "title": "为什么需要工具",
           "body": [
-            "讲义先展示了两个现象：GPT-4 做多位数乘法（例如 999 × 867）的准确率只有约 59%，位数越多越差；Dziri et al.（2023）的实验显示，随着乘法位数、逻辑谜题规模、动态规划序列长度增加，零样本准确率迅速掉到接近 0。",
+            "讲义先展示了两个现象：GPT-4 做多位数乘法（例如 \\(999 \\times 867\\)）的准确率只有约 59%，位数越多越差；Dziri et al.（2023）的实验显示，随着乘法位数、逻辑谜题规模、动态规划序列长度增加，零样本准确率迅速掉到接近 0。",
             "据此讲义把 LLM 的短板分成三类，并给出对应的工具。补充：这三类分别对应工具的三种作用——补计算、补知识、补行动，和第 1 讲智能体结构图里“工具”和“环境”两个部件对应。"
           ],
           "table": {
@@ -1093,15 +1156,25 @@
           "title": "Toolformer：模型自己学会调用工具",
           "body": [
             "Toolformer（Schick et al., 2023）训练语言模型决定调用哪个 API、何时调用、传什么参数、怎样使用结果，只需要每个 API 的少量示范，其余靠自监督。候选工具有五个：问答系统、计算器、搜索引擎、翻译系统和日历。做法是构造一个带 API 调用的新数据集，再用它微调 GPT-J（6B）。",
-            "构造数据分三步。（1）采样：对文本 x，先用少量示范提示模型在文本中插入 API 调用，在模型认为“这里该调用 API”的概率 p_i 超过阈值 τ_s 的位置 i，采样若干候选调用 c_i¹, c_i², …。例如“Pittsburgh is known as the Steel City.”中，在“the Steel City”之前插入 [QA(\"What other name is Pittsburgh known by?\")]。（2）执行：真正调用 API，拿到结果（这里是 the Steel City）。（3）过滤：只保留能降低后续词元损失的调用。",
-            "过滤用加权交叉熵 L_i(z) = −Σ_j w_{j−i} · log p_M(x_j | z, x_{1:j−1})，比较两种损失：L_i⁺ 是插入“调用 + 执行结果”后的损失；L_i⁻ 取“不调用 API”和“插入调用但不给结果”两者中较小的那个。只有 L_i⁻ − L_i⁺ ≥ τ_f 时才保留该调用。也就是说，光是“插入调用”这个动作不能算有用，必须是结果本身带来了帮助。",
+            "构造数据分三步。（1）采样：对文本 x，先用少量示范提示模型在文本中插入 API 调用，在模型认为“这里该调用 API”的概率 \\(p_i\\) 超过阈值 \\(\\tau_s\\) 的位置 \\(i\\)，采样若干候选调用 \\(c_i^1, c_i^2, \\dots\\)。例如“Pittsburgh is known as the Steel City.”中，在“the Steel City”之前插入 [QA(\"What other name is Pittsburgh known by?\")]。（2）执行：真正调用 API，拿到结果（这里是 the Steel City）。（3）过滤：只保留能降低后续词元损失的调用。",
+            "过滤用加权交叉熵 \\(L_i(z) = -\\sum_j w_{j-i} \\cdot \\log p_M(x_j \\mid z, x_{1:j-1})\\)，比较两种损失：\\(L_i^+\\) 是插入“调用 + 执行结果”后的损失；\\(L_i^-\\) 取“不调用 API”和“插入调用但不给结果”两者中较小的那个。只有 \\(L_i^- - L_i^+ \\ge \\tau_f\\) 时才保留该调用。也就是说，光是“插入调用”这个动作不能算有用，必须是结果本身带来了帮助。",
             "补充（读图推断）：讲义的结果图中，6B 的 Toolformer 在数学题上约 37.7，远高于 GPT-J 的 7.7，也高于 175B 的 GPT-3（14.7）；但在问答上 GPT-3（39.3）仍高于 Toolformer（31.0）。另一组图显示，模型规模太小时即使有工具也用不好，工具带来的提升随规模增大才显现。"
           ],
-          "formula": "L_i⁺ = L_i(e(c_i, r_i))；L_i⁻ = min( L_i(ε), L_i(e(c_i, ε)) )；保留调用 ⇔ L_i⁻ − L_i⁺ ≥ τ_f",
+          "math": [
+            "L_i^+ = L_i\\big(e(c_i, r_i)\\big)",
+            "L_i^- = \\min\\big(L_i(\\varepsilon),\\; L_i(e(c_i, \\varepsilon))\\big)",
+            "\\text{保留调用} \\iff L_i^- - L_i^+ \\ge \\tau_f"
+          ],
+          "figure": {
+            "src": "figures/l04-toolformer-pipeline.webp",
+            "alt": "Toolformer 数据构造流程：LM 数据集经过三步——采样 API 调用、执行 API 调用、过滤 API 调用——变成带 API 调用的数据集；以 Pittsburgh is also known as the Steel City 为例，两个候选调用中只有返回 Steel City 的那个通过了损失过滤",
+            "caption": "沿着同一个例子看三步：采样出两个候选问题 \\(c_i^1\\)、\\(c_i^2\\)，执行后分别得到 Steel City 和 United States；过滤时只有 \\(c_i^1\\) 让后文损失明显下降（绿色的“<”），被写回数据集；\\(c_i^2\\) 没帮上忙（红色的“>”），被丢弃。原图出自 Toolformer 论文（Schick et al., 2023）。",
+            "source": "Lecture 4 · p.24"
+          },
           "flow": [
-            "采样：在 p_i > τ_s 处生成候选 API 调用",
+            "采样：在 \\(p_i > \\tau_s\\) 处生成候选 API 调用",
             "执行：调用 API 得到结果",
-            "过滤：保留 L⁻ − L⁺ ≥ τ_f 的调用",
+            "过滤：保留 \\(L^- - L^+ \\ge \\tau_f\\) 的调用",
             "用新数据集微调 GPT-J"
           ],
           "source": "Lecture 4 · p.22–27, 30–31（Toolformer / Candidate Tools / Method / (1) Sample API Calls / (2) Execute API Calls / (3) Filter API Calls / Toolformer Result on Diverse Tasks / GPT-2 Models with and without Toolformer）"
@@ -1110,15 +1183,15 @@
           "title": "手算：一次 API 调用值不值得保留",
           "kind": "worked-example",
           "body": [
-            "讲义 p.28 给了一组具体数字。L(前缀) 定义为 −log p(\"the Steel City.\" | 前缀)。A. 不调用 API，前缀是“Pittsburgh is known as”：L_A = 2.5。B. 插入调用但不执行（结果位置写“?”）：L_B = 2.1。C. 插入调用并给出执行结果“Steel City”：L_C = 0.8。",
-            "有用性 = min(L_A, L_B) − L_C = min(2.5, 2.1) − 0.8 = 2.1 − 0.8 = 1.3。注意减数取的是 A、B 中较小的 2.1，而不是 2.5：如果只和“不调用”比，会把“插入一个问题本身就让后文更好猜”的效果也算到工具头上，高估成 1.7。只要 1.3 ≥ τ_f，这条调用就进入训练数据。",
+            "讲义 p.28 给了一组具体数字。\\(L(\\text{前缀})\\) 定义为 \\(-\\log p(\\text{\"the Steel City.\"} \\mid \\text{前缀})\\)。A. 不调用 API，前缀是“Pittsburgh is known as”：\\(L_A = 2.5\\)。B. 插入调用但不执行（结果位置写“?”）：\\(L_B = 2.1\\)。C. 插入调用并给出执行结果“Steel City”：\\(L_C = 0.8\\)。",
+            "有用性 = \\(\\min(L_A, L_B) - L_C = \\min(2.5, 2.1) - 0.8 = 2.1 - 0.8 = 1.3\\)。注意减数取的是 A、B 中较小的 2.1，而不是 2.5：如果只和“不调用”比，会把“插入一个问题本身就让后文更好猜”的效果也算到工具头上，高估成 1.7。只要 \\(1.3 \\ge \\tau_f\\)，这条调用就进入训练数据。",
             "讲义 p.29 还给了三个例子的有用性分数：日历调用（“Today is Thursday, March 9, 2017” 帮助预测后面的日期）得 2.11；计算器调用 Calculator(735 / 499) → 1.47 得 1.59；而问答调用 QA(\"Who was the last time I was with?\") → The Last Time 得 −1.23——结果不但没帮上忙，反而让后文更难预测，会被过滤掉。"
           ],
           "table": {
             "columns": [
               "情形",
               "前缀",
-              "−log p(the Steel City. | 前缀)"
+              "\\(-\\log p(\\text{the Steel City.} \\mid \\text{前缀})\\)"
             ],
             "rows": [
               [
@@ -1138,7 +1211,7 @@
               ],
               [
                 "有用性",
-                "min(2.5, 2.1) − 0.8",
+                "\\(\\min(2.5, 2.1) - 0.8\\)",
                 "1.3"
               ]
             ]
@@ -1148,10 +1221,13 @@
         {
           "title": "ToolkenGPT：把工具当作“词”",
           "body": [
-            "ToolkenGPT（Hao et al., 2024）把每个工具表示成一个特殊词元（toolken），为它学一个嵌入。模型预测下一个词元时，在普通词表 W_v 和工具嵌入 W_τ 拼成的矩阵上一起做 softmax；一旦预测出某个 toolken，就切换到工具模式：生成暂停，上下文被移到一个新提示里，用上下文学习的示范（[tool](args) 语法）补全参数，工具执行后把返回值带回推理模式继续生成。",
+            "ToolkenGPT（Hao et al., 2024）把每个工具表示成一个特殊词元（toolken），为它学一个嵌入。模型预测下一个词元时，在普通词表 \\(W_v\\) 和工具嵌入 \\(W_\\tau\\) 拼成的矩阵上一起做 softmax；一旦预测出某个 toolken，就切换到工具模式：生成暂停，上下文被移到一个新提示里，用上下文学习的示范（[tool](args) 语法）补全参数，工具执行后把返回值带回推理模式继续生成。",
             "训练时冻结语言模型，只学 toolken 嵌入。讲义的例子是“the area is 256 square feet”：在结果的第一个词元处标注 toolken [square]，结果词元本身记为 [N/A]，在损失中跳过，所以损失只落在 toolken 的位置上。训练数据可以是带真实工具调用的数据集，也可以是合成数据。讲义的表格显示，在 FuncQA 的多跳问题上，ToolkenGPT（0.15）明显高于 0-shot ChatGPT、CoT 和 ReAct，且工具数量增加时表现下降较慢。"
           ],
-          "formula": "P(t_i | t_<i) = softmax([W_v; W_τ] · h_{i−1})；L(W_τ) = Σ_{(s,s′)∈D} Σ_i −log P(t′_i | t_<i) · 1[t′_i ≠ N/A]",
+          "math": [
+            "P(t_i \\mid t_{<i}) = \\mathrm{softmax}\\big([W_v; W_\\tau] \\cdot h_{i-1}\\big)",
+            "L(W_\\tau) = \\sum_{(s,s') \\in D} \\sum_i -\\log P(t'_i \\mid t_{<i}) \\cdot \\mathbf{1}[t'_i \\ne \\text{N/A}]"
+          ],
           "source": "Lecture 4 · p.32–35（View Tools as \"Words\"? Toolken GPT / ToolkenGPT Framework / Learning Toolken Embeddings / ToolkenGPT involving different numbers of tools）"
         },
         {
@@ -1280,6 +1356,12 @@
             "发现工具用 tools/list：客户端问“你有哪些工具？”，服务器返回一个列表，每个工具有 name、description 和 JSON 格式的 inputSchema。讲义的例子里有 weather_current，参数 location 为字符串（必填），units 只能是 metric 或 imperial。执行工具用 tools/call：name 选一个已列出的工具，arguments 遵守它的 inputSchema，例如 {\"location\": \"Stanford\", \"units\": \"imperial\"}；返回结果是一个 content 数组（这里是一段文本“Current weather in Stanford: 68°F, partly cloudy…”），由宿主交回给 LLM。",
             "讲义用课程 LMS 演示怎样把已有 REST API 包成 MCP 服务器：GET /assignments、GET /submissions、POST /grade 三条路由，用 FastMCP.from_openapi 读取 OpenAPI 规范，自动变成 list_assignments、get_submissions、post_grade 三个 MCP 工具。认证要分两个方向：入站（inbound）——智能体用 AGENT_TOKEN 向 MCP 服务器证明身份；出站（outbound）——MCP 服务器用 LMS_TOKEN 访问 LMS 的 REST API。补充：这样智能体本身永远拿不到 LMS 的凭据。"
           ],
+          "figure": {
+            "src": "figures/l04-mcp-architecture.webp",
+            "alt": "MCP 架构图：一个 MCP 宿主（AI 应用）内有多个 MCP 客户端，每个客户端通过专用连接对应一个 MCP 服务器，例如本地的文件系统服务器、本地数据库服务器和远程的 Sentry 服务器",
+            "caption": "注意一一对应：宿主里每个客户端只连一个服务器，服务器可以在本地也可以在远程。模型通过宿主看到所有服务器暴露的工具，下面讲的 tools/list 和 tools/call 都发生在一条客户端—服务器连接上。",
+            "source": "Lecture 4 · p.52"
+          },
           "flow": [
             "客户端 tools/list",
             "服务器返回 name、description、inputSchema",
@@ -1294,40 +1376,49 @@
           "body": [
             "BFCL（Berkeley Function-Calling Leaderboard）是一个综合评测函数调用能力的框架。评测方式有三种：基于抽象语法树（AST）的离线评测、真实执行函数的评测、以及针对多步多轮调用的基于状态的评测；数据来自真实用例，覆盖 Python、C++、Java、SQL 等，还专门测相关性检测——当给出的函数都与请求无关时，模型应当拒绝调用。讲义的例子：“2 + 3 是多少？”给出 add 和 mult，应调用 add(a=2, b=3)（多函数）；“(2+3) 和 (4+5) 是多少？”应并行调用两次 add（并行函数）；“2*3 是多少？”只给了 add，应回答“请求是乘法，只有 add 可用”（相关性检测）。",
             "ToolBench / ToolLLM（Qin et al., 2023）从 RapidAPI 爬取 6,000 多个真实 API，按类别—工具—API 的层次构造单工具、类内多工具和集合内多工具三类指令，用 ChatGPT 标注解题路径。τ-bench（Yao et al., 2024）测的是工具—智能体—用户三方交互：智能体拿着领域政策（例如基础经济舱不能改签、预订 24 小时内才能取消）和数据库工具，与一个由模型模拟的用户多轮对话，最后看数据库状态是否正确。τ-retail 有 500 个用户、50 种商品、1,000 个订单、7 个写工具和 8 个非写工具、115 个任务；τ-airline 有 500 个用户、300 个航班、2,000 个预订、6 个写工具和 7 个非写工具、50 个任务。之后 τ-bench 又扩展出 τ²-bench、τ-knowledge、τ-voice 等版本。",
-            "τ-bench 引入了 pass^k 来衡量可靠性和一致性：同一任务跑 n 次、成功 c 次，pass^k 是“随机抽 k 次全部成功”的概率，pass@k 是“随机抽 k 次至少一次成功”的概率。讲义的图显示，随着 k 增大，各模型的 pass^k 在 τ-retail 上迅速下降，而 pass@k 上升——同一个模型“能做到”和“每次都做到”差别很大。"
+            "τ-bench 引入了 \\(\\mathrm{pass}^k\\) 来衡量可靠性和一致性：同一任务跑 n 次、成功 c 次，\\(\\mathrm{pass}^k\\) 是“随机抽 k 次全部成功”的概率，\\(\\mathrm{pass@}k\\) 是“随机抽 k 次至少一次成功”的概率。讲义的图显示，随着 k 增大，各模型的 \\(\\mathrm{pass}^k\\) 在 τ-retail 上迅速下降，而 \\(\\mathrm{pass@}k\\) 上升——同一个模型“能做到”和“每次都做到”差别很大。"
           ],
-          "formula": "pass^k = E_task[ C(c,k) / C(n,k) ]；pass@k = 1 − E_task[ C(n−c,k) / C(n,k) ]",
+          "math": [
+            "\\mathrm{pass}^k = \\mathbb{E}_{\\text{task}}\\left[\\binom{c}{k} \\Big/ \\binom{n}{k}\\right]",
+            "\\mathrm{pass@}k = 1 - \\mathbb{E}_{\\text{task}}\\left[\\binom{n-c}{k} \\Big/ \\binom{n}{k}\\right]"
+          ],
+          "figure": {
+            "src": "figures/l04-tau-bench.webp",
+            "alt": "τ-bench 示意图：左侧是设置——智能体拿着工具（get_user_details、book_reservation 等）和领域政策系统提示，与带着用户指令的模拟用户交互；右侧是 τ-airline 中一条改签请求的示例轨迹，智能体查数据库、按政策说明不能改签、经用户同意后取消预订并写入数据库",
+            "caption": "左边说明三方：工具、受政策约束的智能体、由模型扮演的用户；右边的轨迹里，智能体先读数据库，发现基础经济舱不能改签，于是提出取消并重订，用户同意后才写数据库。评分看的是最终数据库状态，所以同一任务多跑几次，结果可能不同——这就是要看 \\(\\mathrm{pass}^k\\) 的原因。原图出自 Yao et al.（2024）。",
+            "source": "Lecture 4 · p.63"
+          },
           "source": "Lecture 4 · p.58–66（BFCL / Berkeley Function Calling Leaderboard / Example Function Calls / ToolBench / ToolLLM / τ-bench / Pass^k to reward reliability and consistency / τ-bench Has Evolved）"
         },
         {
-          "title": "手算：pass^k 与 pass@k",
+          "title": "手算：\\(\\mathrm{pass}^k\\) 与 \\(\\mathrm{pass@}k\\)",
           "kind": "worked-example",
           "body": [
-            "补充：设某任务跑了 n = 8 次，成功 c = 6 次（数字为演示讲义 p.64 的公式而设）。k = 1 时两者相同：pass^1 = pass@1 = 6/8 = 0.75。",
-            "k = 2：pass^2 = C(6,2)/C(8,2) = 15/28 ≈ 0.536；pass@2 = 1 − C(2,2)/C(8,2) = 1 − 1/28 ≈ 0.964。k = 4：pass^4 = C(6,4)/C(8,4) = 15/70 ≈ 0.214；pass@4 = 1 − C(2,4)/C(8,4) = 1 − 0 = 1（只有 2 次失败，抽 4 次不可能全失败）。",
-            "同一组 8 次运行，k 从 1 增加到 4，pass@k 从 0.75 升到 1，pass^k 从 0.75 降到 0.214。这就是讲义列在失败模式里的“非确定性：一次通过，重试就失败”。面向用户的智能体（比如每天替你改签机票）更该看 pass^k。补充：这里的公式是不放回地从 n 次结果中抽 k 次；如果把每次成功当作独立、概率 0.75 的事件，pass^2 = 0.75² ≈ 0.563，与 0.536 接近但不相等。"
+            "补充：设某任务跑了 \\(n = 8\\) 次，成功 \\(c = 6\\) 次（数字为演示讲义 p.64 的公式而设）。\\(k = 1\\) 时两者相同：\\(\\mathrm{pass}^1 = \\mathrm{pass@}1 = 6/8 = 0.75\\)。",
+            "\\(k = 2\\)：\\(\\mathrm{pass}^2 = \\binom{6}{2}/\\binom{8}{2} = 15/28 \\approx 0.536\\)；\\(\\mathrm{pass@}2 = 1 - \\binom{2}{2}/\\binom{8}{2} = 1 - 1/28 \\approx 0.964\\)。\\(k = 4\\)：\\(\\mathrm{pass}^4 = \\binom{6}{4}/\\binom{8}{4} = 15/70 \\approx 0.214\\)；\\(\\mathrm{pass@}4 = 1 - \\binom{2}{4}/\\binom{8}{4} = 1 - 0 = 1\\)（只有 2 次失败，抽 4 次不可能全失败）。",
+            "同一组 8 次运行，k 从 1 增加到 4，\\(\\mathrm{pass@}k\\) 从 0.75 升到 1，\\(\\mathrm{pass}^k\\) 从 0.75 降到 0.214。这就是讲义列在失败模式里的“非确定性：一次通过，重试就失败”。面向用户的智能体（比如每天替你改签机票）更该看 \\(\\mathrm{pass}^k\\)。补充：这里的公式是不放回地从 n 次结果中抽 k 次；如果把每次成功当作独立、概率 0.75 的事件，\\(\\mathrm{pass}^2 = 0.75^2 \\approx 0.563\\)，与 0.536 接近但不相等。"
           ],
           "table": {
             "columns": [
               "k",
-              "pass^k = C(6,k)/C(8,k)",
-              "pass@k = 1 − C(2,k)/C(8,k)"
+              "\\(\\mathrm{pass}^k = \\binom{6}{k}/\\binom{8}{k}\\)",
+              "\\(\\mathrm{pass@}k = 1 - \\binom{2}{k}/\\binom{8}{k}\\)"
             ],
             "rows": [
               [
                 "1",
-                "6/8 = 0.75",
-                "1 − 2/8 = 0.75"
+                "\\(6/8 = 0.75\\)",
+                "\\(1 - 2/8 = 0.75\\)"
               ],
               [
                 "2",
-                "15/28 ≈ 0.536",
-                "1 − 1/28 ≈ 0.964"
+                "\\(15/28 \\approx 0.536\\)",
+                "\\(1 - 1/28 \\approx 0.964\\)"
               ],
               [
                 "4",
-                "15/70 ≈ 0.214",
-                "1 − 0/70 = 1"
+                "\\(15/70 \\approx 0.214\\)",
+                "\\(1 - 0/70 = 1\\)"
               ]
             ]
           },
@@ -1336,8 +1427,8 @@
         {
           "title": "工具使用的失败模式",
           "body": [
-            "讲义按三种情形归纳失败模式。单次调用：选错工具或本不需要工具时调用了工具；参数里编造字段、类型或单位错误；调用根本不存在的 API。多步链：跳过前置步骤、调用顺序错误；对失败的调用原样重试，而不是退回去换方法。对话：在规则说不该行动的地方行动；该问用户时自己假设；一次通过、重试失败的非确定性（pass^k）。",
-            "补充：这张表和前面的评测一一对应——BFCL 主要测单次调用（包括相关性检测），ToolBench 测多步链，τ-bench 测对话中的政策遵守和用户交互，pass^k 测非确定性。"
+            "讲义按三种情形归纳失败模式。单次调用：选错工具或本不需要工具时调用了工具；参数里编造字段、类型或单位错误；调用根本不存在的 API。多步链：跳过前置步骤、调用顺序错误；对失败的调用原样重试，而不是退回去换方法。对话：在规则说不该行动的地方行动；该问用户时自己假设；一次通过、重试失败的非确定性（\\(\\mathrm{pass}^k\\)）。",
+            "补充：这张表和前面的评测一一对应——BFCL 主要测单次调用（包括相关性检测），ToolBench 测多步链，τ-bench 测对话中的政策遵守和用户交互，\\(\\mathrm{pass}^k\\) 测非确定性。"
           ],
           "table": {
             "columns": [
@@ -1359,7 +1450,7 @@
               [
                 "幻觉工具：调用不存在的 API",
                 "—",
-                "非确定性：一次通过、重试失败（pass^k）"
+                "非确定性：一次通过、重试失败（\\(\\mathrm{pass}^k\\)）"
               ]
             ]
           },
@@ -1368,15 +1459,15 @@
       ],
       "quiz": [
         {
-          "question": "Toolformer 过滤 API 调用时，为什么用 min(L_A, L_B) 而不是只用“不调用 API”的损失 L_A 作比较基准？",
+          "question": "Toolformer 过滤 API 调用时，为什么用 \\(\\min(L_A, L_B)\\) 而不是只用“不调用 API”的损失 \\(L_A\\) 作比较基准？",
           "options": [
-            "因为 L_B 总是比 L_A 小，取最小值只是为了简化计算",
+            "因为 \\(L_B\\) 总是比 \\(L_A\\) 小，取最小值只是为了简化计算",
             "为了排除“只插入调用、不给结果”就能让后文更好预测的效果，确保收益来自执行结果",
             "为了惩罚调用次数太多的文本",
-            "因为 L_A 在训练时无法计算"
+            "因为 \\(L_A\\) 在训练时无法计算"
           ],
           "answer": 1,
-          "explanation": "L_B 是插入调用但不给结果的损失。讲义例子中 L_A = 2.5、L_B = 2.1、L_C = 0.8，有用性取 min(2.5, 2.1) − 0.8 = 1.3；若只和 L_A 比会得到 1.7，把“提问本身”的作用误算给工具结果。L_B 并不总小于 L_A；这一步与调用次数无关；L_A 就是普通语言模型损失，当然可以计算。"
+          "explanation": "\\(L_B\\) 是插入调用但不给结果的损失。讲义例子中 \\(L_A = 2.5\\)、\\(L_B = 2.1\\)、\\(L_C = 0.8\\)，有用性取 \\(\\min(2.5, 2.1) - 0.8 = 1.3\\)；若只和 \\(L_A\\) 比会得到 1.7，把“提问本身”的作用误算给工具结果。\\(L_B\\) 并不总小于 \\(L_A\\)；这一步与调用次数无关；\\(L_A\\) 就是普通语言模型损失，当然可以计算。"
         },
         {
           "question": "按第 4 讲对标准接口的划分，函数调用（function calling）相对 REST API 的主要改进是什么？",
@@ -1390,7 +1481,7 @@
           "explanation": "讲义 p.48–50：REST 面向人，模型要读文档手写请求，没有机器可读契约；函数调用为每个工具提供 JSON Schema，模型输出名字和参数，harness 校验并分派。运行时发现、跨宿主复用是第三代 MCP 的特点；模型仍要输出参数；“每个新 API 都要微调”恰恰是标准接口要避免的 Toolformer 类做法。"
         },
         {
-          "question": "某任务跑 4 次成功 2 次。按 τ-bench 的公式，pass^2 和 pass@2 分别是多少？",
+          "question": "某任务跑 4 次成功 2 次。按 τ-bench 的公式，\\(\\mathrm{pass}^2\\) 和 \\(\\mathrm{pass@}2\\) 分别是多少？",
           "options": [
             "0.25 和 0.75",
             "0.5 和 0.5",
@@ -1398,7 +1489,7 @@
             "0 和 1"
           ],
           "answer": 2,
-          "explanation": "pass^2 = C(2,2)/C(4,2) = 1/6；pass@2 = 1 − C(2,2)/C(4,2) = 1 − 1/6 = 5/6。0.25 和 0.75 是把两次抽样当作独立、成功率 0.5 时的结果（0.5² 和 1 − 0.5²），不是讲义的不放回公式；0.5 和 0.5 是 k = 1 的值；0 和 1 等于说“抽 2 次必然不全成功、也必然至少成功一次”，忽略了 2 次成功、2 次失败都可能被抽中。"
+          "explanation": "\\(\\mathrm{pass}^2 = \\binom{2}{2}/\\binom{4}{2} = 1/6\\)；\\(\\mathrm{pass@}2 = 1 - \\binom{2}{2}/\\binom{4}{2} = 1 - 1/6 = 5/6\\)。0.25 和 0.75 是把两次抽样当作独立、成功率 0.5 时的结果（\\(0.5^2\\) 和 \\(1 - 0.5^2\\)），不是讲义的不放回公式；0.5 和 0.5 是 \\(k = 1\\) 的值；0 和 1 等于说“抽 2 次必然不全成功、也必然至少成功一次”，忽略了 2 次成功、2 次失败都可能被抽中。"
         }
       ],
       "resources": [
@@ -1580,6 +1671,12 @@
             "智能体 harness 就是第 1 讲那张图里围绕 LLM 核心的所有东西：规划与推理、记忆、工具、行动与观察的循环。构建智能体要在工具、记忆、上下文管理和执行方式上做设计选择；不同 harness 为适应各自的任务和运行环境做了不同取舍；好的 harness 要在任务成功率、成本、延迟和用户控制之间取得平衡，平衡点取决于用例。",
             "讲义的结论是：没有唯一正确的构建方式，同一个模型换不同 harness，效果可能差别很大——讲义引用了 Arena.ai 在 Terminal-Bench 2 上的对比，同一模型配 Pi、Codex、Claude Code 三种 harness，单次 rollout 成本和成功率都不同。Meta-Harness 则更进一步，让一个智能体自动搜索 harness：它读取一个文件系统，里面存着之前所有候选 harness 的源代码、执行轨迹和得分，提出新的 harness，评测后把所有日志存回文件系统，如此循环；讲义引用的结果是它在 TerminalBench-2 上超过了所有已报告的 Claude Haiku 4.5 harness。"
           ],
+          "figure": {
+            "src": "figures/l05-harness-difference.webp",
+            "alt": "Terminal-Bench 2 上同一模型在不同 harness 下的对比柱状图：Claude Fable 5、Opus 4.8、Sonnet 4.6、Haiku 4.5 各自在 Pi、Codex、Claude Code 三个 harness 中的每次 rollout 成本和成功率",
+            "caption": "每组比较的是同一个模型，只换 harness：成功率和成本都会明显变化，而且最好的 harness 因模型而异（绿框标出每组成本最低和成功率最高的项）。例如 Haiku 4.5 在 Pi 中的成功率是 47.8%，在 Codex 中只有 31.1%。原图出自 arena.ai 博客。",
+            "source": "Lecture 5 · p.86"
+          },
           "table": {
             "columns": [
               "harness",
@@ -1613,6 +1710,12 @@
             "Temporal 的执行模型：活动（Activity）是可能失败的功能单元，例如一次 LLM 调用或一次写日历；工作流（Workflow）把活动串起来；Worker 进程真正执行工作流和活动；Temporal 服务器维护活动队列、工作流队列和执行历史与状态存储。讲义复用 DSPy 的抽取和选表情模块作为活动，工作流就是把 UpdateCalendarFromEmail.forward 里每个可能失败的调用包进 execute_activity。工作流本身必须是确定性的（不能自己做 LLM 调用或 I/O），因为 Temporal 会根据记录重放它。",
             "两个演示说明了它的价值。重试：一个模拟的不稳定服务前两次都抛出“503 Service Unavailable”，在重试策略（初始间隔 1 秒、最多 5 次）下第 3 次成功，日历里照常加上事件，时间线上能看到每次尝试。持久计时：ReminderWorkflow 先把事件写进日历，再 workflow.sleep 一段时间后发提醒（讲义说可以“一行代码睡几个月甚至几年”）；演示中在睡眠中途杀掉 worker，工作流状态仍是 RUNNING；把 worker 重新启动后计时结束、工作流完成，而之前已经完成的 LLM 步骤不会重跑，因为结果已经记录在历史里——日历上只有一个 Lab meeting，而不是两个。"
           ],
+          "figure": {
+            "src": "figures/l05-temporal-execution.webp",
+            "alt": "Temporal 执行模型示意图：左侧是你的代码（客户端），由活动和把活动串起来的工作流组成，并由活动 Worker 和工作流 Worker 执行；右侧是服务器，包含活动队列和工作流队列组成的任务队列，以及存放执行历史与状态的存储",
+            "caption": "左右分开读：左边是你写的代码和真正执行它的 Worker，右边是 Temporal 服务器。Worker 从服务器的队列里领任务，每一步的结果都写进执行历史；某个活动失败或进程崩溃后，服务器可以按历史重放工作流、只重试失败的活动。",
+            "source": "Lecture 5 · p.98"
+          },
           "flow": [
             "你的代码（客户端）发起工作流",
             "服务器把任务放进工作流队列 / 活动队列",
@@ -1777,6 +1880,20 @@
             "并行化（parallelization）有两种：分段（sectioning），把独立的工作拆开并行，例如一边判断查询是否安全、一边处理查询；投票（voting），一种推理时扩展，把同一输入处理多次，由聚合器得出结论。它让每次调用专注于一个方面。编排者—工作者（orchestrator-workers）：一个 LLM 动态拆解任务并分派给工作者 LLM，适合难以预知需要哪些、多少子任务的情形；它和并行化相似，区别是子任务是动态生成的。",
             "评估者—优化者（evaluator-optimizer）：一个 LLM 生成回答，另一个给出评估和反馈，循环迭代。讲义列出两个必要条件：有清晰可表述的反馈标准，并且 LLM 有能力给出这种反馈；此外生成者还要能根据反馈改进。"
           ],
+          "figures": [
+            {
+              "src": "figures/l06-orchestrator-workers.webp",
+              "alt": "编排器—工作者模式示意图：输入交给编排器，编排器动态分出 LLM Call 1、2、3 三个子任务，结果交给综合器汇总后输出",
+              "caption": "和并行化的区别在虚线：子任务不是事先写死的，而是由编排器根据输入临时拆出来的，数量也不固定。原图出自 Anthropic《Building effective agents》。",
+              "source": "Lecture 6 · p.19"
+            },
+            {
+              "src": "figures/l06-evaluator-optimizer.webp",
+              "alt": "评估器—优化器模式示意图：生成器 LLM 产出方案交给评估器 LLM；评估器接受则输出，拒绝则带着反馈返回生成器重做",
+              "caption": "关键是下面那条“拒绝 + 反馈”的回路：只有反馈说得清楚、生成器又能据此改进时，这个循环才会收敛。原图出自 Anthropic《Building effective agents》。",
+              "source": "Lecture 6 · p.20"
+            }
+          ],
           "table": {
             "columns": [
               "模式",
@@ -1837,6 +1954,12 @@
             "讲义补充了两点。第一，原论文发现要微调才能得到最好的效果：在 PaLM 的 8B、62B、540B 上，只用提示时 ReAct 并不总是最好的，但微调后 ReAct 明显领先——如今“把模型微调成智能体”已是后训练的常规做法。第二，推理很重要：PaLM-540B 提示下，HotpotQA 上 Act 25.7、ReAct 27.4，Fever 上 Act 58.9、ReAct 60.9。在行动前写出思考，至今仍非常普遍。",
             "补充：HW1 第 7 题要求学生自己写这个循环（工具调用循环）：模型看到目前为止的对话，选择一个工具或给出最终答案，执行结果追加进上下文再继续，直到给出答案或触发上限（最大轮数、词元预算、连续三次格式错误）。下面的代码演示就是这样一个循环，并加入了本讲后面的观察遮蔽。"
           ],
+          "figure": {
+            "src": "figures/l06-react-trajectories.webp",
+            "alt": "ReAct 论文中的 HotpotQA 示例：同一个问题下，(1a) 直接作答、(1b) 只推理的 CoT、(1c) 只行动的 Act 都答错，(1d) ReAct 交替写出 Thought、Act、Obs，最终找到正确答案 keyboard function keys",
+            "caption": "对比 (1b) 和 (1d)：CoT 凭记忆编出了错误事实（红色高亮）；(1c) 只行动，搜索结果没有被推理串起来；(1d) 每一步先想清楚下一步搜什么，再根据观察修正计划，绿色高亮是从环境中拿到的证据。原图出自 ReAct 论文（Yao et al., 2023）。",
+            "source": "Lecture 6 · p.34"
+          },
           "flow": [
             "Thought：推理",
             "Act：调用工具",
@@ -1848,7 +1971,7 @@
         {
           "title": "Reflexion、自我反思的局限与 CRITIC",
           "body": [
-            "Reflexion（2023）的关键洞见是：自我反思有用。它的算法由三个模型组成：行动者（Actor）M_a、评估者（Evaluator）M_e、自我反思模型 M_sr。每次试验先由行动者生成轨迹，评估者打分，自我反思模型把评估结果写成一段反思文本并存进记忆 mem；下一次试验时，这些反思作为上下文交给行动者，直到评估通过或达到最大试验次数。换句话说，它把评估和反思变成了行动者的“记忆”（上下文）。讲义的 HotpotQA 图显示：CoT + Reflexion、ReAct + Reflexion 的成功率随试验次数上升；另一张图对比“只给过去的轨迹（EPM）”和“轨迹 + 反思”，说明起作用的是 LLM 的反思，而不仅仅是过去的轨迹。",
+            "Reflexion（2023）的关键洞见是：自我反思有用。它的算法由三个模型组成：行动者（Actor）\\(M_a\\)、评估者（Evaluator）\\(M_e\\)、自我反思模型 \\(M_{sr}\\)。每次试验先由行动者生成轨迹，评估者打分，自我反思模型把评估结果写成一段反思文本并存进记忆 mem；下一次试验时，这些反思作为上下文交给行动者，直到评估通过或达到最大试验次数。换句话说，它把评估和反思变成了行动者的“记忆”（上下文）。讲义的 HotpotQA 图显示：CoT + Reflexion、ReAct + Reflexion 的成功率随试验次数上升；另一张图对比“只给过去的轨迹（EPM）”和“轨迹 + 反思”，说明起作用的是 LLM 的反思，而不仅仅是过去的轨迹。",
             "自我反思也有局限。讲义引用的研究（“LLM 还不能自我纠正推理”）显示，让 LLM 评估自己的回答反而会降低表现；Reflexion 绕过这一点，靠的是外部环境的反馈。这个发现早于推理模型，而推理模型在推理过程中表现出很强的自我纠正能力；所以今天自我反思通常内置在 LLM 的推理里，而不是由外部流程强制。",
             "CRITIC（2024）给验证器加上外部工具：黑盒 LLM 先输出，再借助知识库（维基百科）、代码解释器、计算器、搜索引擎等工具验证并写出批评，据此修正，循环几轮。讲义的图显示在 AmbigNQ 上，带工具的 CRITIC 随迭代提升，去掉工具后提升很小。结论是：给验证器加外部工具有用——做一个智能体式的验证器。"
           ],
@@ -2039,6 +2162,12 @@
             "讲义采用 CoALA（Cognitive Architectures for Language Agents，Sumers et al., 2024）的划分。工作记忆（working memory）通常就是上下文窗口：智能体当前看到、正在推理的内容，包括观察、目标、用户输入和内部推理。情景记忆（episodic）是智能体过去行为的序列（轨迹），在聊天机器人里就是以前所有对话的存储，通常是原始日志。语义记忆（semantic）存关于世界的事实：用户的细节、偏好、一般知识都属于这一类，也是人们说“聊天机器人的记忆”时通常指的东西。程序记忆（procedural）是作用在工作记忆上、决定智能体行为的规则，本质上就是智能体的技能——“怎样完成任务”的知识，例如技能文件。",
             "另一个维度是记忆放在哪里。参数记忆（parametric）在模型权重里：语义方面是预训练知识，程序方面是指令遵循能力，情景方面不适用；可以通过微调加入更多知识或技能。上下文记忆（context）被加进模型上下文：语义方面是检索到的事实，程序方面是检索到的技能，情景方面是检索到的对话；由上下文管理器取出合适的记忆。补充：第 1 讲按内容讲了情景、语义、程序三类长期记忆，这里多了“工作记忆”这一层，并区分了记忆存在权重里还是上下文里。"
           ],
+          "figure": {
+            "src": "figures/l07-coala.webp",
+            "alt": "CoALA 框架图：程序记忆（LLM 权重与智能体代码）、语义记忆和情景记忆通过检索与学习和工作记忆交互；决策过程在工作记忆上推理，经动作与观察和对话、物理、数字三类外部环境交互",
+            "caption": "红框是四类记忆：上面三类是长期记忆，下面的工作记忆就是当前上下文。箭头说明长期记忆要靠“检索”读进工作记忆、靠“学习”写回去，而只有工作记忆直接参与决策。原图出自 Sumers et al.（2024）。",
+            "source": "Lecture 7 · p.16"
+          },
           "table": {
             "columns": [
               "记忆类型",
@@ -2123,6 +2252,12 @@
             "记忆函数分两类。写入/替换：系统提示“内存压力”后，模型调用 working_context.append(\"Birthday is February 7\") 写入事实；用户说“其实我和 James 分手了”时，用 working_context.replace 把“男朋友叫 James”改成“前男友叫 James”。搜索：recall_storage.search(\"six flags\") 找回早先关于去 Six Flags 的对话；archival_storage.search(\"nobel physics\") 分页检索文档。工作记忆本来就在上下文里，所以不需要搜索；归档记忆有类似的写入工具，回忆记忆没有（由队列管理器自动写入）。讲义引用的深度记忆检索（DMR）结果：GPT-3.5 Turbo 从 38.7% 提升到 66.9%，GPT-4 从 32.1% 提升到 92.5%，GPT-4 Turbo 从 35.3% 提升到 93.4%；文档问答中 MemGPT 的表现不随检索文档数增加而下降。",
             "MemoryOS（Kang et al., 2025）把层次分成三级：短期记忆（按页组织的 FIFO）、中期记忆（按段组织，按“热度”把内容升级到长期）、长期人设记忆（用户画像、用户知识库、智能体特质），检索时三级都参与生成回答。"
           ],
+          "figure": {
+            "src": "figures/l07-memgpt.webp",
+            "alt": "MemGPT 架构图：LLM 的有限上下文窗口分为只读的系统指令、可由函数读写的工作上下文、由队列管理器读写的 FIFO 消息队列和输出缓冲；上下文之外是归档存储和回忆存储，分别通过函数执行器和队列管理器读写",
+            "caption": "把上下文窗口看成内存、外部存储看成磁盘：工作上下文和归档存储由模型通过函数自己读写；FIFO 队列里被挤出去的旧消息由队列管理器写进回忆存储，模型只能通过函数搜索它。这就是正文说的“回忆存储没有写入工具”。原图出自 Packer et al.（2024）。",
+            "source": "Lecture 7 · p.43"
+          },
           "flow": [
             "上下文窗口：系统指令 + 工作上下文 + FIFO 消息队列",
             "队列满：旧消息移入回忆存储",
@@ -2137,17 +2272,25 @@
             "第三种模式是在存储之前先对记忆进行反思。讲义先回顾了 Reflexion：把评估和反思写成文本存进长期记忆；第 6 讲的图已经说明，起作用的是 LLM 的反思，而不仅是过去的轨迹。",
             "Generative Agents（Park et al., 2023）在一个像《模拟人生》的小镇里放了 25 个智能体，它们会散步、聊天、传播消息、组织聚会。架构是：感知 → 写入记忆流（memory stream，所有观察的完整记录）→ 检索相关记忆 → 行动；检索出的记忆还被用来形成更长期的计划和更高层的反思，这些反思和计划也写回记忆流。检索时，每条记忆的得分是近期性（recency）、重要性（importance）和相关性（relevance）三项之和。消融实验显示：完整架构的行为最可信，去掉反思、计划、观察中的任何一部分都会降低可信度，每多去掉一部分下降越多。"
           ],
-          "formula": "retrieval = recency + importance + relevance",
+          "math": [
+            "\\text{retrieval} = \\text{recency} + \\text{importance} + \\text{relevance}"
+          ],
           "source": "Lecture 7 · p.50–56（Pattern 3: Reflective Memory Consolidation / Refresher: Reflexion / Generative Agents）"
         },
         {
           "title": "手算：Generative Agents 的记忆检索分数",
           "kind": "worked-example",
           "body": [
-            "讲义 p.55 的例子：问 Isabella“你现在最期待什么？”记忆流里大部分条目是“桌子空闲”“床空闲”这类观察。检索时三条得分最高的记忆是：“Isabella 很兴奋地在筹备 2 月 14 日下午 5 点在 Hobbs Cafe 的情人节派对” = 0.91 + 0.63 + 0.80 = 2.34；“为派对订装饰品” = 0.87 + 0.63 + 0.71 = 2.21；“为派对查找点子” = 0.85 + 0.73 + 0.62 = 2.20。模型据此回答“我期待在 Hobbs Cafe 筹办的情人节派对！”",
-            "注意第二、三条只差 0.01：“查找点子”的重要性更高（0.73 对 0.63），但近期性和相关性略低。补充：讲义里三项是等权相加的；如果把重要性的权重改成 2，两条的分数变成 0.87 + 2×0.63 + 0.71 = 2.84 和 0.85 + 2×0.73 + 0.62 = 2.93，排序就翻转了。这说明检索打分里的权重本身就是一个设计决策——它决定了智能体“想起”什么。",
+            "讲义 p.55 的例子：问 Isabella“你现在最期待什么？”记忆流里大部分条目是“桌子空闲”“床空闲”这类观察。检索时三条得分最高的记忆是：“Isabella 很兴奋地在筹备 2 月 14 日下午 5 点在 Hobbs Cafe 的情人节派对” \\(= 0.91 + 0.63 + 0.80 = 2.34\\)；“为派对订装饰品” \\(= 0.87 + 0.63 + 0.71 = 2.21\\)；“为派对查找点子” \\(= 0.85 + 0.73 + 0.62 = 2.20\\)。模型据此回答“我期待在 Hobbs Cafe 筹办的情人节派对！”",
+            "注意第二、三条只差 0.01：“查找点子”的重要性更高（0.73 对 0.63），但近期性和相关性略低。补充：讲义里三项是等权相加的；如果把重要性的权重改成 2，两条的分数变成 \\(0.87 + 2\\times0.63 + 0.71 = 2.84\\) 和 \\(0.85 + 2\\times0.73 + 0.62 = 2.93\\)，排序就翻转了。这说明检索打分里的权重本身就是一个设计决策——它决定了智能体“想起”什么。",
             "补充：“桌子空闲”这类观察近期性可能很高，但重要性和相关性都低，所以不会被检索出来。这正对应讲义 p.45 说的问题：上下文装不下全部事件流，即便装得下，模型也难以在其中注意到相关事件。"
           ],
+          "figure": {
+            "src": "figures/l07-generative-agents-retrieval.webp",
+            "alt": "Generative Agents 记忆检索示意图：左侧是按时间排列的记忆流，大多数是“桌子空闲”之类的观察；右侧对问题“你现在最期待什么？”列出得分最高的三条记忆，每条的检索分 = 近期性 + 重要性 + 相关性，最后 Isabella 回答期待情人节派对",
+            "caption": "右侧三行就是下表的数字：2.34 = 0.91 + 0.63 + 0.80，2.21 = 0.87 + 0.63 + 0.71，2.20 = 0.85 + 0.73 + 0.62。左边的长列表说明检索要从大量无关观察中挑出少数几条放进提示。原图出自 Park et al.（2023）。",
+            "source": "Lecture 7 · p.55"
+          },
           "table": {
             "columns": [
               "记忆",
@@ -2155,7 +2298,7 @@
               "重要性",
               "相关性",
               "等权总分",
-              "重要性 ×2"
+              "重要性 \\(\\times 2\\)"
             ],
             "rows": [
               [
@@ -2397,6 +2540,12 @@
             "去中心（decentralized，蜂群 swarm）：智能体可以派生子智能体，所有智能体通过共享消息板或通信渠道彼此通信（全对全），适合大规模的独立探索和发现。混合（hybrid）：编排者管理整体任务并整合结果，工作者在任务需要时直接交换信息；兼具全局监督和局部灵活性，但需要清楚规定职责和信息共享规则。",
             "怎么选？讲义引用 Kim et al. 的比较：不同架构的 LLM 调用次数、通信开销和并行度不同；在 BrowseComp-Plus、Finance Agent、PlanCraft、Workbench 四个任务上，最好的架构各不相同（例如 Finance Agent 上多智能体普遍明显提升，PlanCraft 上则普遍下降），所以架构要按任务选；成本结构大致是单智能体 < 编排式 < 蜂群。"
           ],
+          "figure": {
+            "src": "figures/l08-orchestration-comparison.webp",
+            "alt": "多智能体架构对比表：单智能体（SAS）与独立、去中心、中心化、混合四种多智能体架构的交互方式示意，以及各自的 LLM 调用次数、顺序深度、通信开销、并行度、内存复杂度和协调方式",
+            "caption": "第一行的小图就是四种编排模式的拓扑；下面几行把代价写成复杂度：例如中心化的 LLM 调用是 \\(O(rnk) + O(r)\\)，混合架构在此之上还要加上点对点通信 \\(O(p)\\)。读这张表时要注意，表达能力越强的拓扑，通信和协调开销也越高。原表出自 Kim et al.（2026）。",
+            "source": "Lecture 8 · p.22"
+          },
           "table": {
             "columns": [
               "模式",
@@ -2692,7 +2841,10 @@
             "少样本提示（few-shot prompting）里，示例的顺序本身就会影响结果。Lu et al.（2022）的方法：用训练集示例的多种排列构成提示，让模型生成一个无标签的“探测集”；然后在探测集上看每种排序会预测出什么标签——有趣的是，这一步完全不用探测集的真实标签。判断依据是熵：全局熵（GlobalE）看整个探测集上预测标签的分布是否均衡；局部熵（LocalE）看每个样本上预测概率的熵，再对探测集平均。熵低说明这种排序让模型偏向某一个标签，应当淘汰。讲义的表格显示，用探测集和熵来选排序，接近“在开发集上尝试所有排序再挑最好”的 oracle 准确率。",
             "思维链很重要，但带标签的少样本示例通常没有推理过程。STaR（Zelikman et al., 2022）用拒绝采样挖掘推理轨迹：让模型对问题生成推理和答案，答对的保留下来用于微调；答错的给出正确答案作提示，让模型重新生成推理。DSPy（Khattab et al., 2023）走得更远：连微调都不需要，只要拒绝采样出成功的推理——输入经模型产生推理和输出，指标判定好就保留、差就丢弃；然后在开发集上尝试不同的组合，找出表现最好的少样本示例。讲义的 GSM8K 表格显示，自举推理/输出再在训练集上随机搜索，可以比提供人类写的推理或金标准标签更好。"
           ],
-          "formula": "GlobalE_m = Σ_{v∈V} −p_m^v log p_m^v；LocalE_m = Σ_i Σ_{v∈V} −p_{i,m}^v log p_{i,m}^v / |D|",
+          "math": [
+            "\\mathrm{GlobalE}_m = \\sum_{v \\in V} -p_m^v \\log p_m^v",
+            "\\mathrm{LocalE}_m = \\sum_i \\sum_{v \\in V} -p_{i,m}^v \\log p_{i,m}^v \\,/\\, |D|"
+          ],
           "source": "Lecture 9 · p.13–22（Fewshot Optimization / Fantastically Ordered Prompts and Where to Find Them / Bootstrap Reasoning / STaR / DSPy）"
         },
         {
@@ -2741,7 +2893,15 @@
             "PPO 的结构：策略模型对问题 q 生成输出 o；奖励模型对整个输出给一个奖励，同时对每个词元计算与参考模型的 KL，合成逐词元奖励；价值模型对每个词元估计价值；再用广义优势估计（GAE）算出每个词元的优势——“这个词元比其他可能的词元有用多少”。讲义总结了它的代价：内存里要放四个模型（策略、参考、奖励、价值）；每一步要训练两个模型（策略和价值）；还有好几个昂贵的逐词元步骤。",
             "GRPO 的改动：对同一个问题生成一组 G 个输出，奖励只按输出给（每个输出一个分数），在组内计算优势；KL 直接作为损失中的一项按词元计算。于是内存里只要三个模型（而且“奖励模型”不一定是模型，可以是程序化的验证器），每步只训练一个模型，除了 KL 之外其他都在序列层面计算。优势就是每个输出奖励在组内的 z 分数。目标函数里：对数据集中的问题和为它采样的一组输出取期望；在组内和回答的词元上取平均；用新旧策略的概率比衡量这个词元的重要性，乘以优势；clip 防止对某个词元更新过头；再减去与参考模型的 KL，不要偏离太远。讲义还展示了 DeepSeek-R1 的多阶段训练流程，以及 MATH 上 GRPO 优于 PPO 的曲线。"
           ],
-          "formula": "Â_{i,t} = ( R_i − mean({R_1,…,R_G}) ) / std({R_1,…,R_G})",
+          "math": [
+            "\\hat{A}_{i,t} = \\frac{R_i - \\mathrm{mean}(\\{R_1, \\dots, R_G\\})}{\\mathrm{std}(\\{R_1, \\dots, R_G\\})}"
+          ],
+          "figure": {
+            "src": "figures/l09-ppo-vs-grpo.webp",
+            "alt": "PPO 与 GRPO 的结构对比：PPO 用策略模型生成输出 o，参考模型、奖励模型和价值模型分别给出 KL、奖励 r 和价值 v，再用 GAE 算优势 A；GRPO 对同一问题采样一组输出 o_1…o_G，用奖励模型打分后做组内计算得到每个输出的优势 A_1…A_G，没有价值模型",
+            "caption": "比较两行：GRPO 去掉了需要训练的价值模型（黄色框是被训练的模型，蓝色框是冻结的模型），改用同一组输出的奖励均值和标准差当基线，也就是上面的优势公式。代价是每个问题要采样 \\(G\\) 个输出。原图出自 DeepSeekMath 论文（Shao et al., 2024）。",
+            "source": "Lecture 9 · p.83"
+          },
           "table": {
             "columns": [
               "",
@@ -2782,8 +2942,8 @@
           "title": "手算：全局熵与 GRPO 的组内优势",
           "kind": "worked-example",
           "body": [
-            "全局熵（讲义 p.16 的例子）：探测集有四个句子。某种排序下模型预测的标签是 0、1、0、1，标签分布 p⁰ = p¹ = 0.5，GlobalE = −0.5 ln 0.5 − 0.5 ln 0.5 = ln 2 ≈ 0.693（自然对数）；另一种排序下四个句子全被预测为 0，p⁰ = 1，GlobalE = −1 · ln 1 = 0。熵为 0 说明这种排序让模型不管输入是什么都输出同一个标签，应当淘汰；注意整个计算没有用到“nice movie 应该是正面”这样的真实标签。",
-            "GRPO 优势（补充：数字为演示讲义 p.92 的公式而设，std 取总体标准差）：对一个问题采样 G = 4 个输出，验证器给出奖励 [1, 0, 0, 0]。均值 0.25，标准差 √(0.25 × 0.75) ≈ 0.433。答对的那个输出优势 = (1 − 0.25)/0.433 ≈ +1.732，三个答错的各为 (0 − 0.25)/0.433 ≈ −0.577。如果奖励是 [1, 1, 1, 0]，均值 0.75、标准差同样约 0.433，三个答对的各为 +0.577，答错的那个为 −1.732。",
+            "全局熵（讲义 p.16 的例子）：探测集有四个句子。某种排序下模型预测的标签是 0、1、0、1，标签分布 \\(p^0 = p^1 = 0.5\\)，\\(\\mathrm{GlobalE} = -0.5 \\ln 0.5 - 0.5 \\ln 0.5 = \\ln 2 \\approx 0.693\\)（自然对数）；另一种排序下四个句子全被预测为 0，\\(p^0 = 1\\)，\\(\\mathrm{GlobalE} = -1 \\cdot \\ln 1 = 0\\)。熵为 0 说明这种排序让模型不管输入是什么都输出同一个标签，应当淘汰；注意整个计算没有用到“nice movie 应该是正面”这样的真实标签。",
+            "GRPO 优势（补充：数字为演示讲义 p.92 的公式而设，std 取总体标准差）：对一个问题采样 \\(G = 4\\) 个输出，验证器给出奖励 [1, 0, 0, 0]。均值 0.25，标准差 \\(\\sqrt{0.25 \\times 0.75} \\approx 0.433\\)。答对的那个输出优势 = \\((1 - 0.25)/0.433 \\approx +1.732\\)，三个答错的各为 \\((0 - 0.25)/0.433 \\approx -0.577\\)。如果奖励是 [1, 1, 1, 0]，均值 0.75、标准差同样约 0.433，三个答对的各为 +0.577，答错的那个为 −1.732。",
             "对比可见：组内越少见的结果，优势的绝对值越大——难题上偶然答对一次会被重点强化，简单题上偶然答错一次会被重点惩罚。补充：如果一组奖励全相同（全对或全错），标准差为 0，这个问题在这一步提供不了学习信号；这也是讲义强调要让任务复杂度多样的一个原因。"
           ],
           "table": {
@@ -2826,7 +2986,15 @@
             "讲义用下棋打比方：在你自己下过的棋局上接受指导，比看别人下的棋更有用。三种方法的区别在于轨迹从哪来、信号有多密。SFT 在教师的轨迹上学，是离线策略（off-policy）、信号密集；RL 在学生自己的轨迹上学，是在线策略（on-policy），但信号稀疏——例子里学生算“5 + (2 × 3)”得出 21，整条轨迹只得到一个奖励 0，不知道错在哪一步；在线策略蒸馏也在学生自己的轨迹上学，但信号密集——教师给学生轨迹上的每个词元打出条件概率，学生一写出“21”之前那几个错误的词元，教师给的概率就很低。",
             "损失是学生与教师之间的逆向 KL：对从学生策略采样的回答取期望，逐词元计算学生对数概率减去教师对数概率。讲义展示了 Qwen3 的后训练流程：旗舰模型经过长 CoT 冷启动、推理 RL、思考模式融合、通用 RL 四个阶段；轻量模型则通过强到弱的蒸馏得到。结果表：在离线蒸馏的基础上，再做 RL 得到 AIME'24 67.6%、GPQA-Diamond 61.3%，耗费 17,920 GPU 小时；改做在线策略蒸馏得到 74.4% 和 63.3%，只用 1,800 GPU 小时。在线策略蒸馏更高效，得到的模型也比 RL 更好。"
           ],
-          "formula": "KL(π_θ ‖ π_teacher) = E_{x∼π_θ}[ log π_θ(x_{t+1}|x_{1..t}) − log π_teacher(x_{t+1}|x_{1..t}) ]",
+          "math": [
+            "\\begin{aligned} \\mathrm{KL}(\\pi_\\theta \\,\\|\\, \\pi_{\\text{teacher}}) = \\mathbb{E}_{x \\sim \\pi_\\theta}\\big[ &\\log \\pi_\\theta(x_{t+1} \\mid x_{1..t}) \\\\ &- \\log \\pi_{\\text{teacher}}(x_{t+1} \\mid x_{1..t}) \\big] \\end{aligned}"
+          ],
+          "figure": {
+            "src": "figures/l09-sft-rl-opd.webp",
+            "alt": "SFT、RL 与在线策略蒸馏的对比：对“5 + (2 × 3) 等于多少”，SFT 在教师轨迹上学习，学生给每个词元的概率不同；RL 在学生自己的错误轨迹上只得到一个奖励 0；在线策略蒸馏在学生轨迹上由教师给每个词元打出条件概率",
+            "caption": "颜色越深表示概率越低。RL 一行整条轨迹只有一个奖励，不知道错在哪；在线策略蒸馏一行中，学生写出“2 is”这两个错误词元时教师给的概率只有 5% 和 15%，正好指出出错的位置。原图出自 Thinking Machines 博客。",
+            "source": "Lecture 9 · p.98"
+          },
           "table": {
             "columns": [
               "方法",
@@ -3035,6 +3203,12 @@
             "讲座采用 Anthropic《Demystifying Evals for AI Agents》中的术语，并对比了单轮评测和智能体评测：单轮评测是“提示 → 回答 → 评分”；智能体评测中，智能体要在环境里多轮使用工具，最后对环境状态评分。",
             "Harbor 中的一个任务是一个目录：instruction.md（给智能体的指令）、task.toml（元数据和运行设置）、environment/Dockerfile（智能体的起始环境）、solution/solve.sh（参考解法）、tests/test.sh（验证器入口）。讲者要求任务做到：与具体智能体无关（agent agnostic）、容易定义、可移植、有表达力、彼此独立。"
           ],
+          "figure": {
+            "src": "figures/l10-task-structure.webp",
+            "alt": "一个 Harbor 任务的目录结构：my-task/ 下有 instruction.md、task.toml、environment/Dockerfile、solution/solve.sh 和 tests/test.sh",
+            "caption": "每个文件对应正文的一项定义：instruction.md 是指令，environment/ 是环境，tests/ 是验证器，solution/ 是参考解法。任务因此与具体智能体无关、可以移植，也可以独立运行。",
+            "source": "Lecture 10 · p.43"
+          },
           "table": {
             "columns": [
               "术语",
@@ -3093,6 +3267,12 @@
             "补充：混淆矩阵在这里的含义是——假阳性是“智能体没完成任务，验证器却判过”，这会高估能力，也是奖励作弊得逞的形式；假阴性是“智能体完成了任务，验证器却判错”，通常来自过严或不稳定的验证器。讲座后面的版本号规则里，“修正过严的验证器”“消除奖励作弊”正好分别对应这两类错误。",
             "奖励作弊的防护靠隔离：锁定智能体的环境；把验证器环境隔离出去；隔离智能体代码的执行。智能体环境只把产出物（artifact）交给验证器环境，测试在验证器环境里运行。讲座举了一个真实例子：在 Terminal Bench Science 上，一个模型上网搜索 Lean 内核中已知的 bug，找到后利用它构造出一个能对抗性地骗过评分器的证明。"
           ],
+          "figure": {
+            "src": "figures/l10-reward-hacking-isolation.webp",
+            "alt": "防止奖励作弊的隔离示意图：智能体环境和验证器环境是两个独立的环境，只有智能体产出的工件被传到验证器环境，与测试一起运行",
+            "caption": "测试文件只存在于右边的验证器环境，智能体在左边既看不到也改不了测试，只能交出工件。图上方三行就是对应的三条措施：锁定智能体环境、隔离验证器环境、隔离智能体代码的执行。",
+            "source": "Lecture 10 · p.51"
+          },
           "flow": [
             "智能体在锁定的智能体环境中工作",
             "只把产出物交给验证器环境",
@@ -3236,6 +3416,12 @@
             "对轨迹（SFT），“奖励”就是预测对动作；对环境（RL），奖励来自哪里？讲义从“可靠但狭窄”到“通用但模糊”列了四种：代码测试（运行一组单元测试，确定性地检查）、rubric（让 LM 或人检查一张清单是否满足）、LLM 裁判（模型比较两个以上的方案并排序）、人类偏好（真人现场选出最好的答案）。",
             "两类数据的训练方式：在环境里做许多次 rollout；要么筛选出 SFT 数据、模仿保留下来的轨迹；要么给每次尝试打分、按奖励做 RL 更新权重。各阶段的数据量实验室通常不公开，DeepSeek 是一个参照：V3 有 14.8T 预训练词元、150 万条 SFT 样本；V3.2 有 8.5 万个 RL 任务提示。V3 的算力（H800 GPU 小时）是预训练 2,664k、中训练 119k、后训练 5k；一年后的 V3.2，后训练预算超过了预训练的 10%。补充：5k / 2,664k 不到 0.2%，一年内后训练占比提高了约 50 倍以上，这也说明了智能体数据和 RL 的分量在迅速上升。"
           ],
+          "figure": {
+            "src": "figures/l11-trajectory-anatomy.webp",
+            "alt": "一条智能体轨迹的结构：系统提示、用户问题、智能体动作（grep、编辑、运行脚本、提交）和工具输出交替出现，右侧的损失掩码只覆盖智能体的部分",
+            "caption": "训练时只对深红色的“智能体”行计算损失，系统提示、任务和工具输出只作为上下文。动作的格式（工具调用、ReAct 文本还是代码）由模型外面的系统决定，所以同一份轨迹换一个 harness 就可能不再适用。",
+            "source": "Lecture 11 · p.14"
+          },
           "table": {
             "columns": [
               "奖励来源",
@@ -3497,6 +3683,12 @@
             "本讲的一句话总结：制造智能体任务和轨迹现在很便宜，决定留下什么才是难点。讲义的例子是 Meta 的 CWM：从 3,150 个仓库的 10,200 个 Docker 镜像中生成了 300 万条智能体轨迹，然后决定留下哪些——去掉近似重复（同一仓库内保留的轨迹两两 Jaccard 相似度低于 0.5）；保留失败的尝试，因为目标是学习代码环境的世界模型，所以不按成功与否过滤。",
             "管线的每个阶段都在丢数据：候选任务 → 有效任务 → 可学习的任务 → rollout → 保留的轨迹 → 训练混合。我们选择两样东西：给 SFT 的轨迹、给 RL 的环境。训练数据变坏有三种方式：错误信号（验证器坏了、成功是作弊得来的）、没有信号（任务太容易或太难，学不到东西）、冗余信号（更多同样的东西）。还有一个悬而未决的张力：少即是多（LIMI：78 条手工挑选的轨迹胜过 1 万条），还是多即是多（Orchard：在规模上，数据量比怎么挑更重要）？"
           ],
+          "figure": {
+            "src": "figures/l12-data-pipeline-funnel.webp",
+            "alt": "数据流水线漏斗：候选任务 → 有效任务 → 可学习任务 → rollout → 保留的轨迹 → 训练混合，每一层都比上一层少；右侧标注第 2、3、4 部分分别讨论选哪些任务、哪些轨迹、要更多还是更好的数据",
+            "caption": "漏斗每变窄一层就丢掉一部分数据，本讲的三个部分正好对应漏斗的三段：前两层是任务选择，中间是轨迹选择，最后是训练混合的规模与质量。",
+            "source": "Lecture 12 · p.8"
+          },
           "flow": [
             "候选任务",
             "有效任务",
@@ -3519,27 +3711,39 @@
         {
           "title": "难度筛选：只留下能产生学习信号的任务",
           "body": [
-            "DAPO 指出：如果一组 rollout 的奖励全都一样，RL 什么也学不到。原因就在第 9 讲的 GRPO 优势公式 (奖励 − 组均值) / 组标准差：一组 8 次 rollout 有对有错时能学；全对（或全错）时没有梯度。更糟的是，模型越强，全对的提示越多，每个批次里能学的提示就越少。DAPO 的修正是动态采样：持续采样，直到批次里装满奖励有对有错的提示，丢掉全对和全错的；每一步采样更多，但用更少的步数就达到同样的准确率。",
+            "DAPO 指出：如果一组 rollout 的奖励全都一样，RL 什么也学不到。原因就在第 9 讲的 GRPO 优势公式 \\((\\text{奖励} - \\text{组均值}) / \\text{组标准差}\\)：一组 8 次 rollout 有对有错时能学；全对（或全错）时没有梯度。更糟的是，模型越强，全对的提示越多，每个批次里能学的提示就越少。DAPO 的修正是动态采样：持续采样，直到批次里装满奖励有对有错的提示，丢掉全对和全错的；每一步采样更多，但用更少的步数就达到同样的准确率。",
             "LEGO-RL 的数据：36,884 个候选任务，经规则筛选剩 22,806 个，再经构建和验证器检查剩 21,681 个（被检查的任务中约 2.5% 的验证器会错误地接受参考补丁）；最后做难度筛选——每个任务试 4 次，只保留解出 1–3 次的，0/4（从未解出）和 4/4（总能解出）都丢掉，最终训练集 2,699 个任务。不做筛选时，未筛选的任务池中 72.7% 从未被解出、13.4% 总能解出，训练在两项指标上都没有提升。而且随着策略进步任务池会“过期”：在 OpenHands SDK 下，零差异组的比例从 44.7% 升到 51.4%，必须定期刷新。",
             "WebRL 针对网页智能体在线 RL 的三个问题——训练任务稀缺、反馈稀疏、策略分布漂移——用一个自我进化的课程：从失败的尝试中生成新任务，并训练一个结果监督的奖励模型。它把 Llama-3.1-8B 在 WebArena-Lite 上的成功率从 4.8% 提到 42.4%，70B 模型达到 47.3%。"
           ],
-          "formula": "advantage = (reward − group mean) / group std；一组奖励全相同 ⇒ std = 0 ⇒ 无梯度",
+          "math": [
+            "\\text{advantage} = \\frac{\\text{reward} - \\text{group mean}}{\\text{group std}}",
+            "\\text{一组奖励全相同} \\;\\Rightarrow\\; \\text{std} = 0 \\;\\Rightarrow\\; \\text{无梯度}"
+          ],
+          "figure": {
+            "src": "figures/l12-dapo-same-reward.webp",
+            "alt": "DAPO 示意图：同一个提示的 8 次 rollout，奖励有对有错时可以学习；8 次全对时没有梯度",
+            "caption": "实心圆表示奖励为 1。上一行有对有错，组内标准差不为 0，每个 rollout 都有非零优势；下一行全是 1，优势全为 0，这一组提示白跑了。原图出自 DAPO（Yu et al., 2025）。",
+            "source": "Lecture 12 · p.25"
+          },
           "source": "Lecture 12 · p.25–34（DAPO / LEGO-RL / WebRL）"
         },
         {
           "title": "手算：多少提示会浪费在“全对或全错”上",
           "kind": "worked-example",
           "body": [
-            "补充：讲义 p.25–27 说明全对或全错的组没有梯度。设模型在某个提示上每次 rollout 独立地以概率 p 成功，一组 G 次 rollout 奖励全相同的概率是 p^G + (1 − p)^G（这里的独立性只是计算用的假设）。",
-            "G = 8：p = 0.5 时只有 0.5⁸ + 0.5⁸ ≈ 0.0078，几乎每组都能学；p = 0.9 时是 0.9⁸ + 0.1⁸ ≈ 0.4305，四成多的组白跑；p = 0.99 时达到约 0.9227。这正是 DAPO 说的“模型越强，全对的提示越多，有效批次越小”。p = 0.1 和 p = 0.9 的结果相同（约 0.4305），说明太难的任务同样浪费算力。",
-            "再看 LEGO-RL 的 4 次试验筛选（G = 4）：p = 0.9 的任务有 0.9⁴ + 0.1⁴ ≈ 0.6562 的概率 4/4 全对而被丢弃，p = 0.5 的任务只有 0.125 的概率被丢弃。所以“保留 1–3 次解出的任务”实际上是在优先保留模型成功率居中的任务；随着模型进步，原来居中的任务变得 p 接近 1，被丢弃的概率上升——这就是任务池需要刷新的原因。"
+            "补充：讲义 p.25–27 说明全对或全错的组没有梯度。设模型在某个提示上每次 rollout 独立地以概率 \\(p\\) 成功，一组 \\(G\\) 次 rollout 奖励全相同的概率是 \\(p^G + (1 - p)^G\\)（这里的独立性只是计算用的假设）。",
+            "\\(G = 8\\)：\\(p = 0.5\\) 时只有 \\(0.5^8 + 0.5^8 \\approx 0.0078\\)，几乎每组都能学；\\(p = 0.9\\) 时是 \\(0.9^8 + 0.1^8 \\approx 0.4305\\)，四成多的组白跑；\\(p = 0.99\\) 时达到约 0.9227。这正是 DAPO 说的“模型越强，全对的提示越多，有效批次越小”。\\(p = 0.1\\) 和 \\(p = 0.9\\) 的结果相同（约 0.4305），说明太难的任务同样浪费算力。",
+            "再看 LEGO-RL 的 4 次试验筛选（\\(G = 4\\)）：\\(p = 0.9\\) 的任务有 \\(0.9^4 + 0.1^4 \\approx 0.6562\\) 的概率 4/4 全对而被丢弃，\\(p = 0.5\\) 的任务只有 0.125 的概率被丢弃。所以“保留 1–3 次解出的任务”实际上是在优先保留模型成功率居中的任务；随着模型进步，原来居中的任务变得 \\(p\\) 接近 1，被丢弃的概率上升——这就是任务池需要刷新的原因。"
           ],
-          "formula": "P(一组全相同) = p^G + (1 − p)^G（各次 rollout 独立的假设下）",
+          "math": [
+            "P(\\text{一组全相同}) = p^G + (1 - p)^G",
+            "\\text{（各次 rollout 独立的假设下）}"
+          ],
           "table": {
             "columns": [
-              "单次成功率 p",
-              "G = 4：全相同概率",
-              "G = 8：全相同概率"
+              "单次成功率 \\(p\\)",
+              "\\(G = 4\\)：全相同概率",
+              "\\(G = 8\\)：全相同概率"
             ],
             "rows": [
               [
@@ -3699,7 +3903,7 @@
             "只是为了节省存储空间"
           ],
           "answer": 1,
-          "explanation": "讲义 p.25–30：优势 = (奖励 − 组均值)/组标准差，全对或全错时没有梯度；未筛选的池中 72.7% 从未解出、13.4% 总能解出，训练在两项指标上都没有提升。总能解出说明任务太容易，不说明验证器有 bug；2,699 是筛选的结果而不是目标；理由与存储无关。"
+          "explanation": "讲义 p.25–30：优势 \\(= (\\text{奖励} - \\text{组均值})/\\text{组标准差}\\)，全对或全错时没有梯度；未筛选的池中 72.7% 从未解出、13.4% 总能解出，训练在两项指标上都没有提升。总能解出说明任务太容易，不说明验证器有 bug；2,699 是筛选的结果而不是目标；理由与存储无关。"
         },
         {
           "question": "Verification Horizon 的结果说明了什么？",
@@ -3764,7 +3968,7 @@
           "title": "什么是基准：从语言任务到智能体任务",
           "body": [
             "回顾前面各讲：我们讨论了怎样构建基于 LM 的智能体系统（框架与智能体设计、记忆与多智能体），以及怎样训练它获得更强的智能体能力（优化、智能体数据）。怎么知道这些进展真的起作用？这就需要基准。",
-            "训练时可以一直把损失降到降不动为止，但 LM 能不能真正完成现实中的自然语言任务？许多任务语言学家早已研究过，早期 LM 出现后，它们被改造成基准，评测一般可以写成 response = LM(prompt)；T5 把各种任务统一成文本到文本的形式；之后出现了把许多任务打包的大型集合（GLUE、SuperGLUE、MMLU、BIG-bench、HELM 等）。随着 LM 变强，评测的任务也越来越难：考试基准（LM 能否在 SAT、AMC、AIME、GRE、律师考试这类人类考试上表现好）、对话基准（能否很好地回答开放式问题、进行多轮对话）、安全基准（能否安全行事，拒绝恶意请求、尊重用户约束）、智能体基准（能否在数字或真实环境中多轮交互完成任务）。",
+            "训练时可以一直把损失降到降不动为止，但 LM 能不能真正完成现实中的自然语言任务？许多任务语言学家早已研究过，早期 LM 出现后，它们被改造成基准，评测一般可以写成 \\(\\text{response} = \\mathrm{LM}(\\text{prompt})\\)；T5 把各种任务统一成文本到文本的形式；之后出现了把许多任务打包的大型集合（GLUE、SuperGLUE、MMLU、BIG-bench、HELM 等）。随着 LM 变强，评测的任务也越来越难：考试基准（LM 能否在 SAT、AMC、AIME、GRE、律师考试这类人类考试上表现好）、对话基准（能否很好地回答开放式问题、进行多轮对话）、安全基准（能否安全行事，拒绝恶意请求、尊重用户约束）、智能体基准（能否在数字或真实环境中多轮交互完成任务）。",
             "讲义快速浏览了几个非智能体基准。考试类：MMLU（57 个领域的多项选择知识题）→ MMLU-Pro（选项从 4 个增加到 10 个，并去掉了有噪声的题）→ GPQA（博士生编写的“谷歌搜不到”的问答）→ Humanity's Last Exam（更难，有多选也有简答）。对话类：AlpacaEval 用胜率或 Elo 作主要指标，Chatbot Arena 把它扩展到真实、开放的现场提示。安全类：HarmBench 测红队攻击能多频繁地诱出有害回答；AIR-Bench 有 314 个风险类别下的 5,694 个 LM 应当拒绝的提示。总结：基准用来衡量我们是否改进了 LM 系统的行为或能力，一般由一组提示和一个报告表现的指标组成，形态各异。本讲和下一讲只关注 LM 智能体的基准。"
           ],
           "source": "Lecture 13 · p.3–24（What is a benchmark? / Exam Benchmarks / Chat Benchmarks / Safety Benchmarks / Summary）"
@@ -3784,6 +3988,12 @@
             "智能体基准可以建模成两大部分。任务形式（task formulation）：定义要解决的任务，包括三部分——问题陈述（要智能体做什么、交付物是什么）、环境（在哪里完成、有哪些初始资产）、验证（怎样给输出打分）。讲义的示意：一段问题陈述（例如“我运行这条 ffmpeg 命令，期望输出 1280×720，结果却是 1920×1080，能看看 parse_args.py 吗？”）交给智能体，智能体在终端、浏览器、模拟器或真实世界中工作，提交后由单元/端到端测试、rubric 或偏好来验证，得到通过或失败。这和 HW2 讲义开头的图是同一张。",
             "评测协议（evaluation protocol）是与基准无关、针对智能体的参数：每个任务尝试几次（rollout 数）？一次 rollout 怎样结束——最大轮数、墙钟时间、算力预算，还是智能体自己决定？LM 的配置（推理强度、温度）是什么？harness 是固定的还是自带？允许哪些工具？能否上网？多次运行怎样汇总？报告哪些维度（成本、轮数、词元）？"
           ],
+          "figure": {
+            "src": "figures/l13-benchmark-formulation.webp",
+            "alt": "智能体基准的组成：问题陈述（一段关于 ffmpeg 输出分辨率的 bug 报告）交给智能体，智能体在终端、浏览器、模拟器或真实世界的环境中工作并提交，再由单元/端到端测试、rubric 或偏好进行验证，得出通过或失败",
+            "caption": "从左到右是任务形式的三部分——问题陈述、环境、验证；中间的智能体和提交方式属于评测协议要规定的内容。下一节的三个维度就是分别沿这三块展开的。",
+            "source": "Lecture 13 · p.33"
+          },
           "flow": [
             "问题陈述：要做什么、交付什么",
             "环境：在哪里做、有哪些初始资产",
@@ -3978,7 +4188,7 @@
           "kind": "worked-example",
           "body": [
             "讲义 p.67 引用了 2026 年 7 月 DeepSWE 排行榜的两行（mini-SWE-agent harness，每个任务跑 4 次求 pass@1）：claude-fable-5 [max] 为 70% ± 4%，每任务成本 21.63 美元，输出 11.9 万词元，88 步；gpt-5.5 [xhigh] 为 67% ± 6%，每任务 7.23 美元，输出 4.6 万词元，82 步。",
-            "第一步，看区间。前者是 [66%, 74%]，后者是 [61%, 73%]，两个区间大面积重叠，3 个百分点的差距落在误差线之内，不能断言前者更强。第二步，看成本。21.63 / 7.23 ≈ 2.99，前者每个任务贵约 3 倍。补充：换成“每解决一个任务的期望成本”，前者是 21.63 / 0.70 ≈ 30.9 美元，后者是 7.23 / 0.67 ≈ 10.8 美元，差距仍约 2.9 倍。",
+            "第一步，看区间。前者是 [66%, 74%]，后者是 [61%, 73%]，两个区间大面积重叠，3 个百分点的差距落在误差线之内，不能断言前者更强。第二步，看成本。\\(21.63 / 7.23 \\approx 2.99\\)，前者每个任务贵约 3 倍。补充：换成“每解决一个任务的期望成本”，前者是 \\(21.63 / 0.70 \\approx 30.9\\) 美元，后者是 \\(7.23 / 0.67 \\approx 10.8\\) 美元，差距仍约 2.9 倍。",
             "所以讲义的解读是：表面上 70% > 67%，但有了更多信息后，这 3% 的差距在误差线以内，而更高的分数每个任务要多花 3 倍的钱。补充：这也说明为什么评测协议要规定“每任务尝试几次、怎样汇总”——只报一个数字，读者既不知道它有多不确定，也不知道它的代价。HW2 要求对自己写的任务跑 5 次独立尝试再分析，也是同样的道理。"
           ],
           "table": {
@@ -4000,8 +4210,8 @@
               ],
               [
                 "每解决一个任务的期望成本（补充）",
-                "21.63 / 0.70 ≈ $30.9",
-                "7.23 / 0.67 ≈ $10.8"
+                "\\(21.63 / 0.70 \\approx\\) $30.9",
+                "\\(7.23 / 0.67 \\approx\\) $10.8"
               ],
               [
                 "输出词元 / 步数",
@@ -4168,17 +4378,17 @@
       "module": "deployment",
       "title": "LLM 裁判与评测基础设施（预习提纲）",
       "originalTitle": "LLM-as-Judge & Evaluation Infrastructure",
-      "summary": "11 月 11 日这一讲的讲义尚未公开。按官网课表，它将讨论三类评分器、裁判提示的设计、已知偏差、成对与逐点评测、非确定性指标（pass@k 与 pass^k）、harness 设计和 Anthropic 的八步路线图。本页整理与前几讲的衔接、阅读材料中的背景知识和听课问题。",
+      "summary": "11 月 11 日这一讲的讲义尚未公开。按官网课表，它将讨论三类评分器、裁判提示的设计、已知偏差、成对与逐点评测、非确定性指标（\\(\\mathrm{pass@}k\\) 与 \\(\\mathrm{pass}^k\\)）、harness 设计和 Anthropic 的八步路线图。本页整理与前几讲的衔接、阅读材料中的背景知识和听课问题。",
       "objectives": [
         "复述课表列出的本讲主题，并把“评分器”与第 10、11、13 讲中的验证器、奖励来源和验证方式分类联系起来。",
         "根据阅读材料说明 LLM 裁判常见的偏差（位置、冗长、自我偏好）和成对与逐点两种评测方式的差别，并说出对应的缓解办法。",
-        "用第 4 讲的公式区分 pass@k 与 pass^k，并列出听课时要关注的问题（裁判怎样校准、harness 怎样设计、路线图的步骤）。"
+        "用第 4 讲的公式区分 \\(\\mathrm{pass@}k\\) 与 \\(\\mathrm{pass}^k\\)，并列出听课时要关注的问题（裁判怎样校准、harness 怎样设计、路线图的步骤）。"
       ],
       "sections": [
         {
           "title": "课表上的主题与前面讲次的衔接",
           "body": [
-            "官网对本讲的描述是：三类评分器、设计裁判提示、已知偏差、成对与逐点评测、非确定性指标（pass@k 与 pass^k）、harness 设计，以及 Anthropic 的八步路线图。",
+            "官网对本讲的描述是：三类评分器、设计裁判提示、已知偏差、成对与逐点评测、非确定性指标（\\(\\mathrm{pass@}k\\) 与 \\(\\mathrm{pass}^k\\)）、harness 设计，以及 Anthropic 的八步路线图。",
             "这些主题在前面已经出现过多次。第 10 讲（Terminal-Bench 嘉宾讲座）说验证器是作用在环境状态上的分类器，能用程序检查就用程序检查，必要时用智能体或 LLM 裁判，并引用了 Anthropic《Demystifying Evals for AI Agents》中基于代码和基于模型的评分器对比；第 11 讲把 RL 的奖励来源从“可靠但狭窄”到“通用但模糊”排成代码测试、rubric、LLM 裁判、人类偏好；第 13 讲用“容易验证”一节说明了 LLM 裁判的问题（偏好长度和自己的风格、可被钻空子、随提示和裁判变化），并按静态/相对 × 二值/连续给验证方式分类。本讲可以看作把这些零散的讨论系统化。"
           ],
           "table": {
@@ -4189,7 +4399,7 @@
             "rows": [
               [
                 "第 4 讲",
-                "τ-bench 的 pass^k 与 pass@k 公式"
+                "τ-bench 的 \\(\\mathrm{pass}^k\\) 与 \\(\\mathrm{pass@}k\\) 公式"
               ],
               [
                 "第 10 讲",
@@ -4245,12 +4455,15 @@
           "source": "阅读材料：Zheng et al. \"Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena.\" NeurIPS (2023)；Lecture 13 · p.58（Easy to Verify）"
         },
         {
-          "title": "非确定性：pass@k 与 pass^k",
+          "title": "非确定性：\\(\\mathrm{pass@}k\\) 与 \\(\\mathrm{pass}^k\\)",
           "body": [
-            "第 4 讲已经给出 τ-bench 的公式：同一任务跑 n 次、成功 c 次，pass^k = C(c,k)/C(n,k) 是“抽 k 次全部成功”的概率，pass@k = 1 − C(n−c,k)/C(n,k) 是“抽 k 次至少一次成功”的概率；那一讲的手算例题显示，8 次中成功 6 次时，k 从 1 增加到 4，pass@k 从 0.75 升到 1，pass^k 从 0.75 降到约 0.214。",
+            "第 4 讲已经给出 τ-bench 的公式：同一任务跑 n 次、成功 c 次，\\(\\mathrm{pass}^k = \\binom{c}{k}/\\binom{n}{k}\\) 是“抽 k 次全部成功”的概率，\\(\\mathrm{pass@}k = 1 - \\binom{n-c}{k}/\\binom{n}{k}\\) 是“抽 k 次至少一次成功”的概率；那一讲的手算例题显示，8 次中成功 6 次时，k 从 1 增加到 4，\\(\\mathrm{pass@}k\\) 从 0.75 升到 1，\\(\\mathrm{pass}^k\\) 从 0.75 降到约 0.214。",
             "第 13 讲的 DeepSWE 表格则是“每任务跑 4 次求 pass@1”并附上置信区间。听课时可以对照这些已学内容，留意讲者怎样建议在评测报告中呈现非确定性：报哪个指标、跑几次、怎样给出误差线。补充：HW2 要求对自己的任务跑 5 次独立尝试，这些指标可以直接用在作业分析中。"
           ],
-          "formula": "pass^k = E_task[ C(c,k) / C(n,k) ]；pass@k = 1 − E_task[ C(n−c,k) / C(n,k) ]",
+          "math": [
+            "\\mathrm{pass}^k = \\mathbb{E}_{\\text{task}}\\left[\\binom{c}{k} \\Big/ \\binom{n}{k}\\right]",
+            "\\mathrm{pass@}k = 1 - \\mathbb{E}_{\\text{task}}\\left[\\binom{n-c}{k} \\Big/ \\binom{n}{k}\\right]"
+          ],
           "source": "前序讲义：Lecture 4 · p.64（Pass^k to reward reliability and consistency）；Lecture 13 · p.67（Transparent）"
         },
         {

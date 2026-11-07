@@ -86,6 +86,7 @@ for(const lesson of s.window.COURSE.lessons){
  const visual=hasVisual?s.window.COURSE_VISUALS?.[id]:null,code=hasCode?s.window.COURSE_CODE?.[id]:null;if(hasVisual)check(visual,`${id} visual registered`);if(hasCode)check(code,`${id} code registered`);
  s.go(lesson.id);eq(d.querySelector('h1').textContent,lesson.title,`${id} renders the correct lesson`);
  // Formulas must compile in KaTeX; figures are archived on this site and credit their source.
+ check(!(lesson.title+lesson.originalTitle).includes('\\('),`${id} lesson titles stay plain text (they appear in navigation and <title>)`);
  eq(d.querySelectorAll('.katex-error').length,0,`${id} every TeX formula compiles`);eq(d.querySelectorAll('.tex-fallback').length,0,`${id} formulas render through KaTeX`);
  for(const section of lesson.sections){
   if(section.math!==undefined)check(Array.isArray(section.math)&&section.math.every(line=>typeof line==='string'&&line.trim()),`${id} math is a list of TeX strings`);
