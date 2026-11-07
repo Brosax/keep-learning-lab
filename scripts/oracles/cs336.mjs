@@ -1,43 +1,131 @@
-/** Independent CS336 mechanism checks. Hardware numbers are the declared analytical
- * models, not measured speed, memory allocation, or a model training benchmark.
+/** Independent numerical checks for CS336's lecture-aligned modules.
+ * Visuals: 02, 05, 08, 09, 10, 14. Code demos: 01, 03, 04, 06, 07, 14, 15, 16. Lessons 11, 12, 13, 17 have no module.
+ * Expected values are derived by hand or separately in Python (closed forms, not the lab code).
  */
-export default function verify({metrics,logged,check,eq,close,deep,mark}){
- const near=(a,b,message,tolerance=1e-10)=>close(a,b,tolerance,message);
+export default function verify({metrics,logged,outputObjects,check,eq,close,deep,mark}){
+ const near=(a,b,message,tolerance=1e-9)=>close(a,b,tolerance,message);
+ const rel=(a,b,message,tolerance=1e-6)=>close(a/b,1,tolerance,message);
  let m;
- // 01. Weighted within-word pair counts are ab=5 and ba=4; merges never cross a word boundary.
- mark('01');m=metrics('01');eq(m.initialTokens,13,'01 initial weighted character count');eq(m.tokenCount,6,'01 two learned merges reduce weighted token count');deep(m.merges.map(x=>x.pair),[['a','b'],['ab','ab']],'01 ordered highest-frequency merges');deep(m.merges.map(x=>x.count),[5,2],'01 merge counts include corpus frequency');deep(m.wordTokens,[['abab'],['ab','a'],['b','a']],'01 merged training vocabulary');eq(m.decodeMatches,true,'01 concatenating symbols reconstructs each word');[13,8,6,5,4].forEach((expected,rounds)=>eq(metrics('01',undefined,rounds).tokenCount,expected,`01 weighted token count after ${rounds} merges`));deep(metrics('01',undefined,3).merges[2].pair,['ab','a'],'01 deterministic lexicographic tie break');eq(logged('01','tokenCount').tokenCount,6,'01 executable BPE learning');
- // 02. A 4-by-8 projection plus bias has forty parameters, independent of batch size.
- mark('02');m=metrics('02');eq(m.parameterCount,40,'02 parameter shape includes bias');eq(m.inputElements,24,'02 B*T*D input elements');eq(m.outputElements,48,'02 B*T*H output elements');eq(m.parameterBytes,80,'02 BF16 parameters');eq(m.gradientBytes,160,'02 declared FP32 gradients');eq(m.masterBytes,160,'02 FP32 master copy');eq(m.momentBytes,320,'02 two FP32 Adam moments');eq(m.persistentBytes,720,'02 persistent state accounts for eighteen bytes per parameter');eq(m.savedActivationBytes,144,'02 declared saved BF16 inputs plus outputs');eq(m.totalBytes,864,'02 persistent and saved activation storage');eq(m.matmulFLOPs,384,'02 every multiply-add counts as two FLOPs');eq(m.biasAdds,48,'02 bias additions are reported separately');eq(metrics('02',undefined,4).totalBytes,1008,'02 doubling batch changes activation storage only');eq(logged('02','totalBytes').totalBytes,864,'02 executable tensor budget');
- // 03. RMSNorm scales by sqrt(12.5+epsilon); it does not subtract the input mean.
- mark('03');m=metrics('03');near(m.rms,Math.sqrt(12.500001),'03 RMS denominator');m.normalized.forEach((v,i)=>near(v,[3,4][i]/Math.sqrt(12.500001),`03 normalized channel ${i}`));m.branch.forEach((v,i)=>near(v,[.6722479021877298,.7258480579389953][i],`03 gated feed-forward branch ${i}`));m.output.forEach((v,i)=>near(v,[3.6722479021877298,4.7258480579389953][i],`03 residual output ${i}`));deep(metrics('03',undefined,0).output,[3,4],'03 zero branch scale preserves the residual stream');metrics('03',undefined,2).output.forEach((v,i)=>near(v,[3,4][i]+2*m.branch[i],`03 branch scaling after normalization ${i}`));logged('03','output').output.forEach((v,i)=>near(v,m.output[i],`03 executable gated block ${i}`));
- // 04. Capacity three admits the first three requests to experts zero/one, then two to expert two.
- mark('04');m=metrics('04');deep(m.requestedCounts,[5,5,2],'04 top-two routing demand');deep(m.acceptedCounts,[3,3,2],'04 capacity-limited expert load');eq(m.droppedAssignments,4,'04 overflow drops four assignments');eq(m.fullyDroppedTokens,1,'04 fourth token loses both expert branches');m.branchOutputs.forEach((v,i)=>near(v,[2,10/3,44/9,0,-35/9,-14/3][i],`04 accepted weighted expert sum ${i}`));near(m.residualOutputs[3],4,'04 fully dropped FFN keeps its residual');const roomy=metrics('04',undefined,5);eq(roomy.droppedAssignments,0,'04 capacity five satisfies all routing demand');deep(roomy.acceptedCounts,[5,5,2],'04 sufficient capacity does not invent extra routes');eq(metrics('04',undefined,1).droppedAssignments,9,'04 capacity-one accepts exactly one branch per expert');eq(logged('04','droppedAssignments').droppedAssignments,4,'04 executable capacity policy');
- // 05. Time is bounded below by the slower of arithmetic and traffic at their ceilings.
- mark('05');m=metrics('05');near(m.intensity,60,'05 arithmetic intensity in FLOP per byte');near(m.ridgeIntensity,80,'05 peak over bandwidth crossover');near(m.computeMs,2,'05 arithmetic time lower bound');near(m.memoryMs,8/3,'05 decimal-byte transfer time lower bound');near(m.lowerBoundMs,8/3,'05 bandwidth-limited lower bound');near(m.upperTF,90,'05 attainable-throughput upper bound');near(metrics('05',undefined,1).lowerBoundMs,2,'05 reduced traffic becomes compute limited');near(metrics('05',undefined,3).lowerBoundMs,2,'05 crossover balances both lower bounds');near(logged('05','upperTF').upperTF,90,'05 executable roofline ceiling');
- // 06. B has columns (1,0,2,0), (0,1,0,2), (2,0,1,0), (0,2,0,1).
- mark('06');m=metrics('06');const product=[[7,10,5,8],[19,22,17,20],[31,34,29,32],[43,46,41,44]];deep(m.output,product,'06 full matrix product');deep(m.firstTilePartial,[[1,2,0,0],[5,6,0,0],[0,0,0,0],[0,0,0,0]],'06 first inner tile is not the finished product');eq(m.globalReads,64,'06 tile-two explicit input loads');eq(m.globalWrites,16,'06 write each completed output once');eq(m.bytesMoved,320,'06 FP32 input plus output transfer model');eq(m.flops,2*4**3,'06 sixty-four multiply-adds count as 128 FLOPs');eq(m.maxTileElements,12,'06 two input tiles and one accumulator');[128,64,64,32].forEach((reads,i)=>{const result=metrics('06',undefined,i+1);eq(result.globalReads,reads,`06 edge-aware tile-${i+1} load count`);deep(result.output,product,`06 tile-${i+1} leaves arithmetic result unchanged`);});eq(logged('06','globalReads').globalReads,64,'06 executable tiled load accounting');
 
- // 07. Ring all-reduce sends 2(P-1)/P times the gradient per rank.
- mark('07');m=metrics('07');eq(m.ranks,4,'07 four participants');eq(m.bytesPerRank,180e6,'07 per-rank send payload');near(m.commMs,15.6,'07 bandwidth time plus six startup latencies');near(m.hiddenMs,12,'07 declared compute overlap hides twelve milliseconds');near(m.exposedMs,3.6,'07 uncovered collective time');near(m.stepMs,43.6,'07 step includes only exposed communication');near(m.serialMs,55.6,'07 no-overlap reference');eq(m.globalBatch,32,'07 global batch sums four local batches');near(metrics('07',undefined,0).stepMs,55.6,'07 zero overlap restores serial execution');near(metrics('07',undefined,24).stepMs,40,'07 overlap cannot subtract beyond communication duration');near(logged('07','commMs').commMs,15.6,'07 executable collective cost model');
- // 08. Shard optimizer, then gradients, then parameters; activation/workspace remain separate.
- mark('08');m=metrics('08');near(m.weightsGB,2,'08 stage two still replicates BF16 weights');near(m.gradientsGB,.5,'08 stage two quarters gradients');near(m.optimizerGB,3,'08 stage two quarters twelve GB optimizer state');near(m.statesGB,5.5,'08 stage-two persistent state');near(m.totalGB,9.5,'08 activation and workspace add four GB');[20,11,9.5,8].forEach((expected,stage)=>near(metrics('08',undefined,stage).totalGB,expected,`08 stage ${stage} total analytical storage`));near(logged('08','statesGB').statesGB,5.5,'08 executable state sharding');
- // 09. Residual losses [2,1,.5] halve whenever N quadruples, so alpha=1/2.
- mark('09');m=metrics('09');near(m.exponent,.5,'09 exact power exponent for the correct floor');near(m.coefficient,2,'09 exact residual scale');near(m.predicted,1.25,'09 extrapolation to N=64');near(m.absoluteError,.05,'09 held-out discrepancy');near(m.trainingRMSE,0,'09 interpolation fit is exact');near(m.heldOutRelativeError,1/26,'09 held-out relative error');const zeroFloor=metrics('09',undefined,0);near(zeroFloor.exponent,.25,'09 equal log-spaced inputs give slope from endpoint log losses');near(zeroFloor.coefficient,Math.cbrt(9)*Math.SQRT2,'09 OLS intercept differs when the floor is wrong');check(zeroFloor.trainingRMSE>0,'09 a misspecified floor spoils the exact training fit');near(logged('09','predicted').predicted,1.25,'09 executable scaling-law extrapolation');
- // 10. KV stores both K and V for two layers and two KV heads, using two bytes each.
- mark('10');m=metrics('10');eq(m.kvBytes,32768,'10 GQA KV storage at 256 tokens');eq(m.weightBytes,2e6,'10 BF16 parameter bytes');eq(m.decodeReadBytes,2032768,'10 one-token weights-plus-KV read model');eq(m.prefillFLOPs,528777216,'10 dense prefill arithmetic');eq(m.decodeFLOPs,2065536,'10 cached one-token arithmetic');near(m.decodeComputeMs,.002065536,'10 compute ceiling time');near(m.decodeBandwidthMs,.2032768,'10 bandwidth ceiling time');near(m.decodeLowerBoundMs,.2032768,'10 decoding model is bandwidth limited');near(m.prefillComputeMs,.528777216,'10 prefill arithmetic time');const longer=metrics('10',undefined,512);eq(longer.kvBytes,65536,'10 KV storage grows linearly with context');eq(longer.decodeFLOPs-2e6,2*(m.decodeFLOPs-2e6),'10 cached attention arithmetic grows linearly');eq(longer.prefillFLOPs-2e6*512,4*(m.prefillFLOPs-2e6*256),'10 dense prefill attention arithmetic grows quadratically');eq(logged('10','kvBytes').kvBytes,32768,'10 executable cache-size model');
- // 11. Under ND=100, the two reducible terms are 4/N and .09N.
- mark('11');m=metrics('11');near(m.modelSize,10,'11 default normalized model size');near(m.dataSize,10,'11 fixed compute determines data size');near(m.compute,600,'11 declared compute budget stays fixed');near(m.loss,2.3,'11 default loss surrogate');near(m.optimalModelSize,20/3,'11 continuous budget-constrained optimum');near(m.optimalDataSize,15,'11 data size at the continuous optimum');near(m.optimalLoss,2.2,'11 optimal surrogate loss');near(m.gap,.1,'11 default allocation gap');near(metrics('11',undefined,5).loss,2.25,'11 smaller model allocates more data');near(metrics('11',undefined,20).loss,3,'11 model-heavy allocation has larger data error');near(logged('11','optimalLoss').optimalLoss,2.2,'11 executable compute allocation');
- // 12. The same 4-byte string has joint probability 1/16 under every declared tokenization.
- mark('12');m=metrics('12');near(m.totalNLL,Math.log(16),'12 total log loss of the fixed string');near(m.perplexity,4,'12 two-token perplexity');near(m.sequenceProbability,1/16,'12 unchanged joint sequence probability');near(m.bitsPerByte,1,'12 byte-normalized codelength');near(m.pooledPerplexity,2**1.25,'12 pooled perplexity exponentiates token-weighted NLL');near(m.macroMeanPerplexity,3,'12 arithmetic mean of sequence perplexities differs');[16,4,16**(1/3),2].forEach((expected,i)=>{const result=metrics('12',undefined,i+1);near(result.perplexity,expected,`12 perplexity under ${i+1} tokens`);near(result.bitsPerByte,1,`12 bytes remove token-count denominator ${i+1}`);});near(logged('12','pooledPerplexity').pooledPerplexity,2**1.25,'12 executable pooled metric');
- // 13. Source availability and exposure use tokens in both the numerator and denominator.
- mark('13');m=metrics('13');deep(m.availableTokens,[600,300,100],'13 usable token inventory');eq(m.excludedTokens,200,'13 missing provenance excludes two hundred tokens');near(m.retainedFraction,5/6,'13 metadata-filtered token fraction');deep(m.probabilities,[.5,.25,.25],'13 explicit training mixture');deep(m.expectedExposure,[500,250,250],'13 expected one-thousand-token allocation');m.repeatFactors.forEach((v,i)=>near(v,[5/6,5/6,2.5][i],`13 expected exposure per available token ${i}`));near(metrics('13',undefined,.5).repeatFactors[2],5,'13 oversampling scarce code increases reuse');near(metrics('13',undefined,.5).expectedExposure.reduce((a,b)=>a+b,0),1000,'13 changing the mix preserves budget');near(logged('13','repeatFactors').repeatFactors[2],2.5,'13 executable token-mixture accounting');
- // 14. Four unique bigrams per document; three shared bigrams give intersection/union 3/5.
- mark('14');m=metrics('14');eq(m.intersectionAB,3,'14 common adjacent-token shingles');eq(m.unionAB,5,'14 set union counts shared shingles once');near(m.pairJaccard.ab,.6,'14 near-duplicate Jaccard');near(m.pairJaccard.ac,1/7,'14 only one shared shingle with third document');deep(m.keptIds,['A','C'],'14 equality at the threshold removes the second document');deep(m.removedIds,['B'],'14 default greedy removal');deep(metrics('14',undefined,.65).keptIds,['A','B','C'],'14 stricter similarity threshold keeps all documents');deep(metrics('14',undefined,.1).keptIds,['A'],'14 permissive similarity threshold removes both successors');deep(logged('14','keptIds').keptIds,['A','C'],'14 executable exact-shingle deduplication');
- // 15. Only three shifted assistant targets contribute; their correct-token probability product is .1.
- mark('15');m=metrics('15');deep(m.mask,[0,0,1,1,1,0],'15 shifted target roles mask prompt and padding');eq(m.targetCount,3,'15 masked denominator counts supervised targets');near(m.sumNll,Math.log(10),'15 supervised negative log probability');near(m.maskedLoss,Math.log(10)/3,'15 answer-only token-mean loss');near(m.allNonPadLoss,Math.log(25)/5,'15 supervising prompt tokens changes the objective');near(m.wrongFullLengthLoss,Math.log(10)/6,'15 wrong denominator silently halves the gradient scale');m.targetLogitGradients.forEach((v,i)=>near(v,[0,0,-1/4,-1/6,-1/15,0][i],`15 target logit derivative ${i}`));near(metrics('15',undefined,1).maskedLoss,Math.log(4),'15 single supervised answer target');near(metrics('15',undefined,1).targetLogitGradients[2],-.75,'15 gradient denominator follows active target count');near(logged('15','maskedLoss').maskedLoss,Math.log(10)/3,'15 executable SFT loss masking');
- // 16. Group-relative advantages can faithfully amplify an incorrectly accepted answer.
- mark('16');m=metrics('16');deep(m.observedRewards,[1,1,1,0],'16 faulty tolerance rewards answer five');near(m.mean,.75,'16 observed reward mean');near(m.variance,3/16,'16 population reward variance');near(m.std,Math.sqrt(3)/4,'16 population reward standard deviation');m.advantages.forEach((v,i)=>near(v,i===3?-Math.sqrt(3):1/Math.sqrt(3),`16 group advantage ${i}`));near(m.trueSuccessRate,.5,'16 strict task success remains half');eq(m.falseAccepts,1,'16 one false reward acceptance');deep(metrics('16',undefined,0).advantages,[1,1,-1,-1],'16 strict verifier gives the intended sign pattern');deep(metrics('16',undefined,2).advantages,[0,0,0,0],'16 identical rewards have zero normalized advantage');near(metrics('16',undefined,2).denominator,1e-8,'16 denominator floor prevents zero division');near(logged('16','trueSuccessRate').trueSuccessRate,.5,'16 executable verifier audit');
- // 17. Length^alpha is a declared example weighting rule, not an implied architecture property.
- mark('17');m=metrics('17');deep(m.rawWeights,[2,4],'17 square-root length weights');m.weights.forEach((v,i)=>near(v,[1/3,2/3][i],`17 normalized example weight ${i}`));near(m.loss,5/6,'17 weighted example-mean objective');m.perTokenGradients.forEach((v,i)=>near(v,[1/12,1/24][i],`17 coefficient on each token loss ${i}`));near(metrics('17',undefined,0).loss,.75,'17 alpha zero averages examples equally');near(metrics('17',undefined,1).loss,.9,'17 alpha one equals a pooled token mean');metrics('17',undefined,1).perTokenGradients.forEach(v=>near(v,.05,'17 pooled token mean gives equal token coefficients'));near(logged('17','loss').loss,5/6,'17 executable multimodal example weighting');
+ // 01. lecture_01.py · train_bpe("the cat in the hat", 3): (t,h)→256, (256,e)→257, (257,' ')→258; 18 bytes → 12 indices.
+ mark('01');m=logged('01','merges');
+ deep(m.merges.map(x=>[x.pair,x.newIndex]),[[[116,104],256],[[256,101],257],[[257,32],258]],'01 merges follow the lecture (first-seen pair wins ties)');
+ deep(m.lengths,[18,16,14,12],'01 each merge shortens the training string by two');
+ deep(m.trainIndices,[258,99,97,116,32,105,110,32,258,104,97,116],'01 trained indices');
+ near(m.compressionRatio,18/12,'01 compression ratio 1.5');
+ m=logged('01','testIds');
+ deep(m.testIds,[258,113,117,105,99,107,32,98,114,111,119,110,32,102,111,120],'01 encode applies merges in training order');
+ eq(m.testBytes,19,'01 test string bytes');near(m.testCompression,19/16,'01 test compression');eq(m.roundTrip,true,'01 decode(encode(s)) = s');
 
+ // 02. lecture_02.py · arithmetic_intensity_matmul(): AI = n²(2n−1)/(6n²) = (2n−1)/6; H100 989.5e12 / 3.35e12 = 295.3731…
+ mark('02');m=metrics('02');
+ near(m.acceleratorIntensity,989.5e12/3.35e12,'02 H100 accelerator intensity');
+ eq(m.bytes,6*1024*1024,'02 bytes for n = 1024');eq(m.flops,1024*1024*2047,'02 FLOPs for n = 1024');
+ near(m.arithmeticIntensity,2047/6,'02 intensity n = 1024 (~n/3)');eq(m.computeBound,true,'02 lecture: n = 1024 matmul is compute-bound');eq(m.mfuBound,1,'02 MFU bound saturates');
+ m=metrics('02',undefined,64);near(m.arithmeticIntensity,127/6,'02 intensity n = 64');near(m.mfuBound,(127/6)/(989.5e12/3.35e12),'02 MFU bound n = 64');eq(m.computeBound,false,'02 n = 64 is memory-bound');
+ eq(metrics('02',undefined,886).computeBound,false,'02 n = 886 still memory-bound (295.17 < 295.37)');
+ eq(metrics('02',undefined,887).computeBound,true,'02 n = 887 compute-bound (295.5 > 295.37)');
+
+ // 03. Lecture 3 p.31–35 RoPE; d = 4, Θ = 10000 → θ = [1, 0.01]. Reference values computed separately in numpy.
+ mark('03');m=logged('03','rope');
+ deep(m.theta,[1,.01],'03 RoPE frequencies');
+ deep(m.rope.sameOffset,[-0.904686,-0.904686,-0.904686],'03 RoPE inner product depends only on m − n');
+ near(m.rope.offset3,-1.336566,'03 offset 3 gives a different score');
+ deep(m.additive.sameOffset,[4.218834,1.526809,0.198712],'03 additive sinusoidal embedding depends on absolute position');
+ eq(m.relativeOnly,true,'03 relative-only flag');eq(m.rotationPreservesNorm,true,'03 rotation preserves norm');
+
+ // 04. Lecture 4 p.4–5 linear attention. Hand-computed: QKᵀ = [[1,0,1,2],[1,1,0,0],[2,1,1,2],[0,-1,1,2]].
+ mark('04');m=logged('04','unmasked');
+ deep(m.unmasked,[[8,3],[1,2],[9,5],[7,1]],'04 (QKᵀ)V');deep(m.reordered,m.unmasked,'04 Q(KᵀV) equals (QKᵀ)V');
+ m=logged('04','causalParallel');
+ deep(m.causalParallel,[[1,0],[1,2],[3,3],[7,1]],'04 causal masked parallel form');deep(m.recurrent,m.causalParallel,'04 RNN form equals masked parallel form');
+ deep(m.finalState,[[8,3],[1,2]],'04 final state S = KᵀV');deep(m.unmaskedRowsMatchingRnn,[false,true,false,true],'04 without the mask only some rows coincide');
+ m=logged('04','decayParallel');
+ deep(m.decayParallel,[[1,0],[.5,2],[1.5,2],[6.5,2]],'04 RetNet γ = 0.5 parallel');eq(m.decayMatches,true,'04 decayed recurrence matches');
+ eq(m.mulsQuadratic,64,'04 n²d_k + n²d_v');eq(m.mulsLinear,32,'04 2n·d_k·d_v');
+
+ // 05. Lecture 5 p.48: tiles = ⌈N/256⌉⌈N/128⌉, 108 SMs.
+ mark('05');m=metrics('05');
+ eq(m.tiles,98,'05 N = 1792: 7×14 tiles');eq(m.waves,1,'05 N = 1792 fits in one wave');near(m.utilization,98/108,'05 utilization 1792');
+ m=metrics('05',undefined,1793);eq(m.tiles,120,'05 N = 1793: 8×15 tiles');eq(m.waves,2,'05 N = 1793 needs two waves');eq(m.lastWaveTiles,12,'05 second wave has 12 tiles');near(m.utilization,120/216,'05 utilization drops');
+ m=metrics('05',undefined,2048);eq(m.tiles,128,'05 N = 2048 tiles');eq(m.waves,2,'05 N = 2048 waves in the simplified model');near(m.usefulArea,1,'05 2048 divides evenly');
+ m=metrics('05',undefined,1536);eq(m.tiles,72,'05 N = 1536 tiles');near(m.utilization,2/3,'05 N = 1536 utilization');
+ m=metrics('05',undefined,2560);eq(m.tiles,200,'05 N = 2560 tiles');near(m.utilization,200/216,'05 N = 2560 utilization');
+
+ // 06. lecture_06.py · matmul_relu_kernel with BLOCK 64/64/32 on 1024³: loads = MNK(1/BLOCK_N + 1/BLOCK_M).
+ mark('06');m=logged('06','part1').part1;
+ deep(m.grid,[16,16],'06 grid');eq(m.iterationsPerProgram,32,'06 K loop iterations');
+ eq(m.tiledLoads,1024**3*(1/64+1/64),'06 tiled loads');eq(m.naiveLoads,2*1024**3,'06 naive loads');eq(m.reuse,64,'06 reuse factor');
+ m=logged('06','part2').part2;
+ // A[i][k] = i + k, B[k][j] = k − j: (A@B)[i][j] = Σ_k (i+k)(k−j) = 7ij·(−1)… closed form: Σk² + i·Σk − j·(7i + Σk), Σk = 21, Σk² = 91.
+ const ref=Array.from({length:5},(_,i)=>Array.from({length:6},(_,j)=>Math.max(0,91+21*i-j*(7*i+21))));
+ deep(m.C,ref,'06 tiled ReLU(A@B) equals the closed form');eq(m.maxAbsDiff,0,'06 tiled result matches direct product');
+ deep(m.grid,[3,3],'06 non-divisible grid');eq(m.iterationsTotal,18,'06 total iterations');
+ // masked slots: A tiles 8 slots × 18 iterations − valid (5 rows × 7 k × 3 column programs) = 144 − 105 = 39; B: 144 − (7 × 6 × 3 row programs) = 144 − 126 = 18.
+ eq(m.maskedSlots,57,'06 masked loads');
+
+ // 07. lecture_07.py · collective_operations_main(): data = [0,1,2,3] + rank, world_size 4.
+ mark('07');m=logged('07','allReduce');
+ deep(m.allReduce,[[6,10,14,18],[6,10,14,18],[6,10,14,18],[6,10,14,18]],'07 all-reduce');
+ deep(m.reduceScatter,[[6],[10],[14],[18]],'07 reduce-scatter');eq(m.allReduceEqualsRsThenAg,true,'07 all-reduce = reduce-scatter + all-gather');
+ deep(m.allToAll,[[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15]],'07 all-to-all transposes blocks');
+ deep(m.gather,[0,1,2,3],'07 gather');deep(m.reduce,[6,10,14,18],'07 reduce');
+ m=logged('07','ring');eq(m.ringMatches,true,'07 ring all-reduce');deep(m.chunksSentPerRank,[6,6,6,6],'07 ring sends 2(W−1) chunks per rank');
+ m=logged('07','benchmark').benchmark;
+ eq(m.sizeBytes,419430400,'07 100·1024² float32 bytes');eq(m.allReduceSentBytes,419430400*2*3,'07 all-reduce sent bytes');eq(m.reduceScatterSentBytes,4*4*104857600*3,'07 reduce-scatter sent bytes');
+
+ // 08. Lecture 8 p.34: bubble = (p − 1)/m with p = 4.
+ mark('08');m=metrics('08');
+ near(m.bubbleRatio,.75,'08 m = 4 bubble');near(m.utilization,4/7,'08 m = 4 utilization');eq(m.totalSlots,14,'08 m = 4 slots');eq(m.idleSlotsPerDevice,6,'08 idle slots are constant');
+ m=metrics('08',undefined,1);near(m.bubbleRatio,3,'08 m = 1 bubble');near(m.utilization,.25,'08 naive layer-wise parallel uses 1/4');eq(m.totalSlots,8,'08 m = 1 slots');
+ m=metrics('08',undefined,32);near(m.bubbleRatio,3/32,'08 m = 32 bubble');near(m.utilization,32/35,'08 m = 32 utilization');
+ check(metrics('08',undefined,30).bubbleRatio<=.1&&metrics('08',undefined,29).bubbleRatio>.1,'08 30 microbatches is the smallest m with bubble ≤ 0.1');
+
+ // 09. Lecture 9 p.52 fit; closed form N_opt = G (C/6)^{β/(α+β)}, G = (αA/(βB))^{1/(α+β)}.
+ mark('09');
+ const a=.37/.72,G=(.35*482/(.37*2085))**(1/.72),L=(N,D)=>482/N**.35+2085/D**.37+1.82;
+ for(const lc of [19,21,24]){
+  m=metrics('09',undefined,lc);const C=10**lc,N=G*(C/6)**a,D=C/(6*N);
+  rel(m.Nopt,N,`09 N_opt at 1e${lc}`,1e-5);rel(m.Dopt,D,`09 D_opt at 1e${lc}`,1e-5);near(m.Lopt,L(N,D),`09 L_opt at 1e${lc}`,1e-9);
+ }
+ m=metrics('09');near(m.tokensPerParam,18.7133,'09 tokens per parameter at 1e21',1e-3);near(m.Lopt,2.272877,'09 minimum loss at 1e21',1e-5);
+ check(m.lossAtTenthN>m.Lopt&&m.lossAtTenTimesN>m.Lopt,'09 the optimum is a valley');
+ near(Math.log10(metrics('09',undefined,22).Nopt/metrics('09',undefined,21).Nopt),a,'09 slope of the frontier ≈ 0.51',1e-5);
+
+ // 10. lecture_10.py · llama2_13b_config(): memory = 26,030,899,200 + 838,860,800·B (K = 40); 22,675,456,000 + 167,772,160·B (K = 8).
+ mark('10');m=metrics('10',0,64);
+ eq(m.numParams,13015449600,'10 Llama 2 13B parameter count (MHA)');eq(m.memory,26030899200+838860800*64,'10 K = 40, B = 64 memory');
+ near(m.latencyMs,79717990400/3.35e12*1e3,'10 K = 40, B = 64 latency');eq(m.fits,true,'10 K = 40, B = 64 just fits in 80 GB');eq(m.maxBatchThatFits,64,'10 K = 40 max batch');
+ m=metrics('10',0,256);eq(m.fits,false,'10 lecture: K = 40, B = 256 does not fit');near(m.memoryGB,240.779264,'10 K = 40, B = 256 memory');
+ m=metrics('10',1,64);eq(m.memory,22675456000+167772160*64,'10 GQA K = 8, B = 64 memory');near(m.throughput,64/(m.memory/3.35e12),'10 throughput = B / latency',1e-6);
+ m=metrics('10',1,256);near(m.throughput,13068.164795877607,'10 GQA B = 256 throughput',1e-6);eq(m.maxBatchThatFits,341,'10 GQA max batch');
+ m=metrics('10',0,1);near(m.latencyMs,8.020823880597016,'10 B = 1 latency',1e-9);
+
+ // 14. lecture_14.py: mmh3.hash("hello") = 613153351; Jaccard({1,2,3,4},{1,2,3,5}) = 3/5; LSH 1 − (1 − s^r)^b.
+ mark('14');m=logged('14','helloHash');
+ eq(m.helloHash,613153351,'14 MurmurHash3 matches mmh3.hash("hello")');
+ deep(m.deduped,['hi','bye','hello','hello there','Hello!'],'14 exact dedup keeps one item per hash, sorted by hash');
+ m=logged('14','estimatedJaccard');near(m.jaccard,.6,'14 Jaccard 3/5');eq(m.matches,60,'14 60 of 100 seeds collide');near(m.estimatedJaccard,.6,'14 lecture assert |estimate − 0.6| < 0.01');
+ const P=(s,b,r)=>1-(1-s**r)**b;
+ near(metrics('14',0,10).probAt08,0.43330782041120397,'14 lecture example b = 5, r = 10, s = 0.8');
+ near(metrics('14',1,10).probAt08,0.6788599735928997,'14 b = 10, r = 10');near(metrics('14',1,20).probAt08,0.10949086440906874,'14 b = 10, r = 20 moves right');
+ near(metrics('14',2,20).probAt08,0.2069934794290924,'14 b = 20, r = 20 moves left');
+ m=metrics('14');near(m.threshold,(1/20)**(1/10),'14 threshold (1/b)^(1/r)');m.probs.forEach((p,i)=>near(p,P([.7,.75,.8,.85,.9,.95,.98][i],20,10),`14 S-curve point ${i}`));
+
+ // 15. Lecture 15 p.57–58 DPO: margin = β[(πw − refw) − (πl − refl)], loss = log(1 + e^{−margin}), weight = σ(−margin).
+ mark('15');m=logged('15','rows');
+ deep(m.rows.map(r=>r.margin),[.2,0,-.3,.4],'15 margins at β = 0.1');
+ deep(m.rows.map(r=>r.loss),[.5981,.6931,.8544,.513],'15 per-pair losses');deep(m.rows.map(r=>r.weight),[.4502,.5,.5744,.4013],'15 gradient weights σ(−margin)');
+ near(m.meanLoss,.6647,'15 mean loss');near(m.accuracy,.5,'15 preference accuracy (ties are not correct)');
+
+ // 16. Lecture 16 p.20: (r − mean)/(std + 1e-4), population std; hard group std = √(0.125·0.875).
+ mark('16');m=logged('16','hard');
+ const sd=Math.sqrt(.125*.875);
+ near(m.hard.grpo[0],Math.round(.875/(sd+1e-4)*1e4)/1e4,'16 hard group: lone correct answer');near(m.hard.grpo[1],Math.round(-.125/(sd+1e-4)*1e4)/1e4,'16 hard group: wrong answers');
+ near(m.hard.drGrpo[0],.875,'16 Dr. GRPO hard correct');near(m.medium.grpo[0],Math.round(.5/(.5+1e-4)*1e4)/1e4,'16 medium group ±0.9998');near(m.medium.drGrpo[4],-.5,'16 Dr. GRPO medium wrong');
+ near(m.hard.sampleStd[0],Math.round(.875/(Math.sqrt(.125*.875*8/7)+1e-6)*1e4)/1e4,'16 sample-std variant');
+ deep(m.solved.grpo,[0,0,0,0,0,0,0,0],'16 solved group gives no signal');near(m.easy.grpo[7],-m.hard.grpo[0],'16 easy group mirrors hard group');
+ m=logged('16','grpoPerToken');
+ deep(m.grpoPerToken,[.01,.005,.0033,.0025,-.01,-.005,-.0033,-.0025],'16 GRPO per-token weights shrink with length');
+ deep(m.drGrpoPerToken,[.001,.001,.001,.001,-.001,-.001,-.001,-.001],'16 Dr. GRPO constant normalizer');
 }

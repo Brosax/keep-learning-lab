@@ -1,90 +1,289 @@
-/* CS336 01–06: tokenization, exact accounting and explicit hardware cost models. */
+/* CS336 01–06, aligned with the 2026 lectures.
+ * 01 code: lecture_01.py · train_bpe() / count_adjacent_pairs() / merge() / BPETokenizer
+ * 02 visual: lecture_02.py · arithmetic_intensity_matmul() / roofline_plots()
+ * 03 code: Lecture 3 (2026) p.31–35 RoPE relative-position property (Assignment 1 · Problem (rope))
+ * 04 code: Lecture 4 (2026) p.4–5 linear attention as matrix reordering and as an RNN
+ * 05 visual: Lecture 5 (2026) p.48 wave quantization
+ * 06 code: lecture_06.py · matmul_relu_kernel() block decomposition
+ */
 (() => {
 'use strict';
-const {text,line,arrow,node,rect,point,fmt}=window.MLVis;
+const {text,line,fmt}=window.MLVis;
 const V=window.COURSE_VISUALS ||= {},C=window.COURSE_CODE ||= {};
 const title=s=>text(24,28,s,'v-title');
-const corpus=[{word:'abab',count:2},{word:'aba',count:1},{word:'ba',count:1}];
-function trainBPE(rounds){let rows=corpus.map(r=>({...r,tokens:[...r.word]}));const tokenTotal=()=>rows.reduce((s,r)=>s+r.tokens.length*r.count,0),initialTokens=tokenTotal(),merges=[];let firstPairs=[];for(let step=0;step<rounds;step++){const counts=new Map();for(const row of rows)for(let i=0;i<row.tokens.length-1;i++){const pair=[row.tokens[i],row.tokens[i+1]],key=pair.join('\0');counts.set(key,{pair,count:(counts.get(key)?.count||0)+row.count});}const ranked=[...counts.values()].sort((a,b)=>b.count-a.count||(a.pair[0]===b.pair[0]?(a.pair[1]<b.pair[1]?-1:1):(a.pair[0]<b.pair[0]?-1:1)));if(step===0)firstPairs=ranked.map(r=>({pair:r.pair,count:r.count}));if(!ranked.length)break;const best=ranked[0];rows=rows.map(row=>{const out=[];for(let i=0;i<row.tokens.length;i++){if(i+1<row.tokens.length&&row.tokens[i]===best.pair[0]&&row.tokens[i+1]===best.pair[1]){out.push(row.tokens[i]+row.tokens[i+1]);i++;}else out.push(row.tokens[i]);}return {...row,tokens:out};});merges.push({pair:best.pair,count:best.count,tokenCount:tokenTotal()});}return {initialTokens,tokenCount:tokenTotal(),merges,firstPairs,wordTokens:rows.map(r=>r.tokens),decodeMatches:rows.every(r=>r.tokens.join('')===r.word),compressionRatio:initialTokens/tokenTotal()};}
-V['cs336-01']={title:'BPE：数相邻对，再真正合并符号',param:'执行的合并轮数',min:0,max:4,step:1,value:2,steps:['声明词边界和频数','统计加权相邻对','按规则逐轮合并','核对长度与可逆性'],render(step,rounds){const m=trainBPE(rounds),initial=trainBPE(1);let svg=title('训练词表：abab×2，aba×1，ba×1；不跨词边界');corpus.forEach((r,i)=>{const y=80+i*63;svg+=text(25,y+18,`${r.word} × ${r.count}`);const tokens=step>=2?m.wordTokens[i]:[...r.word];tokens.forEach((t,j)=>{svg+=rect(190+j*122,y-8,108,44,step===2?'v-node active':'v-node')+text(244+j*122,y+19,t,'v-center v-node-title');});});if(step>=1)svg+=text(25,292,'首轮计数：(a,b)=5，(b,a)=4','v-small');if(step>=3)svg+=text(405,292,`加权token：13 → ${m.tokenCount}`,'v-title');const bodies=['三个词条共有4个词实例。统计乘上词频，但词尾与下一个词头不相邻。这个小词表从字符a、b起步，专门展示合并算法，不冒充完整字节级分词器。','abab内部有两个(a,b)与一个(b,a)，出现两次；aba各含一次，ba另贡献一次。因此(a,b)=2×2+1=5，(b,a)=2+1+1=4。统计允许重叠的相邻位置；实际替换仍从左向右不重叠。',`执行${rounds}轮，合并序列为${m.merges.map(r=>`(${r.pair.join(',')})×${r.count}`).join('；')||'空'}。每轮都在新的符号序列上重新统计。并列时按两个符号的字典序确定唯一选择，不借助未声明的随机性。`,`当前加权token数${m.tokenCount}，初始13；拼接每个词的符号仍能还原原词：${m.decodeMatches?'是':'否'}。第1轮13→8，第2轮8→6。训练合并规则之后还需固定规则用于新文本，不能为测试文本重新训练分词器。`];return {svg,metrics:m,formula:'pair_count(a,b)=Σ_word 词频×词内相邻(a,b)次数；每轮选择最高频对',body:bodies[step],result:`token ${m.tokenCount} · 压缩比 ${fmt(m.compressionRatio)} · 可还原=${m.decodeMatches}`,note:'字符级玩具词表，无跨词合并或结束符。真实byte-level BPE还需预切分、字节映射和特殊token等规则。'};}};
-C['cs336-01']={name:'执行一个完整的小型BPE训练循环',instructions:['核对首轮(a,b)=5和(b,a)=4，注意词频权重。','把rounds从2改为0、1、3、4，观察token数13、8、5、4。','把词表加入aaa，区分重叠pair计数与不重叠替换。'],expected:'rounds=2时先合并(a,b)，再合并(ab,ab)；token总数13→8→6，所有词仍可拼接还原。',code:`const corpus=[{word:'abab',count:2},{word:'aba',count:1},{word:'ba',count:1}],rounds=2;
-let rows=corpus.map(r=>({...r,tokens:[...r.word]}));
-const total=()=>rows.reduce((s,r)=>s+r.tokens.length*r.count,0),initialTokens=total(),merges=[];
-for(let step=0;step<rounds;step++){
- const counts=new Map();
- for(const row of rows)for(let i=0;i<row.tokens.length-1;i++){const pair=[row.tokens[i],row.tokens[i+1]],key=pair.join('|');counts.set(key,{pair,count:(counts.get(key)?.count||0)+row.count});}
- const ranked=[...counts.values()].sort((a,b)=>b.count-a.count||(a.pair[0]===b.pair[0]?(a.pair[1]<b.pair[1]?-1:1):(a.pair[0]<b.pair[0]?-1:1)));
- if(!ranked.length)break;const best=ranked[0];
- rows=rows.map(row=>{const tokens=[];for(let i=0;i<row.tokens.length;i++){if(i+1<row.tokens.length&&row.tokens[i]===best.pair[0]&&row.tokens[i+1]===best.pair[1]){tokens.push(row.tokens[i]+row.tokens[i+1]);i++;}else tokens.push(row.tokens[i]);}return {...row,tokens};});
- merges.push({pair:best.pair,count:best.count,tokenCount:total()});
+const box=(x,y,w,h,fill,opacity=1)=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${Math.max(0,h)}" rx="2" fill="${fill}" fill-opacity="${opacity}"/>`;
+
+C['cs336-01']={name:'train_bpe：在 "the cat in the hat" 上合并 3 次',
+ instructions:['先运行默认代码：3 次合并依次得到 256 = "th"、257 = "the"、258 = "the "，训练串从 18 个索引缩到 12 个，压缩率 1.5。','把 numMerges 改成 4：第 4 次合并的是 (a, t) → "at"，训练串只剩 10 个索引；再改成 0，看看什么都不合并时编码就是原始 UTF-8 字节。','把 testString 换成包含中文或 emoji 的句子：每个字符会先变成 3–4 个字节，训练语料里没出现过的字节对不会被合并，但 decode(encode(s)) 仍然还原原文。'],
+ expected:'默认：merges = [[116,104]→256 "th", [256,101]→257 "the", [257,32]→258 "the "]；训练串长度 18→16→14→12，compression_ratio = 1.5；"the quick brown fox" 19 字节编码成 16 个 token，压缩率 1.1875，roundTrip = true。',
+ code:`const trainString = "the cat in the hat";
+const numMerges = 3;
+const testString = "the quick brown fox";
+
+// 沙箱里没有 TextEncoder，这里手写 UTF-8 编码（等价于 Python 的 string.encode("utf-8")）
+function utf8(s) {
+  const out = [];
+  for (const ch of s) {
+    const c = ch.codePointAt(0);
+    if (c < 0x80) out.push(c);
+    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+    else if (c < 0x10000) out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    else out.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 63), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+  }
+  return out;
 }
-console.log({initialTokens,tokenCount:total(),merges,wordTokens:rows.map(r=>r.tokens),decodeMatches:rows.every(r=>r.tokens.join('')===r.word)});`};
-
-function tensorBudget(B){const T=3,D=4,H=8,parameterCount=D*H+H,inputElements=B*T*D,outputElements=B*T*H,parameterBytes=2*parameterCount,gradientBytes=4*parameterCount,momentBytes=8*parameterCount,masterBytes=4*parameterCount,persistentBytes=parameterBytes+gradientBytes+momentBytes+masterBytes,savedActivationBytes=2*(inputElements+outputElements);return {parameterCount,inputElements,outputElements,parameterBytes,gradientBytes,momentBytes,masterBytes,persistentBytes,savedActivationBytes,totalBytes:persistentBytes+savedActivationBytes,matmulFLOPs:2*B*T*D*H,biasAdds:B*T*H};}
-V['cs336-02']={title:'一个投影层：按张量逐项记显存账',param:'批量大小 B',min:1,max:8,step:1,value:2,steps:['从形状确定参数数','列出持久训练状态','加上保存的输入输出','区分批量与参数的增长'],render(step,B){const m=tensorBudget(B);let svg=title(`输入 ${B}×3×4，投影W:4×8，bias:8`)+node(25,63,175,'输入 BF16',`${m.inputElements} 元素`,step===0)+arrow(206,97,269,97)+node(280,63,180,'W 与 bias','40 个参数',step===1)+arrow(466,97,529,97)+node(540,63,190,'输出 BF16',`${m.outputElements} 元素`,step===0);const parts=[['权重',m.parameterBytes],['梯度',m.gradientBytes],['Adam两矩',m.momentBytes],['FP32主权重',m.masterBytes],['保存激活',m.savedActivationBytes]];if(step>=1){let x=25;parts.forEach(([label,size],i)=>{if(i===4&&step<2)return;const w=size/m.totalBytes*690;svg+=`<rect x="${x}" y="178" width="${w}" height="32" fill="${i===4?'#ffe38a':i%2?'#62a7ef':'#50dfc2'}"/>`+text(25+(i%3)*230,242+Math.floor(i/3)*24,`${label} ${size}B`,'v-small');x+=w;});}if(step>=3)svg+=text(25,310,`持久 ${m.persistentBytes}B + 激活 ${m.savedActivationBytes}B = ${m.totalBytes}B`,'v-title');const bodies=[`B=${B}、T=3、输入宽度4、输出宽度8。W有32个参数，偏置8个，共40个。输入${m.inputElements}、输出${m.outputElements}个元素；批量改变不会新增W或偏置参数。`,'本例明确采用BF16权重、FP32梯度、FP32主权重以及FP32一阶/二阶矩。因此每参数占2+4+4+4+4=18字节，40个参数共720字节。其他精度与优化器配置会产生不同账单。',`只为教学核算额外保存BF16输入和输出，共2×(${m.inputElements}+${m.outputElements})=${m.savedActivationBytes}字节。该清单不声称涵盖真实自动求导的全部中间量、临时workspace或分配器开销。`,`总计${m.totalBytes}字节，其中持久状态固定720，示例激活随B线性增长。矩阵乘前向约${m.matmulFLOPs} FLOPs，另有${m.biasAdds}次偏置加法；这里不把反向传播或通信悄悄算进去。`];return {svg,metrics:m,formula:'P=4×8+8=40；持久状态=18P；保存激活=2BT(4+8)；matmul FLOPs=2BT·4·8',body:bodies[step],result:`${m.totalBytes} B · matmul ${m.matmulFLOPs} FLOPs · bias ${m.biasAdds} adds`,note:'单层理想账本，不是设备实测峰值。后续ZeRO章节讨论状态放在哪里，本讲先明确每项状态是什么。'};}};
-C['cs336-02']={name:'逐张量预算：批量翻倍后哪项不变？',instructions:['运行B=2，手算40参数与720B持久状态。','把B改为4，检查权重/优化器不变而激活翻倍。','修改精度假设前先说明是否保留FP32主权重，避免重复或漏记。'],expected:'B=2：参数40，持久720B，保存激活144B，总864B；matmul384 FLOPs另加48次bias加法。',code:`const B=2,T=3,D=4,H=8;
-const parameterCount=D*H+H,inputElements=B*T*D,outputElements=B*T*H;
-const parameterBytes=parameterCount*2,gradientBytes=parameterCount*4;
-const momentBytes=parameterCount*4*2,masterBytes=parameterCount*4;
-const persistentBytes=parameterBytes+gradientBytes+momentBytes+masterBytes;
-const savedActivationBytes=(inputElements+outputElements)*2,totalBytes=persistentBytes+savedActivationBytes;
-const matmulFLOPs=2*B*T*D*H,biasAdds=B*T*H;
-console.log({inputShape:[B,T,D],weightShape:[D,H],outputShape:[B,T,H],
- parameterCount,inputElements,outputElements,parameterBytes,gradientBytes,momentBytes,masterBytes,persistentBytes,savedActivationBytes,totalBytes,matmulFLOPs,biasAdds});`};
-
-function gatedBlock(alpha){const input=[3,4],epsilon=1e-6,rms=Math.sqrt((9+16)/2+epsilon),normalized=input.map(x=>x/rms),gate=[...normalized],up=[normalized[1],normalized[0]],silu=gate.map(x=>x/(1+Math.exp(-x))),branch=silu.map((x,i)=>x*up[i]),output=input.map((x,i)=>x+alpha*branch[i]);return {rms,normalized,gate,up,silu,branch,output,alpha};}
-V['cs336-03']={title:'RMSNorm → SwiGLU → 残差：完整算一个前馈子层',param:'残差支路缩放 α',min:0,max:2,step:.25,value:1,steps:['用均方根缩放输入','生成门控与上投影','逐元素乘积形成SwiGLU','映射回原维度并相加'],render(step,alpha){const m=gatedBlock(alpha);let svg=title('x=[3,4]；RMSNorm ε=10⁻⁶、γ=[1,1]');svg+=node(25,120,135,'输入 x','3, 4',step===0)+node(205,120,160,'RMSNorm',m.normalized.map(v=>fmt(v,3)).join(', '),step===0)+arrow(166,153,197,153);if(step>=1)svg+=node(410,58,150,'gate = z',m.gate.map(v=>fmt(v,3)).join(', '),step===1)+node(410,198,150,'up = swap(z)',m.up.map(v=>fmt(v,3)).join(', '),step===1)+arrow(370,142,402,100)+arrow(370,165,402,225);if(step>=2)svg+=node(590,120,150,'SiLU(g) ⊙ up',m.branch.map(v=>fmt(v,3)).join(', '),step===2)+arrow(565,100,600,114)+arrow(565,225,600,193);if(step>=3)svg+=text(25,296,`y=x+α·branch=[${m.output.map(v=>fmt(v,6)).join(', ')}]`,'v-title');const bodies=[`输入均方为(9+16)/2=12.5，rms=√(12.5+10⁻⁶)=${fmt(m.rms,6)}。归一化后z=[${m.normalized.map(v=>fmt(v,6))}]。RMSNorm不减均值，这一点与LayerNorm不同。`,'为了可以完整手算，gate投影取单位矩阵，上投影交换两维，均无偏置。于是gate=z，up=(z₂,z₁)。真实FFN通常扩展隐藏维度；这里压到二维展示计算次序。',`门值先经过SiLU(g)=g·sigmoid(g)，再与up逐元素相乘，得到[${m.branch.map(v=>fmt(v,6))}]。SwiGLU不是把两个分支相加，也不是对它们做softmax。`,`下投影取单位矩阵，支路乘α=${fmt(alpha,2)}后加回原始x，输出[${m.output.map(v=>fmt(v,6))}]。α=0时精确回到x，体现恒等残差路径；归一化是在支路中，不应把原始残差也误替换成z。`];return {svg,metrics:m,formula:'z=x/√(mean(x²)+ε)；h=SiLU(z)⊙swap(z)；y=x+αh',body:bodies[step],result:`branch=[${m.branch.map(v=>fmt(v,6))}] · y=[${m.output.map(v=>fmt(v,6))}]`,note:'Pre-norm FFN的二维社区算例：没有注意力、训练或真实扩维矩阵，不代表一个完整Transformer块。'};}};
-C['cs336-03']={name:'前馈子层：逐项核对归一化、门控与残差',instructions:['手算均方12.5，说明RMSNorm为何没有减均值。','计算门控SiLU后再乘交换的up分支，检查逐元素顺序。','将alpha设为0，确认output精确等于原始输入。'],expected:'归一化约[.848528,1.131371]；branch约[.672248,.725848]；alpha=0时输出[3,4]。',code:`const input=[3,4],epsilon=1e-6,gamma=[1,1],alpha=1;
-const rms=Math.sqrt(input.reduce((s,x)=>s+x*x,0)/input.length+epsilon);
-const normalized=input.map((x,i)=>gamma[i]*x/rms);
-const gate=[...normalized],up=[normalized[1],normalized[0]];
-const silu=gate.map(g=>g/(1+Math.exp(-g)));
-const branch=silu.map((g,i)=>g*up[i]);
-const output=input.map((x,i)=>x+alpha*branch[i]);
-console.log({rms,normalized,gate,up,silu,branch,output,alpha});`};
-
-const gateRows=[[.7,.2,.1],[.6,.3,.1],[.5,.4,.1],[.8,.1,.1],[.1,.2,.7],[.2,.1,.7]];
-function dispatch(capacity){const requestedCounts=[0,0,0],acceptedCounts=[0,0,0],routes=[],branchOutputs=[];let droppedAssignments=0,fullyDroppedTokens=0;gateRows.forEach((p,t)=>{const chosen=p.map((weight,e)=>({e,weight})).sort((a,b)=>b.weight-a.weight||a.e-b.e).slice(0,2),mass=chosen.reduce((s,r)=>s+r.weight,0);let out=0,accepted=0;routes[t]=chosen.map(r=>{requestedCounts[r.e]++;const weight=r.weight/mass,ok=acceptedCounts[r.e]<capacity;if(ok){acceptedCounts[r.e]++;accepted++;const x=t+1,expert=r.e===0?x+1:r.e===1?2*x:-x;out+=weight*expert;}else droppedAssignments++;return {expert:r.e,weight,accepted:ok};});if(!accepted)fullyDroppedTokens++;branchOutputs.push(out);});return {requestedCounts,acceptedCounts,routes,droppedAssignments,fullyDroppedTokens,branchOutputs,residualOutputs:branchOutputs.map((v,i)=>v+i+1)};}
-V['cs336-04']={title:'MoE 容量限制：被选中的专家也可能收不下',param:'每位专家最多接收的token数',min:1,max:6,step:1,value:3,steps:['选择并归一化top-2','统计请求负载','按输入顺序检查容量','保留残差并报告溢出'],render(step,capacity){const m=dispatch(capacity);let svg=title('6个token、3个专家；选top-2后归一化门权重');for(let i=0;i<6;i++){const y=69+i*37;svg+=text(25,y,`token ${i+1}`,'v-small');m.routes[i].forEach((r,j)=>{const x=130+j*170;svg+=text(x,y,`E${r.expert} ×${fmt(r.weight,2)} ${step>=2?(r.accepted?'✓':'×'):''}`,'v-small');});}if(step>=1)m.requestedCounts.forEach((n,e)=>{const x=480+e*88;svg+=text(x+30,68,`E${e}`,'v-center');for(let i=0;i<6;i++)svg+=`<rect x="${x}" y="${250-i*25}" width="60" height="20" fill="${i<(step>=2?m.acceptedCounts[e]:n)?'#50dfc2':'#172337'}"/>`;svg+=text(x+30,286,`${step>=2?m.acceptedCounts[e]:n}/${capacity}`,'v-center v-small');});if(step>=3)svg+=text(25,315,`丢弃分支 ${m.droppedAssignments}；整条FFN支路为0的token ${m.fullyDroppedTokens}`,'v-title');const bodies=['路由概率已给定，先选概率最高的两位专家，再在这两位之间归一化。概率相同按专家编号小者优先。专家函数设为E0(x)=x+1、E1(x)=2x、E2(x)=−x，方便计算输出。','六个token产生12次专家请求，负载为[5,5,2]。平均每专家4次不能代表每一位都收到4次；总参数与激活参数的账面节省也无法消除这种不均衡。',`容量=${capacity}。严格按token输入顺序接收，专家满载就丢弃该分支，不重新路由，也不把剩余权重重新归一化。接收负载为[${m.acceptedCounts}]，丢弃${m.droppedAssignments}次分支请求。`,`${m.fullyDroppedTokens}个token的两个专家分支都被拒绝，其FFN输出为0，但残差x仍保留。这是本例明确选择的溢出策略；其他系统可能使用无丢弃路由、重路由或不同优先级，输出会不同。`];return {svg,metrics:m,formula:'top-2选后权重 w_e=p_e/Σ_top2 p；branch=Σ_accepted w_e E_e(x)；y=x+branch',body:bodies[step],result:`请求[${m.requestedCounts}] → 接收[${m.acceptedCounts}] · 丢弃${m.droppedAssignments}`,note:'演示容量与路由语义，没有模拟专家并行通信或真实性能；丢弃后不再归一化是显式教学约定。'};}};
-C['cs336-04']={name:'实现有容量限制的top-2路由',instructions:['运行capacity=3，核对请求[5,5,2]与接收[3,3,2]。','检查第4个token为什么FFN支路为0但残差输出仍为4。','把capacity改成5，确认没有溢出，再讨论重路由会怎样改变模型定义。'],expected:'默认丢弃4次专家分支请求，1个token整条FFN支路为0；branchOutputs≈[2,3.333333,4.888889,0,−3.888889,−4.666667]。',code:`const gates=[[.7,.2,.1],[.6,.3,.1],[.5,.4,.1],[.8,.1,.1],[.1,.2,.7],[.2,.1,.7]],capacity=3;
-const requestedCounts=[0,0,0],acceptedCounts=[0,0,0],routes=[],branchOutputs=[];
-let droppedAssignments=0,fullyDroppedTokens=0;
-gates.forEach((p,t)=>{
- const top=p.map((weight,e)=>({e,weight})).sort((a,b)=>b.weight-a.weight||a.e-b.e).slice(0,2);
- const mass=top.reduce((s,r)=>s+r.weight,0);let result=0,accepted=0;
- routes[t]=top.map(r=>{requestedCounts[r.e]++;const weight=r.weight/mass,ok=acceptedCounts[r.e]<capacity;
-  if(ok){acceptedCounts[r.e]++;accepted++;const x=t+1,value=r.e===0?x+1:r.e===1?2*x:-x;result+=weight*value;}else droppedAssignments++;
-  return {expert:r.e,weight,accepted:ok};});
- if(accepted===0)fullyDroppedTokens++;branchOutputs.push(result);
-});
-console.log({requestedCounts,acceptedCounts,routes,droppedAssignments,fullyDroppedTokens,branchOutputs,residualOutputs:branchOutputs.map((v,i)=>v+i+1)});`};
-
-function roofline(trafficGB){const flops=240e9,peak=120e12,bandwidth=1.5e12,bytes=trafficGB*1e9,intensity=flops/bytes,computeMs=flops/peak*1000,memoryMs=bytes/bandwidth*1000,upperTF=Math.min(peak,bandwidth*intensity)/1e12,lowerBoundMs=Math.max(computeMs,memoryMs);return {flops,bytes,intensity,computeMs,memoryMs,upperTF,lowerBoundMs,ridgeIntensity:peak/bandwidth,bottleneck:memoryMs>computeMs?'bandwidth':memoryMs<computeMs?'compute':'balanced'};}
-V['cs336-05']={title:'Roofline：算力和带宽给出哪一个上界？',param:'需要搬运的数据量（十进制 GB）',min:1,max:8,step:.5,value:4,steps:['声明硬件上界与工作量','算出算术强度','分别计算两项时间下界','取较大下界而非声称实测'],render(step,trafficGB){const m=roofline(trafficGB),px=x=>60+x*1.5,py=y=>275-y*1.6;let svg=title('假设峰值120 TFLOP/s、带宽1.5 TB/s；工作量240 GFLOP');svg+=line(60,275,450,275,'v-axis')+line(60,275,60,65,'v-axis')+line(px(0),py(0),px(80),py(120),'v-teal')+line(px(80),py(120),px(250),py(120),'v-teal')+text(65,58,'TFLOP/s','v-small')+text(280,309,'算术强度 FLOP/byte','v-small')+text(px(80),py(120)-10,'转折点80','v-center v-small');if(step>=1)svg+=point(px(m.intensity),py(m.upperTF),7)+line(px(m.intensity),py(m.upperTF),px(m.intensity),275,'v-yellow');svg+=text(480,80,`流量 ${fmt(trafficGB,1)} GB`)+text(480,120,`强度 ${fmt(m.intensity,2)} FLOP/B`);if(step>=2)svg+=text(480,165,`计算至少 ${fmt(m.computeMs,4)} ms`)+text(480,202,`搬运至少 ${fmt(m.memoryMs,4)} ms`);if(step>=3)svg+=text(480,255,`总体至少 ${fmt(m.lowerBoundMs,4)} ms`,'v-title');const bodies=['所有数值是教学硬件假设：峰值120×10¹² FLOP/s，带宽1.5×10¹² byte/s，工作量240×10⁹ FLOP。GB/TB采用十进制，不与GiB/TiB混用。',`搬运${fmt(trafficGB,1)}×10⁹字节，算术强度I=FLOPs/bytes=${fmt(m.intensity,3)} FLOP/byte。带宽线的性能上界为带宽×I，平台峰值又限制它最多120 TFLOP/s。`,`仅计算就至少需要2ms；仅搬运至少需要${fmt(m.memoryMs,6)}ms。它们是工作量除以资源上限，不含启动、同步、排队、调度或通信开销。`,`即使理想地完全重叠计算与传输，时间也不能低于两项中的较大者${fmt(m.lowerBoundMs,6)}ms。对应吞吐上界${fmt(m.upperTF,3)} TFLOP/s。实际可能更慢；这个图用于识别值得测量的瓶颈，不能替代GPU计时。`];return {svg,metrics:m,formula:'I=FLOPs/byte；吞吐≤min(P_peak,BW·I)；时间≥max(FLOPs/P_peak,bytes/BW)',body:bodies[step],result:`I=${fmt(m.intensity)} · 上界${fmt(m.upperTF)} TFLOP/s · 时间下界${fmt(m.lowerBoundMs)}ms`,note:'理想roofline模型，非实际GPU/TPU测量。部分课件使用byte/FLOP作为逆强度；本图始终用FLOP/byte。'};}};
-C['cs336-05']={name:'用单位一致的账本判断roofline瓶颈',instructions:['把十进制GB、TB/s都转换成byte单位再计算。','比较trafficGB=1与4时瓶颈如何改变。','解释为什么lowerBoundMs不是预计实测延迟，也不是两项时间直接相加。'],expected:'4GB时I=60 FLOP/B，计算下界2ms，搬运下界2.666667ms；吞吐上界90 TFLOP/s，转折强度80 FLOP/B。',code:`const trafficGB=4,flops=240e9,peak=120e12,bandwidth=1.5e12;
-const bytes=trafficGB*1e9,intensity=flops/bytes,ridgeIntensity=peak/bandwidth;
-const computeMs=flops/peak*1000,memoryMs=bytes/bandwidth*1000;
-const lowerBoundMs=Math.max(computeMs,memoryMs),upperTF=Math.min(peak,bandwidth*intensity)/1e12;
-const bottleneck=memoryMs>computeMs?'bandwidth':memoryMs<computeMs?'compute':'balanced';
-console.log({flops,bytes,intensity,ridgeIntensity,computeMs,memoryMs,lowerBoundMs,upperTF,bottleneck});`};
-
-const matrixA=Array.from({length:4},(_,i)=>Array.from({length:4},(_,j)=>i*4+j+1)),matrixB=[[1,0,2,0],[0,1,0,2],[2,0,1,0],[0,2,0,1]];
-function tiledMultiply(tile){const n=4,output=Array.from({length:n},()=>Array(n).fill(0)),reference=matrixA.map(row=>matrixB[0].map((_,j)=>row.reduce((s,a,k)=>s+a*matrixB[k][j],0)));let globalReads=0,globalWrites=0,maxTileElements=0;for(let ii=0;ii<n;ii+=tile)for(let jj=0;jj<n;jj+=tile){const r=Math.min(tile,n-ii),c=Math.min(tile,n-jj),acc=Array.from({length:r},()=>Array(c).fill(0));for(let kk=0;kk<n;kk+=tile){const kSize=Math.min(tile,n-kk),a=Array.from({length:r},(_,i)=>Array.from({length:kSize},(_,k)=>matrixA[ii+i][kk+k])),b=Array.from({length:kSize},(_,k)=>Array.from({length:c},(_,j)=>matrixB[kk+k][jj+j]));globalReads+=r*kSize+kSize*c;maxTileElements=Math.max(maxTileElements,r*c+r*kSize+kSize*c);for(let i=0;i<r;i++)for(let j=0;j<c;j++)for(let k=0;k<kSize;k++)acc[i][j]+=a[i][k]*b[k][j];}for(let i=0;i<r;i++)for(let j=0;j<c;j++){output[ii+i][jj+j]=acc[i][j];globalWrites++;}}const firstTilePartial=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i<tile&&j<tile?matrixA[i].slice(0,tile).reduce((s,a,k)=>s+a*matrixB[k][j],0):0));return {output,reference,firstTilePartial,globalReads,globalWrites,bytesMoved:4*(globalReads+globalWrites),naiveReads:2*n**3,naiveWrites:n*n,flops:2*n**3,maxTileElements,maxError:Math.max(...output.flatMap((row,i)=>row.map((v,j)=>Math.abs(v-reference[i][j])))),reuseFactor:2*n**3/globalReads};}
-V['cs336-06']={title:'分块矩乘：答案一样，显式加载次数不同',param:'正方形tile边长',min:1,max:4,step:1,value:2,steps:['固定两个4×4矩阵','把输入片段载入tile','在片上累加一个输出块','写回并与朴素结果核对'],render(step,tile){const m=tiledMultiply(tile);let svg=title('一次乘法＋一次加法＝2 FLOP；FP32读写');const grid=(x,label,mat,highlight)=>{let out=text(x+76,66,label,'v-center');mat.forEach((row,i)=>row.forEach((v,j)=>{out+=`<rect x="${x+j*40}" y="${86+i*40}" width="36" height="36" rx="4" fill="${highlight&&i<tile&&j<tile?'#247766':'#172337'}"/>`+text(x+j*40+18,110+i*40,String(v),'v-center v-small');}));return out;};svg+=grid(28,'A',matrixA,step>=1)+text(208,163,'×','v-title')+grid(247,'B',matrixB,step>=1)+text(430,163,'=','v-title')+grid(473,step>=3?'完整 C':'首块累加',step>=3?m.output:step>=2?m.firstTilePartial:Array.from({length:4},()=>[0,0,0,0]),step>=2);if(step>=1)svg+=text(25,283,`tile=${tile}；最大暂存 ${m.maxTileElements} 个元素`,'v-small');if(step>=3)svg+=text(25,313,`读取 ${m.globalReads} + 写入 ${m.globalWrites} = ${m.bytesMoved}B；最大误差 ${m.maxError}`,'v-title');const bodies=['A按行存放1至16，B使用稀疏整数值，但算法仍执行全部乘加，不跳过零。朴素逐元素点积需要4³次乘加，记为128 FLOPs；每次从全局读两个输入，共128次读。',`tile边长=${tile}，每个输出块把对应A与B片段各加载一次，再重复使用。边界使用min截断，tile=3时最后一行/列块只有1个元素宽，不能越界读取。`,`只看第一个k块的局部累加，如默认tile=2时左上输出片段先得到[[1,2],[5,6]]，还不是最终结果。后续k块继续加到同一累加器，不把每次部分结果都写回全局。`,`全部k块处理后，每个输出只写一次。当前读取${m.globalReads}、写入16个FP32元素，共${m.bytesMoved}字节；朴素模型是576字节。输出与朴素矩阵乘逐项一致，最大误差0。这个加载计数假设块间无额外缓存复用，并非真实设备流量或Triton加速比。`];return {svg,metrics:m,formula:'朴素读=2n³，写=n²；分块按实际边界累计 A_tile 与 B_tile 的加载；byte=4(读+写)',body:bodies[step],result:`读取复用比=${fmt(m.reuseFactor)} · FLOPs=${m.flops} · bytes=${m.bytesMoved} · maxError=${m.maxError}`,note:'纯JavaScript模拟显式tile缓冲，非GPU内核。真实实现还受缓存、寄存器、并行度、边界掩码和编译开销影响。'};}};
-C['cs336-06']={name:'真的做分块矩乘，再数每一次显式加载',instructions:['用tile=2运行，核对C第一行[7,10,5,8]与64次读取。','设tile=3测试非整块边界，输出必须保持完全相同。','设tile=4观察32次读取及48元素暂存，解释复用与快存储容量的取舍。'],expected:'tile=2：输出四行[7,10,5,8]、[19,22,17,20]、[31,34,29,32]、[43,46,41,44]；64读+16写=320B。',code:`const n=4,tile=2,A=Array.from({length:4},(_,i)=>Array.from({length:4},(_,j)=>i*4+j+1));
-const B=[[1,0,2,0],[0,1,0,2],[2,0,1,0],[0,2,0,1]];
-const output=Array.from({length:n},()=>Array(n).fill(0));let globalReads=0,globalWrites=0,maxTileElements=0;
-for(let ii=0;ii<n;ii+=tile)for(let jj=0;jj<n;jj+=tile){
- const r=Math.min(tile,n-ii),c=Math.min(tile,n-jj),acc=Array.from({length:r},()=>Array(c).fill(0));
- for(let kk=0;kk<n;kk+=tile){
-  const ks=Math.min(tile,n-kk),a=Array.from({length:r},(_,i)=>Array.from({length:ks},(_,k)=>A[ii+i][kk+k]));
-  const b=Array.from({length:ks},(_,k)=>Array.from({length:c},(_,j)=>B[kk+k][jj+j]));
-  globalReads+=r*ks+ks*c;maxTileElements=Math.max(maxTileElements,r*c+r*ks+ks*c);
-  for(let i=0;i<r;i++)for(let j=0;j<c;j++)for(let k=0;k<ks;k++)acc[i][j]+=a[i][k]*b[k][j];
- }
- for(let i=0;i<r;i++)for(let j=0;j<c;j++){output[ii+i][jj+j]=acc[i][j];globalWrites++;}
+function utf8Decode(bytes) {
+  let s = "", i = 0;
+  while (i < bytes.length) {
+    const b = bytes[i], n = b < 0x80 ? 1 : b < 0xe0 ? 2 : b < 0xf0 ? 3 : 4;
+    let c = n === 1 ? b : b & (0xff >> (n + 1));
+    for (let j = 1; j < n; j++) c = (c << 6) | (bytes[i + j] & 63);
+    s += String.fromCodePoint(c); i += n;
+  }
+  return s;
 }
-const reference=A.map(row=>B[0].map((_,j)=>row.reduce((s,a,k)=>s+a*B[k][j],0)));
-const maxError=Math.max(...output.flatMap((row,i)=>row.map((v,j)=>Math.abs(v-reference[i][j]))));
-console.log({output,reference,maxError,globalReads,globalWrites,bytesMoved:4*(globalReads+globalWrites),naiveReads:2*n**3,naiveWrites:n*n,flops:2*n**3,maxTileElements,reuseFactor:2*n**3/globalReads});`};
+
+// count_adjacent_pairs()：Map 按插入顺序保存，重叠出现也计数
+function countAdjacentPairs(indices) {
+  const counts = new Map();
+  for (let i = 0; i + 1 < indices.length; i++) {
+    const key = indices[i] + "," + indices[i + 1];
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return counts;
+}
+// merge()：从左到右扫描，匹配就写入 newIndex 并跳过两个位置
+function merge(indices, pair, newIndex) {
+  const out = [];
+  let i = 0;
+  while (i < indices.length) {
+    if (i + 1 < indices.length && indices[i] === pair[0] && indices[i + 1] === pair[1]) { out.push(newIndex); i += 2; }
+    else { out.push(indices[i]); i += 1; }
+  }
+  return out;
+}
+
+// train_bpe()
+let indices = utf8(trainString);
+const vocab = new Map(Array.from({ length: 256 }, (_, x) => [x, [x]]));
+const merges = [];
+const lengths = [indices.length];
+for (let i = 0; i < numMerges; i++) {
+  const counts = countAdjacentPairs(indices);
+  let best = null, bestCount = 0;
+  for (const [key, c] of counts) if (c > bestCount) { best = key; bestCount = c; } // 并列时取最先出现的，同 Python max()
+  const pair = best.split(",").map(Number);
+  const newIndex = 256 + i;
+  vocab.set(newIndex, vocab.get(pair[0]).concat(vocab.get(pair[1])));
+  merges.push({ pair, newIndex, count: bestCount, bytes: utf8Decode(vocab.get(newIndex)) });
+  indices = merge(indices, pair, newIndex);
+  lengths.push(indices.length);
+}
+
+// BPETokenizer.encode / decode：按训练时的顺序逐条应用合并规则
+function encode(s) { let ids = utf8(s); for (const m of merges) ids = merge(ids, m.pair, m.newIndex); return ids; }
+function decode(ids) { return utf8Decode(ids.flatMap(id => vocab.get(id))); }
+
+const testIds = encode(testString);
+console.log({ merges, lengths, trainIndices: indices, compressionRatio: utf8(trainString).length / indices.length });
+console.log({ testBytes: utf8(testString).length, testIds, testTokens: testIds.length,
+  testCompression: utf8(testString).length / testIds.length, roundTrip: decode(testIds) === testString });`};
+
+// lecture_02.py: H100 bf16 989.5e12 FLOP/s (1979e12/2), 3.35e12 bytes/s; n×n matmul reads x, w and writes y in bf16.
+const H100_FLOPS=1979e12/2,H100_BW=3.35e12,ACC=H100_FLOPS/H100_BW;
+function matmulIntensity(n){
+ const bytes=6*n*n,flops=n*n*(2*n-1),ai=flops/bytes;
+ const commTime=bytes/H100_BW,compTime=flops/H100_FLOPS;
+ return {n,bytes,flops,arithmeticIntensity:ai,acceleratorIntensity:ACC,mfuBound:Math.min(1,ai/ACC),communicationTime:commTime,computationTime:compTime,totalTime:Math.max(commTime,compTime),computeBound:ai>ACC};
+}
+V['cs336-02']={title:'矩阵乘法的算术强度：多大的矩阵才 compute-bound',param:'矩阵边长 n',min:64,max:4096,step:1,value:1024,
+ steps:['搬运：读 x、读 w、写 y，共 6n² 字节','计算：n² 个点积，共 n²(2n − 1) 次 FLOP','算术强度对比 H100 的加速器强度 295.37','roofline：MFU = min(1, 算术强度 / 加速器强度)'],
+ render(step,n){
+  const m=matmulIntensity(n);
+  const X=v=>90+(Math.log10(v)+1)/5*620,Y=v=>300-(Math.log10(v)-11)/4.5*240; // x: 0.1–10⁴ FLOP/byte; y: 10¹¹–10¹⁵·⁵ FLOP/s
+  let svg=title('lecture_02 · arithmetic_intensity_matmul() 与 roofline_plots()');
+  svg+=line(90,300,710,300,'v-axis')+line(90,60,90,300,'v-axis')+text(706,292,'算术强度（FLOP/byte，对数轴）','v-end v-small')+text(14,180,'FLOP/s','v-small');
+  [0.1,1,10,100,1000,10000].forEach(v=>{svg+=line(X(v),300,X(v),305,'v-axis')+text(X(v),318,String(v),'v-center v-small');});
+  if(step>=2){
+   const kneeX=X(ACC),roofY=Y(H100_FLOPS);
+   svg+=`<polyline points="${X(0.1)},${Y(0.1*H100_BW)} ${kneeX},${roofY} ${X(10000)},${roofY}" class="v-teal"/>`;
+   svg+=line(kneeX,roofY,kneeX,300,'v-loop')+text(kneeX+6,roofY+18,`加速器强度 ${fmt(ACC,2)}`,'v-small')+text(X(3000),roofY-8,'989.5 TFLOP/s','v-center v-small');
+   [['ReLU',0.25],['GELU',5],['点积',(2*1024*1024-1)/(4*1024*1024+2)],['矩阵×向量',1024*(2*1024-1)/(2*1024+2*1024*1024+2*1024)]].forEach(([label,ai],i)=>{const y=Y(Math.min(H100_FLOPS,ai*H100_BW));svg+=`<circle cx="${X(ai)}" cy="${y}" r="4" fill="#9aa9bd"/>`+text(X(ai)+(i===2?-6:6),y+(i%2?16:-8),label,i===2?'v-end v-small':'v-small');});
+  }
+  const ai=m.arithmeticIntensity,px=X(Math.min(10000,ai)),py=Y(Math.min(H100_FLOPS,ai*H100_BW));
+  if(step>=1)svg+=`<circle cx="${px}" cy="${py}" r="7" fill="${m.computeBound?'#50dfc2':'#f28b82'}" stroke="#0d1420" stroke-width="2"/>`+text(px,py-14,`n = ${n}`,'v-center v-small');
+  svg+=text(740,56,`字节 6n² = ${m.bytes.toExponential(3)}`,'v-end v-small');
+  if(step>=1)svg+=text(740,76,`FLOPs = ${m.flops.toExponential(3)}`,'v-end v-small');
+  if(step>=2)svg+=text(740,96,`算术强度 = ${fmt(ai,2)} → ${m.computeBound?'compute-bound':'memory-bound'}`,'v-end v-small');
+  if(step>=3)svg+=text(740,116,`MFU 上限 = ${fmt(m.mfuBound,4)}`,'v-end v-small');
+  const bodies=[
+   `讲义把一次运算拆成三步：把输入从显存送到加速器、计算、把输出送回显存。n×n 的 bf16 矩阵每个元素 2 字节，读 x、读 w、写 y 各 2n² 字节，共 6n² = ${m.bytes.toExponential(3)} 字节。按 H100 的 3.35e12 字节/s，搬运需要 ${fmt(m.communicationTime*1e6,2)} μs。`,
+   `输出有 n² 个元素，每个是长度 n 的点积：n 次乘法、n − 1 次加法，共 n²(2n − 1) = ${m.flops.toExponential(3)} 次 FLOP。按 H100 去掉稀疏性后的 989.5 TFLOP/s，计算需要 ${fmt(m.computationTime*1e6,2)} μs。讲义假设搬运和计算可以完全重叠，总时间取两者的较大值。`,
+   `算术强度 = FLOPs / 字节 = (2n − 1)/6 ≈ n/3，当前为 ${fmt(ai,2)}；H100 的加速器强度 = 989.5e12 / 3.35e12 = ${fmt(ACC,2)}。算术强度更小就是 memory-bound，更大就是 compute-bound。图上灰点是讲义前面算过的 ReLU（0.25）、GELU（5）、点积（≈0.5）、矩阵×向量（≈1），全都 memory-bound。`,
+   `roofline 的折点就是加速器强度：左边斜线受带宽限制，右边平台受算力限制。MFU = min(1, ${fmt(ai,2)} / ${fmt(ACC,2)}) = ${fmt(m.mfuBound,4)}。n 从 886 增加到 887 时越过折点；讲义的结论是“只要矩阵够大就是 compute-bound”，而推理时常见的矩阵×向量则是 memory-bound。`];
+  return {svg,metrics:m,formula:'bytes = 6n²；FLOPs = n²(2n − 1)；算术强度 = FLOPs / bytes；加速器强度 = 989.5e12 / 3.35e12 ≈ 295.37；MFU = min(1, 算术强度 / 加速器强度)',body:bodies[step],
+   result:`n = ${n} · 算术强度 ${fmt(ai,2)} · ${m.computeBound?'compute-bound':'memory-bound'} · MFU 上限 ${fmt(m.mfuBound,4)}`,
+   note:'这是讲义的理想模型：不计 kernel 启动、缓存复用和分块细节；真实 MFU 还会更低。精度从 bf16 换成 fp32 时字节数翻倍，算术强度也会变（讲义最后一句提醒）。'};
+ }};
+
+C['cs336-03']={name:'RoPE：旋转后的内积只依赖相对位置 m − n',
+ instructions:['先运行默认代码：(m, n) = (0, 1)、(2, 3)、(10, 11) 三对相对距离都是 1，RoPE 内积完全相同（−0.904686）；(0, 3) 距离为 3，结果不同。','对照第二行的加法式正弦位置编码：同样相对距离为 1，内积随绝对位置变化（4.218834、1.526809、0.198712）。','把 theta 的计算改成 Math.pow(base, -(2 * k) / d) 以外的写法（例如忘了除以 d），再看 rotationPreservesNorm 和相对位置性质是否仍然成立。'],
+ expected:'默认：rope.sameOffset = [−0.904686, −0.904686, −0.904686]，rope.offset3 = −1.336566；additive.sameOffset ≈ [4.218834, 1.526809, 0.198712]；relativeOnly = true，rotationPreservesNorm = true。',
+ code:`// 讲义 p.31–35：RoPE 让 <f(x, m), f(y, n)> = g(x, y, m − n)
+const d = 4, base = 10000;
+const q = [1.0, 0.5, -0.3, 0.8];   // 补充的玩具向量：“we” 的 query
+const k = [0.2, 1.0, 0.7, -0.4];   // 补充的玩具向量：“know” 的 key
+// 作业 1 的记号：θ_k = Θ^{−(2k−2)/d}，k = 1..d/2；这里用 0 起的下标 k，等价于 Θ^{−2k/d}
+const theta = Array.from({ length: d / 2 }, (_, k) => Math.pow(base, -(2 * k) / d));
+
+function rope(x, pos) {             // 每两维一组，按 pos·θ_k 旋转
+  const y = x.slice();
+  for (let k = 0; k < d / 2; k++) {
+    const a = x[2 * k], b = x[2 * k + 1], c = Math.cos(pos * theta[k]), s = Math.sin(pos * theta[k]);
+    y[2 * k] = a * c - b * s;
+    y[2 * k + 1] = a * s + b * c;
+  }
+  return y;
+}
+function sinusoidal(pos) {          // 原始 Transformer 的加法式位置编码
+  return Array.from({ length: d }, (_, j) => {
+    const i = Math.floor(j / 2), angle = pos / Math.pow(base, (2 * i) / d);
+    return j % 2 === 0 ? Math.sin(angle) : Math.cos(angle);
+  });
+}
+const dot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
+const add = (a, b) => a.map((v, i) => v + b[i]);
+const r6 = x => Math.round(x * 1e6) / 1e6;
+
+const pairs = [[0, 1], [2, 3], [10, 11]];
+const ropeSame = pairs.map(([m, n]) => r6(dot(rope(q, m), rope(k, n))));
+const additiveSame = pairs.map(([m, n]) => r6(dot(add(q, sinusoidal(m)), add(k, sinusoidal(n)))));
+console.log({
+  theta,
+  rope: { sameOffset: ropeSame, offset3: r6(dot(rope(q, 0), rope(k, 3))) },
+  additive: { sameOffset: additiveSame, offset3: r6(dot(add(q, sinusoidal(0)), add(k, sinusoidal(3)))) },
+  relativeOnly: ropeSame.every(v => Math.abs(v - ropeSame[0]) < 1e-9),
+  rotationPreservesNorm: Math.abs(Math.hypot(...rope(q, 2)) - Math.hypot(...q)) < 1e-12
+});`};
+
+C['cs336-04']={name:'线性注意力：同一个计算的并行形式与 RNN 形式',
+ instructions:['先运行默认代码：去掉 softmax 后，(QKᵀ)V 和 Q(KᵀV) 结果相同，这是矩阵乘法结合律（讲义 p.4）。','再看 causal 部分：并行形式加上下三角掩码 M 后，和逐步更新状态 S_t = S_{t−1} + k_t v_tᵀ 的 RNN 形式完全一致（p.5）；不加掩码时只有最后一行相同。','把 gamma 从 0.5 改成 1：衰减版退化成普通线性注意力；改成 0.9 看看早期 token 的贡献怎样被逐步“遗忘”。'],
+ expected:'默认：unmasked = reordered = [[8,3],[1,2],[9,5],[7,1]]；causalParallel = recurrent = [[1,0],[1,2],[3,3],[7,1]]，finalState = [[8,3],[1,2]]；decayParallel = decayRecurrent = [[1,0],[0.5,2],[1.5,2],[6.5,2]]；乘法次数 64 对 32。',
+ code:`// 补充的小例子：n = 4 个 token，d_k = d_v = 2（讲义 p.4–5 只有符号）
+const Q = [[1, 0], [0, 1], [1, 1], [1, -1]];
+const K = [[1, 1], [0, 1], [1, 0], [2, 0]];
+const V = [[1, 0], [0, 2], [1, 1], [3, 1]];
+const gamma = 0.5;                 // RetNet 式衰减（p.5 脚注）
+
+const T = A => A[0].map((_, j) => A.map(row => row[j]));
+const matmul = (A, B) => A.map(row => B[0].map((_, j) => row.reduce((s, v, t) => s + v * B[t][j], 0)));
+const n = Q.length, dk = K[0].length, dv = V[0].length;
+
+// ① 去掉 softmax 后：(QKᵀ)V = Q(KᵀV)
+const unmasked = matmul(matmul(Q, T(K)), V);
+const reordered = matmul(Q, matmul(T(K), V));
+
+// ② 自回归要因果掩码：((QKᵀ) ⊙ M)V，M 为下三角（这里用 D_ts = w^{t−s} 统一写，w = 1 即普通掩码）
+function maskedParallel(w) {
+  const scores = matmul(Q, T(K)).map((row, t) => row.map((v, s) => (s <= t ? v * Math.pow(w, t - s) : 0)));
+  return matmul(scores, V);
+}
+// ③ RNN 形式：S_t = w·S_{t−1} + k_t v_tᵀ，y_t = q_tᵀ S_t
+function recurrent(w) {
+  let S = Array.from({ length: dk }, () => Array(dv).fill(0));
+  const Y = [];
+  for (let t = 0; t < n; t++) {
+    S = S.map((row, i) => row.map((v, j) => w * v + K[t][i] * V[t][j]));
+    Y.push(V[0].map((_, j) => Q[t].reduce((s, q, i) => s + q * S[i][j], 0)));
+  }
+  return { Y, S };
+}
+const rnn = recurrent(1), decay = recurrent(gamma);
+const same = (A, B) => A.every((row, i) => row.every((v, j) => Math.abs(v - B[i][j]) < 1e-12));
+console.log({ unmasked, reordered, associativity: same(unmasked, reordered) });
+console.log({ causalParallel: maskedParallel(1), recurrent: rnn.Y, finalState: rnn.S, causalMatches: same(maskedParallel(1), rnn.Y),
+  unmaskedRowsMatchingRnn: unmasked.map((row, t) => same([row], [rnn.Y[t]])) });
+console.log({ decayParallel: maskedParallel(gamma), decayRecurrent: decay.Y, decayMatches: same(maskedParallel(gamma), decay.Y),
+  mulsQuadratic: n * n * dk + n * n * dv, mulsLinear: 2 * n * dk * dv });`};
+
+// Lecture 5 (2026) p.48: tile 256×128 on an A100 with 108 SMs; tiles = ⌈N/256⌉·⌈N/128⌉, waves = ⌈tiles/108⌉.
+function waves(N){
+ const rows=Math.ceil(N/256),cols=Math.ceil(N/128),tiles=rows*cols,SM=108,w=Math.ceil(tiles/SM),last=tiles-(w-1)*SM;
+ return {N,rows,cols,tiles,sms:SM,waves:w,lastWaveTiles:last,utilization:tiles/(w*SM),usefulArea:N*N/(tiles*256*128)};
+}
+V['cs336-05']={title:'波量化：tile 数越过 108 个 SM 时吞吐骤降',param:'方阵边长 N',min:1536,max:2560,step:1,value:1792,
+ steps:['把 N×N 输出切成 256×128 的 tile','每个 SM 一次处理一个 tile：分成若干“波”','最后一波空出多少 SM'],
+ render(step,N){
+  const m=waves(N);let svg=title('Lecture 5 p.48 · wave quantization（A100：108 个 SM）');
+  // left: output matrix tiled
+  const size=230,sc=size/2560,x0=30,y0=60;
+  svg+=box(x0,y0,size,size,'#172337');
+  const cellW=128*sc,cellH=256*sc;
+  for(let r=0;r<m.rows;r++)for(let c=0;c<m.cols;c++)svg+=`<rect x="${x0+c*cellW}" y="${y0+r*cellH}" width="${cellW}" height="${cellH}" fill="${step>=1&&r*m.cols+c>=108?'#f2b46d':'#7aa2f7'}" fill-opacity=".55" stroke="#0d1420" stroke-width=".6"/>`;
+  svg+=`<rect x="${x0}" y="${y0}" width="${N*sc}" height="${N*sc}" fill="none" stroke="#ffe38a" stroke-width="1.6"/>`;
+  svg+=text(x0,y0+size+20,`${m.rows} × ${m.cols} = ${m.tiles} 个 tile`,'v-small');
+  if(step>=1){
+   const gx=310,gy=60,cw=22,ch=14;
+   for(let w=0;w<m.waves;w++){
+    svg+=text(gx-8,gy+w*140+12,`第 ${w+1} 波`,'v-end v-small');
+    for(let s=0;s<108;s++){const idx=w*108+s,busy=idx<m.tiles,col=s%18,row=Math.floor(s/18);
+     svg+=`<rect x="${gx+col*cw}" y="${gy+w*140+row*(ch+4)}" width="${cw-3}" height="${ch}" rx="2" fill="${busy?(w===0?'#7aa2f7':'#f2b46d'):'#2a3647'}"/>`;}
+   }
+  }
+  if(step>=2)svg+=text(740,320,`SM 利用率 ${fmt(m.utilization*100,1)}%（${m.waves} 波，最后一波 ${m.lastWaveTiles}/108）`,'v-end v-small');
+  const bodies=[
+   `讲义 p.48 用一个简化模型解释 p.20 吞吐曲线上周期性的下跌：输出矩阵被切成 256×128 的 tile。N = ${N} 时需要 ⌈N/256⌉ × ⌈N/128⌉ = ${m.rows} × ${m.cols} = ${m.tiles} 个 tile；黄框是真实的 N×N，超出黄框的部分是边缘 tile 里的无效区域（有效面积占 ${fmt(m.usefulArea*100,1)}%）。`,
+   `每个 SM 一次处理一个 tile，A100 有 108 个 SM，所以 ${m.tiles} 个 tile 要分 ⌈${m.tiles}/108⌉ = ${m.waves} 波执行。讲义的例子：N = 1792 时 7 × 14 = 98 个 tile，一波就做完；N = 1793 时变成 8 × 15 = 120 个 tile，第二波只有 12 个 tile 在跑。`,
+   `利用率 = tile 数 / (波数 × 108) = ${m.tiles}/(${m.waves} × 108) = ${fmt(m.utilization*100,1)}%。最后一波的空闲 SM 就是吞吐下跌的原因。讲义的建议：让矩阵尺寸（以及 tile 数）与硬件对齐，比如把词表从 50257 补到 64 的倍数 50304。`];
+  return {svg,metrics:m,formula:'tiles = ⌈N/256⌉ · ⌈N/128⌉；waves = ⌈tiles / 108⌉；SM 利用率 = tiles / (waves · 108)',body:bodies[step],
+   result:`N = ${N} · ${m.tiles} 个 tile · ${m.waves} 波 · SM 利用率 ${fmt(m.utilization*100,1)}%`,
+   note:'这是讲义的简化模型：固定 256×128 的 tile、每个 SM 同时只跑一个 tile。真实库会按形状换 tile 尺寸和调度方式，所以 p.20 的实测曲线并不是在每个 108 的倍数处都下跌。'};
+ }};
+
+C['cs336-06']={name:'matmul_relu_kernel：按输出 tile 分块，沿 K 方向循环',
+ instructions:['先运行默认代码：第 1 部分按讲义的配置（1024³，BLOCK 64/64/32）数出 grid 为 16×16、每个程序循环 32 次，分块后从全局内存读取的元素数比逐元素点积少 64 倍。','第 2 部分故意用不能整除的 5×7 和 7×6 矩阵：maxAbsDiff = 0，说明 mask 把越界位置补成了 0。','把 loadA 里的 k0 + kk < K 条件删掉（只保留行条件），再运行：越界读到 undefined 会让结果出错或变成 NaN，这正是讲义里 mask 的作用。'],
+ expected:'默认：part1 = {grid:[16,16], programs:256, iterationsPerProgram:32, tiledLoads:33554432, naiveLoads:2147483648, reuse:64}；part2：grid [3,3]，每程序 2 次迭代，maskedSlots = 57，maxAbsDiff = 0，第一行结果 [91,70,49,28,7,0]。',
+ code:`const cdiv = (a, b) => Math.ceil(a / b);
+
+// 第 1 部分：讲义 matmul_relu_main() 的配置，只数读取次数
+{
+  const M = 1024, N = 1024, K = 1024, BLOCK_M = 64, BLOCK_N = 64, BLOCK_K = 32;
+  const grid = [cdiv(M, BLOCK_M), cdiv(N, BLOCK_N)];
+  const iterations = cdiv(K, BLOCK_K);
+  const loadsPerIteration = BLOCK_M * BLOCK_K + BLOCK_K * BLOCK_N;   // 一块 a、一块 b
+  const tiledLoads = grid[0] * grid[1] * iterations * loadsPerIteration;
+  const naiveLoads = M * N * K * 2;                                   // 每个输出单独做点积：每步读 a、b 各一个
+  console.log({ part1: { grid, programs: grid[0] * grid[1], iterationsPerProgram: iterations, tiledLoads, naiveLoads, reuse: naiveLoads / tiledLoads } });
+}
+
+// 第 2 部分（补充）：尺寸不能整除时，mask 保证结果正确
+const M = 5, N = 6, K = 7, BLOCK_M = 2, BLOCK_N = 2, BLOCK_K = 4;
+const A = Array.from({ length: M }, (_, i) => Array.from({ length: K }, (_, k) => i + k));
+const B = Array.from({ length: K }, (_, k) => Array.from({ length: N }, (_, j) => k - j));
+const C = Array.from({ length: M }, () => Array(N).fill(0));
+let maskedSlots = 0, iterationsTotal = 0;
+const loadA = (i, k0, kk) => (i < M && k0 + kk < K ? A[i][k0 + kk] : (maskedSlots++, 0));   // tl.load(..., mask, other=0)
+const loadB = (k0, kk, j) => (k0 + kk < K && j < N ? B[k0 + kk][j] : (maskedSlots++, 0));
+
+for (let pidM = 0; pidM < cdiv(M, BLOCK_M); pidM++) {
+  for (let pidN = 0; pidN < cdiv(N, BLOCK_N); pidN++) {          // 每个 (pid_m, pid_n) 是一个程序
+    const acc = Array.from({ length: BLOCK_M }, () => Array(BLOCK_N).fill(0));
+    for (let k0 = 0; k0 < K; k0 += BLOCK_K) {                      // 指针沿 K 前移 BLOCK_K
+      iterationsTotal++;
+      const a = Array.from({ length: BLOCK_M }, (_, r) => Array.from({ length: BLOCK_K }, (_, kk) => loadA(pidM * BLOCK_M + r, k0, kk)));
+      const b = Array.from({ length: BLOCK_K }, (_, kk) => Array.from({ length: BLOCK_N }, (_, c) => loadB(k0, kk, pidN * BLOCK_N + c)));
+      for (let r = 0; r < BLOCK_M; r++) for (let c = 0; c < BLOCK_N; c++) for (let kk = 0; kk < BLOCK_K; kk++) acc[r][c] += a[r][kk] * b[kk][c];
+    }
+    for (let r = 0; r < BLOCK_M; r++) for (let c = 0; c < BLOCK_N; c++) {
+      const i = pidM * BLOCK_M + r, j = pidN * BLOCK_N + c;
+      if (i < M && j < N) C[i][j] = Math.max(acc[r][c], 0);        // ReLU 后按 mask 写回
+    }
+  }
+}
+let maxAbsDiff = 0;
+for (let i = 0; i < M; i++) for (let j = 0; j < N; j++) {
+  let s = 0; for (let k = 0; k < K; k++) s += A[i][k] * B[k][j];
+  maxAbsDiff = Math.max(maxAbsDiff, Math.abs(Math.max(s, 0) - C[i][j]));
+}
+console.log({ part2: { grid: [cdiv(M, BLOCK_M), cdiv(N, BLOCK_N)], iterationsPerProgram: cdiv(K, BLOCK_K), iterationsTotal, maskedSlots, maxAbsDiff, C } });`};
 })();

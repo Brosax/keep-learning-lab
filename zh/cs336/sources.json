@@ -51,9 +51,19 @@
       "sha256": "30a2de73c2b95b9302bf31640f5f6016ef884d611cba94c9a0fdb1e505ad07e3",
       "lesson_references": [
         {
+          "lesson_id": "12",
+          "title": "作业 5 补充 · §3 零样本基线：MMLU、GSM8K、AlpacaEval、SimpleSafetyTests",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_supplement_safety_rlhf.pdf#page=3"
+        },
+        {
           "lesson_id": "15",
-          "title": "2026 作业5 可选补充：Safety / RLHF",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_supplement_safety_rlhf.pdf"
+          "title": "作业 5 可选补充 · §4 指令微调（look_at_sft / data_loading / sft_script / sft）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_supplement_safety_rlhf.pdf#page=8"
+        },
+        {
+          "lesson_id": "15",
+          "title": "作业 5 可选补充 · §6 RLHF 与 DPO（look_at_hh / dpo_loss / dpo_training）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_supplement_safety_rlhf.pdf#page=14"
         }
       ]
     },
@@ -65,7 +75,13 @@
       "status": "downloaded",
       "bytes": 5277140,
       "sha256": "3692b3d25b5605e70930abc81d63241c71c136dfb573029d4544420925e0f9c4",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "2025 第 3 讲课件 · p.56 QK norm（补充）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/spring2025-lectures/e9cb2488fdb53ea37f0e38924ec3a1701925cef3/nonexecutable/2025%20Lecture%203%20-%20architecture.pdf#page=56"
+        }
+      ]
     },
     {
       "title": "2025 Lecture 4 - MoEs",
@@ -115,7 +131,13 @@
       "status": "downloaded",
       "bytes": 6265218,
       "sha256": "9aab7ba7abb0059170c2626291f7ff4b6f5c81bc6448a52945143008bcc9b887",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "11",
+          "title": "2025 第 11 讲课件 · p.48–50 muP 对激活函数、批量、初始化的稳健性",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/spring2025-lectures/00191bba00d6d64621dc46ccaed9122681413a24/nonexecutable/2025%20Lecture%2011%20-%20Scaling%20details.pdf#page=48"
+        }
+      ]
     },
     {
       "title": "2025 Lecture 15 - RLHF Alignment",
@@ -155,7 +177,38 @@
       "status": "downloaded",
       "bytes": 965629,
       "sha256": "cf402d1c6d3c66da035bdf33b3e2c1bbc4bb92a78b006ee36577e925a265e328",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "作业 1 · §2.1–2.4 Unicode、UTF-8 与 BPE 训练",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment1-basics/main/cs336_assignment1_basics.pdf#page=3"
+        },
+        {
+          "lesson_id": "01",
+          "title": "作业 1 · Problem (train_bpe) 与 Problem (tokenizer)",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment1-basics/main/cs336_assignment1_basics.pdf#page=9"
+        },
+        {
+          "lesson_id": "02",
+          "title": "作业 1 · §3.2 Batching、einsum 与高效计算",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment1-basics/main/cs336_assignment1_basics.pdf#page=14"
+        },
+        {
+          "lesson_id": "02",
+          "title": "作业 1 · Problem (transformer_accounting) 与 Problem (adamw_accounting)",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment1-basics/main/cs336_assignment1_basics.pdf#page=27"
+        },
+        {
+          "lesson_id": "03",
+          "title": "作业 1 讲义 · §3.4 Pre-norm Transformer 块（RMSNorm、SwiGLU、RoPE）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment1-basics/main/cs336_assignment1_basics.pdf#page=19"
+        },
+        {
+          "lesson_id": "12",
+          "title": "作业 1 · §4.1 困惑度的定义",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment1-basics/main/cs336_assignment1_basics.pdf#page=29"
+        }
+      ]
     },
     {
       "title": "cs336 assignment2 systems",
@@ -165,7 +218,38 @@
       "status": "downloaded",
       "bytes": 1495177,
       "sha256": "f5667e3b6fac23c3a6d4ad4a999445b96aab3fb2246904d13ec86b79320b1a84",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "作业 2 · §2.1 基准测试、nsys 分析与混合精度",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment2-systems/main/cs336_assignment2_systems.pdf#page=2"
+        },
+        {
+          "lesson_id": "06",
+          "title": "作业 2 · p.3–6 端到端 benchmark 与 Nsight 剖析（benchmarking_script / nsys_profile）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment2-systems/main/cs336_assignment2_systems.pdf#page=3"
+        },
+        {
+          "lesson_id": "06",
+          "title": "作业 2 · p.16–28 torch.compile、Triton 加权和示例与 FlashAttention-2（torch_compile / flash_forward）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment2-systems/main/cs336_assignment2_systems.pdf#page=16"
+        },
+        {
+          "lesson_id": "07",
+          "title": "作业 2 · p.30–33 单机分布式通信与朴素 DDP（distributed_communication_single_node / naive_ddp）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment2-systems/main/cs336_assignment2_systems.pdf#page=30"
+        },
+        {
+          "lesson_id": "07",
+          "title": "作业 2 · p.40–41 通信原语：ring all-gather、ring reduce-scatter 与 all-reduce",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment2-systems/main/cs336_assignment2_systems.pdf#page=40"
+        },
+        {
+          "lesson_id": "08",
+          "title": "作业 2 · §6–8 优化器状态切分、FSDP 与并行策略分析",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment2-systems/main/cs336_assignment2_systems.pdf#page=37"
+        }
+      ]
     },
     {
       "title": "cs336 assignment3 scaling",
@@ -175,7 +259,23 @@
       "status": "downloaded",
       "bytes": 182230,
       "sha256": "121e9d15b1ba508cef437acc764eaa83268b559c4898c10bda3fd56bdde50392",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "作业 3 · §2.1 IsoFLOP 剖面与 Problem (chinchilla_isoflops)",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment3-scaling/main/cs336_assignment3_scaling.pdf#page=2"
+        },
+        {
+          "lesson_id": "11",
+          "title": "作业 3 · §2.1 Problem (chinchilla_isoflops)：IsoFLOPs 规模规律",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment3-scaling/main/cs336_assignment3_scaling.pdf#page=2"
+        },
+        {
+          "lesson_id": "11",
+          "title": "作业 3 · §3 Problem (scaling_laws)：在固定预算下构建规模规律",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment3-scaling/main/cs336_assignment3_scaling.pdf#page=3"
+        }
+      ]
     },
     {
       "title": "cs336 assignment4 data",
@@ -185,7 +285,23 @@
       "status": "downloaded",
       "bytes": 287362,
       "sha256": "2b0660d0d1e96366c4688f9606c707c668a1fa76396c563b21a6fc75863fb59e",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "13",
+          "title": "作业 4 · p.2–4 查看 Common Crawl（look_at_cc）与 HTML 转文本（extract_text）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment4-data/main/cs336_assignment4_data.pdf#page=2"
+        },
+        {
+          "lesson_id": "14",
+          "title": "作业 4 · p.4–9 语言识别、PII、有害内容、Gopher 规则与质量分类器",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment4-data/main/cs336_assignment4_data.pdf#page=4"
+        },
+        {
+          "lesson_id": "14",
+          "title": "作业 4 · p.9–12 精确行去重与 MinHash + LSH 文档去重",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment4-data/main/cs336_assignment4_data.pdf#page=9"
+        }
+      ]
     },
     {
       "title": "cs336 spring2026 assignment5 alignment",
@@ -195,7 +311,23 @@
       "status": "downloaded",
       "bytes": 765568,
       "sha256": "c93d503a69aef4aa7519b7fc664abebbf2ebf5e5e88379a7ed92f4c209a2d26a",
-      "lesson_references": []
+      "lesson_references": [
+        {
+          "lesson_id": "10",
+          "title": "作业 5 · §3.1 用 vLLM 做推理（PagedAttention 与 KV 缓存）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_alignment.pdf#page=4"
+        },
+        {
+          "lesson_id": "16",
+          "title": "作业 5 讲义 · §4 GRPO 推导与实现（compute_group_normalized_rewards 等）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_alignment.pdf#page=7"
+        },
+        {
+          "lesson_id": "16",
+          "title": "作业 5 讲义 · §5 RL 算法变体（Dr. GRPO、RFT、MaxRL）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/assignment5-alignment/main/cs336_spring2026_assignment5_alignment.pdf#page=26"
+        }
+      ]
     },
     {
       "title": "lectures",
@@ -287,7 +419,7 @@
       "lesson_references": [
         {
           "lesson_id": "01",
-          "title": "2026第1讲Python源码 · bpe_tokenizer / train_bpe",
+          "title": "2026 第 1 讲 Python 讲稿 · tokenization / bpe_tokenizer / train_bpe",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_01.py"
         }
       ]
@@ -316,7 +448,7 @@
       "lesson_references": [
         {
           "lesson_id": "02",
-          "title": "2026第2讲Python源码 · tensors_memory / optimizer",
+          "title": "2026 第 2 讲 Python 讲稿 · tensors_memory / arithmetic_intensity / gradients_flops / optimizer",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_02.py"
         }
       ]
@@ -332,8 +464,18 @@
       "lesson_references": [
         {
           "lesson_id": "03",
-          "title": "2026第3讲 · 第14–23页 RMSNorm 与 SwiGLU",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_03.pdf#page=14"
+          "title": "2026 第 3 讲课件（全文）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_03.pdf#page=1"
+        },
+        {
+          "lesson_id": "03",
+          "title": "2026 第 3 讲课件 · p.10–19 Pre-norm 与 RMSNorm",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_03.pdf#page=10"
+        },
+        {
+          "lesson_id": "03",
+          "title": "2026 第 3 讲课件 · p.30–35 RoPE",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_03.pdf#page=30"
         }
       ]
     },
@@ -348,8 +490,18 @@
       "lesson_references": [
         {
           "lesson_id": "04",
-          "title": "2026第4讲 · 第26–32页 MoE 路由与 top-k",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_04.pdf#page=26"
+          "title": "2026 第 4 讲课件（全册）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_04.pdf#page=1"
+        },
+        {
+          "lesson_id": "04",
+          "title": "2026 第 4 讲课件 · p.4–13 线性注意力、Mamba-2、Gated DeltaNet、混合架构与 DSA",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_04.pdf#page=4"
+        },
+        {
+          "lesson_id": "04",
+          "title": "2026 第 4 讲课件 · p.27–43 MoE 路由、细粒度与共享专家、负载均衡",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_04.pdf#page=27"
         }
       ]
     },
@@ -364,8 +516,18 @@
       "lesson_references": [
         {
           "lesson_id": "05",
-          "title": "2026第5讲 · 第21页起 roofline 与硬件约束",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_05.pdf#page=21"
+          "title": "2026 第 5 讲课件（全部）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_05.pdf#page=1"
+        },
+        {
+          "lesson_id": "05",
+          "title": "2026 第 5 讲课件 · p.20–49 方阵乘法之谜、roofline 与五个提速技巧",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_05.pdf#page=20"
+        },
+        {
+          "lesson_id": "05",
+          "title": "2026 第 5 讲课件 · p.50–54 拆解 FlashAttention",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_05.pdf#page=50"
         }
       ]
     },
@@ -393,7 +555,7 @@
       "lesson_references": [
         {
           "lesson_id": "06",
-          "title": "2026第6讲Python源码 · triton_row_sum_example / triton_matmul_relu_example",
+          "title": "2026 第 6 讲 Python 讲稿 · review_of_gpus / benchmark / triton_softmax / row_sum_kernel / matmul_relu_kernel",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_06.py"
         }
       ]
@@ -422,7 +584,7 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "2026 官方代码讲义 Python 源文件",
+          "title": "2026 第 7 讲 Python 讲稿 · collective_operations / all_reduce / data_parallelism_main / tensor_parallelism_main / pipeline_parallelism_main",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_07.py"
         }
       ]
@@ -438,8 +600,18 @@
       "lesson_references": [
         {
           "lesson_id": "08",
-          "title": "2026第8讲 · ZeRO分片，PDF第18–28页",
+          "title": "2026 第 8 讲课件（全文）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_08.pdf#page=1"
+        },
+        {
+          "lesson_id": "08",
+          "title": "2026 第 8 讲课件 · p.18–28 ZeRO 与 FSDP",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_08.pdf#page=18"
+        },
+        {
+          "lesson_id": "08",
+          "title": "2026 第 8 讲课件 · p.55 并行方式汇总表",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_08.pdf#page=55"
         }
       ]
     },
@@ -454,13 +626,23 @@
       "lesson_references": [
         {
           "lesson_id": "09",
-          "title": "2026第9讲 · 幂律关系，PDF第13–18页",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=13"
+          "title": "2026 第 9 讲课件（全文）· Scaling laws - basics",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=1"
+        },
+        {
+          "lesson_id": "09",
+          "title": "2026 第 9 讲课件 · p.16–20 为什么是幂律：均值估计与非参数学习",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=16"
+        },
+        {
+          "lesson_id": "09",
+          "title": "2026 第 9 讲课件 · p.43–53 联合缩放律与 Chinchilla 三种方法",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=43"
         },
         {
           "lesson_id": "11",
-          "title": "2026第9讲补充 · 联合拟合与IsoFLOPs，PDF第43–49页",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=43"
+          "title": "第 9 讲回顾 · p.46–49 Chinchilla 三种拟合方法（本讲 MiniCPM、DeepSeek 直接沿用）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_09.pdf#page=46"
         }
       ]
     },
@@ -488,7 +670,7 @@
       "lesson_references": [
         {
           "lesson_id": "10",
-          "title": "2026 官方代码讲义 Python 源文件",
+          "title": "2026 第 10 讲 Python 讲稿 · arithmetic_intensity_of_inference() / throughput_and_latency() / reduce_kv_cache_size() / speculative_sampling()",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_10.py"
         }
       ]
@@ -504,8 +686,18 @@
       "lesson_references": [
         {
           "lesson_id": "11",
-          "title": "2026第11讲 · 规模配方，PDF第26–30页",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_11.pdf#page=26"
+          "title": "2026 第 11 讲课件（Scaling – case study and details）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_11.pdf#page=1"
+        },
+        {
+          "lesson_id": "11",
+          "title": "2026 第 11 讲课件 · p.13–18 WSD 学习率与 MiniCPM 的 Chinchilla 拟合",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_11.pdf#page=13"
+        },
+        {
+          "lesson_id": "11",
+          "title": "2026 第 11 讲课件 · p.46–50 muP 推导（条件 A1、A2）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_11.pdf#page=46"
         }
       ]
     },
@@ -533,7 +725,7 @@
       "lesson_references": [
         {
           "lesson_id": "12",
-          "title": "2026 官方代码讲义 Python 源文件",
+          "title": "2026 第 12 讲 Python 讲稿 · perplexity() / exam_benchmarks() / chat_benchmarks() / validity()",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_12.py"
         }
       ]
@@ -562,7 +754,7 @@
       "lesson_references": [
         {
           "lesson_id": "13",
-          "title": "2026 官方代码讲义 Python 源文件",
+          "title": "2026 第 13 讲 Python 讲稿 · raw_sources / copyright / common_crawl / t5_c4 / dclm / common_pile",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_13.py"
         }
       ]
@@ -590,13 +782,8 @@
       "sha256": "8e0e17f868002f2e8f73afed018b2dd787c0a1b371eec599c44d8dbfe555ae9b",
       "lesson_references": [
         {
-          "lesson_id": "13",
-          "title": "第14讲 data_mixing() · 采样混合与重复曝光补充",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_14.py"
-        },
-        {
           "lesson_id": "14",
-          "title": "第14讲 Python源码 · exact_deduplication / jaccard_minhash / data_mixing",
+          "title": "2026 第 14 讲 Python 讲稿 · filtering / exact_deduplication / jaccard_minhash / locality_sensitive_hashing / data_mixing / post_training_data",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_14.py"
         }
       ]
@@ -612,8 +799,18 @@
       "lesson_references": [
         {
           "lesson_id": "15",
-          "title": "2026 第 15 讲官方课件 PDF",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_15.pdf"
+          "title": "2026 第 15 讲课件（After pretraining: mid/posttraining）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_15.pdf#page=1"
+        },
+        {
+          "lesson_id": "15",
+          "title": "2026 第 15 讲课件 · p.54–58 从 PPO 到 DPO 的推导与梯度",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_15.pdf#page=54"
+        },
+        {
+          "lesson_id": "15",
+          "title": "2026 第 15 讲课件 · p.62–64 过度优化与模式坍缩",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_15.pdf#page=62"
         }
       ]
     },
@@ -628,8 +825,18 @@
       "lesson_references": [
         {
           "lesson_id": "16",
-          "title": "第16讲官方PDF · GRPO组归一化与偏差讨论（第18–24页）",
-          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_16.pdf#page=18"
+          "title": "2026 第 16 讲课件（RLVR，全 61 页）",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_16.pdf#page=1"
+        },
+        {
+          "lesson_id": "16",
+          "title": "2026 第 16 讲课件 · p.17–24 GRPO、优势计算与 Dr. GRPO",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_16.pdf#page=17"
+        },
+        {
+          "lesson_id": "16",
+          "title": "2026 第 16 讲课件 · p.25–38 DeepSeek-R1 案例",
+          "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_16.pdf#page=25"
         }
       ]
     },
@@ -657,7 +864,7 @@
       "lesson_references": [
         {
           "lesson_id": "17",
-          "title": "第17讲Python源码 · 多模态输入与长样本损失平衡背景",
+          "title": "2026 第 17 讲 Python 讲稿 · clip / siglip / llava / llava_onevision / qwen_vl / qwen2_vl / qwen3_vl / chameleon",
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_17.py"
         }
       ]
