@@ -39,16 +39,17 @@ for slug in COURSES:
         if not file.is_file():
             raise SystemExit(f'Missing course asset: {file}')
         return relative+'?v='+hashlib.sha256(file.read_bytes()).hexdigest()[:12] if scoped else relative
-    script_files=['data.js',*experiment_files,'../ai/assets/course.js','../ai/assets/labs.js','../ai/assets/playground.js','../ai/assets/visuals.js']
+    script_files=['data.js',*experiment_files,'../ai/vendor/katex/katex.min.js','../ai/assets/course.js','../ai/assets/labs.js','../ai/assets/playground.js','../ai/assets/visuals.js']
     scripts=''.join(f'<script src="{asset_url(file)}"></script>' for file in script_files)
     stylesheet=asset_url('../ai/assets/course.css')
+    katex_css=asset_url('../ai/vendor/katex/katex.min.css')
     title=html.escape(data['title']);desc=html.escape(data['description'],quote=True)
     links=''.join(f'<li><a href="#lesson-{l["id"]}">{html.escape(l["title"])}</a></li>' for l in data['lessons'])
     (out/'index.html').write_text(f'''<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{data['code']} · {title} — Keep Learning Lab</title><meta name="description" content="{desc}">
 <meta name="theme-color" content="#F4F2EC"><link rel="icon" href="../ai/assets/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{stylesheet}"></head><body>
+<link rel="stylesheet" href="{katex_css}"><link rel="stylesheet" href="{stylesheet}"></head><body>
 <div id="course-app"></div><noscript><main><h1>{title}</h1><p>{html.escape(data['description'])}</p><p>交互学习需要启用 JavaScript。原始资料仍可从 <a href="{html.escape(data['sourceUrl'],quote=True)}">官方课程站</a> 获取。</p><a href="sources.json">下载资料索引</a><ul>{links}</ul></main></noscript>
 {scripts}
 </body></html>''')

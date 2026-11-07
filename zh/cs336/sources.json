@@ -868,6 +868,171 @@
           "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/lecture_17.py"
         }
       ]
+    },
+    {
+      "title": "讲稿配图 · tokenized-example.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/tokenized-example.png",
+      "type": "figure",
+      "local": "figures/l01-tokenized-example.webp",
+      "status": "downloaded",
+      "bytes": 16836,
+      "sha256": "743b71d2503dc82fb4e6f7b60ef15fa2869da1baadf022bd746325638843f510",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · fp32.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/fp32.png",
+      "type": "figure",
+      "local": "figures/l02-fp32.webp",
+      "status": "downloaded",
+      "bytes": 11808,
+      "sha256": "7021b8b7934e58a2123d8b1c93ff2986a80405aff14b831e2086d1f13dcba669",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · fp16.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/fp16.png",
+      "type": "figure",
+      "local": "figures/l02-fp16.webp",
+      "status": "downloaded",
+      "bytes": 14000,
+      "sha256": "70c7df0794398410bd8c0d95cf8c5997ed6a5a50b0b44d2eda869cabcc212a1b",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · bf16.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/bf16.png",
+      "type": "figure",
+      "local": "figures/l02-bf16.webp",
+      "status": "downloaded",
+      "bytes": 11088,
+      "sha256": "9ad128b3510591c65409e33bc224cc69ad7fef895ffe44d59b24539fea4331d1",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · gpu-hardware.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/gpu-hardware.png",
+      "type": "figure",
+      "local": "figures/l06-gpu-hardware.webp",
+      "status": "downloaded",
+      "bytes": 21308,
+      "sha256": "465e1b7a4d5768a848354c050cb316522fa8d67c4f1f40c4d0028789938243b4",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · triton-softmax.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/triton-softmax.png",
+      "type": "figure",
+      "local": "figures/l06-triton-softmax.webp",
+      "status": "downloaded",
+      "bytes": 16516,
+      "sha256": "d990c0814d66f8f41395e285afb63e9767647429fdfe8c301177f18613f81c89",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · gemm_tiled.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/gemm_tiled.png",
+      "type": "figure",
+      "local": "figures/l06-gemm-tiled.webp",
+      "status": "downloaded",
+      "bytes": 33442,
+      "sha256": "83a299814a75693ed21669e02a8050e0b08f43673d8b40cc76c46f5eb1b20eed",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · gpu-node-overview.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/gpu-node-overview.png",
+      "type": "figure",
+      "local": "figures/l07-gpu-node-overview.webp",
+      "status": "downloaded",
+      "bytes": 26954,
+      "sha256": "101d7c59af6e2de0836b2445152febc579a591bd1f532a6bd9d60b33d1097c68",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · mla-schema.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/mla-schema.png",
+      "type": "figure",
+      "local": "figures/l10-mla-schema.webp",
+      "status": "downloaded",
+      "bytes": 43256,
+      "sha256": "d09f6f6d7fa472476ea650755f49e6b71a1c05f460abefa6b8e1bc190c0a4417",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · paged-attention-logical.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/paged-attention-logical.png",
+      "type": "figure",
+      "local": "figures/l10-paged-attention-logical.webp",
+      "status": "downloaded",
+      "bytes": 31868,
+      "sha256": "f7a90df3f1fbf66e95c9788d78c6b27fea34a33879dee2c791afb2d08283e962",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · dclm-filter.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/dclm-filter.png",
+      "type": "figure",
+      "local": "figures/l13-dclm-filter.webp",
+      "status": "downloaded",
+      "bytes": 47078,
+      "sha256": "d2c234c3369c1f77efbff4b9a97821b2362e367f6dcf08c7322c33b5a76414c2",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · raw-target-schema.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/raw-target-schema.png",
+      "type": "figure",
+      "local": "figures/l14-raw-target-schema.webp",
+      "status": "downloaded",
+      "bytes": 10598,
+      "sha256": "4bdccc84bb4ada8ed1143c88fa3b745c1ff269d4dd8707269b31e959530755a5",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · clip.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/clip.png",
+      "type": "figure",
+      "local": "figures/l17-clip.webp",
+      "status": "downloaded",
+      "bytes": 26982,
+      "sha256": "5edb29c91907a9feaf4fffd2477b039fba0b2fa5f77bc2563ea4d971fb97cb4b",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · llava-architecture.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/llava-architecture.png",
+      "type": "figure",
+      "local": "figures/l17-llava-architecture.webp",
+      "status": "downloaded",
+      "bytes": 28208,
+      "sha256": "d690e3fd106ec87ced5f498057c4e9dd30c8341c180bb0dc5871f5771868c023",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
+    },
+    {
+      "title": "讲稿配图 · chameleon.png",
+      "url": "https://raw.githubusercontent.com/stanford-cs336/lectures/main/images/chameleon.png",
+      "type": "figure",
+      "local": "figures/l17-chameleon.webp",
+      "status": "downloaded",
+      "bytes": 41500,
+      "sha256": "718191cd29c4588468396f9f001ac18d3312c48b4101d502bc2c58ece9b8d0c0",
+      "note": "CS336 官方讲稿仓库配图，转为 webp。版权归原作者。",
+      "lesson_references": []
     }
   ],
   "discovery": {

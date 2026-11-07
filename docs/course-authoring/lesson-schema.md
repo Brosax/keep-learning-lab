@@ -56,13 +56,31 @@
   "body": ["第一段……", "第二段……"],          // 字符串或字符串数组
   "source": "Lecture 1 · p.62–78（Self-attention）",  // lectureAligned 课程必填
   "kind": "worked-example",                 // 可选：worked-example = 手算例题
-  "formula": "Attention(Q,K,V)=softmax(QKᵀ/√d_k)V",  // 可选
+  "math": ["\\mathrm{Attention}(Q,K,V)=\\mathrm{softmax}\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V"],  // 可选：行间公式，TeX，一行一个
+  "figure": {"src": "figures/l01-encoder.webp", "alt": "编码器结构图", "caption": "读图要看什么", "source": "Lecture 1 (2026) · p.80"},  // 可选；多张用 figures 数组
   "flow": ["分词", "嵌入", "自注意力", "前馈层", "输出分布"],    // 可选：静态流程链
   "table": {"columns": ["方法", "优点", "代价"], "rows": [["…", "…", "…"]]},  // 可选：对比表
   "code": "x = …",                          // 可选：静态代码片段（只展示，不运行）
   "bullets": ["要点或常见误区"]                // 可选
 }
 ```
+
+### 公式
+
+- **行间公式**用 `math`：TeX 字符串数组，一个等式或一步推导占一行；多步计算可以用 `\begin{aligned}…\end{aligned}` 对齐等号。中文写在 `\text{…}` 里，科学计数法写成 `70\times10^{9}`。
+- **行内公式**在正文、要点、表格、流程、学习目标、自测题和图注里用 `\(` … `\)` 包住（JSON 里写成 `\\(` … `\\)`）。普通数字、单位和代码标识符不要包。
+- 旧字段 `formula`（等宽纯文本）只为兼容未修订的课程而保留，新内容不要再用。
+- KaTeX 放在 `zh/ai/vendor/katex/`，测试会检查公式全部能编译。
+
+### 配图
+
+- 只在图比文字更能说明问题时加：架构图、流程或时序图、硬件结构、讲义里的关键实验曲线。不加装饰图，也不加和交互图示重复的图。每讲 0–3 张。
+- 图必须放在本站 `zh/<课程>/figures/`，不能外链。格式用 webp，宽度不超过 1200px，单张尽量不超过 150 KB。
+- PDF 讲义：用 `pdftoppm -f N -l N -r 120 -png` 渲染该页，再用 `magick` 裁掉标题栏和页脚，只留图本身。
+- 讲稿仓库里讲师自己的图可以下载，并登记到 `sources.json`（`type: "figure"`）。第三方网站的图不要下载。
+- 每张图都要写 `alt`（图里画了什么）、`caption`（读图要看什么）和 `source`（出处）。测试会检查这三项都有，并且文件存在。
+
+### 出处（`source`）
 
 `source` 的写法是 `<讲义名> · p.<页码>（<讲义里的小节名>）`：
 - 一段跨越多个小节标题时，用 ` / ` 连接，例如 `Lecture 4 (2026) · p.41–66（PPO computes advantages / PPO prevents large updates）`

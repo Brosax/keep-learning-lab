@@ -23,6 +23,7 @@
    - 每段写上 `source`
    - 用老师的例子和术语，中文讲解，保留英文原词
    - 不跨讲预支内容，不照抄原文
+   - 公式用 `math`（行间）和 `\(` … `\)`（行内）写成 TeX；在图比文字更清楚的地方加讲义配图（见 `lesson-schema.md` 的"公式"和"配图"两节）
 3. **逐讲决定模块。** 按 `module-decision.md` 决定 `visual`、`codeDemo`、`exercise`、`flow`、`table` 和手算例题：
    - 不需要的就删掉，包括 `labs-*.js` 里的注册和 oracle 里的 `mark`
    - 需要的就重写，让它对应讲义内容

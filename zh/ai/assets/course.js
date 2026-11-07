@@ -166,17 +166,37 @@
     main.querySelectorAll('[data-resource-filter]').forEach(button => button.addEventListener('click', () => { resourceType = button.dataset.resourceFilter; renderResourceList(); }));
   }
 
+  // Math: display formulas come from section.math (TeX); inline TeX in prose is written as \( ... \).
+  // KaTeX is optional at runtime: without it the TeX source is shown verbatim, never dropped.
+  function tex(source, display) {
+    const katex = window.katex || globalThis.katex;
+    if (katex?.renderToString) {
+      try { return katex.renderToString(String(source), {displayMode: display, throwOnError: false, output: 'htmlAndMathml'}); } catch (_) {}
+    }
+    return `<code class="tex-fallback">${esc(source)}</code>`;
+  }
+  function rich(value) {
+    return String(value ?? '').split(/(\\\([\s\S]+?\\\))/).map((part, i) => i % 2 ? tex(part.slice(2, -2), false) : esc(part)).join('');
+  }
+  function figureMarkup(figure) {
+    if (!figure?.src) return '';
+    const caption = figure.caption ? `<span>${rich(figure.caption)}</span>` : '';
+    const credit = figure.source ? `<small>图源：${esc(figure.source)}</small>` : '';
+    return `<figure class="lesson-figure"><img src="${esc(figure.src)}" alt="${esc(figure.alt || figure.caption || '')}" loading="lazy" decoding="async">${caption || credit ? `<figcaption>${caption}${credit}</figcaption>` : ''}</figure>`;
+  }
   function contentSection(section) {
     const paragraphs = Array.isArray(section.body) ? section.body : section.body ? String(section.body).split(/\n\n+/) : [];
+    const figures = (Array.isArray(section.figures) ? section.figures : section.figure ? [section.figure] : []).map(figureMarkup).join('');
     // Optional static aids: flow (ordered steps drawn as a chain) and table ({columns, rows}).
-    const flow = Array.isArray(section.flow) && section.flow.length ? `<ol class="section-flow" aria-label="${esc(section.title)}：流程">${section.flow.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
-    const table = section.table?.columns?.length ? `<div class="section-table"><table><thead><tr>${section.table.columns.map(cell => `<th scope="col">${esc(cell)}</th>`).join('')}</tr></thead><tbody>${(section.table.rows || []).map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
+    const flow = Array.isArray(section.flow) && section.flow.length ? `<ol class="section-flow" aria-label="${esc(section.title)}：流程">${section.flow.map(step => `<li>${rich(step)}</li>`).join('')}</ol>` : '';
+    const math = Array.isArray(section.math) && section.math.length ? `<div class="math-block">${section.math.map(line => `<div class="math-line">${tex(line, true)}</div>`).join('')}</div>` : '';
+    const table = section.table?.columns?.length ? `<div class="section-table"><table><thead><tr>${section.table.columns.map(cell => `<th scope="col">${rich(cell)}</th>`).join('')}</tr></thead><tbody>${(section.table.rows || []).map(row => `<tr>${row.map(cell => `<td>${rich(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
     const source = section.source ? `<p class="section-source"><span>讲义出处</span>${esc(section.source)}</p>` : '';
-    return `<section class="lesson-section${section.kind ? ` kind-${esc(section.kind)}` : ''}"><h2>${esc(section.title)}</h2>${paragraphs.map(paragraph => `<p>${esc(paragraph)}</p>`).join('')}${flow}${section.formula ? `<div class="formula-block" role="math">${esc(section.formula)}</div>` : ''}${table}${section.code ? `<pre class="code-block"><code>${esc(section.code)}</code></pre>` : ''}${section.bullets?.length ? `<ul class="takeaway-list">${section.bullets.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : ''}${source}</section>`;
+    return `<section class="lesson-section${section.kind ? ` kind-${esc(section.kind)}` : ''}"><h2>${rich(section.title)}</h2>${paragraphs.map(paragraph => `<p>${rich(paragraph)}</p>`).join('')}${figures}${flow}${math}${section.formula ? `<div class="formula-block" role="math">${esc(section.formula)}</div>` : ''}${table}${section.code ? `<pre class="code-block"><code>${esc(section.code)}</code></pre>` : ''}${section.bullets?.length ? `<ul class="takeaway-list">${section.bullets.map(item => `<li>${rich(item)}</li>`).join('')}</ul>` : ''}${source}</section>`;
   }
   function quizMarkup(lesson) {
     if (!lesson.quiz?.length) return '';
-    return `<section class="quiz-panel"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>随堂自测</h2><p class="muted">${quizUpdated ? '题目已更新，请重新自测。' : ''}选择答案查看解析。可以重新作答，检验自己的理解。</p>${lesson.quiz.map((question, qi) => `<div class="quiz-question" data-question="${qi}"><h3><span>${String(qi + 1).padStart(2, '0')}.</span> ${esc(question.question)}</h3><div class="quiz-options" role="group" aria-label="第 ${qi + 1} 题选项">${question.options.map((option, oi) => `<button class="quiz-option" type="button" data-question="${qi}" data-answer="${oi}" aria-pressed="false"><span>${String.fromCharCode(65 + oi)}</span>${esc(option)}</button>`).join('')}</div><div class="quiz-feedback" aria-live="polite"></div></div>`).join('')}</section>`;
+    return `<section class="quiz-panel"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>随堂自测</h2><p class="muted">${quizUpdated ? '题目已更新，请重新自测。' : ''}选择答案查看解析。可以重新作答，检验自己的理解。</p>${lesson.quiz.map((question, qi) => `<div class="quiz-question" data-question="${qi}"><h3><span>${String(qi + 1).padStart(2, '0')}.</span> ${rich(question.question)}</h3><div class="quiz-options" role="group" aria-label="第 ${qi + 1} 题选项">${question.options.map((option, oi) => `<button class="quiz-option" type="button" data-question="${qi}" data-answer="${oi}" aria-pressed="false"><span>${String.fromCharCode(65 + oi)}</span>${rich(option)}</button>`).join('')}</div><div class="quiz-feedback" aria-live="polite"></div></div>`).join('')}</section>`;
   }
   function updateQuiz(lesson, questionIndex, answerIndex) {
     const question = lesson.quiz[questionIndex];
@@ -193,15 +213,15 @@
     });
     const feedback = element.querySelector('.quiz-feedback');
     feedback.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-    feedback.innerHTML = `<strong>${isCorrect ? '回答正确 ✓' : '再想一想 · 正确答案是 ' + String.fromCharCode(65 + Number(question.answer))}</strong><p>${esc(question.explanation || '')}</p>`;
+    feedback.innerHTML = `<strong>${isCorrect ? '回答正确 ✓' : '再想一想 · 正确答案是 ' + String.fromCharCode(65 + Number(question.answer))}</strong><p>${rich(question.explanation || '')}</p>`;
   }
   function lessonPage(lesson) {
     state.resume = lesson.id; save();
     const index = lessons.indexOf(lesson);
     const previous = lessons[index - 1]; const next = lessons[index + 1];
     const module = modules.find(item => item.id === lesson.module);
-    main.innerHTML = `<header class="lesson-header"><div class="lesson-breadcrumb"><a href="#overview">课程总览</a><span>/</span><span>${esc(module?.title || course.code)}</span></div><div class="lesson-kicker"><span class="eyebrow">LESSON ${esc(lesson.id)} / ${esc(course.code)}</span><span>${index + 1} / ${lessons.length}</span></div><h1 class="lesson-title">${esc(lesson.title)}</h1><p class="lesson-original">${esc(lesson.originalTitle || '')}</p><p class="lesson-summary">${esc(lesson.summary)}</p>${lesson.sourceStatus ? `<p class="source-status" role="note"><strong>资料说明</strong>${esc(lesson.sourceStatus)}</p>` : ''}<div class="lesson-meta"><span>${objectives(lesson).length} 个学习目标</span><span>${lesson.quiz?.length || 0} 道自测</span>${(lesson.lab || lesson.visual) ? '<span>含交互实验</span>' : ''}<span>中文社区导学</span></div></header>
-      <div class="lesson-body"><div class="lesson-content" data-lesson-id="${esc(lesson.id)}"><section class="objectives"><span class="eyebrow">LEARNING OBJECTIVES</span><h2>这一讲，要掌握什么？</h2>${objectives(lesson).map((objective, i) => `<label class="objective-item"><input type="checkbox" data-objective="${i}"${state.obj[objKey(lesson, i)] ? ' checked' : ''}><span>${esc(objective)}</span></label>`).join('')}</section>
+    main.innerHTML = `<header class="lesson-header"><div class="lesson-breadcrumb"><a href="#overview">课程总览</a><span>/</span><span>${esc(module?.title || course.code)}</span></div><div class="lesson-kicker"><span class="eyebrow">LESSON ${esc(lesson.id)} / ${esc(course.code)}</span><span>${index + 1} / ${lessons.length}</span></div><h1 class="lesson-title">${esc(lesson.title)}</h1><p class="lesson-original">${esc(lesson.originalTitle || '')}</p><p class="lesson-summary">${rich(lesson.summary)}</p>${lesson.sourceStatus ? `<p class="source-status" role="note"><strong>资料说明</strong>${esc(lesson.sourceStatus)}</p>` : ''}<div class="lesson-meta"><span>${objectives(lesson).length} 个学习目标</span><span>${lesson.quiz?.length || 0} 道自测</span>${(lesson.lab || lesson.visual) ? '<span>含交互实验</span>' : ''}<span>中文社区导学</span></div></header>
+      <div class="lesson-body"><div class="lesson-content" data-lesson-id="${esc(lesson.id)}"><section class="objectives"><span class="eyebrow">LEARNING OBJECTIVES</span><h2>这一讲，要掌握什么？</h2>${objectives(lesson).map((objective, i) => `<label class="objective-item"><input type="checkbox" data-objective="${i}"${state.obj[objKey(lesson, i)] ? ' checked' : ''}><span>${rich(objective)}</span></label>`).join('')}</section>
       ${(lesson.sections || []).map(contentSection).join('')}
       ${lesson.lab ? `<section class="lab-panel"><span class="eyebrow">INTERACTIVE LAB</span><h2>动手观察机制</h2><div data-lab="${esc(lesson.lab)}"></div></section>` : ''}
       ${lesson.exercise ? `<section class="exercise-panel"><span class="eyebrow">PUT IT INTO PRACTICE</span><h2>${esc(lesson.exercise.title || '动手练习')}</h2><ol>${(lesson.exercise.instructions || []).map(item => `<li>${esc(item)}</li>`).join('')}</ol>${lesson.exercise.deliverable ? `<div class="deliverable"><strong>完成标准</strong><p>${esc(lesson.exercise.deliverable)}</p></div>` : ''}</section>` : ''}

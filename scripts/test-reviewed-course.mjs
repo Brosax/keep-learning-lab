@@ -85,6 +85,16 @@ for(const lesson of s.window.COURSE.lessons){
  if(hasVisual)eq(lesson.visual,id,`lesson ${lesson.id} explicit visual key`);if(hasCode)eq(lesson.codeDemo,id,`lesson ${lesson.id} explicit code key`);
  const visual=hasVisual?s.window.COURSE_VISUALS?.[id]:null,code=hasCode?s.window.COURSE_CODE?.[id]:null;if(hasVisual)check(visual,`${id} visual registered`);if(hasCode)check(code,`${id} code registered`);
  s.go(lesson.id);eq(d.querySelector('h1').textContent,lesson.title,`${id} renders the correct lesson`);
+ // Formulas must compile in KaTeX; figures are archived on this site and credit their source.
+ eq(d.querySelectorAll('.katex-error').length,0,`${id} every TeX formula compiles`);eq(d.querySelectorAll('.tex-fallback').length,0,`${id} formulas render through KaTeX`);
+ for(const section of lesson.sections){
+  if(section.math!==undefined)check(Array.isArray(section.math)&&section.math.every(line=>typeof line==='string'&&line.trim()),`${id} math is a list of TeX strings`);
+  for(const figure of section.figures||(section.figure?[section.figure]:[])){
+   check(typeof figure.src==='string'&&!/^[a-z]+:|^\/\//i.test(figure.src),`${id} figure ${figure.src} is served from this site`);
+   check(fs.existsSync(path.join(root,'zh',slug,figure.src)),`${id} figure ${figure.src} exists`);
+   check(figure.alt?.trim()&&figure.source?.trim(),`${id} figure ${figure.src} has alt text and a source credit`);
+  }
+ }
  eq(d.querySelectorAll('.geometry-lab').length,hasVisual?1:0,`${id} mounts ${hasVisual?'its':'no'} diagram`);eq(d.querySelectorAll('.lab-panel').length,0,`${id} does not duplicate a generic course lab`);eq(d.querySelectorAll('.code-playground').length,hasCode?1:0,`${id} mounts ${hasCode?'its':'no'} code lab`);
  if(hasCode){
  check(!codeTitles.has(code.name),`${id} code title is chapter-specific`);codeTitles.add(code.name);
