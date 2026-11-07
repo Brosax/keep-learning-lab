@@ -1,0 +1,2298 @@
+{
+  "level": "C1",
+  "modules": [
+    {
+      "id": "m27",
+      "level": "C1",
+      "title": "与过去事实相反的假设",
+      "description": "用虚拟式过去完成时和复合条件式谈论没有发生的过去，并能处理混合时间的假设和对过去的遗憾。",
+      "lessons": [
+        {
+          "id": "m27-l1",
+          "title": "虚拟式过去完成时与第三类条件句",
+          "goal": "能用 si + 虚拟式过去完成时 + 复合条件式，表达与过去事实相反的假设及其本会产生的结果。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "下面三句话里假设的事情实际上发生了吗？比较 si 从句和主句的动词形式。",
+            "examples": [
+              {
+                "es": "Si hubiera sabido que estabas enfermo, habría ido a verte.",
+                "zh": "要是我早知道你病了，我就去看你了。（实际上我不知道，也没去。）"
+              },
+              {
+                "es": "Si no hubiéramos perdido el tren, habríamos llegado a tiempo.",
+                "zh": "要是我们没误火车，就能准时到了。（实际上误了，也迟到了。）"
+              },
+              {
+                "es": "Si me lo hubieras dicho antes, te habría ayudado.",
+                "zh": "要是你早点告诉我，我就帮你了。"
+              }
+            ],
+            "answer": "三句都在假设已经过去、而且与事实相反的情况：我当时不知道、我们误了火车、你没有早说。si 从句用 hubiera + 过去分词（虚拟式过去完成时），主句用 habría + 过去分词（复合条件式），表示“当时本会出现、但实际没有出现”的结果。"
+          },
+          "rules": [
+            {
+              "title": "虚拟式过去完成时的构成",
+              "body": "虚拟式过去完成时（pretérito pluscuamperfecto de subjuntivo）＝ haber 的虚拟式过去时 + 过去分词。haber 有 -ra（hubiera）和 -se（hubiese）两套形式，意义相同，口语中 -ra 更常见。过去分词不变，注意不规则分词：hecho、dicho、visto、puesto、escrito、vuelto、abierto、roto。宾语代词放在 hubiera 前面：si me lo hubieras dicho。除条件句外，它也用在过去时主句后、表示更早发生之事的名词从句中，如 me extrañó que…。",
+              "table": {
+                "caption": "haber 的虚拟式过去时（+ 过去分词）",
+                "headers": [
+                  "人称",
+                  "-ra 形式",
+                  "-se 形式"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "hubiera",
+                    "hubiese"
+                  ],
+                  [
+                    "tú",
+                    "hubieras",
+                    "hubieses"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "hubiera",
+                    "hubiese"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "hubiéramos",
+                    "hubiésemos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hubierais",
+                    "hubieseis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "hubieran",
+                    "hubiesen"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Si hubieras visto su cara, te habrías reído.",
+                  "zh": "你要是看到他当时的表情，肯定会笑出来。visto 是 ver 的不规则分词。"
+                },
+                {
+                  "es": "Me extrañó que no hubiera llamado nadie.",
+                  "zh": "我当时很奇怪居然没人打过电话。主句是过去时，从句动作更早，用虚拟式过去完成时。"
+                }
+              ]
+            },
+            {
+              "title": "复合条件式与第三类条件句",
+              "body": "复合条件式（condicional compuesto）＝ haber 的条件式 + 过去分词，表示过去本会发生却没有发生的结果。第三类条件句（与过去事实相反）的结构是：si + 虚拟式过去完成时，复合条件式。两个分句可以调换顺序。si 引导的条件从句里不能用条件式：*si habría sabido 是常见错误。",
+              "table": {
+                "caption": "haber 的条件式（+ 过去分词）",
+                "headers": [
+                  "人称",
+                  "形式",
+                  "例：venir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "habría",
+                    "habría venido"
+                  ],
+                  [
+                    "tú",
+                    "habrías",
+                    "habrías venido"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "habría",
+                    "habría venido"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "habríamos",
+                    "habríamos venido"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "habríais",
+                    "habríais venido"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "habrían",
+                    "habrían venido"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Habríamos ganado el partido si Luis no se hubiera lesionado.",
+                  "zh": "要不是路易斯受伤了，我们本来能赢那场比赛。主句在前，si 从句在后。"
+                },
+                {
+                  "es": "Si hubieras salido antes, no habrías perdido el autobús.",
+                  "zh": "你要是早点出门，就不会错过公交车了。"
+                }
+              ]
+            },
+            {
+              "title": "主句中的 hubiera + 分词",
+              "body": "在口语和书面语中，第三类条件句的主句也可以用 hubiera + 过去分词代替 habría + 过去分词，意义相同：Si lo hubiera sabido, hubiera venido. 主句用 hubiese 形式较少见。反过来却不行：si 从句里只能用 hubiera / hubiese，不能用 habría。这一用法在西班牙和拉美都很普遍。",
+              "examples": [
+                {
+                  "es": "Si me hubieras avisado, hubiera ido contigo.",
+                  "zh": "你要是通知我，我就跟你一起去了。hubiera ido ＝ habría ido。"
+                },
+                {
+                  "es": "Con más tiempo, lo hubiéramos hecho mejor.",
+                  "zh": "要是时间多一些，我们本可以做得更好。con más tiempo 相当于一个隐含的条件。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "实际上你之前没有告诉我。Si me lo ___ antes, te habría ayudado.",
+              "options": [
+                "habrías dicho",
+                "hubieras dicho",
+                "habías dicho"
+              ],
+              "answer": "hubieras dicho",
+              "hint": "这是与过去事实相反的条件；先想 si 从句里能不能用条件式。",
+              "explanation": "与过去事实相反的 si 从句用虚拟式过去完成时 hubieras dicho。habrías dicho 是条件式，不能用在 si 条件从句里；habías dicho 是陈述式过去完成时，表示真实的过去条件，不表示“事实上没有说”。",
+              "errorType": "用法判断",
+              "id": "m27-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "我们实际上九点才出发，结果迟到了。Si hubiéramos salido a las ocho, ___ a tiempo.",
+              "options": [
+                "habíamos llegado",
+                "habremos llegado",
+                "habríamos llegado"
+              ],
+              "answer": "habríamos llegado",
+              "hint": "主句表示过去“本会出现”的结果，需要哪个时态的 haber？",
+              "explanation": "第三类条件句的主句用复合条件式 habríamos llegado。habíamos llegado 是陈述式过去完成时，陈述真实发生的事；habremos llegado 是将来完成时，指向将来。",
+              "errorType": "用法判断",
+              "id": "m27-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择正确的句子：“要是我当时有时间，就给你打电话了。”",
+              "options": [
+                "Si habría tenido tiempo, te habría llamado.",
+                "Si hubiera tenido tiempo, te habría llamado.",
+                "Si hubiera tenido tiempo, te habré llamado."
+              ],
+              "answer": "Si hubiera tenido tiempo, te habría llamado.",
+              "hint": "分别检查 si 从句和主句的动词形式。",
+              "explanation": "si 从句用虚拟式过去完成时 hubiera tenido，主句用复合条件式 habría llamado。第一句把条件式放进了 si 从句；第三句主句用了将来完成时，与过去假设不搭配。",
+              "errorType": "句子组织",
+              "id": "m27-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填 haber 的虚拟式过去时形式：Si (nosotros) ___ estudiado más, habríamos aprobado.（我们当时要是多学一点，就能通过了。）",
+              "answer": "hubiéramos",
+              "accepted": [
+                "hubiésemos"
+              ],
+              "hint": "nosotros 的形式重音落在倒数第三个音节，需要写重音符号。",
+              "explanation": "nosotros 对应 hubiéramos（或 hubiésemos），重音符号写在 é 上。si 从句不能用 habríamos。",
+              "errorType": "词形变化",
+              "id": "m27-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用复合条件式（habría + 分词）填空，动词 hacer，主语 tú：Si hubieras tenido más tiempo, ¿qué ___?（填两个词）",
+              "answer": "habrías hecho",
+              "hint": "先变 haber 的条件式 tú 形式，再想 hacer 的不规则过去分词。",
+              "explanation": "tú 对应 habrías，hacer 的过去分词是不规则的 hecho，所以是 habrías hecho。常见错误是写成 *hacido。",
+              "errorType": "词形变化",
+              "id": "m27-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "口语中主句也可以不用复合条件式。保持句意不变，填 haber 的另一种形式：Si me hubieras invitado, yo ___ venido encantado.（＝ habría venido）",
+              "answer": "hubiera",
+              "accepted": [
+                "hubiese"
+              ],
+              "hint": "主句可以借用 si 从句里同一种 haber 形式，主语是 yo。",
+              "explanation": "第三类条件句的主句可以用 hubiera + 分词代替 habría + 分词：yo hubiera venido。注意反向替换不成立：si 从句里不能出现 habría。",
+              "errorType": "用法判断",
+              "id": "m27-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "回想一个你过去做过（或没做）的重要决定，写 4–5 句话：先说明实际发生了什么，再用至少三个第三类条件句设想“如果当时不这样，会怎样”。",
+            "model": "El año pasado no acepté un trabajo en Valencia. Si lo hubiera aceptado, habría vivido junto al mar y habría aprendido valenciano. Pero tampoco habría conocido a mis compañeros actuales. Si me hubieran ofrecido el puesto un año después, quizá habría dicho que sí.（去年我没接受瓦伦西亚的一份工作……）",
+            "rubric": [
+              "si 从句用了虚拟式过去完成时（hubiera / hubiese + 分词），没有用条件式。",
+              "主句用了 habría + 分词（或 hubiera + 分词），过去分词形式正确，包括不规则分词。",
+              "假设的内容确实与过去事实相反，并交代了实际发生的情况。"
+            ]
+          }
+        },
+        {
+          "id": "m27-l2",
+          "title": "混合条件句、de + 复合不定式与过去的遗憾",
+          "goal": "能根据条件和结果各自的时间构造混合条件句，并用 de + 复合不定式、ojalá + hubiera、me habría gustado que + hubiera 表达过去的假设与遗憾。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "比较三句话的时间：假设的条件属于过去还是现在？结果属于过去还是现在？",
+            "examples": [
+              {
+                "es": "Si hubiera estudiado Medicina, ahora sería médica.",
+                "zh": "要是我当年学了医，现在就是医生了。"
+              },
+              {
+                "es": "Si fuera más prudente, no habría dicho eso en la reunión.",
+                "zh": "他要是个更谨慎的人，就不会在会上说那种话了。"
+              },
+              {
+                "es": "De haberlo sabido, no habría venido.",
+                "zh": "早知道这样，我就不来了。"
+              }
+            ],
+            "answer": "第一句：条件在过去（当年没学医），结果在现在（现在不是医生），所以 si 从句用 hubiera + 分词，主句用简单条件式 sería。第二句相反：条件是他现在的性格（虚拟式过去时 fuera），结果是过去那件事（habría dicho）。第三句用 de + haber + 分词代替 si 从句，意思等于 si lo hubiera sabido。"
+          },
+          "rules": [
+            {
+              "title": "混合条件句：条件和结果各按自己的时间",
+              "body": "混合条件句（oraciones condicionales mixtas）中，条件和结果分属不同时间，各自选形式。① 过去的条件 → 现在的结果：si + 虚拟式过去完成时，简单条件式，常配 ahora、hoy、todavía。② 现在或恒常的条件（性格、身份、长期状态）→ 过去的结果：si + 虚拟式过去时，复合条件式。判断方法：分别问“条件是什么时候的事？”和“结果是什么时候的事？”。",
+              "examples": [
+                {
+                  "es": "Si no hubiera perdido las llaves, ahora no estaría esperando en la calle.",
+                  "zh": "要不是我（刚才）把钥匙弄丢了，现在就不用在街上等着了。过去的条件，现在的结果。"
+                },
+                {
+                  "es": "Si no fueras tan tímida, le habrías preguntado su nombre.",
+                  "zh": "你要不是这么害羞，（当时）早就问他名字了。现在的性格，过去的结果。"
+                }
+              ]
+            },
+            {
+              "title": "de + 复合不定式代替 si 从句",
+              "body": "de + 复合不定式（infinitivo compuesto：haber + 过去分词）相当于 si + 虚拟式过去完成时，多用于书面语或较正式的口语。宾语代词接在 haber 后面连写：de haberlo sabido。用 de + 简单不定式则对应现在的假设：de ser así ＝ si fuera así。主句的主语通常就是不定式的逻辑主语，避免造成歧义。",
+              "examples": [
+                {
+                  "es": "De haberlo sabido antes, te lo habría contado.",
+                  "zh": "我要是早点知道，就告诉你了。＝ Si lo hubiera sabido antes…"
+                },
+                {
+                  "es": "De ser así, tendríamos que cambiar el plan.",
+                  "zh": "如果真是这样，我们就得改计划了。＝ Si fuera así…"
+                }
+              ]
+            },
+            {
+              "title": "对过去的遗憾：ojalá 与 me habría gustado que",
+              "body": "ojalá + 虚拟式过去完成时表示对已经无法改变的过去的愿望或遗憾（“要是当时……就好了”）；对比 ojalá + 虚拟式过去时，那是对现在不太可能实现之事的愿望。me habría gustado que + 虚拟式过去完成时表示“我本希望（别人）当时……”，日常中 me habría gustado que + 虚拟式过去时（que vinieras）也很常见。如果希望的主语就是自己，直接用不定式：me habría gustado estudiar fuera。",
+              "examples": [
+                {
+                  "es": "Ojalá hubiera aceptado aquella oferta de trabajo.",
+                  "zh": "要是我当时接受了那份工作就好了。"
+                },
+                {
+                  "es": "Me habría gustado que hubieras conocido a mi abuela.",
+                  "zh": "我真希望你当时见过我奶奶。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "她当年没学医，所以她现在不是医生。Si hubiera estudiado Medicina, ahora ___ médica.",
+              "options": [
+                "habría sido",
+                "sería",
+                "fuera"
+              ],
+              "answer": "sería",
+              "hint": "注意 ahora：结果是哪个时间的事？",
+              "explanation": "条件在过去，结果在现在，主句用简单条件式 sería。habría sido 指过去的结果，与 ahora 冲突；fuera 是虚拟式，不能作这类条件句的主句。",
+              "errorType": "用法判断",
+              "id": "m27-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "她一直是个冲动的人，所以昨天说了那句不该说的话。Si no ___ tan impulsiva, no habría dicho eso ayer.",
+              "options": [
+                "habría sido",
+                "fuera",
+                "sería"
+              ],
+              "answer": "fuera",
+              "hint": "冲动是她一贯的性格；si 从句里可以用条件式吗？",
+              "explanation": "条件是她现在和一贯的性格，用虚拟式过去时 fuera；结果是昨天的事，用复合条件式 habría dicho。habría sido 和 sería 都是条件式，不能放进 si 从句。",
+              "errorType": "用法判断",
+              "id": "m27-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择正确的句子：“早知道的话，我就不来了。”",
+              "options": [
+                "De haberlo sabido, no habría venido.",
+                "De haber lo sabido, no habría venido.",
+                "De lo haber sabido, no habría venido."
+              ],
+              "answer": "De haberlo sabido, no habría venido.",
+              "hint": "不定式带宾语代词时，代词放在哪里、怎么写？",
+              "explanation": "宾语代词要接在不定式 haber 后面连写成 haberlo。分开写或把 lo 放到 haber 前面都不符合规范。",
+              "errorType": "句子组织",
+              "id": "m27-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "表达对过去的遗憾，填 haber 的适当形式：Ojalá no le ___ (yo) dicho nada a mi jefe.（要是我当时什么都没跟老板说就好了。）",
+              "answer": "hubiera",
+              "accepted": [
+                "hubiese"
+              ],
+              "hint": "遗憾的是已经发生、无法改变的事；主语是 yo。",
+              "explanation": "ojalá + 虚拟式过去完成时表示对过去的遗憾，yo 对应 hubiera（或 hubiese）。如果用 haya dicho，就变成了“但愿我（可能）没说过”，表示说话人不确定。",
+              "errorType": "词形变化",
+              "id": "m27-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 de + 复合不定式改写：Si hubiéramos reservado mesa, habríamos cenado allí. → De ___ mesa, habríamos cenado allí.（填两个词）",
+              "answer": "haber reservado",
+              "hint": "复合不定式＝ haber 的原形 + 过去分词。",
+              "explanation": "si + 虚拟式过去完成时可改写为 de + haber + 过去分词：de haber reservado mesa。haber 用原形，不随人称变化。",
+              "errorType": "句子组织",
+              "id": "m27-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "朋友没来参加你的生日聚会。用 venir 的虚拟式过去完成时填空（tú，两个词）：Me habría gustado que ___ a mi fiesta.",
+              "answer": "hubieras venido",
+              "accepted": [
+                "hubieses venido"
+              ],
+              "hint": "haber 的 tú 形式 + venir 的过去分词。",
+              "explanation": "me habría gustado que 后接虚拟式，本题要求过去完成时：hubieras venido（或 hubieses venido）。不能用陈述式 habías venido。",
+              "errorType": "词形变化",
+              "id": "m27-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "回顾你人生中的一个选择（学业、工作、城市等），写一段 5–6 句的反思：至少用一个混合条件句、一个 de + 复合不定式，以及一个 ojalá 或 me habría gustado 表达的遗憾。",
+            "model": "Cuando terminé el bachillerato, elegí estudiar Derecho. Si hubiera estudiado Bellas Artes, ahora trabajaría en un estudio de diseño. De haber sabido lo mucho que me iba a gustar dibujar, quizá habría elegido otra carrera. Ojalá hubiera tomado clases de pintura en aquella época. Aun así, si no fuera tan constante, no habría terminado la carrera.（高中毕业时我选了法律……）",
+            "rubric": [
+              "混合条件句中，条件和结果的时间判断正确，形式与时间对应。",
+              "de + 复合不定式的形式正确（haber 用原形，代词连写在 haber 后）。",
+              "表达遗憾时用了 ojalá / me habría gustado + 虚拟式过去完成时（或在同一主语时用不定式）。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m28",
+      "level": "C1",
+      "title": "高级关系从句与比拟",
+      "description": "用介词 + 关系词、lo cual、cuyo 组织更书面的长句，区分限定性与解释性从句，并用 como si、ni que、por más que 表达比拟、反驳与让步。",
+      "lessons": [
+        {
+          "id": "m28-l1",
+          "title": "介词 + 关系词、lo cual / lo que 与 cuyo",
+          "goal": "能在介词后正确选择 el que、la que、el cual、quien 等关系词，用 lo cual 指代整句内容，使 cuyo 与所修饰名词一致，并用逗号区分限定性与解释性关系从句。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "观察关系词前面的介词和关系词本身的形式：介词放在哪里？关系词与哪个名词一致？",
+            "examples": [
+              {
+                "es": "La empresa para la que trabajo tiene su sede en Bilbao.",
+                "zh": "我所工作的那家公司总部在毕尔巴鄂。"
+              },
+              {
+                "es": "El amigo con quien viajé a Perú vive ahora en Lima.",
+                "zh": "和我一起去秘鲁旅行的那个朋友现在住在利马。"
+              },
+              {
+                "es": "Es una autora cuyas novelas se leen en muchos países.",
+                "zh": "她是一位作品在许多国家都有人读的作家。"
+              }
+            ],
+            "answer": "介词（para、con）必须放在关系词前面，不能像英语口语那样留在句尾。la que 与先行词 la empresa 性数一致；指人时也可以用 quien。cuyas 与后面被拥有的名词 novelas 一致，而不是与拥有者 autora 一致。"
+          },
+          "rules": [
+            {
+              "title": "介词 + 冠词 + que / cual，或介词 + quien",
+              "body": "关系从句中动词要求介词时（trabajar para、hablar con、pensar en），介词放在关系词前。指物用“介词 + el / la / los / las + que”或更书面的“介词 + el cual / la cual / los cuales / las cuales”，冠词与先行词性数一致；指人还可以用“介词 + quien / quienes”。一般情况下介词后带冠词；只有在 en、con、de 等少数简单介词后指物时，省略冠词也较常见（la ciudad en que nací）。a pesar de、gracias a、delante de 等较长的介词短语后尤其常用 el cual 系列（gracias a la cual）。",
+              "table": {
+                "caption": "介词后的关系词",
+                "headers": [
+                  "先行词",
+                  "介词后可用",
+                  "例"
+                ],
+                "rows": [
+                  [
+                    "阳性单数（el proyecto）",
+                    "el que / el cual",
+                    "el proyecto en el que trabajo"
+                  ],
+                  [
+                    "阴性单数（la ciudad）",
+                    "la que / la cual",
+                    "la ciudad en la que nací"
+                  ],
+                  [
+                    "阳性复数（los motivos）",
+                    "los que / los cuales",
+                    "los motivos por los que dimitió"
+                  ],
+                  [
+                    "阴性复数（las razones）",
+                    "las que / las cuales",
+                    "las razones por las cuales se fue"
+                  ],
+                  [
+                    "人（la profesora / los vecinos）",
+                    "quien / quienes，或 el que、la que 等",
+                    "la profesora a quien escribí"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Esta es la razón por la cual dejé el trabajo.",
+                  "zh": "这就是我辞职的原因。por la cual 比 por la que 更书面。"
+                },
+                {
+                  "es": "Los vecinos a quienes pedimos ayuda fueron muy amables.",
+                  "zh": "我们向他们求助的那些邻居人很好。pedir ayuda a alguien，介词 a 前置。"
+                }
+              ]
+            },
+            {
+              "title": "lo cual 与 lo que",
+              "body": "指代前面一整句话或一件事时，在逗号后用 lo cual 或 lo que，二者意义相同，lo cual 更书面；前面也可以加介词：por lo cual、a raíz de lo cual。区别在于：lo que 还能表示“……的东西／事情”，没有先行词，可以放在句首或作宾语（lo que dijiste）；lo cual 必须有前面的句子作先行词，不能这样用。",
+              "examples": [
+                {
+                  "es": "Perdimos el último tren, lo cual nos obligó a dormir en un hostal.",
+                  "zh": "我们错过了末班火车，这让我们只好在青年旅舍过夜。lo cual 指“错过末班车”这件事，也可以用 lo que。"
+                },
+                {
+                  "es": "No entiendo lo que quieres decir.",
+                  "zh": "我不明白你想说什么。这里是“……的内容”，只能用 lo que。"
+                }
+              ]
+            },
+            {
+              "title": "cuyo：与被拥有的名词一致",
+              "body": "cuyo 表示所属关系（“……的”），相当于英语的 whose。它的性数与后面被拥有的名词一致，不与拥有者一致；cuyo 前不加冠词，后面的名词也不再加冠词。需要介词时放在 cuyo 前：la autora en cuya novela se basa la película。口语中有人用 que su 代替（*un hombre que su hija…），正式表达中应避免。",
+              "table": {
+                "caption": "cuyo 的四种形式",
+                "headers": [
+                  "被拥有的名词",
+                  "形式",
+                  "例"
+                ],
+                "rows": [
+                  [
+                    "阳性单数",
+                    "cuyo",
+                    "un escritor cuyo nombre no recuerdo"
+                  ],
+                  [
+                    "阴性单数",
+                    "cuya",
+                    "una amiga cuya casa está en la playa"
+                  ],
+                  [
+                    "阳性复数",
+                    "cuyos",
+                    "un pueblo cuyos habitantes son muy mayores"
+                  ],
+                  [
+                    "阴性复数",
+                    "cuyas",
+                    "una empresa cuyas oficinas están en Madrid"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "El pueblo cuyas fiestas te recomendé está a dos horas de aquí.",
+                  "zh": "我向你推荐过它的节庆活动的那个小镇，离这里两小时。cuyas 与 fiestas 一致。"
+                },
+                {
+                  "es": "Conocí a un hombre cuya hija es piloto de avión.",
+                  "zh": "我认识了一个男人，他的女儿是飞行员。cuya 与 hija 一致，而不是与 hombre 一致。"
+                }
+              ]
+            },
+            {
+              "title": "限定性与解释性关系从句",
+              "body": "限定性关系从句（oraciones de relativo especificativas）不加逗号，用来限定“是哪一些”；解释性关系从句（explicativas）用逗号隔开，只补充信息，指的是先行词的全部。没有介词的限定性从句只用 que，不能用 quien 或 el cual（*los alumnos quienes viven lejos）；解释性从句里，que、quien、el cual 都可以。",
+              "examples": [
+                {
+                  "es": "Los alumnos que viven lejos llegan en autobús.",
+                  "zh": "住得远的那些学生坐公交来。（其他学生不一定。）"
+                },
+                {
+                  "es": "Los alumnos, que viven lejos, llegan en autobús.",
+                  "zh": "学生们都住得远，所以都坐公交来。（指全部学生。）"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "“我工作的那家公司很大。”（trabajar para una empresa）La empresa ___ trabajo es muy grande.",
+              "options": [
+                "que para",
+                "para la que",
+                "para que"
+              ],
+              "answer": "para la que",
+              "hint": "介词应该放在关系词前面还是后面？para 后面还需要什么？",
+              "explanation": "介词要前置，并在 para 后加与 la empresa 一致的冠词：para la que。que para 不是合法的语序；para que 是目的连词“为了”，意思完全不同。",
+              "errorType": "句子组织",
+              "id": "m28-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "El científico, ___ descubrimientos cambiaron la medicina, murió en 1955.",
+              "options": [
+                "cuyo",
+                "cuyos",
+                "que sus"
+              ],
+              "answer": "cuyos",
+              "hint": "cuyo 要与哪个名词一致：拥有者，还是被拥有的东西？",
+              "explanation": "cuyo 与后面被拥有的名词 descubrimientos（阳性复数）一致，所以用 cuyos。cuyo 是误与 el científico 一致；que sus 是口语中不规范的替代说法。",
+              "errorType": "词形变化",
+              "id": "m28-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你有好几个表兄弟，只有住在智利的那几个圣诞节会来。选择准确表达这个意思的句子。",
+              "options": [
+                "Mis primos que viven en Chile vienen en Navidad.",
+                "Mis primos, que viven en Chile, vienen en Navidad.",
+                "Mis primos quienes viven en Chile vienen en Navidad."
+              ],
+              "answer": "Mis primos que viven en Chile vienen en Navidad.",
+              "hint": "要限定“哪几个”，还是给全部表兄弟补充信息？逗号起什么作用？",
+              "explanation": "要限定“住在智利的那几个”，用不加逗号的限定性从句。第二句有逗号，意思变成“我的表兄弟们（都）住在智利”；第三句在无介词的限定性从句里用了 quien，不符合规范。",
+              "errorType": "用法判断",
+              "id": "m28-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个介词：La persona ___ quien hablé ayer es la directora.（我昨天和她交谈的那个人是主任。）",
+              "answer": "con",
+              "hint": "“和某人交谈”在西语里用 hablar + 哪个介词？",
+              "explanation": "hablar con alguien 表示“和某人交谈”，介词前置到关系词前：con quien。若填 de，意思会变成“我昨天谈到的那个人”。",
+              "errorType": "用法判断",
+              "id": "m28-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 cuyo 的正确形式填空：Vivo en un barrio ___ calles son estrechas y empinadas.",
+              "answer": "cuyas",
+              "hint": "看紧跟在空格后的名词的性和数。",
+              "explanation": "被拥有的名词 calles 是阴性复数，所以用 cuyas；它与 barrio 的阳性单数无关。",
+              "errorType": "词形变化",
+              "id": "m28-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词，使逗号后的关系词指代前面整件事（没人通知我）：Nadie me avisó del cambio de horario, ___ cual me pareció una falta de respeto.",
+              "answer": "lo",
+              "hint": "这里指的不是某个具体名词，而是一整件事，需要中性形式。",
+              "explanation": "指代前面整句内容用中性的 lo cual。el cual 会被理解为指 el cambio 或 el horario，而“觉得是不尊重”的是“没人通知我”这件事。",
+              "errorType": "用法判断",
+              "id": "m28-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "介绍一座你去过或很想去的城市，写 4 句较长的句子，至少用到：一个介词 + 关系词、一个 cuyo、一个 lo cual，以及一个带逗号的解释性从句。",
+            "model": "Valparaíso es una ciudad cuyas casas de colores parecen colgar sobre el mar. El barrio en el que me alojé estaba lleno de murales, lo cual me sorprendió muchísimo. La señora con quien compartí piso, que era profesora jubilada, me enseñó rincones a los que nunca habría llegado sola.（瓦尔帕莱索是一座……的城市）",
+            "rubric": [
+              "介词放在关系词前，冠词或 quien 的选择与先行词一致。",
+              "cuyo 与被拥有的名词性数一致，lo cual 指代的是前面整件事。",
+              "逗号的使用与“限定”还是“补充说明”的意思相符。"
+            ]
+          }
+        },
+        {
+          "id": "m28-l2",
+          "title": "como si、ni que 与 por más que",
+          "goal": "能用 como si + 虚拟式过去时／过去完成时表达与事实不符的比拟，用 ni que 反驳夸张的言行，并根据事实或假设为 por más que / por mucho que 选择语式。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "这三句话里，从句的内容是事实还是与事实不符的假设？观察动词的语式和时态。",
+            "examples": [
+              {
+                "es": "Habla como si fuera el jefe.",
+                "zh": "他说话的样子好像自己是老板似的。（其实他不是。）"
+              },
+              {
+                "es": "Me miró como si nunca me hubiera visto.",
+                "zh": "她看着我，好像从来没见过我一样。"
+              },
+              {
+                "es": "Por más que estudio, no consigo aprobar.",
+                "zh": "不管我怎么学，就是考不过。（我确实一直在学。）"
+              }
+            ],
+            "answer": "como si 后面的内容都与事实不符，只能用虚拟式过去时（与主句同时）或虚拟式过去完成时（比主句更早），即使主句是现在时 habla 也一样。por más que 后用陈述式 estudio，因为“我一直在学”是说话人陈述的事实。"
+          },
+          "rules": [
+            {
+              "title": "como si + 虚拟式过去时 / 过去完成时",
+              "body": "como si（“好像……似的”）引出与事实不符或想象中的比较，无论主句是什么时态，后面只用两种形式：虚拟式过去时表示与主句同时的情况，虚拟式过去完成时表示比主句更早的情况。不用陈述式，也不用虚拟式现在时（*como si es、*como si sea）。",
+              "examples": [
+                {
+                  "es": "Gasta dinero como si fuera millonario.",
+                  "zh": "他花钱的样子好像是个百万富翁。"
+                },
+                {
+                  "es": "Actúan como si no hubiera pasado nada.",
+                  "zh": "他们表现得好像什么都没发生过一样。"
+                }
+              ]
+            },
+            {
+              "title": "ni que + 虚拟式过去时：反驳夸张",
+              "body": "ni que + 虚拟式过去时（或过去完成时）是口语中的反驳或讽刺，用来回应对方夸张、不合理的言行，意思是“（又）不是……”“好像……似的”。通常独立成句，带感叹号。和 como si 一样，不用虚拟式现在时。",
+              "examples": [
+                {
+                  "es": "¿Por qué gritas? ¡Ni que estuviera sorda!",
+                  "zh": "你喊什么？我又不是聋子！说话人为女性。"
+                },
+                {
+                  "es": "¡Qué pálido estás! ¡Ni que hubieras visto un fantasma!",
+                  "zh": "你脸色怎么这么白！又不是见了鬼！"
+                }
+              ]
+            },
+            {
+              "title": "por más que / por mucho que：陈述式还是虚拟式",
+              "body": "por más que 和 por mucho que 表示“无论怎么……也”，带有强调。后接陈述式时，说话人陈述一个已知事实（确实做了很多努力）；后接虚拟式时，内容是假设、尚未发生，或说话人认为它无关紧要。中间也可以插入名词：por más / mucho + 名词 + que（por mucho dinero que gane）。与 aunque 一样，已知事实有时也可用虚拟式表示“无论如何都无所谓”，但表达将来或假设时只能用虚拟式。",
+              "examples": [
+                {
+                  "es": "Por mucho que insistas, no voy a cambiar de opinión.",
+                  "zh": "不管你怎么坚持，我都不会改变主意。对方会不会坚持、坚持多少都无所谓，用虚拟式。"
+                },
+                {
+                  "es": "Por más que le explico las reglas, siempre se equivoca.",
+                  "zh": "我给他讲规则讲了多少遍，他还是总出错。陈述习惯性的事实，用陈述式。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "她并不是餐厅老板，可是她发号施令的样子：Da órdenes como si ___ la dueña.",
+              "options": [
+                "es",
+                "sea",
+                "fuera"
+              ],
+              "answer": "fuera",
+              "hint": "como si 后只接两种虚拟式形式，与主句的时态无关。",
+              "explanation": "como si 引出与事实不符的比拟，与主句同时用虚拟式过去时 fuera。es 是陈述式，sea 是虚拟式现在时，都不能用在 como si 后。",
+              "errorType": "用法判断",
+              "id": "m28-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "胡安其实认识我们，但昨天他从我们身边走过：Pasó a nuestro lado como si nunca nos ___.",
+              "options": [
+                "hubiera visto",
+                "haya visto",
+                "había visto"
+              ],
+              "answer": "hubiera visto",
+              "hint": "“见过我们”发生在“走过”之前；como si 后需要哪一种复合形式？",
+              "explanation": "比主句更早的情况用虚拟式过去完成时 hubiera visto。haya visto 是虚拟式现在完成时，había visto 是陈述式，都不能用在 como si 后。",
+              "errorType": "用法判断",
+              "id": "m28-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "下周你要参加面试，朋友提醒你：到时候不管当众讲话对你来说多难，都要保持微笑。Por mucho que te ___ hablar en público, sonríe en la entrevista.",
+              "options": [
+                "cuesta",
+                "cueste",
+                "costara"
+              ],
+              "answer": "cueste",
+              "hint": "面试还没发生；同时注意主句是命令式。",
+              "explanation": "面试是将来的事，难的程度只是假设，用虚拟式；主句是现在的命令，所以用虚拟式现在时 cueste。cuesta 把它当作已知事实来陈述；costara 与现在时主句不呼应。",
+              "errorType": "用法判断",
+              "id": "m28-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ser 的正确形式填空：¡Deja de darme órdenes! ¡Ni que ___ (tú) mi madre!（你又不是我妈！）",
+              "answer": "fueras",
+              "accepted": [
+                "fueses"
+              ],
+              "hint": "ni que 后用哪种虚拟式？主语是 tú。",
+              "explanation": "ni que 后接虚拟式过去时，ser 的 tú 形式是 fueras（或 fueses）。不能用虚拟式现在时 seas。",
+              "errorType": "词形变化",
+              "id": "m28-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "这是已经发生的事实，用 intentar 的陈述式简单过去时填空：Por más que lo ___ (él), no pudo abrir la puerta.",
+              "answer": "intentó",
+              "hint": "第三人称单数简单过去时，别忘了重音符号。",
+              "explanation": "陈述他确实反复尝试过这一事实，用陈述式 intentó，重音符号写在 ó 上。",
+              "errorType": "词形变化",
+              "id": "m28-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填 haber 的适当形式：Estaba pálido, como si ___ visto un fantasma.（他脸色苍白，好像见了鬼一样。）",
+              "answer": "hubiera",
+              "accepted": [
+                "hubiese"
+              ],
+              "hint": "“见到”发生在“脸色苍白”之前，主语是 él。",
+              "explanation": "como si 后表示更早的情况，用虚拟式过去完成时：hubiera（或 hubiese）visto。había visto 是陈述式，不能用在 como si 后。",
+              "errorType": "词形变化",
+              "id": "m28-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "描写一个言行有点夸张的人（室友、同事或家人），写 4 句话：用 como si 描写他的样子，用 ni que 写一句你的反驳，再用 por más que 或 por mucho que 说明你的努力或无奈。",
+            "model": "Mi compañero de piso habla de fútbol como si fuera entrenador profesional. Ayer me explicó una jugada durante una hora, como si yo nunca hubiera visto un partido. Cuando le dije que estaba cansada, me contestó: «¡Ni que hubieras corrido tú los noventa minutos!». Por más que le pido que baje la voz durante los partidos, sigue gritando.（我的室友谈起足球……）",
+            "rubric": [
+              "como si 和 ni que 后只用了虚拟式过去时或过去完成时。",
+              "por más que / por mucho que 的语式与“事实”还是“假设”相符。",
+              "比拟和反驳的内容确实与事实不符，语气自然。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m29",
+      "level": "C1",
+      "title": "进阶条件与让步连接词",
+      "description": "用 a no ser que、con tal de que、en caso de que、como + 虚拟式等连接词设定例外、前提和警告，并用 aun cuando、si bien、por + 形容词 + que 和重复结构表达让步。",
+      "lessons": [
+        {
+          "id": "m29-l1",
+          "title": "例外、前提与警告：条件连接词",
+          "goal": "能用 a no ser que、a menos que、salvo que、siempre que、con tal de que、en caso de que 和句首的 como + 虚拟式表达例外、前提、防备和警告，并正确使用虚拟式。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "这些连接词引出的是已经确定的事实，还是一个设想的条件？观察它们后面动词的语式。",
+            "examples": [
+              {
+                "es": "Iremos a la playa a no ser que llueva.",
+                "zh": "除非下雨，否则我们去海滩。"
+              },
+              {
+                "es": "Te presto el coche siempre que me lo devuelvas mañana.",
+                "zh": "只要你明天还给我，我就把车借给你。"
+              },
+              {
+                "es": "Como no vengas a tiempo, nos vamos sin ti.",
+                "zh": "你要是不按时来，我们就不等你直接走了。"
+              }
+            ],
+            "answer": "三个连接词都引出一个设想的条件（会不会下雨、会不会还车、会不会准时，都还不知道），所以都用虚拟式现在时。a no ser que 表示例外（除非），siempre que 在这里表示前提（只要），句首的 como + 虚拟式带有警告甚至威胁的语气。"
+          },
+          "rules": [
+            {
+              "title": "表示例外：a no ser que、a menos que、salvo que",
+              "body": "a no ser que、a menos que、salvo que（excepto que）意为“除非”，引出唯一会改变结果的例外情况，后接虚拟式；在过去的语境中用虚拟式过去时（dijo que vendría a no ser que tuviera trabajo）。比较 si no + 陈述式（si no llueve），意思相近，但不能把 si no 换成虚拟式现在时。注意：salvo que 引出已发生的事实、意为“只是……”时用陈述式（todo salió bien, salvo que llegamos un poco tarde）。",
+              "examples": [
+                {
+                  "es": "No te llamaré a menos que surja algún problema.",
+                  "zh": "除非出了什么问题，否则我不会给你打电话。"
+                },
+                {
+                  "es": "Saldremos a las nueve, salvo que el vuelo se retrase.",
+                  "zh": "我们九点出发，除非航班延误。"
+                }
+              ]
+            },
+            {
+              "title": "表示前提：siempre que、con tal de que、siempre y cuando",
+              "body": "siempre que、con tal de que、siempre y cuando（较正式）意为“只要（满足这个前提）”，后接虚拟式。注意 siempre que 有两种意义：表条件“只要”时接虚拟式；表时间“每当”时陈述习惯性的事实，接陈述式。主语相同时可用 con tal de + 不定式（haría cualquier cosa con tal de verte）。",
+              "table": {
+                "caption": "前提连接词与 siempre que 的两种用法",
+                "headers": [
+                  "连接词",
+                  "语式",
+                  "意义",
+                  "例"
+                ],
+                "rows": [
+                  [
+                    "siempre que",
+                    "虚拟式",
+                    "只要（条件）",
+                    "Siempre que pagues a tiempo, no habrá problema."
+                  ],
+                  [
+                    "siempre que",
+                    "陈述式",
+                    "每当（习惯）",
+                    "Siempre que llueve, se inunda esta calle."
+                  ],
+                  [
+                    "con tal de que",
+                    "虚拟式",
+                    "只要（常带“愿意为此做出让步”的意味）",
+                    "Te ayudo con tal de que me invites a comer."
+                  ],
+                  [
+                    "siempre y cuando",
+                    "虚拟式",
+                    "只要（较正式）",
+                    "Se aceptan devoluciones siempre y cuando se presente el tique."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Puedes quedarte en casa, con tal de que no hagas ruido.",
+                  "zh": "你可以待在家里，只要你别弄出声音。"
+                },
+                {
+                  "es": "Siempre que voy a Sevilla, visito a mi tía.",
+                  "zh": "每次去塞维利亚，我都会去看望姑妈。表示习惯，用陈述式。"
+                }
+              ]
+            },
+            {
+              "title": "表示防备：en caso de que",
+              "body": "en caso de que（“万一、如果发生……”）引出可能发生的情况，后接虚拟式，多见于说明、通知等较正式的场合。后面是名词或不定式时用 en caso de（en caso de duda、en caso de no poder asistir）。",
+              "examples": [
+                {
+                  "es": "En caso de que haya un incendio, utilicen las escaleras.",
+                  "zh": "万一发生火灾，请走楼梯。utilizar 的 ustedes 命令式（z 变 c），用于公共通知。"
+                },
+                {
+                  "es": "En caso de no poder asistir, avísenos con antelación.",
+                  "zh": "如果无法出席，请提前通知我们。"
+                }
+              ]
+            },
+            {
+              "title": "句首 como + 虚拟式：警告或威胁",
+              "body": "放在句首的 como + 虚拟式表示“要是……（后果自负）”，带有警告或威胁的口语色彩，后面的主句常用现在时或将来时。不要与 B 级学过的原因 como + 陈述式（como estaba cansada…，“因为”）混淆：语式不同，意义完全不同。",
+              "examples": [
+                {
+                  "es": "Como no te des prisa, vas a perder el tren.",
+                  "zh": "你要是再不快点，就赶不上火车了。"
+                },
+                {
+                  "es": "Como estaba cansada, me acosté pronto.",
+                  "zh": "因为我很累，所以早早睡了。陈述式，表示原因。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "明天我们去爬山，除非天气不好。Mañana subimos a la montaña, a no ser que ___ mal tiempo.",
+              "options": [
+                "hace",
+                "haga",
+                "hará"
+              ],
+              "answer": "haga",
+              "hint": "明天的天气还不知道；a no ser que 后用哪种语式？",
+              "explanation": "a no ser que 表示例外条件，后接虚拟式，与现在时主句搭配用虚拟式现在时 haga。hace 和 hará 都是陈述式。",
+              "errorType": "用法判断",
+              "id": "m29-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "我有个习惯：每次去马德里都会去普拉多博物馆。Siempre que ___ a Madrid, visito el Prado.",
+              "options": [
+                "voy",
+                "vaya",
+                "fuera"
+              ],
+              "answer": "voy",
+              "hint": "这里的 siempre que 是“只要”还是“每当”？",
+              "explanation": "这里 siempre que 表示“每当”，陈述习惯性的事实，用陈述式 voy。若用 vaya，意思会变成“只要我去马德里（就去普拉多）”这种条件；fuera 与现在时主句不呼应。",
+              "errorType": "用法判断",
+              "id": "m29-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "妈妈警告孩子：要是不收拾房间，今天下午就别想出门。选择表达这个警告的句子。",
+              "options": [
+                "Como no recojas tu cuarto, no sales esta tarde.",
+                "Como no recoges tu cuarto, no sales esta tarde.",
+                "Como no recogerás tu cuarto, no sales esta tarde."
+              ],
+              "answer": "Como no recojas tu cuarto, no sales esta tarde.",
+              "hint": "警告针对的是还没发生的事；句首 como 后接哪种语式才表示条件？",
+              "explanation": "句首 como + 虚拟式表示警告性的条件：como no recojas…。como no recoges 是陈述式，意思变成“因为你不收拾房间”；como + 将来时不能表示这种条件。注意 recoger 的虚拟式要把 g 改成 j：recojas。",
+              "errorType": "用法判断",
+              "id": "m29-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 haber 的虚拟式现在时填空：En caso de que ___ algún problema, llámame al móvil.",
+              "answer": "haya",
+              "hint": "这里的 haber 是无人称的“有”，用第三人称单数。",
+              "explanation": "en caso de que 后接虚拟式，无人称 haber 的虚拟式现在时是 haya。",
+              "errorType": "词形变化",
+              "id": "m29-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词：Te dejo mi bici con tal ___ que me la devuelvas el lunes.",
+              "answer": "de",
+              "hint": "这个连接词由四个词组成：con tal … que。",
+              "explanation": "完整形式是 con tal de que + 虚拟式。口语中偶尔听到省略 de 的说法，但标准形式要带 de。",
+              "errorType": "句子组织",
+              "id": "m29-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 tener 的正确形式填空：A menos que (tú) ___ una buena excusa, tendrás que venir a la reunión.",
+              "answer": "tengas",
+              "hint": "a menos que 后用哪种语式？tener 的 yo 形式是 tengo。",
+              "explanation": "a menos que 后接虚拟式；tener 的虚拟式现在时以 yo 的 teng- 为词干，tú 形式是 tengas。",
+              "errorType": "词形变化",
+              "id": "m29-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "你周末出门，把公寓借给朋友住。给他写一段留言，说明 4 条规则或注意事项：至少用到一个表示例外的连接词、一个表示前提的连接词、en caso de que，以及一句半开玩笑的 como + 虚拟式警告。",
+            "model": "Puedes quedarte en mi piso el fin de semana, siempre que riegues las plantas. No hace falta que limpies a fondo, a no ser que hagas una fiesta. En caso de que se vaya la luz, el cuadro eléctrico está en la entrada. Y como pierdas las llaves, ¡te toca pagar al cerrajero!（周末你可以住我家，只要……）",
+            "rubric": [
+              "例外、前提、防备三类连接词后都用了虚拟式。",
+              "句首的 como + 虚拟式表达的是警告，而不是原因。",
+              "各条规则的逻辑清楚：哪条是前提、哪条是例外一目了然。"
+            ]
+          }
+        },
+        {
+          "id": "m29-l2",
+          "title": "aun cuando、si bien、por + 形容词 + que 与重复结构",
+          "goal": "能用 si bien、aun cuando、por + 形容词／副词 + que 和重复结构（digas lo que digas、pase lo que pase、quieras o no）表达让步，并为每种结构选对语式。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "这些句子都在表达“即使……也……”。哪些动词是陈述式，哪些是虚拟式？它们说的是已知事实还是任何情况？",
+            "examples": [
+              {
+                "es": "Si bien el hotel era caro, mereció la pena.",
+                "zh": "虽然那家酒店很贵，但物有所值。"
+              },
+              {
+                "es": "Por difícil que sea, voy a terminar la tesis este año.",
+                "zh": "不管有多难，我今年都要写完论文。"
+              },
+              {
+                "es": "Pase lo que pase, te apoyaré.",
+                "zh": "无论发生什么，我都会支持你。"
+              }
+            ],
+            "answer": "si bien 后用陈述式（era），承认一个已知事实；por + 形容词 + que 后用虚拟式（sea），表示难到什么程度都不影响结果；pase lo que pase 是“虚拟式动词 + lo que + 同一个虚拟式动词”的重复结构，表示“无论……”。"
+          },
+          "rules": [
+            {
+              "title": "si bien + 陈述式：书面的“虽然”",
+              "body": "si bien 相当于 aunque，用来承认一个事实，再提出更重要的另一面，后接陈述式，多用于书面语和正式发言。它可以放在句首，也可以作为插入成分。不要把它理解成条件句的 si。",
+              "examples": [
+                {
+                  "es": "Si bien la propuesta tiene ventajas, también presenta riesgos importantes.",
+                  "zh": "虽然这项提案有优点，但也存在重大风险。"
+                },
+                {
+                  "es": "El informe, si bien es breve, resulta muy útil.",
+                  "zh": "这份报告虽然简短，却非常有用。"
+                }
+              ]
+            },
+            {
+              "title": "aun cuando：“即使”，语式同 aunque",
+              "body": "aun cuando 意为“即使、尽管”，比 aunque 更书面。它的语式选择与 aunque 一致：陈述已知事实用陈述式，表示假设或不论事实如何用虚拟式。注意拼写：这里的 aun 表示“甚至”，不带重音符号；带重音的 aún 表示“仍然、还”。",
+              "examples": [
+                {
+                  "es": "Aun cuando me lo pidieras de rodillas, no lo haría.",
+                  "zh": "就算你跪下来求我，我也不会做。假设，用虚拟式过去时。"
+                },
+                {
+                  "es": "Aun cuando tenía fiebre, fue a trabajar.",
+                  "zh": "尽管发着烧，他还是去上班了。已知事实，用陈述式。"
+                }
+              ]
+            },
+            {
+              "title": "por + 形容词 / 副词 + que + 虚拟式",
+              "body": "por + 形容词或副词 + que 表示“不管多么……”，强调程度再高也不改变结果，通常接虚拟式；口语中常加 muy：por muy cansada que estés。形容词与所说的对象性数一致。与上一模块的 por más que 比较：por más / mucho que 后接动词或名词，por + 形容词 + que 中间是形容词或副词。",
+              "examples": [
+                {
+                  "es": "Por muy cansada que estés, tienes que terminar el informe.",
+                  "zh": "不管你有多累，都得把报告写完。对女性说。"
+                },
+                {
+                  "es": "Por rápido que conduzcas, no llegarás antes de las diez.",
+                  "zh": "你开得再快，也不可能十点前到。rápido 在这里作副词，不变。"
+                }
+              ]
+            },
+            {
+              "title": "重复结构：digas lo que digas、quieras o no",
+              "body": "重复结构（estructuras reduplicativas）由“虚拟式 + 关系词 + 同一个虚拟式”构成，表示“无论……”，常放在句首并用逗号隔开。关系词可以是 lo que、donde、como、cuando 等。另一种是“虚拟式 + o no”，表示“不管愿不愿意／是不是”。在过去的语境中改用虚拟式过去时：dijera lo que dijera, nadie le hacía caso。",
+              "table": {
+                "caption": "常见重复结构",
+                "headers": [
+                  "结构",
+                  "例句",
+                  "意思"
+                ],
+                "rows": [
+                  [
+                    "digas lo que digas",
+                    "Digas lo que digas, no cambiaré de idea.",
+                    "不管你说什么"
+                  ],
+                  [
+                    "hagas lo que hagas",
+                    "Hagas lo que hagas, hazlo bien.",
+                    "不管你做什么"
+                  ],
+                  [
+                    "pase lo que pase",
+                    "Pase lo que pase, te llamo esta noche.",
+                    "无论发生什么"
+                  ],
+                  [
+                    "cueste lo que cueste",
+                    "Lo terminaremos, cueste lo que cueste.",
+                    "不惜任何代价"
+                  ],
+                  [
+                    "vayas donde vayas",
+                    "Vayas donde vayas, lleva el pasaporte.",
+                    "不管你去哪里"
+                  ],
+                  [
+                    "sea como sea",
+                    "Sea como sea, hay que decidir hoy.",
+                    "无论如何"
+                  ],
+                  [
+                    "quieras o no",
+                    "Quieras o no, mañana madrugamos.",
+                    "不管你愿不愿意"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Digan lo que digan los demás, yo confío en ti.",
+                  "zh": "不管别人怎么说，我都相信你。主语是 los demás，动词用 ellos 形式。"
+                },
+                {
+                  "es": "Llueva o no, el partido se jugará.",
+                  "zh": "不管下不下雨，比赛都会照常进行。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "考试确实很难，但几乎所有人都通过了。Si bien el examen ___ difícil, casi todos aprobaron.",
+              "options": [
+                "fue",
+                "fuera",
+                "sea"
+              ],
+              "answer": "fue",
+              "hint": "si bien 用来承认一个已知事实。",
+              "explanation": "si bien 后接陈述式，这里讲过去的一次考试，用简单过去时 fue。fuera 和 sea 是虚拟式，不用于 si bien 之后。",
+              "errorType": "用法判断",
+              "id": "m29-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择拼写正确的一项：“就算你求我一千次，我也不会做。”___ cuando me lo pidas mil veces, no lo haré.",
+              "options": [
+                "Aún",
+                "Aun",
+                "Aunque"
+              ],
+              "answer": "Aun",
+              "hint": "这里的 aun 是“甚至”还是“仍然”？",
+              "explanation": "aun cuando 中的 aun 表示“甚至”，不带重音符号。aún 表示“仍然、还”；aunque cuando 是两个让步／时间连接词的错误叠加。",
+              "errorType": "词形变化",
+              "id": "m29-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "“不管你说什么，我都不会改变主意。”___, no voy a cambiar de opinión.",
+              "options": [
+                "Digas lo que digas",
+                "Dices lo que dices",
+                "Digas lo que dices"
+              ],
+              "answer": "Digas lo que digas",
+              "hint": "重复结构中，两个动词的形式要一样吗？用哪种语式？",
+              "explanation": "重复结构要求同一个动词的虚拟式出现两次：digas lo que digas。只用陈述式或混用两种语式都不成立。",
+              "errorType": "句子组织",
+              "id": "m29-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ser 的虚拟式现在时填空：Por difícil que ___, voy a intentarlo.",
+              "answer": "sea",
+              "hint": "主语是“这件事”，用第三人称单数。",
+              "explanation": "por + 形容词 + que 通常接虚拟式，与现在时主句搭配用虚拟式现在时 sea。",
+              "errorType": "词形变化",
+              "id": "m29-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "补全重复结构（不惜任何代价）：Cueste lo que ___, compraremos esa casa.",
+              "answer": "cueste",
+              "hint": "重复结构里第二个动词与第一个完全相同。",
+              "explanation": "重复结构是同一个虚拟式动词出现两次：cueste lo que cueste。costar 词干元音变化，虚拟式现在时第三人称单数是 cueste。",
+              "errorType": "词形变化",
+              "id": "m29-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词：Quieras ___ no, mañana empezamos a las siete.（不管你愿不愿意，明天七点开始。）",
+              "answer": "o",
+              "hint": "“愿意还是不愿意”之间用哪个连词？",
+              "explanation": "“虚拟式 + o no”表示“不管是否……”：quieras o no。",
+              "errorType": "句子组织",
+              "id": "m29-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "你决定去做一件有难度的事（出国读书、转行、跑马拉松等）。写 4–5 句话说明你的决心：至少用 si bien、aun cuando、por + 形容词 + que，以及一个重复结构。",
+            "model": "Si bien estudiar un máster en el extranjero es caro, estoy decidida a hacerlo. Por difícil que sea conseguir una beca, voy a presentarme a todas las convocatorias. Aun cuando tuviera que trabajar los fines de semana, no renunciaría. Digan lo que digan mis padres, pase lo que pase, lo voy a intentar.（虽然出国读硕士很贵，我还是下定了决心……）",
+            "rubric": [
+              "si bien 后用了陈述式，por + 形容词 + que 和重复结构用了虚拟式。",
+              "aun cuando 的语式与“事实”或“假设”相符，aun 没有加重音符号。",
+              "让步部分与主句的关系清楚，表达出“即使有困难也要做”的决心。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m30",
+      "level": "C1",
+      "title": "语式选择的细微差别与中性冠词 lo",
+      "description": "掌握同一个动词因语式不同而改变意义的情况，处理 el hecho de que 和否定观点动词的特殊用法，并用中性冠词 lo 把性质、程度和话题名词化。",
+      "lessons": [
+        {
+          "id": "m30-l1",
+          "title": "意义随语式而变的动词",
+          "goal": "能根据要表达的是“告知、察觉”还是“要求、评价”，为 decir、escribir、sentir、comprender / entender、temer 后的 que 从句选择陈述式或虚拟式，并处理 el hecho de que 与疑问、否定命令中的观点动词。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "同一个动词，为什么有时接陈述式、有时接虚拟式？比较每句话里说话人在做什么：传递信息、提出要求，还是表达感受？",
+            "examples": [
+              {
+                "es": "Marta dice que llega tarde.",
+                "zh": "玛尔塔说她会晚到。（转述信息）"
+              },
+              {
+                "es": "Marta dice que lleguemos temprano.",
+                "zh": "玛尔塔叫我们早点到。（转达要求）"
+              },
+              {
+                "es": "Siento que no puedas venir.",
+                "zh": "很遗憾你来不了。"
+              }
+            ],
+            "answer": "decir 后用陈述式时是在转述信息（她会晚到）；用虚拟式时是在转达命令或请求（让我们早到）。sentir 后接虚拟式表示“遗憾”，接陈述式则表示“感觉到”。语式改变的是动词本身的意义，而不只是语气的强弱。"
+          },
+          "rules": [
+            {
+              "title": "decir、escribir、insistir en：告知 vs 要求",
+              "body": "B 级学转述命令时已经见过 dice que + 虚拟式；这里把它放进“语式改变动词意义”的整体框架中。交际类动词（decir、escribir、avisar、repetir、insistir en）后的 que 从句，如果是在传递信息，用陈述式；如果是在转达命令、请求或建议，用虚拟式，时态按时态呼应：现在时、现在完成时主句后用虚拟式现在时，过去时主句后用虚拟式过去时。下表中的其他动词在本课后两条规则中展开。",
+              "table": {
+                "caption": "意义随语式改变的动词",
+                "headers": [
+                  "动词",
+                  "+ 陈述式",
+                  "+ 虚拟式"
+                ],
+                "rows": [
+                  [
+                    "decir / escribir / avisar",
+                    "告知某事",
+                    "要求某人做某事"
+                  ],
+                  [
+                    "insistir en",
+                    "坚称某事属实",
+                    "坚持要求某事发生"
+                  ],
+                  [
+                    "sentir",
+                    "感觉到、察觉到",
+                    "为……感到遗憾"
+                  ],
+                  [
+                    "comprender / entender",
+                    "明白、意识到某个事实",
+                    "理解、认为情有可原"
+                  ],
+                  [
+                    "temer / temerse",
+                    "me temo que：委婉地告知坏消息（常用陈述式）",
+                    "temer que：担心某事发生"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Me escribió que había encontrado trabajo.",
+                  "zh": "她写信告诉我她找到工作了。传递信息，用陈述式。"
+                },
+                {
+                  "es": "Me escribió que la llamara cuanto antes.",
+                  "zh": "她写信叫我尽快给她打电话。转达要求，过去时主句后用虚拟式过去时。"
+                }
+              ]
+            },
+            {
+              "title": "sentir、comprender / entender、temer",
+              "body": "sentir que + 陈述式意为“感觉到”，+ 虚拟式意为“遗憾”。comprender / entender que + 陈述式意为“明白、意识到（某个事实）”，+ 虚拟式意为“理解、体谅（认为某事情有可原）”。temer que 表示担心，接虚拟式；而 me temo que 多用来委婉地说出坏消息，常接陈述式，相当于“恐怕……”。",
+              "examples": [
+                {
+                  "es": "Entiendo que no quieras hablar de eso.",
+                  "zh": "我理解你不想谈这件事。表示体谅，用虚拟式。"
+                },
+                {
+                  "es": "Por fin entendí que no tenía sentido seguir discutiendo.",
+                  "zh": "我终于明白再争下去没有意义。意识到一个事实，用陈述式。"
+                }
+              ]
+            },
+            {
+              "title": "el hecho de que 多用虚拟式",
+              "body": "el hecho de que（“……这件事”）引出的内容即使是事实，通常也用虚拟式，因为句子的重点是对这件事进行评价或推论，而不是告知它；句首的 que 从句（que llegues tarde no me importa）也是如此。陈述式在这一结构中也能见到，但虚拟式更常见、更稳妥。",
+              "examples": [
+                {
+                  "es": "El hecho de que sea joven no significa que no tenga experiencia.",
+                  "zh": "他年轻这一点，并不意味着他没有经验。"
+                },
+                {
+                  "es": "El hecho de que nadie haya contestado me preocupa.",
+                  "zh": "没有任何人回复，这让我很担心。"
+                }
+              ]
+            },
+            {
+              "title": "疑问句和否定命令中的观点动词",
+              "body": "陈述句中 no creo que、no pienso que 后接虚拟式（B 级已学）。但在疑问句和否定命令中，说话人常借这些结构表达自己的看法，从句多用陈述式：¿No crees que es…? 实际意思是“我觉得是……，你说呢？”；no pienses que… 是在否认对方可能的误解。这些结构里虚拟式也可能出现，语气更中性、更不确定。",
+              "examples": [
+                {
+                  "es": "¿No crees que es un poco tarde para llamar?",
+                  "zh": "你不觉得现在打电话有点晚了吗？（说话人认为太晚了。）"
+                },
+                {
+                  "es": "No pienses que lo hice a propósito.",
+                  "zh": "你别以为我是故意的。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "老师要求我们明天交作业（转达要求）：La profesora nos ha dicho que ___ los deberes mañana.",
+              "options": [
+                "entregamos",
+                "entreguemos",
+                "entregaremos"
+              ],
+              "answer": "entreguemos",
+              "hint": "decir 在这里是在传递信息，还是在转达命令？主句是现在完成时。",
+              "explanation": "decir 转达要求时，从句用虚拟式；主句 ha dicho 是现在完成时，所以用虚拟式现在时 entreguemos（注意 g 后加 u）。entregamos 和 entregaremos 是陈述式，只会被理解为“她告诉我们，我们（将）交作业”这一信息。",
+              "errorType": "用法判断",
+              "id": "m30-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "听说朋友的父亲住院了，你表示遗憾：Siento mucho que tu padre ___ en el hospital.",
+              "options": [
+                "está",
+                "esté",
+                "estaba"
+              ],
+              "answer": "esté",
+              "hint": "这里 sentir 表示“感觉到”还是“遗憾”？",
+              "explanation": "sentir 表示遗憾时接虚拟式，现在的情况用虚拟式现在时 esté。está 和 estaba 是陈述式，会让 sentir 变成“感觉到”的意思，不符合语境。",
+              "errorType": "用法判断",
+              "id": "m30-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "夜里走在街上，你隐约感觉到有人在跟着你：Siento que alguien me ___.",
+              "options": [
+                "sigue",
+                "siga",
+                "siguiera"
+              ],
+              "answer": "sigue",
+              "hint": "这里的 sentir 是感官上的“察觉到”。",
+              "explanation": "sentir 表示“感觉到、察觉到”时，从句陈述所感知的情况，用陈述式 sigue。用 siga 会变成“我很遗憾有人跟着我”，与语境不符；siguiera 与现在时主句也不呼应。",
+              "errorType": "用法判断",
+              "id": "m30-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "妈妈在消息里要求我今晚给她打电话。用 llamar 的正确形式填空：Mi madre me ha escrito que la ___ (yo) esta noche.",
+              "answer": "llame",
+              "hint": "escribir 在这里转达的是要求；主句是现在完成时，主语是 yo。",
+              "explanation": "转达要求用虚拟式，现在完成时主句后用虚拟式现在时：yo llame。若写 llamo，就成了“她写信说我（会）给她打电话”这一信息。",
+              "errorType": "词形变化",
+              "id": "m30-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "表示遗憾，用 poder 的虚拟式现在时填空：Siento que no ___ (vosotros) venir a la cena.",
+              "answer": "podáis",
+              "hint": "vosotros 的虚拟式现在时，注意重音符号。",
+              "explanation": "sentir 表示遗憾接虚拟式；poder 的虚拟式现在时 vosotros 形式是 podáis，词干不变元音，á 上有重音符号。",
+              "errorType": "词形变化",
+              "id": "m30-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 haber 的虚拟式现在完成时填空：El hecho de que nadie ___ protestado no significa que todos estén de acuerdo.",
+              "answer": "haya",
+              "hint": "nadie 作主语时动词用第三人称单数。",
+              "explanation": "el hecho de que 通常接虚拟式，已经发生的事用虚拟式现在完成时：haya protestado。",
+              "errorType": "词形变化",
+              "id": "m30-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "你的同事没能参加昨天的会议。给他写一段 4–5 句的消息：表达遗憾，转述会上的一条信息和一项要求，表示你理解他的处境，最后用一句 ¿No crees que…? 提出你的看法。",
+            "model": "Hola, Pablo: siento que no pudieras venir a la reunión de ayer. La directora explicó que el proyecto se retrasaría un mes y nos dijo que revisáramos el presupuesto antes del viernes. Entiendo que estés agobiado con tantos cambios, pero el hecho de que tengamos más tiempo es una buena noticia. ¿No crees que es una oportunidad para mejorar la propuesta?（你好，巴勃罗：很遗憾你昨天没能来开会……）",
+            "rubric": [
+              "转述信息用了陈述式，转达要求用了虚拟式，并符合时态呼应。",
+              "sentir、entender 的语式与“遗憾／体谅”或“察觉／明白”的意义相符。",
+              "el hecho de que 和 ¿No crees que…? 的用法自然、语式恰当。"
+            ]
+          }
+        },
+        {
+          "id": "m30-l2",
+          "title": "中性冠词 lo 与名词化",
+          "goal": "能用 lo + 形容词、lo + 形容词／副词 + que、lo de 和 lo que 把性质、程度和话题名词化，并让形容词与所指对象一致。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "这三句中的 lo 后面分别接了什么？lo 本身有没有随名词的性数变化？",
+            "examples": [
+              {
+                "es": "Lo importante es que estás bien.",
+                "zh": "重要的是你没事。"
+              },
+              {
+                "es": "No sabes lo cansada que estoy.",
+                "zh": "你不知道我有多累。（说话人为女性）"
+              },
+              {
+                "es": "¿Te has enterado de lo de Raúl?",
+                "zh": "你听说拉乌尔那件事了吗？"
+              }
+            ],
+            "answer": "lo 是中性冠词（artículo neutro），永远不变成 la 或 los。lo + 形容词把性质变成“……的方面／事情”；lo + 形容词 + que 表示程度“多么……”，这里 cansada 与说话的女性一致，而不是与 lo 一致；lo de + 名词表示“关于……的那件事”。"
+          },
+          "rules": [
+            {
+              "title": "lo + 形容词：“……的方面、……的事”",
+              "body": "lo + 阳性单数形容词把性质变成抽象概念：lo importante（重要的是）、lo difícil（难的地方）、lo mejor / lo peor（最好／最糟的是）、lo bueno / lo malo（好处／坏处）、lo raro（奇怪的是）。这里的形容词固定用阳性单数，不随句中其他名词变化（不说 *lo buena）。",
+              "examples": [
+                {
+                  "es": "Lo difícil no es empezar, sino seguir.",
+                  "zh": "难的不是开始，而是坚持。"
+                },
+                {
+                  "es": "Lo mejor del viaje fue la comida.",
+                  "zh": "这次旅行最棒的是吃的。"
+                }
+              ]
+            },
+            {
+              "title": "lo + 形容词 / 副词 + que：表示程度",
+              "body": "lo + 形容词或副词 + que 表示“多么……”，常出现在 no sabes、no te imaginas、me sorprende、ya verás 等之后，意思与感叹的 qué + 形容词相近（no sabes qué cansada estoy）。这里的形容词要与所描述的人或物性数一致：lo cansada que estoy、lo caros que son los pisos；副词不变：lo bien que canta、lo lejos que vive。",
+              "examples": [
+                {
+                  "es": "No te imaginas lo caras que están las entradas.",
+                  "zh": "你想象不到门票现在有多贵。caras 与 las entradas 一致。"
+                },
+                {
+                  "es": "Me sorprendió lo bien que habla chino.",
+                  "zh": "他中文说得那么好，让我很惊讶。bien 是副词，不变。"
+                }
+              ]
+            },
+            {
+              "title": "lo de 与 lo que",
+              "body": "lo de + 名词／不定式／副词表示“关于……的那件事”，指说话双方都知道的话题：lo de ayer、lo de Raúl、lo de mudarnos；口语中也说 lo de que + 从句（¿es verdad lo de que te vas?）。lo que 是“……的东西／事情”，后面跟一个从句：lo que dijiste、lo que más me gusta；它也常用来突出重点：lo que necesitas es descansar。区别在于：lo de 是“那件事”，指一个话题；lo que 是关系结构，表示“……的东西”，其后的从句里缺一个成分（lo que dijiste 中 lo que 是 dijiste 的宾语）。",
+              "examples": [
+                {
+                  "es": "Lo de ayer no volverá a pasar.",
+                  "zh": "昨天那件事不会再发生了。"
+                },
+                {
+                  "es": "Lo que más me preocupa es el precio.",
+                  "zh": "我最担心的是价格。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "“住在市中心的好处是去哪儿都能走路。”___ bueno de vivir en el centro es que vas andando a todas partes.",
+              "options": [
+                "El",
+                "Lo",
+                "La"
+              ],
+              "answer": "Lo",
+              "hint": "这里的 bueno 指的是一个具体名词，还是“好的方面”这个抽象概念？",
+              "explanation": "表示“……的方面”这一抽象概念，用中性冠词 lo + 阳性单数形容词：lo bueno。el bueno 会指“那个好的（人／东西）”，la 与 bueno 不一致。",
+              "errorType": "用法判断",
+              "id": "m30-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "今年草莓特别贵：No te imaginas lo ___ que están las fresas este año.",
+              "options": [
+                "caro",
+                "caras",
+                "cara"
+              ],
+              "answer": "caras",
+              "hint": "lo … que 结构里的形容词与谁一致？",
+              "explanation": "lo + 形容词 + que 表示程度时，形容词与所描述的名词一致：las fresas 是阴性复数，所以用 caras。caro 是误与 lo 保持一致，cara 漏了复数。",
+              "errorType": "词形变化",
+              "id": "m30-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "朋友要你保守她换工作的秘密：No le cuentes a nadie ___ mi nuevo trabajo.",
+              "options": [
+                "lo de",
+                "lo que",
+                "el de"
+              ],
+              "answer": "lo de",
+              "hint": "空格后面是名词短语，不是带变位动词的从句。",
+              "explanation": "lo de + 名词表示“关于……的那件事”：lo de mi nuevo trabajo。lo que 后面要接从句；el de 需要一个可指代的阳性名词。",
+              "errorType": "用法判断",
+              "id": "m30-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "写出形容词 contento 的正确形式：¡No sabes lo ___ que estaban mis padres con la noticia!（我父母听到消息多么高兴）",
+              "answer": "contentos",
+              "hint": "形容词要与 mis padres 一致。",
+              "explanation": "mis padres 是阳性复数，形容词用 contentos；lo 本身不影响形容词的性数。",
+              "errorType": "词形变化",
+              "id": "m30-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词：___ que más me gusta de mi barrio es que siempre hay vida en la calle.（我最喜欢我们街区的一点是街上总是很热闹。）",
+              "answer": "Lo",
+              "hint": "这里要表达“……的东西／地方”，后面接了一个从句。",
+              "explanation": "lo que + 从句表示“……的东西”：Lo que más me gusta…。这里指的是一个抽象的“方面”，没有可指代的具体名词，所以不能用 el que 或 la que，也不能只用 que。",
+              "errorType": "用法判断",
+              "id": "m30-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词：Me sorprendió lo ___ que habla español tu hermana.（你妹妹西语说得那么好，让我很惊讶。）",
+              "answer": "bien",
+              "hint": "修饰动词 habla 的是形容词还是副词？",
+              "explanation": "修饰动词“说得好”要用副词 bien，副词不随主语变化。buena 是形容词，不能修饰 habla。",
+              "errorType": "用法判断",
+              "id": "m30-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "描述你搬到一个新城市（或开始一份新工作）的经历，写 4–5 句话：至少用一个 lo + 形容词、一个 lo + 形容词／副词 + que、一个 lo de 和一个 lo que。",
+            "model": "Lo más difícil de mudarme a Barcelona fue encontrar piso. No te imaginas lo caros que son los alquileres en el centro. Lo bueno es que mis vecinos son muy amables. Lo que más echo de menos es la comida de mi madre, y lo de aprender catalán todavía lo tengo pendiente.（搬到巴塞罗那最难的是找房子……）",
+            "rubric": [
+              "lo 始终保持不变，lo + 形容词中的形容词用阳性单数。",
+              "lo … que 结构中，形容词与所描述的对象一致，副词保持不变。",
+              "lo de 后接名词或不定式，lo que 后接从句，两者没有混用。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m31",
+      "level": "C1",
+      "title": "篇章组织与语域",
+      "description": "用话语标记组织段落中的对比、结果和补充，学会重述与修正观点、安排论证结构，并在口语与正式书面语之间转换。",
+      "lessons": [
+        {
+          "id": "m31-l1",
+          "title": "话语标记：转折、对比、结果与补充",
+          "goal": "能用 sin embargo、no obstante、en cambio、ahora bien 表示转折或对比，用 por lo tanto、por consiguiente、de ahí que 表示结果，用 además、asimismo、es más 补充论据，并注意标点和语式。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "观察每句中的话语标记：前后两部分是什么逻辑关系？标点放在哪里？最后一句的动词是什么语式？",
+            "examples": [
+              {
+                "es": "El proyecto es interesante; sin embargo, el presupuesto es insuficiente.",
+                "zh": "这个项目很有意思；然而，预算不够。"
+              },
+              {
+                "es": "Mi hermano es muy ordenado. Yo, en cambio, soy un desastre.",
+                "zh": "我哥哥很有条理。我呢，正相反，一团糟。"
+              },
+              {
+                "es": "Llovió durante semanas, de ahí que el río se desbordara.",
+                "zh": "连续下了好几周雨，因此河水泛滥了。"
+              }
+            ],
+            "answer": "sin embargo 表示与预期相反的转折，前面用分号或句号，后面加逗号；en cambio 对比两个对象，插在句中时两边用逗号隔开；de ahí que 引出结果，虽然河水泛滥是事实，动词仍用虚拟式（se desbordara）。"
+          },
+          "rules": [
+            {
+              "title": "转折与对比：sin embargo、no obstante、en cambio、ahora bien",
+              "body": "话语标记（marcadores discursivos）是连接句子、标明逻辑关系的词语。sin embargo 和 no obstante（更正式）表示后面的内容与前面引起的预期相反；en cambio、por el contrario 用来对比两个不同的对象或情况；ahora bien 先承认前面的说法，再提出一个重要的限制或保留（“不过，话说回来”）。这些标记放在句首时，前面通常用句号或分号，后面加逗号；插在句中时两边加逗号。它们与连词 pero 不同：pero 后面不加逗号。",
+              "examples": [
+                {
+                  "es": "El método es eficaz. No obstante, requiere mucho tiempo.",
+                  "zh": "这种方法很有效。不过，它很费时间。"
+                },
+                {
+                  "es": "Puedes usar mi ordenador. Ahora bien, no toques mis archivos.",
+                  "zh": "你可以用我的电脑。不过话说在前头，别动我的文件。"
+                }
+              ]
+            },
+            {
+              "title": "结果：por lo tanto、por consiguiente、de ahí que + 虚拟式",
+              "body": "por lo tanto（por tanto）、por consiguiente（更正式）引出结论或结果，后接陈述式；口语中常用连词 así que。de ahí que 也引出结果，但后接虚拟式——即使结果是事实，因为重点在于“由此可以解释”。虚拟式的时态按前句的时间选择：现在的结果用虚拟式现在时，过去的结果用虚拟式过去时。de ahí 后面也可以直接接名词：de ahí su éxito。",
+              "examples": [
+                {
+                  "es": "No ha llegado el informe; por consiguiente, aplazamos la reunión.",
+                  "zh": "报告还没到；因此，我们推迟会议。"
+                },
+                {
+                  "es": "Es un tema delicado, de ahí que nadie quiera hablar de él.",
+                  "zh": "这是个敏感话题，所以没有人愿意谈。"
+                }
+              ]
+            },
+            {
+              "title": "补充：además、asimismo、es más",
+              "body": "además 是最常用的补充标记（“此外”）；asimismo 更正式，意为“同样、此外”，常见于报告和公文；es más 引出比前面更强的论据（“不仅如此，甚至……”），带有递进意味，多用于口语和论证性文字。",
+              "examples": [
+                {
+                  "es": "La empresa se compromete, asimismo, a reducir sus emisiones.",
+                  "zh": "此外，公司还承诺减少排放。"
+                },
+                {
+                  "es": "No me molesta que vengas. Es más, me encantaría que te quedaras a cenar.",
+                  "zh": "你来我一点也不介意。不仅如此，我还很希望你留下来吃晚饭。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "姐姐喜欢乡村，我喜欢城市，对比两个人：Mi hermana adora el campo. Yo, ___, prefiero la ciudad.",
+              "options": [
+                "en cambio",
+                "por lo tanto",
+                "además"
+              ],
+              "answer": "en cambio",
+              "hint": "两句是因果、补充，还是对比两个人？",
+              "explanation": "en cambio 用来对比两个不同的人或情况。por lo tanto 表示结果，además 表示补充，都不符合句意。",
+              "errorType": "用法判断",
+              "id": "m31-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "El vuelo se retrasó tres horas, de ahí que ___ la conexión.",
+              "options": [
+                "perdimos",
+                "perdiéramos",
+                "perderíamos"
+              ],
+              "answer": "perdiéramos",
+              "hint": "de ahí que 后用什么语式？前句是过去时。",
+              "explanation": "de ahí que 后接虚拟式，即使“错过转机”是事实；前句是过去时，所以用虚拟式过去时 perdiéramos（也可说 perdiésemos）。perdimos 是陈述式，perderíamos 是条件式。",
+              "errorType": "用法判断",
+              "id": "m31-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "“你来我不介意。不仅如此，我很希望你来。”No me importa que vengas. ___, me encantaría.",
+              "options": [
+                "Es más",
+                "Sin embargo",
+                "Por consiguiente"
+              ],
+              "answer": "Es más",
+              "hint": "第二句是在反驳前一句，还是在前一句基础上更进一步？",
+              "explanation": "es más 引出比前面更强的论据，表示递进。sin embargo 表示转折，与“更进一步”的意思相反；por consiguiente 表示结果。",
+              "errorType": "用法判断",
+              "id": "m31-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词，补全表示结果的标记：El presupuesto es limitado; por lo ___, tendremos que reducir gastos.",
+              "answer": "tanto",
+              "hint": "这个标记由三个词组成，意为“因此”。",
+              "explanation": "por lo tanto 表示“因此”，后接陈述式。也可以说 por tanto。",
+              "errorType": "句子组织",
+              "id": "m31-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 tener 的正确形式填空：La empresa ha crecido mucho este año, de ahí que ___ que contratar a más personal.",
+              "answer": "tenga",
+              "hint": "de ahí que 后的语式；主语是 la empresa，结果属于现在。",
+              "explanation": "de ahí que 后接虚拟式；结果属于现在，用虚拟式现在时，la empresa 对应 tenga。",
+              "errorType": "词形变化",
+              "id": "m31-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词，补全正式的转折标记：El plan es ambicioso. No ___, creemos que es viable.",
+              "answer": "obstante",
+              "hint": "这是比 sin embargo 更正式的同义标记。",
+              "explanation": "no obstante 与 sin embargo 意义相同，更常见于正式书面语，句首使用时后面加逗号。",
+              "errorType": "句子组织",
+              "id": "m31-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "就“远程办公（el teletrabajo）的利与弊”写一段 5 句左右的短文：至少用一个转折或对比标记、一个补充标记，以及 de ahí que + 虚拟式。注意标记前后的标点。",
+            "model": "El teletrabajo ofrece una gran flexibilidad; además, ahorra tiempo en desplazamientos. Es más, muchos empleados afirman que rinden más en casa. Sin embargo, no todo son ventajas: el aislamiento puede afectar al ánimo. Ahora bien, pocos quieren volver al horario de antes, de ahí que muchas empresas hayan optado por un modelo mixto.（远程办公提供了很大的灵活性……）",
+            "rubric": [
+              "话语标记的逻辑关系（转折、对比、结果、补充）与内容相符。",
+              "de ahí que 后用了虚拟式，时态与前句一致。",
+              "标记前后的标点（句号、分号、逗号）使用正确。"
+            ]
+          }
+        },
+        {
+          "id": "m31-l2",
+          "title": "重述、论证结构与语域转换",
+          "goal": "能用 es decir、o sea、mejor dicho、en otras palabras 重述或修正说法，用 en primer lugar、por un lado / por otro、en definitiva 组织论证，并把口语表达改写为正式书面语。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "同一个意思，一句是朋友间的聊天，一句来自书面报告。哪些词语让你分辨出语域？",
+            "examples": [
+              {
+                "es": "Bueno, pues el piso es carísimo; o sea, que no nos lo podemos permitir.",
+                "zh": "嗯，那套房子贵得要命，也就是说，我们负担不起。"
+              },
+              {
+                "es": "En definitiva, el precio del inmueble supera nuestro presupuesto; por consiguiente, descartamos su adquisición.",
+                "zh": "总之，该房产的价格超出了我们的预算；因此，我们决定不予购买。"
+              }
+            ],
+            "answer": "口语中常用 bueno、pues 开头或衔接，用 o sea 重述；正式书面语则用 en definitiva、por consiguiente 等标记，词汇也更书面（inmueble 代替 piso，descartar su adquisición 代替“买不起”）。o sea 和 es decir 都用来重述，但 o sea 偏口语。"
+          },
+          "rules": [
+            {
+              "title": "重述与修正：es decir、o sea、mejor dicho",
+              "body": "重述标记（marcadores de reformulación）用另一种说法解释前面的内容：es decir、esto es（更正式）、en otras palabras、o sea（偏口语）。mejor dicho（或 o mejor dicho）则不同：它表示纠正，说话人觉得前面的说法不够准确，换成更准确的说法。",
+              "examples": [
+                {
+                  "es": "El curso es intensivo, es decir, hay clase todos los días.",
+                  "zh": "这是密集课程，也就是说，每天都有课。"
+                },
+                {
+                  "es": "Llegaremos el lunes, mejor dicho, el martes por la mañana.",
+                  "zh": "我们周一到，不对，应该说是周二上午。"
+                }
+              ]
+            },
+            {
+              "title": "组织论证：顺序、分项与总结",
+              "body": "列举论点用 en primer lugar、en segundo lugar、por último；并列两个方面用 por un lado… por otro (lado) 或 por una parte… por otra，两组要配套使用（lado 配 otro，parte 配 otra）；总结用 en definitiva、en resumen、en suma（较书面）。这些标记让读者一眼看出论证的结构，是正式写作和演讲的基本工具。",
+              "examples": [
+                {
+                  "es": "Por un lado, el trabajo está bien pagado; por otro, exige viajar mucho.",
+                  "zh": "一方面，这份工作薪水不错；另一方面，需要经常出差。"
+                },
+                {
+                  "es": "En definitiva, se trata de una decisión personal.",
+                  "zh": "总而言之，这是个人的决定。"
+                }
+              ]
+            },
+            {
+              "title": "语域转换：口语 vs 正式书面语",
+              "body": "同一功能在不同语域（registro）中用不同的标记。正式文本中应避免 bueno、pues（句首填充）、o sea、total 等口语标记。注意 pues 的两种身份：口语句首的 pues 只是开启或衔接话题；正式书面语中 pues 放在句中可表示原因，相当于 ya que（no asistió, pues estaba enfermo）。书面语中表示结果时，de ahí que + 虚拟式是很典型的手段。",
+              "table": {
+                "caption": "同一功能在两种语域中的常见标记",
+                "headers": [
+                  "功能",
+                  "口语",
+                  "正式书面语"
+                ],
+                "rows": [
+                  [
+                    "开启话题",
+                    "bueno, pues",
+                    "en primer lugar, cabe señalar que"
+                  ],
+                  [
+                    "引出结果",
+                    "así que",
+                    "por consiguiente, de ahí que + 虚拟式"
+                  ],
+                  [
+                    "重述",
+                    "o sea",
+                    "es decir, esto es"
+                  ],
+                  [
+                    "总结",
+                    "total, que…",
+                    "en suma, en definitiva"
+                  ],
+                  [
+                    "转折",
+                    "pero",
+                    "no obstante, sin embargo"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Total, que al final no fuimos.",
+                  "zh": "反正最后我们没去成。口语。"
+                },
+                {
+                  "es": "En suma, el proyecto no se llevó a cabo, de ahí que los fondos se destinaran a otra iniciativa.",
+                  "zh": "总之，该项目未能实施，因此资金被转用于另一项计划。正式书面语。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "说话人发现自己说错了，要纠正：Te lo mando hoy, ___, mañana a primera hora.",
+              "options": [
+                "mejor dicho",
+                "es decir",
+                "por lo tanto"
+              ],
+              "answer": "mejor dicho",
+              "hint": "“今天”和“明天一早”是同一个意思的不同说法，还是对前面说法的纠正？",
+              "explanation": "mejor dicho 用来纠正前面不准确的说法。es decir 表示同义重述，会让“今天”和“明天”自相矛盾；por lo tanto 表示结果。",
+              "errorType": "用法判断",
+              "id": "m31-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "在正式的评估报告中引出总结：___, la medida ha tenido un impacto positivo.",
+              "options": [
+                "Total",
+                "En definitiva",
+                "O sea"
+              ],
+              "answer": "En definitiva",
+              "hint": "三个选项中哪一个适合书面报告？",
+              "explanation": "en definitiva 是适合正式文本的总结标记。total 是口语的总结说法；o sea 是偏口语的重述标记，都不适合正式报告。",
+              "errorType": "用法判断",
+              "id": "m31-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "Por un lado, vivir solo da independencia; ___, resulta más caro.",
+              "options": [
+                "por otro",
+                "por otra",
+                "en otro"
+              ],
+              "answer": "por otro",
+              "hint": "前面用的是 por un lado；后半部分要和它配套。",
+              "explanation": "por un lado 要与 por otro (lado) 配套；por otra 配的是 por una parte；en otro 不是固定搭配。",
+              "errorType": "句子组织",
+              "id": "m31-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词，补全重述标记：La asistencia es obligatoria, ___ decir, quien falte más de tres veces no podrá presentarse al examen.",
+              "answer": "es",
+              "hint": "这个标记意为“也就是说”。",
+              "explanation": "es decir 用来换一种说法解释前面的内容：出勤是必须的，也就是说，缺席超过三次就不能参加考试。",
+              "errorType": "句子组织",
+              "id": "m31-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "演讲开头列举第一点，填一个词：En primer ___, quiero agradecerles su presencia.",
+              "answer": "lugar",
+              "hint": "“首先”在西语里是 en primer …",
+              "explanation": "en primer lugar 用来引出第一个论点，后面可接 en segundo lugar、por último。",
+              "errorType": "句子组织",
+              "id": "m31-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "把口语改写为书面语。口语：Los costes han subido mucho, así que se han cancelado dos proyectos. 书面语：Los costes han aumentado considerablemente, de ahí que se ___ cancelado dos proyectos.（用 haber 的虚拟式现在完成时）",
+              "answer": "hayan",
+              "hint": "de ahí que 后用虚拟式；主语是 dos proyectos。",
+              "explanation": "书面语中用 de ahí que + 虚拟式代替口语的 así que；主语 dos proyectos 是复数，haber 的虚拟式现在时为 hayan：se hayan cancelado。",
+              "errorType": "词形变化",
+              "id": "m31-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "先用口语给朋友讲一件事（例如你为什么换工作），写 2–3 句；再把同样的内容改写成求职信中的一段正式文字，写 3–4 句，至少用 en primer lugar 或 por un lado / por otro、一个重述或总结标记，以及 de ahí que + 虚拟式。",
+            "model": "（口语）Bueno, pues dejé el trabajo porque no me pagaban las horas extra, o sea, trabajaba gratis. Total, que me fui. （正式）Quisiera explicar los motivos de mi cambio profesional. Por un lado, en mi anterior empresa no se remuneraban las horas extraordinarias; por otro, apenas había posibilidades de promoción. En definitiva, buscaba un entorno más estable, de ahí que decidiera presentar mi candidatura a este puesto.",
+            "rubric": [
+              "两段的语域区分清楚：口语段用了 bueno、o sea 等，正式段没有口语标记。",
+              "正式段的论证结构清晰，分项和总结标记配套使用。",
+              "de ahí que 后用了虚拟式，时态与语境一致。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m32",
+      "level": "C1",
+      "title": "词义细节与结课综合",
+      "description": "辨析与 ser / estar 搭配时意义不同的形容词，以及表示“变成”的各类变化动词，最后在一篇论证短文中综合运用 C1 的主要结构。",
+      "lessons": [
+        {
+          "id": "m32-l1",
+          "title": "与 ser / estar 搭配时词义不同的形容词",
+          "goal": "能根据语境为 listo、rico、malo、aburrido、despierto、orgulloso 等形容词选择 ser 或 estar，准确表达不同的含义。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "同一个形容词分别配 ser 和 estar，意思一样吗？",
+            "examples": [
+              {
+                "es": "Mi sobrina es muy lista.",
+                "zh": "我外甥女很聪明。"
+              },
+              {
+                "es": "¿Estás lista? Nos vamos.",
+                "zh": "你准备好了吗？我们走了。"
+              },
+              {
+                "es": "Esta paella está riquísima.",
+                "zh": "这份海鲜饭太好吃了。"
+              }
+            ],
+            "answer": "es lista 描述人的特点（聪明），está lista 描述当下的状态（准备好了）；rico 配 estar 用于食物表示“好吃”，配 ser 则表示“富有”。对这类形容词来说，区别不只是“持久／暂时”，而是词义本身改变了。"
+          },
+          "rules": [
+            {
+              "title": "listo、despierto：能力特点 vs 当下状态",
+              "body": "有一组形容词与 ser 搭配时表示人或事物的特点，与 estar 搭配时表示状态，而且两个意思差别很大，需要分别记忆。ser listo 是“聪明”，estar listo 是“准备好了”；ser despierto 是“机灵、反应快”，estar despierto 是“醒着”。下表汇总本课的主要词对。",
+              "table": {
+                "caption": "ser / estar + 形容词：词义对照",
+                "headers": [
+                  "形容词",
+                  "ser + 形容词",
+                  "estar + 形容词"
+                ],
+                "rows": [
+                  [
+                    "listo",
+                    "聪明",
+                    "准备好了"
+                  ],
+                  [
+                    "despierto",
+                    "机灵、反应快",
+                    "醒着"
+                  ],
+                  [
+                    "rico",
+                    "富有",
+                    "（食物）好吃"
+                  ],
+                  [
+                    "malo",
+                    "坏、品质差",
+                    "生病、不舒服；（食物）变质"
+                  ],
+                  [
+                    "aburrido",
+                    "（人或事）无聊、乏味",
+                    "（人）感到无聊"
+                  ],
+                  [
+                    "orgulloso",
+                    "高傲、自尊心强",
+                    "（de）感到自豪"
+                  ],
+                  [
+                    "atento",
+                    "体贴、周到",
+                    "专心、留意"
+                  ],
+                  [
+                    "vivo",
+                    "机灵、精明",
+                    "活着"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Es un niño muy despierto para su edad.",
+                  "zh": "就他这个年纪来说，这孩子非常机灵。"
+                },
+                {
+                  "es": "Son las seis y Lucas ya está despierto.",
+                  "zh": "才六点，卢卡斯就已经醒了。"
+                }
+              ]
+            },
+            {
+              "title": "rico、malo：人的属性 vs 味道与身体状况",
+              "body": "ser rico 指人或家庭“富有”，estar rico 指食物“好吃”（estar riquísimo 很常用）。ser malo 指人“坏”、东西“质量差”或某事“有害”（fumar es malo）；estar malo 在西班牙口语中指人“生病、不舒服”，也可指食物“变质”。拉美更常说 estar enfermo 表示生病。",
+              "examples": [
+                {
+                  "es": "Andrés es rico, pero vive con sencillez.",
+                  "zh": "安德烈斯很富有，但他生活得很朴素。"
+                },
+                {
+                  "es": "Hoy no voy al gimnasio porque estoy malo desde ayer.",
+                  "zh": "今天我不去健身房了，从昨天起我就不舒服。说话人为男性。"
+                }
+              ]
+            },
+            {
+              "title": "aburrido、orgulloso 及其他",
+              "body": "ser aburrido 指人或事物“乏味、让人无聊”，estar aburrido 指人“感到无聊”。ser orgulloso 指性格“高傲、自尊心强”，estar orgulloso de 指“为……感到自豪”。同样的思路也适用于 ser atento（体贴）/ estar atento（专心）、ser vivo（机灵）/ estar vivo（活着）。判断时先问：我在描述这个人是什么样的人，还是他此刻的状态或感受？",
+              "examples": [
+                {
+                  "es": "La película es aburrida; por eso los niños están aburridos.",
+                  "zh": "这部电影很无聊，所以孩子们都觉得没意思。"
+                },
+                {
+                  "es": "Es demasiado orgulloso para pedir perdón, pero está muy orgulloso de su hija.",
+                  "zh": "他太要面子了，不肯道歉；不过他为女儿感到非常骄傲。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "晚饭做好了，你招呼大家来吃：¡La cena ___ lista! A la mesa.",
+              "options": [
+                "es",
+                "está",
+                "hay"
+              ],
+              "answer": "está",
+              "hint": "晚饭是“聪明”，还是“准备好了”？",
+              "explanation": "estar listo 表示“准备好了”，la cena 用 está。es lista 会变成“晚饭很聪明”；hay 表示存在，不能与形容词这样搭配。",
+              "errorType": "用法判断",
+              "id": "m32-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "这位演讲者讲得总是很乏味：Ese conferenciante ___ muy aburrido; siempre lee las diapositivas sin mirar al público.",
+              "options": [
+                "es",
+                "está",
+                "estaba"
+              ],
+              "answer": "es",
+              "hint": "描述的是他给人的感觉（乏味），还是他自己感到无聊？",
+              "explanation": "ser aburrido 表示“（人）乏味、让人觉得无聊”，用来描述他的讲话风格。está / estaba aburrido 是“他自己感到无聊”，与后半句不符。",
+              "errorType": "用法判断",
+              "id": "m32-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "卡门今天发烧，没来上班：Carmen no ha venido porque ___ mala.",
+              "options": [
+                "es",
+                "está",
+                "ha sido"
+              ],
+              "answer": "está",
+              "hint": "说的是她的品行，还是她现在的身体状况？",
+              "explanation": "estar malo / mala 在西班牙口语中表示“生病、不舒服”。es mala 是“她是个坏人”；ha sido mala 也是在评价她的行为。",
+              "errorType": "用法判断",
+              "id": "m32-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ser 或 estar 的现在时填空：Mis abuelos ___ muy orgullosos de sus nietos.（我爷爷奶奶为孙子孙女感到非常自豪。）",
+              "answer": "están",
+              "hint": "这里是“为……感到自豪”，后面有 de；别忘了重音符号。",
+              "explanation": "estar orgulloso de 表示“为……感到自豪”，mis abuelos 对应 están。son orgullosos 会变成“他们性格高傲”。",
+              "errorType": "用法判断",
+              "id": "m32-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "称赞蛋糕的味道，填 ser 或 estar 的现在时：¡Qué buena esta tarta! ___ riquísima.",
+              "answer": "Está",
+              "hint": "说的是味道，不是“富有”。",
+              "explanation": "estar rico 表示食物“好吃”，la tarta 对应 está。es rica 指“富有”，不能用来形容味道。",
+              "errorType": "用法判断",
+              "id": "m32-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "描述孩子的性格特点，填 ser 或 estar 的现在时：Tu hija ___ muy despierta; lo entiende todo enseguida.",
+              "answer": "es",
+              "hint": "“什么都一下子就懂”说明的是醒着，还是机灵？",
+              "explanation": "ser despierto 表示“机灵、反应快”，描述性格特点，tu hija 对应 es。está despierta 只是“醒着”。",
+              "errorType": "用法判断",
+              "id": "m32-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "介绍一位家人或朋友，写 4–5 句话，至少用本课的四个形容词，并让其中至少两个分别与 ser 和 estar 搭配，体现词义差别。",
+            "model": "Mi primo Diego es muy listo: terminó la carrera con veintiún años. Es un poco orgulloso y le cuesta pedir ayuda, pero está muy orgulloso de su trabajo. Ayer cocinó para todos y el arroz estaba riquísimo. Esta semana no ha salido de casa porque está malo, así que está aburridísimo.（我表哥迭戈很聪明……）",
+            "rubric": [
+              "每个形容词选用的 ser 或 estar 与要表达的词义相符。",
+              "同一个形容词与 ser、estar 分别搭配时，意思区分清楚。",
+              "形容词与所描述的人或物性数一致，动词时态符合语境。"
+            ]
+          }
+        },
+        {
+          "id": "m32-l2",
+          "title": "变化动词与结课综合",
+          "goal": "能根据变化的性质选择 ponerse、volverse、hacerse、quedarse、llegar a ser、convertirse en，并在一篇论证短文中综合运用本级的主要结构。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "中文都可以说“变得／成为”，西语却用了不同的动词。这些变化分别是短暂的、深刻的，还是通过努力达到的？",
+            "examples": [
+              {
+                "es": "Se puso rojo cuando le preguntaron.",
+                "zh": "被问到的时候，他脸红了。"
+              },
+              {
+                "es": "Desde que ganó la lotería, se ha vuelto muy desconfiado.",
+                "zh": "自从中了彩票，他变得疑心很重。"
+              },
+              {
+                "es": "Mi tío se hizo abogado a los cuarenta años.",
+                "zh": "我叔叔四十岁时当上了律师。"
+              }
+            ],
+            "answer": "ponerse 表示短暂的状态或情绪变化（脸红）；volverse 表示性格或本质上较深刻、通常不由自主的变化；hacerse 表示通过努力或逐步过程达到的身份（职业）。中文统一说“变成”，西语要先判断变化的性质再选动词。"
+          },
+          "rules": [
+            {
+              "title": "ponerse：短暂、突然的状态和情绪",
+              "body": "变化动词（verbos de cambio）都是代词式动词，要随主语变化代词。ponerse + 形容词表示身体或情绪上较短暂、往往突然的变化：ponerse nervioso、rojo、pálido、triste、contento、serio、enfermo。不要与 B2 学过的 ponerse a + 不定式（开始做某事）混淆。下表先给出本课六个动词的总览。",
+              "table": {
+                "caption": "变化动词总览",
+                "headers": [
+                  "动词",
+                  "变化的性质",
+                  "常见搭配"
+                ],
+                "rows": [
+                  [
+                    "ponerse + 形容词",
+                    "短暂、突然的身体或情绪变化",
+                    "nervioso, rojo, pálido, triste, serio"
+                  ],
+                  [
+                    "volverse + 形容词",
+                    "性格或本质的深刻变化，常不由自主",
+                    "loco, desconfiado, más paciente, egoísta"
+                  ],
+                  [
+                    "hacerse + 名词 / 形容词",
+                    "主动或逐步达到的职业、信仰、身份",
+                    "médico, budista, vegetariano, rico, mayor"
+                  ],
+                  [
+                    "quedarse + 形容词",
+                    "某个事件后留下的结果，常为失去",
+                    "ciego, sordo, viudo, solo, calvo, sin trabajo"
+                  ],
+                  [
+                    "llegar a ser + 名词 / 形容词",
+                    "经过长期过程最终达到（多为较高的地位）",
+                    "director, campeón, famoso"
+                  ],
+                  [
+                    "convertirse en + 名词",
+                    "彻底变成另一种事物或身份",
+                    "un problema, una ciudad moderna"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Me pongo nerviosa antes de cada examen.",
+                  "zh": "每次考试前我都会紧张。说话人为女性。"
+                },
+                {
+                  "es": "Cuando se enteró de la noticia, se puso muy serio.",
+                  "zh": "得知这个消息时，他的脸一下子严肃起来。"
+                }
+              ]
+            },
+            {
+              "title": "volverse 与 hacerse：深刻的变化 vs 努力或逐步的结果",
+              "body": "volverse + 形容词表示性格、本质上较持久的变化，通常不是主语主动追求的：volverse loco、desconfiado、más tolerante。hacerse + 名词或形容词表示主语主动或经过一个逐步过程达到的身份、信仰或状态：hacerse médico、budista、vegetariano、rico、famoso；hacerse mayor（长大、上年纪）表示逐渐的过程。",
+              "examples": [
+                {
+                  "es": "Con los años se ha vuelto más paciente.",
+                  "zh": "这些年来他变得更有耐心了。"
+                },
+                {
+                  "es": "Se hizo vegetariana después de vivir en la India.",
+                  "zh": "在印度生活过之后，她成了素食者。"
+                }
+              ]
+            },
+            {
+              "title": "quedarse：事件之后的结果状态",
+              "body": "quedarse + 形容词（或 sin + 名词）表示某个事件之后留下的结果状态，常常是失去某种东西：quedarse ciego、sordo、viudo、solo、calvo、sin trabajo、sin dinero。它也用于突然的反应：quedarse sorprendido、quedarse helado（愣住）。",
+              "examples": [
+                {
+                  "es": "Se quedó viuda muy joven.",
+                  "zh": "她很年轻就守了寡。"
+                },
+                {
+                  "es": "Con la crisis, muchas personas se quedaron sin trabajo.",
+                  "zh": "经济危机期间，许多人失业了。"
+                }
+              ]
+            },
+            {
+              "title": "llegar a ser 与 convertirse en",
+              "body": "llegar a ser 强调经过长期过程最终达到某个（常是较高的）地位，突出“终点”。convertirse en 后面只接名词，表示彻底变成另一种事物或身份，主语可以是人，也可以是物或地方；不能直接接形容词（*se convirtió en famosa，应说 se hizo famosa 或 se convirtió en una actriz famosa）。",
+              "examples": [
+                {
+                  "es": "Empezó como camarera y llegó a ser directora del hotel.",
+                  "zh": "她从服务员做起，最后当上了酒店的总经理。"
+                },
+                {
+                  "es": "La aldea se convirtió en un destino turístico.",
+                  "zh": "那个小村庄变成了一个旅游目的地。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "听到坏消息，她的脸一下子变得煞白：Al oír la noticia, ___ pálida.",
+              "options": [
+                "se puso",
+                "se volvió",
+                "se hizo"
+              ],
+              "answer": "se puso",
+              "hint": "这是短暂、突然的身体变化，还是性格或身份的改变？",
+              "explanation": "脸色突然变白是短暂的身体变化，用 ponerse：se puso pálida。volverse 表示性格上的深刻变化，hacerse 表示主动或逐步达到的身份，都不适合。",
+              "errorType": "用法判断",
+              "id": "m32-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "在公司工作二十年后，他最终当上了总裁：Después de veinte años en la empresa, ___ presidente.",
+              "options": [
+                "llegó a ser",
+                "se puso",
+                "se quedó"
+              ],
+              "answer": "llegó a ser",
+              "hint": "强调经过漫长过程后最终达到的地位。",
+              "explanation": "llegar a ser 强调长期努力后最终达到的地位。ponerse 只接表示短暂状态的形容词；quedarse 表示事件后留下的结果，常为失去，都不能用于“当上总裁”。",
+              "errorType": "用法判断",
+              "id": "m32-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择正确的句子：“她成了一位著名的演员。”",
+              "options": [
+                "Se convirtió en famosa.",
+                "Se convirtió en una actriz famosa.",
+                "Se puso una actriz famosa."
+              ],
+              "answer": "Se convirtió en una actriz famosa.",
+              "hint": "convertirse en 后面能直接接形容词吗？ponerse 后面接什么？",
+              "explanation": "convertirse en 后面要接名词：una actriz famosa。*se convirtió en famosa 直接接了形容词；ponerse 只表示短暂状态，不能接职业身份名词。",
+              "errorType": "句子组织",
+              "id": "m32-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用表示“事件之后留下的结果、常为失去”的变化动词填空，简单过去时第三人称单数（两个词）：Mi abuelo ___ sordo después del accidente.",
+              "answer": "se quedó",
+              "hint": "这个动词还用于 viudo、ciego、sin trabajo 等搭配。",
+              "explanation": "事故之后留下失聪的结果，用 quedarse：se quedó sordo。代词 se 不能省略。",
+              "errorType": "用法判断",
+              "id": "m32-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 volverse 的现在完成时填空（三个词）：Desde que es famoso, mi vecino ___ muy arrogante.",
+              "answer": "se ha vuelto",
+              "hint": "代词 + haber 的现在时 + volver 的不规则过去分词。",
+              "explanation": "现在完成时为 se ha vuelto；volver 的过去分词是不规则的 vuelto（不是 *volvido）。性格上的深刻变化用 volverse。",
+              "errorType": "词形变化",
+              "id": "m32-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用表示“主动选择的信仰身份”的变化动词填空，简单过去时第三人称单数（两个词）：A los treinta años, Laura ___ budista.",
+              "answer": "se hizo",
+              "hint": "这个动词也用于 médico、vegetariano 等主动达到的身份。",
+              "explanation": "信仰、职业等主动或逐步达到的身份用 hacerse：se hizo budista。hacer 的简单过去时第三人称单数是 hizo（z 而不是 c）。",
+              "errorType": "用法判断",
+              "id": "m32-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "结课任务：围绕“科技是否让我们变得更孤独”或你自选的社会话题，写一篇 150–200 词的论证短文。至少用到：一个第三类条件句或混合条件句、一个让步结构（por + 形容词 + que、por más que 或 si bien）、三个不同功能的话语标记、一个中性 lo 结构，以及一个变化动词。",
+            "model": "En los últimos veinte años, el móvil se ha convertido en una extensión de nuestro cuerpo. Por un lado, nos permite hablar con personas que viven al otro lado del mundo; por otro, muchos nos hemos vuelto incapaces de cenar sin mirar la pantalla. Lo preocupante no es la tecnología en sí, sino el uso que hacemos de ella. Si nuestros padres hubieran tenido redes sociales a nuestra edad, quizá también se habrían quedado enganchados. Por útil que sea una aplicación, no puede sustituir una conversación cara a cara, de ahí que cada vez más gente se proponga desconectar los fines de semana. En definitiva, no se trata de renunciar al móvil, sino de aprender a usarlo con sentido común.（近二十年来，手机已经变成了我们身体的延伸……）",
+            "rubric": [
+              "条件句、让步结构、de ahí que 等的语式和时态搭配正确。",
+              "话语标记清楚地组织了引入、对比和结论，全文保持书面语域。",
+              "变化动词和中性 lo 结构的选择与形式准确。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

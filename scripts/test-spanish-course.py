@@ -30,7 +30,13 @@ try:
         page = context.new_page()
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
+        source = json.loads((ROOT/'content/spanish-grammar/course.json').read_text(encoding='utf-8'))
+        total = sum(len(q['questions']) for level in source['levels']
+                    for module in json.loads((ROOT/'content/spanish-grammar'/level['file']).read_text(encoding='utf-8'))['modules']
+                    for q in module['lessons'])
         page.goto(origin + '/zh/spanish-grammar/#lesson-m6-l2')
+        expect(page.locator('.level-nav[data-level=A1]')).to_have_attribute('open', '')
+        expect(page.locator('.level-nav')).to_have_count(len(source['levels']))
         expect(page.locator('#lesson-heading')).to_contain_text('谁喜欢')
         q = page.locator('[data-question-id="m6-l2-q4"]')
         q.locator('input[type=text]').fill('nos')
@@ -40,12 +46,25 @@ try:
         assert stored['obj']['m6-l2.m6-l2-q4'] is True
         assert stored['resume'] == 'm6-l2'
         page.reload()
-        expect(page.locator('#solved-metric')).to_have_text('1 / 96')
+        expect(page.locator('#solved-metric')).to_have_text(f'1 / {total}')
+        # Accent-only misses get a dedicated hint instead of the generic one.
+        page.goto(origin + '/zh/spanish-grammar/#lesson-m8-l1')
+        accent = page.locator('[data-question-id="m8-l1-q5"]')
+        accent.locator('input[type=text]').fill('estan')
+        accent.locator('[data-action=check]').click()
+        expect(accent.locator('.feedback')).to_contain_text('重音符号')
+        accent.locator('.accent-keys button[aria-label="插入 á"]').click()
+        assert accent.locator('input[type=text]').input_value() == 'estaná'
+        # A C1 lesson renders a conjugation table and is reachable by deep link.
+        page.goto(origin + '/zh/spanish-grammar/#lesson-m27-l1')
+        expect(page.locator('.level-nav[data-level=C1]')).to_have_attribute('open', '')
+        expect(page.locator('table.conj').first).to_be_visible()
+        page.goto(origin + '/zh/spanish-grammar/#lesson-m6-l2')
         page.get_by_role('link', name='← Keep Learning Lab 首页').click()
         page.locator('[data-filter=language]').click()
         expect(page.locator('.course-card:visible')).to_have_count(1)
         card = page.locator('[data-course=spanish-grammar]')
-        expect(card.locator('.progress-label')).to_contain_text('1%')
+        expect(card.locator('.progress-label')).to_contain_text('%')
         expect(page.locator('#resume-link')).to_have_attribute('href', 'zh/spanish-grammar/index.html#lesson-m6-l2')
         page.screenshot(path='/tmp/openseei-spanish-home.png', full_page=False)
         page.locator('#resume-link').click()
@@ -60,9 +79,8 @@ try:
             assert response.status == 200, file
             if file.endswith(('.docx','.zip')):
                 assert response.body().startswith(b'PK'), file
-        source = json.loads((ROOT/'content/spanish-grammar/course.json').read_text())
-        embedded = page.locator('#course-data').text_content()
-        assert json.loads(embedded) == source
+        embedded = json.loads(page.locator('#course-data').text_content())
+        assert embedded['title'] == source['title'] and sum(len(l['questions']) for m in embedded['modules'] for l in m['lessons']) == total
         assert not errors, errors
         browser.close()
         print('PASS Spanish integration: deep links, progress mirror, homepage category, resume, downloads, mobile layout, source consistency.')

@@ -1,0 +1,2603 @@
+{
+  "level": "A2",
+  "modules": [
+    {
+      "id": "m9",
+      "level": "A2",
+      "title": "说说经历：现在完成时",
+      "description": "用 haber + 过去分词谈论今天、这周等尚未结束的时间里做过的事，以及人生中有过的经历。",
+      "lessons": [
+        {
+          "id": "m9-l1",
+          "title": "he hablado：现在完成时的构成",
+          "goal": "能用 haber 的现在时加规则过去分词，说出今天、这周等尚未结束的时间段里做过或没做的事。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "三句话都在说“今天／今天上午／这周”做过的事。动词由几个部分组成？哪一部分随主语变化，哪一部分不变？",
+            "examples": [
+              {
+                "es": "Hoy he trabajado mucho.",
+                "zh": "今天我工作了很多。"
+              },
+              {
+                "es": "Esta semana Ana ha comido en casa.",
+                "zh": "这周安娜都在家吃饭。"
+              },
+              {
+                "es": "Esta mañana hemos bebido café.",
+                "zh": "今天上午我们喝了咖啡。"
+              }
+            ],
+            "answer": "动词由两部分组成：haber 的现在时（he、ha、hemos）随主语变化；过去分词（trabajado、comido、bebido）以 -ado 或 -ido 结尾，始终不变。hoy、esta semana、esta mañana 都是说话时还没结束的时间段。"
+          },
+          "rules": [
+            {
+              "title": "haber 的现在时 + 过去分词",
+              "body": "现在完成时（pretérito perfecto）由助动词 haber 的现在时加过去分词（participio）构成。这里的 haber 只起助动词作用，不表示“有”：“有”要用 tener，“某处有”用 hay。注意 habéis 带重音符号。",
+              "table": {
+                "caption": "现在完成时（pretérito perfecto）：haber 现在时 + 过去分词",
+                "headers": [
+                  "人称",
+                  "haber",
+                  "hablar",
+                  "comer",
+                  "vivir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "he",
+                    "he hablado",
+                    "he comido",
+                    "he vivido"
+                  ],
+                  [
+                    "tú",
+                    "has",
+                    "has hablado",
+                    "has comido",
+                    "has vivido"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "ha",
+                    "ha hablado",
+                    "ha comido",
+                    "ha vivido"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "hemos",
+                    "hemos hablado",
+                    "hemos comido",
+                    "hemos vivido"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "habéis",
+                    "habéis hablado",
+                    "habéis comido",
+                    "habéis vivido"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "han",
+                    "han hablado",
+                    "han comido",
+                    "han vivido"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Has hablado con Luis esta tarde.",
+                  "zh": "今天下午你跟路易斯谈过了。"
+                },
+                {
+                  "es": "Mis padres han llamado esta mañana.",
+                  "zh": "我父母今天上午打来了电话。"
+                }
+              ]
+            },
+            {
+              "title": "规则过去分词：-ado 与 -ido",
+              "body": "去掉不定式词尾：-ar 动词加 -ado（trabajar → trabajado），-er 和 -ir 动词加 -ido（beber → bebido，salir → salido）。词干以元音结尾的 -er/-ir 动词写成 -ído：leer → leído。在完成时里，分词永远以 -o 结尾，不随主语的阴阳性和单复数变化：Ana ha salido，不说 *Ana ha salida*。haber 和分词之间不插入任何词：no 和自复代词都放在 haber 前面。",
+              "examples": [
+                {
+                  "es": "Hoy no he bebido café.",
+                  "zh": "今天我没喝咖啡。no 放在 he 前面。"
+                },
+                {
+                  "es": "Esta mañana me he levantado tarde.",
+                  "zh": "今天早上我起晚了。自复代词 me 也放在 haber 前面。"
+                }
+              ]
+            },
+            {
+              "title": "什么时候用：时间段还没有结束",
+              "body": "现在完成时把过去的动作和“现在”联系起来。在西班牙，说话时还没结束的时间段里发生的事通常用它：hoy、esta mañana、esta semana、este mes、este año。ayer、el año pasado 这类已经结束的时间要用下一模块的简单过去时。拉美多数地区在 hoy 这类语境里也常用简单过去时（Hoy trabajé mucho）；本课以半岛用法为准。",
+              "examples": [
+                {
+                  "es": "Este año hemos viajado poco.",
+                  "zh": "今年我们旅行得很少。"
+                },
+                {
+                  "es": "Esta semana he estudiado mucho.",
+                  "zh": "这周我学习了很多。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "说说今天自己做了什么：Hoy ___ trabajado en casa.",
+              "options": [
+                "ha",
+                "he",
+                "hay"
+              ],
+              "answer": "he",
+              "hint": "主语是 yo；助动词 haber 的形式和表示“有”的 hay 不同。",
+              "explanation": "yo 对应 haber 的 he：Hoy he trabajado en casa. ha 是第三人称单数；hay 表示“某处有”，不能作助动词。",
+              "errorType": "词形变化",
+              "id": "m9-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "Esta mañana Ana y Luis ___ salido temprano.",
+              "options": [
+                "ha",
+                "habéis",
+                "han"
+              ],
+              "answer": "han",
+              "hint": "主语是两个人，相当于 ellos。",
+              "explanation": "Ana y Luis = ellos，haber 用 han。ha 是单数；habéis 对应 vosotros。",
+              "errorType": "词形变化",
+              "id": "m9-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "Esta tarde María ha ___ con sus amigas.（今天下午玛丽亚和朋友们出去了。）",
+              "options": [
+                "salida",
+                "salido",
+                "salidos"
+              ],
+              "answer": "salido",
+              "hint": "完成时里的分词会不会跟着主语的性别或后面的名词变化？",
+              "explanation": "在 haber 后面，分词永远是 -o 结尾的不变形式：ha salido。不要因为 María 是女性或 amigas 是复数而改成 salida、salidos。",
+              "errorType": "词形变化",
+              "id": "m9-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 haber 的现在时填空：¿Vosotros ___ cenado ya?",
+              "answer": "habéis",
+              "hint": "vosotros 的形式带重音符号。",
+              "explanation": "vosotros 对应 habéis，重音符号写在 é 上：¿Vosotros habéis cenado ya?",
+              "errorType": "词形变化",
+              "id": "m9-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 llamar 的现在完成时填空（两个词）：Esta mañana tú ___ a tu madre.",
+              "answer": "has llamado",
+              "hint": "先选 tú 对应的 haber 形式，再把 -ar 动词变成分词。",
+              "explanation": "tú 对应 has，llamar 的分词是 llamado：Esta mañana tú has llamado a tu madre.",
+              "errorType": "词形变化",
+              "id": "m9-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 no 和 comer 的现在完成时补全句子（三个词）：Hoy ___ carne.（今天我没吃肉。）",
+              "answer": "no he comido",
+              "hint": "no 不能插在 haber 和分词之间。",
+              "explanation": "否定词放在整个完成时前面：Hoy no he comido carne. 不说 *he no comido*。",
+              "errorType": "句子组织",
+              "id": "m9-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "用现在完成时写四句话，说说你今天或这周做了什么、没做什么：至少一句用 no 否定，一句写家人或朋友做的事。",
+            "model": "Hoy he trabajado ocho horas. Esta mañana he bebido dos cafés. Mi hermana me ha llamado esta tarde. Esta semana no he cocinado.（今天我工作了八个小时。今天上午我喝了两杯咖啡。今天下午我姐姐给我打了电话。这周我没做饭。）",
+            "rubric": [
+              "haber 的形式与每句的主语一致，habéis 等重音正确。",
+              "过去分词用了 -ado／-ido，并且没有随主语变化。",
+              "时间标记都是还没结束的时间段，no 放在 haber 前面。"
+            ]
+          }
+        },
+        {
+          "id": "m9-l2",
+          "title": "不规则分词与经历：ya、todavía no、alguna vez、nunca",
+          "goal": "能使用常见不规则过去分词，并用 ya、todavía no、alguna vez、nunca 询问和讲述完成情况与人生经历。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "这些分词还是 -ado／-ido 结尾吗？alguna vez、ya、todavía no 分别在问或说什么？",
+            "examples": [
+              {
+                "es": "¿Has visto esta película alguna vez?",
+                "zh": "你看过这部电影吗？"
+              },
+              {
+                "es": "Ya he hecho los deberes.",
+                "zh": "我已经做完作业了。"
+              },
+              {
+                "es": "Todavía no hemos escrito el correo.",
+                "zh": "我们还没写那封邮件。"
+              }
+            ],
+            "answer": "visto（ver）、hecho（hacer）、escrito（escribir）是不规则分词，要单独记。alguna vez 问人生中是否有过某种经历；ya 表示“已经”，todavía no 表示“还没有”。它们放在 haber 前或句末，不插在 haber 和分词中间。"
+          },
+          "rules": [
+            {
+              "title": "常见不规则过去分词",
+              "body": "下面这些高频动词的分词不按 -ado／-ido 规则变化，要整体记忆。由它们派生的动词也跟着变：devolver → devuelto，describir → descrito。",
+              "table": {
+                "caption": "常见不规则过去分词",
+                "headers": [
+                  "不定式",
+                  "过去分词",
+                  "中文"
+                ],
+                "rows": [
+                  [
+                    "hacer",
+                    "hecho",
+                    "做"
+                  ],
+                  [
+                    "decir",
+                    "dicho",
+                    "说"
+                  ],
+                  [
+                    "ver",
+                    "visto",
+                    "看见"
+                  ],
+                  [
+                    "escribir",
+                    "escrito",
+                    "写"
+                  ],
+                  [
+                    "poner",
+                    "puesto",
+                    "放"
+                  ],
+                  [
+                    "volver",
+                    "vuelto",
+                    "回来"
+                  ],
+                  [
+                    "abrir",
+                    "abierto",
+                    "打开"
+                  ],
+                  [
+                    "romper",
+                    "roto",
+                    "打破"
+                  ],
+                  [
+                    "morir",
+                    "muerto",
+                    "死"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "¿Quién ha roto el vaso?",
+                  "zh": "谁把杯子打碎了？"
+                },
+                {
+                  "es": "He puesto las llaves en la mesa.",
+                  "zh": "我把钥匙放在桌子上了。"
+                }
+              ]
+            },
+            {
+              "title": "ya 与 todavía no：做完了没有？",
+              "body": "ya 表示“已经”，常放在 haber 前（Ya he comido），也可放在句末。todavía no 表示“还没有”，放在 haber 前（Todavía no he comido），也可以说 No he comido todavía。回答 ¿Ya has…? 时可以简答 Sí, ya. 或 No, todavía no.",
+              "examples": [
+                {
+                  "es": "—¿Ya has terminado? —No, todavía no.",
+                  "zh": "——你已经做完了吗？——不，还没有。"
+                },
+                {
+                  "es": "Mis amigos ya han vuelto de vacaciones.",
+                  "zh": "我的朋友们已经度假回来了。"
+                }
+              ]
+            },
+            {
+              "title": "alguna vez 与 nunca：人生经历",
+              "body": "问“你曾经……过吗？”用 ¿Has… alguna vez?，回答次数用 una vez、dos veces、muchas veces。“从来没有”用 nunca：nunca 放在动词前时不再加 no（Nunca he estado en México）；放在动词后时，前面必须有 no（No he estado nunca en México）。谈经历时不说具体时间；一旦出现 en 2019、el verano pasado 这类具体的过去时间，就要用下一模块的简单过去时。",
+              "examples": [
+                {
+                  "es": "¿Has estado alguna vez en Perú?",
+                  "zh": "你去过秘鲁吗？"
+                },
+                {
+                  "es": "Nunca he comido paella. / He comido paella dos veces.",
+                  "zh": "我从没吃过西班牙海鲜饭。／我吃过两次西班牙海鲜饭。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Ya ___ los deberes.（我已经做完作业了。）",
+              "options": [
+                "he hacido",
+                "he hecho",
+                "he hechos"
+              ],
+              "answer": "he hecho",
+              "hint": "hacer 的分词是不规则的，而且分词在完成时里不变。",
+              "explanation": "hacer 的分词是 hecho：Ya he hecho los deberes. *hacido* 是按规则硬套的错误；分词也不随 los deberes 变成复数。",
+              "errorType": "词形变化",
+              "id": "m9-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "朋友问你去没去过墨西哥，你从来没去过：___ he estado en México.",
+              "options": [
+                "No nunca",
+                "Nunca",
+                "Todavía"
+              ],
+              "answer": "Nunca",
+              "hint": "nunca 放在动词前时，还需要 no 吗？",
+              "explanation": "nunca 放在动词前就已经是否定：Nunca he estado en México. *No nunca* 是重复否定的错误位置；todavía 单用意思是“仍然”，不能表达“从来没有”。",
+              "errorType": "用法判断",
+              "id": "m9-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "朋友问：¿Ya has comprado los billetes? 你打算今天下午买，现在还没买。你回答：No, ___.",
+              "options": [
+                "nunca",
+                "todavía no",
+                "alguna vez"
+              ],
+              "answer": "todavía no",
+              "hint": "这件事你打算做，只是现在还没完成。",
+              "explanation": "表示“还没有（但打算做）”用 todavía no。nunca 表示一生中从来没有，与“打算下午买”矛盾；alguna vez 用于询问经历。",
+              "errorType": "用法判断",
+              "id": "m9-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 escribir 的过去分词填空：Esta semana Lucía ha ___ tres correos.",
+              "answer": "escrito",
+              "hint": "escribir 的分词属于不规则分词。",
+              "explanation": "escribir 的分词是 escrito：Lucía ha escrito tres correos. 不说 *escribido*。",
+              "errorType": "词形变化",
+              "id": "m9-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 abrir 的过去分词填空：¡Qué frío! ¿Quién ha ___ la ventana?",
+              "answer": "abierto",
+              "hint": "abrir 的分词不规则，以 -to 结尾。",
+              "explanation": "abrir 的分词是 abierto：¿Quién ha abierto la ventana? 不说 *abrido*。",
+              "errorType": "词形变化",
+              "id": "m9-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 nunca 和 estar 的现在完成时补全，nunca 放在动词前（三个词）：Yo ___ en Japón.（我从来没去过日本。）",
+              "answer": "nunca he estado",
+              "hint": "nunca 放在 haber 前时，句子里不需要 no。",
+              "explanation": "Yo nunca he estado en Japón. nunca 在 haber 前，haber 和分词 estado 连在一起；不说 *he nunca estado*。",
+              "errorType": "句子组织",
+              "id": "m9-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "准备和新同学聊天：写三个 ¿Has… alguna vez? 问题，并如实回答自己的情况；再写一句 ya 和一句 todavía no，说明你本周计划的完成情况。至少用两个不规则分词。",
+            "model": "¿Has visto alguna vez una película española? Sí, he visto muchas. ¿Has escrito alguna vez un poema? No, nunca he escrito un poema. ¿Has estado alguna vez en Barcelona? Sí, una vez. Esta semana ya he hecho la compra, pero todavía no he limpiado la casa.",
+            "rubric": [
+              "不规则分词（visto、hecho、escrito 等）写对了。",
+              "alguna vez 和 nunca 用于人生经历，nunca 的位置与否定正确。",
+              "ya 和 todavía no 用于说明完成情况，放在 haber 前或句末。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m10",
+      "level": "A2",
+      "title": "讲述过去：简单过去时",
+      "description": "用简单过去时讲述在已经结束的时间里发生的事，掌握规则变位、拼写变化和最常用的不规则动词。",
+      "lessons": [
+        {
+          "id": "m10-l1",
+          "title": "规则变位与时间标记",
+          "goal": "能用规则动词的简单过去时讲述 ayer、el año pasado 等已结束时间里发生的事，并写对 -car／-gar／-zar 动词的 yo 形式。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "三句话都有明确的过去时间。比较 hablé 与现在时 hablo：词尾和重音符号有什么不同？",
+            "examples": [
+              {
+                "es": "Ayer hablé con mi abuela.",
+                "zh": "昨天我和奶奶通了电话。"
+              },
+              {
+                "es": "El año pasado Marta vivió en Valencia.",
+                "zh": "去年玛尔塔住在瓦伦西亚。"
+              },
+              {
+                "es": "Anoche comimos en casa de Luis.",
+                "zh": "昨晚我们在路易斯家吃了饭。"
+              }
+            ],
+            "answer": "ayer、el año pasado、anoche 指已经结束的时间，用简单过去时。hablé（yo）、vivió（él/ella）的重读音节在词尾，要写重音符号。hablo 是现在时 yo，habló 是过去时第三人称：重音位置不同，意思就不同。"
+          },
+          "rules": [
+            {
+              "title": "规则变位：-ar 一套，-er/-ir 共用一套",
+              "body": "简单过去时（pretérito indefinido，也叫 pretérito perfecto simple）去掉 -ar／-er／-ir 后加词尾，-er 和 -ir 动词的词尾完全相同。yo 和 él/ella/usted 形式带重音符号（hablé、comió）。tú 形式以 -ste 结尾，不加 -s：hablaste，不是 *hablastes*。-ar 和 -ir 动词的 nosotros 形式与现在时相同（hablamos、vivimos），要靠时间标记区分。",
+              "table": {
+                "caption": "简单过去时（pretérito indefinido）：规则动词",
+                "headers": [
+                  "人称",
+                  "hablar",
+                  "comer",
+                  "vivir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "hablé",
+                    "comí",
+                    "viví"
+                  ],
+                  [
+                    "tú",
+                    "hablaste",
+                    "comiste",
+                    "viviste"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "habló",
+                    "comió",
+                    "vivió"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "hablamos",
+                    "comimos",
+                    "vivimos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hablasteis",
+                    "comisteis",
+                    "vivisteis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "hablaron",
+                    "comieron",
+                    "vivieron"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Ayer comí con mis compañeros.",
+                  "zh": "昨天我和同事们一起吃了饭。"
+                },
+                {
+                  "es": "¿Hablaste con el profesor la semana pasada?",
+                  "zh": "上周你和老师谈过了吗？"
+                }
+              ]
+            },
+            {
+              "title": "时间标记：已经结束的时间",
+              "body": "简单过去时讲述在已结束的时间里完成的动作。常见标记：ayer、anteayer、anoche、la semana pasada、el mes pasado、el año pasado、hace dos días、en 2020、el lunes。对比半岛用法：Hoy he comido paella（今天还没结束，用现在完成时）／Ayer comí paella（昨天已经结束，用简单过去时）。拉美多数地区两种情况都常用简单过去时。",
+              "examples": [
+                {
+                  "es": "Hace tres años visité Lima.",
+                  "zh": "三年前我去过利马。"
+                },
+                {
+                  "es": "La semana pasada mis amigos vendieron su coche.",
+                  "zh": "上周我的朋友们把车卖了。"
+                }
+              ]
+            },
+            {
+              "title": "-car／-gar／-zar：yo 形式的拼写变化",
+              "body": "为了保持原来的发音，以 -car、-gar、-zar 结尾的动词在 yo 形式中改写字母：c → qu（buscar → busqué），g → gu（llegar → llegué，jugar → jugué），z → c（empezar → empecé）。其他人称不变：buscó、llegaste、empezaron。这只是拼写变化，读音没有变。",
+              "examples": [
+                {
+                  "es": "El sábado jugué al fútbol y practiqué inglés.",
+                  "zh": "周六我踢了足球，还练习了英语。"
+                },
+                {
+                  "es": "Empecé el curso en octubre y mi hermano empezó en enero.",
+                  "zh": "我十月开始上这门课，我弟弟一月开始。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Ayer yo ___ con mi jefe por teléfono.",
+              "options": [
+                "hablo",
+                "hablé",
+                "habló"
+              ],
+              "answer": "hablé",
+              "hint": "看时间标记和主语：昨天，yo。",
+              "explanation": "ayer 是已经结束的时间，yo 的简单过去时是 hablé。hablo 是现在时；habló 是第三人称（él/ella/usted）。",
+              "errorType": "词形变化",
+              "id": "m10-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "昨天下午已经结束了：Ayer por la tarde Luis ___ al tenis.",
+              "options": [
+                "ha jugado",
+                "jugó",
+                "juega"
+              ],
+              "answer": "jugó",
+              "hint": "ayer 指的时间段说话时已经结束了吗？",
+              "explanation": "ayer 是已结束的时间，用简单过去时：Luis jugó al tenis. 现在完成时 ha jugado 用于 hoy、esta semana 等还没结束的时间；juega 是现在时。",
+              "errorType": "用法判断",
+              "id": "m10-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "El viernes pasado yo ___ a casa a las diez.",
+              "options": [
+                "llegé",
+                "llegué",
+                "llegó"
+              ],
+              "answer": "llegué",
+              "hint": "llegar 的 yo 形式要保持 g 的读音。",
+              "explanation": "g 在 e 前要写成 gu 才保持读音：llegué。*llegé* 拼写错误；llegó 是第三人称。",
+              "errorType": "词形变化",
+              "id": "m10-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 comer 的简单过去时填空：Anoche nosotros ___ pizza en casa.",
+              "answer": "comimos",
+              "hint": "-er 动词的 nosotros 词尾是 -imos。",
+              "explanation": "comer 的 nosotros 形式是 comimos：Anoche nosotros comimos pizza en casa.",
+              "errorType": "词形变化",
+              "id": "m10-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 buscar 的简单过去时填空：Ayer yo ___ un piso nuevo en internet.",
+              "answer": "busqué",
+              "hint": "-car 动词的 yo 形式要改字母，别忘了重音符号。",
+              "explanation": "buscar 的 yo 形式是 busqué：c 变 qu，词尾 é 带重音。",
+              "errorType": "词形变化",
+              "id": "m10-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "对 tú 说，用 escribir 的简单过去时填空：¿___ a tus padres la semana pasada?",
+              "answer": "Escribiste",
+              "hint": "tú 的简单过去时以 -ste 结尾。",
+              "explanation": "escribir 的 tú 形式是 escribiste，结尾没有 -s：¿Escribiste a tus padres la semana pasada? 不说 *escribistes*。",
+              "errorType": "词形变化",
+              "id": "m10-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写一段五句话的“上周末日记”：用 el sábado、el domingo、por la mañana 等时间标记说明你做了什么，至少用一个 -car／-gar／-zar 动词的 yo 形式。",
+            "model": "El sábado pasado me levanté tarde. Desayuné en una cafetería y después jugué al tenis con mi hermano. Por la tarde visité a mis abuelos. El domingo estudié español y empecé un libro nuevo. Por la noche cené con unos amigos.",
+            "rubric": [
+              "时间标记都指已经结束的时间。",
+              "规则词尾正确，yo 和 él/ella 形式带重音符号。",
+              "-car／-gar／-zar 动词的 yo 形式拼写正确（busqué、jugué、empecé）。"
+            ]
+          }
+        },
+        {
+          "id": "m10-l2",
+          "title": "高频不规则动词与词干变化",
+          "goal": "能写出 ser／ir、tener、estar、hacer、poder、poner、venir、decir 的简单过去时，以及 pedir、dormir 第三人称的词干变化。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "和上一课的 hablé、comió 比，tuve、hizo 的词干和重音符号有什么不同？fuimos 来自哪个动词？",
+            "examples": [
+              {
+                "es": "Ayer tuve un examen.",
+                "zh": "昨天我有一场考试。"
+              },
+              {
+                "es": "El sábado fuimos al cine.",
+                "zh": "周六我们去看了电影。"
+              },
+              {
+                "es": "Mi padre hizo la cena y Ana pidió una pizza.",
+                "zh": "我爸爸做了晚饭，安娜点了一份比萨。"
+              }
+            ],
+            "answer": "tuve（tener）、hizo（hacer）的词干完全变了，而且这类形式不带重音符号。fuimos 既可能是 ir，也可能是 ser，这里 al cine 说明是“去”。pidió 是 pedir 的第三人称，词干 e 变成了 i。"
+          },
+          "rules": [
+            {
+              "title": "ser 与 ir：形式完全相同",
+              "body": "ser 和 ir 的简单过去时完全同形，靠语境区分：后面接 a + 地点通常是 ir（Fui a Roma），后面接名词、形容词时通常是 ser（Fue un día largo）。这些形式都不带重音符号：fui、fue。",
+              "table": {
+                "caption": "简单过去时：ser / ir",
+                "headers": [
+                  "人称",
+                  "ser / ir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "fui"
+                  ],
+                  [
+                    "tú",
+                    "fuiste"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "fue"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "fuimos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "fuisteis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "fueron"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Fui a Roma en 2018.",
+                  "zh": "2018 年我去了罗马。这里是 ir。"
+                },
+                {
+                  "es": "El viaje fue muy bonito.",
+                  "zh": "那次旅行非常美好。这里是 ser。"
+                }
+              ]
+            },
+            {
+              "title": "u 词干：tener、estar、poder、poner",
+              "body": "这几个动词换成特殊词干 tuv-、estuv-、pud-、pus-，再加一套共用词尾：-e、-iste、-o、-imos、-isteis、-ieron。yo 以 -e 结尾，él/ella 以 -o 结尾，并且都不带重音符号：tuve、tuvo，不是 *tuvé*、*tuvó*。",
+              "table": {
+                "caption": "简单过去时：u 词干动词",
+                "headers": [
+                  "人称",
+                  "tener",
+                  "estar",
+                  "poder",
+                  "poner"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "tuve",
+                    "estuve",
+                    "pude",
+                    "puse"
+                  ],
+                  [
+                    "tú",
+                    "tuviste",
+                    "estuviste",
+                    "pudiste",
+                    "pusiste"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "tuvo",
+                    "estuvo",
+                    "pudo",
+                    "puso"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "tuvimos",
+                    "estuvimos",
+                    "pudimos",
+                    "pusimos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "tuvisteis",
+                    "estuvisteis",
+                    "pudisteis",
+                    "pusisteis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "tuvieron",
+                    "estuvieron",
+                    "pudieron",
+                    "pusieron"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "La semana pasada estuve enfermo y no pude ir a clase.",
+                  "zh": "上周我病了，没能去上课；说话者为男性。"
+                },
+                {
+                  "es": "¿Dónde pusiste mis gafas?",
+                  "zh": "你把我的眼镜放哪儿了？"
+                }
+              ]
+            },
+            {
+              "title": "i 词干与 j 词干：hacer、venir、decir",
+              "body": "hacer → hic-，venir → vin-，decir → dij-，词尾与上一条相同，同样不带重音符号。hacer 的第三人称单数写作 hizo（c 变 z 以保持读音）。decir 的第三人称复数是 dijeron，j 后面不加 i，不是 *dijieron*。",
+              "table": {
+                "caption": "简单过去时：hacer、venir、decir",
+                "headers": [
+                  "人称",
+                  "hacer",
+                  "venir",
+                  "decir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "hice",
+                    "vine",
+                    "dije"
+                  ],
+                  [
+                    "tú",
+                    "hiciste",
+                    "viniste",
+                    "dijiste"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "hizo",
+                    "vino",
+                    "dijo"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "hicimos",
+                    "vinimos",
+                    "dijimos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hicisteis",
+                    "vinisteis",
+                    "dijisteis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "hicieron",
+                    "vinieron",
+                    "dijeron"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "¿Qué hiciste el domingo?",
+                  "zh": "周日你做了什么？"
+                },
+                {
+                  "es": "Luis vino tarde y no dijo nada.",
+                  "zh": "路易斯来晚了，什么也没说。"
+                }
+              ]
+            },
+            {
+              "title": "pedir、dormir：只在第三人称变词干",
+              "body": "一些 -ir 词干变化动词在简单过去时里只有 él/ella/usted 和 ellos/ellas/ustedes 形式变化：e → i（pedir → pidió、pidieron；同类有 repetir、servir），o → u（dormir → durmió、durmieron；同类有 morir）。其他人称照常规则：pedí、dormimos。词尾仍是规则词尾，所以 -ió 要写重音符号。",
+              "table": {
+                "caption": "简单过去时：pedir、dormir",
+                "headers": [
+                  "人称",
+                  "pedir",
+                  "dormir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "pedí",
+                    "dormí"
+                  ],
+                  [
+                    "tú",
+                    "pediste",
+                    "dormiste"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "pidió",
+                    "durmió"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "pedimos",
+                    "dormimos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "pedisteis",
+                    "dormisteis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "pidieron",
+                    "durmieron"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Yo pedí sopa y mi hermana pidió pescado.",
+                  "zh": "我点了汤，我姐姐点了鱼。"
+                },
+                {
+                  "es": "Los niños durmieron diez horas.",
+                  "zh": "孩子们睡了十个小时。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Ayer yo ___ un examen difícil.",
+              "options": [
+                "tuve",
+                "tuvé",
+                "tení"
+              ],
+              "answer": "tuve",
+              "hint": "tener 在简单过去时用特殊词干，想一想这类形式要不要写重音。",
+              "explanation": "tener 的 yo 形式是 tuve，不带重音符号。*tuvé* 把规则动词的重音规则套到了不规则形式上；*tení* 是按规则硬套的错误。",
+              "errorType": "词形变化",
+              "id": "m10-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "Anoche Marta ___ la cena para toda la familia.",
+              "options": [
+                "hice",
+                "hació",
+                "hizo"
+              ],
+              "answer": "hizo",
+              "hint": "主语是第三人称单数，注意 hacer 第三人称的拼写。",
+              "explanation": "hacer 的第三人称单数是 hizo。hice 是 yo 形式；*hació* 是按规则硬套的错误。",
+              "errorType": "词形变化",
+              "id": "m10-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "El verano pasado fuimos a la playa con unos amigos. 这里的 fuimos 来自哪个动词？",
+              "options": [
+                "ser",
+                "ir",
+                "estar"
+              ],
+              "answer": "ir",
+              "hint": "看 fuimos 后面接的是什么：a + 地点。",
+              "explanation": "fuimos a la playa 表示“去了海边”，是 ir。ser 和 ir 同形，但 a + 地点说明是移动；estar 的形式是 estuvimos。",
+              "errorType": "用法判断",
+              "id": "m10-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 decir 的简单过去时填空：Ayer mis amigos me ___ la verdad.",
+              "answer": "dijeron",
+              "hint": "第三人称复数；j 后面的词尾和 tuvieron 不完全一样。",
+              "explanation": "decir 的第三人称复数是 dijeron，j 后面没有 i：不说 *dijieron*。",
+              "errorType": "词形变化",
+              "id": "m10-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 pedir 的简单过去时填空：En el restaurante, Luis ___ una paella.",
+              "answer": "pidió",
+              "hint": "第三人称单数，词干元音要变，词尾要写重音。",
+              "explanation": "pedir 在第三人称中 e 变 i：Luis pidió una paella。词尾 -ió 带重音符号。",
+              "errorType": "词形变化",
+              "id": "m10-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "对 tú 说，用 venir 的简单过去时填空：¿Por qué no ___ a la reunión ayer?",
+              "answer": "viniste",
+              "hint": "venir 的过去时词干是 vin-。",
+              "explanation": "venir 的 tú 形式是 viniste：¿Por qué no viniste a la reunión ayer? 不说 *veniste*。",
+              "errorType": "词形变化",
+              "id": "m10-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "讲讲你上一次旅行或一个特别的周末：去了哪里、在那里待了多久、做了什么、遇到了什么问题，最后评价这次经历。至少用五个本课的不规则动词。",
+            "model": "El año pasado fui a Granada con mi hermana. Estuvimos allí tres días. El primer día hicimos una visita a la Alhambra. Mi hermana tuvo un problema con el móvil y no pudo hacer fotos. Por la noche pedimos tapas y mi hermana durmió muy bien. Fue un viaje genial.",
+            "rubric": [
+              "不规则词干正确，tuve、hizo、fue 等形式没有加重音符号。",
+              "能根据语境区分 fui／fue 是 ser 还是 ir。",
+              "pedir、dormir 等动词只在第三人称变化词干。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m11",
+      "level": "A2",
+      "title": "描述过去：过去未完成时",
+      "description": "用过去未完成时描述过去的习惯、场景、年龄和时间，并在叙事中与简单过去时分工。",
+      "lessons": [
+        {
+          "id": "m11-l1",
+          "title": "过去未完成时：变位与用法",
+          "goal": "能写出过去未完成时的规则变位和 ser、ir、ver 的形式，并用它描述过去的习惯、背景、年龄和钟点。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "这些句子讲的是一次性的事件，还是“那时候经常这样／那时候是这样”？动词以什么结尾？",
+            "examples": [
+              {
+                "es": "De niño, vivía en un pueblo.",
+                "zh": "小时候我住在一个小镇上；说话者为男性。"
+              },
+              {
+                "es": "Todos los veranos íbamos a la playa.",
+                "zh": "每年夏天我们都去海边。"
+              },
+              {
+                "es": "Mi abuela era muy alegre.",
+                "zh": "我奶奶是个很开朗的人。"
+              }
+            ],
+            "answer": "vivía、íbamos、era 描述过去的状态和反复的习惯，不强调动作何时开始或结束。-ar 动词用 -aba，-er/-ir 动词用 -ía；ir → iba、ser → era 是不规则形式。"
+          },
+          "rules": [
+            {
+              "title": "规则变位：-aba 与 -ía",
+              "body": "过去未完成时（pretérito imperfecto）非常规则：-ar 动词加 -aba，-er/-ir 动词加 -ía。yo 和 él/ella/usted 形式相同（hablaba），需要时加上主语。重音：-ar 动词只有 nosotros 带重音符号（hablábamos）；-er/-ir 动词每个人称的 í 都带重音符号（comía、comíamos）。tener、hacer、poder 这些在简单过去时里不规则的动词，在这里都是规则的：tenía、hacía、podía。",
+              "table": {
+                "caption": "过去未完成时（pretérito imperfecto）：规则动词",
+                "headers": [
+                  "人称",
+                  "hablar",
+                  "comer",
+                  "vivir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "hablaba",
+                    "comía",
+                    "vivía"
+                  ],
+                  [
+                    "tú",
+                    "hablabas",
+                    "comías",
+                    "vivías"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "hablaba",
+                    "comía",
+                    "vivía"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "hablábamos",
+                    "comíamos",
+                    "vivíamos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hablabais",
+                    "comíais",
+                    "vivíais"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "hablaban",
+                    "comían",
+                    "vivían"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Antes trabajaba en un banco.",
+                  "zh": "以前我在一家银行工作。"
+                },
+                {
+                  "es": "Mis padres no tenían coche.",
+                  "zh": "那时我父母没有车。"
+                }
+              ]
+            },
+            {
+              "title": "只有三个不规则动词：ser、ir、ver",
+              "body": "过去未完成时只有 ser、ir、ver 三个不规则动词。ver 只是保留了词干的 e：veía。注意 éramos、íbamos 的重音符号。",
+              "table": {
+                "caption": "过去未完成时：ser、ir、ver",
+                "headers": [
+                  "人称",
+                  "ser",
+                  "ir",
+                  "ver"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "era",
+                    "iba",
+                    "veía"
+                  ],
+                  [
+                    "tú",
+                    "eras",
+                    "ibas",
+                    "veías"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "era",
+                    "iba",
+                    "veía"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "éramos",
+                    "íbamos",
+                    "veíamos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "erais",
+                    "ibais",
+                    "veíais"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "eran",
+                    "iban",
+                    "veían"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "De pequeños, íbamos al colegio en bicicleta.",
+                  "zh": "小时候我们骑自行车去上学。"
+                },
+                {
+                  "es": "Desde mi ventana veía el mar.",
+                  "zh": "从我的窗户能看到大海。"
+                }
+              ]
+            },
+            {
+              "title": "用法：习惯、描述、年龄与钟点",
+              "body": "过去未完成时用于：① 过去反复的习惯，常与 siempre、todos los días、a menudo、antes、de niño 连用；② 描述过去的人物、地点、天气等背景；③ 过去的年龄和钟点：Tenía diez años.／Eran las ocho.（钟点用 ser 的复数 eran，一点钟用 era la una）。它不交代动作是否结束，像一幅“背景画面”。",
+              "examples": [
+                {
+                  "es": "Cuando tenía ocho años, siempre jugaba en la calle.",
+                  "zh": "我八岁的时候总在街上玩。"
+                },
+                {
+                  "es": "Eran las once y hacía frío.",
+                  "zh": "那时是十一点，天很冷。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "De niño, yo ___ al fútbol todos los sábados.",
+              "options": [
+                "jugué",
+                "jugaba",
+                "juego"
+              ],
+              "answer": "jugaba",
+              "hint": "de niño 和 todos los sábados 说明这是什么样的动作？",
+              "explanation": "小时候每个周六都做的事是过去的习惯，用过去未完成时 jugaba。jugué 讲一次完整的事件；juego 是现在时。",
+              "errorType": "用法判断",
+              "id": "m11-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "Cuando ___ diez años, me encantaban los dinosaurios.",
+              "options": [
+                "tenía",
+                "tuve",
+                "era"
+              ],
+              "answer": "tenía",
+              "hint": "西语用哪个动词表达年龄？过去的年龄是背景还是事件？",
+              "explanation": "年龄用 tener，过去的年龄是背景描述，用 tenía。*era diez años* 是照搬“我是十岁”的错误；tuve 表示一次性事件，不用于描述当时的年龄。",
+              "errorType": "用法判断",
+              "id": "m11-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "Antes nosotros ___ mucho al cine.",
+              "options": [
+                "íbamos",
+                "ibamos",
+                "fuimos"
+              ],
+              "answer": "íbamos",
+              "hint": "antes 表示过去的习惯；再检查重音符号。",
+              "explanation": "ir 的过去未完成时 nosotros 形式是 íbamos，í 带重音符号。fuimos 是简单过去时，不表达“以前常常”。",
+              "errorType": "词形变化",
+              "id": "m11-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ser 的过去未完成时填空：___ las siete de la tarde cuando llegó Pedro.",
+              "answer": "Eran",
+              "hint": "过去的钟点用 ser；七点是复数。",
+              "explanation": "表示过去的钟点用 ser 的过去未完成时，七点用复数：Eran las siete. 只有一点钟用 Era la una。",
+              "errorType": "词形变化",
+              "id": "m11-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 hablar 的过去未完成时填空：Cuando vivíamos en París, ___ francés en casa.（主语是 nosotros）",
+              "answer": "hablábamos",
+              "hint": "-ar 动词只有 nosotros 形式带重音符号。",
+              "explanation": "hablar 的 nosotros 形式是 hablábamos，重音符号在第二个 á 上。",
+              "errorType": "词形变化",
+              "id": "m11-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ver 的过去未完成时填空：Antes yo ___ la tele todas las noches, pero ahora leo.",
+              "answer": "veía",
+              "hint": "ver 是三个不规则动词之一，保留词干的 e。",
+              "explanation": "ver 的 yo 形式是 veía，í 带重音符号：Antes yo veía la tele todas las noches.",
+              "errorType": "词形变化",
+              "id": "m11-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "描述你八到十岁时的生活：住在哪里、家或学校是什么样、平时有什么习惯。写五句话，至少用到 ser、ir 和一个表示年龄的句子。",
+            "model": "Cuando tenía nueve años, vivía en Chengdu con mis padres. Mi colegio era pequeño y estaba cerca de casa. Todos los días iba andando con mi hermano. Por las tardes jugaba con mis vecinos y veía dibujos animados. Mis padres trabajaban mucho.",
+            "rubric": [
+              "过去的习惯和描述都用了过去未完成时。",
+              "ser、ir、ver 的不规则形式和年龄表达（tenía… años）正确。",
+              "-er/-ir 动词的 í 和 -ábamos 的重音符号写对了。"
+            ]
+          }
+        },
+        {
+          "id": "m11-l2",
+          "title": "叙事中的分工：背景与事件",
+          "goal": "能在一段过去的叙事中用过去未完成时铺设背景和进行中的动作，用简单过去时推进事件，并正确使用 mientras 和 cuando。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "在下面的句子里，哪个动词描述“当时的情况”，哪个动词讲“接着发生了什么”？",
+            "examples": [
+              {
+                "es": "Llovía mucho cuando salí de casa.",
+                "zh": "我出门的时候雨下得很大。"
+              },
+              {
+                "es": "Mientras cocinaba, sonó el teléfono.",
+                "zh": "我正在做饭的时候，电话响了。"
+              },
+              {
+                "es": "Estaba cansada, así que me acosté pronto.",
+                "zh": "我很累，所以早早睡了；说话者为女性。"
+              }
+            ],
+            "answer": "llovía、cocinaba、estaba 是背景：当时的天气、正在进行的动作、人物状态，用过去未完成时；salí、sonó、me acosté 是推动故事的完整事件，用简单过去时。"
+          },
+          "rules": [
+            {
+              "title": "背景用未完成时，事件用简单过去时",
+              "body": "讲故事时，过去未完成时描述场景：时间、天气、人物状态、当时正在进行的动作；简单过去时讲述一个接一个完成的事件，推动情节。可以把未完成时想成舞台布景，把简单过去时想成演员的动作。依次发生的一连串动作都用简单过去时：Me levanté, me duché y salí.",
+              "examples": [
+                {
+                  "es": "Hacía sol y había mucha gente en la playa. De repente, empezó a llover.",
+                  "zh": "天气晴朗，海滩上有很多人。突然，开始下雨了。"
+                },
+                {
+                  "es": "Llegué a casa, cené y me acosté.",
+                  "zh": "我到家，吃了晚饭，然后睡了。"
+                }
+              ]
+            },
+            {
+              "title": "mientras 与 cuando",
+              "body": "mientras（在……的时候）通常引出一个持续中的背景动作，用过去未完成时。两个同时持续的动作都用未完成时：Mientras yo cocinaba, mi hermano ponía la mesa。cuando 后面两种时态都可以，看意义：cuando + 简单过去时指某个事件发生的那一刻（Cuando llegué, …）；cuando + 未完成时指当时的状况或习惯（Cuando era niño, …）。“正在做 A 的时候，B 发生了”：A 用未完成时，B 用简单过去时。",
+              "examples": [
+                {
+                  "es": "Mientras yo leía, mi hermana veía la tele.",
+                  "zh": "我看书的时候，我妹妹在看电视。"
+                },
+                {
+                  "es": "Cuando entré en la clase, el profesor hablaba con un alumno.",
+                  "zh": "我走进教室时，老师正在和一个学生说话。"
+                }
+              ]
+            },
+            {
+              "title": "一次还是习惯？兼谈现在完成时",
+              "body": "同一个动词换时态，意思就变了：De niño iba a la playa todos los veranos（反复的习惯）／El verano pasado fui a la playa（一次完整的事件）。时间标记是线索：siempre、todos los días、antes 多配未完成时；ayer、una vez、el lunes、de repente 多配简单过去时。复习：在西班牙，hoy、esta semana 等未结束时间里的事件用现在完成时，已结束的时间用简单过去时；拉美多数地区两种情况都常用简单过去时。",
+              "examples": [
+                {
+                  "es": "Antes comía carne, pero el año pasado decidí ser vegetariano.",
+                  "zh": "以前我吃肉，但去年我决定吃素了；说话者为男性。"
+                },
+                {
+                  "es": "Esta mañana he desayunado fruta; ayer desayuné tostadas.",
+                  "zh": "今天早上我早饭吃了水果；昨天吃的是烤面包片。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Mientras Ana se duchaba, de repente ___ el timbre.",
+              "options": [
+                "sonaba",
+                "sonó",
+                "ha sonado"
+              ],
+              "answer": "sonó",
+              "hint": "de repente 说明这个动作是背景，还是突然发生的事件？",
+              "explanation": "门铃突然响起是打断背景的事件，用简单过去时 sonó。sonaba 会把它变成持续的背景，与 de repente 矛盾；ha sonado 不用于这种过去叙事。",
+              "errorType": "用法判断",
+              "id": "m11-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "Cuando salí del cine, hacía frío y ___ mucho, así que tomé un taxi.",
+              "options": [
+                "llovía",
+                "llovió",
+                "ha llovido"
+              ],
+              "answer": "llovía",
+              "hint": "这个动词和 hacía frío 一起描述你出来时看到的情况。",
+              "explanation": "下雨和天冷一样是当时的天气背景，用 llovía；salí 和 tomé 才是事件。",
+              "errorType": "用法判断",
+              "id": "m11-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选出意思是“小时候我每个周日都去奶奶家”的句子。",
+              "options": [
+                "De niño, fui a casa de mi abuela todos los domingos.",
+                "De niño, iba a casa de mi abuela todos los domingos.",
+                "De niño, he ido a casa de mi abuela todos los domingos."
+              ],
+              "answer": "De niño, iba a casa de mi abuela todos los domingos.",
+              "hint": "de niño 加 todos los domingos 描述的是什么？",
+              "explanation": "小时候的反复习惯用过去未完成时 iba。fui 讲一次完整的事件；he ido 用于和现在相关的时间段，不用于“小时候”。",
+              "errorType": "用法判断",
+              "id": "m11-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 dormir 的适当过去时填空：Los niños ___ cuando sus padres llegaron a casa.（父母到家时，孩子们正在睡觉。）",
+              "answer": "dormían",
+              "accepted": [
+                "estaban durmiendo"
+              ],
+              "hint": "“正在睡觉”是父母到家时的背景。",
+              "explanation": "正在进行的背景动作用过去未完成时：Los niños dormían. 父母到家 llegaron 是事件。未完成时里 dormir 规则变化，不变词干。",
+              "errorType": "用法判断",
+              "id": "m11-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 llamar 的适当过去时填空：Yo veía una película cuando mi madre me ___.（我在看电影时，妈妈给我打了电话。）",
+              "answer": "llamó",
+              "hint": "打电话是打断“看电影”这一背景的事件。",
+              "explanation": "打断背景的事件用简单过去时，第三人称单数是 llamó，ó 带重音符号。",
+              "errorType": "用法判断",
+              "id": "m11-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 preparar 的适当过去时填空：Mientras yo ___ la cena, mi hermano ponía la mesa.（两个动作同时持续进行。）",
+              "answer": "preparaba",
+              "accepted": [
+                "estaba preparando"
+              ],
+              "hint": "mientras 引出的持续动作，和后面的 ponía 用同一种时态。",
+              "explanation": "两个同时持续的背景动作都用过去未完成时：Mientras yo preparaba la cena, mi hermano ponía la mesa.",
+              "errorType": "用法判断",
+              "id": "m11-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "讲一个小故事：“那天发生了一件意想不到的事”。先用两三句过去未完成时铺设背景（时间、天气、你在做什么、感觉如何），再用三四句简单过去时讲发生了什么、你怎么做，最后一句说结果。至少用一次 mientras 或 cuando。",
+            "model": "Era sábado por la mañana y hacía mucho calor. Yo estaba en el parque y leía un libro. Mientras leía, un perro pequeño vino hacia mí. No tenía collar y parecía perdido. Busqué a su dueño por todo el parque. Al final, llegó una niña y dijo: «¡Es mi perro!». Fue un día muy bonito.",
+            "rubric": [
+              "时间、天气、状态和进行中的动作用了过去未完成时。",
+              "推动情节的事件用了简单过去时，不规则形式正确。",
+              "mientras／cuando 前后的时态搭配合理。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m12",
+      "level": "A2",
+      "title": "宾语代词：不再重复名词",
+      "description": "用直接宾语代词和间接宾语代词代替已经提到的人和物，掌握它们与变位动词、不定式、副动词和命令式的位置关系。",
+      "lessons": [
+        {
+          "id": "m12-l1",
+          "title": "直接宾语代词：lo、la、los、las",
+          "goal": "能用 me、te、lo、la、nos、os、los、las 代替已经提到的直接宾语，并把它放在变位动词前或连写在不定式后。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "回答里的 lo、la、las 分别代替了什么？它们放在动词的哪一边？",
+            "examples": [
+              {
+                "es": "—¿Tienes el libro? —Sí, lo tengo.",
+                "zh": "——你有那本书吗？——有，我有。"
+              },
+              {
+                "es": "—¿Dónde compraste la chaqueta? —La compré en Madrid.",
+                "zh": "——你在哪儿买的这件外套？——在马德里买的。"
+              },
+              {
+                "es": "—¿Y las llaves? —Voy a buscarlas.",
+                "zh": "——钥匙呢？——我去找。"
+              }
+            ],
+            "answer": "lo 代替 el libro，la 代替 la chaqueta，las 代替 las llaves：代词与所代的名词阴阳性、单复数一致。和变位动词（tengo、compré）一起时放在动词前；和不定式（buscar）一起时可以连写在不定式后面。"
+          },
+          "rules": [
+            {
+              "title": "直接宾语代词的形式",
+              "body": "直接宾语是动作直接作用的对象（看见谁、买什么）。为了不重复，用直接宾语代词代替已经提到的人或物。第三人称要与所代名词的阴阳性和单复数一致：el libro → lo，la casa → la，los libros → los，las casas → las。人作直接宾语时前面有 a（Veo a Ana），代词代替的是整个 a Ana：La veo。西班牙部分地区指男性时用 le（Le conozco），称为 leísmo；本课统一使用 lo。",
+              "table": {
+                "caption": "直接宾语代词",
+                "headers": [
+                  "所指",
+                  "代词",
+                  "例句"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "me",
+                    "Mi madre me llama todos los días."
+                  ],
+                  [
+                    "tú",
+                    "te",
+                    "Te espero aquí."
+                  ],
+                  [
+                    "él / usted（阳性）；阳性单数事物",
+                    "lo",
+                    "¿El café? Lo tomo solo."
+                  ],
+                  [
+                    "ella / usted（阴性）；阴性单数事物",
+                    "la",
+                    "¿La sopa? La hago yo."
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "nos",
+                    "Nuestros amigos nos visitan."
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "os",
+                    "Os invito a cenar."
+                  ],
+                  [
+                    "ellos / ustedes（阳性）；阳性复数事物",
+                    "los",
+                    "¿Los billetes? Los tengo yo."
+                  ],
+                  [
+                    "ellas / ustedes（阴性）；阴性复数事物",
+                    "las",
+                    "¿Las fotos? Las miro luego."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "—¿Ves a Marta? —Sí, la veo.",
+                  "zh": "——你看见玛尔塔了吗？——看见了。"
+                },
+                {
+                  "es": "—¿Compras las naranjas? —Sí, las compro.",
+                  "zh": "——你买这些橙子吗？——买。"
+                }
+              ]
+            },
+            {
+              "title": "位置：放在变位动词前",
+              "body": "代词放在变位动词前面，分开书写。否定句中 no 在代词前：No lo sé。在现在完成时中，代词放在 haber 前：Lo he visto（不说 *He lo visto*）。简单过去时和过去未完成时也一样：La compré ayer。",
+              "examples": [
+                {
+                  "es": "No la conozco.",
+                  "zh": "我不认识她。"
+                },
+                {
+                  "es": "—¿Has leído el periódico? —Sí, lo he leído esta mañana.",
+                  "zh": "——你看过报纸了吗？——看过了，今天早上看的。"
+                }
+              ]
+            },
+            {
+              "title": "不定式与副动词：可以连写在后面",
+              "body": "动词短语里有不定式（voy a、quiero、tengo que + 不定式）或副动词（estar + -ando／-iendo，m14 详讲）时，代词有两个位置，意思相同：放在变位动词前（Lo voy a comprar），或连写在不定式／副动词后（Voy a comprarlo）。不能放在两个动词中间：*Voy lo a comprar*。不定式后连写一个代词不加重音（comprarlo）；副动词后连写代词要加重音，以保持原来的重读位置（leyendo → leyéndolo）。",
+              "examples": [
+                {
+                  "es": "Quiero verla. / La quiero ver.",
+                  "zh": "我想见她。"
+                },
+                {
+                  "es": "—¿Y el informe? —Estoy escribiéndolo. / Lo estoy escribiendo.",
+                  "zh": "——报告呢？——我正在写。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "—¿Dónde está mi chaqueta? —___ tengo yo.",
+              "options": [
+                "Lo",
+                "La",
+                "Le"
+              ],
+              "answer": "La",
+              "hint": "chaqueta 是阴性还是阳性？它在句中是直接宾语。",
+              "explanation": "la chaqueta 是阴性单数，直接宾语代词用 la：La tengo yo. lo 用于阳性；le 是间接宾语代词。",
+              "errorType": "用法判断",
+              "id": "m12-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "—¿Has visto mis gafas? —No, no ___ he visto.",
+              "options": [
+                "los",
+                "la",
+                "las"
+              ],
+              "answer": "las",
+              "hint": "gafas 的阴阳性和单复数是什么？",
+              "explanation": "las gafas 是阴性复数，用 las：No, no las he visto. 代词放在 haber 前。",
+              "errorType": "用法判断",
+              "id": "m12-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "说到 los billetes，选出正确的句子：“我今天下午要买那些票。”",
+              "options": [
+                "Voy los a comprar esta tarde.",
+                "Voy a comprarlos esta tarde.",
+                "Voy a los comprar esta tarde."
+              ],
+              "answer": "Voy a comprarlos esta tarde.",
+              "hint": "代词可以放在整个动词短语前，或连写在不定式后；能不能放中间？",
+              "explanation": "代词连写在不定式后：Voy a comprarlos。也可以说 Los voy a comprar。代词不能插在 voy 和 a 之间，也不能放在 a 和不定式之间。",
+              "errorType": "句子组织",
+              "id": "m12-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用直接宾语代词填空：—¿Conoces a Laura y a Carmen? —Sí, ___ conozco desde hace años.",
+              "answer": "las",
+              "hint": "代替的是两位女性。",
+              "explanation": "a Laura y a Carmen 是阴性复数的直接宾语，用 las：Sí, las conozco desde hace años.",
+              "errorType": "用法判断",
+              "id": "m12-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用直接宾语代词填空：—¿Me llamas esta noche? —Sí, ___ llamo a las nueve.",
+              "answer": "te",
+              "hint": "对方问“你给我打电话吗”，你回答“我给你打”。",
+              "explanation": "回答时对象变成了 tú，直接宾语代词用 te：Sí, te llamo a las nueve.",
+              "errorType": "用法判断",
+              "id": "m12-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "把代词连写在不定式后，只写一个词：—¿Y el pescado? —Lo quiero preparar hoy. → Quiero ___ hoy.",
+              "answer": "prepararlo",
+              "hint": "把 lo 接在不定式末尾，连成一个词。",
+              "explanation": "Quiero prepararlo hoy. 不定式后连写一个代词时不需要加重音符号。",
+              "errorType": "句子组织",
+              "id": "m12-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "你和室友在准备周末聚会。写一段四到五句的对话：室友问你是否买了或准备了某些东西（el pan、la tarta、los refrescos、las sillas），你用直接宾语代词回答。至少一句用 voy a + 不定式，一句用现在完成时。",
+            "model": "—¿Has comprado el pan? —Sí, lo he comprado esta mañana. —¿Y la tarta? —Todavía no la he comprado. Voy a comprarla esta tarde. —¿Y las sillas? —Las trae Marcos.",
+            "rubric": [
+              "代词与所代名词的阴阳性和单复数一致。",
+              "代词放在变位动词前或连写在不定式后，没有插在 haber 和分词之间。",
+              "回答中没有重复已经提到的名词。"
+            ]
+          }
+        },
+        {
+          "id": "m12-l2",
+          "title": "双宾语代词：se lo doy",
+          "goal": "能把间接宾语代词和直接宾语代词连用，按“间接在前、直接在后”排列，把 le／les 换成 se，并在连写时加上重音符号。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "回答里把两个名词都换成了代词。两个代词的顺序是什么？第二句里的 le 去哪里了？",
+            "examples": [
+              {
+                "es": "—¿Me prestas tu bici? —Sí, te la presto.",
+                "zh": "——你把自行车借给我吗？——好，借给你。"
+              },
+              {
+                "es": "—¿Le das el regalo a Ana? —Sí, se lo doy mañana.",
+                "zh": "——你把礼物给安娜吗？——是的，我明天给她。"
+              },
+              {
+                "es": "—¿Nos enseñas las fotos? —Sí, os las enseño ahora.",
+                "zh": "——你给我们看看照片吗？——好，我现在给你们看。"
+              }
+            ],
+            "answer": "表示“给谁”的间接宾语代词（te、se、os）在前，表示“什么”的直接宾语代词（la、lo、las）在后。le 遇到 lo 时变成 se：不说 *le lo doy*，而说 se lo doy。"
+          },
+          "rules": [
+            {
+              "title": "顺序：间接在前，直接在后",
+              "body": "间接宾语代词（me、te、le、nos、os、les，A1 学 gustar 时已经见过）表示“给谁、为谁”。同一个动词带两个代词时，间接宾语代词在前，直接宾语代词在后，一起放在变位动词前：Me lo explica。否定时 no 放在最前：No te lo digo。",
+              "examples": [
+                {
+                  "es": "—¿Me explicas el ejercicio? —Sí, te lo explico.",
+                  "zh": "——你给我讲讲这道练习吗？——好，我给你讲。"
+                },
+                {
+                  "es": "Mis padres nos compraron las entradas. → Mis padres nos las compraron.",
+                  "zh": "我父母给我们买了门票。→ 我父母给我们买了。"
+                }
+              ]
+            },
+            {
+              "title": "le / les → se",
+              "body": "le 或 les 后面紧跟 lo、la、los、las 时，一律变成 se：*le lo doy* → se lo doy，*les las enseño* → se las enseño。这个 se 不分单复数，可能指 a él、a ella、a usted、a ellos、a ellas、a ustedes；意思不清楚时，可以在句末补上 a + 人：Se lo doy a ella。直接宾语代词仍然要与所代的事物一致。",
+              "examples": [
+                {
+                  "es": "—¿Le has dado las llaves a Pedro? —Sí, ya se las he dado.",
+                  "zh": "——你把钥匙给佩德罗了吗？——给了，已经给他了。"
+                },
+                {
+                  "es": "—¿Les mandas la foto a tus padres? —Sí, se la mando ahora.",
+                  "zh": "——你把照片发给你父母吗？——发，我现在就发给他们。"
+                }
+              ]
+            },
+            {
+              "title": "连写与重音符号",
+              "body": "和不定式、副动词或肯定命令式一起用时，两个代词按同样的顺序连写在动词后面（不定式和副动词的情况也可以放在变位动词前）：Te lo voy a decir = Voy a decírtelo。连写后，原来的重读音节离词尾更远了，要加重音符号来保持读音：dar → dárselo，dando → dándoselo，da（tú 的命令式“给”，m13 详讲）→ dámelo。只连写一个代词的不定式不加重音（darlo）。",
+              "examples": [
+                {
+                  "es": "Voy a explicártelo. / Te lo voy a explicar.",
+                  "zh": "我来给你解释这个。"
+                },
+                {
+                  "es": "—¿Y las fotos para tus abuelos? —Estoy enviándoselas ahora.",
+                  "zh": "——给你祖父母的照片呢？——我正在发给他们。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "—¿Le mandaste el libro a Pablo? —Sí, ___ mandé ayer.",
+              "options": [
+                "le lo",
+                "se lo",
+                "lo le"
+              ],
+              "answer": "se lo",
+              "hint": "le 后面紧跟 lo 时要怎么变？顺序是什么？",
+              "explanation": "间接宾语 le 在 lo 前要变成 se：Sí, se lo mandé ayer. *le lo* 没有变形；*lo le* 顺序也错了。",
+              "errorType": "词形变化",
+              "id": "m12-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "—¿Me prestas tus apuntes? —Claro, ___ presto.",
+              "options": [
+                "los te",
+                "te los",
+                "te las"
+              ],
+              "answer": "te los",
+              "hint": "先写“给谁”，再写“什么”；apuntes 是阳性复数。",
+              "explanation": "间接宾语 te 在前，直接宾语在后；los apuntes 是阳性复数，用 los：Claro, te los presto.",
+              "errorType": "句子组织",
+              "id": "m12-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "说到 la carta，选出书写正确的句子：“我要把它寄给他们。”",
+              "options": [
+                "Voy a mandarsela.",
+                "Voy a mandársela.",
+                "Voy a mandarlesla."
+              ],
+              "answer": "Voy a mandársela.",
+              "hint": "les 遇到 la 要变形；连写两个代词后，检查重读音节的位置。",
+              "explanation": "les + la → se la，连写成 mandársela。原来重读的 -dar 变成倒数第三个音节，必须写重音符号。*mandarlesla* 没有把 les 变成 se。",
+              "errorType": "词形变化",
+              "id": "m12-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用两个代词填空：—¿Les has enseñado las fotos a tus amigos? —Sí, ya ___ he enseñado.",
+              "answer": "se las",
+              "hint": "les 遇到直接宾语代词会变形；fotos 是阴性复数。",
+              "explanation": "les + las → se las：Sí, ya se las he enseñado. 两个代词都放在 haber 前。",
+              "errorType": "词形变化",
+              "id": "m12-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "对 vosotros 说，用两个代词填空：—¿Nos explicas el problema? —Sí, ___ explico ahora.",
+              "answer": "os lo",
+              "hint": "回答时“给谁”变成了 vosotros；el problema 是阳性单数。",
+              "explanation": "间接宾语 os 在前，直接宾语 lo 在后：Sí, os lo explico ahora.",
+              "errorType": "句子组织",
+              "id": "m12-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "把两个代词连写在不定式后，只写一个词（注意重音）：Quiero decirle la verdad a mi madre. → Quiero ___.",
+              "answer": "decírsela",
+              "hint": "le + la 先变形，再连写；数一数重读音节的位置。",
+              "explanation": "le + la → se la，连写成 decírsela。-cir 原本重读，连写后变成倒数第三个音节，要写重音符号：Quiero decírsela.",
+              "errorType": "词形变化",
+              "id": "m12-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "你要搬家，要把一些东西送给或卖给朋友和家人。写四句话说明把什么给谁，再分别用两个代词改写。至少一句用 se + lo／la／los／las，一句把两个代词连写在不定式后。",
+            "model": "Le doy mi bicicleta a mi primo. → Se la doy. / Voy a regalar los libros a mis compañeros. → Voy a regalárselos. / Te dejo la lámpara a ti. → Te la dejo. / Les vendo el sofá a mis vecinos. → Se lo vendo.",
+            "rubric": [
+              "间接宾语代词在前，直接宾语代词在后。",
+              "le／les 在 lo／la／los／las 前变成了 se。",
+              "两个代词连写在不定式后时写了重音符号。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m13",
+      "level": "A2",
+      "title": "比较与命令",
+      "description": "学会比较人和事物的异同，并用肯定命令式给出指令、建议和邀请。",
+      "lessons": [
+        {
+          "id": "m13-l1",
+          "title": "比较级与最高级",
+          "goal": "能用 más／menos… que、tan… como、tanto… como、不规则比较级、el más… de 和 -ísimo 比较人和事物。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "这三句话分别表示“更……”“一样……”和“最……”。各用了哪些词来搭配？",
+            "examples": [
+              {
+                "es": "Madrid es más grande que Sevilla.",
+                "zh": "马德里比塞维利亚大。"
+              },
+              {
+                "es": "Mi hermano es tan alto como yo.",
+                "zh": "我哥哥和我一样高。"
+              },
+              {
+                "es": "Es el restaurante más caro de la ciudad.",
+                "zh": "这是城里最贵的餐馆。"
+              }
+            ],
+            "answer": "“更……”用 más + 形容词 + que；“一样……”用 tan + 形容词 + como；“最……”用 定冠词 +（名词）+ más + 形容词 + de。比较对象是人称代词时用主格：como yo。"
+          },
+          "rules": [
+            {
+              "title": "比较级：más／menos… que，tan… como",
+              "body": "不等比较：más 或 menos + 形容词／副词 + que（Ana es más alta que Luis；Hablas menos rápido que yo）。同等比较：tan + 形容词／副词 + como（Es tan simpático como su padre）。比较对象是人称代词时用主格：que yo、como tú。数字前说“多于”用 más de：Tengo más de diez libros。",
+              "examples": [
+                {
+                  "es": "Este piso es menos caro que el otro.",
+                  "zh": "这套公寓没有另一套贵。"
+                },
+                {
+                  "es": "Hoy hace tan frío como ayer.",
+                  "zh": "今天和昨天一样冷。"
+                }
+              ]
+            },
+            {
+              "title": "tanto… como 与不规则比较级",
+              "body": "比较名词的数量时用 tanto／tanta／tantos／tantas + 名词 + como，tanto 要与名词的阴阳性和单复数一致：tanto dinero、tanta paciencia、tantos amigos、tantas horas。和动词一起比较时用不变的 tanto：Trabajo tanto como tú。四个常用不规则比较级：bueno → mejor，malo → peor，比较年龄时用 mayor（年纪大）和 menor（年纪小）。比较好坏时用 mejor、peor，不说 *más mejor*。复数形式为 mejores、peores、mayores、menores。",
+              "examples": [
+                {
+                  "es": "No tengo tantas clases como tú.",
+                  "zh": "我的课没有你那么多。"
+                },
+                {
+                  "es": "Mi hermana es mayor que yo, pero yo cocino mejor que ella.",
+                  "zh": "我姐姐比我大，但我做饭比她好。"
+                }
+              ]
+            },
+            {
+              "title": "最高级：el más… de 与 -ísimo",
+              "body": "相对最高级：定冠词 +（名词）+ más／menos + 形容词 + de + 范围：la ciudad más bonita de España，范围用 de，不用 en。不规则形式 el mejor、el peor 通常放在名词前：el mejor restaurante del barrio。绝对最高级 -ísimo 表示“非常、极其”，不和别人比较：去掉词尾元音，加 -ísimo／-ísima／-ísimos／-ísimas。caro → carísimo，fácil → facilísimo（原来的重音符号去掉）；拼写变化：rico → riquísimo，largo → larguísimo。-ísimo 前不再加 muy。",
+              "examples": [
+                {
+                  "es": "Lucía es la más alta de la clase.",
+                  "zh": "露西亚是班上最高的。"
+                },
+                {
+                  "es": "La paella está riquísima.",
+                  "zh": "这份海鲜饭好吃极了。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Este restaurante es muy bueno, pero el otro es todavía ___.",
+              "options": [
+                "más mejor",
+                "mejor",
+                "el mejor"
+              ],
+              "answer": "mejor",
+              "hint": "bueno 的比较级是什么？它前面还需要 más 吗？",
+              "explanation": "bueno 的比较级是 mejor，本身就含“更”的意思：el otro es todavía mejor。*más mejor* 重复了比较；el mejor 是最高级。",
+              "errorType": "词形变化",
+              "id": "m13-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "Pedro mide 1,80 y Juan también mide 1,80. Pedro es ___ alto como Juan.",
+              "options": [
+                "tanto",
+                "tan",
+                "más"
+              ],
+              "answer": "tan",
+              "hint": "两人一样高；后面是形容词 alto。",
+              "explanation": "形容词前表示“一样”用 tan… como：Pedro es tan alto como Juan。tanto 用于名词或动词；más 表示“更”，要配 que。",
+              "errorType": "用法判断",
+              "id": "m13-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "Granada es la ciudad más bonita ___ España, en mi opinión.",
+              "options": [
+                "en",
+                "de",
+                "que"
+              ],
+              "answer": "de",
+              "hint": "最高级的范围用哪个介词？",
+              "explanation": "西语最高级的比较范围用 de：la ciudad más bonita de España。不用 en；que 用于比较级。",
+              "errorType": "用法判断",
+              "id": "m13-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填 tanto 的正确形式：Yo no tengo ___ paciencia como tú.",
+              "answer": "tanta",
+              "hint": "paciencia 是阴性单数名词。",
+              "explanation": "tanto 修饰名词时要一致，paciencia 是阴性单数，所以用 tanta：Yo no tengo tanta paciencia como tú.",
+              "errorType": "词形变化",
+              "id": "m13-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "写出 -ísimo 形式：Esta sopa está muy rica. → Esta sopa está ___.",
+              "answer": "riquísima",
+              "hint": "sopa 是阴性；rico 加 -ísimo 时 c 要变。",
+              "explanation": "rico 去掉 -o 加 -ísima，c 变 qu 以保持读音：riquísima。不说 *muy riquísima*。",
+              "errorType": "词形变化",
+              "id": "m13-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词：Luis tiene 15 años y su hermano tiene 12. Su hermano es ___ que él.",
+              "answer": "menor",
+              "hint": "比较年龄时，“年纪小”用哪个不规则比较级？",
+              "explanation": "比较年龄用 mayor／menor。弟弟 12 岁，比 15 岁的路易斯小：Su hermano es menor que él.",
+              "errorType": "用法判断",
+              "id": "m13-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "比较你熟悉的两座城市（比如你的家乡和你现在住的城市）。写五句话，用到 más／menos… que、tan… como、tanto… como、一个不规则比较级和一个最高级。",
+            "model": "Shanghái es más grande que mi ciudad, Hangzhou. La vida en Hangzhou es menos cara que en Shanghái, pero la ciudad no es tan moderna. Shanghái no tiene tantos parques como Hangzhou. Para mí, la comida de Hangzhou es mejor. El Lago del Oeste es el lugar más bonito de la ciudad: ¡es bellísimo!",
+            "rubric": [
+              "比较级中 más／menos 配 que，tan／tanto 配 como。",
+              "tanto 与名词一致，并正确使用了 mejor、peor、mayor 或 menor。",
+              "最高级用 de 表示范围，-ísimo 形式拼写正确。"
+            ]
+          }
+        },
+        {
+          "id": "m13-l2",
+          "title": "肯定命令式",
+          "goal": "能用 tú、usted、vosotros、ustedes 的肯定命令式给出指令和建议，掌握八个不规则 tú 形式，并把代词连写在命令式后。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "这些句子都在请人做事。比较 habla 和现在时 hablas；对 usted 说话时，为什么词尾换成了 -e？",
+            "examples": [
+              {
+                "es": "Habla más despacio, por favor.",
+                "zh": "（对 tú）请说慢一点。"
+              },
+              {
+                "es": "Pase y siéntese, por favor.",
+                "zh": "（对 usted）请进，请坐。"
+              },
+              {
+                "es": "Abrid los libros.",
+                "zh": "（对 vosotros）打开书。"
+              }
+            ],
+            "answer": "tú 的肯定命令式和现在时 él/ella 形式相同（habla）。usted 的命令式“换元音”：-ar 动词用 -e（pase），-er/-ir 动词用 -a。vosotros 把不定式的 -r 换成 -d（abrid）。代词连写在命令式后面（siéntese）。"
+          },
+          "rules": [
+            {
+              "title": "规则变位：四种对象",
+              "body": "肯定命令式（imperativo afirmativo）：tú 形式等于现在时第三人称单数（habla、come、escribe）；vosotros 形式把不定式的 -r 换成 -d（hablad、comed、escribid）；usted／ustedes 形式“换元音”：-ar 动词用 e（hable／hablen），-er/-ir 动词用 a（coma／coman）。usted／ustedes 形式以现在时 yo 形式为基础：tengo → tenga，hago → haga，pongo → ponga，salgo → salga，vengo → venga，digo → diga；例外有 ir → vaya，ser → sea，estar → esté，saber → sepa，dar → dé。-car／-gar／-zar 动词同样改拼写：busque、llegue、empiece。词干变化动词在 tú、usted、ustedes 中照样变：cierra、cierre、cierren，vosotros 不变：cerrad。拉美通常用 ustedes 代替 vosotros。usted／ustedes 的命令式与 B1 将要学习的虚拟式现在时（presente de subjuntivo）形式相同，先记住“以现在时 yo 形式为基础换元音”即可。",
+              "table": {
+                "caption": "肯定命令式（imperativo afirmativo）：规则动词",
+                "headers": [
+                  "对象",
+                  "hablar",
+                  "comer",
+                  "escribir"
+                ],
+                "rows": [
+                  [
+                    "tú",
+                    "habla",
+                    "come",
+                    "escribe"
+                  ],
+                  [
+                    "usted",
+                    "hable",
+                    "coma",
+                    "escriba"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hablad",
+                    "comed",
+                    "escribid"
+                  ],
+                  [
+                    "ustedes",
+                    "hablen",
+                    "coman",
+                    "escriban"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Escribe tu nombre aquí.",
+                  "zh": "（对 tú）在这里写上你的名字。"
+                },
+                {
+                  "es": "Hablen más bajo, por favor.",
+                  "zh": "（对 ustedes）请小声一点说话。"
+                }
+              ]
+            },
+            {
+              "title": "八个不规则 tú 命令式",
+              "body": "这八个高频动词的 tú 命令式很短，要单独记。它们的 vosotros 形式仍然规则：tened、venid、poned、salid、haced、decid、id、sed。ve 既是 ir 的命令式，也是 ver 的命令式，靠语境区分；sé（ser 的命令式）带重音符号，与代词 se 区分。",
+              "table": {
+                "caption": "不规则 tú 命令式（附 usted 形式）",
+                "headers": [
+                  "不定式",
+                  "tú",
+                  "usted"
+                ],
+                "rows": [
+                  [
+                    "tener",
+                    "ten",
+                    "tenga"
+                  ],
+                  [
+                    "venir",
+                    "ven",
+                    "venga"
+                  ],
+                  [
+                    "poner",
+                    "pon",
+                    "ponga"
+                  ],
+                  [
+                    "salir",
+                    "sal",
+                    "salga"
+                  ],
+                  [
+                    "hacer",
+                    "haz",
+                    "haga"
+                  ],
+                  [
+                    "decir",
+                    "di",
+                    "diga"
+                  ],
+                  [
+                    "ir",
+                    "ve",
+                    "vaya"
+                  ],
+                  [
+                    "ser",
+                    "sé",
+                    "sea"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Ven aquí y pon la mesa, por favor.",
+                  "zh": "过来摆一下餐具吧。"
+                },
+                {
+                  "es": "Ten cuidado y sé puntual.",
+                  "zh": "小心点，要准时。"
+                }
+              ]
+            },
+            {
+              "title": "代词连写在命令式后",
+              "body": "肯定命令式中，自复代词和宾语代词必须连写在动词后面，不能放在前面：siéntate、dímelo、póngalo。连写后，如果原来的重读音节变成了倒数第三个或更前的音节，要加重音符号：levanta → levántate，da → dámelo，diga → dígame。单音节命令式只加一个代词时不加重音：ponlo、dime、hazlo。vosotros 形式加自复代词 os 时去掉 -d：levantad + os → levantaos。",
+              "examples": [
+                {
+                  "es": "Levántate, son las ocho.",
+                  "zh": "起床吧，八点了。"
+                },
+                {
+                  "es": "—¿Dónde pongo las bolsas? —Póngalas aquí, por favor.",
+                  "zh": "——袋子放哪儿？——请放这儿。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "朋友在你家门口，你请他进来（对 tú）：___, por favor.",
+              "options": [
+                "Pase",
+                "Pasa",
+                "Pasas"
+              ],
+              "answer": "Pasa",
+              "hint": "tú 的肯定命令式和现在时哪个人称的形式相同？",
+              "explanation": "对 tú 的肯定命令式等于现在时第三人称单数：Pasa. Pase 是对 usted 说的；pasas 是陈述“你进来”的现在时，不是命令。",
+              "errorType": "词形变化",
+              "id": "m13-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "你对一位年长的陌生人（usted）说：“请在这里写上您的名字。”___ su nombre aquí, por favor.",
+              "options": [
+                "Escribe",
+                "Escriba",
+                "Escribid"
+              ],
+              "answer": "Escriba",
+              "hint": "对 usted 时，-ir 动词的元音要怎么换？",
+              "explanation": "usted 的命令式“换元音”，-ir 动词用 a：Escriba su nombre aquí. Escribe 对 tú；Escribid 对 vosotros。",
+              "errorType": "词形变化",
+              "id": "m13-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "妈妈对孩子说：“把外套穿上！”",
+              "options": [
+                "¡Pónte el abrigo!",
+                "¡Te pon el abrigo!",
+                "¡Ponte el abrigo!"
+              ],
+              "answer": "¡Ponte el abrigo!",
+              "hint": "肯定命令式中代词的位置在哪里？单音节命令式加一个代词要不要写重音？",
+              "explanation": "pon + te 连写为 ponte：¡Ponte el abrigo! 代词不能放在肯定命令式前；pon 是单音节，加一个代词后重读仍在倒数第二个音节，不写重音符号。",
+              "errorType": "句子组织",
+              "id": "m13-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "写出 hacer 的 tú 肯定命令式：___ los deberes antes de cenar.",
+              "answer": "Haz",
+              "hint": "hacer 是八个不规则 tú 命令式之一。",
+              "explanation": "hacer 的 tú 命令式是 haz：Haz los deberes antes de cenar.",
+              "errorType": "词形变化",
+              "id": "m13-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "对 vosotros 说，写出 salir 的肯定命令式：Chicos, ___ ya, que es tarde.",
+              "answer": "salid",
+              "hint": "vosotros 形式即使在不规则动词中也是规则的：把 -r 换成……",
+              "explanation": "vosotros 的肯定命令式把不定式的 -r 换成 -d：salir → salid。sal 是 tú 形式。",
+              "errorType": "词形变化",
+              "id": "m13-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "把 decir 的 tú 命令式和代词 me、lo 连写成一个词（注意重音）：—Tengo un secreto. —¡___!",
+              "answer": "Dímelo",
+              "hint": "di + me + lo，间接宾语在前；数一数重读音节。",
+              "explanation": "di + me + lo = dímelo。di 原本重读，连写后成为倒数第三个音节，要写重音符号。",
+              "errorType": "词形变化",
+              "id": "m13-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "一位西班牙朋友第一次来你的城市，给他写一条五句的建议消息（对 tú）：去哪里、吃什么、注意什么；再写一句同样的建议，对他的父母（ustedes）说。至少用三个不规则 tú 形式和一个连写代词的命令式。",
+            "model": "Ven en primavera, es la mejor época. Ve al casco antiguo y haz fotos del río. Prueba el pato asado: ¡pídelo en el restaurante de la plaza! Ten cuidado con el metro en hora punta. Sal por la noche al mercado. （对他的父母：）Vengan en primavera y visiten el museo.",
+            "rubric": [
+              "tú、usted、ustedes 的形式区分清楚。",
+              "不规则 tú 形式（ven、ve、haz、ten、sal 等）写对了。",
+              "代词连写在命令式后，需要时写了重音符号。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m14",
+      "level": "A2",
+      "title": "进行、义务与将来",
+      "description": "用 estar + 副动词描述正在进行的动作，用常见动词短语表达义务和动作阶段，并用简单将来时谈论未来。",
+      "lessons": [
+        {
+          "id": "m14-l1",
+          "title": "estar + 副动词与常用动词短语",
+          "goal": "能用 estar + 副动词描述正在进行的动作，并用 tener que、hay que、deber、acabar de、volver a、empezar a 表达义务和动作阶段。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "第一句在说“此刻正在发生”。后两句里，动词短语给句子增加了什么意思？",
+            "examples": [
+              {
+                "es": "Ahora estoy leyendo un libro muy bueno.",
+                "zh": "我现在正在读一本很好的书。"
+              },
+              {
+                "es": "Tengo que estudiar esta noche.",
+                "zh": "今晚我得学习。"
+              },
+              {
+                "es": "Acabo de llegar a casa.",
+                "zh": "我刚到家。"
+              }
+            ],
+            "answer": "estar + 副动词（leyendo）表示正在进行；tener que + 不定式表示必须做；acabar de + 不定式表示刚刚做完。这些短语中只有第一个动词变位，第二个动词保持不定式或副动词形式。"
+          },
+          "rules": [
+            {
+              "title": "副动词与 estar + 副动词",
+              "body": "副动词（gerundio）：-ar 动词去词尾加 -ando，-er/-ir 动词加 -iendo：hablando、comiendo、viviendo。副动词本身不随人称变化，由 estar 变位：Estoy comiendo、Están viviendo。estar + 副动词表示说话这一刻或这段时间正在进行的动作；西语一般现在时也能指“现在”，estar + 副动词更强调“正在进行中”。代词可以放在 estar 前，也可以连写在副动词后（要加重音）：Lo estoy haciendo／Estoy haciéndolo。",
+              "examples": [
+                {
+                  "es": "—¿Qué haces? —Estoy cocinando.",
+                  "zh": "——你在干什么？——我在做饭。"
+                },
+                {
+                  "es": "Mis padres están viviendo en Valencia este año.",
+                  "zh": "今年我父母住在瓦伦西亚。"
+                }
+              ]
+            },
+            {
+              "title": "不规则副动词",
+              "body": "① 词干以元音结尾的 -er/-ir 动词，-iendo 的 i 变成 y：leer → leyendo，oír → oyendo，traer → trayendo，ir → yendo。② 一些 -ir 动词的词干 e 变 i、o 变 u：pedir → pidiendo，decir → diciendo，venir → viniendo，dormir → durmiendo。其中 pedir、dormir 的变化与简单过去时第三人称（pidió、durmió）相同，可以一起记。",
+              "table": {
+                "caption": "常见不规则副动词",
+                "headers": [
+                  "不定式",
+                  "副动词",
+                  "变化"
+                ],
+                "rows": [
+                  [
+                    "leer",
+                    "leyendo",
+                    "i → y"
+                  ],
+                  [
+                    "oír",
+                    "oyendo",
+                    "i → y"
+                  ],
+                  [
+                    "traer",
+                    "trayendo",
+                    "i → y"
+                  ],
+                  [
+                    "ir",
+                    "yendo",
+                    "i → y"
+                  ],
+                  [
+                    "pedir",
+                    "pidiendo",
+                    "e → i"
+                  ],
+                  [
+                    "decir",
+                    "diciendo",
+                    "e → i"
+                  ],
+                  [
+                    "venir",
+                    "viniendo",
+                    "e → i"
+                  ],
+                  [
+                    "dormir",
+                    "durmiendo",
+                    "o → u"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Habla bajo, el bebé está durmiendo.",
+                  "zh": "小声点，宝宝在睡觉。"
+                },
+                {
+                  "es": "¿Qué estás leyendo?",
+                  "zh": "你在读什么？"
+                }
+              ]
+            },
+            {
+              "title": "义务：tener que、hay que、deber",
+              "body": "tener que + 不定式：某人必须做某事，tener 随主语变位：Tengo que trabajar el sábado。hay que + 不定式：无人称的“得、必须”，泛指所有人，hay 不变，也不加主语：Hay que reservar mesa。deber + 不定式：“应该”，多用于建议或责任：Debes descansar más。tener que 中间的 que 不能省略。",
+              "examples": [
+                {
+                  "es": "Mañana tenemos que levantarnos temprano.",
+                  "zh": "明天我们得早起。"
+                },
+                {
+                  "es": "En la biblioteca hay que hablar bajo.",
+                  "zh": "在图书馆里要小声说话。"
+                }
+              ]
+            },
+            {
+              "title": "动作阶段：acabar de、volver a、empezar a",
+              "body": "acabar de + 不定式：刚刚做完（Acabo de comer，我刚吃过）。volver a + 不定式：再做一次（Vuelvo a leer el libro，我再读一遍这本书）。empezar a + 不定式：开始做（Empecé a estudiar español en 2023）。介词 de、a 不能省略。注意 empezar 和 volver 在现在时中有词干变化：empiezo、vuelvo。",
+              "examples": [
+                {
+                  "es": "El tren acaba de salir.",
+                  "zh": "火车刚开走。"
+                },
+                {
+                  "es": "Ha empezado a llover. / Mañana vuelvo a intentarlo.",
+                  "zh": "开始下雨了。／明天我再试一次。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "朋友打电话来，你此刻正在和父母吃饭：—¿Puedes hablar? —Ahora no, ___ con mis padres.",
+              "options": [
+                "soy comiendo",
+                "estoy comiendo",
+                "estoy comido"
+              ],
+              "answer": "estoy comiendo",
+              "hint": "“正在做”用哪个动词加哪种形式？",
+              "explanation": "正在进行用 estar + 副动词：estoy comiendo。不用 ser；comido 是过去分词，用于 haber 构成的完成时。",
+              "errorType": "词形变化",
+              "id": "m14-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "图书馆的规定，对所有人适用：___ apagar el móvil en la biblioteca.",
+              "options": [
+                "Hay",
+                "Tener que",
+                "Hay que"
+              ],
+              "answer": "Hay que",
+              "hint": "无人称地表达“必须”，后面接不定式时需要哪个词？",
+              "explanation": "无人称的义务用 hay que + 不定式：Hay que apagar el móvil. 只用 hay 缺少 que；tener que 要变位并有明确主语。",
+              "errorType": "用法判断",
+              "id": "m14-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你五分钟前刚到车站：___ llegar a la estación.",
+              "options": [
+                "Vuelvo a",
+                "Acabo de",
+                "Empiezo a"
+              ],
+              "answer": "Acabo de",
+              "hint": "哪个短语表示“刚刚做完”？",
+              "explanation": "acabar de + 不定式表示刚刚完成：Acabo de llegar a la estación. volver a 表示“再一次”；empezar a 表示“开始”。",
+              "errorType": "用法判断",
+              "id": "m14-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "写出 leer 的副动词：Mi hermano está ___ el periódico.",
+              "answer": "leyendo",
+              "hint": "leer 的词干以元音结尾，-iendo 的 i 要变。",
+              "explanation": "leer 的副动词是 leyendo：i 夹在两个元音之间时写成 y。",
+              "errorType": "词形变化",
+              "id": "m14-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "写出 dormir 的副动词：Habla bajo, el bebé está ___.",
+              "answer": "durmiendo",
+              "hint": "dormir 的词干元音变化和简单过去时的 durmió 一样。",
+              "explanation": "dormir 的副动词是 durmiendo，o 变成 u：el bebé está durmiendo.",
+              "errorType": "词形变化",
+              "id": "m14-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词：Mañana tengo ___ ir al médico.",
+              "answer": "que",
+              "hint": "tener 表示“必须”时，和不定式之间还要一个词。",
+              "explanation": "表示义务的结构是 tener que + 不定式：Mañana tengo que ir al médico. que 不能省略。",
+              "errorType": "句子组织",
+              "id": "m14-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "给朋友发一条语音：说说你现在正在做什么（estar + 副动词）、刚刚做完什么（acabar de）、这周必须做什么（tener que 或 hay que），以及你准备重新开始或刚开始做的事（volver a 或 empezar a）。写五句。",
+            "model": "Ahora mismo estoy escribiendo un correo en la oficina. Acabo de salir de una reunión larguísima. Esta semana tengo que terminar un informe y hay que preparar la presentación del viernes. Además, he empezado a ir al gimnasio. El domingo quiero volver a correr en el parque.",
+            "rubric": [
+              "estar 随主语变位，副动词（包括不规则形式）写对了。",
+              "tener que 和 hay que 的区别用对了，que 没有遗漏。",
+              "acabar de、volver a、empezar a 的介词和不定式正确。"
+            ]
+          }
+        },
+        {
+          "id": "m14-l2",
+          "title": "简单将来时与 ir a + 不定式",
+          "goal": "能写出简单将来时的规则和不规则形式，并能区分用它表达预测、承诺和用 ir a + 不定式表达已经决定的计划。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "这些将来时动词是怎么构成的？比较 hablaré 与 tendremos、diré：词尾一样吗？",
+            "examples": [
+              {
+                "es": "Mañana hablaré con el director.",
+                "zh": "明天我会和主任谈谈。"
+              },
+              {
+                "es": "El año que viene tendremos más tiempo.",
+                "zh": "明年我们会有更多时间。"
+              },
+              {
+                "es": "Te lo prometo: no diré nada.",
+                "zh": "我向你保证：我什么都不会说。"
+              }
+            ],
+            "answer": "简单将来时在整个不定式后加词尾（hablar + é → hablaré）。不规则动词换词干（tendr-、dir-），但词尾完全一样。除了 nosotros（-emos），所有词尾都带重音符号。"
+          },
+          "rules": [
+            {
+              "title": "规则变位：不定式 + 词尾",
+              "body": "简单将来时（futuro simple）不去掉不定式词尾，而是直接在整个不定式后面加 -é、-ás、-á、-emos、-éis、-án；-ar、-er、-ir 三类动词的词尾相同。除 nosotros 外，所有形式都带重音符号。",
+              "table": {
+                "caption": "简单将来时（futuro simple）：规则动词",
+                "headers": [
+                  "人称",
+                  "词尾",
+                  "hablar",
+                  "comer",
+                  "vivir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "-é",
+                    "hablaré",
+                    "comeré",
+                    "viviré"
+                  ],
+                  [
+                    "tú",
+                    "-ás",
+                    "hablarás",
+                    "comerás",
+                    "vivirás"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "-á",
+                    "hablará",
+                    "comerá",
+                    "vivirá"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "-emos",
+                    "hablaremos",
+                    "comeremos",
+                    "viviremos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "-éis",
+                    "hablaréis",
+                    "comeréis",
+                    "viviréis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "-án",
+                    "hablarán",
+                    "comerán",
+                    "vivirán"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "El curso empezará en septiembre.",
+                  "zh": "课程将在九月开始。"
+                },
+                {
+                  "es": "¿Viviréis en Madrid el año que viene?",
+                  "zh": "明年你们会住在马德里吗？"
+                }
+              ]
+            },
+            {
+              "title": "不规则词干",
+              "body": "下面这些常用动词词干不规则，但词尾不变。可以分三组记：① 去掉元音，插入 d：tener → tendr-，salir → saldr-，venir → vendr-，poner → pondr-；② 去掉元音：poder → podr-，saber → sabr-，haber → habr-，querer → querr-，caber → cabr-；③ 完全特殊：hacer → har-，decir → dir-。hay 的将来时是 habrá，不论后面是单数还是复数：Habrá muchas personas。",
+              "table": {
+                "caption": "简单将来时：不规则词干",
+                "headers": [
+                  "不定式",
+                  "词干",
+                  "yo",
+                  "nosotros / nosotras"
+                ],
+                "rows": [
+                  [
+                    "tener",
+                    "tendr-",
+                    "tendré",
+                    "tendremos"
+                  ],
+                  [
+                    "salir",
+                    "saldr-",
+                    "saldré",
+                    "saldremos"
+                  ],
+                  [
+                    "venir",
+                    "vendr-",
+                    "vendré",
+                    "vendremos"
+                  ],
+                  [
+                    "poner",
+                    "pondr-",
+                    "pondré",
+                    "pondremos"
+                  ],
+                  [
+                    "poder",
+                    "podr-",
+                    "podré",
+                    "podremos"
+                  ],
+                  [
+                    "saber",
+                    "sabr-",
+                    "sabré",
+                    "sabremos"
+                  ],
+                  [
+                    "haber",
+                    "habr-",
+                    "—",
+                    "—（只用 habrá）"
+                  ],
+                  [
+                    "querer",
+                    "querr-",
+                    "querré",
+                    "querremos"
+                  ],
+                  [
+                    "caber",
+                    "cabr-",
+                    "cabré",
+                    "cabremos"
+                  ],
+                  [
+                    "hacer",
+                    "har-",
+                    "haré",
+                    "haremos"
+                  ],
+                  [
+                    "decir",
+                    "dir-",
+                    "diré",
+                    "diremos"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Mañana saldré temprano y vendré a las ocho.",
+                  "zh": "明天我会早点出门，八点回来。"
+                },
+                {
+                  "es": "Habrá una fiesta el sábado. ¿Qué harás tú?",
+                  "zh": "周六会有个聚会。你打算做什么？"
+                }
+              ]
+            },
+            {
+              "title": "简单将来时还是 ir a + 不定式？",
+              "body": "ir a + 不定式（A1 已学）常用于已经决定、已经安排好的近期计划：Esta tarde voy a ver a mi abuela。有眼前迹象时也用它：Mira esas nubes, va a llover。简单将来时常用于对未来的预测、承诺，以及较远或还不确定的未来：Algún día viviré en España；Te llamaré, te lo prometo。很多时候两者都能用，口语里 ir a 更常见。",
+              "examples": [
+                {
+                  "es": "—¿Qué haces el sábado? —Voy a ir a la playa con mis amigos.",
+                  "zh": "——你周六干什么？——我要和朋友们去海边。"
+                },
+                {
+                  "es": "No te preocupes, todo saldrá bien.",
+                  "zh": "别担心，一切都会顺利的。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Mañana yo ___ con tu profesor.",
+              "options": [
+                "hablé",
+                "hablaré",
+                "hablaremos"
+              ],
+              "answer": "hablaré",
+              "hint": "mañana 指将来；主语是 yo。",
+              "explanation": "yo 的将来时是 hablaré：在 hablar 后加 -é。hablé 是简单过去时；hablaremos 是 nosotros 形式。",
+              "errorType": "词形变化",
+              "id": "m14-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "El próximo año mis primos ___ a vivir con nosotros.",
+              "options": [
+                "venirán",
+                "vinieron",
+                "vendrán"
+              ],
+              "answer": "vendrán",
+              "hint": "venir 的将来时词干不规则：去掉元音，插入一个字母。",
+              "explanation": "venir 的将来时词干是 vendr-，ellos 形式为 vendrán。*venirán* 没有变词干；vinieron 是简单过去时，与 el próximo año 矛盾。",
+              "errorType": "词形变化",
+              "id": "m14-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "朋友担心你会忘记，你向他保证：No te preocupes, ___ mañana sin falta.",
+              "options": [
+                "te llamé",
+                "te llamaré",
+                "te llamaba"
+              ],
+              "answer": "te llamaré",
+              "hint": "承诺明天做的事，用哪个时态？",
+              "explanation": "对未来的承诺可用简单将来时：te llamaré mañana sin falta。te llamé 是简单过去时，te llamaba 是过去未完成时，都不能和 mañana 搭配。",
+              "errorType": "用法判断",
+              "id": "m14-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "对 tú 说，用 hacer 的简单将来时填空：¿Qué ___ este verano?",
+              "answer": "harás",
+              "hint": "hacer 的将来时词干很短；tú 的词尾带重音。",
+              "explanation": "hacer 的将来时词干是 har-，tú 形式是 harás：¿Qué harás este verano?",
+              "errorType": "词形变化",
+              "id": "m14-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 hay（haber）的将来时填空：Mañana ___ mucho tráfico en el centro.",
+              "answer": "habrá",
+              "hint": "hay 的将来时只有一个形式，词干是 habr-。",
+              "explanation": "hay 的将来时是 habrá：Mañana habrá mucho tráfico. 后面是复数名词时也用 habrá。",
+              "errorType": "词形变化",
+              "id": "m14-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 decir 的简单将来时填空：No te preocupes, no se lo ___ a nadie.（我不会告诉任何人。）",
+              "answer": "diré",
+              "hint": "decir 的将来时词干是 dir-，yo 的词尾带重音。",
+              "explanation": "decir 的将来时 yo 形式是 diré：no se lo diré a nadie。不说 *deciré*。",
+              "errorType": "词形变化",
+              "id": "m14-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写写你的“五年后”：三句用简单将来时做预测或承诺（会住在哪里、做什么工作、会有什么），两句用 ir a + 不定式说明你已经决定的近期计划。至少用三个不规则词干。",
+            "model": "Dentro de cinco años viviré en otra ciudad y tendré un trabajo más interesante. Sabré hablar español muy bien y podré viajar por América Latina. Habrá más tiempo para mi familia. Pero primero, este mes voy a apuntarme a un curso intensivo, y el verano que viene voy a hacer un intercambio en Salamanca.",
+            "rubric": [
+              "将来时词尾和重音符号正确（nosotros 形式不带重音）。",
+              "不规则词干（tendr-、sabr-、podr-、habr- 等）写对了。",
+              "预测和承诺用简单将来时，已经决定的计划用 ir a + 不定式。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

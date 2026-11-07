@@ -55,17 +55,17 @@ node scripts/test-reviewed-course.mjs cs329z
 
 `index.html` 保留 `catalog-data` 数据块供课程生成器更新；主页交互与样式位于 `assets/home.js` 和 `assets/home.css`。运行 `node scripts/test-home.mjs` 检查筛选、搜索、语言、主题、续读与导航。
 
-## 西班牙语语法 · 互动入门
+## 西班牙语语法 · A1–C1 互动课程
 
-入口：`/zh/spanish-grammar/`。中文讲解的基础语法专项课，包含 8 个模块、16 节短课、96 道选择/填空练习和 16 项表达任务。提供先提示后解析、错题独立重练、表达草稿与自评。它以 A1 基础语法为方向，不代表完整 A1 等级认证。
+入口：`/zh/spanish-grammar/`。中文讲解的语法专项课，按 A1、A2、B1、B2、C1 五个级别展开，共 32 个模块、64 节短课、384 道选择/填空练习和 64 项表达任务。提供先提示后解析、错题独立重练、重音字母输入、只错重音时的专门提示、新时态的完整变位表、表达草稿与自评。级别划分参考塞万提斯学院《课程计划》的语法清单，只覆盖语法，不代表等级认证。
 
-- `content/spanish-grammar/course.json`：原创例句、规则、题目、答案、反馈与任务。
+- `content/spanish-grammar/course.json`：课程标题、范围、级别列表与设计参考。
+- `content/spanish-grammar/levels/<级别>.json`：各级别的模块、规则、变位表、题目、答案、反馈与任务（每课固定 6 题：3 选择 + 3 填空）。
 - `content/spanish-grammar/player.template.html`：课程播放器模板；请编辑源文件再生成。
-- `scripts/build-spanish-course.py`：无网络依赖地生成网页、公开 JSON 与 CSV 题库。
-- `zh/spanish-grammar/materials/`：教师用书和完整离线课程包；修改教学内容时需同步更新这两份下载资料。
+- `scripts/build-spanish-course.py`：无网络依赖地校验数据并生成网页、公开 JSON、CSV 题库、教师用书（.docx）、离线课程包（.zip），并更新首页的课程卡片与目录数据。下载资料不要手改。
 
 ```bash
-python scripts/build-spanish-course.py
+PYTHONUTF8=1 python scripts/build-spanish-course.py
 node scripts/test-home.mjs
 # 可选：安装 Python playwright 和 Chromium 后运行浏览器集成检查
 python scripts/test-spanish-course.py

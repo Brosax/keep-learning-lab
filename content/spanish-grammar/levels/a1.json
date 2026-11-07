@@ -1,0 +1,2521 @@
+{
+  "level": "A1",
+  "modules": [
+    {
+      "id": "m1",
+      "level": "A1",
+      "title": "名词短语：让词语配合起来",
+      "description": "先建立名词的阴阳性与冠词意识，再练习单复数和形容词一致。",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "名词的阴阳性与冠词",
+          "goal": "能为本课常见名词选择阴阳性一致的冠词，并区分首次提及与已知对象。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "观察每组名词前面的词：哪些词可以跟 libro 配对？哪些可以跟 mesa 配对？",
+            "examples": [
+              {
+                "es": "el libro / un libro",
+                "zh": "这本已知的书／一本书"
+              },
+              {
+                "es": "la mesa / una mesa",
+                "zh": "这张已知的桌子／一张桌子"
+              }
+            ],
+            "answer": "libro 是阳性名词，搭配 el 或 un；mesa 是阴性名词，搭配 la 或 una。冠词既要与名词性别一致，也会提示对象是否已知。"
+          },
+          "rules": [
+            {
+              "title": "名词有语法性别",
+              "body": "本课先学习单数：阳性名词常用 el、un；阴性名词常用 la、una。这里说的是语法分类，物品的语法性别不等于生物性别。",
+              "examples": [
+                {
+                  "es": "el libro / un libro",
+                  "zh": "这本书／一本书"
+                },
+                {
+                  "es": "la casa / una casa",
+                  "zh": "这所房子／一所房子"
+                }
+              ]
+            },
+            {
+              "title": "词尾可以提供线索，记忆时带上冠词",
+              "body": "许多以 -o 结尾的名词是阳性，以 -a 结尾的名词是阴性，但存在例外。学习新词时一起记 el mapa（地图）和 la mano（手），不要只根据词尾判断。",
+              "examples": [
+                {
+                  "es": "el mapa",
+                  "zh": "地图：以 -a 结尾，但属阳性"
+                },
+                {
+                  "es": "la mano",
+                  "zh": "手：以 -o 结尾，但属阴性"
+                }
+              ]
+            },
+            {
+              "title": "首次提及与已知对象",
+              "body": "当第一次提到某一个、某一件对象，常用 un 或 una；双方知道所指对象时，常用 el 或 la。本课通过明确语境练习这一区别。",
+              "examples": [
+                {
+                  "es": "un libro → el libro",
+                  "zh": "先提到一本书，再指回这本书"
+                },
+                {
+                  "es": "una taza → la taza",
+                  "zh": "先提到一个杯子，再指回这个杯子；taza 是阴性名词"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "libro（书）是阳性名词。要说“一本书”，选哪一个？",
+              "options": [
+                "un libro",
+                "una libro",
+                "la libro"
+              ],
+              "answer": "un libro",
+              "hint": "先找表示“一本”的冠词，再检查它的阴阳性。",
+              "explanation": "libro 是阳性单数名词，首次提到“一本书”用 un libro。una、la 都是阴性形式。",
+              "errorType": "用法判断",
+              "id": "m1-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "mesa（桌子）是阴性名词。双方都知道你指的是哪张桌子，应该选：",
+              "options": [
+                "un mesa",
+                "el mesa",
+                "la mesa"
+              ],
+              "answer": "la mesa",
+              "hint": "语境要求指向已知对象；还要让冠词与 mesa 的性别一致。",
+              "explanation": "已知的特定桌子用定冠词；mesa 为阴性单数，所以用 la mesa。",
+              "errorType": "用法判断",
+              "id": "m1-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你第一次向朋友提到“某一所房子”，还没有说明是哪一所。选择最符合这个意思的短语。",
+              "options": [
+                "la casa",
+                "una casa",
+                "un casa"
+              ],
+              "answer": "una casa",
+              "hint": "注意“某一所、首次提到”，以及 casa 的阴性。",
+              "explanation": "una casa 表示一所尚未具体指明的房子。casa 为阴性单数，因此用 una。",
+              "errorType": "用法判断",
+              "id": "m1-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填写定冠词：___ mapa（那张双方已知的地图；mapa 是阳性名词）。",
+              "answer": "el",
+              "hint": "mapa 的语法性别是已给出的信息；不要只看 -a 词尾。",
+              "explanation": "mapa 虽以 -a 结尾，却是阳性名词；阳性单数定冠词是 el。",
+              "errorType": "词形变化",
+              "id": "m1-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "填写定冠词：___ mano（那只手；mano 是阴性名词）。",
+              "answer": "la",
+              "hint": "mano 的性别属于需要随词记忆的例外。",
+              "explanation": "mano 是阴性单数名词，因此搭配 la，不受 -o 词尾影响。",
+              "errorType": "词形变化",
+              "id": "m1-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "第一次提到“一个杯子”。填写不定冠词：___ taza。",
+              "answer": "una",
+              "hint": "taza 是阴性单数名词；这里需要表示“某一个”。",
+              "explanation": "“一个杯子”首次出现时用 una taza；una 是阴性单数不定冠词。",
+              "errorType": "用法判断",
+              "id": "m1-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "给自己的学习桌制作四张西语物品卡：两张使用定冠词表示你指定的物品，两张使用不定冠词表示某一件物品。可用 libro、mesa、mapa、taza、casa，并为每张卡标注中文意思。",
+            "model": "el libro（这本书）；la mesa（这张桌子）；un mapa（一张地图）；una taza（一个杯子）。",
+            "rubric": [
+              "四个冠词都与名词的阴阳性一致。",
+              "使用了两次定冠词和两次不定冠词。",
+              "能说明哪些对象是特定的，哪些只是首次提到的某一件。"
+            ]
+          }
+        },
+        {
+          "id": "m1-l2",
+          "title": "单复数与形容词一致",
+          "goal": "能把简单名词短语改成复数，并让冠词、名词和形容词保持一致。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "从一件物品变成多件时，观察三个位置分别发生了什么变化。",
+            "examples": [
+              {
+                "es": "el libro rojo → los libros rojos",
+                "zh": "那本红色的书 → 那些红色的书"
+              },
+              {
+                "es": "la casa pequeña → las casas pequeñas",
+                "zh": "那所小房子 → 那些小房子"
+              }
+            ],
+            "answer": "冠词改成复数形式，名词和形容词也改成复数。形容词还要保持与名词性别一致：libros rojos、casas pequeñas。"
+          },
+          "rules": [
+            {
+              "title": "本课的复数构成",
+              "body": "本课词汇中，以元音结尾的名词加 -s：libro → libros；以辅音结尾的名词通常加 -es：papel → papeles。其他拼写变化留待后续学习。",
+              "examples": [
+                {
+                  "es": "casa → casas",
+                  "zh": "房子：单数 → 复数"
+                },
+                {
+                  "es": "papel → papeles",
+                  "zh": "纸张：单数 → 复数"
+                }
+              ]
+            },
+            {
+              "title": "冠词也要改成复数",
+              "body": "定冠词 el → los、la → las；不定冠词 un → unos、una → unas。复数形式仍然区分阴阳性。",
+              "examples": [
+                {
+                  "es": "el libro → los libros",
+                  "zh": "那本书 → 那些书"
+                },
+                {
+                  "es": "una casa → unas casas",
+                  "zh": "一所房子 → 几所房子"
+                }
+              ]
+            },
+            {
+              "title": "形容词跟随名词的性别和数量",
+              "body": "以 -o 结尾的本课形容词有 -o、-a、-os、-as 四种形式，如 rojo/roja/rojos/rojas。以 -e 结尾的 grande 不区分阴阳性，但复数都用 grandes。本课描述颜色和大小时，形容词放在名词后。",
+              "examples": [
+                {
+                  "es": "una casa roja / dos casas rojas",
+                  "zh": "一所红房子／两所红房子；dos 表示二"
+                },
+                {
+                  "es": "un libro grande / una casa grande",
+                  "zh": "一本大书／一所大房子"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "libros 是阳性复数。“那些书”应填：___ libros。",
+              "options": [
+                "el",
+                "los",
+                "las"
+              ],
+              "answer": "los",
+              "hint": "冠词要同时满足“阳性”和“复数”。",
+              "explanation": "libros 是 libro 的复数，阳性复数定冠词是 los。",
+              "errorType": "词形变化",
+              "id": "m1-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择正确的形容词：las casas ___（那些红房子）。",
+              "options": [
+                "rojos",
+                "roja",
+                "rojas"
+              ],
+              "answer": "rojas",
+              "hint": "形容词需要配合 casas 的性别和数量。",
+              "explanation": "casas 是阴性复数，因此 rojo 变成 rojas。",
+              "errorType": "词形变化",
+              "id": "m1-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择正确的形容词：los libros ___（那些大书）。",
+              "options": [
+                "grande",
+                "grandes",
+                "grandas"
+              ],
+              "answer": "grandes",
+              "hint": "grande 的阴阳性形式相同；这里还需要考虑复数。",
+              "explanation": "grande 不因阴阳性变成 granda；与复数 libros 搭配时用 grandes。",
+              "errorType": "词形变化",
+              "id": "m1-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "只写名词的复数：casa → ___。",
+              "answer": "casas",
+              "hint": "本课以元音结尾的这个名词，复数在词尾增加一个字母。",
+              "explanation": "casa 以元音结尾，复数加 -s，得到 casas。",
+              "errorType": "词形变化",
+              "id": "m1-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "只写名词的复数：papel → ___。",
+              "answer": "papeles",
+              "hint": "papel 以辅音 -l 结尾，复数通常要增加两个字母。",
+              "explanation": "papel 以辅音结尾，加 -es 构成 papeles。",
+              "errorType": "词形变化",
+              "id": "m1-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "名词和冠词已经改为复数，请补全形容词：la casa pequeña → las casas ___。",
+              "answer": "pequeñas",
+              "hint": "保留阴性形式，再让形容词与 casas 的数量一致。",
+              "explanation": "casas 为阴性复数，pequeña 加 -s 变成 pequeñas。",
+              "errorType": "词形变化",
+              "id": "m1-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "制作两组“单件→多件”物品卡：一组用 libro rojo，一组用 casa pequeña。每组先写带定冠词的单数短语，再改成复数，并标出三个发生变化的位置。",
+            "model": "el libro rojo → los libros rojos；la casa pequeña → las casas pequeñas。",
+            "rubric": [
+              "冠词的阴阳性与单复数正确。",
+              "名词和形容词都完成了需要的复数变化。",
+              "能指出形容词为何使用 -os 或 -as。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "level": "A1",
+      "title": "人称与现在时：谁在做什么",
+      "description": "通过人称切换学习规则动词现在时，再建立 tener、ir 的常用形式。",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "人称代词与规则动词现在时",
+          "goal": "能根据明确主语选择 hablar、comer、vivir 的现在时形式。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "看同一个动词在“我、你、我们”之后的变化，哪些部分保留，哪些部分变化？",
+            "examples": [
+              {
+                "es": "Yo hablo español.",
+                "zh": "我说西班牙语。"
+              },
+              {
+                "es": "Tú hablas español.",
+                "zh": "你说西班牙语。"
+              },
+              {
+                "es": "Nosotros hablamos español.",
+                "zh": "我们说西班牙语。"
+              }
+            ],
+            "answer": "hablar 去掉 -ar 后保留词干 habl-，再按主语加不同词尾。yo、tú、nosotros 分别对应 hablo、hablas、hablamos。"
+          },
+          "rules": [
+            {
+              "title": "先认出动作的执行者",
+              "body": "yo＝我；tú＝你；él/ella＝他/她；usted＝您；nosotros/nosotras＝我们；vosotros/vosotras＝你们（西班牙常见）；ellos/ellas＝他们/她们；ustedes＝你们。usted 用第三人称单数形式，ustedes 用第三人称复数形式。主语明确时，西语常省略主语代词。 下方完整变位表供查询，首次学习先练习本课题目涉及的形式，再通过后续复习扩展。",
+              "examples": [
+                {
+                  "es": "Yo hablo español. / Hablo español.",
+                  "zh": "我说西班牙语。两句都可以。"
+                },
+                {
+                  "es": "Usted habla español.",
+                  "zh": "您说西班牙语。"
+                }
+              ]
+            },
+            {
+              "title": "规则 -ar 动词",
+              "body": "hablar（说话）去掉 -ar，再按 yo、tú、él/ella/usted、nosotros/as、vosotros/as、ellos/ellas/ustedes 的顺序加 -o、-as、-a、-amos、-áis、-an。本课练习先集中常见人称。",
+              "examples": [
+                {
+                  "es": "Tú hablas. / Ella habla.",
+                  "zh": "你说话。／她说话。"
+                },
+                {
+                  "es": "Nosotros hablamos. / Ellos hablan.",
+                  "zh": "我们说话。／他们说话。"
+                }
+              ]
+            },
+            {
+              "title": "规则 -er 与 -ir 动词",
+              "body": "comer（吃）的对应形式是 como、comes、come、comemos、coméis、comen；vivir（居住）的对应形式是 vivo、vives、vive、vivimos、vivís、viven。注意我们这一人称：-er 用 -emos，-ir 用 -imos。",
+              "examples": [
+                {
+                  "es": "Yo como pan. / Ella come pan.",
+                  "zh": "我吃面包。／她吃面包。"
+                },
+                {
+                  "es": "Nosotros vivimos en Madrid.",
+                  "zh": "我们住在马德里。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "选择 hablar 的正确形式：Tú ___ español.（你说西班牙语。）",
+              "options": [
+                "hablo",
+                "hablas",
+                "habla"
+              ],
+              "answer": "hablas",
+              "hint": "tú 对应规则 -ar 动词的第二人称单数词尾。",
+              "explanation": "hablar 的词干是 habl-；tú 对应 -as，因此用 hablas。",
+              "errorType": "词形变化",
+              "id": "m2-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择 comer 的正确形式：Ella ___ pan.（她吃面包。）",
+              "options": [
+                "comes",
+                "comemos",
+                "come"
+              ],
+              "answer": "come",
+              "hint": "ella 使用第三人称单数；检查 -er 动词的对应词尾。",
+              "explanation": "comer 去掉 -er 后加第三人称单数词尾 -e，得到 come。",
+              "errorType": "词形变化",
+              "id": "m2-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选择 vivir 的正确形式：Nosotros ___ en Madrid.（我们住在马德里。）",
+              "options": [
+                "vivemos",
+                "vivimos",
+                "viven"
+              ],
+              "answer": "vivimos",
+              "hint": "-ir 动词的“我们”形式与 -er 动词不同。",
+              "explanation": "vivir 属于 -ir 动词，nosotros 对应 -imos，所以是 vivimos。",
+              "errorType": "词形变化",
+              "id": "m2-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 hablar 的现在时填空：Yo ___ español.",
+              "answer": "hablo",
+              "hint": "先保留 habl-，再选择 yo 对应的词尾。",
+              "explanation": "规则现在时中，yo 对应 hablar 的 hablo。",
+              "errorType": "词形变化",
+              "id": "m2-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 comer 的现在时填空：Tú ___ pan.",
+              "answer": "comes",
+              "hint": "comer 是 -er 动词；tú 对应的词尾有两个字母。",
+              "explanation": "comer 的 tú 形式是词干 com- 加 -es，即 comes。",
+              "errorType": "词形变化",
+              "id": "m2-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 vivir 的现在时填空：Ellos ___ en Madrid.",
+              "answer": "viven",
+              "hint": "ellos 是第三人称复数；使用 -ir 动词的对应词尾。",
+              "explanation": "vivir 的第三人称复数形式是 viven。",
+              "errorType": "词形变化",
+              "id": "m2-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写三张人物卡：用 yo 写一句自己说什么语言；用 ella 写一句某位女性吃面包；用 nosotros 写一句共同居住的城市。使用 hablar、comer、vivir，城市可用 Madrid。",
+            "model": "Yo hablo español. Ella come pan. Nosotros vivimos en Madrid.",
+            "rubric": [
+              "每句的动词形式都与主语相匹配。",
+              "能区分 -ar、-er、-ir 的“我们”形式。",
+              "三句表达的意思完整，并能口头读出来。"
+            ]
+          }
+        },
+        {
+          "id": "m2-l2",
+          "title": "常用不规则动词 tener 与 ir",
+          "goal": "能用 tener 表达拥有或年龄，用 ir a 表达前往地点，并选对人称形式。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "比较下列动词形式，能否完全照搬上一课的规则词尾？",
+            "examples": [
+              {
+                "es": "Yo tengo un libro.",
+                "zh": "我有一本书。"
+              },
+              {
+                "es": "Ella tiene un libro.",
+                "zh": "她有一本书。"
+              },
+              {
+                "es": "Yo voy a Madrid.",
+                "zh": "我去马德里。"
+              }
+            ],
+            "answer": "tener 和 ir 的现在时需要学习专门的形式。不能用规则方法造出 teno 或 iro；“我有”是 tengo，“我去”是 voy。"
+          },
+          "rules": [
+            {
+              "title": "tener 的常用现在时形式",
+              "body": "tener 表示“有”。按 yo、tú、él/ella/usted、nosotros/as、vosotros/as、ellos/ellas/ustedes 的顺序，形式为 tengo、tienes、tiene、tenemos、tenéis、tienen。不要把所有人称都变成同一个词干。",
+              "examples": [
+                {
+                  "es": "Yo tengo un mapa. / Ella tiene un mapa.",
+                  "zh": "我有一张地图。／她有一张地图。"
+                },
+                {
+                  "es": "Nosotros tenemos libros.",
+                  "zh": "我们有书。"
+                }
+              ]
+            },
+            {
+              "title": "年龄也用 tener",
+              "body": "西语表达年龄常用 tener + 数字 + años。años 表示“岁”。本课提供数字，不要求先记住全部数词。",
+              "examples": [
+                {
+                  "es": "Tengo veinte años.",
+                  "zh": "我二十岁；veinte＝二十。"
+                },
+                {
+                  "es": "Ella tiene treinta años.",
+                  "zh": "她三十岁；treinta＝三十。"
+                }
+              ]
+            },
+            {
+              "title": "ir 表示去；目的地前常用 a",
+              "body": "ir 的对应形式是 voy、vas、va、vamos、vais、van。“去某个城市”使用 ir a + 城市；这里的 a 连接去向。",
+              "examples": [
+                {
+                  "es": "Tú vas a Madrid. / Ella va a Madrid.",
+                  "zh": "你去马德里。／她去马德里。"
+                },
+                {
+                  "es": "Nosotros vamos a Madrid. / Ellos van a Madrid.",
+                  "zh": "我们去马德里。／他们去马德里。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "用 tener 表达“我有一本书”：Yo ___ un libro.",
+              "options": [
+                "teno",
+                "tienes",
+                "tengo"
+              ],
+              "answer": "tengo",
+              "hint": "这是 tener 的不规则 yo 形式。",
+              "explanation": "tener 的第一人称单数是 tengo，不能按普通 -er 动词造出 teno。",
+              "errorType": "词形变化",
+              "id": "m2-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "表达“她二十岁”：Ella ___ veinte años.",
+              "options": [
+                "tiene",
+                "es",
+                "está"
+              ],
+              "answer": "tiene",
+              "hint": "回想西语表达年龄使用哪一个动词。",
+              "explanation": "西语年龄表达使用 tener + 数字 + años；ella 对应 tiene。",
+              "errorType": "用法判断",
+              "id": "m2-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "用 ir 表达“我们去马德里”：Nosotros ___ a Madrid.",
+              "options": [
+                "van",
+                "vamos",
+                "voy"
+              ],
+              "answer": "vamos",
+              "hint": "nosotros 对应 ir 的第一人称复数形式。",
+              "explanation": "ir 的 nosotros 形式是 vamos；van 对应他们/她们/你们，voy 对应我。",
+              "errorType": "词形变化",
+              "id": "m2-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 tener 的现在时填空：Tú ___ un mapa.",
+              "answer": "tienes",
+              "hint": "tú 的形式中词干元音会发生变化。",
+              "explanation": "tener 的 tú 形式是 tienes。这里是“你有一张地图”。",
+              "errorType": "词形变化",
+              "id": "m2-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ir 的现在时填空：Ella ___ a Madrid.",
+              "answer": "va",
+              "hint": "ella 使用第三人称单数形式。",
+              "explanation": "ir 的第三人称单数是 va，所以填 Ella va a Madrid.",
+              "errorType": "词形变化",
+              "id": "m2-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 tener 的现在时填空：Nosotros ___ libros.",
+              "answer": "tenemos",
+              "hint": "这个人称的词干保留 ten-，不要照搬 tienes 中的元音变化。",
+              "explanation": "tener 的 nosotros 形式是 tenemos，词干不变成 tien-。",
+              "errorType": "词形变化",
+              "id": "m2-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "为自己和一位虚构朋友各写一句：一句说明拥有什么物品，另一句说明去哪个城市。再用 nosotros 写一句大家共有的物品。使用 tener 与 ir a，明确主语。",
+            "model": "Yo tengo un libro. Ella va a Madrid. Nosotros tenemos un mapa.",
+            "rubric": [
+              "tener 与 ir 的形式都与主语一致。",
+              "前往城市时保留了 a。",
+              "没有把 tener 的词干变化套用到所有人称。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "level": "A1",
+      "title": "ser、estar 与 hay：选择合适的表达",
+      "description": "用清晰语境区分身份与特征、状态、存在和位置，并同步巩固动词形式。",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "身份与特征用 ser，状态用 estar",
+          "goal": "能在明确语境中用 ser 介绍身份、来源和特征，用 estar 描述身体或情绪状态。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "同一个人物的两句话，分别在回答“她是什么身份”还是“她现在感觉怎样”？",
+            "examples": [
+              {
+                "es": "Ana es profesora.",
+                "zh": "安娜是老师。"
+              },
+              {
+                "es": "Ana está cansada.",
+                "zh": "安娜累了。"
+              },
+              {
+                "es": "Ana es de Madrid.",
+                "zh": "安娜来自马德里。"
+              }
+            ],
+            "answer": "es profesora 说明职业身份，es de Madrid 说明来源，都用 ser；está cansada 描述她的身体状态，用 estar。应根据表达意义判断，而不是只按持续时间判断。"
+          },
+          "rules": [
+            {
+              "title": "ser：身份、来源与特征",
+              "body": "介绍职业身份、来源或人物特征时常用 ser。本课用“她是一位老师”“她来自某地”“她这个人很友善”等明确语境。ser 的形式为 soy、eres、es、somos、sois、son（人称顺序同前课）。",
+              "examples": [
+                {
+                  "es": "Soy estudiante. / Ella es profesora.",
+                  "zh": "我是学生。／她是老师。介绍普通职业身份时通常不用不定冠词。"
+                },
+                {
+                  "es": "Él es de Madrid. / Él es simpático.",
+                  "zh": "他来自马德里。／他这个人很友善。"
+                }
+              ]
+            },
+            {
+              "title": "estar：身体与情绪等状态",
+              "body": "描述某人当下感到疲倦、高兴等状态时常用 estar。对应形式为 estoy、estás、está、estamos、estáis、están。注意 estás、está、estáis、están 的重音符号。",
+              "examples": [
+                {
+                  "es": "Estoy cansado. / Estoy cansada.",
+                  "zh": "我累了。前句说话者为男性，后句为女性。"
+                },
+                {
+                  "es": "Ella está contenta.",
+                  "zh": "她现在很高兴。"
+                }
+              ]
+            },
+            {
+              "title": "先判断意义，再检查形式",
+              "body": "本课先回答“我在说身份/来源/特征，还是状态？”，再根据主语选择变位。两步都要做。有些形容词搭配两个动词时会改变意义；先掌握本课明确的常见语境，不用“永久/暂时”概括所有情况。",
+              "examples": [
+                {
+                  "es": "Ana es profesora y está cansada.",
+                  "zh": "安娜是老师，而且她累了。y 表示“而且／和”。"
+                },
+                {
+                  "es": "Yo soy estudiante y estoy contento.",
+                  "zh": "我是学生，而且现在很高兴；此处说话者为男性。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "你正在介绍 Ana 的职业身份：Ana ___ profesora.",
+              "options": [
+                "está",
+                "es",
+                "hay"
+              ],
+              "answer": "es",
+              "hint": "题目在说明她从事什么职业。",
+              "explanation": "职业身份使用 ser；Ana 是第三人称单数，所以用 es。",
+              "errorType": "用法判断",
+              "id": "m3-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "Ana 刚忙完一天，现在觉得累。表达她的身体状态：Ana ___ cansada.",
+              "options": [
+                "es",
+                "hay",
+                "está"
+              ],
+              "answer": "está",
+              "hint": "这里强调身体感受；先选动词，再看人称。",
+              "explanation": "描述疲倦状态用 estar，Ana 对应 está。",
+              "errorType": "用法判断",
+              "id": "m3-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你在说明自己的来源：“我来自马德里。”Yo ___ de Madrid.",
+              "options": [
+                "estoy",
+                "soy",
+                "hay"
+              ],
+              "answer": "soy",
+              "hint": "de Madrid 在这里说明来源，而不是现在所在位置。",
+              "explanation": "表达来源使用 ser；yo 对应 soy，所以是 Soy de Madrid.",
+              "errorType": "用法判断",
+              "id": "m3-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ser 的现在时填空：Nosotros ___ estudiantes.（我们是学生。）",
+              "answer": "somos",
+              "hint": "nosotros 是第一人称复数；回看 ser 的对应形式。",
+              "explanation": "ser 的第一人称复数是 somos，因此填 Nosotros somos estudiantes.",
+              "errorType": "词形变化",
+              "id": "m3-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 estar 的现在时填空：Tú ___ cansada.（你累了；对女性说。）",
+              "answer": "estás",
+              "hint": "tú 的对应形式需要保留重音符号。",
+              "explanation": "estar 的 tú 形式是 estás，重音符号写在 á 上。",
+              "errorType": "词形变化",
+              "id": "m3-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 estar 的现在时填空：Yo ___ contento.（我现在很高兴；男性说。）",
+              "answer": "estoy",
+              "hint": "yo 对应 estar 的特殊第一人称形式。",
+              "explanation": "estar 的第一人称单数是 estoy，所以填 Yo estoy contento.",
+              "errorType": "词形变化",
+              "id": "m3-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "给一位虚构人物制作三句介绍：说明职业身份、来自哪个城市、现在的身体或情绪状态。可用 Ana、profesora、Madrid、cansada 或 contenta。读出后，说明每句选择 ser 或 estar 的理由。",
+            "model": "Ana es profesora. Es de Madrid. Está contenta.",
+            "rubric": [
+              "身份和来源使用了 ser。",
+              "身体或情绪状态使用了 estar。",
+              "动词和形容词与人物的人称、性别一致，并保留了必要重音符号。"
+            ]
+          }
+        },
+        {
+          "id": "m3-l2",
+          "title": "hay 表示存在，estar 表示位置",
+          "goal": "能用 hay 引入某处有什么，再用 estar 说明已知的人或物在哪里。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "第一句话引入一件物品，第二句话定位已经提到的物品。比较动词和冠词。",
+            "examples": [
+              {
+                "es": "Hay un libro en la mesa.",
+                "zh": "桌上有一本书。"
+              },
+              {
+                "es": "El libro está en la mesa.",
+                "zh": "那本书在桌上。"
+              },
+              {
+                "es": "Los libros están en la mesa.",
+                "zh": "那些书在桌上。"
+              }
+            ],
+            "answer": "hay 介绍某处存在什么；estar 定位已知物品。hay 不随所介绍物品的数量变化，而 estar 要与主语一致：el libro está、los libros están。"
+          },
+          "rules": [
+            {
+              "title": "hay：引入“有某物”",
+              "body": "hay 表示存在，在本课常与 un、una、unos、unas 或不带定冠词的复数名词搭配。无论后面是一件还是多件物品，都用 hay。",
+              "examples": [
+                {
+                  "es": "Hay una mesa. / Hay mesas.",
+                  "zh": "有一张桌子。／有桌子。"
+                },
+                {
+                  "es": "En la casa hay dos libros.",
+                  "zh": "房子里有两本书。"
+                }
+              ]
+            },
+            {
+              "title": "estar：说明已知对象在哪里",
+              "body": "如果问题是“那本书在哪里”，用 estar 定位已知对象。动词随主语变化：单数物品用 está，复数物品用 están；人称变化也遵循上一课的 estar 形式。",
+              "examples": [
+                {
+                  "es": "El libro está en la mesa.",
+                  "zh": "那本书在桌上。"
+                },
+                {
+                  "es": "Las casas están en Madrid.",
+                  "zh": "那些房子在马德里。"
+                }
+              ]
+            },
+            {
+              "title": "位置短语与选择步骤",
+              "body": "en 表示“在……里面／上面／某地”，含义依具体地点而定。先判断要引入存在的对象，还是定位已知对象，再决定是否需要配合主语变位。本课只处理人和物的位置，活动举办地点留到后续。",
+              "examples": [
+                {
+                  "es": "Hay libros en la casa.",
+                  "zh": "房子里有书。"
+                },
+                {
+                  "es": "Ana está en la casa.",
+                  "zh": "安娜在那所房子里。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "第一次说明桌面上有什么：“桌上有一本书。”___ un libro en la mesa.",
+              "options": [
+                "Está",
+                "Hay",
+                "Es"
+              ],
+              "answer": "Hay",
+              "hint": "这句话要引入一个此前未指定的对象。",
+              "explanation": "介绍某处有某物使用 hay：Hay un libro en la mesa.",
+              "errorType": "用法判断",
+              "id": "m3-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "对方问之前提到的那本书在哪里。El libro ___ en la mesa.",
+              "options": [
+                "hay",
+                "es",
+                "está"
+              ],
+              "answer": "está",
+              "hint": "对象已经确定，现在需要说明它的位置。",
+              "explanation": "定位已知物品用 estar；el libro 是单数，所以用 está。",
+              "errorType": "用法判断",
+              "id": "m3-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你第一次介绍屋内有什么，请选择本课的存在表达：“房子里有两本书。”En la casa ___ dos libros.",
+              "options": [
+                "están",
+                "hay",
+                "está"
+              ],
+              "answer": "hay",
+              "hint": "存在句中的动词不随后面物品的数量改变。",
+              "explanation": "hay 表示存在，即使后面是 dos libros，仍然用 hay。",
+              "errorType": "用法判断",
+              "id": "m3-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 estar 的现在时填空：Los libros ___ en la mesa.",
+              "answer": "están",
+              "hint": "这里的主语是复数；别忘记重音符号。",
+              "explanation": "los libros 是第三人称复数，estar 的对应形式是 están。",
+              "errorType": "词形变化",
+              "id": "m3-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "根据“屋里有一张桌子”填空：En la casa ___ una mesa.",
+              "answer": "hay",
+              "hint": "这句话是在介绍屋里有什么。",
+              "explanation": "介绍存在用 hay，不按 mesa 的单数去套用 estar。",
+              "errorType": "用法判断",
+              "id": "m3-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "按“主语＋动词＋地点”的顺序，将 Ana / en Madrid / está 连成完整句子，表达“安娜现在在马德里”。",
+              "answer": "Ana está en Madrid.",
+              "hint": "先写人物，再写表示位置的动词，最后写地点短语。保留 está 的重音符号。",
+              "explanation": "按题目指定顺序为 Ana está en Madrid.：Ana 是主语，está 表示她所在的位置，en Madrid 是地点。",
+              "errorType": "句子组织",
+              "id": "m3-l2-q6",
+              "accepted": [
+                "Ana está en Madrid.",
+                "Ana está en Madrid"
+              ]
+            }
+          ],
+          "task": {
+            "prompt": "想象一个房间，先用 hay 介绍其中有一本书和一张桌子，再用 estar 说明刚提到的书放在哪里。写三句话。可以用 casa、mesa、libro 和 en。",
+            "model": "En la casa hay un libro. Hay una mesa. El libro está en la mesa.",
+            "rubric": [
+              "首次引入物品时使用 hay，且没有随数量改变 hay。",
+              "定位已知物品时使用 estar，并与主语一致。",
+              "能够解释 hay 与 estar 在这段描述中的不同作用。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "level": "A1",
+      "title": "提问与否定",
+      "description": "根据想获得的信息选择疑问词，把简单陈述变成问题或否定表达。",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "我想知道什么？选择疑问词",
+          "goal": "根据人物、地点、时间、方式或数量等目标信息，选择适合的疑问词。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "观察下面的问题和中文意思：如果答案分别是 Ana、Madrid 和 tres，你会把它们匹配给哪一个问题？",
+            "examples": [
+              {
+                "es": "¿Quién es tu profesora?",
+                "zh": "你的老师是谁？"
+              },
+              {
+                "es": "¿Dónde vive Ana?",
+                "zh": "安娜住在哪里？"
+              },
+              {
+                "es": "¿Cuántos libros tienes?",
+                "zh": "你有多少本书？"
+              }
+            ],
+            "answer": "Ana 对应 quién（谁）；Madrid 对应 dónde（哪里）；tres 对应 cuántos（多少）。先确定需要哪类信息，再选择疑问词。"
+          },
+          "rules": [
+            {
+              "title": "人物、事物和地点",
+              "body": "本课先用 quién 询问一个人的身份，用 qué 询问事物或内容，用 dónde 询问地点。直接问句中的这些疑问词都带重音符号。",
+              "examples": [
+                {
+                  "es": "¿Quién es ella? — Es Ana.",
+                  "zh": "她是谁？——她是安娜。"
+                },
+                {
+                  "es": "¿Qué estudias? — Estudio español.",
+                  "zh": "你学什么？——我学西班牙语。"
+                },
+                {
+                  "es": "¿Dónde trabajas? — Trabajo en Madrid.",
+                  "zh": "你在哪里工作？——我在马德里工作。"
+                }
+              ]
+            },
+            {
+              "title": "时间和方式",
+              "body": "cuándo 询问时间；cómo 询问方式，也出现在询问姓名、状态等常用表达中。根据完整问题和预期答案理解含义。",
+              "examples": [
+                {
+                  "es": "¿Cuándo estudias? — Estudio por la tarde.",
+                  "zh": "你什么时候学习？——我下午学习。"
+                },
+                {
+                  "es": "¿Cómo vas al trabajo? — Voy en autobús.",
+                  "zh": "你怎样去上班？——我坐公交车去。"
+                }
+              ]
+            },
+            {
+              "title": "数量与问号",
+              "body": "询问可数名词的数量时，cuántos / cuántas 与所修饰名词的阴阳性、复数形式一致。书面西语问句前后分别使用 ¿ 和 ?。",
+              "examples": [
+                {
+                  "es": "¿Cuántos libros tienes?",
+                  "zh": "你有多少本书？libro 是阳性名词。"
+                },
+                {
+                  "es": "¿Cuántas hermanas tienes?",
+                  "zh": "你有几个姐妹？hermana 是阴性名词。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m4-l1-q1",
+              "type": "mc",
+              "prompt": "想知道对方学习的内容。¿___ estudias? — Estudio español.",
+              "options": [
+                "Qué",
+                "Quién",
+                "Dónde"
+              ],
+              "answer": "Qué",
+              "hint": "答案是学习的内容，不是一个人或地点。",
+              "explanation": "用 qué 询问学习什么。Quién 询问人物，dónde 询问地点。完整问句是 ¿Qué estudias?",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m4-l1-q2",
+              "type": "mc",
+              "prompt": "想知道老师的身份。¿___ es tu profesora? — Es Ana.",
+              "options": [
+                "Cuándo",
+                "Quién",
+                "Cómo"
+              ],
+              "answer": "Quién",
+              "hint": "预期答案是一个人的名字。",
+              "explanation": "Quién 用来询问一个人是谁。Es Ana 回答的是身份，而不是时间或方式。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m4-l1-q3",
+              "type": "mc",
+              "prompt": "想知道居住地点。¿___ vive Luis? — Vive en Madrid.",
+              "options": [
+                "Cuántos",
+                "Qué",
+                "Dónde"
+              ],
+              "answer": "Dónde",
+              "hint": "en Madrid 提供了一项地点信息。",
+              "explanation": "Dónde 询问地点。Vive en Madrid 表示“他住在马德里”，因此使用 ¿Dónde vive Luis?",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m4-l1-q4",
+              "type": "text",
+              "prompt": "填写一个疑问词，询问学习的时间：¿___ estudias? — Estudio por la mañana.（我上午学习。）",
+              "answer": "Cuándo",
+              "accepted": [
+                "cuándo"
+              ],
+              "hint": "por la mañana 回答“什么时候”；请检查疑问词的重音符号。",
+              "explanation": "Cuándo 询问时间。完整问句是 ¿Cuándo estudias?；直接疑问词 cuándo 的 á 带重音。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m4-l1-q5",
+              "type": "text",
+              "prompt": "填写一个疑问词，询问交通方式：¿___ vas al trabajo? — Voy en autobús.（我坐公交车去。）",
+              "answer": "Cómo",
+              "accepted": [
+                "cómo"
+              ],
+              "hint": "答案说明“怎样去”，而不是去哪里。",
+              "explanation": "Cómo 在这里询问方式。¿Cómo vas al trabajo? 意为“你怎样去上班？”，cómo 的 ó 带重音。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m4-l1-q6",
+              "type": "text",
+              "prompt": "填写一个疑问词，询问书的数量：¿___ libros tienes? — Tengo tres libros.（我有三本书。）",
+              "answer": "Cuántos",
+              "accepted": [
+                "cuántos"
+              ],
+              "hint": "libros 是阳性复数；数量疑问词需要与它保持一致。",
+              "explanation": "询问 libros 的数量使用阳性复数 cuántos。Cuántas 则用于 casas、hermanas 等阴性复数名词。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "为新同学写三个问题，分别询问学习内容、居住地点和拥有的书的数量。可以与同伴互问；独自学习时，先写问题，再用自己的真实信息回答。",
+            "model": "¿Qué estudias? — Estudio español.\n¿Dónde vives? — Vivo en Pekín.\n¿Cuántos libros tienes? — Tengo cinco libros.",
+            "rubric": [
+              "三个问题分别对应内容、地点和数量。",
+              "疑问词带正确重音，数量词与名词一致。",
+              "每个问题都有前后问号，回答提供了所问的信息。"
+            ]
+          }
+        },
+        {
+          "id": "m4-l2",
+          "title": "是这样吗？提问和否定",
+          "goal": "把简单陈述改成一般疑问句，并用 no 否定一个动作或情况。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "三句话中的人物和动作相同。哪一句在陈述事实，哪一句在提问，哪一句在否定？",
+            "examples": [
+              {
+                "es": "Ana vive en Madrid.",
+                "zh": "安娜住在马德里。"
+              },
+              {
+                "es": "¿Ana vive en Madrid?",
+                "zh": "安娜住在马德里吗？"
+              },
+              {
+                "es": "Ana no vive en Madrid.",
+                "zh": "安娜不住在马德里。"
+              }
+            ],
+            "answer": "第一句是陈述，第二句通过问号和说话时的疑问语调提问，第三句在动词 vive 前加 no 表示否定。"
+          },
+          "rules": [
+            {
+              "title": "一般疑问句可以保持原有词序",
+              "body": "询问“是否如此”时，一种入门做法是保留简单陈述句的词序，在书面上使用 ¿...?，口头上使用相应疑问语调。西语也有其他疑问句词序，本课先练这一种。",
+              "examples": [
+                {
+                  "es": "Tienes un libro. → ¿Tienes un libro?",
+                  "zh": "你有一本书。→你有一本书吗？"
+                },
+                {
+                  "es": "Ana trabaja aquí. → ¿Ana trabaja aquí?",
+                  "zh": "安娜在这里工作。→安娜在这里工作吗？"
+                }
+              ]
+            },
+            {
+              "title": "简单句中，no 放在变位动词之前",
+              "body": "本课没有宾语代词的简单句中，将 no 放在变位动词前，表示动作或情况不成立。主语可以出现，也可以在清楚时省略。",
+              "examples": [
+                {
+                  "es": "Yo trabajo aquí. → Yo no trabajo aquí.",
+                  "zh": "我在这里工作。→我不在这里工作。"
+                },
+                {
+                  "es": "Es profesora. → No es profesora.",
+                  "zh": "她是老师。→她不是老师。"
+                }
+              ]
+            },
+            {
+              "title": "回答中的 sí 和 no",
+              "body": "肯定回答的 sí 带重音。完整否定回答可以出现两个 no：第一个独立回应“不是”，第二个放入句子中否定动词。逗号将回应与后面的句子分开。",
+              "examples": [
+                {
+                  "es": "¿Estudias español? — Sí, estudio español.",
+                  "zh": "你学西班牙语吗？——是的，我学西班牙语。"
+                },
+                {
+                  "es": "¿Trabajas los domingos? — No, no trabajo los domingos.",
+                  "zh": "你周日工作吗？——不，我周日不工作。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m4-l2-q1",
+              "type": "mc",
+              "prompt": "选择“安娜不在这里工作”的正确表达。",
+              "options": [
+                "Ana trabaja no aquí.",
+                "Ana no trabaja aquí.",
+                "Ana trabaja aquí no."
+              ],
+              "answer": "Ana no trabaja aquí.",
+              "hint": "找出变位动词 trabaja，再判断表示否定的词放在哪里。",
+              "explanation": "简单否定句将 no 放在变位动词前，因此为 Ana no trabaja aquí.。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m4-l2-q2",
+              "type": "mc",
+              "prompt": "有人问 ¿Estudias español? 你确实在学西语。选择正确的完整回答。",
+              "options": [
+                "Sí, estudio español.",
+                "No, estudio español.",
+                "Sí, no estudio español."
+              ],
+              "answer": "Sí, estudio español.",
+              "hint": "回应和后面的句子都应表达肯定。",
+              "explanation": "Sí 表示肯定回应，estudio español 说明自己学习西语。Sí 的 í 带重音。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m4-l2-q3",
+              "type": "mc",
+              "prompt": "保留词序，把 Ana vive en Madrid. 写成规范的一般疑问句。",
+              "options": [
+                "Ana vive en Madrid?",
+                "¿Ana vive en Madrid.",
+                "¿Ana vive en Madrid?"
+              ],
+              "answer": "¿Ana vive en Madrid?",
+              "hint": "西班牙语书面问句的开头和结尾都需要问号。",
+              "explanation": "¿Ana vive en Madrid? 保留了原句词序，并使用配对问号，询问“安娜是否住在马德里”。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m4-l2-q4",
+              "type": "text",
+              "prompt": "只填一个词，使句子表示“我不在马德里生活”：Yo ___ vivo en Madrid.",
+              "answer": "no",
+              "hint": "需要一个否定词，位置已经在变位动词前。",
+              "explanation": "No 放在 vivo 前否定“住在马德里”这一情况。完整句子为 Yo no vivo en Madrid.。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m4-l2-q5",
+              "type": "text",
+              "prompt": "按固定句式完整回答“不是，我周日不工作”：No, ___ trabajo los domingos. 只填写空缺的一个词。",
+              "answer": "no",
+              "hint": "逗号前的回应词不会代替句子内部的否定词。",
+              "explanation": "第一个 No 回应对方，第二个 no 否定 trabajo。完整回答为 No, no trabajo los domingos.。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m4-l2-q6",
+              "type": "text",
+              "prompt": "只填一个词，作肯定回答并注意重音：¿Tienes un libro? — ___, tengo un libro.",
+              "answer": "Sí",
+              "accepted": [
+                "sí"
+              ],
+              "hint": "表示“是的”的词带书写重音。",
+              "explanation": "肯定回答使用 sí，必须写 í 上的重音。Si 不带重音时常表示“如果”，不是这里的肯定回应。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "写两组简单问答：第一组询问是否学习西语并肯定回答；第二组询问是否周日工作并否定回答。与同伴互问时可根据真实情况修改答案；独自学习时朗读并录下自己的版本。",
+            "model": "¿Estudias español? — Sí, estudio español.\n¿Trabajas los domingos? — No, no trabajo los domingos.",
+            "rubric": [
+              "问题使用成对问号，朗读时能让人听出是在提问。",
+              "否定句的 no 放在变位动词前。",
+              "完整回答与想表达的肯定或否定意思一致，sí 写出重音。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "level": "A1",
+      "title": "指代与所属",
+      "description": "通过距离和归属说明自己指的是哪件物品，并让修饰词与名词保持一致。",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "这个、那个、远处那个",
+          "goal": "根据清楚的距离线索选择指示词，并调整阴阳性和单复数。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "想象书分别在我手上、你手上，以及离我们都很远的书架上。三个句子中，哪个词告诉你书的位置？",
+            "examples": [
+              {
+                "es": "Este libro está aquí, en mi mano.",
+                "zh": "这本书在这里，在我手上。"
+              },
+              {
+                "es": "Ese libro está ahí, en tu mano.",
+                "zh": "那本书在那里，在你手上。"
+              },
+              {
+                "es": "Aquel libro está allí, lejos de nosotros.",
+                "zh": "远处那本书在那里，离我们都很远。"
+              }
+            ],
+            "answer": "Este、ese、aquel 提供了不同的距离线索。本课使用位置明确的情境，先练“靠近我、靠近你、远离我们双方”这三类指示。"
+          },
+          "rules": [
+            {
+              "title": "先确定在指哪一处",
+              "body": "本课用 este 系列指靠近说话者的事物；用 ese 系列指靠近听话者、远离说话者的事物；用 aquel 系列指远离双方的事物。真实交流中的距离也受说话者视角影响，练习会明确提供位置。",
+              "examples": [
+                {
+                  "es": "Este libro está aquí, junto a mí.",
+                  "zh": "这本书在这里，靠近我。"
+                },
+                {
+                  "es": "Ese libro está ahí, junto a ti.",
+                  "zh": "那本书在那里，靠近你。"
+                },
+                {
+                  "es": "Aquel libro está allí, lejos de los dos.",
+                  "zh": "远处那本书在那里，离我们两人都很远。"
+                }
+              ]
+            },
+            {
+              "title": "再与名词的阴阳性、数配合",
+              "body": "三组常用形式分别是 este / esta / estos / estas；ese / esa / esos / esas；aquel / aquella / aquellos / aquellas。选择取决于所修饰的名词，不取决于说话者的性别。",
+              "examples": [
+                {
+                  "es": "este libro / esta casa",
+                  "zh": "这本书／这座房子：阳性单数／阴性单数。"
+                },
+                {
+                  "es": "esos libros / esas casas",
+                  "zh": "那些书／那些房子：阳性复数／阴性复数。"
+                },
+                {
+                  "es": "aquellos libros / aquellas casas",
+                  "zh": "远处那些书／远处那些房子。"
+                }
+              ]
+            },
+            {
+              "title": "本课把指示词放在名词前",
+              "body": "在本课练习的结构中，指示词直接修饰后面的名词，例如 este libro。不要在它前面再添加定冠词写成 el este libro。",
+              "examples": [
+                {
+                  "es": "Esta mesa es pequeña.",
+                  "zh": "这张桌子很小。"
+                },
+                {
+                  "es": "Aquellas casas son blancas.",
+                  "zh": "远处那些房子是白色的。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m5-l1-q1",
+              "type": "mc",
+              "prompt": "书就在你自己手上。你指着它说“这本书”：___ libro.",
+              "options": [
+                "Este",
+                "Esta",
+                "Estos"
+              ],
+              "answer": "Este",
+              "hint": "先确定距离靠近说话者，再检查 libro 的阴阳性和数。",
+              "explanation": "Libro 是阳性单数；书靠近说话者，因此使用 este libro。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l1-q2",
+              "type": "mc",
+              "prompt": "桌子在对方身旁，离你较远。按本课的距离对应关系，你说：___ mesa está junto a ti.（那张桌子在你旁边。）",
+              "options": [
+                "Esta",
+                "Esa",
+                "Aquella"
+              ],
+              "answer": "Esa",
+              "hint": "位置明确在听话者旁边；mesa 是阴性单数。",
+              "explanation": "本题的桌子靠近听话者、远离说话者，因此选择 ese 系列；mesa 为阴性单数，对应 esa。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m5-l1-q3",
+              "type": "mc",
+              "prompt": "几本书放在远处书架上，离交谈双方都很远。选择“远处那些书”：___ libros.",
+              "options": [
+                "Aquel",
+                "Aquellas",
+                "Aquellos"
+              ],
+              "answer": "Aquellos",
+              "hint": "远离双方使用 aquel 系列，再配合 libros 的性和数。",
+              "explanation": "Libros 是阳性复数，因此使用 aquellos libros。Aquel 是单数，aquellas 是阴性复数。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l1-q4",
+              "type": "text",
+              "prompt": "把 esta 改成复数，填出“这些房子”：___ casas. 房子都靠近说话者。",
+              "answer": "estas",
+              "hint": "Casa 是阴性名词，casas 是复数；指示词也要同时表达这两点。",
+              "explanation": "Esta 的阴性复数形式是 estas，与 casas 一致：estas casas。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l1-q5",
+              "type": "text",
+              "prompt": "只把 ese 改为适合 libros 的形式：___ libros. 这些书在听话者身旁。",
+              "answer": "esos",
+              "hint": "保持 ese 这一距离系列，将形式改为阳性复数。",
+              "explanation": "Ese 的阳性复数形式是 esos。Esos libros 指本情境中靠近听话者的那些书。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l1-q6",
+              "type": "text",
+              "prompt": "只把 aquel 改为适合 casa 的形式，表示远离双方的那座房子：___ casa.",
+              "answer": "aquella",
+              "hint": "保持 aquel 这一距离系列；casa 是阴性单数。",
+              "explanation": "Aquel 的阴性单数形式是 aquella，因此为 aquella casa。注意词形中有 ll。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "把三组物品（每组一件或多件）分别放在你身边、同伴身边和远离双方的位置，分别写一句描述。独自学习时画出两个交谈者的位置。至少一句使用复数，并说明你所指的位置。",
+            "model": "Este libro está aquí, junto a mí.\nEsa mesa está ahí, junto a ti.\nAquellos libros están allí, lejos de los dos.",
+            "rubric": [
+              "每个指示词都与我设定的位置关系相符。",
+              "指示词与名词的阴阳性、单复数一致。",
+              "至少有一个复数名词短语，听者能确认我指的是哪个对象。"
+            ]
+          }
+        },
+        {
+          "id": "m5-l2",
+          "title": "谁的物品？物主词的一致关系",
+          "goal": "使用 mi、tu、su、nuestro 等名词前的物主词，准确表达归属。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "物品都属于“我”，为什么下面前两组会在 mi / mis 之间变化？再看“我们的”一组，哪些词随着物品变化？",
+            "examples": [
+              {
+                "es": "mi libro / mis libros",
+                "zh": "我的书（单数）／我的书（复数）。"
+              },
+              {
+                "es": "mi casa / mis casas",
+                "zh": "我的房子（单数）／我的房子（复数）。"
+              },
+              {
+                "es": "nuestro libro / nuestras casas",
+                "zh": "我们的书（阳性单数）／我们的房子（阴性复数）。"
+              }
+            ],
+            "answer": "Mi / mis 的变化取决于所属事物的单复数；nuestro 系列还要配合所属事物的阴阳性。拥有者是一个人还是多个人，与物品是一件还是多件是两件事。"
+          },
+          "rules": [
+            {
+              "title": "mi、tu、su 只在单复数上变化",
+              "body": "放在名词前时，mi / mis 表示“我的”，tu / tus 表示“你的”，su / sus 可表示“他／她／您／他们／她们／各位的”。这些形式不随物品的阴阳性变化，但要随物品的单复数变化。物主词 tu 不带重音，人称代词 tú 带重音。",
+              "examples": [
+                {
+                  "es": "mi libro / mi casa / mis libros / mis casas",
+                  "zh": "我的书／我的房子：单数用 mi，复数用 mis。"
+                },
+                {
+                  "es": "Tú tienes tu libro.",
+                  "zh": "你有你的书。Tú 是“你”，tu 是“你的”。"
+                }
+              ]
+            },
+            {
+              "title": "nuestro 系列与所属事物的性和数一致",
+              "body": "表达“我们的”时，根据后面的名词选择 nuestro、nuestra、nuestros、nuestras。判断的是所属事物的阴阳性和数，不是拥有者的性别。",
+              "examples": [
+                {
+                  "es": "nuestro libro / nuestra casa",
+                  "zh": "我们的书／我们的房子。"
+                },
+                {
+                  "es": "nuestros libros / nuestras casas",
+                  "zh": "我们的书（复数）／我们的房子（复数）。"
+                },
+                {
+                  "es": "Nosotras hablamos con nuestros amigos.",
+                  "zh": "我们这些女性与我们的男性朋友或男女混合的朋友交谈；amigos 决定使用 nuestros。"
+                }
+              ]
+            },
+            {
+              "title": "归属信息要清楚",
+              "body": "Su / sus 自身不能明确区分“他的、她的、他们的”等含义，需要由上下文确定。容易混淆时可以用 de + 人名，例如 el libro de Ana。本课的短物主词直接放在名词前，不再加定冠词。",
+              "examples": [
+                {
+                  "es": "Ana tiene un libro. Su libro es rojo.",
+                  "zh": "安娜有一本书。她的书是红色的。"
+                },
+                {
+                  "es": "El libro de Ana es rojo.",
+                  "zh": "安娜的书是红色的：直接写出拥有者。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m5-l2-q1",
+              "type": "mc",
+              "prompt": "书属于说话者自己。选择“我的书（单数）”：___ libro.",
+              "options": [
+                "mis",
+                "mi",
+                "mías"
+              ],
+              "answer": "mi",
+              "hint": "先确定拥有者是“我”，再检查物品是一本还是多本。",
+              "explanation": "Mi 是放在单数名词前的“我的”。Libro 为单数，因此使用 mi libro。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l2-q2",
+              "type": "mc",
+              "prompt": "选择“我们的房子（复数）”：___ casas.",
+              "options": [
+                "nuestros",
+                "nuestra",
+                "nuestras"
+              ],
+              "answer": "nuestras",
+              "hint": "Casas 同时提供了阴性和复数两条线索。",
+              "explanation": "Nuestro 系列与所属事物一致。Casas 是阴性复数，所以选择 nuestras casas。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l2-q3",
+              "type": "mc",
+              "prompt": "Ana tiene dos libros. ___ libros son rojos.（安娜有两本书。她的书是红色的。）",
+              "options": [
+                "Sus",
+                "Su",
+                "Mi"
+              ],
+              "answer": "Sus",
+              "hint": "上下文已经说明拥有者是安娜；现在要配合 libros 的数。",
+              "explanation": "本语境的 su / sus 表示“她的”；所属事物 libros 为复数，所以用 sus，即使拥有者安娜只有一个人。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l2-q4",
+              "type": "text",
+              "prompt": "填写名词前的“你的”，只填一个词：Tú tienes ___ libro.（你有你的书。）",
+              "answer": "tu",
+              "hint": "这是修饰单数名词的物主词，注意它与句首人称代词的重音区别。",
+              "explanation": "名词前的“你的”用 tu，不带重音；句首 Tú 表示“你”，带重音。完整句子是 Tú tienes tu libro.。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l2-q5",
+              "type": "text",
+              "prompt": "把 nuestro 系列填入空格，表示“我们的书（单数）”：___ libro es rojo.",
+              "answer": "Nuestro",
+              "accepted": [
+                "nuestro"
+              ],
+              "hint": "Libro 是阳性单数；拥有者是我们，但物品并不因此变成复数。",
+              "explanation": "“我们的”需要与 libro 的阳性单数一致，故用 nuestro。Nuestros 用于 libros 等阳性复数名词前。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m5-l2-q6",
+              "type": "text",
+              "prompt": "说话者是一群女性。填写“我们的”：Nosotras hablamos con ___ amigos.（我们与我们的朋友交谈。）",
+              "answer": "nuestros",
+              "hint": "要检查被修饰的 amigos，而不是主语 nosotras 的性别。",
+              "explanation": "Amigos 是阳性复数，决定使用 nuestros。物主词与所属事物的性和数一致，不能根据拥有者 nosotras 误选 nuestras。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "为三件物品写标签：一件属于你自己，一组物品属于明确写出的朋友，一件属于你和同伴共同所有。每条都写出物主词和物品名称；至少包含一次复数。",
+            "model": "Mi libro es azul.\nAna tiene dos libros. Sus libros son rojos.\nNuestra mesa es pequeña.",
+            "rubric": [
+              "读者能从上下文确定每件物品属于谁，su / sus 没有造成歧义。",
+              "物主词随所属物品的单复数变化，nuestro 系列还配合阴阳性。",
+              "名词前的短物主词没有与多余的定冠词连用，tu 与 tú 的重音能区分。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "level": "A1",
+      "title": "用 gustar 表达喜好",
+      "description": "把喜欢者和喜欢的对象分开判断，再组合成正确的喜好表达。",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "为什么是 gusta 或 gustan？",
+          "goal": "在一个名词对象或一个动词原形作主语的基础句中，正确选择 gusta 或 gustan。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "三句中的喜欢者都是“我”。为什么动词在 gusta 和 gustan 之间变化？先比较喜欢的对象。",
+            "examples": [
+              {
+                "es": "Me gusta el libro.",
+                "zh": "我喜欢这本书。"
+              },
+              {
+                "es": "Me gustan los libros.",
+                "zh": "我喜欢书。"
+              },
+              {
+                "es": "Me gusta bailar.",
+                "zh": "我喜欢跳舞。"
+              }
+            ],
+            "answer": "El libro 是单数名词短语，los libros 是复数；动词形式跟这些主语一致。Bailar 是动词原形，作为一个活动来表达喜好时使用单数 gusta。Me 表示喜欢者是“我”，不决定 gusta / gustan。"
+          },
+          "rules": [
+            {
+              "title": "先找喜欢的对象：它是这里的主语",
+              "body": "中文常说“我喜欢书”，西语 gustar 的结构可帮助理解为“书使我喜欢”。在 Me gustan los libros 中，los libros 是语法主语；me 表示喜欢者。动词与主语一致，不能照中文词序写成 Yo gusto los libros。",
+              "examples": [
+                {
+                  "es": "Me gusta el café.",
+                  "zh": "我喜欢咖啡。El café 是单数主语，me 表示喜欢者是我。"
+                },
+                {
+                  "es": "Me gustan los libros.",
+                  "zh": "我喜欢书。Los libros 是复数主语，动词使用 gustan。"
+                }
+              ]
+            },
+            {
+              "title": "一个单数对象用 gusta，一个复数对象用 gustan",
+              "body": "本课先处理一个喜欢的对象。单数名词短语配 gusta，复数名词短语配 gustan。可数名词和不可数名词都需要判断其实际语法数；本课的 el café 按单数处理。",
+              "examples": [
+                {
+                  "es": "Me gusta la película.",
+                  "zh": "我喜欢这部电影。La película 为单数。"
+                },
+                {
+                  "es": "Me gustan las películas.",
+                  "zh": "我喜欢电影。Las películas 为复数。"
+                }
+              ]
+            },
+            {
+              "title": "一个动词原形表达一项活动，用 gusta",
+              "body": "喜欢的对象可以是一项活动，如 leer（阅读）、bailar（跳舞）。这里使用动词原形，并用单数 gusta。本课暂不处理多个对象并列时的情况。",
+              "examples": [
+                {
+                  "es": "Me gusta leer.",
+                  "zh": "我喜欢阅读。"
+                },
+                {
+                  "es": "Me gusta estudiar español.",
+                  "zh": "我喜欢学习西班牙语。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m6-l1-q1",
+              "type": "mc",
+              "prompt": "选择“我喜欢咖啡”的正确形式：Me ___ el café.",
+              "options": [
+                "gustan",
+                "gusto",
+                "gusta"
+              ],
+              "answer": "gusta",
+              "hint": "决定动词形式的是 el café 的语法数，不是喜欢者“我”。",
+              "explanation": "El café 在本句中是单数主语，因此动词使用 gusta。Me 表示喜欢者是我。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m6-l1-q2",
+              "type": "mc",
+              "prompt": "选择“我喜欢这些书”的正确形式：Me ___ estos libros.",
+              "options": [
+                "gustan",
+                "gusta",
+                "gustas"
+              ],
+              "answer": "gustan",
+              "hint": "先找到主语 estos libros，再检查它是单数还是复数。",
+              "explanation": "Estos libros 是复数主语，动词与之保持一致，使用 gustan。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m6-l1-q3",
+              "type": "mc",
+              "prompt": "选择“我喜欢跳舞”的正确形式：Me ___ bailar.",
+              "options": [
+                "gustan",
+                "gusta",
+                "gusto"
+              ],
+              "answer": "gusta",
+              "hint": "Bailar 是动词原形，这里表示一项活动。",
+              "explanation": "一个动词原形 bailar 作主语表示活动时，搭配单数 gusta：Me gusta bailar.。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m6-l1-q4",
+              "type": "text",
+              "prompt": "只填 gusta 或 gustan：Me ___ la música.（我喜欢音乐。）",
+              "answer": "gusta",
+              "hint": "La música 是阴性单数；动词需要配合主语的数。",
+              "explanation": "La música 虽然可以涵盖很多音乐作品，语法上仍是单数，因此用 gusta。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m6-l1-q5",
+              "type": "text",
+              "prompt": "把喜欢的对象由 el libro 换成 los libros，填写正确形式：Me ___ los libros.",
+              "answer": "gustan",
+              "hint": "喜欢者没变，变化的是主语从一本书变成了复数的书。",
+              "explanation": "主语变成复数 los libros 后，动词从 gusta 改为 gustan。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m6-l1-q6",
+              "type": "text",
+              "prompt": "只填 gusta 或 gustan：Me ___ leer.（我喜欢阅读。）",
+              "answer": "gusta",
+              "hint": "Leer 表示一项活动，不是复数名词。",
+              "explanation": "Leer 是一个动词原形，作为主语时这里用单数 gusta：Me gusta leer.。",
+              "errorType": "用法判断"
+            }
+          ],
+          "task": {
+            "prompt": "写三句真实或设定的个人喜好，分别使用一个单数名词对象、一个复数名词对象和一个动词原形。圈出每句中决定 gusta / gustan 的主语。",
+            "model": "Me gusta el café.\nMe gustan las películas.\nMe gusta bailar.",
+            "rubric": [
+              "能标出喜欢的对象是句子的主语，me 表示喜欢者。",
+              "单数名词和一个动词原形使用 gusta，复数名词使用 gustan。",
+              "句子表达了自己的喜好，动词原形保留原形，没有按中文词序误写成 Yo gusto…。"
+            ]
+          }
+        },
+        {
+          "id": "m6-l2",
+          "title": "谁喜欢？切换 me、te、le、nos、les",
+          "goal": "根据喜欢者选择间接宾语代词，并保持 gustar 与喜欢对象的主语一致。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "前两句的喜欢者不同，但喜欢的对象相同。第三句又改变了什么？分别观察代词和动词。",
+            "examples": [
+              {
+                "es": "Me gusta el café.",
+                "zh": "我喜欢咖啡。"
+              },
+              {
+                "es": "A Ana le gusta el café.",
+                "zh": "安娜喜欢咖啡。"
+              },
+              {
+                "es": "A Ana le gustan los libros.",
+                "zh": "安娜喜欢书。"
+              }
+            ],
+            "answer": "从“我”改成“安娜”时，me 变成 le；el café 仍是单数主语，gusta 不变。第三句把主语换成复数 los libros，所以动词变成 gustan，喜欢者仍由 le 表示。"
+          },
+          "rules": [
+            {
+              "title": "喜欢者决定间接宾语代词",
+              "body": "本课练习：我→me；你（tú）→te；他、她、您（usted）→le；我们→nos；他们、她们、你们／各位（ustedes）→les。这些代词表示谁产生喜欢的感受，不决定动词的单复数。西班牙常用的 vosotros / vosotras 对应 os，作为本课扩展识别项。",
+              "examples": [
+                {
+                  "es": "Me gusta el café. / Te gusta el café.",
+                  "zh": "我喜欢咖啡。／你喜欢咖啡。"
+                },
+                {
+                  "es": "Nos gusta el café. / Les gusta el café.",
+                  "zh": "我们喜欢咖啡。／他们、她们或您们喜欢咖啡，具体由语境确定。"
+                },
+                {
+                  "es": "Os gusta el café.",
+                  "zh": "你们（vosotros / vosotras）喜欢咖啡。扩展识别。"
+                }
+              ]
+            },
+            {
+              "title": "A + 人物可以说明或强调喜欢者",
+              "body": "句首可用 a mí、a ti、a Ana、a nosotros 等进一步说明喜欢者。使用本课这种句首结构时，后面的 me / te / le / nos / les 仍保留。A Ana le gusta... 中的 le 不能因为已经写出 Ana 就删掉。",
+              "examples": [
+                {
+                  "es": "A mí me gusta leer.",
+                  "zh": "我喜欢阅读，a mí 可以强调“对我来说”。"
+                },
+                {
+                  "es": "A Ana le gusta leer.",
+                  "zh": "安娜喜欢阅读，a Ana 明确了 le 指谁。"
+                },
+                {
+                  "es": "A Ana y a Luis les gusta leer.",
+                  "zh": "安娜和路易斯喜欢阅读，两位喜欢者对应 les。"
+                }
+              ]
+            },
+            {
+              "title": "分别判断人和物，否定放在代词前",
+              "body": "先根据喜欢者选择代词，再根据喜欢的对象这一主语选择 gusta / gustan。要表达“不喜欢”，把 no 放在代词前：no me gusta、no le gustan 等。",
+              "examples": [
+                {
+                  "es": "A Ana le gustan los libros.",
+                  "zh": "安娜喜欢书：Ana 决定 le，los libros 决定 gustan。"
+                },
+                {
+                  "es": "A nosotros nos gusta la música.",
+                  "zh": "我们喜欢音乐：nosotros 决定 nos，la música 决定 gusta。"
+                },
+                {
+                  "es": "A Ana no le gusta el café.",
+                  "zh": "安娜不喜欢咖啡：no 放在 le 前。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m6-l2-q1",
+              "type": "mc",
+              "prompt": "填写“你喜欢阅读”：A ti ___ gusta leer.",
+              "options": [
+                "le",
+                "te",
+                "me"
+              ],
+              "answer": "te",
+              "hint": "A ti 已经明确喜欢者是以 tú 称呼的“你”。",
+              "explanation": "喜欢者是 tú，对应间接宾语代词 te，因此为 A ti te gusta leer.。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m6-l2-q2",
+              "type": "mc",
+              "prompt": "选择“安娜喜欢咖啡”的正确句子。",
+              "options": [
+                "A Ana gusta el café.",
+                "A Ana les gusta el café.",
+                "A Ana le gusta el café."
+              ],
+              "answer": "A Ana le gusta el café.",
+              "hint": "Ana 是一位喜欢者；句首已经写出 A Ana 时，代词仍要保留。",
+              "explanation": "一位第三人称喜欢者 Ana 对应 le。在 A Ana 位于句首的结构中，需要保留 le；单数主语 el café 对应 gusta。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m6-l2-q3",
+              "type": "mc",
+              "prompt": "填写“安娜和路易斯喜欢咖啡”：A Ana y a Luis ___ gusta el café.",
+              "options": [
+                "les",
+                "le",
+                "nos"
+              ],
+              "answer": "les",
+              "hint": "这里有两位第三人称喜欢者，先处理喜欢者的数量。",
+              "explanation": "Ana 和 Luis 是两位喜欢者，对应 les。喜欢的对象 el café 仍是单数，所以 gusta 不因两个人喜欢而改变。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m6-l2-q4",
+              "type": "text",
+              "prompt": "只填一个代词，表达“我们喜欢音乐”：A nosotros ___ gusta la música.",
+              "answer": "nos",
+              "hint": "A nosotros 表示喜欢者是“我们”；不要根据 música 选择代词。",
+              "explanation": "Nosotros 对应 nos。喜欢的对象 la música 是单数，因此完整句子是 A nosotros nos gusta la música.。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m6-l2-q5",
+              "type": "text",
+              "prompt": "只填一个代词，表达“我不喜欢咖啡”：A mí no ___ gusta el café.",
+              "answer": "me",
+              "hint": "喜欢者由 a mí 指明；no 已经放在代词的位置之前。",
+              "explanation": "A mí 对应 me。否定形式是 no me gusta，因此为 A mí no me gusta el café.。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m6-l2-q6",
+              "type": "text",
+              "prompt": "喜欢者仍是 Pablo，把喜欢的对象改成复数。只填 gusta 或 gustan：A Pablo le ___ los libros.",
+              "answer": "gustan",
+              "hint": "Pablo 决定代词 le；另找决定动词形式的主语。",
+              "explanation": "主语 los libros 是复数，使用 gustan。Pablo 只有一人并不意味着动词用 gusta：喜欢者和喜欢的对象需要分开判断。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "询问一位同伴喜欢哪项活动、喜欢哪些东西、是否喜欢咖啡，然后用对方的名字写三句喜好介绍。独自学习时设定一位人物及其偏好。至少一句使用 gustan，一句使用否定。",
+            "model": "A Ana le gusta bailar.\nA Ana le gustan los libros.\nA Ana no le gusta el café.",
+            "rubric": [
+              "用 A + 人名明确喜欢者，并保留对应的间接宾语代词。",
+              "根据喜欢对象的主语选择 gusta / gustan，而非根据喜欢者的数量。",
+              "否定词 no 放在代词前，三句能准确传达采访或设定的信息。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m7",
+      "level": "A1",
+      "title": "日常与计划",
+      "description": "用自复动词说明自己的日常，用 ir a + 不定式表达接下来的计划。",
+      "lessons": [
+        {
+          "id": "m7-l1",
+          "title": "我几点起床：自复动词与频率",
+          "goal": "能让自复代词、动词形式与说话对象保持一致，并区分总是与有时。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "比较这三句话：换了人物后，动词前的小词和动词末尾分别发生了什么变化？",
+            "examples": [
+              {
+                "es": "Yo me levanto a las siete.",
+                "zh": "我七点起床。"
+              },
+              {
+                "es": "Tú te levantas a las ocho.",
+                "zh": "你八点起床。"
+              },
+              {
+                "es": "Ana se levanta a las siete.",
+                "zh": "安娜七点起床。"
+              }
+            ],
+            "answer": "人物改变时，要同时检查代词和动词：yo 对应 me levanto，tú 对应 te levantas，Ana 相当于 ella，对应 se levanta。只换代词或只换动词都可能出错。"
+          },
+          "rules": [
+            {
+              "title": "先选代词，再检查动词",
+              "body": "本课用 levantarse（起床）学习自复形式。对应关系为 yo me levanto、tú te levantas、él/ella/usted se levanta、nosotros/nosotras nos levantamos、ellos/ellas/ustedes se levantan。在西班牙常用的 vosotros/vosotras 形式是 os levantáis。先确定人物，再同时选对代词和动词。",
+              "examples": [
+                {
+                  "es": "Nosotros nos levantamos a las siete.",
+                  "zh": "我们七点起床。"
+                },
+                {
+                  "es": "Ellas se levantan a las ocho.",
+                  "zh": "她们八点起床。"
+                }
+              ]
+            },
+            {
+              "title": "llamarse 也要搭配相应代词",
+              "body": "llamarse 表示“名叫”，本课把它作为整体搭配学习：me llamo、te llamas、se llama、nos llamamos、os llamáis、se llaman。正常使用时，代词不可省略；明确说的是谁时，人称主语通常可以省略。",
+              "examples": [
+                {
+                  "es": "Me llamo Marta.",
+                  "zh": "我叫玛尔塔。"
+                },
+                {
+                  "es": "Ella se llama Ana.",
+                  "zh": "她叫安娜。"
+                }
+              ]
+            },
+            {
+              "title": "用频率词补充日常习惯",
+              "body": "siempre 表示“总是”，a veces 表示“有时”。本课先使用“频率词 + 代词 + 动词”的句型。频率词的加入不会改变人物对应的代词和动词形式。",
+              "examples": [
+                {
+                  "es": "Siempre me levanto a las siete.",
+                  "zh": "我总是七点起床。"
+                },
+                {
+                  "es": "A veces me levanto a las ocho.",
+                  "zh": "我有时八点起床。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m7-l1-q1",
+              "type": "mc",
+              "prompt": "我七点起床：Yo ___ levanto a las siete. 选择合适的代词。",
+              "options": [
+                "te",
+                "me",
+                "se"
+              ],
+              "answer": "me",
+              "hint": "先看主语 yo：哪一个代词和“我”对应？",
+              "explanation": "yo 对应自复代词 me，完整表达是 Yo me levanto a las siete。te 对应 tú，se 对应第三人称以及 usted/ustedes。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m7-l1-q2",
+              "type": "mc",
+              "prompt": "她八点起床：Ella se ___ a las ocho. 选择 levantar 的正确动词形式。",
+              "options": [
+                "levantas",
+                "levantan",
+                "levanta"
+              ],
+              "answer": "levanta",
+              "hint": "ella 是第三人称单数，检查 -ar 动词对应的词尾。",
+              "explanation": "ella 使用第三人称单数 levanta，所以是 Ella se levanta。levantas 对应 tú，levantan 对应 ellos/ellas/ustedes。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m7-l1-q3",
+              "type": "mc",
+              "prompt": "选择准确表达“我有时八点起床”的一句。",
+              "options": [
+                "A veces me levanto a las ocho.",
+                "Siempre me levanto a las ocho.",
+                "Nunca me levanto a las ocho."
+              ],
+              "answer": "A veces me levanto a las ocho.",
+              "hint": "要表达的是“有时”，请比较三个句子开头的频率表达。",
+              "explanation": "a veces 表示“有时”，siempre 表示“总是”，nunca 表示“从不”。这题中人物与动词相同，需要根据实际频率选择。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m7-l1-q4",
+              "type": "text",
+              "prompt": "你叫玛尔塔：Tú ___ llamas Marta. 只填写一个代词。",
+              "answer": "te",
+              "accepted": [
+                "te"
+              ],
+              "hint": "主语是 tú，想一想 te levantas 中与这个主语对应的小词。",
+              "explanation": "tú 对应代词 te，llamarse 的相应搭配是 te llamas。完整句子是 Tú te llamas Marta。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m7-l1-q5",
+              "type": "text",
+              "prompt": "我们七点起床：Nosotros nos ___ a las siete. 根据 levantarse 填写动词形式，保留题目已有的 nos。",
+              "answer": "levantamos",
+              "accepted": [
+                "levantamos"
+              ],
+              "hint": "nos 已经给出；现在只需给 levantar 加上 nosotros 对应的现在时词尾。",
+              "explanation": "nosotros 对应 levantamos，因此完整搭配是 nos levantamos。题目已有 nos，空格里不应再次写代词。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m7-l1-q6",
+              "type": "text",
+              "prompt": "把 Me llamo Ana. 改成介绍“她”：Ella ___ Ana. 空格中填写代词和动词两个词。",
+              "answer": "se llama",
+              "accepted": [
+                "se llama"
+              ],
+              "hint": "人物从“我”换成“她”时，两个词都要检查，不能只改 llamo 的词尾。",
+              "explanation": "me llamo 对应 yo；ella 对应 se llama。改变人物时，代词 me 变为 se，动词 llamo 变为 llama。",
+              "errorType": "句子组织"
+            }
+          ],
+          "task": {
+            "prompt": "制作一张三句日常卡：第一句介绍自己的名字；第二句用 siempre 说明自己总是几点起床；第三句用 a veces 介绍一位朋友几点起床。可以使用虚构人物。完成后，请同伴根据你的卡片确认“谁、几点、频率”。",
+            "model": "Me llamo Ana. Siempre me levanto a las siete. A veces mi amigo Luis se levanta a las ocho.",
+            "rubric": [
+              "我介绍自己时使用了 me llamo，而介绍朋友起床时使用了 se levanta。",
+              "我正确区分了 siempre（总是）和 a veces（有时）。",
+              "每句的代词、动词与人物一致，读者能找到人物、时间和频率。"
+            ]
+          }
+        },
+        {
+          "id": "m7-l2",
+          "title": "接下来做什么：ir a + 不定式",
+          "goal": "能根据人物选对 ir 的现在时形式，并用 a + 不定式说明计划。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "比较三个人物的计划：哪一个动词发生了变化？哪两个部分保持不变？",
+            "examples": [
+              {
+                "es": "Yo voy a estudiar español.",
+                "zh": "我打算学习西班牙语。"
+              },
+              {
+                "es": "Tú vas a estudiar español.",
+                "zh": "你打算学习西班牙语。"
+              },
+              {
+                "es": "Ana va a estudiar español.",
+                "zh": "安娜打算学习西班牙语。"
+              }
+            ],
+            "answer": "人物改变时，ir 变成 voy、vas 或 va；a 和 estudiar 保持不变。计划中真正要做的动作使用不定式，而人称信息由 ir 的形式表达。"
+          },
+          "rules": [
+            {
+              "title": "计划结构分成三个部分",
+              "body": "用“ir 的现在时形式 + a + 动词不定式”表达打算做的事。ir 的形式是 voy、vas、va、vamos、vais、van。根据人物选择形式；中间的 a 不能省略。",
+              "examples": [
+                {
+                  "es": "Voy a cocinar.",
+                  "zh": "我打算做饭。"
+                },
+                {
+                  "es": "Vamos a visitar Madrid.",
+                  "zh": "我们打算游览马德里。"
+                }
+              ]
+            },
+            {
+              "title": "第二个动词保留不定式",
+              "body": "这个结构中，表示具体动作的动词保留 -ar、-er 或 -ir 的不定式形式，例如 estudiar、comer、vivir。人物变化已体现在 voy/vas/va 等形式上，不再把第二个动词变成 estudio、comes 等形式。",
+              "examples": [
+                {
+                  "es": "Ella va a comer.",
+                  "zh": "她打算吃饭。"
+                },
+                {
+                  "es": "Nosotros vamos a estudiar.",
+                  "zh": "我们打算学习。"
+                }
+              ]
+            },
+            {
+              "title": "补充时间或否定计划",
+              "body": "mañana（明天）等时间表达可以帮助说明计划何时发生。否定时把 no 放在变位动词 ir 前面，保留 a 和后面的不定式。",
+              "examples": [
+                {
+                  "es": "Mañana voy a estudiar español.",
+                  "zh": "明天我打算学习西班牙语。"
+                },
+                {
+                  "es": "No voy a cocinar mañana.",
+                  "zh": "明天我不打算做饭。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m7-l2-q1",
+              "type": "mc",
+              "prompt": "我们明天打算学习：Nosotros ___ estudiar mañana. 选择完整的计划结构前半部分。",
+              "options": [
+                "vamos",
+                "van a",
+                "vamos a"
+              ],
+              "answer": "vamos a",
+              "hint": "同时检查两点：形式是否对应 nosotros，中间是否保留了连接词。",
+              "explanation": "nosotros 对应 vamos，后接 a + 不定式，所以需要 vamos a。vamos 缺少 a；van a 对应 ellos/ellas/ustedes。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m7-l2-q2",
+              "type": "mc",
+              "prompt": "我打算学习西语：Yo voy a ___ español. 选择 estudiar 的合适形式。",
+              "options": [
+                "estudio",
+                "estudiar",
+                "estudias"
+              ],
+              "answer": "estudiar",
+              "hint": "voy 已经表达了“我”；这一结构的第二个动词需要什么形式？",
+              "explanation": "ir a 后接动词不定式 estudiar。这里不能再把第二个动词按 yo 变成 estudio。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m7-l2-q3",
+              "type": "mc",
+              "prompt": "Eva va a visitar Madrid mañana. 这句话表达什么？",
+              "options": [
+                "埃娃昨天游览了马德里。",
+                "埃娃每天游览马德里。",
+                "埃娃明天打算游览马德里。"
+              ],
+              "answer": "埃娃明天打算游览马德里。",
+              "hint": "观察 va a visitar 的结构，再结合 mañana（明天）。",
+              "explanation": "va a visitar 表达计划，mañana 明确说明时间是明天。本句表达埃娃明天打算游览马德里。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m7-l2-q4",
+              "type": "text",
+              "prompt": "你明天打算做饭：Tú ___ a cocinar mañana. 只填写 ir 的正确形式。",
+              "answer": "vas",
+              "accepted": [
+                "vas"
+              ],
+              "hint": "主语是 tú，回想 voy、vas、va 中哪个形式与“你”对应。",
+              "explanation": "tú 对应 vas。题目已经给出 a 和 cocinar，因此完整句子为 Tú vas a cocinar mañana。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m7-l2-q5",
+              "type": "text",
+              "prompt": "他们打算吃饭：Ellos van ___ comer. 只填写缺少的一个词。",
+              "answer": "a",
+              "accepted": [
+                "a"
+              ],
+              "hint": "将句子与“ir 的变位 + 连接词 + 不定式”三个部分对照。",
+              "explanation": "计划结构为 van a comer，其中 a 连接 ir 的变位与动作不定式，不能省略。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m7-l2-q6",
+              "type": "text",
+              "prompt": "将 Voy a cocinar mañana. 改成否定句，只加 no，其他词保持原顺序。请填写完整句子。",
+              "answer": "No voy a cocinar mañana.",
+              "accepted": [
+                "No voy a cocinar mañana.",
+                "No voy a cocinar mañana"
+              ],
+              "hint": "no 放在已经变位的动词前面。不要把它放在 a 与 cocinar 之间。",
+              "explanation": "否定词放在变位动词 voy 之前，得到 No voy a cocinar mañana。a cocinar 的结构保持不变。",
+              "errorType": "句子组织"
+            }
+          ],
+          "task": {
+            "prompt": "写出三句明天的安排：一句自己的计划，一句与同伴共同的计划，一句自己不打算做的事。可使用 estudiar（学习）、comer（吃饭）、cocinar（做饭）、visitar（游览）。请同伴指出每句“谁将做什么”，并检查 a 是否齐全。",
+            "model": "Mañana voy a estudiar español. Vamos a visitar Madrid. No voy a cocinar mañana.",
+            "rubric": [
+              "自己的计划使用 voy，共同的计划使用 vamos。",
+              "每个计划都保留 a，后面的具体动作使用不定式。",
+              "否定句的 no 位于 voy 之前，三句计划的意思明确。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m8",
+      "level": "A1",
+      "title": "综合辨析与结课任务",
+      "description": "在新的描述和计划中混合运用已学语法，定位错误，并完成八句人物生活档案。",
+      "lessons": [
+        {
+          "id": "m8-l1",
+          "title": "认识新老师：人物与物品描述",
+          "goal": "能根据描述目的选择 ser、estar 或 hay，并检查名词短语的阴阳性与单复数一致。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "读完新老师的教室介绍，分别找出：人物身份、首次介绍某物存在、已知物品的位置。",
+            "examples": [
+              {
+                "es": "Marta es profesora.",
+                "zh": "玛尔塔是一名老师。"
+              },
+              {
+                "es": "En su clase hay dos libros rojos.",
+                "zh": "她的教室里有两本红色的书。"
+              },
+              {
+                "es": "Los libros están en la mesa.",
+                "zh": "这些书在桌子上。"
+              }
+            ],
+            "answer": "es profesora 说明人物身份；hay dos libros rojos 首次介绍教室中有什么；los libros están en la mesa 定位前面已经提到的书。描述两本书时，libros 与 rojos 同为阳性复数。"
+          },
+          "rules": [
+            {
+              "title": "先找中心名词，再检查一致关系",
+              "body": "描述物品时，先确定中心名词的阴阳性和数量，再检查冠词与形容词。把 un libro rojo 改成复数时，三部分都要配合变化：unos libros rojos。",
+              "examples": [
+                {
+                  "es": "una mochila roja",
+                  "zh": "一个红色书包"
+                },
+                {
+                  "es": "unas mochilas rojas",
+                  "zh": "一些红色书包"
+                }
+              ]
+            },
+            {
+              "title": "根据表达目的选择 ser 或 estar",
+              "body": "回顾已学用途：职业身份和本课中的颜色特征使用 ser；人物或物品的位置使用 estar。判断时先看句子想说明什么，再选择动词并按人物或物品数量变位。",
+              "examples": [
+                {
+                  "es": "Marta es profesora.",
+                  "zh": "玛尔塔是一名老师。"
+                },
+                {
+                  "es": "Las mochilas son rojas.",
+                  "zh": "这些书包是红色的。"
+                },
+                {
+                  "es": "Las mochilas están en la clase.",
+                  "zh": "这些书包在教室里。"
+                }
+              ]
+            },
+            {
+              "title": "区分介绍存在与定位已知物品",
+              "body": "本课用 hay 引入“某处有什么”，其现在时形式不随后面物品的数量变化；定位已经明确的物品时，用 estar，并让动词与主语的数量一致。",
+              "examples": [
+                {
+                  "es": "En la clase hay una mesa.",
+                  "zh": "教室里有一张桌子。"
+                },
+                {
+                  "es": "En la clase hay dos mesas.",
+                  "zh": "教室里有两张桌子。"
+                },
+                {
+                  "es": "Las mesas están en la clase.",
+                  "zh": "这些桌子在教室里。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m8-l1-q1",
+              "type": "mc",
+              "prompt": "mochila（书包）是阴性名词。选择正确表达“一个红色书包”的词组。",
+              "options": [
+                "un mochila rojo",
+                "una mochila roja",
+                "una mochila rojas"
+              ],
+              "answer": "una mochila roja",
+              "hint": "名词是阴性单数，分别检查冠词与颜色词。",
+              "explanation": "mochila 是阴性单数，应搭配阴性单数冠词 una 和形容词 roja，得到 una mochila roja。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m8-l1-q2",
+              "type": "mc",
+              "prompt": "介绍玛尔塔的职业：Marta ___ profesora. 选择正确形式。",
+              "options": [
+                "está",
+                "hay",
+                "es"
+              ],
+              "answer": "es",
+              "hint": "这里要说明她“做什么工作”，不是说明她现在在哪里。",
+              "explanation": "职业身份使用 ser，Marta 相当于 ella，因此选第三人称单数 es。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m8-l1-q3",
+              "type": "mc",
+              "prompt": "第一次向别人介绍教室里有什么：En la clase ___ una mesa. 选择表达“有一张桌子”的词。",
+              "options": [
+                "hay",
+                "es",
+                "está"
+              ],
+              "answer": "hay",
+              "hint": "先确定任务：是在介绍一个物品的存在，还是定位双方已经知道的物品？",
+              "explanation": "这里首次介绍教室里存在一张桌子，使用 hay una mesa。若定位一张已知的桌子，则可以说 La mesa está en la clase。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m8-l1-q4",
+              "type": "text",
+              "prompt": "说明两只书包的颜色特征：Las mochilas ___ rojas. 用 ser 的正确形式填空。",
+              "answer": "son",
+              "accepted": [
+                "son"
+              ],
+              "hint": "题目已指定 ser；现在检查 las mochilas 是单数还是复数。",
+              "explanation": "las mochilas 是第三人称复数，ser 的相应形式为 son。颜色词 rojas 也与阴性复数主语一致。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m8-l1-q5",
+              "type": "text",
+              "prompt": "把 El libro está en la mesa. 的主语改为 Los libros：Los libros ___ en la mesa. 只填写动词，注意重音。",
+              "answer": "están",
+              "accepted": [
+                "están"
+              ],
+              "hint": "书的数量变成了复数，表示位置的动词也需要变成第三人称复数。",
+              "explanation": "定位多个已知物品时，estar 与复数主语 los libros 一致，使用 están，á 上的重音符号不能漏掉。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m8-l1-q6",
+              "type": "text",
+              "prompt": "把 un libro rojo 改成复数，保留不定冠词，并填写完整的三个词。",
+              "answer": "unos libros rojos",
+              "accepted": [
+                "unos libros rojos"
+              ],
+              "hint": "检查三个位置：冠词、中心名词、颜色形容词，都要体现复数。",
+              "explanation": "阳性单数 un、libro、rojo 分别变成阳性复数 unos、libros、rojos，因此答案是 unos libros rojos。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "请写五句新人物与房间的介绍：①人物职业；②房间里有某种物品；③该物品的位置；④该物品的颜色；⑤再加入一个冠词、名词、形容词都为复数的短语。可用 clase（教室）、casa（家）、mesa（桌子）、libro（书）、mochila（书包）。让同伴根据描述列出房间中的物品，再核对位置和颜色。",
+            "model": "Luis es profesor. En su clase hay una mochila. La mochila está en la mesa. La mochila es roja. En la clase hay unos libros rojos.",
+            "rubric": [
+              "我能指出哪一句介绍身份、哪一句介绍存在、哪一句定位已知物品，并据此使用 ser、hay、estar。",
+              "冠词、名词和形容词的阴阳性与单复数相互一致。",
+              "读者能根据五句话确定人物职业，以及物品的存在、位置和颜色。"
+            ]
+          }
+        },
+        {
+          "id": "m8-l2",
+          "title": "我的生活档案：喜好、习惯与计划",
+          "goal": "能在新语境中区分喜欢者与喜好对象、日常动作与计划，并完成八句综合人物档案。",
+          "minutes": 25,
+          "notice": {
+            "prompt": "三句话分别在说喜好、日常习惯还是计划？找出帮助你判断的结构。",
+            "examples": [
+              {
+                "es": "A Eva le gustan los libros.",
+                "zh": "埃娃喜欢书。"
+              },
+              {
+                "es": "Eva estudia español todos los días.",
+                "zh": "埃娃每天学习西班牙语。"
+              },
+              {
+                "es": "Mañana Eva va a visitar Madrid.",
+                "zh": "明天埃娃打算游览马德里。"
+              }
+            ],
+            "answer": "le gustan los libros 表达喜好，复数主语 los libros 对应 gustan；estudia 与 todos los días（每天）共同表达这里的日常习惯；va a visitar 与 mañana（明天）说明一项计划。"
+          },
+          "rules": [
+            {
+              "title": "gustar：分别检查喜欢者和主语",
+              "body": "回顾本课范围内的结构：me、te、le、nos、os、les 表示谁喜欢；作为主语的喜好对象决定 gusta 或 gustan。一个单数名词对象或一个动作不定式使用 gusta，一个复数名词对象使用 gustan。",
+              "examples": [
+                {
+                  "es": "A Eva le gusta leer.",
+                  "zh": "埃娃喜欢阅读。"
+                },
+                {
+                  "es": "A Eva le gustan los libros.",
+                  "zh": "埃娃喜欢书。"
+                }
+              ]
+            },
+            {
+              "title": "根据人物描述日常动作",
+              "body": "已学现在时可以描述日常习惯。在本课给定的习惯语境中，先确定谁做动作，再选择对应的变位；todos los días 表示“每天”。使用自复动词时，还要检查代词是否与人物一致。",
+              "examples": [
+                {
+                  "es": "Yo estudio español todos los días.",
+                  "zh": "我每天学习西班牙语。"
+                },
+                {
+                  "es": "Nosotros nos levantamos a las siete.",
+                  "zh": "我们七点起床。"
+                }
+              ]
+            },
+            {
+              "title": "计划仍需完整的三个部分",
+              "body": "表达打算做的事时，检查 ir 的人物形式、连接词 a、动作不定式三个部分。不要把第二个动词再变位，也不要漏掉 a。",
+              "examples": [
+                {
+                  "es": "Mañana voy a estudiar español.",
+                  "zh": "明天我打算学习西班牙语。"
+                },
+                {
+                  "es": "Ellos van a visitar Madrid.",
+                  "zh": "他们打算游览马德里。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "id": "m8-l2-q1",
+              "type": "mc",
+              "prompt": "我明天的计划：Mañana yo ___ estudiar español. 选择正确部分。",
+              "options": [
+                "voy",
+                "voy a",
+                "va a"
+              ],
+              "answer": "voy a",
+              "hint": "主语是 yo，动作 estudiar 已经是不定式；还需要哪两个部分？",
+              "explanation": "yo 对应 voy，表达计划时需要连接词 a，因此填 voy a。voy 缺少 a；va a 的人物形式不对应 yo。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m8-l2-q2",
+              "type": "mc",
+              "prompt": "埃娃喜欢书：A Eva le ___ los libros. 选择正确的 gustar 形式。",
+              "options": [
+                "gusta",
+                "gustas",
+                "gustan"
+              ],
+              "answer": "gustan",
+              "hint": "不要用 Eva 的单数决定动词；找出这句话中作为主语的喜好对象。",
+              "explanation": "los libros 是复数主语，因此用 gustan。le 对应喜欢者 Eva，但 Eva 的单复数不决定这里的 gusta/gustan。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m8-l2-q3",
+              "type": "mc",
+              "prompt": "我们每天说西语：Nosotros ___ español todos los días. 选择 hablar 的现在时形式。",
+              "options": [
+                "hablamos",
+                "hablan",
+                "hablo"
+              ],
+              "answer": "hablamos",
+              "hint": "先把 nosotros 与“我们”对应，再选择 -ar 动词的相应词尾。",
+              "explanation": "nosotros 对应第一人称复数 hablamos。hablan 对应第三人称复数，hablo 对应 yo。",
+              "errorType": "词形变化"
+            },
+            {
+              "id": "m8-l2-q4",
+              "type": "text",
+              "prompt": "我喜欢阅读：A mí ___ gusta leer. 只填写表示喜欢者的代词。",
+              "answer": "me",
+              "accepted": [
+                "me"
+              ],
+              "hint": "A mí 已经说明喜欢的人是“我”；后面仍需与“我”对应的代词。",
+              "explanation": "A mí 与代词 me 对应。即使已经写了 A mí，仍保留 me；leer 这个不定式作为主语时使用 gusta。",
+              "errorType": "用法判断"
+            },
+            {
+              "id": "m8-l2-q5",
+              "type": "text",
+              "prompt": "他们计划游览马德里：Ellos van ___ visitar Madrid. 只填写缺少的一个词。",
+              "answer": "a",
+              "accepted": [
+                "a"
+              ],
+              "hint": "把计划结构拆成 ir 的变位、连接词、动作不定式三个部分。",
+              "explanation": "van a visitar 包含 ir 的变位 van、连接词 a 和不定式 visitar；缺少的是 a。",
+              "errorType": "句子组织"
+            },
+            {
+              "id": "m8-l2-q6",
+              "type": "text",
+              "prompt": "这是我现在的日常习惯：Yo ___ español todos los días. 根据 estudiar 填写一个现在时动词。",
+              "answer": "estudio",
+              "accepted": [
+                "estudio"
+              ],
+              "hint": "题目要求现在时的一个动词，主语是 yo；检查 -ar 动词对应的词尾。",
+              "explanation": "estudiar 的 yo 现在时形式是 estudio。这里按题目要求直接描述每天的习惯，不需要加入 ir a 计划结构。",
+              "errorType": "词形变化"
+            }
+          ],
+          "task": {
+            "prompt": "结课任务：为自己或一个虚构人物制作八句生活档案。依次写：①名字（llamarse）；②职业（ser）；③拥有的物品（tener + 数量 + 名词 + 形容词）；④家里有什么（hay）；⑤上述物品的位置（estar）；⑥起床习惯（levantarse）；⑦一项喜好（gustar）；⑧明天的一项计划（ir a + 不定式）。先独立完成，再逐句说明为什么选择这个动词或词形。请同伴或教师根据八项信息核对内容；参考示范只在完成后打开。",
+            "model": "Me llamo Ana. Soy profesora. Tengo dos libros rojos. En mi casa hay una mesa. Los libros están en la mesa. Me levanto a las siete. Me gustan los libros. Mañana voy a estudiar español.",
+            "rubric": [
+              "我完成了八项指定信息，名词、冠词和形容词的阴阳性与数量一致，并能解释一处词形变化。",
+              "我能区分 ser 的身份表达、hay 的存在表达与 estar 的定位表达；gustar 的代词和动词分别对应喜欢者与喜好对象。",
+              "自复代词与现在时动词对应正确人物；计划包含 ir 的正确变位、a 和不定式。有错误时，我能依据反馈重写；没有错误时，我能说明检查依据。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

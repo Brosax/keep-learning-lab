@@ -1,0 +1,2402 @@
+{
+  "level": "B2",
+  "modules": [
+    {
+      "id": "m21",
+      "level": "B2",
+      "title": "虚拟式过去时：形式与时态呼应",
+      "description": "从简单过去时推出虚拟式过去时的 -ra 与 -se 两套形式，再学会根据主句时态在虚拟式现在时与过去时之间选择。",
+      "lessons": [
+        {
+          "id": "m21-l1",
+          "title": "虚拟式过去时的构成：从 -ron 出发",
+          "goal": "能从简单过去时第三人称复数推出虚拟式过去时的 -ra 与 -se 两套形式，并写对 nosotros 形式的重音。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "比较每组箭头左右两句：右句里的动词是从左句动词的哪一部分变来的？",
+            "examples": [
+              {
+                "es": "Ellos hablaron con Ana. → Yo quería que hablaran con Ana.",
+                "zh": "他们和安娜谈了。→ 我（当时）希望他们和安娜谈谈。"
+              },
+              {
+                "es": "Ellos tuvieron tiempo. → Esperaba que tuvieran tiempo.",
+                "zh": "他们有时间了。→ 我（当时）希望他们有时间。"
+              },
+              {
+                "es": "Ellos fueron a la fiesta. → Me alegró que fueran a la fiesta.",
+                "zh": "他们去了聚会。→ 他们去了聚会，我很高兴。"
+              }
+            ],
+            "answer": "把简单过去时 ellos 形式 hablaron、tuvieron、fueron 去掉 -ron，再加 -ran，就得到 hablaran、tuvieran、fueran。不规则词干（tuv-、fu-）直接从简单过去时继承，不需要另外记忆。"
+          },
+          "rules": [
+            {
+              "title": "构成：简单过去时 ellos 形式去掉 -ron，加 -ra 或 -se",
+              "body": "虚拟式过去时（pretérito imperfecto de subjuntivo）有两套词尾，-ra 组：-ra、-ras、-ra、-ramos、-rais、-ran；-se 组：-se、-ses、-se、-semos、-seis、-sen。三种变位动词用同一套词尾：hablaron → habla-，comieron → comie-，vivieron → vivie-。本级别讲到的用法里，两套形式可以互换，意思相同；口语中 -ra 更常用，在拉丁美洲尤其如此。",
+              "table": {
+                "caption": "规则动词的虚拟式过去时（-ra / -se）",
+                "headers": [
+                  "人称",
+                  "hablar",
+                  "comer",
+                  "vivir"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "hablara / hablase",
+                    "comiera / comiese",
+                    "viviera / viviese"
+                  ],
+                  [
+                    "tú",
+                    "hablaras / hablases",
+                    "comieras / comieses",
+                    "vivieras / vivieses"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "hablara / hablase",
+                    "comiera / comiese",
+                    "viviera / viviese"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "habláramos / hablásemos",
+                    "comiéramos / comiésemos",
+                    "viviéramos / viviésemos"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hablarais / hablaseis",
+                    "comierais / comieseis",
+                    "vivierais / vivieseis"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "hablaran / hablasen",
+                    "comieran / comiesen",
+                    "vivieran / viviesen"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Quería que hablaras con ella. / Quería que hablases con ella.",
+                  "zh": "我（当时）想让你和她谈谈。两种形式意思相同。"
+                },
+                {
+                  "es": "Nos pidió que comiéramos con él.",
+                  "zh": "他请我们和他一起吃饭。"
+                }
+              ]
+            },
+            {
+              "title": "不规则动词：词干全部来自简单过去时",
+              "body": "只要会简单过去时的 ellos 形式，就能写出任何动词的虚拟式过去时：tuvieron → tuviera，hicieron → hiciera，fueron → fuera（ser 和 ir 同形）。两个容易出错的地方：-ir 词干变化动词在简单过去时第三人称就已经 e→i、o→u（pidieron、durmieron），虚拟式过去时照搬：pidiera、durmiera；词干以 j 结尾的动词，简单过去时是 dijeron、trajeron，所以写 dijera、trajera，不要写成 *dijiera。",
+              "table": {
+                "caption": "常见不规则动词：从 ellos 的简单过去时推出虚拟式过去时",
+                "headers": [
+                  "不定式",
+                  "简单过去时（ellos）",
+                  "yo（-ra / -se）",
+                  "nosotros（-ra / -se）"
+                ],
+                "rows": [
+                  [
+                    "tener",
+                    "tuvieron",
+                    "tuviera / tuviese",
+                    "tuviéramos / tuviésemos"
+                  ],
+                  [
+                    "ser / ir",
+                    "fueron",
+                    "fuera / fuese",
+                    "fuéramos / fuésemos"
+                  ],
+                  [
+                    "hacer",
+                    "hicieron",
+                    "hiciera / hiciese",
+                    "hiciéramos / hiciésemos"
+                  ],
+                  [
+                    "estar",
+                    "estuvieron",
+                    "estuviera / estuviese",
+                    "estuviéramos / estuviésemos"
+                  ],
+                  [
+                    "poder",
+                    "pudieron",
+                    "pudiera / pudiese",
+                    "pudiéramos / pudiésemos"
+                  ],
+                  [
+                    "querer",
+                    "quisieron",
+                    "quisiera / quisiese",
+                    "quisiéramos / quisiésemos"
+                  ],
+                  [
+                    "dar",
+                    "dieron",
+                    "diera / diese",
+                    "diéramos / diésemos"
+                  ],
+                  [
+                    "decir",
+                    "dijeron",
+                    "dijera / dijese",
+                    "dijéramos / dijésemos"
+                  ],
+                  [
+                    "pedir",
+                    "pidieron",
+                    "pidiera / pidiese",
+                    "pidiéramos / pidiésemos"
+                  ],
+                  [
+                    "dormir",
+                    "durmieron",
+                    "durmiera / durmiese",
+                    "durmiéramos / durmiésemos"
+                  ],
+                  [
+                    "leer",
+                    "leyeron",
+                    "leyera / leyese",
+                    "leyéramos / leyésemos"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "El médico le aconsejó que durmiera más.",
+                  "zh": "医生建议他多睡一点。durmieron → durmiera。"
+                },
+                {
+                  "es": "Nos sorprendió que no dijeran nada.",
+                  "zh": "他们什么都没说，这让我们很意外。dijeron → dijeran。"
+                }
+              ]
+            },
+            {
+              "title": "重音：只有 nosotros 形式带重音符号",
+              "body": "nosotros 形式的重音落在倒数第三个音节，所以要写重音符号：habláramos、tuviéramos、fuéramos、durmiéramos（-se 组同理：hablásemos）。其他人称都不写重音符号。还要注意 hablara（虚拟式过去时，重音在 bla）和 hablará（将来时，重音在 rá）是两个不同的形式，重音符号不能随意加减。",
+              "examples": [
+                {
+                  "es": "Mis padres querían que estudiáramos música.",
+                  "zh": "我父母（当时）希望我们学音乐。estudiáramos 的重音在 diá。"
+                },
+                {
+                  "es": "Mañana hablará con ella. / Quería que hablara con ella.",
+                  "zh": "他明天会和她谈。（将来时）／我（当时）想让他和她谈谈。（虚拟式过去时）"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "tener 的简单过去时 ellos 形式是 tuvieron。选出正确的虚拟式过去时：Mi madre quería que yo ___ más paciencia con mi hermano.",
+              "options": [
+                "teniera",
+                "tuviera",
+                "tendría"
+              ],
+              "answer": "tuviera",
+              "hint": "先找简单过去时 ellos 形式，去掉 -ron，再加 yo 的词尾。",
+              "explanation": "tuvieron 去掉 -ron 得到 tuvie-，加 -ra 得 tuviera。teniera 错在用了不定式词干；tendría 是条件式，不能用在 querer que 之后。",
+              "errorType": "词形变化",
+              "id": "m21-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "选出 dormir 的虚拟式过去时 ellos 形式：El médico les recomendó que ___ ocho horas.",
+              "options": [
+                "dormieran",
+                "durmieran",
+                "durmiera"
+              ],
+              "answer": "durmieran",
+              "hint": "dormir 的简单过去时第三人称复数里，词干元音已经变了。主语是 ellos。",
+              "explanation": "简单过去时是 durmieron，所以虚拟式过去时是 durmieran。dormieran 没有保留 o→u 的变化；durmiera 是单数，与 les（他们）不一致。",
+              "errorType": "词形变化",
+              "id": "m21-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "选出拼写正确的 nosotros 形式：Nuestros padres querían que ___ (ir) juntos de vacaciones.",
+              "options": [
+                "fueramos",
+                "fuéramos",
+                "fuerámos"
+              ],
+              "answer": "fuéramos",
+              "hint": "nosotros 形式的重音落在倒数第三个音节上。",
+              "explanation": "fuéramos 的重读音节是 fué，处在倒数第三个音节，必须写重音符号。fueramos 漏了重音；fuerámos 把重音放错了位置。",
+              "errorType": "词形变化",
+              "id": "m21-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 decir 的虚拟式过去时填空（-ra 或 -se 形式均可）：Me sorprendió que ellos no me ___ nada.（他们什么都没告诉我，这让我很意外。）",
+              "answer": "dijeran",
+              "accepted": [
+                "dijesen"
+              ],
+              "hint": "先写出 decir 的简单过去时 ellos 形式，注意 j 后面有没有 i。",
+              "explanation": "decir 的简单过去时是 dijeron，去掉 -ron 加 -ran，得 dijeran（或 dijesen）。常见错误 *dijieran 多写了 i。",
+              "errorType": "词形变化",
+              "id": "m21-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 pedir 的虚拟式过去时填空（-ra 或 -se 形式均可）：Era normal que el cliente ___ un descuento; el producto tenía un defecto.",
+              "answer": "pidiera",
+              "accepted": [
+                "pidiese"
+              ],
+              "hint": "pedir 在简单过去时第三人称中词干元音会变；主语 el cliente 是单数。",
+              "explanation": "pedir 的简单过去时 ellos 形式是 pidieron，所以单数形式是 pidiera（或 pidiese）。*pediera 没有保留 e→i 的变化。",
+              "errorType": "词形变化",
+              "id": "m21-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 hablar 的虚拟式过去时 nosotros 形式填空（-ra 或 -se 形式均可）：La profesora quería que en clase ___ solo en español.",
+              "answer": "habláramos",
+              "accepted": [
+                "hablásemos"
+              ],
+              "hint": "nosotros 形式要写重音符号。",
+              "explanation": "hablaron → habla- + -ramos = habláramos（或 hablásemos）。重读音节 blá 是倒数第三个音节，所以必须标重音。",
+              "errorType": "词形变化",
+              "id": "m21-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "回忆小时候父母、老师或其他长辈对你的三条要求或期望，用 Mis padres querían que…、Mi profesor/a me pedía que…、Mis abuelos preferían que… 等写三句话，至少用两个不规则动词（tener、hacer、ir、decir 等）。",
+            "model": "Cuando era pequeño, mis padres querían que comiera verdura todos los días. Mi profesora me pedía que hiciera los deberes antes de cenar. Mis abuelos preferían que fuéramos al pueblo en verano.",
+            "rubric": [
+              "从句动词用了虚拟式过去时，形式从简单过去时 ellos 形式正确推出。",
+              "至少两个不规则动词形式正确（如 hiciera、fuéramos、tuviera）。",
+              "nosotros 形式写了重音符号，其他人称没有多加重音。"
+            ]
+          }
+        },
+        {
+          "id": "m21-l2",
+          "title": "时态呼应：主句时态决定从句用哪种虚拟式",
+          "goal": "能根据主句是现在时、将来时、命令式，还是过去时、条件式，选择虚拟式现在时或虚拟式过去时。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "三句话从句的内容相同（你来聚会），为什么第一句用 vengas，后两句用 vinieras？看看主句动词。",
+            "examples": [
+              {
+                "es": "Quiero que vengas a la fiesta.",
+                "zh": "我想让你来聚会。"
+              },
+              {
+                "es": "Quería que vinieras a la fiesta.",
+                "zh": "我（当时）想让你来聚会。"
+              },
+              {
+                "es": "Me gustaría que vinieras a la fiesta.",
+                "zh": "我希望你能来聚会。（语气更委婉）"
+              }
+            ],
+            "answer": "主句 quiero 是现在时，从句用虚拟式现在时 vengas；主句 quería 是过去时、me gustaría 是条件式，从句就改用虚拟式过去时 vinieras。用虚拟式的原因（表达愿望）不变，变的只是时态，这叫时态呼应（concordancia temporal）。"
+          },
+          "rules": [
+            {
+              "title": "主句是现在时、将来时或命令式 → 虚拟式现在时",
+              "body": "B1 学过的虚拟式现在时，主句都在现在框架里：现在时（quiero que、me alegra que）、将来时（le diré que）或命令式（dile que）。这时从句动词用虚拟式现在时。",
+              "examples": [
+                {
+                  "es": "Te pido que llegues pronto.",
+                  "zh": "我请你早点到。"
+                },
+                {
+                  "es": "Cuando la vea, le diré que me llame.",
+                  "zh": "我见到她时会告诉她给我打电话。"
+                }
+              ]
+            },
+            {
+              "title": "主句是过去时或条件式 → 虚拟式过去时",
+              "body": "主句动词用简单过去时（le pedí que）、过去未完成时（quería que）、过去完成时（le había pedido que）或简单条件式（me gustaría que、sería mejor que、preferiría que）时，从句用虚拟式过去时。条件式主句常用来委婉地提出愿望或建议，从句不能用虚拟式现在时：说 Me gustaría que vinieras，不说 *Me gustaría que vengas。",
+              "table": {
+                "caption": "主句时态与从句虚拟式的对应",
+                "headers": [
+                  "主句动词",
+                  "从句",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "现在时：quiero / te pido",
+                    "虚拟式现在时",
+                    "Quiero que vengas."
+                  ],
+                  [
+                    "将来时：le diré",
+                    "虚拟式现在时",
+                    "Le diré que me espere."
+                  ],
+                  [
+                    "命令式：dile",
+                    "虚拟式现在时",
+                    "Dile que me espere."
+                  ],
+                  [
+                    "简单过去时：le pedí",
+                    "虚拟式过去时",
+                    "Le pedí que me esperara."
+                  ],
+                  [
+                    "过去未完成时：quería",
+                    "虚拟式过去时",
+                    "Quería que vinieras."
+                  ],
+                  [
+                    "简单条件式：me gustaría",
+                    "虚拟式过去时",
+                    "Me gustaría que vinieras."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Ayer le pedí a Marta que me ayudara con la mudanza.",
+                  "zh": "昨天我请玛尔塔帮我搬家。"
+                },
+                {
+                  "es": "Sería mejor que lo habláramos mañana.",
+                  "zh": "我们最好明天再谈这件事。"
+                }
+              ]
+            },
+            {
+              "title": "两步判断：先确认要用虚拟式，再看主句时态",
+              "body": "B1 学过的所有虚拟式触发条件——愿望、情感、评价、否定观点、关系从句里不确定的先行词——在过去框架里都照样成立，只是从句换成虚拟式过去时。做题时先问“这里需要虚拟式吗？”，再问“主句在现在框架还是过去／条件框架？”。如果第一步答案是陈述式（如 creía que、sabía que），第二步就不涉及虚拟式。",
+              "examples": [
+                {
+                  "es": "No creía que fuera verdad. / Creía que era verdad.",
+                  "zh": "我（当时）不相信那是真的。（否定观点 → 虚拟式）／我（当时）以为那是真的。（肯定观点 → 陈述式）"
+                },
+                {
+                  "es": "Buscábamos un piso que tuviera terraza.",
+                  "zh": "我们（当时）在找一套带露台的公寓。（还不知道有没有这样的公寓）"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "主句是简单过去时：Ayer le pedí a Marta que me ___ con la mudanza.",
+              "options": [
+                "ayude",
+                "ayudara",
+                "ayudaría"
+              ],
+              "answer": "ayudara",
+              "hint": "pedir que 需要虚拟式；再看 pedí 是什么时态。",
+              "explanation": "pedí 是简单过去时，从句用虚拟式过去时 ayudara。ayude 是虚拟式现在时，只能配现在框架；ayudaría 是条件式，不能放在 pedir que 之后。",
+              "errorType": "用法判断",
+              "id": "m21-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "主句是现在时：Mi jefe siempre me pide que ___ puntual.",
+              "options": [
+                "sea",
+                "fuera",
+                "soy"
+              ],
+              "answer": "sea",
+              "hint": "pide 是现在时。",
+              "explanation": "pedir que 触发虚拟式；主句 pide 是现在时，所以用虚拟式现在时 sea。fuera 要配过去或条件式主句；soy 是陈述式。",
+              "errorType": "用法判断",
+              "id": "m21-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "委婉地表达愿望：Me gustaría que mis amigos ___ a mi cumpleaños.",
+              "options": [
+                "vengan",
+                "vinieran",
+                "vendrían"
+              ],
+              "answer": "vinieran",
+              "hint": "gustaría 是什么时态？它要求从句用哪种虚拟式？",
+              "explanation": "me gustaría 是简单条件式，从句用虚拟式过去时 vinieran。vengan 是虚拟式现在时，与条件式主句不呼应；vendrían 是条件式，不能用在表达愿望的 que 从句里。",
+              "errorType": "用法判断",
+              "id": "m21-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 tener 的正确形式填空（-ra 或 -se 形式均可）：No creía que el restaurante ___ mesa libre un sábado por la noche, pero tuvimos suerte.",
+              "answer": "tuviera",
+              "accepted": [
+                "tuviese"
+              ],
+              "hint": "no creer que 要求什么语式？主句 creía 是什么时态？",
+              "explanation": "否定观点 no creía que 触发虚拟式；creía 是过去未完成时，所以用虚拟式过去时 tuviera（或 tuviese）。",
+              "errorType": "用法判断",
+              "id": "m21-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 estar 的正确形式填空（-ra 或 -se 形式均可）：Buscábamos un piso que ___ cerca del metro, pero no encontramos ninguno.",
+              "answer": "estuviera",
+              "accepted": [
+                "estuviese"
+              ],
+              "hint": "说话人当时并不知道有没有这样的公寓；主句动词是过去时。",
+              "explanation": "关系从句的先行词不确定，用虚拟式；主句 buscábamos 是过去时，所以用虚拟式过去时 estuviera（或 estuviese）。",
+              "errorType": "用法判断",
+              "id": "m21-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 traer 的正确形式填空，主句是命令式：Cuando llegue Carmen, dile que me ___ el libro.（卡门来了以后，告诉她把书带给我。）",
+              "answer": "traiga",
+              "hint": "dile 是命令式，属于现在框架还是过去框架？traer 的 yo 现在时是 traigo。",
+              "explanation": "decir que 表示让别人做某事时用虚拟式；主句 dile 是命令式，属于现在框架，所以用虚拟式现在时 traiga，不用 trajera。",
+              "errorType": "用法判断",
+              "id": "m21-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写 3–4 句话：讲一次你过去请别人帮忙或提要求的经历，再说一个你现在对朋友或家人的愿望。至少各用一次 le pedí que…、quería que… 和 me gustaría que…。",
+            "model": "El año pasado le pedí a mi hermano que me ayudara con la mudanza. Yo quería que viniera temprano, pero llegó a las doce. Ahora me gustaría que pasáramos más tiempo juntos.",
+            "rubric": [
+              "过去时和条件式主句之后，从句用了虚拟式过去时。",
+              "如果有现在时主句，从句用了虚拟式现在时，没有混用。",
+              "虚拟式过去时的词形正确，nosotros 形式带重音。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m22",
+      "level": "B2",
+      "title": "条件句与虚拟式现在完成时",
+      "description": "区分可能实现的条件和不太可能或与现在事实相反的假设，并用 haya + 过去分词谈论已经完成的动作。",
+      "lessons": [
+        {
+          "id": "m22-l1",
+          "title": "si 条件句：可能的条件与不太可能的假设",
+          "goal": "能区分 si + 现在时（可能实现）与 si + 虚拟式过去时 + 条件式（不太可能或与现在事实相反），并避免在条件 si 后用虚拟式现在时或条件式。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "前两句都在说“如果有时间”。说话人觉得哪一种情况更可能发生？两句的动词形式有什么不同？",
+            "examples": [
+              {
+                "es": "Si tengo tiempo, te llamaré.",
+                "zh": "如果我有时间，就给你打电话。（说话人认为有可能）"
+              },
+              {
+                "es": "Si tuviera tiempo, te llamaría.",
+                "zh": "要是我有时间，我就会给你打电话。（可惜现在没时间）"
+              },
+              {
+                "es": "Si llueve, quédate en casa.",
+                "zh": "如果下雨，你就待在家里。"
+              }
+            ],
+            "answer": "si + 现在时（tengo、llueve）表示说话人认为可能实现的条件，结果用将来时、现在时或命令式；si + 虚拟式过去时（tuviera）表示不太可能或与现在事实相反的情况，结果用简单条件式（llamaría）。"
+          },
+          "rules": [
+            {
+              "title": "可能的条件：si + 现在时 → 将来时 / 现在时 / 命令式",
+              "body": "说话人认为条件有可能实现时，si 从句用陈述式现在时，即使指的是将来。主句按意思选择：预测结果用将来时，一般规律或习惯用现在时，建议或指示用命令式。",
+              "examples": [
+                {
+                  "es": "Si mañana llueve, nos quedaremos en casa.",
+                  "zh": "如果明天下雨，我们就待在家里。si 后面用 llueve，不用将来时。"
+                },
+                {
+                  "es": "Si ves a Pablo, dile que me llame.",
+                  "zh": "如果你见到巴勃罗，让他给我打个电话。"
+                }
+              ]
+            },
+            {
+              "title": "不太可能或与现在事实相反：si + 虚拟式过去时 → 简单条件式",
+              "body": "说话人认为条件不太可能实现，或者条件与现在的事实相反时，si 从句用虚拟式过去时（-ra 或 -se 均可），主句用简单条件式。两个分句可以调换顺序；si 从句在后时通常不加逗号。虽然动词是“过去时”的形式，这里谈的是现在或将来。与过去事实相反的假设（“如果当时……就会……”）留到 C1 学习。",
+              "table": {
+                "caption": "两类条件句的结构",
+                "headers": [
+                  "条件类型",
+                  "si 从句",
+                  "主句",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "可能实现",
+                    "陈述式现在时",
+                    "将来时 / 现在时 / 命令式",
+                    "Si tengo tiempo, te llamaré."
+                  ],
+                  [
+                    "不太可能实现",
+                    "虚拟式过去时",
+                    "简单条件式",
+                    "Si me tocara la lotería, dejaría de trabajar."
+                  ],
+                  [
+                    "与现在事实相反",
+                    "虚拟式过去时",
+                    "简单条件式",
+                    "Si yo fuera tú, hablaría con ella."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Si tuviera más dinero, viajaría por toda Sudamérica.",
+                  "zh": "要是我有更多钱，我会去整个南美旅行。（现在钱不够）"
+                },
+                {
+                  "es": "Te ayudaría si pudiera.",
+                  "zh": "要是能帮，我一定帮你。si 从句在后，不加逗号。"
+                }
+              ]
+            },
+            {
+              "title": "条件 si 之后的两个禁区",
+              "body": "表示“如果”的 si 后面不用虚拟式现在时，也不用简单条件式：不说 *Si llueva，也不说 *Si tendría。可能的条件用陈述式现在时，不太可能的条件用虚拟式过去时。注意：间接疑问里表示“是否”的 si（m23 会讲）不受这个限制，可以接将来时或条件式，如 No sé si vendrá（我不知道他会不会来）。",
+              "examples": [
+                {
+                  "es": "Si tuviera tiempo, iría al gimnasio.",
+                  "zh": "要是我有时间，我会去健身房。不说 *Si tendría tiempo。"
+                },
+                {
+                  "es": "Si llueve, no saldré.",
+                  "zh": "如果下雨，我就不出门。不说 *Si llueva。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "天气预报说明天很可能是好天气：Si mañana ___ buen tiempo, iremos a la playa.",
+              "options": [
+                "hace",
+                "haga",
+                "haría"
+              ],
+              "answer": "hace",
+              "hint": "说话人认为条件很可能实现；主句是将来时。",
+              "explanation": "可能实现的条件用 si + 陈述式现在时，所以是 hace。haga 是虚拟式现在时，haría 是条件式，两者都不能放在条件 si 之后。",
+              "errorType": "用法判断",
+              "id": "m22-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "你现在没有车，只是在假设：Si ___ coche, te llevaría al aeropuerto.",
+              "options": [
+                "tengo",
+                "tuviera",
+                "tendría"
+              ],
+              "answer": "tuviera",
+              "hint": "条件与现在的事实相反，主句 llevaría 是条件式。",
+              "explanation": "与现在事实相反的条件用 si + 虚拟式过去时，主句用条件式：Si tuviera coche, te llevaría… tengo 表示真实可能，与 llevaría 不搭配；tendría 不能放在条件 si 之后。",
+              "errorType": "用法判断",
+              "id": "m22-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "给朋友提建议：Si yo ___ tú, aceptaría ese trabajo.",
+              "options": [
+                "sería",
+                "fuera",
+                "sea"
+              ],
+              "answer": "fuera",
+              "hint": "“如果我是你”永远不可能成真。",
+              "explanation": "我不可能是你，所以用 si + 虚拟式过去时：Si yo fuera tú… sería 是条件式，sea 是虚拟式现在时，都不能放在条件 si 后。",
+              "errorType": "用法判断",
+              "id": "m22-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 comprar 的简单条件式填主句动词：Si ganara la lotería, ___ una casa en la playa.（yo）",
+              "answer": "compraría",
+              "hint": "主句要和 si + 虚拟式过去时呼应；注意重音符号。",
+              "explanation": "si + 虚拟式过去时（ganara）对应主句简单条件式 compraría。条件式的 -ía 要写重音。",
+              "errorType": "词形变化",
+              "id": "m22-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 vivir 的正确形式填 si 从句（与现在事实相反，-ra 或 -se 形式均可）：Mis padres viven lejos. Si ___ más cerca, los visitaría cada semana.",
+              "answer": "vivieran",
+              "accepted": [
+                "viviesen"
+              ],
+              "hint": "事实是他们住得远；主语是 mis padres。",
+              "explanation": "与现在事实相反的条件用虚拟式过去时，ellos 形式为 vivieran（或 viviesen）。",
+              "errorType": "词形变化",
+              "id": "m22-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ver 的正确形式填 si 从句（真实可能的条件，主句是命令式）：Si ___ a Lucía, dile que la espero en el café.（tú）",
+              "answer": "ves",
+              "hint": "你很可能会见到露西娅；条件 si 后面不用虚拟式现在时。",
+              "explanation": "可能实现的条件用 si + 陈述式现在时，tú 形式是 ves。*Si veas 是常见错误。",
+              "errorType": "用法判断",
+              "id": "m22-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写三句话：一句说下周可能出现的情况和你的打算（si + 现在时）；两句说与你现在生活不同的假设和你会怎么做（si + 虚拟式过去时 + 简单条件式）。",
+            "model": "Si el sábado hace sol, iré a correr al parque. Si viviera cerca del mar, nadaría todas las mañanas. Si hablara mejor español, buscaría trabajo en Valencia.",
+            "rubric": [
+              "可能实现的条件用了 si + 陈述式现在时，主句用将来时、现在时或命令式。",
+              "不太可能或与事实相反的条件用了 si + 虚拟式过去时，主句用简单条件式。",
+              "条件 si 后面没有出现虚拟式现在时或条件式。"
+            ]
+          }
+        },
+        {
+          "id": "m22-l2",
+          "title": "虚拟式现在完成时：haya + 过去分词",
+          "goal": "能用 haya + 过去分词，对已经完成或将在某时之前完成的动作表达愿望、情感、怀疑，并用于 cuando 等时间从句。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "比较 llegues 和 hayas llegado：说话人谈的是还没发生的动作，还是（估计）已经完成的动作？",
+            "examples": [
+              {
+                "es": "Espero que llegues bien.",
+                "zh": "希望你一路平安。（对方出发前说）"
+              },
+              {
+                "es": "Espero que hayas llegado bien.",
+                "zh": "希望你已经平安到了。（估计对方已经到了）"
+              },
+              {
+                "es": "Llámame cuando hayas terminado.",
+                "zh": "你做完以后给我打电话。"
+              }
+            ],
+            "answer": "虚拟式现在时 llegues 指现在或将来的动作；haya + 过去分词（hayas llegado）指在说话时已经完成的动作，或在将来某一时刻之前会完成的动作。触发虚拟式的条件和 B1 相同，主句仍在现在框架里。"
+          },
+          "rules": [
+            {
+              "title": "构成：haber 的虚拟式现在时 + 过去分词",
+              "body": "虚拟式现在完成时（pretérito perfecto de subjuntivo）由 haber 的虚拟式现在时加过去分词构成。过去分词保持 -ado / -ido 形式，不随主语变化；不规则分词与陈述式现在完成时相同（hecho、visto、dicho、vuelto 等）。宾语代词和自复代词放在 haya 前面。",
+              "table": {
+                "caption": "haber 的虚拟式现在时 + 过去分词",
+                "headers": [
+                  "人称",
+                  "haber",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "haya",
+                    "haya llegado"
+                  ],
+                  [
+                    "tú",
+                    "hayas",
+                    "hayas comido"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "haya",
+                    "haya visto"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "hayamos",
+                    "hayamos hecho"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "hayáis",
+                    "hayáis dicho"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "hayan",
+                    "hayan vuelto"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Me alegro de que hayáis venido.",
+                  "zh": "你们来了，我很高兴。hayáis 要写重音。"
+                },
+                {
+                  "es": "Es posible que ya se hayan ido.",
+                  "zh": "他们可能已经走了。se 放在 hayan 前面。"
+                }
+              ]
+            },
+            {
+              "title": "现在框架里谈已经完成的动作",
+              "body": "主句是 espero que、me alegro de que、no creo que、es posible que、es raro que 等现在时表达，而从句内容在说话前已经发生（或应该已经发生）时，用 haya + 分词。它相当于陈述式现在完成时的虚拟式版本：Creo que lo ha visto. → No creo que lo haya visto.",
+              "examples": [
+                {
+                  "es": "No creo que Juan haya visto la película.",
+                  "zh": "我不认为胡安看过那部电影。对比 Creo que la ha visto。"
+                },
+                {
+                  "es": "Es raro que Marta no haya llamado todavía.",
+                  "zh": "玛尔塔到现在还没打电话，真奇怪。"
+                }
+              ]
+            },
+            {
+              "title": "时间从句：在将来某个动作之前完成",
+              "body": "cuando、en cuanto、hasta que 等引出的从句如果指将来，B1 学过要用虚拟式现在时。若想强调这个动作要先完成，再发生主句的动作，就用 haya + 分词。Cuando termines 和 Cuando hayas terminado 常常都可以，后者更突出“做完以后”。",
+              "examples": [
+                {
+                  "es": "Cuando hayas terminado los deberes, podrás salir.",
+                  "zh": "等你写完作业，就可以出去。"
+                },
+                {
+                  "es": "No me voy hasta que hayamos hablado.",
+                  "zh": "我们没谈过之前，我不走。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "朋友昨天坐车去了马德里，你估计他已经到了，给他发消息：Espero que ___ bien.",
+              "options": [
+                "llegues",
+                "hayas llegado",
+                "has llegado"
+              ],
+              "answer": "hayas llegado",
+              "hint": "到达这个动作估计已经完成；esperar que 要求虚拟式。",
+              "explanation": "动作已经完成，又在 espero que 之后，用虚拟式现在完成时 hayas llegado。llegues 指还没发生的到达；has llegado 是陈述式，不能放在 espero que 后。",
+              "errorType": "用法判断",
+              "id": "m22-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "你怀疑同事到现在还没读那封邮件：No creo que Pedro ___ el correo todavía.",
+              "options": [
+                "ha leído",
+                "haya leído",
+                "habrá leído"
+              ],
+              "answer": "haya leído",
+              "hint": "no creo que 后面要用什么语式？动作指到现在为止。",
+              "explanation": "否定观点 no creo que 触发虚拟式，动作指到现在为止，用 haya leído。ha leído 和 habrá leído 都是陈述式。",
+              "errorType": "用法判断",
+              "id": "m22-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "两位朋友刚告诉你他们考试通过了，你对他们说：Me alegro de que ___ el examen.",
+              "options": [
+                "habéis aprobado",
+                "hayáis aprobado",
+                "hayas aprobado"
+              ],
+              "answer": "hayáis aprobado",
+              "hint": "先确定语式，再确定人称：你在对两个人说话。",
+              "explanation": "alegrarse de que 触发虚拟式，动作已完成，用 haya + 分词；对两个人说用 vosotros 形式 hayáis。habéis aprobado 是陈述式；hayas 是单数。",
+              "errorType": "词形变化",
+              "id": "m22-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "填 haber 的正确形式：Cuando ___ terminado el informe, mándamelo.（你写完报告以后发给我。）",
+              "answer": "hayas",
+              "hint": "主语是 tú；将来时间从句里要用虚拟式。",
+              "explanation": "cuando 指将来，用虚拟式；强调先完成，用 haber 的虚拟式现在时 + 分词，tú 形式为 hayas。",
+              "errorType": "词形变化",
+              "id": "m22-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "填 haber 的正确形式：Es posible que los niños ya se ___ dormido.（孩子们可能已经睡着了。）",
+              "answer": "hayan",
+              "hint": "主语是 los niños；es posible que 后面用虚拟式。",
+              "explanation": "es posible que 触发虚拟式，动作已经完成，ellos 形式是 hayan：se hayan dormido。",
+              "errorType": "词形变化",
+              "id": "m22-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用代词替换 la película，填入“代词 + haber + ver 的分词”：No creo que Ana ___ todavía.（我不认为安娜已经看过那部电影了。）",
+              "answer": "la haya visto",
+              "hint": "代词放在 haya 前面；ver 的过去分词不规则。",
+              "explanation": "la película 用 la 替代，放在变位动词 haya 前；ver 的分词是 visto，所以填 la haya visto。",
+              "errorType": "句子组织",
+              "id": "m22-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "给一个刚搬到另一个城市的朋友写一条 3–4 句的消息：希望他已经顺利安顿，对他已经做成的某件事表示高兴或怀疑，再约定“等你……之后就……”。",
+            "model": "¡Hola, Leo! Espero que hayas llegado bien y que ya hayas encontrado piso. Me alegro mucho de que te hayan dado el trabajo. Cuando hayas deshecho las maletas, llámame y me lo cuentas todo.",
+            "rubric": [
+              "对已经完成的动作用了 haya + 过去分词，haber 与主语一致。",
+              "虚拟式出现在合适的触发语之后（espero que、me alegro de que、no creo que、cuando 指将来）。",
+              "代词放在 haya 前，不规则过去分词写对。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m23",
+      "level": "B2",
+      "title": "过去框架的间接引语",
+      "description": "转述过去某人说过的话、问过的问题和提出的要求：时态后移，调整时间、地点和人称，并选用合适的转述动词。",
+      "lessons": [
+        {
+          "id": "m23-l1",
+          "title": "dijo que…：时态后移与时间、地点词的变化",
+          "goal": "能用 dijo que / me contó que 转述过去某人说的话，正确后移时态，并调整人称、时间词和地点词。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "劳拉上周在电话里说了箭头左边的话，今天你转述给别人。动词和时间词各发生了什么变化？",
+            "examples": [
+              {
+                "es": "«Estoy muy cansada.» → Laura dijo que estaba muy cansada.",
+                "zh": "“我很累。”→ 劳拉说她很累。"
+              },
+              {
+                "es": "«He perdido las llaves.» → Laura dijo que había perdido las llaves.",
+                "zh": "“我把钥匙弄丢了。”→ 劳拉说她把钥匙弄丢了。"
+              },
+              {
+                "es": "«Mañana iré al médico.» → Laura dijo que al día siguiente iría al médico.",
+                "zh": "“我明天去看医生。”→ 劳拉说她第二天去看医生。"
+              }
+            ],
+            "answer": "转述动词 dijo 是过去时，原话的现在时变成过去未完成时（estoy → estaba），现在完成时变成过去完成时（he perdido → había perdido），将来时变成简单条件式（iré → iría）。mañana 改成 al día siguiente，因为“明天”是相对劳拉说话那天而言的。"
+          },
+          "rules": [
+            {
+              "title": "时态后移：转述动词是过去时",
+              "body": "B1 学过，转述动词是现在时（dice que）时动词时态基本不变。当转述动词是过去时（dijo、contó、comentó、explicó）且转述的内容属于说话那个过去时刻时，标准做法是把时态往过去“后移一格”。原话的简单过去时可以后移为过去完成时，口语中也常保留简单过去时；本课练习统一使用后移形式。原话已经是过去未完成时、过去完成时或条件式的，不再变化。另外，如果所说的内容到现在仍然成立，也可以不后移（Dijo que es de Sevilla），本课题目都以后移为准。",
+              "table": {
+                "caption": "过去框架里的时态后移",
+                "headers": [
+                  "原话（直接引语）",
+                  "转述（dijo que…）",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "现在时",
+                    "过去未完成时",
+                    "«Vivo en Sevilla.» → Dijo que vivía en Sevilla."
+                  ],
+                  [
+                    "现在完成时",
+                    "过去完成时",
+                    "«He terminado.» → Dijo que había terminado."
+                  ],
+                  [
+                    "简单过去时",
+                    "过去完成时（口语中也常不变）",
+                    "«Llegué tarde.» → Dijo que había llegado tarde."
+                  ],
+                  [
+                    "将来时",
+                    "简单条件式",
+                    "«Te llamaré.» → Dijo que me llamaría."
+                  ],
+                  [
+                    "ir a + 不定式（现在时）",
+                    "ir a + 不定式（过去未完成时）",
+                    "«Voy a mudarme.» → Dijo que iba a mudarse."
+                  ],
+                  [
+                    "过去未完成时 / 过去完成时 / 条件式",
+                    "不变",
+                    "«Antes vivía en Sevilla.» → Dijo que antes vivía en Sevilla."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "«Trabajo en un banco.» → Me dijo que trabajaba en un banco.",
+                  "zh": "“我在银行工作。”→ 他告诉我他在银行工作。"
+                },
+                {
+                  "es": "«Iremos en tren.» → Dijeron que irían en tren.",
+                  "zh": "“我们坐火车去。”→ 他们说他们会坐火车去。"
+                }
+              ]
+            },
+            {
+              "title": "人称、代词和物主词跟着说话人变化",
+              "body": "原话里的 yo、mi、me 指原说话人，转述时要换成第三人称（él / ella、su、se 等）；原话里的 tú、te、tu 如果指的是你自己，转述时变成 yo、me、mi。动词变位也随之改变。",
+              "examples": [
+                {
+                  "es": "«Mi hermano te llamará.» → Dijo que su hermano me llamaría.",
+                  "zh": "“我哥哥会给你打电话。”→ 他说他哥哥会给我打电话。"
+                },
+                {
+                  "es": "«Te he comprado un regalo.» → Me dijo que me había comprado un regalo.",
+                  "zh": "“我给你买了礼物。”→ 她跟我说她给我买了礼物。"
+                }
+              ]
+            },
+            {
+              "title": "时间词和地点词：以原说话的时间和地点为参照",
+              "body": "如果转述时的时间或地点和原话不同，表示“今天、明天、这里”的词要换成以过去那一刻为参照的说法。如果是今天早上听到的话，今天转述，hoy 就可以保留——关键是看参照点有没有变。",
+              "table": {
+                "caption": "常见的时间、地点词变化",
+                "headers": [
+                  "原话",
+                  "转述（过去框架）"
+                ],
+                "rows": [
+                  [
+                    "hoy",
+                    "aquel día / ese día"
+                  ],
+                  [
+                    "ayer",
+                    "el día anterior"
+                  ],
+                  [
+                    "mañana",
+                    "al día siguiente"
+                  ],
+                  [
+                    "ahora",
+                    "entonces / en ese momento"
+                  ],
+                  [
+                    "la semana que viene",
+                    "la semana siguiente"
+                  ],
+                  [
+                    "aquí",
+                    "allí"
+                  ],
+                  [
+                    "este / esta",
+                    "ese / esa, aquel / aquella"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "«Hoy no puedo salir.» → Dijo que ese día no podía salir.",
+                  "zh": "“我今天不能出门。”→ 他说那天他不能出门。"
+                },
+                {
+                  "es": "«Te espero aquí.» → Me dijo que me esperaba allí.",
+                  "zh": "“我在这儿等你。”→ 她说她在那儿等我。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "卡洛斯上个月说：«Hoy tengo mucho trabajo.» 你现在转述：Carlos dijo que ese día ___ mucho trabajo.",
+              "options": [
+                "tiene",
+                "tenía",
+                "tuviera"
+              ],
+              "answer": "tenía",
+              "hint": "原话是现在时，转述动词 dijo 是过去时。",
+              "explanation": "过去框架里原话的现在时后移为过去未完成时：tengo → tenía。tiene 没有后移，与 ese día 矛盾；tuviera 是虚拟式，这里只是转述信息，用陈述式。",
+              "errorType": "用法判断",
+              "id": "m23-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "安娜两周前说：«Os llamaré el domingo.» 那个周日已经过去了。转述：Ana dijo que nos ___ el domingo.",
+              "options": [
+                "llamará",
+                "llamaría",
+                "llamara"
+              ],
+              "answer": "llamaría",
+              "hint": "原话是将来时；从过去的那一刻看，这个“将来”现在也已经过去。",
+              "explanation": "过去框架里将来时后移为简单条件式：llamaré → llamaría。llamará 没有后移；llamara 是虚拟式过去时，转述信息不用虚拟式。",
+              "errorType": "用法判断",
+              "id": "m23-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "巴勃罗上周五说：«Mañana me voy de viaje.» 这周你转述：Pablo dijo que ___ se iba de viaje.",
+              "options": [
+                "mañana",
+                "al día siguiente",
+                "el día anterior"
+              ],
+              "answer": "al día siguiente",
+              "hint": "“明天”是相对巴勃罗说话那天的明天，不是相对今天。",
+              "explanation": "参照点从现在换成了过去的周五，mañana 要改成 al día siguiente（第二天）。el día anterior 对应的是 ayer。",
+              "errorType": "用法判断",
+              "id": "m23-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "玛尔塔昨天说：«He visto a tu hermano.» 填一个词完成转述：Marta me dijo que ___ visto a mi hermano.",
+              "answer": "había",
+              "hint": "原话是现在完成时（he + 分词），过去框架里要后移。",
+              "explanation": "现在完成时后移为过去完成时：he visto → había visto。主语是 Marta，所以用 había。",
+              "errorType": "词形变化",
+              "id": "m23-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "我的表兄弟们去年说：«Viviremos en Lima.» 用 vivir 的正确形式完成转述：Mis primos dijeron que ___ en Lima.",
+              "answer": "vivirían",
+              "hint": "原话是将来时；注意转述后的形式需要重音符号。",
+              "explanation": "将来时在过去框架里后移为简单条件式，ellos 形式为 vivirían，í 上要写重音。",
+              "errorType": "词形变化",
+              "id": "m23-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "露西娅站在咖啡馆门口打电话说：«Te espero aquí.» 第二天你转述时，用本课表格里的地点词填空：Lucía me dijo que me esperaba ___.",
+              "answer": "allí",
+              "hint": "你转述时不在咖啡馆；aquí 对应哪个词？别忘了重音。",
+              "explanation": "转述时说话地点变了，aquí 换成 allí。allí 的 í 要写重音。",
+              "errorType": "用法判断",
+              "id": "m23-l1-q6",
+              "accepted": [
+                "allá"
+              ]
+            }
+          ],
+          "task": {
+            "prompt": "转述一段你上周或更早时候听到的话：一个朋友或家人告诉你的三件事——一件他当时的情况、一件他已经做过的事、一个他的计划。用 me dijo que / me contó que，并注意时间词的变化。",
+            "model": "El viernes pasado mi amiga Elena me contó que estaba buscando trabajo. Me dijo que había hecho una entrevista aquel día y que la semana siguiente iría a Barcelona para otra.",
+            "rubric": [
+              "现在时、现在完成时、将来时分别后移为过去未完成时、过去完成时、简单条件式。",
+              "人称和物主词从原说话人的角度换成了转述者的角度。",
+              "hoy、mañana、la semana que viene 等词按过去的参照点做了调整。"
+            ]
+          }
+        },
+        {
+          "id": "m23-l2",
+          "title": "间接疑问与转述命令",
+          "goal": "能用 preguntó si / qué / dónde… 转述过去的问题，用 pidió / dijo que + 虚拟式过去时转述请求和命令，并选用 explicar、añadir、recomendar、sugerir 等转述动词。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "三句原话分别是什么类型（是非问句、特殊疑问句、请求）？转述时分别用了什么连接词？动词形式怎样变化？",
+            "examples": [
+              {
+                "es": "«¿Tienes coche?» → Me preguntó si tenía coche.",
+                "zh": "“你有车吗？”→ 他问我有没有车。"
+              },
+              {
+                "es": "«¿Dónde vives?» → Me preguntó dónde vivía.",
+                "zh": "“你住哪儿？”→ 他问我住在哪儿。"
+              },
+              {
+                "es": "«Ayúdame, por favor.» → Juan me pidió que lo ayudara.",
+                "zh": "“请帮帮我。”→ 胡安请我帮他。"
+              }
+            ],
+            "answer": "是非问句用 si 引出；特殊疑问句保留原来的疑问词，并保留它的重音（dónde）；命令或请求变成 pedir / decir que + 虚拟式过去时。三种情况的时态同样要后移。"
+          },
+          "rules": [
+            {
+              "title": "是非问句：preguntar si",
+              "body": "原话是可以用 sí / no 回答的问题时，转述用 preguntar si，再按上一课的规则后移时态。si 不带重音（它是“是否”，不是 sí“是”）。口语里有时会听到 me preguntó que si…，书面语用 me preguntó si…。",
+              "examples": [
+                {
+                  "es": "«¿Has estado en México?» → Me preguntó si había estado en México.",
+                  "zh": "“你去过墨西哥吗？”→ 她问我是否去过墨西哥。"
+                },
+                {
+                  "es": "«¿Podrás ayudarme?» → Me preguntó si podría ayudarlo.",
+                  "zh": "“你能帮我吗？”→ 他问我能不能帮他。将来时 podrás 后移为 podría。"
+                }
+              ]
+            },
+            {
+              "title": "特殊疑问句：保留疑问词和它的重音",
+              "body": "原话以 qué、quién、dónde、cuándo、cómo、cuánto、por qué 等开头时，转述直接用这个疑问词连接，不加 que，并且疑问词仍然写重音。疑问词后面常常是动词，再接主语。",
+              "examples": [
+                {
+                  "es": "«¿Qué estás haciendo?» → Me preguntó qué estaba haciendo.",
+                  "zh": "“你在做什么？”→ 他问我在做什么。"
+                },
+                {
+                  "es": "«¿Cuándo volvéis?» → Nos preguntó cuándo volvíamos.",
+                  "zh": "“你们什么时候回来？”→ 她问我们什么时候回来。"
+                }
+              ]
+            },
+            {
+              "title": "转述命令和请求：que + 虚拟式过去时",
+              "body": "命令式在过去框架里转述时，变成 pedir、decir、ordenar 等 + que + 虚拟式过去时；否定命令也一样。注意 decir que 有两种意思：后面接陈述式是转述信息，接虚拟式是转述要求。Me dijo que venía（他告诉我他要来）≠ Me dijo que viniera（他叫我来）。",
+              "examples": [
+                {
+                  "es": "«Cierra la ventana.» → Me dijo que cerrara la ventana.",
+                  "zh": "“把窗关上。”→ 他叫我把窗关上。"
+                },
+                {
+                  "es": "«No llegues tarde.» → Me pidió que no llegara tarde.",
+                  "zh": "“别迟到。”→ 她要我别迟到。"
+                }
+              ]
+            },
+            {
+              "title": "常用转述动词",
+              "body": "除了 decir，还可以用更精确的动词。转述信息的 explicar、añadir、comentar、contar、contestar、responder 后接 que + 陈述式；表示建议或要求的 recomendar、sugerir、aconsejar、pedir 后接 que + 虚拟式。注意它们自身的变位：sugerir 的简单过去时第三人称是 sugirió（e→i），pedir 是 pidió。",
+              "examples": [
+                {
+                  "es": "La recepcionista añadió que el precio incluía el desayuno.",
+                  "zh": "前台还补充说房价包含早餐。（信息 → 陈述式）"
+                },
+                {
+                  "es": "El médico me recomendó que caminara todos los días.",
+                  "zh": "医生建议我每天散步。（建议 → 虚拟式过去时）"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "面试官问：«¿Hablas francés?» 你转述：En la entrevista me preguntaron ___ hablaba francés.",
+              "options": [
+                "que",
+                "si",
+                "qué"
+              ],
+              "answer": "si",
+              "hint": "原问题可以用“是／不是”回答。",
+              "explanation": "是非问句的间接转述用 si。que 不能单独引出问句；qué 是“什么”，原句里没有这个疑问词。",
+              "errorType": "用法判断",
+              "id": "m23-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "一位游客问：«¿Dónde está la estación?» 你转述：Un turista me preguntó ___ estaba la estación.",
+              "options": [
+                "donde",
+                "dónde",
+                "si"
+              ],
+              "answer": "dónde",
+              "hint": "原问题有疑问词；间接疑问里它的拼写会不会变？",
+              "explanation": "特殊疑问句转述时保留疑问词，而且仍写重音：dónde。donde 不带重音是关系副词，不用于间接疑问；si 用于是非问句。",
+              "errorType": "词形变化",
+              "id": "m23-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "昨晚很冷，妈妈对你说：«Cierra la ventana.» 你转述：Mi madre me dijo que ___ la ventana.",
+              "options": [
+                "cerraba",
+                "cerrara",
+                "cierre"
+              ],
+              "answer": "cerrara",
+              "hint": "这是在转述一个要求，而且转述动词是过去时。",
+              "explanation": "decir que 转述要求时用虚拟式；主句 dijo 是过去时，所以用虚拟式过去时 cerrara。cerraba 会变成“她说她在关窗”；cierre 是虚拟式现在时，与过去框架不呼应。",
+              "errorType": "用法判断",
+              "id": "m23-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "老板上周对你们说：«No lleguéis tarde.» 用 llegar 的正确形式完成转述（-ra 或 -se 形式均可）：El jefe nos pidió que no ___ tarde.",
+              "answer": "llegáramos",
+              "accepted": [
+                "llegásemos"
+              ],
+              "hint": "nos 指“我们”；虚拟式过去时的 nosotros 形式要标重音。",
+              "explanation": "否定命令转述为 pedir que + 虚拟式过去时；对象是我们，用 nosotros 形式 llegáramos（或 llegásemos），重音在 gá。",
+              "errorType": "词形变化",
+              "id": "m23-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "你在车站问：«¿Cuánto cuesta el billete?» 后来你转述，填疑问词：Le pregunté ___ costaba el billete.",
+              "answer": "cuánto",
+              "hint": "保留原问题的疑问词，注意拼写。",
+              "explanation": "特殊疑问句转述时直接用原疑问词，并保留重音：cuánto。",
+              "errorType": "词形变化",
+              "id": "m23-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "朋友说：«¿Por qué no vamos en tren?» 用 sugerir 的简单过去时（第三人称单数）完成转述：Mi amiga ___ que fuéramos en tren.",
+              "answer": "sugirió",
+              "hint": "sugerir 在简单过去时第三人称有词干元音变化，词尾带重音。",
+              "explanation": "sugerir 和 pedir 一样，简单过去时第三人称 e→i：sugirió。后面的 que fuéramos 是建议，所以用虚拟式过去时。",
+              "errorType": "词形变化",
+              "id": "m23-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "回想一次面试、看病、问路或办手续的经历，转述对方问你的两个问题（一个是非问句、一个特殊疑问句），以及对方给你的一条信息和一个要求或建议。",
+            "model": "En la entrevista, la directora me preguntó si había trabajado antes en una tienda y cuándo podía empezar. Después me explicó que el horario era de mañana y me pidió que trajera una copia del pasaporte al día siguiente.",
+            "rubric": [
+              "是非问句用 si，特殊疑问句保留带重音的疑问词。",
+              "要求或建议用 pedir / recomendar / sugerir que + 虚拟式过去时。",
+              "信息转述用陈述式，时态和时间词按过去框架后移。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m24",
+      "level": "B2",
+      "title": "被动句与 se 的多种用法",
+      "description": "用 ser + 过去分词和被动 se 把动作的对象放到前面，用无人称 se 谈论一般情况，再用“无意 se”表达不小心发生的事。",
+      "lessons": [
+        {
+          "id": "m24-l1",
+          "title": "ser + 过去分词与被动 se",
+          "goal": "能用 ser + 过去分词写出被动句（分词与主语性数一致，用 por 引出施事），并用被动 se 描述不强调施事的动作，让动词与名词单复数一致。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "这几句话都没有把“谁做的”放在主语位置。注意过去分词的词尾和动词的单复数分别跟谁一致。",
+            "examples": [
+              {
+                "es": "La catedral fue construida en el siglo XIII.",
+                "zh": "这座大教堂建于十三世纪。"
+              },
+              {
+                "es": "Se vende un piso.",
+                "zh": "一套公寓出售。"
+              },
+              {
+                "es": "Se venden pisos.",
+                "zh": "公寓出售。（多套）"
+              }
+            ],
+            "answer": "ser 被动句里，过去分词像形容词一样与主语性数一致（la catedral → construida）；被动 se 句里，动词与后面的名词单复数一致：un piso → vende，pisos → venden。"
+          },
+          "rules": [
+            {
+              "title": "ser + 过去分词：被动语态",
+              "body": "被动语态（voz pasiva）由 ser + 过去分词构成，ser 可以用任何时态，过去分词与主语性数一致，施事（动作的执行者）用 por 引出。这种结构多见于新闻、历史介绍和正式文本；日常口语更常用主动句或被动 se。不规则分词同样要变性数：abierto → abierta、escrito → escritas。",
+              "table": {
+                "caption": "过去分词与主语性数一致",
+                "headers": [
+                  "主语",
+                  "ser + 分词"
+                ],
+                "rows": [
+                  [
+                    "el museo",
+                    "fue abierto"
+                  ],
+                  [
+                    "la tienda",
+                    "fue abierta"
+                  ],
+                  [
+                    "los museos",
+                    "fueron abiertos"
+                  ],
+                  [
+                    "las tiendas",
+                    "fueron abiertas"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "El puente fue diseñado por una arquitecta mexicana.",
+                  "zh": "这座桥是一位墨西哥女建筑师设计的。"
+                },
+                {
+                  "es": "Los ganadores serán anunciados mañana.",
+                  "zh": "获奖者将于明天公布。"
+                }
+              ]
+            },
+            {
+              "title": "被动 se：se + 第三人称动词，与名词一致",
+              "body": "被动 se（pasiva refleja）用 se + 第三人称动词，动词与所说的事物单复数一致：单数名词用单数动词，复数名词用复数动词。它不强调是谁做的，一般不加 por + 施事。广告、告示、说明和菜谱中非常常见。名词常放在动词后面。",
+              "examples": [
+                {
+                  "es": "Se alquila habitación.",
+                  "zh": "房间出租。"
+                },
+                {
+                  "es": "En este taller se arreglan bicicletas.",
+                  "zh": "这家店修自行车。arreglan 与 bicicletas 一致。"
+                }
+              ]
+            },
+            {
+              "title": "选择结构并检查一致",
+              "body": "想说出“由谁完成”时用 ser + 分词 + por；只关心动作和对象时用被动 se。写完后检查一致：ser 被动句看分词的性数，被动 se 句看动词的单复数。常见错误是复数名词配单数动词，如 *Se vende pisos。",
+              "examples": [
+                {
+                  "es": "La novela fue escrita por una autora chilena.",
+                  "zh": "这部小说是一位智利女作家写的。要提施事，用 ser 被动句。"
+                },
+                {
+                  "es": "En esta tienda se aceptan tarjetas.",
+                  "zh": "本店可以刷卡。不说 *se acepta tarjetas。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "La nueva biblioteca fue ___ por la alcaldesa la semana pasada.",
+              "options": [
+                "inaugurado",
+                "inaugurada",
+                "inauguradas"
+              ],
+              "answer": "inaugurada",
+              "hint": "过去分词要和句子的主语一致，主语是哪个词？",
+              "explanation": "主语 la nueva biblioteca 是阴性单数，分词用 inaugurada。inaugurado 是阳性；inauguradas 是复数。",
+              "errorType": "词形变化",
+              "id": "m24-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "店门口的广告：En esta tienda se ___ ordenadores de segunda mano.",
+              "options": [
+                "vende",
+                "venden",
+                "vendemos"
+              ],
+              "answer": "venden",
+              "hint": "被动 se 的动词与哪个名词一致？",
+              "explanation": "被动 se 的动词与 ordenadores（复数）一致，所以用 venden。vende 是常见的不一致错误；vendemos 是第一人称，不能和 se 搭配。",
+              "errorType": "用法判断",
+              "id": "m24-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "介绍历史：Este puente fue construido ___ los romanos.",
+              "options": [
+                "para",
+                "por",
+                "de"
+              ],
+              "answer": "por",
+              "hint": "这里要引出动作的执行者。",
+              "explanation": "被动句的施事用 por 引出：fue construido por los romanos。para 表示目的或接受者，不引出施事。",
+              "errorType": "用法判断",
+              "id": "m24-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 alquilar 的现在时填空（被动 se）：Se ___ apartamentos cerca de la playa.",
+              "answer": "alquilan",
+              "hint": "看动词后面的名词是单数还是复数。",
+              "explanation": "apartamentos 是复数，被动 se 的动词用第三人称复数 alquilan。",
+              "errorType": "词形变化",
+              "id": "m24-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 escribir 的过去分词填空：Estas cartas fueron ___ por mi abuela en 1960.",
+              "answer": "escritas",
+              "hint": "escribir 的过去分词不规则，还要和 estas cartas 性数一致。",
+              "explanation": "escribir 的分词是 escrito；主语 estas cartas 是阴性复数，所以是 escritas。",
+              "errorType": "词形变化",
+              "id": "m24-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 ser 的简单过去时填空：Los resultados ___ publicados ayer en la web de la universidad.",
+              "answer": "fueron",
+              "hint": "主语 los resultados 是复数，时间是 ayer。",
+              "explanation": "ser 被动句里 ser 与主语一致，ayer 用简单过去时，所以是 fueron publicados。",
+              "errorType": "词形变化",
+              "id": "m24-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "为你的学校、公司或城市写一段简短介绍和一条小广告：用 ser 被动句写一个历史事实（带 por + 施事），再用被动 se 写两句，说明那里出售、出租或提供什么。",
+            "model": "La universidad fue fundada en 1920 por un grupo de profesores. En la cafetería se sirven desayunos desde las ocho. En la entrada principal se venden libros de segunda mano.",
+            "rubric": [
+              "ser 被动句的过去分词与主语性数一致，施事由 por 引出。",
+              "被动 se 句的动词与名词单复数一致。",
+              "能说明为什么某句用 ser 被动句、某句用被动 se。"
+            ]
+          }
+        },
+        {
+          "id": "m24-l2",
+          "title": "无人称 se 与“无意 se”",
+          "goal": "能用无人称 se 谈论“人们一般怎样做”，并用 se + 间接宾语代词 + 动词表达不小心发生的事情。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "前两句没有具体的主语；第三句里的 se、me 和 las llaves 各起什么作用？三句的动词分别跟谁一致？",
+            "examples": [
+              {
+                "es": "En este barrio se vive muy bien.",
+                "zh": "在这个街区生活很舒服。"
+              },
+              {
+                "es": "Se busca a dos camareros con experiencia.",
+                "zh": "招聘两名有经验的服务员。"
+              },
+              {
+                "es": "Se me olvidaron las llaves.",
+                "zh": "我（不小心）忘带钥匙了。"
+              }
+            ],
+            "answer": "无人称 se 句没有语法主语，动词总是第三人称单数（se vive、se busca a…），即使后面是带 a 的复数人称宾语也一样。第三句里 me 指受影响的人，动词与“东西”las llaves 一致，所以用复数 olvidaron。"
+          },
+          "rules": [
+            {
+              "title": "无人称 se：泛指“人们”",
+              "body": "无人称 se（se impersonal）表示“人们一般……”，不指具体的人，动词永远用第三人称单数。它常和没有直接宾语的动词连用：se vive、se come、se trabaja、se duerme。本身带 se 的代词式动词（如 acostumbrarse）不能再加无人称 se，这时改用 uno 或 la gente：Uno se acostumbra。",
+              "examples": [
+                {
+                  "es": "En España se cena bastante tarde.",
+                  "zh": "在西班牙，人们晚饭吃得比较晚。"
+                },
+                {
+                  "es": "En esta ciudad uno se acostumbra rápido al ruido.",
+                  "zh": "在这座城市，人很快就会习惯噪音。不说 *se se acostumbra。"
+                }
+              ]
+            },
+            {
+              "title": "se + 单数动词 + a + 人：与被动 se 对比",
+              "body": "宾语是特定的人并且带人称 a 时，用无人称 se，动词保持单数，不与后面的名词一致：Se busca a dos camareros，不说 *Se buscan a dos camareros。宾语是物时用上一课的被动 se，动词与名词一致：Se buscan pisos。招聘广告里也常见不带 a 的 Se buscan camareros（被动 se，泛指任何符合条件的人）；一旦加了 a，动词就必须用单数。",
+              "examples": [
+                {
+                  "es": "Ayer se entrevistó a los candidatos.",
+                  "zh": "昨天对候选人进行了面试。带 a，动词用单数。"
+                },
+                {
+                  "es": "Se buscan pisos baratos en el centro.",
+                  "zh": "求购／求租市中心的便宜公寓。物 → 被动 se，动词复数。"
+                }
+              ]
+            },
+            {
+              "title": "无意 se：se + 间接宾语代词 + 动词 + 东西",
+              "body": "表达东西“不小心”掉了、坏了、忘了时，西语常把东西当作主语，把受影响的人放在间接宾语代词里：se + me / te / le / nos / os / les + 动词。动词与东西一致（单数或复数），不与人一致。常用动词：olvidarse、caerse、romperse、perderse、acabarse、estropearse。se 永远在最前面；要点明是谁时可以加 a + 人：A Pedro se le olvidó…。与 Rompí el vaso（我把杯子打破了，强调我做的）相比，Se me rompió el vaso 强调是意外。",
+              "table": {
+                "caption": "无意 se 的代词",
+                "headers": [
+                  "受影响的人",
+                  "代词",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "se me",
+                    "Se me olvidó el paraguas."
+                  ],
+                  [
+                    "tú",
+                    "se te",
+                    "Se te cayó el móvil."
+                  ],
+                  [
+                    "él / ella / usted",
+                    "se le",
+                    "Se le perdieron las gafas."
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "se nos",
+                    "Se nos rompió la lavadora."
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "se os",
+                    "Se os acabó la leche."
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "se les",
+                    "Se les quemó la cena."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "A Clara se le cayeron las llaves en el metro.",
+                  "zh": "克拉拉的钥匙在地铁里掉了。cayeron 与 las llaves 一致。"
+                },
+                {
+                  "es": "Se nos rompió la lavadora.",
+                  "zh": "我们的洗衣机坏了。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "招聘广告：Se ___ a dos profesores de inglés para clases particulares.",
+              "options": [
+                "busca",
+                "buscan",
+                "buscamos"
+              ],
+              "answer": "busca",
+              "hint": "注意名词前的 a。",
+              "explanation": "宾语是带人称 a 的人，这是无人称 se，动词保持单数 busca。buscan 与带 a 的宾语一致是错误的；buscamos 不能和 se 搭配。",
+              "errorType": "用法判断",
+              "id": "m24-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "今天早上佩德罗的眼镜不小心掉了：A Pedro se ___ cayeron las gafas.",
+              "options": [
+                "lo",
+                "le",
+                "se"
+              ],
+              "answer": "le",
+              "hint": "受影响的人用哪一类代词表示？",
+              "explanation": "无意 se 里受影响的人用间接宾语代词，Pedro 对应 le：se le cayeron。lo 是直接宾语代词，这里不用；se 不能重复。",
+              "errorType": "用法判断",
+              "id": "m24-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你向朋友道歉：Lo siento, se me ___ tus libros en el autobús.",
+              "options": [
+                "olvidó",
+                "olvidaron",
+                "olvidé"
+              ],
+              "answer": "olvidaron",
+              "hint": "动词与人一致，还是与东西一致？",
+              "explanation": "无意 se 的动词与东西 tus libros（复数）一致：se me olvidaron。olvidó 是单数；olvidé 与“我”一致，不能和 se me 搭配。",
+              "errorType": "用法判断",
+              "id": "m24-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "我们的车在高速公路上坏了（不是故意的）。填代词：Se ___ estropeó el coche en la autopista.",
+              "answer": "nos",
+              "hint": "受影响的是“我们”，用间接宾语代词。",
+              "explanation": "受影响的人是 nosotros，间接宾语代词是 nos：Se nos estropeó el coche。",
+              "errorType": "词形变化",
+              "id": "m24-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 vivir 的现在时填空（无人称 se）：En los pueblos pequeños se ___ con más tranquilidad.",
+              "answer": "vive",
+              "hint": "无人称 se 句没有具体主语。",
+              "explanation": "无人称 se 的动词永远用第三人称单数：se vive。",
+              "errorType": "词形变化",
+              "id": "m24-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 romper 的简单过去时填空（无意 se）：Al niño se le ___ dos vasos mientras fregaba.",
+              "answer": "rompieron",
+              "hint": "动词跟“孩子”还是跟“两个杯子”一致？",
+              "explanation": "无意 se 的动词与东西 dos vasos（复数）一致，用简单过去时 rompieron。",
+              "errorType": "词形变化",
+              "id": "m24-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "介绍你家乡的生活：用无人称 se 写两句（那里的人怎么生活、吃什么或几点吃饭）；再用无意 se 讲一两件最近不小心发生的小事。",
+            "model": "En mi ciudad se vive con tranquilidad y se come muy bien, sobre todo pescado. La semana pasada se me olvidó el móvil en un taxi y, al día siguiente, se me rompieron las gafas.",
+            "rubric": [
+              "无人称 se 句的动词用了第三人称单数。",
+              "无意 se 的语序是 se + 间接宾语代词 + 动词。",
+              "无意 se 的动词与东西单复数一致，而不是与人一致。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m25",
+      "level": "B2",
+      "title": "目的、原因与让步",
+      "description": "根据主语是否相同选择 para 或 para que，用多种连接词说明原因，并按说话人对信息的态度选择 aunque 后的语式。",
+      "lessons": [
+        {
+          "id": "m25-l1",
+          "title": "目的与原因：para que、como、ya que 与 no porque",
+          "goal": "能根据主语是否相同选择 para + 不定式或 para que + 虚拟式，并按位置和语体选用 porque、como、ya que、puesto que、debido a 等表示原因。",
+          "minutes": 30,
+          "notice": {
+            "prompt": "前两句都表达目的，为什么一句用不定式，一句用 que + 虚拟式？比较“谁做主句动作”和“谁做目的动作”。",
+            "examples": [
+              {
+                "es": "Estudio español para trabajar en México.",
+                "zh": "我学西语是为了在墨西哥工作。"
+              },
+              {
+                "es": "Te lo explico para que lo entiendas.",
+                "zh": "我给你解释，是为了让你明白。"
+              },
+              {
+                "es": "Como no tenía coche, fui en autobús.",
+                "zh": "因为我没车，所以坐公交去的。"
+              }
+            ],
+            "answer": "第一句两个动作的主语相同（我学、我工作），用 para + 不定式；第二句主语不同（我解释、你明白），用 para que + 虚拟式。第三句 como 放在句首，引出原因。"
+          },
+          "rules": [
+            {
+              "title": "para + 不定式 / para que + 虚拟式",
+              "body": "目的动作与主句动作主语相同时，用 para + 不定式；主语不同时，用 para que + 虚拟式。para que 后面永远用虚拟式，并遵守 m21 的时态呼应：主句在现在框架用虚拟式现在时，主句是过去时或条件式用虚拟式过去时。",
+              "examples": [
+                {
+                  "es": "Hablo despacio para que me entiendas.",
+                  "zh": "我说慢一点，好让你听懂。"
+                },
+                {
+                  "es": "Les dejé las llaves para que pudieran entrar.",
+                  "zh": "我把钥匙留给他们，好让他们能进去。主句过去时 → pudieran。"
+                }
+              ]
+            },
+            {
+              "title": "原因连接词：位置和语体不同",
+              "body": "porque 最常用，一般放在主句后面，也用来回答 ¿por qué?；como 表示原因时只放在句首，先说原因再说结果（放在句中的 como 通常是“像……一样”）；ya que、puesto que 较正式，常引出对方已知或显而易见的原因，句首句中都可以；debido a 后接名词，多用于正式书面语和新闻。这些连接词后面用陈述式。",
+              "table": {
+                "caption": "常用原因表达",
+                "headers": [
+                  "连接词",
+                  "常见位置",
+                  "后接",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "porque",
+                    "主句之后",
+                    "陈述式从句",
+                    "Me quedé en casa porque estaba enfermo."
+                  ],
+                  [
+                    "como",
+                    "句首",
+                    "陈述式从句",
+                    "Como estaba enfermo, me quedé en casa."
+                  ],
+                  [
+                    "ya que / puesto que",
+                    "句首或主句之后",
+                    "陈述式从句",
+                    "Ya que estás aquí, ayúdame con esto."
+                  ],
+                  [
+                    "debido a",
+                    "句首或主句之后",
+                    "名词",
+                    "El vuelo se retrasó debido a la niebla."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Como era tarde, cogimos un taxi.",
+                  "zh": "因为很晚了，我们打了出租车。"
+                },
+                {
+                  "es": "Puesto que nadie tiene preguntas, terminamos aquí.",
+                  "zh": "既然没人有问题，我们就到这里。"
+                }
+              ]
+            },
+            {
+              "title": "no porque + 虚拟式, sino porque + 陈述式",
+              "body": "否定一个可能被误会的原因、再给出真正原因时，用 no porque + 虚拟式，后面接 sino porque + 陈述式：被否定的原因用虚拟式，真实原因用陈述式。主句是过去时时，被否定的原因用虚拟式过去时。",
+              "examples": [
+                {
+                  "es": "Me voy, no porque esté cansado, sino porque mañana madrugo.",
+                  "zh": "我要走了，不是因为累，而是因为明天要早起。"
+                },
+                {
+                  "es": "Lo compré no porque fuera barato, sino porque me encantaba.",
+                  "zh": "我买它不是因为便宜，而是因为我很喜欢。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "两个动作都是“我”做的：Ahorro dinero ___ viajar a Japón el año que viene.",
+              "options": [
+                "para",
+                "para que",
+                "porque"
+              ],
+              "answer": "para",
+              "hint": "存钱的人和去旅行的人是同一个人吗？后面是什么形式的动词？",
+              "explanation": "主语相同，后面是不定式 viajar，用 para。para que 后面要接变位的虚拟式；porque 表原因，后面也要接变位动词。",
+              "errorType": "用法判断",
+              "id": "m25-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "La profesora habla despacio para que los alumnos la ___.",
+              "options": [
+                "entienden",
+                "entiendan",
+                "entender"
+              ],
+              "answer": "entiendan",
+              "hint": "说话的人和理解的人是同一批人吗？para que 后面用哪种语式？",
+              "explanation": "主语不同（老师说、学生懂），用 para que + 虚拟式；主句 habla 是现在时，所以用虚拟式现在时 entiendan。",
+              "errorType": "用法判断",
+              "id": "m25-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "新闻报道：El partido se suspendió ___ la lluvia.",
+              "options": [
+                "debido a",
+                "porque",
+                "como"
+              ],
+              "answer": "debido a",
+              "hint": "空格后面是名词，不是从句。",
+              "explanation": "la lluvia 是名词，原因要用 debido a + 名词。porque 和 como 后面都需要带变位动词的从句。",
+              "errorType": "用法判断",
+              "id": "m25-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 poder 的正确形式填空（-ra 或 -se 形式均可）：El verano pasado les dejé una llave a mis vecinos para que ___ regar las plantas.",
+              "answer": "pudieran",
+              "accepted": [
+                "pudiesen"
+              ],
+              "hint": "主语不同，而且主句 dejé 是过去时。",
+              "explanation": "para que + 虚拟式；主句是简单过去时，用虚拟式过去时，ellos 形式为 pudieran（或 pudiesen）。",
+              "errorType": "词形变化",
+              "id": "m25-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "用 necesitar 的正确形式填空：No te llamo porque ___ algo, sino porque te echo de menos.",
+              "answer": "necesite",
+              "hint": "这是被否定的原因；主句 llamo 是现在时。",
+              "explanation": "no porque 引出被否定的原因，用虚拟式；主句是现在时，所以是虚拟式现在时 necesite。真正的原因 te echo de menos 用陈述式。",
+              "errorType": "用法判断",
+              "id": "m25-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个词，组成较正式的原因连接词“既然／由于”：Hoy trabajo desde casa, ___ que la oficina está cerrada por obras.",
+              "answer": "ya",
+              "accepted": [
+                "puesto",
+                "dado"
+              ],
+              "hint": "本课学过两个以 que 结尾、语气较正式的原因连接词。",
+              "explanation": "ya que 或 puesto que 引出已知的原因，句中句首都可以用（dado que 也可以）。这些连接词后面用陈述式 está。",
+              "errorType": "用法判断",
+              "id": "m25-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写 3–4 句话，说明你为什么学西语：用 para 和 para que 各一次说明目的，用 como 或 ya que 说明一个原因，再用 no porque…, sino porque… 澄清一个别人可能有的误解。",
+            "model": "Estudio español para leer novelas latinoamericanas en versión original y para que mis hijos lo aprendan conmigo. Como trabajo con clientes de Chile, también lo necesito en la oficina. Lo estudio no porque sea fácil, sino porque me encanta.",
+            "rubric": [
+              "主语相同用 para + 不定式，主语不同用 para que + 虚拟式。",
+              "como 放在句首，其他原因连接词的位置和后接成分正确。",
+              "no porque 后用虚拟式，sino porque 后用陈述式。"
+            ]
+          }
+        },
+        {
+          "id": "m25-l2",
+          "title": "让步：aunque + 陈述式还是虚拟式",
+          "goal": "能根据说话人是否把信息当作已知事实，选择 aunque + 陈述式或虚拟式，并用 a pesar de / a pesar de que 表达让步。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "三句都用了 aunque。说话人是否把后面的内容当成确定的事实？他在意这个事实吗？",
+            "examples": [
+              {
+                "es": "Aunque llueve, voy a salir.",
+                "zh": "虽然（现在确实）在下雨，我还是要出门。"
+              },
+              {
+                "es": "Aunque llueva mañana, iremos de excursión.",
+                "zh": "即使明天下雨，我们也去远足。"
+              },
+              {
+                "es": "—Es muy caro. —Aunque sea caro, lo voy a comprar.",
+                "zh": "——很贵啊。——就算贵，我也要买。"
+              }
+            ],
+            "answer": "说话人把让步内容当作已知事实、作为信息告诉对方时，aunque 后用陈述式（llueve）；内容还不确定（明天会不会下雨），或者说话人接过对方的话、表示“就算是这样也无所谓”时，用虚拟式（llueva、sea）。"
+          },
+          "rules": [
+            {
+              "title": "aunque + 陈述式：承认一个事实",
+              "body": "aunque 后面用陈述式，表示说话人确认这件事是真的，并把它作为信息说出来，相当于“虽然”。过去的事实用陈述式的过去时态。",
+              "examples": [
+                {
+                  "es": "Aunque estaba cansada, terminó el informe.",
+                  "zh": "她虽然很累，还是把报告写完了。"
+                },
+                {
+                  "es": "Aunque no me gusta el fútbol, fui al partido con mi padre.",
+                  "zh": "虽然我不喜欢足球，还是陪我爸去看了比赛。"
+                }
+              ]
+            },
+            {
+              "title": "aunque + 虚拟式：不确定，或者“就算是也无所谓”",
+              "body": "aunque 后面用虚拟式现在时，有两种情况：一是内容尚不确定，多指将来（“即使”）；二是说话人知道或对方刚说过这件事，但认为它不影响结论，常用来反驳对方。如果是说话人认为不太可能或与现在事实相反的假设，就用虚拟式过去时，主句用简单条件式，和 m22 的 si 条件句平行。",
+              "examples": [
+                {
+                  "es": "—Ese hotel está lejos del centro. —Aunque esté lejos, me gusta.",
+                  "zh": "——那家酒店离市中心很远。——就算远，我也喜欢。"
+                },
+                {
+                  "es": "Aunque tuviera mucho dinero, no me compraría ese coche.",
+                  "zh": "就算我有很多钱，也不会买那辆车。"
+                }
+              ]
+            },
+            {
+              "title": "a pesar de + 名词 / 不定式，a pesar de que + 从句",
+              "body": "a pesar de（尽管）后面接名词或不定式；接带变位动词的从句时要用 a pesar de que。本课只练习它引出已知事实、后接陈述式的用法。a pesar de 后接阳性单数定冠词 el 时要缩合成 del。",
+              "examples": [
+                {
+                  "es": "A pesar del cansancio, terminó el turno.",
+                  "zh": "尽管很累，他还是上完了这一班。de + el → del。"
+                },
+                {
+                  "es": "A pesar de que vive cerca, siempre llega tarde.",
+                  "zh": "尽管他住得很近，却总是迟到。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "你在告诉同事一个他们还不知道的事实：马里奥很累，但还是来帮忙了。Aunque Mario ___ muy cansado, ha venido a ayudarnos.",
+              "options": [
+                "está",
+                "esté",
+                "estaría"
+              ],
+              "answer": "está",
+              "hint": "说话人确认这是事实，并把它作为新信息说出来。",
+              "explanation": "告诉别人一个确定的事实，aunque 后用陈述式 está。esté 会表示“就算他累也……”，不是在提供信息；estaría 是条件式，不用在这里。",
+              "errorType": "用法判断",
+              "id": "m25-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "现在还不知道明天路上堵不堵：Aunque mañana ___ mucho tráfico, llegaré a tiempo.",
+              "options": [
+                "hay",
+                "haya",
+                "habría"
+              ],
+              "answer": "haya",
+              "hint": "这个情况还不确定，说的是将来。",
+              "explanation": "内容不确定，指将来，aunque 后用虚拟式现在时 haya。hay 会把它说成已知事实，与 mañana 不符；habría 是条件式，不能放在这里。",
+              "errorType": "用法判断",
+              "id": "m25-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "A pesar ___ la lluvia, el partido no se suspendió.",
+              "options": [
+                "de",
+                "de que",
+                "que"
+              ],
+              "answer": "de",
+              "hint": "空格后面是名词还是从句？",
+              "explanation": "la lluvia 是名词，用 a pesar de + 名词。de que 后面要接带变位动词的从句；a pesar que 缺少 de。",
+              "errorType": "句子组织",
+              "id": "m25-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "朋友说：«Ese restaurante es carísimo.» 你承认这一点，但坚持要去。用 ser 的正确形式填空：Aunque ___ carísimo, quiero ir.",
+              "answer": "sea",
+              "hint": "你接过对方的话，表示“就算是这样也无所谓”。",
+              "explanation": "反驳对方刚说的话、表示这个事实不影响你的决定时，aunque 后用虚拟式：sea。",
+              "errorType": "用法判断",
+              "id": "m25-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "不太可能的假设，用 dar 的正确形式填空（ellos，泛指公司；-ra 或 -se 形式均可）：Aunque me ___ el doble de sueldo, no me mudaría a esa ciudad.",
+              "answer": "dieran",
+              "accepted": [
+                "diesen"
+              ],
+              "hint": "主句 mudaría 是条件式；dar 的简单过去时 ellos 形式是什么？",
+              "explanation": "不太可能的让步用 aunque + 虚拟式过去时，主句用条件式。dar → dieron → dieran（或 diesen）。",
+              "errorType": "词形变化",
+              "id": "m25-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填两个词完成句子：A pesar ___ tenía fiebre, fue a trabajar.",
+              "answer": "de que",
+              "hint": "空格后面是带变位动词的从句。",
+              "explanation": "a pesar de 后面接从句时要加 que：A pesar de que tenía fiebre…",
+              "errorType": "句子组织",
+              "id": "m25-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "写 3–4 句话，谈谈你坚持做的一件事：用 aunque + 陈述式说一个已知的困难，用 aunque + 虚拟式说一个将来可能遇到的阻碍，再用 a pesar de 写一句。",
+            "model": "Aunque trabajo muchas horas, voy al gimnasio tres veces por semana. Aunque el mes que viene tenga más trabajo, no pienso dejarlo. A pesar del cansancio, siempre salgo de allí de buen humor.",
+            "rubric": [
+              "已知事实用 aunque + 陈述式。",
+              "不确定或不在乎的情况用 aunque + 虚拟式，时态与主句呼应。",
+              "a pesar de 后接名词或不定式，接从句时用 a pesar de que。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "m26",
+      "level": "B2",
+      "title": "推测与动词短语（B2 综合）",
+      "description": "用将来时和条件式对现在和过去做推测，再用常见动词短语表达动作的持续、开始、中止、结果和临近，最后综合运用本级别所学。",
+      "lessons": [
+        {
+          "id": "m26-l1",
+          "title": "用将来时和条件式表示推测",
+          "goal": "能用简单将来时、将来完成时、简单条件式和条件完成时，分别对现在、刚刚之前和过去的情况进行推测。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "三句话里说话人都不确定。比较他推测的是什么时间的情况：现在、在现在之前，还是过去？",
+            "examples": [
+              {
+                "es": "—¿Qué hora es? —No lo sé, serán las ocho.",
+                "zh": "——几点了？——不知道，大概八点吧。"
+              },
+              {
+                "es": "Marta no contesta. Habrá salido.",
+                "zh": "玛尔塔不接电话，大概是出去了。"
+              },
+              {
+                "es": "Cuando se casó, tendría unos veinte años.",
+                "zh": "她结婚的时候大概二十岁左右。"
+              }
+            ],
+            "answer": "简单将来时 serán 推测现在的情况；将来完成时 habrá salido 推测在现在之前已经发生的事；简单条件式 tendría 推测过去某一时刻的情况。这里的将来时和条件式不表示将来或礼貌，而是表示“大概、可能”。"
+          },
+          "rules": [
+            {
+              "title": "推测现在：简单将来时",
+              "body": "用简单将来时谈论说话人对现在情况的猜测，相当于 probablemente + 现在时。也常用在自问句里，表示“到底会是……呢”。形式就是 A2 学过的将来时，包括不规则词干（tendrá、estará、será 等）。",
+              "examples": [
+                {
+                  "es": "—¿Cuántos años tiene el nuevo vecino? —Tendrá unos treinta.",
+                  "zh": "——新邻居多大了？——大概三十岁吧。"
+                },
+                {
+                  "es": "¿Quién será a estas horas?",
+                  "zh": "这么晚了，会是谁呢？"
+                }
+              ]
+            },
+            {
+              "title": "推测刚刚发生的事：将来完成时（haber 的将来时 + 分词）",
+              "body": "将来完成时（futuro compuesto）由 haber 的将来时加过去分词构成，用来推测在现在之前已经发生的事，相当于 probablemente + 现在完成时。下表同时给出 haber 的简单条件式，用于下一条规则的条件完成时（condicional compuesto）。",
+              "table": {
+                "caption": "haber 的将来时与简单条件式",
+                "headers": [
+                  "人称",
+                  "将来时（+ 分词）",
+                  "简单条件式（+ 分词）"
+                ],
+                "rows": [
+                  [
+                    "yo",
+                    "habré salido",
+                    "habría salido"
+                  ],
+                  [
+                    "tú",
+                    "habrás salido",
+                    "habrías salido"
+                  ],
+                  [
+                    "él / ella / usted",
+                    "habrá salido",
+                    "habría salido"
+                  ],
+                  [
+                    "nosotros / nosotras",
+                    "habremos salido",
+                    "habríamos salido"
+                  ],
+                  [
+                    "vosotros / vosotras",
+                    "habréis salido",
+                    "habríais salido"
+                  ],
+                  [
+                    "ellos / ellas / ustedes",
+                    "habrán salido",
+                    "habrían salido"
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Luis llega tarde. Habrá perdido el autobús.",
+                  "zh": "路易斯迟到了，大概是没赶上公交车。"
+                },
+                {
+                  "es": "Ya habrán llegado al hotel.",
+                  "zh": "他们现在大概已经到酒店了。"
+                }
+              ]
+            },
+            {
+              "title": "推测过去：简单条件式与条件完成时",
+              "body": "对过去某一时刻的情况进行推测时，用简单条件式，相当于 probablemente + 过去未完成时或简单过去时；推测在过去某一时刻之前已经发生的事，用条件完成时（habría + 分词），相当于 probablemente + 过去完成时。可以把它们看作确定说法的“推测版本”。",
+              "table": {
+                "caption": "确定的说法与推测的说法",
+                "headers": [
+                  "时间",
+                  "确定的说法",
+                  "推测的说法"
+                ],
+                "rows": [
+                  [
+                    "现在",
+                    "Son las ocho.",
+                    "Serán las ocho."
+                  ],
+                  [
+                    "现在之前",
+                    "Ha salido.",
+                    "Habrá salido."
+                  ],
+                  [
+                    "过去",
+                    "Tenía veinte años.",
+                    "Tendría veinte años."
+                  ],
+                  [
+                    "过去之前",
+                    "Había perdido el tren.",
+                    "Habría perdido el tren."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Anoche Ana no cenó con nosotros; estaría cansada.",
+                  "zh": "昨晚安娜没和我们一起吃饭，大概是累了。"
+                },
+                {
+                  "es": "Pablo llegó tarde a la reunión; habría perdido el tren.",
+                  "zh": "巴勃罗开会迟到了，大概是之前没赶上火车。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "朋友问时间，你没带手机，只能猜：—¿Qué hora es? —No estoy seguro, ___ las once.",
+              "options": [
+                "son",
+                "serán",
+                "serían"
+              ],
+              "answer": "serán",
+              "hint": "推测的是现在的情况。",
+              "explanation": "推测现在用简单将来时 serán。son 表示确定；serían 用于推测过去。",
+              "errorType": "用法判断",
+              "id": "m26-l1-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "你早上出门看到地面是湿的，推测刚才发生的事：El suelo está mojado. ___ durante la noche.",
+              "options": [
+                "Lloverá",
+                "Habrá llovido",
+                "Llovería"
+              ],
+              "answer": "Habrá llovido",
+              "hint": "下雨发生在现在之前，你只是推测。",
+              "explanation": "推测在现在之前发生的事用将来完成时 habrá llovido。lloverá 会被理解为“将要下雨”；llovería 推测的是过去某一时刻的情况。",
+              "errorType": "用法判断",
+              "id": "m26-l1-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "你不确定爷爷当年的年龄，只是猜测：Mi abuelo empezó a trabajar muy joven; ___ unos catorce años.",
+              "options": [
+                "tendrá",
+                "tendría",
+                "tenía"
+              ],
+              "answer": "tendría",
+              "hint": "推测的是过去某一时刻的情况。",
+              "explanation": "推测过去用简单条件式 tendría。tendrá 推测的是现在；tenía 表示确定，不是推测。",
+              "errorType": "用法判断",
+              "id": "m26-l1-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 estar 推测现在的情况：Juan no ha venido a clase hoy; ___ enfermo.（他大概病了。）",
+              "answer": "estará",
+              "hint": "推测现在，用哪个时态？注意重音。",
+              "explanation": "推测现在用简单将来时，él 形式为 estará，á 上写重音。",
+              "errorType": "词形变化",
+              "id": "m26-l1-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "填 haber 的正确形式（推测在现在之前已经发生的事）：Ana no contesta al teléfono; se ___ dejado el móvil en casa.",
+              "answer": "habrá",
+              "hint": "用 haber 的将来时，主语是 Ana。",
+              "explanation": "推测现在之前的事用将来完成时：se habrá dejado el móvil。",
+              "errorType": "词形变化",
+              "id": "m26-l1-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "填 haber 的正确形式（推测比过去某一时刻更早的事）：Ayer Pablo llegó tardísimo a la reunión; ___ perdido el tren.",
+              "answer": "habría",
+              "hint": "推测的时间在“昨天迟到”之前，用 haber 的简单条件式。",
+              "explanation": "推测过去某一时刻之前发生的事用条件完成时：habría perdido el tren，相当于 probablemente había perdido el tren。",
+              "errorType": "词形变化",
+              "id": "m26-l1-q6"
+            }
+          ],
+          "task": {
+            "prompt": "想一位你很久没联系的熟人，写三句推测：他现在大概在做什么（简单将来时），今天早些时候大概已经做了什么（将来完成时），以及过去某个时刻他大概多大或在哪儿（简单条件式）。",
+            "model": "Mi prima estará ahora en la oficina. Habrá tomado ya su segundo café. Cuando se fue a estudiar a Francia, tendría unos dieciocho años.",
+            "rubric": [
+              "推测现在用了简单将来时，推测现在之前的事用了将来完成时。",
+              "推测过去用了简单条件式或条件完成时。",
+              "haber 的变位和过去分词正确，重音符号完整。"
+            ]
+          }
+        },
+        {
+          "id": "m26-l2",
+          "title": "进阶动词短语与 B2 综合运用",
+          "goal": "能用 llevar + 时间 + 副动词、seguir / continuar + 副动词、dejar de、ponerse a、acabar + 副动词和 estar a punto de 描述动作的持续、开始、中止、结果和临近，并在一段近况介绍中综合运用。",
+          "minutes": 35,
+          "notice": {
+            "prompt": "这几句话都在描述动作的某个阶段。哪一句说已经持续了多久，哪一句说仍在继续，哪一句说停止？",
+            "examples": [
+              {
+                "es": "Llevo tres años estudiando español.",
+                "zh": "我学西语已经三年了。"
+              },
+              {
+                "es": "Sigo viviendo con mis padres.",
+                "zh": "我还和父母住在一起。"
+              },
+              {
+                "es": "Dejé de fumar en 2020.",
+                "zh": "我 2020 年戒了烟。"
+              }
+            ],
+            "answer": "llevar + 时间 + 副动词表示一个动作从过去延续到现在已有多久；seguir + 副动词表示动作仍在继续；dejar de + 不定式表示停止。动词短语（perífrasis verbal）中第一个动词正常变位，第二个动词的形式（副动词或不定式）以及中间的介词都是固定的。"
+          },
+          "rules": [
+            {
+              "title": "持续：llevar + 时间 + 副动词，seguir / continuar + 副动词",
+              "body": "llevar + 时间 + 副动词说明一个动作到某个时刻为止已经持续了多久，意思接近 hace + 时间 + que + 现在时；llevar 可以变成过去未完成时，指到过去某一刻为止。seguir 或 continuar + 副动词表示“仍然在做”。否定形式用 sin + 不定式：llevar dos días sin dormir、seguir sin saber。",
+              "examples": [
+                {
+                  "es": "Llevamos dos horas esperando el autobús.",
+                  "zh": "我们已经等公交车两个小时了。"
+                },
+                {
+                  "es": "¿Sigues trabajando en el mismo banco?",
+                  "zh": "你还在那家银行上班吗？"
+                }
+              ]
+            },
+            {
+              "title": "开始、停止与临近：ponerse a、dejar de、estar a punto de",
+              "body": "ponerse a + 不定式表示开始做某事，常带有突然的意味；dejar de + 不定式表示停止做某事；estar a punto de + 不定式表示“马上就要……”，常与 cuando 连用，描述一件事被另一件事打断。注意三个短语的介词分别是 a、de、de。",
+              "examples": [
+                {
+                  "es": "Cuando oyó la noticia, se puso a llorar.",
+                  "zh": "她听到消息，一下子哭了起来。"
+                },
+                {
+                  "es": "Estábamos a punto de salir cuando sonó el teléfono.",
+                  "zh": "我们正要出门，电话响了。"
+                }
+              ]
+            },
+            {
+              "title": "结果：acabar + 副动词 ≠ acabar de + 不定式",
+              "body": "acabar + 副动词表示经过一段过程或犹豫后“最终做了某事”；acabar de + 不定式表示“刚刚做完”。两者只差一个 de 和动词形式，意思完全不同。",
+              "table": {
+                "caption": "本课动词短语一览",
+                "headers": [
+                  "短语",
+                  "意义",
+                  "例子"
+                ],
+                "rows": [
+                  [
+                    "llevar + 时间 + 副动词",
+                    "已经持续多久",
+                    "Llevo un año viviendo aquí."
+                  ],
+                  [
+                    "seguir / continuar + 副动词",
+                    "仍在继续",
+                    "Sigue lloviendo."
+                  ],
+                  [
+                    "dejar de + 不定式",
+                    "停止",
+                    "Ha dejado de llover."
+                  ],
+                  [
+                    "ponerse a + 不定式",
+                    "开始（常较突然）",
+                    "Se puso a llover."
+                  ],
+                  [
+                    "estar a punto de + 不定式",
+                    "马上就要",
+                    "El tren está a punto de salir."
+                  ],
+                  [
+                    "acabar + 副动词",
+                    "最终（结果）",
+                    "Acabé comprando el más caro."
+                  ],
+                  [
+                    "acabar de + 不定式",
+                    "刚刚",
+                    "Acabo de comer."
+                  ]
+                ]
+              },
+              "examples": [
+                {
+                  "es": "Al final acabó aceptando el trabajo.",
+                  "zh": "他最后还是接受了那份工作。"
+                },
+                {
+                  "es": "Acabo de llegar a casa.",
+                  "zh": "我刚到家。"
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "type": "mc",
+              "prompt": "Mi hermano ___ dos años trabajando en Berlín.",
+              "options": [
+                "lleva",
+                "hace",
+                "sigue"
+              ],
+              "answer": "lleva",
+              "hint": "句中有“时间 + 副动词”的结构。",
+              "explanation": "llevar + 时间 + 副动词表示已经持续多久：lleva dos años trabajando。hace 的结构是 hace dos años que trabaja；seguir 后面不加时间段。",
+              "errorType": "用法判断",
+              "id": "m26-l2-q1"
+            },
+            {
+              "type": "mc",
+              "prompt": "他犹豫了很久，最后还是买了最贵的那套：Al principio no quería, pero al final ___ el piso más caro.",
+              "options": [
+                "acabó comprando",
+                "acabó de comprar",
+                "dejó de comprar"
+              ],
+              "answer": "acabó comprando",
+              "hint": "要表达的是一个过程之后的结果。",
+              "explanation": "acabar + 副动词表示最终的结果：acabó comprando。acabó de comprar 是“刚刚买完”；dejó de comprar 是“不再买”。",
+              "errorType": "用法判断",
+              "id": "m26-l2-q2"
+            },
+            {
+              "type": "mc",
+              "prompt": "音乐一响，大家都跳起舞来：Cuando empezó la música, todos se pusieron ___ bailar.",
+              "options": [
+                "a",
+                "de",
+                "en"
+              ],
+              "answer": "a",
+              "hint": "表示“开始做某事”的短语用哪个介词？",
+              "explanation": "ponerse a + 不定式表示开始做某事：se pusieron a bailar。de 属于 dejar de、estar a punto de 等短语。",
+              "errorType": "词形变化",
+              "id": "m26-l2-q3"
+            },
+            {
+              "type": "text",
+              "prompt": "用 vivir 的副动词填空：Han pasado diez años y mis padres siguen ___ en el mismo piso.",
+              "answer": "viviendo",
+              "hint": "seguir 后面接副动词。",
+              "explanation": "seguir + 副动词表示仍在继续；vivir 的副动词是 viviendo。",
+              "errorType": "词形变化",
+              "id": "m26-l2-q4"
+            },
+            {
+              "type": "text",
+              "prompt": "填一个介词：¡Corre! El tren está a punto ___ salir.",
+              "answer": "de",
+              "hint": "这个短语表示“马上就要”。",
+              "explanation": "estar a punto de + 不定式表示即将发生：está a punto de salir。",
+              "errorType": "词形变化",
+              "id": "m26-l2-q5"
+            },
+            {
+              "type": "text",
+              "prompt": "用 llevar 的过去未完成时（nosotros）填空：Cuando por fin llegó el autobús, ___ una hora esperando.",
+              "answer": "llevábamos",
+              "hint": "持续到过去某一刻为止；nosotros 形式要写重音。",
+              "explanation": "到过去某一时刻为止已持续多久，用 llevar 的过去未完成时：llevábamos una hora esperando。bá 上要写重音。",
+              "errorType": "词形变化",
+              "id": "m26-l2-q6"
+            }
+          ],
+          "task": {
+            "prompt": "给一位多年没见的朋友写一段 4–5 句的近况更新，作为 B2 的结课练习：至少用三个本课的动词短语，再加一句推测（简单将来时）和一句愿望或假设（me gustaría que… 或 si + 虚拟式过去时）。",
+            "model": "Llevo cuatro años viviendo en Valencia y sigo trabajando en la misma empresa. Dejé de dar clases de piano porque no tenía tiempo, pero acabé apuntándome a un coro. ¿Y tú? Supongo que seguirás en Lima y que tus hijos estarán enormes. Me gustaría que vinieras a verme este verano.",
+            "rubric": [
+              "动词短语中第一个动词变位正确，第二个动词的形式和介词正确。",
+              "推测用了简单将来时，愿望或假设中的虚拟式过去时与主句呼应。",
+              "内容像真实的近况更新，时间关系清楚。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
