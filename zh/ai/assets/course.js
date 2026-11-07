@@ -1,4 +1,4 @@
-/* OpenSEEI course reader. Content is maintained in each course's data.js. */
+/* Keep Learning Lab course reader. Content is maintained in each course's data.js. */
 (() => {
   'use strict';
   const course = window.COURSE;
@@ -77,7 +77,7 @@
   }
 
   root.innerHTML = `<a class="sr-only skip-link" href="#main-content">跳到课程内容</a>
-    <header class="course-header"><a class="brand" href="../../index.html" data-home-link>NOTES <span>//</span></a><span class="course-code">OPEN COURSE / ${esc(course.code)}</span><div class="header-links"><div class="course-switch"><label class="sr-only" for="course-switch">切换课程</label><select id="course-switch">${courseDirectory.map(item => `<option value="${esc(item.id)}"${item.id === course.id ? ' selected' : ''}>${esc(item.title)}</option>`).join('')}</select></div><button class="theme-toggle" type="button" aria-label="切换深浅主题">◐</button><button class="menu-toggle" type="button" aria-label="展开课程目录" aria-expanded="false" aria-controls="course-sidebar">目录 ☰</button></div></header>
+    <header class="course-header"><a class="brand" href="../../index.html" data-home-link>KEEP LEARNING LAB <span>//</span></a><span class="course-code">OPEN COURSE / ${esc(course.code)}</span><div class="header-links"><div class="course-switch"><label class="sr-only" for="course-switch">切换课程</label><select id="course-switch">${courseDirectory.map(item => `<option value="${esc(item.id)}"${item.id === course.id ? ' selected' : ''}>${esc(item.title)}</option>`).join('')}</select></div><button class="theme-toggle" type="button" aria-label="切换深浅主题">◐</button><button class="menu-toggle" type="button" aria-label="展开课程目录" aria-expanded="false" aria-controls="course-sidebar">目录 ☰</button></div></header>
     <div class="nav-backdrop" aria-hidden="true"></div><div class="course-layout"><aside class="course-sidebar" id="course-sidebar">${sidebar()}</aside><main class="course-main" id="main-content" tabindex="-1"></main></div>`;
   // A course lives at /zh/<course>/; this remains valid on a subpath deployment.
   root.querySelector('[data-home-link]').setAttribute('href', '../../');
@@ -115,7 +115,7 @@
   });
 
   function footer() {
-    return `<footer class="course-footer"><span>OPEN SE EI / ${esc(course.code)}</span><p>${esc(course.notice || '本页为 OpenSEEI 中文社区导学，非 Stanford 官方课程。原始资料版权及许可归原作者；课程安排与要求以官方网站为准。')}</p>${link(course.sourceUrl, '访问官方课程 ↗')}</footer>`;
+    return `<footer class="course-footer"><span>KEEP LEARNING LAB / ${esc(course.code)}</span><p>${esc(course.notice || '本页为 Keep Learning Lab 中文社区导学，非 Stanford 官方课程。原始资料版权及许可归原作者；课程安排与要求以官方网站为准。')}</p>${link(course.sourceUrl, '访问官方课程 ↗')}</footer>`;
   }
   function lessonCard(lesson) {
     return `<a class="lesson-card" href="#lesson-${esc(lesson.id)}"><span class="lesson-index">${esc(lesson.id)}</span><div class="lesson-copy"><h3>${esc(lesson.title)}</h3><p>${esc(lesson.summary)}</p><div class="lesson-tags"><span>${esc(lesson.originalTitle || course.code)}</span><span>${objectives(lesson).length} 个目标</span>${(lesson.lab || lesson.visual) ? '<span>交互实验</span>' : ''}</div></div><span class="status-chip">${done(lesson) ? '已掌握 ✓' : lessonCount(lesson) ? '学习中' : '开始学习'}</span><span class="lesson-arrow" aria-hidden="true">↗</span></a>`;
@@ -257,7 +257,7 @@
       anchor.classList.toggle('active', selected);
       if (selected) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
     });
-    document.title = `${activeLesson ? activeLesson.title : route === 'resources' ? '原始资料库' : course.title} · ${course.code} · OpenSEEI`;
+    document.title = `${activeLesson ? activeLesson.title : route === 'resources' ? '原始资料库' : course.title} · ${course.code} · Keep Learning Lab`;
     closeMenu();
     if (!initial) { window.scrollTo({top: 0, behavior: 'instant'}); main.focus({preventScroll: true}); }
   }

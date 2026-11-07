@@ -1330,7 +1330,7 @@
       "local": "materials/stanford-cme-295-transformers-large-language-models.zip"
     }
   ],
-  "notice": "OpenSEEI 原创中文社区导学，非 Stanford 官方授课或完整译本。以 2026-11-06 公开目录为准：2026 第 1–6 讲有公开课件，第 7–9 讲为自编预习并链接 2025 补充材料；2026 第 6–9 讲视频尚未发布。原始 PDF、视频及考试版权归各自作者；自编练习不代表官方作业。",
+  "notice": "Keep Learning Lab 原创中文社区导学，非 Stanford 官方授课或完整译本。以 2026-11-06 公开目录为准：2026 第 1–6 讲有公开课件，第 7–9 讲为自编预习并链接 2025 补充材料；2026 第 6–9 讲视频尚未发布。原始 PDF、视频及考试版权归各自作者；自编练习不代表官方作业。",
   "experimentsMode": "lesson",
   "experimentScripts": [
     "../ai/assets/lab-core.js",

@@ -1,4 +1,4 @@
-/* OpenSEEI mathematical intuition labs: deterministic, local and dependency-free. */
+/* Keep Learning Lab mathematical intuition labs: deterministic, local and dependency-free. */
 (() => {
   'use strict';
   let timer = null;

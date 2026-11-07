@@ -1,4 +1,4 @@
-// OpenSEEI 社区版：Google 账号登录验证 + 学习进度多端云同步接口（Vercel Function）。
+// Keep Learning Lab 社区版：Google 账号登录验证 + 学习进度多端云同步接口（Vercel Function）。
 //
 // 1. GET /api/progress/
 //    返回公开配置：{ configured, hasDb, googleClientId }

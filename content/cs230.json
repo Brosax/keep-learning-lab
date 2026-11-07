@@ -2163,7 +2163,7 @@
       "local": "materials/cs230-code-examples.zip"
     }
   ],
-  "notice": "OpenSEEI原创中文社区导学，非Stanford官方课程或逐句翻译。18讲为自学重组；注意力是社区衔接专题。原课公开视频为Fall 2018，section资料含2020、2021、2024与2025等版本，见各来源标注。当前Canvas录播仅向注册学生开放，Coursera课程/作业需相应权限，本站未下载或冒称包含这些受限内容。原始材料版权和许可归原作者，旧框架示例需按当前API调整。核实日期：2026-11-06。",
+  "notice": "Keep Learning Lab原创中文社区导学，非Stanford官方课程或逐句翻译。18讲为自学重组；注意力是社区衔接专题。原课公开视频为Fall 2018，section资料含2020、2021、2024与2025等版本，见各来源标注。当前Canvas录播仅向注册学生开放，Coursera课程/作业需相应权限，本站未下载或冒称包含这些受限内容。原始材料版权和许可归原作者，旧框架示例需按当前API调整。核实日期：2026-11-06。",
   "experimentsMode": "lesson",
   "experimentScripts": [
     "../ai/assets/lab-core.js",

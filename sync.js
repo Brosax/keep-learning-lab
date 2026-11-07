@@ -1,8 +1,8 @@
-/* OpenSEEI 社区版：本地学习记录追踪 + Google 账号登录多端云同步 + 课程内页统一导航壳。
+/* Keep Learning Lab 社区版：本地学习记录追踪 + Google 账号登录多端云同步 + 课程内页统一导航壳。
    由 90_System/web_comunidad.py 注入首页与所有课程章节页：
    - 未登录时：完全本地运行，所有进度（要点掌握、章节自测、数值练习、最近学习的章节）保存在浏览器 localStorage。
    - 登录 Google 账号后：将各课进度展开为 "段|键" 并附带毫秒时间戳，与云端（/api/progress/ + Neon）按键合并（最新修改胜出）。
-   - 课程内页增强：注入 OpenSEEI 品牌顶栏、全章目录与跨课切换抽屉（Alt+M）、中英语言切换、阅读进度条与实时云同步胶丸。 */
+   - 课程内页增强：注入 Keep Learning Lab 品牌顶栏、全章目录与跨课切换抽屉（Alt+M）、中英语言切换、阅读进度条与实时云同步胶丸。 */
 (function () {
   "use strict";
 
@@ -245,7 +245,7 @@
     }
   }
 
-  /* ---------- 课程内页统一 OpenSEEI 顶栏、全章目录抽屉与阅读进度条 ---------- */
+  /* ---------- 课程内页统一 Keep Learning Lab 顶栏、全章目录抽屉与阅读进度条 ---------- */
   var COURSE_META = [
     { slug: "micro", code: "MICRO", zh: "微控制器 (MSP430 / ESP32-S3)", en: "Microcontrollers (MSP430 / ESP32-S3)" },
     { slug: "emp", code: "EMP", zh: "嵌入式 Linux 与 POSIX", en: "Embedded Linux & POSIX" },
@@ -263,6 +263,8 @@
       ".crumbs .hub { display: inline-flex; align-items: center; gap: 6px; font: 700 13.5px/1 var(--f-mono, monospace); letter-spacing: .02em; color: var(--accent, var(--blue, #2a6fdb)); text-decoration: none; padding: 4px 8px 4px 6px; border-radius: 7px; background: color-mix(in srgb, var(--accent, var(--blue, #2a6fdb)) 11%, transparent); border: 1px solid color-mix(in srgb, var(--accent, var(--blue, #2a6fdb)) 25%, transparent); transition: filter .15s; }\n" +
       ".crumbs .hub:hover { filter: brightness(1.1); }\n" +
       ".crumbs .hub svg { width: 14px; height: 14px; flex-shrink: 0; }\n" +
+      ".crumbs .hub .hub-short { display: none; }\n" +
+      "@media (max-width: 520px) { .crumbs .hub .hub-full { display: none; } .crumbs .hub .hub-short { display: inline; } }\n" +
       ".crumbs .sep { font: 400 14px/1 var(--f-mono, monospace); color: var(--muted, #888); opacity: .5; }\n" +
       ".os-top-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: wrap; }\n" +
       ".os-top-tools { display: inline-flex; align-items: center; gap: 6px; }\n" +
@@ -435,7 +437,7 @@
         '</div>' +
         '<div class="os-dr-body"></div>' +
         '<div class="os-dr-foot">' +
-          '<a href="' + esc(portalHref) + '">' + (en ? "← NOTES // Index" : "← 返回 NOTES 索引") + '</a>' +
+          '<a href="' + esc(portalHref) + '">' + (en ? "← Keep Learning Lab Index" : "← 返回 Keep Learning Lab 索引") + '</a>' +
           '<a href="' + esc(syncHref) + '">' + (en ? "Google Cloud Sync →" : "Google 进度云同步 →") + '</a>' +
         '</div>' +
       '</aside>';
@@ -480,7 +482,7 @@
     var rt = detectRoute();
     var en = isEnglishPage();
 
-    /* 1. 确保 .crumbs 与 NOTES // 品牌徽标存在 */
+    /* 1. 确保 .crumbs 与 KEEP LEARNING LAB // 品牌徽标存在 */
     var crumbs = topbarIn.querySelector(".crumbs");
     if (!crumbs) {
       var brand = topbarIn.querySelector("a.brand");
@@ -490,8 +492,8 @@
         var hub = document.createElement("a");
         hub.className = "hub";
         hub.href = HOME + (en ? "?lang=en" : "");
-        hub.title = en ? "Back to NOTES Index" : "返回 NOTES 索引主页";
-        hub.textContent = "NOTES //";
+        hub.title = en ? "Back to Keep Learning Lab Index" : "返回 Keep Learning Lab 索引主页";
+        hub.textContent = "KEEP LEARNING LAB";
         var sep = document.createElement("span");
         sep.className = "sep";
         sep.setAttribute("aria-hidden", "true");
@@ -506,24 +508,24 @@
       var hubEl = crumbs.querySelector(".hub");
       if (hubEl) {
         hubEl.href = HOME + (en ? "?lang=en" : "");
-        hubEl.title = en ? "Back to NOTES Index" : "返回 NOTES 索引主页";
+        hubEl.title = en ? "Back to Keep Learning Lab Index" : "返回 Keep Learning Lab 索引主页";
         hubEl.innerHTML =
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>' +
-          '<span>NOTES //</span>';
+          '<span class="hub-full">KEEP LEARNING LAB</span><span class="hub-short">KLL</span>';
       }
     }
 
     /* 1b. 内页去课程化文案修正（不改动静态 HTML 哈希） */
     var homeEyebrow = document.querySelector(".home-head .eyebrow");
     if (homeEyebrow) {
-      homeEyebrow.textContent = en ? "NOTES // Interactive Visual Notes" : "NOTES // 互动图解与技术笔记";
+      homeEyebrow.textContent = en ? "KEEP LEARNING LAB // Interactive Visual Notes" : "KEEP LEARNING LAB // 互动图解与技术笔记";
     }
     var commFoot = document.querySelector("footer.community-foot");
     if (commFoot) {
       var portalUrl = HOME + (en ? "?lang=en" : "");
       commFoot.innerHTML = en
-        ? '<span>NOTES // Interactive Visual Notes &amp; Personal Knowledge Archive</span><a href="' + esc(portalUrl) + '">← Back to NOTES Index</a>'
-        : '<span>NOTES // 互动图解与个人知识库</span><a href="' + esc(portalUrl) + '">← 返回 NOTES 总览</a>';
+        ? '<span>KEEP LEARNING LAB // Interactive Visual Notes &amp; Personal Knowledge Archive</span><a href="' + esc(portalUrl) + '">← Back to Keep Learning Lab Index</a>'
+        : '<span>KEEP LEARNING LAB // 互动图解与个人知识库</span><a href="' + esc(portalUrl) + '">← 返回 Keep Learning Lab 总览</a>';
     }
 
     /* 2. 右侧工具栏：全篇目录抽屉按钮 + 中/EN 切换 + 云同步状态点 */
@@ -562,7 +564,7 @@
         : (HOME + "?lang=en");
       var enTitle = hasEn
         ? "Switch this chapter to English"
-        : "NOTES // English Index (EMP translated, MICRO/EI in progress)";
+        : "KEEP LEARNING LAB // English Index (EMP translated, MICRO/EI in progress)";
       langBox.innerHTML =
         '<a class="' + (!en ? "on" : "") + '" href="' + esc(zhHref) + '" title="中文版本">中</a>' +
         '<a class="' + (en ? "on" : "") + '" href="' + esc(enHref) + '" title="' + esc(enTitle) + '">EN</a>';

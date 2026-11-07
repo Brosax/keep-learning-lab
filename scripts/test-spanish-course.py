@@ -41,7 +41,7 @@ try:
         assert stored['resume'] == 'm6-l2'
         page.reload()
         expect(page.locator('#solved-metric')).to_have_text('1 / 96')
-        page.get_by_role('link', name='← OpenSEEI 首页').click()
+        page.get_by_role('link', name='← Keep Learning Lab 首页').click()
         page.locator('[data-filter=language]').click()
         expect(page.locator('.course-card:visible')).to_have_count(1)
         card = page.locator('[data-course=spanish-grammar]')

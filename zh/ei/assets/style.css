@@ -522,7 +522,7 @@ details.srcs dd { grid-column: 2; }
 .bq-score { font: 700 2rem/1.2 var(--f-mono); color: var(--ink); }
 .bq-result { display: flex; flex-direction: column; gap: .8rem; }
 
-/* ---- OpenSEEI 社区版顶栏面包屑、云同步状态与页脚 ---- */
+/* ---- Keep Learning Lab 社区版顶栏面包屑、云同步状态与页脚 ---- */
 .crumbs { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .crumbs .hub { font: 700 14px/1 var(--f-mono, monospace); letter-spacing: .03em; color: var(--muted, #888); text-decoration: none; }
 .crumbs .hub:hover, .crumbs .hub:focus-visible { color: var(--accent, #2a6fdb); }

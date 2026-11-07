@@ -1,4 +1,4 @@
-/* OpenSEEI original teaching simulations. All examples run locally. */
+/* Keep Learning Lab original teaching simulations. All examples run locally. */
 (() => {
   'use strict';
   const box = (title, intro, content) => `<section class="sim-box"><p class="eyebrow">INTERACTIVE LAB / 交互实验</p><h3>${title}</h3><p>${intro}</p>${content}</section>`;

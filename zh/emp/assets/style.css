@@ -639,7 +639,7 @@ details.srcs dt { grid-column: 1; }
 details.srcs dd { grid-column: 2; }
 @media (max-width: 520px) { details.srcs dt, details.srcs dd { grid-column: 1; } }
 
-/* ---- OpenSEEI 社区版顶栏面包屑、云同步状态与页脚 ---- */
+/* ---- Keep Learning Lab 社区版顶栏面包屑、云同步状态与页脚 ---- */
 .crumbs { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .crumbs .hub { font: 700 14px/1 var(--f-mono, monospace); letter-spacing: .03em; color: var(--muted, #888); text-decoration: none; }
 .crumbs .hub:hover, .crumbs .hub:focus-visible { color: var(--accent, #2a6fdb); }
