@@ -1120,7 +1120,7 @@
           "rules": [
             {
               "title": "是非问句：preguntar si",
-              "body": "原话是可以用 sí / no 回答的问题时，转述用 preguntar si，再按上一课的规则后移时态。si 不带重音（它是“是否”，不是 sí“是”）。口语里有时会听到 me preguntó que si…，书面语用 me preguntó si…。",
+              "body": "原话是可以用 sí / no 回答的问题时，转述用 preguntar si，再按上一课的规则后移时态。si 不带重音（它是“是否”，不是 sí“是”）。me preguntó que si… 也是规范用法，但 me preguntó si… 更简洁、更常见。",
               "examples": [
                 {
                   "es": "«¿Has estado en México?» → Me preguntó si había estado en México.",
@@ -1941,9 +1941,12 @@
               "prompt": "朋友说：«Ese restaurante es carísimo.» 你承认这一点，但坚持要去。用 ser 的正确形式填空：Aunque ___ carísimo, quiero ir.",
               "answer": "sea",
               "hint": "你接过对方的话，表示“就算是这样也无所谓”。",
-              "explanation": "反驳对方刚说的话、表示这个事实不影响你的决定时，aunque 后用虚拟式：sea。",
+              "explanation": "两种形式都正确，只是态度不同：aunque es carísimo 承认这是事实（虽然很贵）；aunque sea carísimo 表示不把这个因素当回事、反驳对方刚说的话（就算再贵）。两种都能表达“我还是要去”。",
               "errorType": "用法判断",
-              "id": "m25-l2-q4"
+              "id": "m25-l2-q4",
+              "accepted": [
+                "es"
+              ]
             },
             {
               "type": "text",
