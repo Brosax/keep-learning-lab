@@ -14,32 +14,32 @@
       "lesson_references": [
         {
           "lesson_id": "14",
-          "title": "官方课程安排（课件待发布）",
+          "title": "官网课表（本讲无讲义与指定阅读）",
           "url": "https://cs329z.stanford.edu/"
         },
         {
           "lesson_id": "15",
-          "title": "官方课程安排（课件待发布）",
+          "title": "官网课表（本讲讲义尚未发布）",
           "url": "https://cs329z.stanford.edu/"
         },
         {
           "lesson_id": "16",
-          "title": "官方课程安排（课件待发布）",
+          "title": "官网课表（本讲讲义尚未发布）",
           "url": "https://cs329z.stanford.edu/"
         },
         {
           "lesson_id": "17",
-          "title": "官方课程安排（课件待发布）",
+          "title": "官网课表（本讲讲义尚未发布）",
           "url": "https://cs329z.stanford.edu/"
         },
         {
           "lesson_id": "18",
-          "title": "官方课程安排（课件待发布）",
+          "title": "官网课表（本讲讲义尚未发布）",
           "url": "https://cs329z.stanford.edu/"
         },
         {
           "lesson_id": "19",
-          "title": "官方课程安排（课件待发布）",
+          "title": "官网课表（本讲讲义尚未发布）",
           "url": "https://cs329z.stanford.edu/"
         }
       ]
@@ -168,8 +168,8 @@
       "lesson_references": [
         {
           "lesson_id": "01",
-          "title": "官方第1讲 · PDF第29页起 Agent anatomy；第56页工作流与智能体",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture01.pdf#page=29"
+          "title": "第1讲讲义 · Intro to Agentic Systems（PDF 第 4 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture01.pdf#page=4"
         }
       ]
     },
@@ -223,8 +223,8 @@
       "lesson_references": [
         {
           "lesson_id": "02",
-          "title": "官方第2讲 · PDF第160–171页 Context engineering",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture02.pdf#page=160"
+          "title": "第2讲讲义 · LLMs for Builders（PDF 第 5 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture02.pdf#page=5"
         }
       ]
     },
@@ -278,8 +278,8 @@
       "lesson_references": [
         {
           "lesson_id": "03",
-          "title": "官方第3讲 · PDF第40页起 retrievers：BM25、DPR 与 ColBERT",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture03.pdf#page=40"
+          "title": "第3讲讲义 · RAG + Agents（PDF 第 3 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture03.pdf#page=3"
         }
       ]
     },
@@ -333,8 +333,8 @@
       "lesson_references": [
         {
           "lesson_id": "04",
-          "title": "官方第4讲 · PDF第48–54页接口、JSON Schema与MCP",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture04.pdf#page=48"
+          "title": "第4讲讲义 · Tool Use（PDF 第 3 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture04.pdf#page=3"
         }
       ]
     },
@@ -388,8 +388,8 @@
       "lesson_references": [
         {
           "lesson_id": "05",
-          "title": "官方第5讲 · PDF第53–58页 LangGraph状态、节点与边",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture05.pdf#page=53"
+          "title": "第5讲讲义 · Frameworks & Orchestration（PDF 第 7 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture05.pdf#page=7"
         }
       ]
     },
@@ -443,8 +443,8 @@
       "lesson_references": [
         {
           "lesson_id": "06",
-          "title": "官方第6讲 · PDF第33页起 ReAct与行动模式；效用计算为社区补充",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture06.pdf#page=33"
+          "title": "第6讲讲义 · Agent Design Patterns and Scaffolds（PDF 第 7 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture06.pdf#page=7"
         }
       ]
     },
@@ -524,8 +524,8 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "官方课件 · 记忆维护PDF第61–64页；遗忘边界第96–100页",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture07.pdf#page=61"
+          "title": "第7讲讲义 · Agent Memory Architectures（PDF 第 7 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture07.pdf#page=7"
         }
       ]
     },
@@ -579,8 +579,8 @@
       "lesson_references": [
         {
           "lesson_id": "08",
-          "title": "官方课件 · 任务账本PDF第52–56页；隔离第62–63页",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture08.pdf#page=52"
+          "title": "第8讲讲义 · Multi-Agent Systems（PDF 第 6 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture08.pdf#page=6"
         }
       ]
     },
@@ -634,8 +634,8 @@
       "lesson_references": [
         {
           "lesson_id": "09",
-          "title": "官方课件 · 优化方法总结PDF第65–69页",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture09.pdf#page=65"
+          "title": "第9讲讲义 · Optimization（PDF 第 6 页 Lecture Overview）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture09.pdf#page=6"
         }
       ]
     },
@@ -689,7 +689,7 @@
       "lesson_references": [
         {
           "lesson_id": "10",
-          "title": "官方课件 · 任务与框架PDF第42–44页；验证器第49页",
+          "title": "第10讲讲义 · Evaluating Agents: Terminal-Bench and Harbor（嘉宾讲座）（PDF 第 42 页 DEFINITIONS）",
           "url": "https://web.stanford.edu/class/cs329z/slides/lecture10.pdf#page=42"
         }
       ]
@@ -731,8 +731,8 @@
       "lesson_references": [
         {
           "lesson_id": "11",
-          "title": "官方课件 · 轨迹与环境PDF第13–15页；harness过拟合第59/69页",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture11.pdf#page=13"
+          "title": "第11讲讲义 · What Data Do Agents Need?（PDF 第 3 页 Roadmap）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture11.pdf#page=3"
         }
       ]
     },
@@ -773,8 +773,8 @@
       "lesson_references": [
         {
           "lesson_id": "12",
-          "title": "官方课件 · 任务选择PDF第14页；多样性第58–64页",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture12.pdf#page=14"
+          "title": "第12讲讲义 · Data Selection & Quality（PDF 第 4 页 Roadmap）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture12.pdf#page=4"
         }
       ]
     },
@@ -828,8 +828,8 @@
       "lesson_references": [
         {
           "lesson_id": "13",
-          "title": "官方第13讲课件 · 任务定义、验证与评测协议（PDF第30–37页）",
-          "url": "https://web.stanford.edu/class/cs329z/slides/lecture13.pdf#page=30"
+          "title": "第13讲讲义 · Evaluation Fundamentals & Benchmark Design（PDF 第 2 页 Roadmap）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture13.pdf#page=2"
         }
       ]
     },
