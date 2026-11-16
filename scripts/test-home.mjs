@@ -42,20 +42,22 @@ function session(seed={},activity={},signedIn=false,withSync=true){
   };
 }
 const s=session(),d=s.document;
-equal(d.querySelectorAll('.course-card').length,9,'all eight original courses plus Spanish remain in DOM');
+equal(d.querySelectorAll('.course-card').length,10,'original courses plus Spanish and English remain in the DOM');
 equal(s.visible('.course-card').length,6,'six course cards shown by default');
 check(!d.querySelector('#show-all-courses').hidden,'show all control available');
-check(d.querySelector('#show-all-courses').textContent.includes('9'),'show all uses the actual course count');
-s.click('#show-all-courses');equal(s.visible('.course-card').length,9,'show all expands');
+check(d.querySelector('#show-all-courses').textContent.includes('10'),'show all uses the actual course count');
+s.click('#show-all-courses');equal(s.visible('.course-card').length,10,'show all expands');
 s.click('#show-all-courses');equal(s.visible('.course-card').length,6,'show all collapses');
 s.click('[data-filter="ai"]');equal(s.visible('.course-card').length,5,'AI filter shows five courses');equal(d.querySelector('[data-filter="ai"]').getAttribute('aria-pressed'),'true','selected filter announced');
 s.click('[data-filter="systems"]');equal(s.visible('.course-card').length,3,'systems filter shows three courses');
-s.click('[data-filter="language"]');equal(s.visible('.course-card').length,1,'language filter isolates the new course');equal(s.visible('.course-card')[0].dataset.course,'spanish-grammar','Spanish is in language category');
+s.click('[data-filter="language"]');equal(s.visible('.course-card').length,2,'language filter shows Spanish and English');
+equal(s.visible('.course-card').map(el=>el.dataset.course).sort().join(),'english-c1,spanish-grammar','language category contains both language courses');
 s.click('[data-filter="all"]');
 s.click('#search-toggle');equal(d.querySelector('#search-toggle').getAttribute('aria-expanded'),'true','search opens accessibly');check(!d.querySelector('#search-panel').hidden,'search panel visible');
 s.input('#global-search','RAG');check(s.visible('.article-row').some(el=>el.textContent.includes('RAG')),'search matches articles');
 s.input('#global-search','CS229');equal(s.visible('.course-card').length,1,'search matches course code');
 s.input('#global-search','gustar');equal(s.visible('.course-card').length,1,'grammar keyword finds the Spanish course');equal(s.visible('.course-card')[0].dataset.course,'spanish-grammar','grammar search selects the right course');
+s.input('#global-search','C1 Advanced');equal(s.visible('.course-card').length,1,'C1 Advanced finds the English course');equal(s.visible('.course-card')[0].dataset.course,'english-c1','English course search selects the right card');
 s.input('#global-search','gradient');check(s.visible('.lab-card').length>0,'search matches experiment');
 s.input('#global-search','__nothing_matches_767__');equal(s.visible('.course-card').length,0,'no unmatched course cards shown');equal(s.visible('.article-row').length,0,'no unmatched articles shown');equal(s.visible('.lab-card').length,0,'no unmatched labs shown');check(!d.querySelector('#global-empty').hidden,'global no-results feedback');
 s.click('#search-clear');check(d.querySelector('#global-empty').hidden,'clear dismisses no-results message');equal(s.visible('.course-card').length,6,'clear restores compact course list');
@@ -84,6 +86,7 @@ for(const anchor of d.querySelectorAll('a[href]')){
 }
 const scriptTag=d.querySelector('script[src="sync.js"]');for(const slug of ['cs229','cs230','cme295','cs336','cs329z','micro','emp','ei'])check(scriptTag.getAttribute('data-cursos').includes(`${slug}:${slug}-web-v1`),`sync/backup covers ${slug}`);
 check(!scriptTag.getAttribute('data-cursos').includes('spanish-grammar'),'Spanish records remain outside cloud sync schema');
+check(!scriptTag.getAttribute('data-cursos').includes('english-c1'),'English records remain outside cloud sync schema');
 console.log(`PASS homepage: ${assertions} assertions covering compact cards, filters, search, locale, theme, learning state, safe resume and local links.`);
 console.log('DOM only: browser layout, focus placement and external login are not verified.');
 

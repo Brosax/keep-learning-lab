@@ -74,3 +74,18 @@ python scripts/test-spanish-course.py
 学习记录使用 `spanish-grammar-course-v1`，保留首次结果、重练记录和表达草稿，并映射到首页进度与续读。首页导入/导出备份包含本课程，但不将其数据传入原有 Google/Neon 云端同步。表达任务采用自评或教师评阅，无自动口语/作文评分。
 
 课程讲解、题目与代码为原创，沿用本站 CC BY-NC-SA 4.0。调研来源列于课程 JSON 和教师用书，不含第三方课程原文或付费资料。
+
+## 英语语法 · B2→C1
+
+入口：`/zh/english-c1/`。给已经通过 B2、觉得基础还不稳、准备在大约 12–18 个月内面对 Cambridge C1 Advanced 的中文母语者。讲解是简体中文，例句和练习是英语。先是一份学习计划（每天大约 10 分钟，每周一次较长练习，以及和试卷四项的对应），然后是模块 0 的基础回顾，再是时态、情态、条件、从句、名词化、搭配、构词和关键词转换。
+
+- `content/english-c1/`：学习计划、课时数据和播放器模板。
+- `scripts/build-english-course.py`：校验并生成课程页、题库，同时更新首页课程卡片。
+
+```bash
+PYTHONUTF8=1 python3 scripts/build-english-course.py
+node scripts/test-english-course.mjs
+node scripts/test-home.mjs
+```
+
+全课 19 个模块、38 课、228 道题，每课都有选择、填空、整句改写和“先改再看参考答案”。记录存在 `english-c1-course-v1`，计入首页进度和备份，不进入账号云端同步。讲解和题目是原创的，不是官方真题。
