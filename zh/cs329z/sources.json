@@ -3,7 +3,7 @@
   "title": "AI 智能体工程",
   "offering": "2026 秋季",
   "source_url": "https://cs329z.stanford.edu/",
-  "verified_at": "2026-11-06T17:32:06.685932+00:00",
+  "verified_at": "2026-11-20T19:21:36.967809+00:00",
   "scope": "Official publicly accessible course materials discovered from course pages and official repositories; videos and restricted materials remain source links. See discovery metadata for crawl scope and failures.",
   "resources": [
     {
@@ -18,17 +18,7 @@
           "url": "https://cs329z.stanford.edu/"
         },
         {
-          "lesson_id": "15",
-          "title": "官网课表（本讲讲义尚未发布）",
-          "url": "https://cs329z.stanford.edu/"
-        },
-        {
           "lesson_id": "16",
-          "title": "官网课表（本讲讲义尚未发布）",
-          "url": "https://cs329z.stanford.edu/"
-        },
-        {
-          "lesson_id": "17",
           "title": "官网课表（本讲讲义尚未发布）",
           "url": "https://cs329z.stanford.edu/"
         },
@@ -1105,6 +1095,157 @@
           "url": "https://github.com/openclaw/openclaw"
         }
       ]
+    },
+    {
+      "title": "第 15 讲官方讲义（88 页）",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture15.pdf",
+      "type": "pdf",
+      "local": "materials/lecture15.pdf",
+      "status": "downloaded",
+      "bytes": 14070478,
+      "sha256": "545ac41688dbea919ca471c93ba3dbf89ee71f85fcfd19d0a4ad65fc073f950e",
+      "lesson_references": [
+        {
+          "lesson_id": "15",
+          "title": "第 15 讲官方讲义（88 页）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture15.pdf#page=2"
+        }
+      ],
+      "license": "原始讲义版权归作者，使用遵循 Stanford 官网及作者条款。"
+    },
+    {
+      "title": "第 17 讲官方讲义（64 页）",
+      "url": "https://web.stanford.edu/class/cs329z/slides/lecture17.pdf",
+      "type": "pdf",
+      "local": "materials/lecture17.pdf",
+      "status": "downloaded",
+      "bytes": 6196614,
+      "sha256": "ac04e7032abd2ba9b0393eb179e83154545dffaa3106bdd21667f74c1be974ad",
+      "lesson_references": [
+        {
+          "lesson_id": "17",
+          "title": "第 17 讲官方讲义（64 页）",
+          "url": "https://web.stanford.edu/class/cs329z/slides/lecture17.pdf#page=2"
+        }
+      ],
+      "license": "原始讲义版权归作者，使用遵循 Stanford 官网及作者条款。"
+    },
+    {
+      "title": "第 1 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/DGI4vucR71w",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "01",
+          "title": "第 1 讲官方课堂录像",
+          "url": "https://youtu.be/DGI4vucR71w"
+        }
+      ]
+    },
+    {
+      "title": "第 2 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/Vr1NzH8bT44",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "02",
+          "title": "第 2 讲官方课堂录像",
+          "url": "https://youtu.be/Vr1NzH8bT44"
+        }
+      ]
+    },
+    {
+      "title": "第 3 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/psLc-46GqY0",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "03",
+          "title": "第 3 讲官方课堂录像",
+          "url": "https://youtu.be/psLc-46GqY0"
+        }
+      ]
+    },
+    {
+      "title": "第 4 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/s0S38lz6O7M",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "04",
+          "title": "第 4 讲官方课堂录像",
+          "url": "https://youtu.be/s0S38lz6O7M"
+        }
+      ]
+    },
+    {
+      "title": "第 5 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/q0Q-Hy8TTps",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "05",
+          "title": "第 5 讲官方课堂录像",
+          "url": "https://youtu.be/q0Q-Hy8TTps"
+        }
+      ]
+    },
+    {
+      "title": "第 6 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/JC_pLC5EX_w",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "第 6 讲官方课堂录像",
+          "url": "https://youtu.be/JC_pLC5EX_w"
+        }
+      ]
+    },
+    {
+      "title": "第 7 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/qh5tP6PBZ6U",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "第 7 讲官方课堂录像",
+          "url": "https://youtu.be/qh5tP6PBZ6U"
+        }
+      ]
+    },
+    {
+      "title": "第 8 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/TlX_ft_PQIM",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "第 8 讲官方课堂录像",
+          "url": "https://youtu.be/TlX_ft_PQIM"
+        }
+      ]
+    },
+    {
+      "title": "第 9 讲官方课堂录像",
+      "type": "video",
+      "url": "https://youtu.be/e_m99aR7_3Q",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "09",
+          "title": "第 9 讲官方课堂录像",
+          "url": "https://youtu.be/e_m99aR7_3Q"
+        }
+      ]
     }
   ],
   "discovery": {
@@ -1278,7 +1419,7 @@
     ],
     "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
   },
-  "lesson_references_updated_at": "2026-11-06T21:16:42.147787+00:00",
+  "lesson_references_updated_at": "2026-11-20T19:21:36.967809+00:00",
   "local_files_verification": {
     "verified_at": "2026-11-06T21:16:42.147787+00:00",
     "algorithm": "SHA-256",
@@ -1288,5 +1429,37 @@
     "discovery_only_files": [],
     "newly_archived_files": [],
     "result": "All 19 published files have verified sizes and hashes; 19 historical downloads retain matching metadata. Discovery-only files are not counted as published course resources."
+  },
+  "official_schedule_snapshot": {
+    "checked_at": "2026-11-20T19:21:36.967809+00:00",
+    "url": "https://cs329z.stanford.edu/",
+    "slides": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "15",
+      "17"
+    ],
+    "videos": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09"
+    ]
   }
 }

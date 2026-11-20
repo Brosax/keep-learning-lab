@@ -1,6 +1,6 @@
-/** Independent checks for CS329Z's lecture-aligned code demos (03 BM25, 06 tool-calling loop).
+/** Independent checks for CS329Z's lecture-aligned code demos.
  * Expected values were derived separately (by hand and in a standalone Python script), not by re-running the lab code. */
-export default function verify({logged,check,eq,close,deep,mark}){
+export default function verify({logged,check,eq,close,deep,mark,outputObjects}){
  const near=(a,b,message,tolerance=1e-4)=>close(a,b,tolerance,message);
  let m;
  // 03. Lecture 3 p.41 BM25 vs HW1 Problem 3 (k1 = 1.5, b = 0.75, Lucene IDF ln(1 + (N − n + 0.5)/(n + 0.5))).
@@ -34,4 +34,15 @@ export default function verify({logged,check,eq,close,deep,mark}){
  eq(m.answer,'keyboard function keys','06 masking keeps the same answer');deep(m.contextWords,[20,55,61,59,90],'06 masking older observations shrinks the context from the third call');
  m=logged('06','budget').budget;
  eq(m.status,'max_turns','06 turn budget stops the loop');eq(m.answer,null,'06 exhausted budget is not a completed task');eq(m.turns,3,'06 three model calls under the budget');
+ // 15. Six unordered pairs per task. With two successes, exactly one pair is
+ // entirely successful, one entirely unsuccessful, and four have mixed results.
+ mark('15');
+ const [uniform,polarized]=outputObjects('15');
+ eq(uniform.k,2,'15 default budget is two attempts');
+ near(uniform.passOne,1/2,'15 uniform group single-attempt success');
+ near(polarized.passOne,1/2,'15 polarized group has the same single-attempt success');
+ near(uniform.passAtK,5/6,'15 uniform group has five successful pairs');
+ near(uniform.passPowerK,1/6,'15 uniform group has only one entirely successful pair');
+ near(polarized.passAtK,1/2,'15 polarized group succeeds only on one task');
+ near(polarized.passPowerK,1/2,'15 polarized group solves that task every time');
 }
