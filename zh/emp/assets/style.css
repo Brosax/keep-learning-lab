@@ -153,7 +153,7 @@ b.t { font-weight: 700; color: var(--ink); }
 
 .eyebrow { font: 600 12px/1.4 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
 .chapter-head { padding-block: 3.2rem 1.4rem; display: flex; flex-direction: column; gap: .6rem; }
-.chapter-head h1 { font-size: clamp(2.4rem, 7vw, 3.6rem); letter-spacing: -.01em; line-height: 1.05; }
+.chapter-head h1 { overflow-wrap: anywhere; font-size: clamp(2rem, 7vw, 3.6rem); letter-spacing: -.01em; line-height: 1.05; }
 .chapter-head .zh { font: 600 1.2rem/1.5 var(--f-zh-display); color: var(--muted); }
 .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); margin-top: .4rem; }
 .meta b { color: var(--ink); font-weight: 600; }

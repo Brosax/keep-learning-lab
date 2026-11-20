@@ -553,21 +553,33 @@
       tools.appendChild(chapBtnEl);
     }
 
-    /* 3. 语言切换（针对已具备 en/<slug>/ 的专题，直接切到同名章节；其余跳回英文门户） */
+    /* 3. 切到同一章的其他语言版本。尚未翻译的课程保留英文门户入口。 */
     if (rt && !tools.querySelector(".os-lang-switch")) {
       var hasEn = EN_READY.indexOf(rt.slug) >= 0;
-      var langBox = document.createElement("div");
+      var langBox = document.createElement("nav");
       langBox.className = "os-lang-switch";
-      var zhHref = en ? ("../../zh/" + rt.slug + "/" + rt.file) : rt.file;
-      var enHref = hasEn
-        ? (en ? rt.file : ("../../en/" + rt.slug + "/" + rt.file))
-        : (HOME + "?lang=en");
-      var enTitle = hasEn
-        ? "Switch this chapter to English"
-        : "KEEP LEARNING LAB // English Index (EMP translated, MICRO/EI in progress)";
-      langBox.innerHTML =
-        '<a class="' + (!en ? "on" : "") + '" href="' + esc(zhHref) + '" title="中文版本">中</a>' +
-        '<a class="' + (en ? "on" : "") + '" href="' + esc(enHref) + '" title="' + esc(enTitle) + '">EN</a>';
+      langBox.setAttribute("aria-label", { zh: "课程语言", en: "Course language", es: "Idioma del curso" }[rt.lang]);
+      var languages = [
+        { code: "zh", label: "中", name: "中文" },
+        { code: "en", label: "EN", name: hasEn ? "English" : "English course index" }
+      ];
+      if (rt.slug === "emp") languages.push({ code: "es", label: "ES", name: "Español" });
+      languages.forEach(function (language) {
+        var link = document.createElement("a");
+        link.href = language.code === "en" && !hasEn
+          ? HOME + "?lang=en"
+          : "../../" + language.code + "/" + rt.slug + "/" + rt.file;
+        link.hreflang = language.code;
+        link.lang = language.code;
+        link.title = language.name;
+        link.setAttribute("aria-label", language.name);
+        link.textContent = language.label;
+        if (language.code === rt.lang) {
+          link.className = "on";
+          link.setAttribute("aria-current", "page");
+        }
+        langBox.appendChild(link);
+      });
       tools.appendChild(langBox);
     }
 

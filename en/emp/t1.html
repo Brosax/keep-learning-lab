@@ -228,11 +228,11 @@ ol.steps-list li { margin: .25rem 0; }
 </ul>
 <p>Because ARM instructions are 4-byte aligned (addresses end in 00) and Thumb instructions are 2-byte aligned (addresses end in 0), bit 0 of a valid instruction address is always 0. The hardware strips bit 0 before loading into the PC, using bit 0 purely as the execution state selector.</p>
 <figure class="stage" data-scene="t1-interwork">
-<div class="stage-canvas">
+<div class="stage-canvas" tabindex="0" aria-label="ARM and Thumb instruction switching">
 <svg viewbox="0 0 800 400">
 <defs>
-<marker id="t1-ah-y" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path class="ah" d="M0 0 L6 3 L0 6 z" fill="var(--yellow)"></path></marker>
-<marker id="t1-ah-g" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path class="ah" d="M0 0 L6 3 L0 6 z" fill="var(--green)"></path></marker>
+<marker id="t1-interwork-y" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path class="ah" d="M0 0 L6 3 L0 6 z" fill="var(--yellow)"></path></marker>
+<marker id="t1-interwork-g" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path class="ah" d="M0 0 L6 3 L0 6 z" fill="var(--green)"></path></marker>
 </defs>
 <text class="tm sm b" x="44" y="40">main() · Thumb · 16-bit</text>
 <rect class="ln thin b" height="86" rx="6" width="440" x="34" y="50"></rect>
@@ -273,9 +273,9 @@ ol.steps-list li { margin: .25rem 0; }
 <g data-out="4" data-step="3"><text class="tz sm y" x="520" y="276">Standard branch b, state unchanged</text><text class="tz sm y" x="520" y="298">Enters foo's ARM code</text></g>
 <g data-out="5" data-step="4"><text class="tz sm y" x="520" y="276">bx lr: LR = 0x81D1, bit 0 = 1</text><text class="tz sm y" x="520" y="298">→ returns to Thumb, PC = 0x81D0</text></g>
 <g data-step="5"><text class="tz sm y" x="520" y="276">main continues execution,</text><text class="tz sm y" x="520" y="298">foo's ARM code requires zero changes</text></g>
-<path class="ln y draw" d="M474 100 C 500 130, 500 180, 474 204" data-out="2" data-step="1" marker-end="url(#t1-ah-y)"></path>
-<path class="ln y draw" d="M474 256 C 500 280, 500 310, 474 334" data-out="4" data-step="3" marker-end="url(#t1-ah-y)"></path>
-<path class="ln g draw" d="M474 360 C 512 320, 512 160, 474 126" data-out="5" data-step="4" marker-end="url(#t1-ah-g)"></path>
+<path class="ln y draw" d="M474 100 C 500 130, 500 180, 474 204" data-out="2" data-step="1" marker-end="url(#t1-interwork-y)"></path>
+<path class="ln y draw" d="M474 256 C 500 280, 500 310, 474 334" data-out="4" data-step="3" marker-end="url(#t1-interwork-y)"></path>
+<path class="ln g draw" d="M474 360 C 512 320, 512 160, 474 126" data-out="5" data-step="4" marker-end="url(#t1-interwork-g)"></path>
 </svg>
 </div>
 <ol class="captions">
@@ -975,6 +975,7 @@ ol.steps-list li { margin: .25rem 0; }
 <script>window.SeeiSync && SeeiSync.beforeApp();</script>
 <script src="assets/app.js"></script>
 <script src="assets/scene.js"></script>
+<script src="../../assets/engineering-answers.js"></script>
 <script src="assets/practice.js"></script>
 <script>
 

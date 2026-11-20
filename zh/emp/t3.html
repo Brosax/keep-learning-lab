@@ -597,7 +597,7 @@
 <pre class="code"><code><span class="ln-row"><span class="kw">struct</span> sigevent {</span><span class="ln-row">  <span class="kw">int</span>          sigev_notify;   <span class="cm">// 通知方式</span></span><span class="ln-row">  <span class="kw">int</span>          sigev_signo;    <span class="cm">// 发哪个信号</span></span><span class="ln-row">  <span class="kw">union</span> sigval sigev_value;    <span class="cm">// 带给接收方的值</span></span><span class="ln-row">  <span class="kw">void</span> (*sigev_notify_function)(<span class="kw">union</span> sigval);</span><span class="ln-row">  pthread_attr_t *sigev_notify_attributes;</span><span class="ln-row">};</span></code></pre>
 <ul>
 <li><b>SIGEV_SIGNAL</b>：发 sigev_signo 指定的信号，si_value = sigev_value，si_code = SI_TIMER。</li>
-<li><b>SIGEV_THREAD</b>：新开一个线程执行 sigev_notify_function(sigev_value)。那是普通线程，不受 async-signal-safe 限制。</li>
+<li><b>SIGEV_THREAD</b>：新开一个线程执行 <code>sigev_notify_function(sigev_value)</code>。那是普通线程，不受 async-signal-safe 限制。</li>
 <li><b>SIGEV_NONE</b>：不通知，只能自己用 timer_gettime 去查。</li>
 <li><code>evp = NULL</code>：等于 SIGEV_SIGNAL + SIGALRM，sigev_value 是定时器的 id。</li>
 </ul>
@@ -950,6 +950,7 @@
 <script>window.SeeiSync && SeeiSync.beforeApp();</script>
 <script src="assets/app.js"></script>
 <script src="assets/scene.js"></script>
+<script src="../../assets/engineering-answers.js"></script>
 <script src="assets/practice.js"></script>
 <script>
 

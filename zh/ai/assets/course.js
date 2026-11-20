@@ -29,6 +29,7 @@
         if (saved[field] && typeof saved[field] === 'object' && !Array.isArray(saved[field])) state[field] = saved[field];
       }
       state.resume = typeof saved.resume === 'string' ? saved.resume : '';
+      if (Number.isFinite(saved.resumeAt)) state.resumeAt = saved.resumeAt;
       if (typeof saved.quizRevision === 'string') state.quizRevision = saved.quizRevision;
     }
   } catch (_) { storageAvailable = false; }
@@ -48,14 +49,30 @@
   const totalObjectives = lessons.reduce((sum, lesson) => sum + objectives(lesson).length, 0);
   const currentCount = () => lessons.reduce((sum, lesson) => sum + lessonCount(lesson), 0);
   const currentPercent = () => totalObjectives ? Math.round(currentCount() / totalObjectives * 100) : 0;
-  const resources = [];
-  const seenResources = new Set();
-  [...(course.resources || []), ...lessons.flatMap(lesson => (lesson.resources || []).map(r => ({...r, lessonId: lesson.id})))].forEach(resource => {
+  const resourceIndex = new Map();
+  function indexResource(resource, lesson) {
     const id = course.experimentsMode === 'lesson'
       ? resource.local || (resource.url && resource.url.split('#')[0]) || resource.title
       : resource.url || resource.local || resource.title;
-    if (!seenResources.has(id)) { seenResources.add(id); resources.push(resource); }
-  });
+    if (!resourceIndex.has(id)) {
+      resourceIndex.set(id, {...resource, types: new Set(), uses: new Map(), terms: []});
+    }
+    const entry = resourceIndex.get(id);
+    if (resource.type) entry.types.add(resource.type);
+    entry.terms.push(resource.title, resource.note, resource.url, resource.type, resourceLabel(resource.type));
+    if (!lesson) return;
+    if (!entry.uses.has(lesson.id)) {
+      entry.uses.set(lesson.id, {lesson, readings: []});
+      entry.terms.push(lesson.title, lesson.originalTitle);
+    }
+    const readings = entry.uses.get(lesson.id).readings;
+    if (!readings.some(item => item.title === resource.title && item.url === resource.url)) readings.push(resource);
+  }
+  for (const resource of course.resources || []) indexResource(resource);
+  for (const lesson of lessons) {
+    for (const resource of lesson.resources || []) indexResource(resource, lesson);
+  }
+  const resources = [...resourceIndex.values()];
   const modules = (course.modules || []).map(module => ({...module, lessons: lessons.filter(lesson => lesson.module === module.id)}));
   const extra = lessons.filter(lesson => !modules.some(module => module.id === lesson.module));
   if (extra.length) modules.push({id: 'more', title: '课程内容', description: '', lessons: extra});
@@ -85,6 +102,10 @@
     if (courseDirectory.some(item => item.id === event.target.value)) location.href = `../${event.target.value}/`;
   });
   const main = root.querySelector('main');
+  root.querySelector('.skip-link').addEventListener('click', event => {
+    event.preventDefault();
+    main.focus();
+  });
   const menuButton = root.querySelector('.menu-toggle');
   const sidebarElement = root.querySelector('.course-sidebar');
   const compactLayout = window.matchMedia('(max-width: 760px)');
@@ -120,10 +141,16 @@
   function lessonCard(lesson) {
     return `<a class="lesson-card" href="#lesson-${esc(lesson.id)}"><span class="lesson-index">${esc(lesson.id)}</span><div class="lesson-copy"><h3>${esc(lesson.title)}</h3><p>${rich(lesson.summary)}</p><div class="lesson-tags"><span>${esc(lesson.originalTitle || course.code)}</span><span>${objectives(lesson).length} 个目标</span>${(lesson.lab || lesson.visual) ? '<span>交互实验</span>' : ''}</div></div><span class="status-chip">${done(lesson) ? '已掌握 ✓' : lessonCount(lesson) ? '学习中' : '开始学习'}</span><span class="lesson-arrow" aria-hidden="true">↗</span></a>`;
   }
+  function lectureNumber(query) {
+    const match = /^(?:第\s*(\d+)\s*讲|(\d+)\s*讲|(?:lecture|l)\s*0*(\d+)|(\d{1,2}))$/i.exec(query);
+    return match ? Number(match.slice(1).find(Boolean)) : null;
+  }
   function renderModuleList() {
     const query = lessonSearch.trim().toLocaleLowerCase();
+    const number = lectureNumber(query);
     const html = modules.map((module, index) => {
-      const matched = module.lessons.filter(lesson => !query || [module.title, lesson.id, lesson.title, lesson.originalTitle, lesson.summary, ...objectives(lesson)].join(' ').toLocaleLowerCase().includes(query));
+      const matched = module.lessons.filter(lesson => number !== null ? Number(lesson.id) === number :
+        [module.title, lesson.id, lesson.title, lesson.originalTitle, lesson.summary, ...objectives(lesson)].join(' ').toLocaleLowerCase().includes(query));
       if (!matched.length) return '';
       return `<section class="module"><div class="module-header"><span class="module-number">${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(module.title)}</h3><p>${esc(module.description || '')}</p></div><span>${matched.length} 讲</span></div><div class="lesson-list">${matched.map(lessonCard).join('')}</div></section>`;
     }).join('');
@@ -141,17 +168,28 @@
   }
 
   function resourceLabel(type) {
-    return ({pdf: 'PDF 讲义', slides: '课件', lecture: '讲义', video: '视频', code: '代码', reading: '阅读', paper: '论文', assignment: '作业', notebook: 'Notebook', website: '网站', notes: '笔记', link: '链接'})[String(type).toLowerCase()] || type || '资料';
+    return ({pdf: 'PDF 讲义', slides: '课件', lecture: '讲义', video: '视频', code: '代码', reading: '阅读', paper: '论文', assignment: '作业', notebook: 'Notebook', website: '网站', notes: '笔记', syllabus: '教学大纲', exam: '考试', license: '许可说明', archive: '归档', link: '链接'})[String(type).toLowerCase()] || type || '资料';
   }
-  function resourceCard(resource, compact = false) {
+  function resourceLessons(resource, number) {
+    const uses = [...resource.uses.values()].filter(({lesson}) => number === null || Number(lesson.id) === number);
+    if (!uses.length) return '';
+    return `<details class="resource-lessons"${number !== null ? ' open' : ''}><summary>相关讲次（${uses.length}）</summary><ul>${uses.map(({lesson, readings}) => {
+      const sections = readings.filter(item => item.url && (item.url.includes('#') || item.title !== resource.title));
+      return `<li><a href="#lesson-${esc(lesson.id)}">第 ${esc(lesson.id)} 讲 · ${esc(lesson.title)}</a>${sections.map(item => link(item.url, esc(item.title), 'reading-link')).join('')}</li>`;
+    }).join('')}</ul></details>`;
+  }
+  function resourceCard(resource, compact = false, number = null) {
     const local = resource.local;
     if (compact) return `<div class="resource-link"><span class="resource-type">${esc(resourceLabel(resource.type))}</span>${link(resource.url || local, esc(resource.title))}${local ? `<a class="resource-download" href="${esc(safeUrl(local))}" download>下载 ↓</a>` : ''}</div>`;
-    return `<article class="resource-card"><div class="resource-card-head"><span class="resource-type">${esc(resourceLabel(resource.type))}</span><span>${local ? '已归档 ↓' : resource.status === 'unpublished' ? '尚未公开' : resource.status === 'restricted' ? '需原站授权' : '来源链接 ↗'}</span></div><h3>${esc(resource.title)}</h3>${resource.note ? `<p class="muted">${esc(resource.note)}</p>` : ''}${resource.lessonId ? `<p class="muted">对应第 ${esc(resource.lessonId)} 讲</p>` : ''}<div class="resource-actions">${link(resource.url || local, '查看来源 ↗')}${local ? `<a href="${esc(safeUrl(local))}" download>下载文件 ↓</a>` : ''}</div></article>`;
+    const labels = [...resource.types].map(type => esc(resourceLabel(type))).join(' · ');
+    return `<article class="resource-card"><div class="resource-card-head"><span class="resource-type">${labels || '资料'}</span><span>${local ? '已归档 ↓' : resource.status === 'unpublished' ? '尚未公开' : resource.status === 'restricted' ? '需原站授权' : '来源链接 ↗'}</span></div><h3>${esc(resource.title)}</h3>${resource.note ? `<p class="muted">${esc(resource.note)}</p>` : ''}${resourceLessons(resource, number)}<div class="resource-actions">${link(resource.url || local, '查看来源 ↗')}${local ? `<a href="${esc(safeUrl(local))}" download>下载文件 ↓</a>` : ''}</div></article>`;
   }
   function renderResourceList() {
     const query = resourceSearch.trim().toLocaleLowerCase();
-    const matched = resources.filter(resource => (resourceType === 'all' || resource.type === resourceType) && (!query || [resource.title, resource.type, resource.url, resource.lessonId].join(' ').toLocaleLowerCase().includes(query)));
-    main.querySelector('.resource-grid').innerHTML = matched.map(resource => resourceCard(resource)).join('') || '<p class="empty-state" role="status">没有匹配的资料。试试其他关键词或类型。</p>';
+    const number = lectureNumber(query);
+    const matched = resources.filter(resource => (resourceType === 'all' || resource.types.has(resourceType)) &&
+      (number !== null ? [...resource.uses.keys()].some(id => Number(id) === number) : resource.terms.join(' ').toLocaleLowerCase().includes(query)));
+    main.querySelector('.resource-grid').innerHTML = matched.map(resource => resourceCard(resource, false, number)).join('') || '<p class="empty-state" role="status">没有匹配的资料。试试其他关键词或类型。</p>';
     main.querySelector('.resource-count').textContent = `${matched.length} / ${resources.length} 份资料`;
     main.querySelectorAll('[data-resource-filter]').forEach(button => {
       const selected = button.dataset.resourceFilter === resourceType;
@@ -159,8 +197,8 @@
     });
   }
   function resourcePage() {
-    const types = [...new Set(resources.map(resource => resource.type).filter(Boolean))];
-    main.innerHTML = `<header class="lesson-header"><span class="eyebrow">${esc(course.code)} / SOURCE LIBRARY</span><h1 class="lesson-title">原始资料库</h1><p class="lesson-summary">按类型查找课件、代码与延伸阅读。已归档文件可直接下载，其余入口跳转原始来源。</p><p><a href="sources.json" download>下载完整来源索引 JSON ↓</a> · <a href="../ai/">五门课学习路径 ↗</a></p><p class="muted">课程材料与许可归原作者；受限或尚未公开的材料不会作为可下载文件提供。</p></header><div class="resource-toolbar"><div class="search-wrap"><label class="sr-only" for="resource-search">搜索资料名称</label><input class="course-search" id="resource-search" type="search" placeholder="搜索资料名称、讲次或关键词…" value="${esc(resourceSearch)}"><span aria-hidden="true">⌕</span></div><div class="resource-filters" aria-label="按资料类型筛选"><button type="button" data-resource-filter="all">全部</button>${types.map(type => `<button type="button" data-resource-filter="${esc(type)}">${esc(resourceLabel(type))}</button>`).join('')}</div><p class="resource-count" role="status"></p></div><div class="resource-grid"></div>${footer()}`;
+    const types = [...new Set(resources.flatMap(resource => [...resource.types]))];
+    main.innerHTML = `<header class="lesson-header"><span class="eyebrow">${esc(course.code)} / SOURCE LIBRARY</span><h1 class="lesson-title">原始资料库</h1><p class="lesson-summary">按类型查找课件、代码与延伸阅读。已归档文件可直接下载，其余入口跳转原始来源。</p><p><a href="sources.json" download>下载完整来源索引 JSON ↓</a> · <a href="../ai/">五门课学习路径 ↗</a></p><p class="muted">课程材料与许可归原作者；受限或尚未公开的材料不会作为可下载文件提供。</p></header><div class="resource-toolbar"><div class="search-wrap"><label class="sr-only" for="resource-search">搜索资料、讲次或关键词</label><input class="course-search" id="resource-search" type="search" placeholder="搜索资料、讲次（如第 2 讲）或关键词…" value="${esc(resourceSearch)}"><span aria-hidden="true">⌕</span></div><div class="resource-filters" aria-label="按资料类型筛选"><button type="button" data-resource-filter="all">全部</button>${types.map(type => `<button type="button" data-resource-filter="${esc(type)}">${esc(resourceLabel(type))}</button>`).join('')}</div><p class="resource-count" role="status"></p></div><div class="resource-grid"></div>${footer()}`;
     renderResourceList();
     main.querySelector('#resource-search').addEventListener('input', event => { resourceSearch = event.target.value; renderResourceList(); });
     main.querySelectorAll('[data-resource-filter]').forEach(button => button.addEventListener('click', () => { resourceType = button.dataset.resourceFilter; renderResourceList(); }));
@@ -196,7 +234,7 @@
   }
   function quizMarkup(lesson) {
     if (!lesson.quiz?.length) return '';
-    return `<section class="quiz-panel"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>随堂自测</h2><p class="muted">${quizUpdated ? '题目已更新，请重新自测。' : ''}选择答案查看解析。可以重新作答，检验自己的理解。</p>${lesson.quiz.map((question, qi) => `<div class="quiz-question" data-question="${qi}"><h3><span>${String(qi + 1).padStart(2, '0')}.</span> ${rich(question.question)}</h3><div class="quiz-options" role="group" aria-label="第 ${qi + 1} 题选项">${question.options.map((option, oi) => `<button class="quiz-option" type="button" data-question="${qi}" data-answer="${oi}" aria-pressed="false"><span>${String.fromCharCode(65 + oi)}</span>${rich(option)}</button>`).join('')}</div><div class="quiz-feedback" aria-live="polite"></div></div>`).join('')}</section>`;
+    return `<section class="quiz-panel"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>随堂自测</h2><p class="muted">${quizUpdated ? '题目已更新，请重新自测。' : ''}选择答案查看解析。可以重新作答，检验自己的理解。</p>${lesson.quiz.map((question, qi) => `<div class="quiz-question" data-question="${qi}"><h3><span>${String(qi + 1).padStart(2, '0')}.</span> ${rich(question.question)}</h3><div class="quiz-options" role="group" aria-label="第 ${qi + 1} 题选项">${question.options.map((option, oi) => `<button class="quiz-option" type="button" data-question="${qi}" data-answer="${oi}" aria-pressed="false"><span>${String.fromCharCode(65 + oi)}</span><span class="quiz-option-copy">${rich(option)}</span></button>`).join('')}</div><div class="quiz-feedback" aria-live="polite"></div></div>`).join('')}</section>`;
   }
   function updateQuiz(lesson, questionIndex, answerIndex) {
     const question = lesson.quiz[questionIndex];
@@ -216,7 +254,9 @@
     feedback.innerHTML = `<strong>${isCorrect ? '回答正确 ✓' : '再想一想 · 正确答案是 ' + String.fromCharCode(65 + Number(question.answer))}</strong><p>${rich(question.explanation || '')}</p>`;
   }
   function lessonPage(lesson) {
-    state.resume = lesson.id; save();
+    state.resume = lesson.id;
+    state.resumeAt = Date.now();
+    save();
     const index = lessons.indexOf(lesson);
     const previous = lessons[index - 1]; const next = lessons[index + 1];
     const module = modules.find(item => item.id === lesson.module);
@@ -270,7 +310,8 @@
   }
   function render(initial = false) {
     const hash = location.hash.slice(1);
-    route = hash || 'overview';
+    const experiment = /^(lesson-[^/]+)\/(visual|code)$/.exec(hash);
+    route = experiment ? experiment[1] : hash || 'overview';
     activeLesson = route.startsWith('lesson-') ? lessons.find(lesson => lesson.id === route.slice(7)) : null;
     if (activeLesson) lessonPage(activeLesson);
     else if (route === 'resources') resourcePage();
@@ -283,7 +324,26 @@
     });
     document.title = `${activeLesson ? activeLesson.title : route === 'resources' ? '原始资料库' : course.title} · ${course.code} · Keep Learning Lab`;
     closeMenu();
-    if (!initial) { window.scrollTo({top: 0, behavior: 'instant'}); main.focus({preventScroll: true}); }
+    if (experiment && activeLesson) {
+      const focusExperiment = () => {
+        if (location.hash.slice(1) !== hash) return;
+        const panel = main.querySelector(experiment[2] === 'visual' ? '.geometry-lab' : '.code-playground');
+        if (panel) {
+          panel.id = hash;
+          panel.tabIndex = -1;
+          panel.focus({preventScroll: true});
+          panel.scrollIntoView?.({block: 'start', behavior: 'instant'});
+        } else {
+          main.focus({preventScroll: true});
+          window.scrollTo({top: 0, behavior: 'instant'});
+        }
+      };
+      // On a direct visit, the experiment scripts mount after the reader script.
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', focusExperiment, {once: true});
+      else focusExperiment();
+    } else if (!initial) {
+      window.scrollTo({top: 0, behavior: 'instant'}); main.focus({preventScroll: true});
+    }
   }
   window.addEventListener('hashchange', () => render());
   render(true);

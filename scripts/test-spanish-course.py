@@ -8,6 +8,7 @@ import json
 import os
 import tempfile
 import threading
+import zipfile
 from functools import partial
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
@@ -52,6 +53,7 @@ try:
         stored = page.evaluate("JSON.parse(localStorage.getItem('spanish-grammar-course-v1'))")
         assert stored['obj']['m6-l2.m6-l2-q4'] is True
         assert stored['resume'] == 'm6-l2'
+        assert 0 <= page.evaluate('Date.now()') - stored['resumeAt'] < 60000
         page.reload()
         expect(page.locator('#solved-metric')).to_have_text(f'1 / {total}')
         # Accent-only misses get a dedicated hint instead of the generic one.
@@ -90,8 +92,63 @@ try:
                 assert response.body().startswith(b'PK'), file
         embedded = json.loads(page.locator('#course-data').text_content())
         assert embedded['title'] == source['title'] and sum(len(l['questions']) for m in embedded['modules'] for l in m['lessons']) == total
+
+        mc = embedded['modules'][0]['lessons'][0]['questions'][0]
+        question = page.locator('#' + mc['id'])
+        page.evaluate('Math.random = () => 0')
+        question.locator('[data-action=retry]').click()
+        assert question.locator('label.option span').all_text_contents() == mc['options'][1:] + mc['options'][:1]
+        wrong = next(option for option in mc['options'] if option != mc['answer'])
+        question.get_by_role('radio', name=wrong, exact=True).check()
+        question.locator('[data-action=check]').click()
+        expect(question.locator('.feedback')).to_contain_text(mc['hint'])
+        page.evaluate('Math.random = () => 0.999')
+        question.locator('[data-action=retry]').click()
+        assert question.locator('label.option span').all_text_contents() == mc['options']
+        question.get_by_role('radio', name=mc['answer'], exact=True).check()
+        question.locator('[data-action=check]').click()
+        expect(question.locator('.feedback')).to_contain_text('回答正确')
+        assert page.evaluate("JSON.parse(localStorage.getItem('spanish-grammar-course-v1')).questions['m1-l1-q1'].firstCorrect") is False
+
+        page.get_by_role('button', name='下一课 →').click()
+        assert page.url.endswith('#lesson-m1-l2')
+        page.locator('#review-button').click()
+        assert page.url.endswith('#review')
+        page.reload()
+        expect(page.locator('#review-heading')).to_be_visible()
+        page.go_back()
+        expect(page.locator('.lesson-link.active')).to_have_attribute('data-lesson-id', 'm1-l2')
+        page.go_back()
+        expect(page.locator('.lesson-link.active')).to_have_attribute('data-lesson-id', 'm1-l1')
+        page.go_forward()
+        expect(page.locator('.lesson-link.active')).to_have_attribute('data-lesson-id', 'm1-l2')
+        page.once('dialog', lambda dialog: dialog.accept())
+        page.locator('#reset-button').click()
+        assert page.url.endswith('#lesson-m1-l1')
+        assert 'resumeAt' not in page.evaluate("JSON.parse(localStorage.getItem('spanish-grammar-course-v1'))")
+        page.reload()
+        expect(page.locator('.lesson-link.active')).to_have_attribute('data-lesson-id', 'm1-l1')
+        expect(page.locator('#solved-metric')).to_have_text(f'0 / {total}')
+
+        page.set_viewport_size({'width': 320, 'height': 812})
+        for lesson_id in ['m10-l2', 'm15-l1', 'm18-l1', 'm26-l1']:
+            page.goto(origin + '/zh/spanish-grammar/#lesson-' + lesson_id)
+            assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), lesson_id
+
+        offline = browser.new_context(offline=True)
+        offline_page = offline.new_page()
+        with zipfile.ZipFile(ROOT / 'zh/spanish-grammar/materials/course-package.zip') as package:
+            offline_page.set_content(package.read('互动课程.html').decode('utf-8'))
+            links = offline_page.locator('.downloads a').evaluate_all('(links) => links.map(a => a.getAttribute("href"))')
+            assert set(links) == {'教师用书与完整课程.docx', 'course.json', '互动题库.csv'}
+            assert all(href in package.namelist() for href in links)
+            offline_q = offline_page.locator('#' + mc['id'])
+            offline_q.get_by_role('radio', name=mc['answer'], exact=True).check()
+            offline_q.locator('[data-action=check]').click()
+            expect(offline_q.locator('.feedback')).to_contain_text('回答正确')
+        offline.close()
         assert not errors, errors
         browser.close()
-        print('PASS Spanish integration: deep links, progress mirror, homepage category, resume, downloads, mobile layout, source consistency.')
+        print('PASS Spanish integration: lesson history, review reload, reset, shuffled retries, progress, mobile layout and offline materials.')
 finally:
     server.shutdown()

@@ -14,19 +14,19 @@ const source=fs.readFileSync(path.join(root,'assets/home.js'),'utf8');
 let assertions=0;
 function check(value,label){assert.ok(value,label);assertions++;}
 function equal(actual,expected,label){assert.equal(actual,expected,label);assertions++;}
-function session(seed={},activity={},signedIn=false,withSync=true){
+function session(seed={},activity={},signedIn=false,withSync=true,hash=''){
   const {window}=parseHTML(html),{document}=window;
   const saved=new Map(Object.entries(seed));
   const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,String(v)),removeItem:k=>saved.delete(k)};
   window.matchMedia=()=>({matches:false,addEventListener(){}});window.scrollTo=()=>{};
-  const location={href:'https://example.test/',pathname:'/',hash:'',search:''};
+  const location={href:'https://example.test/',pathname:'/',hash,search:''};
   const dialog=document.querySelector('#learning-dialog');
   dialog.showModal=function(){this.open=true;this.setAttribute('open','');};
   dialog.close=function(){this.open=false;this.removeAttribute('open');this.dispatchEvent(new window.Event('close'));};
   const calls={sync:0,logout:0,google:0,imports:[],exports:[]};
   const sync=withSync?{available:true,activity:()=>activity,status:()=>({state:signedIn?'ok':'off',on:signedIn,user:signedIn?{name:'Test Learner',email:'test@example.test'}:null,text:signedIn?'已同步':'本地模式'}),sync:()=>{calls.sync++;return Promise.resolve();},logout:()=>{calls.logout++;signedIn=false;},renderGoogleButton:()=>{calls.google++;return Promise.resolve(true);},exportBackup:()=>({version:1,courses:{}}),importBackup:data=>{calls.imports.push(data);return true;}}:undefined;
   window.SeeiSync=sync;
-  const history={replaceState(_a,_b,url){location.href=String(url);}};
+  const history={replaceState(_a,_b,url){location.href=String(url);location.hash=new URL(location.href,'https://example.test').hash;}};
   window.location=location;
   class TestURL extends URL {}
   TestURL.createObjectURL=blob=>{calls.exports.push(blob);return 'blob:openseei-test';};
@@ -63,6 +63,50 @@ const originalHeading=d.querySelector('h1').textContent;s.click('#language-toggl
 s.click('#theme-toggle');equal(s.saved.get('open-seei-theme'),'dark','dark theme persisted');s.click('#theme-toggle');equal(s.saved.get('open-seei-theme'),'light','light theme persisted');
 check(d.querySelector('#resume-link').hidden,'no fake resume on empty storage');s.click('#progress-open');check(s.dialog.open,'learning panel opens');s.click('#progress-close');check(!s.dialog.open,'learning panel closes');
 const p=session({'cs336-web-v1':JSON.stringify({obj:{'L01.1':true},resume:'01'})});check(!p.document.querySelector('#resume-link').hidden,'saved course gives resume link');check(p.document.querySelector('#resume-link').getAttribute('href').includes('cs336'),'resume points at saved course');check(p.document.querySelector('#resume-link').getAttribute('href').includes('lesson-01'),'resume points at saved lesson');check(p.document.querySelector('[data-course="cs336"] .progress-label').textContent.trim().length>0,'saved progress visible on course card');p.click('#progress-open');check(p.document.querySelector('#learning-list').textContent.includes('CS336'),'learning panel includes saved course');
+// A saved engineering chapter formerly won over every newer AI or Spanish visit.
+const activity = {last:{slug:'emp',file:'t3.html',lang:'es',ts:1000},byCurso:{micro:{slug:'micro',file:'m21.html',lang:'zh',ts:900}}};
+const recent = session({'cs336-web-v1':JSON.stringify({resume:'10',resumeAt:2000}), 'spanish-grammar-course-v1':JSON.stringify({resume:'m1-l2',resumeAt:1500})},activity);
+equal(recent.document.querySelector('#resume-link').getAttribute('href'),'zh/cs336/index.html#lesson-10','most recent chapter across readers wins');
+check(recent.document.querySelector('.learning-row[href="es/emp/t3.html"]'),'engineering resume preserves the visited Spanish edition');
+check(recent.document.querySelector('.learning-row[href="zh/micro/m21.html"]'),'each engineering course resumes its own chapter');
+const latestSpanish=session({'spanish-grammar-course-v1':JSON.stringify({resume:'m2-l1',resumeAt:4000}),'cs229-web-v1':JSON.stringify({resume:'06',resumeAt:2000})},activity);
+equal(latestSpanish.document.querySelector('#resume-link').getAttribute('href'),'zh/spanish-grammar/index.html#lesson-m2-l1','new Spanish visits can be the latest');
+const linkedSync=session({}, {}, false, true, '#sync');
+check(linkedSync.dialog.open && linkedSync.document.querySelector('.sync-details').open, 'sync link from engineering lessons opens account controls');
+linkedSync.click('#progress-close');
+equal(linkedSync.window.location.hash,'','closing the deep-linked panel clears its fragment');
+linkedSync.window.location.hash='#sync';linkedSync.event(linkedSync.window,'hashchange');
+check(linkedSync.dialog.open,'subsequent links reopen the dialog');
+const search=session();
+search.input('#global-search','CS229 PCA');
+equal(search.visible('.course-card').length,1,'chapter searches also find the parent course');
+equal(search.document.querySelector('#chapter-links a').getAttribute('href'),'zh/cs229/index.html#lesson-16','combined course and topic lands on PCA');
+search.click('[data-filter="language"]');
+check(search.document.querySelector('#chapter-results').hidden,'chapter matches respect the selected category');
+search.click('[data-filter="all"]');
+search.input('#global-search','Buildroot');
+check(search.document.querySelector('#chapter-links a[href="zh/emp/t1.html"]'),'engineering chapter can be discovered by topic');
+search.click('#language-toggle');
+check(search.document.querySelector('#chapter-links a[href="en/emp/t1.html"]'),'search result follows available English edition');
+search.input('#global-search','CS336');
+equal(search.document.querySelectorAll('#chapter-links a').length,6,'long chapter search is compact');
+search.click('#more-chapters');
+equal(search.document.querySelectorAll('#chapter-links a').length,17,'all chapter matches are accessible');
+search.input('#global-search','');
+check(search.document.querySelector('#chapter-results').hidden,'clearing search restores compact home');
+const catalog=JSON.parse(d.querySelector('#catalog-data').textContent);
+for(const card of d.querySelectorAll('.lab-card')){
+ const match=card.getAttribute('href').match(/^zh\/([^/]+)\/index\.html#lesson-(\d+)\/(visual|code)$/);
+ check(match,'each featured lab addresses an actual interactive component');
+ const [,slug,id,kind]=match;
+ const course=JSON.parse(fs.readFileSync(path.join(root,'content',slug+'.json'),'utf8'));
+ const lesson=course.lessons.find(item=>item.id===id);
+ equal(lesson?.[kind==='code'?'codeDemo':'visual'],slug+'-'+id,slug+' featured chapter declares the promised component');
+}
+for(const course of catalog.published.filter(item=>item.category==='AI / 人工智能')){
+ const lessons=JSON.parse(fs.readFileSync(path.join(root,'content',course.slug+'.json'),'utf8')).lessons;
+ equal(course.drills,lessons.filter(item=>item.exercise).length,course.slug+' practice count follows authored exercises');
+}
 const signed=session({}, {}, true);signed.click('#progress-open');check(!signed.document.querySelector('#sync-now').hidden,'signed-in sync control available');signed.click('#sync-now');await Promise.resolve();equal(signed.calls.sync,1,'sync button calls actual sync API');signed.click('#sign-out');equal(signed.calls.logout,1,'sign out calls actual logout API');check(signed.document.querySelector('#sign-out').hidden,'sign out updates panel state');
 const spanishRaw={version:1,currentLesson:'m6-l1',resume:'m6-l1',questions:Object.fromEntries(['un libro','la mesa','una casa','el'].map((answer,i)=>[`m1-l1-q${i+1}`,{attempts:1,firstCorrect:true,solved:true,revealed:false,lastAnswer:answer}])),tasks:{'m1-l1':{text:'Mi libro.',checks:[true,false,false],modelViewed:false}},observed:{},obj:{'m1-l1.m1-l1-q1':true,'m1-l1.m1-l1-q2':true,'m1-l1.m1-l1-q3':true,'m1-l1.m1-l1-q4':true}};
 const spanish=session({'spanish-grammar-course-v1':JSON.stringify(spanishRaw)});

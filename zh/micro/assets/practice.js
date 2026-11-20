@@ -180,7 +180,7 @@
     make: function (rnd) {
       var voh = pick(rnd, [3.0, 3.2, 3.3, 3.5]), vd = pick(rnd, [1.8, 2.0, 2.1, 2.2]), id = pick(rnd, [2, 3, 4, 5]);
       var R = (voh - vd) / (id / 1000);
-      return { kind: "num", ans: R, tol: 0.01, q: "V<sub>OH</sub> = " + voh + " V，LED 压降 V<sub>D</sub> = " + vd + " V，想要电流 I<sub>D</sub> = " + id + " mA。限流电阻 R = ? Ω", fmt: "填 Ω 数",
+      return { kind: "num", unit: "ohm", ans: R, tol: 0.01, q: "V<sub>OH</sub> = " + voh + " V，LED 压降 V<sub>D</sub> = " + vd + " V，想要电流 I<sub>D</sub> = " + id + " mA。限流电阻 R = ? Ω", fmt: "填 Ω 数",
         steps: ["V<sub>OH</sub> = I<sub>D</sub>·R + V<sub>D</sub> → R = (V<sub>OH</sub> − V<sub>D</sub>) / I<sub>D</sub>", "= (" + voh + " − " + vd + ") / " + id + " mA = <b>" + fmt(R, 1) + " Ω</b>", "实际选一个接近的标准值，并确认 I<sub>D</sub> 不超过 I<sub>OH</sub> 上限（L14 的例子：3.5 V、2 V、5 mA → 300 Ω，选 270 Ω）。"] };
     }
   };
@@ -197,7 +197,7 @@
         return { kind: "dec", ans: M - 1, q: "n = 1、f<sub>FLLREF</sub> = 32768 Hz，想让 DCOCLKDIV = <b>" + hz(M * ref) + "</b>（" + (M * ref) + " Hz）。FLLN 应该是多少？", fmt: "十进制",
           steps: ["DCOCLKDIV = (N + 1) · f<sub>FLLREF</sub> / n", "N + 1 = " + (M * ref) + " / 32768 = " + M, "FLLN = <b>" + (M - 1) + "</b>"] };
       }
-      return { kind: "num", ans: mode === "div" ? div : dco, tol: 0.0005, q: given + "。<b>" + (mode === "div" ? "DCOCLKDIV" : "DCOCLK") + "</b> = ? Hz", fmt: "填 Hz，例如 1048576",
+      return { kind: "num", unit: "Hz", ans: mode === "div" ? div : dco, tol: 0.0005, q: given + "。<b>" + (mode === "div" ? "DCOCLKDIV" : "DCOCLK") + "</b> = ? Hz", fmt: "填 Hz，例如 1048576",
         steps: ["DCOCLK = D · (N + 1) · f<sub>FLLREF</sub> / n；DCOCLKDIV = DCOCLK / D", "DCOCLK = " + D + " · " + (N + 1) + " · 32768 / " + n + " = " + dco + " Hz", "DCOCLKDIV = " + dco + " / " + D + " = " + div + " Hz", "答案：<b>" + (mode === "div" ? div : dco) + " Hz</b>（复位默认：D = 2、N + 1 = 32、n = 1 → 2097152 / 1048576 Hz）"] };
     }
   };
@@ -208,7 +208,7 @@
     make: function (rnd) {
       var cap = pick(rnd, [125, 225, 285]), i = pick(rnd, [0.8, 1.2, 2.5, 3.1, 7.4, 15, 42, 90, 180, 350]);
       var h = cap / (i / 1000), d = h / 24;
-      return { kind: "num", ans: d, tol: 0.005, q: "纽扣电池 " + cap + " mAh，电路平均电流 <b>" + i + " µA</b>。理论上能用多少天？", fmt: "填天数，可以带小数",
+      return { kind: "num", unit: "days", ans: d, tol: 0.005, q: "纽扣电池 " + cap + " mAh，电路平均电流 <b>" + i + " µA</b>。理论上能用多少天？", fmt: "填天数，可以带小数",
         steps: ["续航 = 容量 / 平均电流", "= " + cap + " mAh / " + (i / 1000) + " mA = " + fmt(h, 1) + " h", "= " + fmt(h, 1) + " / 24 = <b>" + fmt(d, 2) + " 天</b>"] };
     }
   };
@@ -228,7 +228,7 @@
         var fl = "f<sub>timer</sub> = " + src[1] + " / (" + ID + " · " + IDEX + ") = " + fmt(f, 4) + " Hz";
         if (mode === "up") return { kind: "dec", ans: cnt - 1, q: clk + "，<b>up</b> 模式。想要周期 T = " + T + " s，TAxCCR0 = ?", fmt: "十进制",
           steps: [fl, "up 模式周期 = (CCR0 + 1) / f<sub>timer</sub>", "CCR0 = T · f − 1 = " + T + " · " + fmt(f, 4) + " − 1 = <b>" + (cnt - 1) + "</b>"] };
-        if (mode === "upT") { var c0 = cnt - 1; return { kind: "num", ans: T * 1000, tol: 0.001, q: clk + "，<b>up</b> 模式，TAxCCR0 = " + c0 + "。CCR0 中断的周期是多少 ms？", fmt: "填 ms",
+        if (mode === "upT") { var c0 = cnt - 1; return { kind: "num", unit: "ms", ans: T * 1000, tol: 0.001, q: clk + "，<b>up</b> 模式，TAxCCR0 = " + c0 + "。CCR0 中断的周期是多少 ms？", fmt: "填 ms",
           steps: [fl, "T = (CCR0 + 1) / f = " + cnt + " / " + fmt(f, 4) + " = <b>" + fmt(T * 1000, 3) + " ms</b>"] }; }
         if (mode === "cont" && cnt > 65535) continue;                        
         if (mode === "cont") return { kind: "dec", ans: cnt, q: clk + "，<b>continuous</b> 模式。想每 " + T + " s 触发一次 CCR1 中断，每次在 ISR 里给 TAxCCR1 加多少？", fmt: "十进制",
@@ -249,7 +249,7 @@
       if (mode === "sq") {
         var fc = pick(rnd, [32768, 1048576]), c0, f;
         do { c0 = int(rnd, 9, 999); f = fc / (2 * (c0 + 1)); } while (Math.abs(f - 20) < 2);   
-        return { kind: "num", ans: f, tol: 0.002, q: "f<sub>clk</sub> = " + fc + " Hz，up 模式，OUT0 用 Toggle 模式，TAxCCR0 = " + c0 + "。输出方波的频率是多少 Hz？", fmt: "填 Hz",
+        return { kind: "num", unit: "Hz", ans: f, tol: 0.002, q: "f<sub>clk</sub> = " + fc + " Hz，up 模式，OUT0 用 Toggle 模式，TAxCCR0 = " + c0 + "。输出方波的频率是多少 Hz？", fmt: "填 Hz",
           steps: ["每 (CCR0 + 1) 个时钟翻转一次，两次翻转是一个周期。", "f = f<sub>clk</sub> / (2 · (CCR0 + 1)) = " + fc + " / (2 · " + (c0 + 1) + ") = <b>" + fmt(f, 2) + " Hz</b>"] };
       }
       var c0u = int(rnd, 9, 199), cn = int(rnd, 1, c0u - 1), d, form;
@@ -262,7 +262,7 @@
         else if (m === "Toggle/Set") { d = (c0u - cn) / c0u; form = "(CCR0 − CCRn) / CCR0"; }
         else { d = (c0u - cn) / (2 * c0u); form = "(CCR0 − CCRn) / (2 · CCR0)"; }
       }
-      return { kind: "num", ans: d * 100, tol: 0.002, abs: 0.06, q: "<b>" + (mode === "up" ? "up" : "up/down") + "</b> 模式，输出模式 <b>" + m + "</b>，TAxCCR0 = " + c0u + "，TAxCCR1 = " + cn + "。OUT1 的占空比是多少 %？", fmt: "填百分数，例如 30 或 30.5",
+      return { kind: "num", unit: "percent", ans: d * 100, tol: 0.002, abs: 0.06, q: "<b>" + (mode === "up" ? "up" : "up/down") + "</b> 模式，输出模式 <b>" + m + "</b>，TAxCCR0 = " + c0u + "，TAxCCR1 = " + cn + "。OUT1 的占空比是多少 %？", fmt: "填百分数，例如 30 或 30.5",
         steps: ["周期 = " + (mode === "up" ? "CCR0 + 1 = " + (c0u + 1) : "2 · CCR0 = " + (2 * c0u)) + " 个时钟", m + " 的占空比 = " + form, "= <b>" + fmt(d * 100, 2) + " %</b>"] };
     }
   };
@@ -275,8 +275,8 @@
       var bits = 1 + db + par + sb, nch = pick(rnd, [1, 10, 64, 100]);
       var t = nch * bits / baud * 1000;
       var cfg = db + (par ? "E" : "N") + sb;
-      return { kind: "num", ans: t, tol: 0.002, q: "UART " + baud + " baud，格式 <b>" + cfg + "</b>（" + db + " 个数据位、" + (par ? "有" : "无") + "校验、" + sb + " 个停止位）。发送 " + nch + " 个字符最少要多少 ms？", fmt: "填 ms",
-        steps: ["每帧位数 = 1（起始）+ " + db + "（数据）+ " + par + "（校验）+ " + sb + "（停止）= " + bits, "一位的时间 = 1 / " + baud + " s = " + fmt(1e6 / baud, 2) + " µs", "t = " + nch + " · " + bits + " / " + baud + " s = <b>" + fmt(t, 3) + " ms</b>"] };
+      return { kind: "num", unit: "ms", ans: t, tol: 0.002, q: "UART " + baud + " baud，格式 <b>" + cfg + "</b>（" + db + " 个数据位、" + (par ? "有" : "无") + "校验、" + sb + " 个停止位）。发送 " + nch + " 个字符最少要多少 ms？", fmt: "填 ms",
+        steps: ["每帧位数 = 1（起始）+ " + db + "（数据）+ " + par + "（校验）+ " + sb + "（停止）= " + bits, "一位的时间 = 1 / " + baud + " s = " + fmt(1e6 / baud, 2) + " µs", "t = " + nch + " · " + bits + " / " + baud + " s = <b>" + fmt(t, 4) + " ms</b>"] };
     }
   };
 
@@ -298,7 +298,7 @@
           if (m === 8) continue;
           if (ask === "err") {
             var real = br / (ub + m / 8), err = (real - bd) / bd * 100;
-            return { kind: "num", ans: err, abs: 0.02, q: head + "按 M34 的方法设 UCBRx、UCBRSx 之后，实际波特率相对目标的误差是多少 %？（偏快为正）", fmt: "填百分数，可为负",
+            return { kind: "num", unit: "percent", ans: err, abs: 0.02, q: head + "按 M34 的方法设 UCBRx、UCBRSx 之后，实际波特率相对目标的误差是多少 %？（偏快为正）", fmt: "填百分数，可为负",
               steps: [nTxt, "UCBRx = int(N) = " + ub + "；UCBRSx = M = round(" + fmt(N - ub, 4) + " · 8) = " + m, "N* = UCBRx + M/8 = " + fmt(ub + m / 8, 4) + "；实际 = " + br + " / " + fmt(ub + m / 8, 4) + " = " + fmt(real, 2) + " baud", "误差 = (" + fmt(real, 2) + " − " + bd + ") / " + bd + " = <b>" + fmt(err, 3) + " %</b>"] };
           }
           return { kind: "dec", ans: ask === "br" ? ub : m, q: head + "<b>" + (ask === "br" ? "UCBRx" : "UCBRSx") + "</b> = ?", fmt: "十进制",
@@ -314,34 +314,7 @@
   };
 
   
-  function readings(s) {
-    s = String(s || "").trim().replace(/\s+/g, "");
-    if (!s) return [];
-    if (/^0x[0-9a-f]+$/i.test(s)) return [parseInt(s.slice(2), 16)];
-    if (/^[0-9a-f]+h$/i.test(s)) return [parseInt(s.slice(0, -1), 16)];
-    if (/^[0-9]+$/.test(s)) return [parseInt(s, 10), parseInt(s, 16)];
-    if (/^[0-9a-f]+$/i.test(s)) return [parseInt(s, 16)];
-    return [];
-  }
-  function num(s) {
-    var m = String(s || "").trim().replace(/,/g, ".").replace(/\s+/g, "").match(/^([-+−]?\d*\.?\d+)([kKmM]?)/);
-    if (!m) return NaN;
-    var v = parseFloat(m[1].replace("−", "-"));
-    if (m[2] === "k" || m[2] === "K") v *= 1e3; else if (m[2] === "M") v *= 1e6;
-    return v;
-  }
-  function check(item, input) {
-    if (item.kind === "num") {
-      var v = num(input);
-      if (!isFinite(v)) return false;
-      var tol = Math.max((item.tol || 0) * Math.abs(item.ans), item.abs || 0, 1e-9);
-      return Math.abs(v - item.ans) <= tol;
-    }
-    var r = readings(input);
-    
-    if (/^\s*[0-9]+\s*$/.test(String(input))) r = item.kind === "dec" ? r.slice(0, 1) : r.slice(1);
-    return r.indexOf(item.ans) >= 0;
-  }
+  var answers = window.EngineeringAnswers;
 
   function mount(box) {
     var key = box.getAttribute("data-drill");
@@ -355,20 +328,20 @@
       '<button type="button" class="btn primary" data-a="check">检查</button>' +
       '<button type="button" class="btn" data-a="show">看答案</button>' +
       '<button type="button" class="btn" data-a="new">换一题</button></div>' +
-      '<p class="fmt"></p><div class="fb" hidden></div>';
+      '<p class="fmt"></p><div class="fb" role="status" hidden></div>';
     var h = box.querySelector("h3"), tally = box.querySelector(".tally"), dq = box.querySelector(".dq");
-    var inp = box.querySelector("input"), fmt = box.querySelector(".fmt"), fb = box.querySelector(".fb");
+    var inp = box.querySelector("input"), fmtEl = box.querySelector(".fmt"), fb = box.querySelector(".fb");
     h.textContent = g.title;
     var item, tries = 0, right = 0, counted = false;
     function upd() { tally.textContent = "本次 " + right + " / " + tries + "（每题只算第一次）"; }
     function fresh() {
       item = g.make(Math.random);
-      dq.innerHTML = item.q; fmt.textContent = item.fmt || ""; inp.value = ""; fb.hidden = true; counted = false;
+      dq.innerHTML = item.q; fmtEl.textContent = item.fmt || ""; inp.value = ""; fb.hidden = true; counted = false;
     }
     function feedback(ok, shown) {
       fb.hidden = false;
       fb.className = "fb " + (ok ? "ok" : "no");
-      var ansTxt = item.kind === "hex" ? hex(item.ans, item.ans > 0xFF ? 4 : 2) : item.kind === "num" ? fmt(item.ans, 3) : String(item.ans);
+      var ansTxt = item.kind === "hex" ? hex(item.ans, item.ans > 0xFF ? 4 : 2) : item.kind === "num" ? String(+item.ans.toPrecision(6)) : String(item.ans);
       fb.innerHTML = '<span class="v">' + (shown ? "答案 · " + ansTxt : ok ? "正确 · " + ansTxt : "不对，再想想（或点“看答案”）") + "</span>" +
         (ok || shown ? "<ol><li>" + item.steps.join("</li><li>") + "</li></ol>" : "");
     }
@@ -380,7 +353,7 @@
       if (a === "show") { if (!counted) { tries++; counted = true; upd(); } feedback(false, true); return; }
       if (a === "check") {
         if (!inp.value.trim()) { inp.focus(); return; }
-        var ok = check(item, inp.value);
+        var ok = answers.check(item, inp.value);
         if (!counted) { tries++; counted = true; if (ok) right++; upd(); }
         feedback(ok, false);
       }
@@ -390,5 +363,5 @@
   }
 
   Array.prototype.slice.call(document.querySelectorAll("[data-drill]")).forEach(mount);
-  window.MICROPractice = { GEN: GEN, check: check, readings: readings, num: num, hex: hex, VT: VT };
+  window.MICROPractice = { GEN: GEN, check: answers.check, readings: answers.readings, num: answers.num, hex: hex, VT: VT };
 })();

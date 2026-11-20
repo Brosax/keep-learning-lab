@@ -50,7 +50,7 @@
         var p = pick(rnd, [10, 20, 50, 100, 200, 250, 500]), w = pick(rnd, [0.2, 0.5, 1, 1.5, 2, 3]), n = pick(rnd, [100, 200, 500, 1000, 3600]);
         var ask = pick(rnd, ["drift", "total"]);
         var drift = n * w, total = n * (p + w);
-        return { kind: "num", ans: ask === "drift" ? drift : total, abs: 0.01,
+        return { kind: "num", unit: "ms", ans: ask === "drift" ? drift : total, abs: 0.01,
           q: "Inside a loop, each iteration executes work for <b>" + w + " ms</b>, then sleeps relatively for <b>" + p + " ms</b> using <code>nanosleep</code>. After running <b>" + n + "</b> iterations, " + (ask === "drift" ? "how many ms later is it than the ideal time (" + n + " × " + p + " ms)?" : "what is the total elapsed time in ms?"),
           fmt: "ms, may include decimals",
           steps: ["Relative sleep restarts counting from the moment of wakeup without deducting execution time: each iteration takes " + p + " + " + w + " = " + fmt(p + w, 2) + " ms.",
@@ -133,7 +133,7 @@
           }
         }
         var k = int(rnd, 0, n - 1);
-        return { kind: "dec", ans: fin[k],
+        return { kind: "num", unit: "ms", ans: fin[k],
           q: n + " threads are ready simultaneously in queue order " + need.map(function (_, i) { return "T" + (i + 1); }).join(", ") + ", requiring CPU times " + need.map(function (x) { return x + " ms"; }).join(", ") + ". On a single core with time slice <b>" + q + " ms</b>, round-robin scheduling, and ignoring context-switch overhead, at which millisecond does <b>T" + (k + 1) + "</b> complete?",
           fmt: "ms, decimal",
           steps: ["Each thread takes turns using one time slice. If unfinished, it re-enters the tail of the queue; if finished early, it yields immediately.",
@@ -144,34 +144,7 @@
   };
 
   
-  function readings(s) {
-    s = String(s || "").trim().replace(/\s+/g, "");
-    if (!s) return [];
-    if (/^0x[0-9a-f]+$/i.test(s)) return [parseInt(s.slice(2), 16)];
-    if (/^[0-9a-f]+h$/i.test(s)) return [parseInt(s.slice(0, -1), 16)];
-    if (/^[0-9]+$/.test(s)) return [parseInt(s, 10), parseInt(s, 16)];
-    if (/^[0-9a-f]+$/i.test(s)) return [parseInt(s, 16)];
-    return [];
-  }
-  function num(s) {
-    var m = String(s || "").trim().replace(/,/g, ".").replace(/\s+/g, "").match(/^([-+−]?\d*\.?\d+)([kKmM]?)/);
-    if (!m) return NaN;
-    var v = parseFloat(m[1].replace("−", "-"));
-    if (m[2] === "k" || m[2] === "K") v *= 1e3; else if (m[2] === "M") v *= 1e6;
-    return v;
-  }
-  function check(item, input) {
-    if (item.kind === "num") {
-      var v = num(input);
-      if (!isFinite(v)) return false;
-      var tol = Math.max((item.tol || 0) * Math.abs(item.ans), item.abs || 0, 1e-9);
-      return Math.abs(v - item.ans) <= tol;
-    }
-    var r = readings(input);
-    
-    if (/^\s*[0-9]+\s*$/.test(String(input))) r = item.kind === "dec" ? r.slice(0, 1) : r.slice(1);
-    return r.indexOf(item.ans) >= 0;
-  }
+  var answers = window.EngineeringAnswers;
 
   function mount(box) {
     var key = box.getAttribute("data-drill");
@@ -185,7 +158,7 @@
       '<button type="button" class="btn primary" data-a="check">Check</button>' +
       '<button type="button" class="btn" data-a="show">Show answer</button>' +
       '<button type="button" class="btn" data-a="new">New problem</button></div>' +
-      '<p class="fmt"></p><div class="fb" hidden></div>';
+      '<p class="fmt"></p><div class="fb" role="status" hidden></div>';
     var h = box.querySelector("h3"), tally = box.querySelector(".tally"), dq = box.querySelector(".dq");
     var inp = box.querySelector("input"), fmtEl = box.querySelector(".fmt"), fb = box.querySelector(".fb");
     h.textContent = g.title;
@@ -210,7 +183,7 @@
       if (a === "show") { if (!counted) { tries++; counted = true; upd(); } feedback(false, true); return; }
       if (a === "check") {
         if (!inp.value.trim()) { inp.focus(); return; }
-        var ok = check(item, inp.value);
+        var ok = answers.check(item, inp.value);
         if (!counted) { tries++; counted = true; if (ok) right++; upd(); }
         feedback(ok, false);
       }
@@ -220,5 +193,5 @@
   }
 
   Array.prototype.slice.call(document.querySelectorAll("[data-drill]")).forEach(mount);
-  window.MICROPractice = { GEN: GEN, check: check, readings: readings, num: num, hex: hex };
+  window.MICROPractice = { GEN: GEN, check: answers.check, readings: answers.readings, num: answers.num, hex: hex };
 })();

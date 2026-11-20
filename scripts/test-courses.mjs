@@ -36,6 +36,27 @@ function session(course,storage=new Map(),hash='') {
 }
 function mockCourse(){return {id:'cs336',code:'CS336',title:'测试课程',subtitle:'Test course',description:'学习课程',year:'2026',sourceUrl:'https://cs336.stanford.edu/',instructors:['Test'],prerequisites:['Python'],modules:[{id:'one',title:'基础',description:'基础概念'}],lessons:['attention','scaling','retrieval','evaluation'].map((lab,i)=>({id:String(i+1).padStart(2,'0'),module:'one',title:`第${i+1}课`,originalTitle:lab,summary:'理解机制',objectives:['理解概念','完成练习'],sections:[{title:'原理',body:'中文讲解',code:'a < b'}],exercise:{title:'练习',instructions:['实验一次'],deliverable:'笔记'},quiz:[{question:'正确选项？',options:['错误','正确'],answer:1,explanation:'这是解析。'}],resources:[{title:`PDF ${i}`,url:`https://example.org/${i}.pdf`,local:`materials/${i}.pdf`,type:'pdf'}],lab})),resources:[{title:'官方视频',type:'video',url:'https://example.org/video'}],assignments:[]};}
 function safeLinks(doc){for(const a of doc.querySelectorAll('a[href]')) check(!/^(?:javascript|data|vbscript):/i.test(a.getAttribute('href')),`safe URL ${a.getAttribute('href')}`);}
+function checkLectureSearch(s, course) {
+  const {document} = s;
+  for (const lesson of course.lessons) {
+    const query = `第 ${Number(lesson.id)} 讲`;
+    s.go('#overview');
+    s.input('#lesson-search', query);
+    eq(document.querySelectorAll('.lesson-card').length, 1, `${course.code} ${query} finds one lesson`);
+    eq(document.querySelector('.lesson-card').getAttribute('href'), '#lesson-' + lesson.id, 'exact lecture number');
+    s.go('#resources');
+    s.input('#resource-search', query);
+    const readings = lesson.resources || [];
+    const sources = new Set(readings.map(r => course.experimentsMode === 'lesson' ? r.local || r.url?.split('#')[0] || r.title : r.url || r.local || r.title));
+    const cards = [...document.querySelectorAll('.resource-card')];
+    eq(cards.length, sources.size, `${course.code} ${query} finds every distinct assigned reading`);
+    for (const card of cards) check(card.querySelector(`.resource-lessons[open] a[href="#lesson-${lesson.id}"]`), 'each result links back to the selected lecture');
+    const links = new Set([...document.querySelectorAll('.resource-lessons a')].map(anchor => anchor.getAttribute('href')));
+    for (const reading of readings) {
+      if (reading.url?.includes('#')) check(links.has(reading.url), `${course.code} ${query} keeps reading ${reading.title} at the assigned section`);
+    }
+  }
+}
 function runCourse(course){
   const s=session(course),d=s.document;
   eq(d.querySelectorAll('.lesson-card').length,course.lessons.length,`${course.code}: all lessons listed`);
@@ -50,6 +71,10 @@ function runCourse(course){
     check(d.querySelector('#lesson-note'),'note editor');safeLinks(d);
   }
   s.go('#lesson-'+f.id);
+  check(Number.isFinite(s.saved().resumeAt), 'opening a lesson saves its visit time');
+  const skip = new s.window.Event('click', {cancelable:true});
+  d.querySelector('.skip-link').dispatchEvent(skip);
+  check(skip.defaultPrevented, 'keyboard skip link stays within the current lesson route');
   const objective=d.querySelector('[data-objective="0"]');objective.checked=true;s.event(objective,'change');eq(s.saved().obj[`L${f.id}.1`],true,'objective persisted');
   if(f.objectives.every((_,i)=>s.saved().obj[`L${f.id}.${i+1}`])) s.click('#complete-lesson');
   s.click('#complete-lesson');check(f.objectives.every((_,i)=>s.saved().obj[`L${f.id}.${i+1}`]),'complete button persists all objectives');
@@ -64,7 +89,8 @@ function runCourse(course){
   for(const button of Array.from(d.querySelectorAll('[data-resource-filter]'))){s.event(button,'click');const type=button.dataset.resourceFilter;eq(button.getAttribute('aria-pressed'),'true',`filter ${type} selected`);if(type!=='all') check(d.querySelectorAll('.resource-card').length<=total,'filtered count');}
   s.click('[data-resource-filter="all"]');safeLinks(d);s.go('#lesson-nonexistent');check(d.querySelector('h1').textContent.includes('没有找到'),'unknown route fallback');
   s.click('.theme-toggle');eq(d.documentElement.dataset.theme,'dark','dark toggle');s.click('.menu-toggle');eq(d.querySelector('.menu-toggle').getAttribute('aria-expanded'),'true','mobile menu opens');s.go('#overview');eq(d.querySelector('.menu-toggle').getAttribute('aria-expanded'),'false','navigation closes menu');
-  console.log(`PASS ${course.code}: ${course.lessons.length} lesson routes, progress/quiz/notes reload, search, resources, navigation`);
+  checkLectureSearch(s, course);
+  console.log(`PASS ${course.code}: ${course.lessons.length} lesson routes, progress/quiz/notes reload, search, page-specific readings, navigation`);
 }
 function runLabs(){
  const s=session(mockCourse()),d=s.document;

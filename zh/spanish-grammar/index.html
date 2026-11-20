@@ -16,6 +16,10 @@
 @media print{body{background:#fff;color:#000;font-size:11pt}.masthead,.sidebar,.metrics,.top-actions,.lesson-pager,.q-actions,.footer,.storage-notice,.skip{display:none!important}.shell{display:block}.main{padding:0}.hero{border-bottom:1px solid #aaa;padding-bottom:12px}.hero h1{font-size:20pt}.card,.question{box-shadow:none;break-inside:avoid;border-color:#aaa}.section{break-inside:auto}.question input{border:1px solid #777}.notice button{display:none}textarea{min-height:90px}a{color:#000}button{display:none}}
 .site-link{display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid var(--line);border-radius:9px;text-decoration:none;font-weight:650}.downloads{margin-top:30px}.downloads summary{cursor:pointer;font-weight:650}.downloads li{margin:8px 0}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 .level-nav{margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:8px}.level-nav>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 2px 10px;font-weight:750;color:var(--green)}.level-nav>summary::-webkit-details-marker{display:none}.level-nav>summary::after{content:"+";font-weight:600;color:var(--muted)}.level-nav[open]>summary::after{content:"−"}.level-badge{display:inline-block;min-width:2.6em;text-align:center;border-radius:6px;background:var(--green);color:#fff;font-size:.74rem;padding:1px 6px;margin-right:6px;letter-spacing:.04em}.level-name{flex:1}.level-score{font-size:.72rem;color:var(--muted);font-weight:500}.level-intro{font-size:.8rem;margin:2px 0 14px}.table-wrap{overflow-x:auto;margin:14px 0 4px}.conj{border-collapse:collapse;font-size:.88rem;min-width:60%}.conj caption{text-align:left;font-size:.8rem;color:var(--muted);padding-bottom:6px}.conj th,.conj td{border:1px solid var(--line);padding:6px 11px;text-align:left;vertical-align:top}.conj thead th{background:var(--green-light);color:var(--green)}.conj tbody th{font-weight:600;color:var(--muted);background:#f7f5ee;white-space:nowrap}.conj td{font-family:Georgia,"Times New Roman",serif;font-size:.95rem}.accent-keys{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.accent-keys button{min-height:34px;min-width:36px;padding:2px 9px;font-weight:500;font-family:Georgia,serif}
+.rules{grid-template-columns:minmax(0,1fr)}
+.rule{min-width:0;overflow-wrap:anywhere}
+.conj{overflow-wrap:normal}
+.lesson-top>div{min-width:0;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -12343,11 +12347,22 @@
     wrap.append(heading);
     return wrap;
   }
+  function setRoute(hash,replace = false) {
+    if (location.hash === hash) return;
+    try {
+      if (replace) history.replaceState(null,'',hash);
+      else history.pushState(null,'',hash);
+    } catch {
+      if (replace) location.replace(hash);
+      else location.hash = hash;
+    }
+  }
   function navigate(id,questionId,startFresh = false) {
     if (questionId && startFresh) practiceRounds.set(questionId,freshRound());
     state.currentLesson = id;
+    state.resumeAt = Date.now();
     openLevels.add(levelOf(id));
-    try { history.replaceState(null,'','#lesson-' + id); } catch {}
+    setRoute('#lesson-' + id);
     view = 'lesson';
     save(); renderLesson(); refreshProgress();
     byId('sidebar-content').classList.add('mobile-closed');
@@ -12379,7 +12394,14 @@
     const radios = [];
     if (question.type === 'mc') {
       const choices = element('div','options');
-      question.options.forEach((option,optionIndex) => {
+      if (!round.options) {
+        round.options = [...question.options];
+        for (let i = round.options.length - 1; i > 0; i--) {
+          const swap = Math.floor(Math.random() * (i + 1));
+          [round.options[i], round.options[swap]] = [round.options[swap], round.options[i]];
+        }
+      }
+      round.options.forEach((option,optionIndex) => {
         const label = element('label','option');
         const radio = document.createElement('input');
         radio.type = 'radio'; radio.name = question.id; radio.value = option;
@@ -12460,13 +12482,11 @@
     revealButton.dataset.action = 'reveal';
     revealButton.disabled = round.revealed;
     const retryButton = button('重新练习','quiet',() => {
-      Object.assign(round,freshRound());
-      if (input) input.value = '';
-      radios.forEach(radio => {radio.checked = false;});
-      revealButton.textContent = '查看解析'; revealButton.disabled = false;
-      showFeedback();
+      practiceRounds.set(question.id,freshRound());
+      const next = buildQuestion(question,index);
+      wrap.replaceWith(next);
       byId('app-status').textContent = '本题已开始新一轮练习。旧答案与解析已隐藏，历史成绩保留。';
-      if (input) input.focus(); else if (radios[0]) radios[0].focus();
+      next.querySelector('input').focus();
     });
     retryButton.dataset.action = 'retry';
     actions.append(checkButton,retryButton,revealButton); wrap.append(fieldset,actions,feedback);
@@ -12541,6 +12561,8 @@
   }
   function renderReview() {
     view = 'review';
+    setRoute('#review');
+    document.title = '我的复习清单 · 西班牙语语法练习室';
     const content = byId('lesson-content');content.replaceChildren();
     const heading = element('h2','','我的复习清单');heading.id = 'review-heading';heading.tabIndex = -1;
     content.append(heading,element('p','review-intro','这里保留首答错误或看过解析的题目，方便隔天重做。即使后来答对，也会保留首次需要帮助的记录。'));
@@ -12571,7 +12593,10 @@
   });
   byId('reset-button').addEventListener('click',() => {
     if (!window.confirm('将清除当前浏览器中的全部答题记录和表达草稿。建议先导出学习记录。确定重置吗？')) return;
-    state = freshState();view = 'lesson';practiceRounds.clear();save();renderLesson();refreshProgress();
+    state = freshState();view = 'lesson';practiceRounds.clear();
+    openLevels.clear();openLevels.add(levelOf(state.currentLesson));
+    setRoute('#lesson-' + state.currentLesson,true);
+    save();renderLesson();refreshProgress();
     byId('app-status').textContent = '学习进度已重置。';
   });
   byId('course-title').textContent = course.title;
@@ -12584,8 +12609,19 @@
   const requestedLesson = lessonFromHash();
   if (requestedLesson) state.currentLesson = requestedLesson;
   openLevels.add(levelOf(state.currentLesson));
-  window.addEventListener('hashchange', () => { const id = lessonFromHash(); if (id) navigate(id); });
-  renderLesson();refreshProgress();save();
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#review') renderReview();
+    else {
+      const id = lessonFromHash();
+      if (id) navigate(id);
+    }
+  });
+  if (location.hash === '#review') renderReview();
+  else {
+    state.resumeAt = Date.now();
+    if (!location.hash) setRoute('#lesson-' + state.currentLesson,true);
+    renderLesson();refreshProgress();save();
+  }
 })();
 </script>
 </body>

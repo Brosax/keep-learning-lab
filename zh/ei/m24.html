@@ -484,14 +484,14 @@ table.tec tr.extra td:first-child { color: var(--muted); }
 <div class="cell">
 <span class="eyebrow">Bluetooth 5.1 · 2019</span>
 <h3>测角度：AoA / AoD</h3>
-<p>以前的 Bluetooth 靠 RSSI，只知道“在某个圆里”。5.1 加入 direction finding，用 AoA（到达角）或 AoD（离开角）：数据包后附一段 <b class="t">CTE (constant tone extension)</b>——恒定音调扩展；接收端用至少 2 根天线的阵列，根据相位差、波长和天线间距算出入射角。再配合 RSSI，并部署多个 locator 做 trilateración。</p>
-<p><b>亚米级，直到几十厘米。</b></p>
+<p>以前的 Bluetooth 靠 RSSI，只知道“在某个圆里”。5.1 加入 direction finding，用 AoA（到达角）或 AoD（离开角）：数据包后附一段 <b class="t">CTE (constant tone extension)</b>——恒定音调扩展；AoA 在接收端切换阵列天线，AoD 在发射端切换阵列天线。接收端根据采样信号的相位差、波长和天线间距估计方向。已知两个定位器的位置和朝向，就能在平面上用两条方位线的交点估计终端位置；前一节的 trilateración 则使用距离。</p>
+<p>两个方向越接近平行，微小的角度误差就越容易放大为位置误差。<a href="https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/direction-finding/">Bluetooth SIG 的 AoA / AoD 图解</a></p>
 </div>
 <div class="cell">
 <span class="eyebrow">UWB · IEEE 802.15.4z</span>
 <h3>测时间：ToF</h3>
-<p>不用信号强度，而用 <b class="t">ToF (Time of Flight)</b>——飞行时间：射频信号以光速传播，与环境无关，所以比 RSSI 稳健。它发的是纳秒量级的脉冲串，不是调制的正弦波，更不怕 multipath。还可以加天线阵列测角度。</p>
-<p><b>约 10 cm，三者中最准（厘米级）。</b></p>
+<p><b class="t">ToF (Time of Flight)</b> 是信号从发射到接收的时间。在空气中，直达路径的长度约等于光速乘以飞行时间。UWB 的宽带脉冲能分辨到达时间相近的路径。如果墙体挡住直达路径，最先检测到的反射可能绕了远路，测得的距离就会偏大。天线阵列还能提供方向信息。</p>
+<p><b>良好的视距和校准条件下，精度可达约 10 cm。</b></p>
 </div>
 <div class="cell">
 <span class="eyebrow">Wi-Fi 802.11az · NGP</span>
@@ -540,7 +540,7 @@ table.tec tr.extra td:first-child { color: var(--muted); }
 <label>T3 · tag 收到 (ns)<input data-v="t3" step="any" type="number" value="540"/></label>
 </div>
 <div aria-live="polite" class="out"></div>
-<p class="aside">默认数值只作演示：ToF = 20 ns，约 6 m。T1、T2 由 anchor 用自己的时钟记，T0、T3 由 tag 用自己的时钟记，公式只用各自时钟内部的差值，所以两边时钟不必同步。</p>
+<p class="aside">默认数值只作演示：ToF = 20 ns，约 6 m。T1、T2 由 anchor 用自己的时钟记，T0、T3 由 tag 用自己的时钟记，固定的时钟偏移会在各自的差值里抵消。这个模型假设两个时钟的计时速率一致，且来回信号的飞行时间相同。</p>
 </div>
 <p>Wi-Fi 802.11az 的 FTM 结构相同：手机发出 M1，AP 回 M2，四个时间戳 t1 = ToD(M1)、t2 = ToA(M1)、t3 = ToD(M2)、t4 = ToA(M2)，于是 ToF = [(t4 − t1) − (t3 − t2)] / 2，距离 = 光速 × ToF。</p>
 
@@ -758,14 +758,14 @@ table.tec tr.extra td:first-child { color: var(--muted); }
 <p class="why"><b>D。</b>Wi-Fi 在 AP 和手机里最普及，但 alto consumo de la batería 是弱点；而且一般要加装 AP 才够精度（§3）。</p>
 </div>
 <div class="q" data-a="b">
-<p class="qt"><span class="qn">08</span>UWB 用什么估计距离，因而比 Bluetooth 的 RSSI 法更不受环境影响？</p>
+<p class="qt"><span class="qn">08</span>UWB 双向测距从往返时间中扣除回复耗时，再除以 2，得到的是什么？</p>
 <div class="opts">
 <button data-o="a" type="button"><span class="k">A</span>接收信号强度 RSSI</button>
 <button data-o="b" type="button"><span class="k">B</span>飞行时间 ToF</button>
 <button data-o="c" type="button"><span class="k">C</span>手机摄像头读取的光脉冲</button>
 <button data-o="d" type="button"><span class="k">D</span>fingerprint 数据库</button>
 </div>
-<p class="why"><b>B。</b>射频信号以光速传播、与环境无关，所以基于 ToF 的距离估计比 RSSI 更稳健（§5）。</p>
+<p class="why"><b>B。</b>这个差值的一半是单程 ToF。直达路径畅通时，乘以光速即可估计距离；直达路径被挡住时，反射可能使估计偏大（§5）。</p>
 </div>
 <div class="q" data-a="a">
 <p class="qt"><span class="qn">09</span>“终端周期性发出带 MAC 地址的信号，传感器收到后连同 Id_sensor、RSSI 发给服务器。”这是哪种架构？</p>
@@ -824,7 +824,7 @@ table.tec tr.extra td:first-child { color: var(--muted); }
 <button class="card" type="button"><span class="front">solución analítica</span><span class="back"><b>分析型方案</b><br/>匿名采集，结合 BI，例如商场营销。</span><span class="flipcue"></span></button>
 <button class="card" type="button"><span class="front">BTLE<small>Bluetooth Low Energy · Smart BT</small></span><span class="back"><b>低功耗蓝牙</b><br/>基于 BT 4.0，省电便宜，iBeacons 带火。</span><span class="flipcue"></span></button>
 <button class="card" type="button"><span class="front">MEMS<small>MicroElectroMechanical Systems</small></span><span class="back"><b>微机电系统</b><br/>加速度计、陀螺仪、磁罗盘、气压计；可不建 WSN。</span><span class="flipcue"></span></button>
-<button class="card" type="button"><span class="front">UWB<small>Ultra Wide Band</small></span><span class="back"><b>超宽带</b><br/>最准（30 cm / 约 10 cm）；2014 年时贵且耗电。</span><span class="flipcue"></span></button>
+<button class="card" type="button"><span class="front">UWB<small>Ultra Wide Band</small></span><span class="back"><b>超宽带</b><br/>用 ToF 测距，良好的视距和校准条件下精度可达约 10 cm。</span><span class="flipcue"></span></button>
 <button class="card" type="button"><span class="front">RFID<small>Radio Frequency Identification</small></span><span class="back"><b>射频识别</b><br/>库存物流为主，适合 proximidad，不太适合 RTLS。</span><span class="flipcue"></span></button>
 <button class="card" type="button"><span class="front">RSSI<small>Received Signal Strength Indication</small></span><span class="back"><b>接收信号强度</b><br/>用接收功率估距离，最简单、最经济。</span><span class="flipcue"></span></button>
 <button class="card" type="button"><span class="front">ToF / ToA<small>Time of Flight / Time of Arrival</small></span><span class="back"><b>飞行时间 / 到达时间</b><br/>用传播时间算距离；UWB 用 ToF。</span><span class="flipcue"></span></button>
@@ -1006,14 +1006,18 @@ table.tec tr.extra td:first-child { color: var(--muted); }
       out.innerHTML = '<span class="warn">请在四个框里都填入数字。</span>';
       return;
     }
-    var reply = t2 - t1, rtt = t3 - t0, tof = (rtt - reply) / 2, d = tof * C;
+    var reply = t2 - t1, rtt = t3 - t0;
+    if (reply < 0 || rtt < 0 || rtt < reply) {
+      out.innerHTML = '<span class="warn">请检查时间戳。每台设备的后一个时间戳应大于或等于前一个，tag 的往返时间必须覆盖 anchor 的回复耗时。</span>';
+      return;
+    }
+    var tof = (rtt - reply) / 2, d = tof * C;
     var s =
       "Reply = T2 − T1 = " + g(t2) + " − " + g(t1) + " = " + g(reply) + " ns<br>" +
       "RTT = T3 − T0 = " + g(t3) + " − " + g(t0) + " = " + g(rtt) + " ns<br>" +
       "ToF = (RTT − Reply) / 2 = (" + g(rtt) + " − " + g(reply) + ") / 2 = " + g(tof) + " ns<br>" +
       "d = ToF × c = " + g(tof) + " ns × 0.2998 m/ns = <b>" + g(d) + " m</b><br>" +
-      "灵敏度：c × 1 ns ≈ 0.30 m，计时差 1 ns，距离就差约 30 cm";
-    if (reply < 0 || tof < 0) s += '<br><span class="warn">出现负值：T2 应晚于 T1，RTT 应大于 Reply。</span>';
+      "试着把 T3 增加 1 ns：RTT 增加 1 ns，单程 ToF 增加 0.5 ns，距离增加约 0.15 m。";
     out.innerHTML = s;
   }
   Array.prototype.slice.call(root.querySelectorAll("input[data-v]")).forEach(function (i) {

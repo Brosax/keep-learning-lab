@@ -1231,6 +1231,7 @@ window.MathJax = {
 <script>window.SeeiSync && SeeiSync.beforeApp();</script>
 <script src="assets/app.js"></script>
 <script src="assets/scene.js"></script>
+<script src="../../assets/engineering-answers.js"></script>
 <script src="assets/practice.js"></script>
 <script>
 
@@ -1452,7 +1453,7 @@ window.MathJax = {
         }
         var s = pick([0, 2, 3, 4, 5]), a = rint(0, 5), m = rint(0, 5), dv = rint(0, 5), D = Math.pow(2, dv), f = FREQ[s] / D;
         var r4 = (a << 8) | (s << 4) | m, r5 = (rint(0, 5) << 8) | (dv << 4) | rint(0, 5);
-        return { kind: "num", ans: f, tol: 0.0005,
+        return { kind: "num", unit: "Hz", ans: f, tol: 0.0005,
           q: "UCSCTL4 = <b>" + hex4(r4) + "</b>，UCSCTL5 = <b>" + hex4(r5) + "</b>。假设 XT1 = REFO = 32768 Hz、DCOCLK = 2097152 Hz、DCOCLKDIV = 1048576 Hz、XT2 = 4 MHz，且都在正常工作。SMCLK 是多少 Hz？",
           fmt: "填 Hz，可以带小数",
           steps: ["SELS = UCSCTL4 的 bits 6–4 = " + bin3(s) + " → " + SRC[s] + " = " + FREQ[s] + " Hz",
@@ -1466,7 +1467,7 @@ window.MathJax = {
         var src = pick([["DCOCLKDIV（PUC 默认）", 1048576], ["XT2CLK", 4000000], ["REFOCLK", 32768], ["DCOCLK", 2097152]]);
         var dm = rint(0, 3), D = Math.pow(2, dm), cyc = pick([5000, 10000, 32768, 50000, 100000, 250000, 500000, 2000000]);
         var f = src[1] / D, ms = cyc / f * 1000;
-        return { kind: "num", ans: ms, tol: 0.005,
+        return { kind: "num", unit: "ms", ans: ms, tol: 0.005,
           q: "MCLK ← <b>" + src[0] + "</b>（" + src[1] + " Hz），DIVM = ÷" + D + "。<code>__delay_cycles(" + cyc + ")</code> 大约延时多少 ms？",
           fmt: "填 ms，可以带小数",
           steps: ["f<sub>MCLK</sub> = " + src[1] + " / " + D + " = " + trim(f, 2) + " Hz",

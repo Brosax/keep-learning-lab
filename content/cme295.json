@@ -2687,6 +2687,11 @@
           "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture6.pdf#page=103",
           "type": "slides",
           "local": "materials/fall26-cme295-lecture6.pdf"
+        },
+        {
+          "title": "2026 第 6 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=nU2a2lm6vDE",
+          "type": "video"
         }
       ]
     },
@@ -2695,309 +2700,102 @@
       "module": "evaluation",
       "title": "评估大模型：从人工评分到 LLM 裁判与基准",
       "originalTitle": "LLM evaluation",
-      "sourceStatus": "2026 年第 7 讲讲义尚未公开。本讲依据 2025 年第 8 讲（LLM evaluation）讲义整理，2026 年这一讲的内容和顺序可能会有变化。",
-      "summary": "模型输出的是自由文本，很难打分：本讲从人工评分出发，依次讲规则指标、LLM-as-a-Judge 及其偏差、Agent 工具调用的失败模式，最后讨论常用基准、pass^k 和基准的局限。",
+      "summary": "怎样判定一个模型真的进步了？从人工评价的分歧出发，为可验证任务计算 pass@k，用人工样本校准 LLM 裁判，沿工具调用轨迹定位错误，最后设计自己的评测集。",
       "objectives": [
-        "解释人工评分为什么被视为「金标准」却又主观、慢、贵，并能说明 Cohen's \\(\\kappa\\) 如何把观察一致率与偶然一致区分开。",
-        "说明 BLEU、ROUGE、METEOR 等规则指标的思路与局限，以及 LLM-as-a-Judge 的形式（pointwise / pairwise）、位置/冗长/自我增强偏差和最佳实践。",
-        "用「事实拆分 + 重要性加权」给一段输出计算事实性分数，并按工具调用的三个步骤定位 Agent 的失败模式和补救办法。",
-        "说出知识、推理、编码、安全、Agent 各类基准的代表与判分方式，会计算 \\(\\text{pass}^k\\)，并解释数据污染和 Goodhart 定律对读基准成绩的提醒。"
+        "用观察一致率和偶然一致率算出 Cohen’s κ，判断人工评判能否作为参照。",
+        "判断任务适合自动规则还是 LLM 裁判，并用交换顺序等办法检查裁判偏差。",
+        "区分函数选择、工具执行和最终回答三个环节，给 Agent 的一次失败定位。",
+        "换算 pass@k 与 pass^k，结合任务分布、成本和对手强弱解读基准成绩。"
       ],
       "sections": [
         {
-          "title": "评估什么：输出质量，以及为什么人工评分是「金标准」",
+          "title": "先给评分员做一次一致性检查",
           "body": [
-            "老师先把「评估」拆成两类：输出质量（output quality），例如是否遵循指令（instruction following）、是否连贯（coherence）、是否符合事实（factuality）；以及系统性能（system performance），例如延迟（latency）、价格（pricing）、可靠性（reliability）。本讲只讨论前者，系统性能不展开。",
-            "难点在于模型生成的是自由文本（free-form text），没有唯一正确答案可以逐字比对。最理想的做法是让人来给模型输出打分（human rating）：它最接近真实标准，被称为「gold」。讲义把它画成一个循环：模型产生输出，人打分，分数再反馈给模型的改进。",
-            "后面整讲的内容，都可以看成是在回答一个问题：人工评分太贵太慢时，用什么来替代它，替代品又有哪些毛病。"
+            "一道数学题可以核对答案，同一句生日礼物建议却可能让两位读者给出不同的“有用”评级。先用少量真实回答找出最容易产生分歧的判据，再决定哪些判断可以交给自动评分。",
+            "补充手算。两名评分员的观察一致率为 80%，按各自使用好评与差评的比例，偶然一致率预计为 50%。Cohen’s κ = (0.80 − 0.50) / (1 − 0.50) = 0.60。记录两人的标签分布，才能知道 80% 的一致中有多少超出了偶然。"
           ],
-          "source": "Lecture 8 (2025) · p.9–13（Setup / Ideal scenario）"
+          "kind": "worked-example",
+          "source": "Lecture 7 (2026) · p.3–14"
         },
         {
-          "title": "人工评分的局限：主观、慢、贵，以及 Cohen's κ",
+          "title": "五次采样里任选两次，至少一次通过的机会有多大？",
           "body": [
-            "第一个问题是主观性（subjectivity）。讲义的例子：用户问「What birthday gift should I get?」，模型回答「泰迪熊几乎总是贴心的礼物，挑一个你觉得合适的就好」，评判标准是有用性（usefulness）。评分者 1 觉得不错，评分者 2 觉得没帮上忙——同一条回答，两个人给出相反的判断。",
-            "衡量评分者之间是否一致，最直接的是观察到的一致率 \\(p_o\\)（o 表示 observed）。但它有漏洞：如果两个人都是随手乱打，也会有一部分碰巧一致。于是要问：我们的一致程度比「纯靠运气、按评分者实际使用各类别的频率」预期的一致程度好多少？这就是 \\(\\kappa\\) 系数：分子是观察一致率超出偶然一致率 \\(p_e\\)（e 表示 expected）的部分，分母是可能超出的最大空间 \\(1 - p_e\\)。",
-            "\\(\\kappa\\) 有多个变体：Cohen's Kappa、Fleiss' Kappa、Krippendorff's alpha（讲义只列出名字，没有展开它们的区别和 \\(p_e\\) 的算法）。此外，人工评分还慢（slow）、贵（expensive），没法在每次改模型后都重做一遍。"
+            "对有单元测试或唯一数值答案的任务，可以生成多个候选并逐个验证。pass@1 衡量用户只拿到一个回答时的体验。pass@k 衡量给足 k 次尝试时，至少有一个通过判分器的机会。cons@k 则先在 k 个答案中多数表决，再判得票最多的答案是否正确。",
+            "补充手算。一次任务的 5 个输出中有 3 个通过。任选 2 个有 10 种搭配，两次都失败只有 1 种，于是估计的 pass@2 为 9/10。若业务要求连续两次都成功，10 种搭配中只有 3 种满足，得到 3/10。这个“全都成功”的量在 2025 年第 8 讲第 153–157 页记作 pass^2。",
+            "开放式回答往往没有可执行的验收条件。BLEU、ROUGE 等指标能比较与参考文本的重叠，但正确的改写也可能很少重词，需要换一种评分方法。"
           ],
+          "kind": "worked-example",
           "math": [
-            "\\kappa = \\frac{p_o - p_e}{1 - p_e}",
-            "p_o\\text{：观察到的一致率，}\\quad p_e\\text{：偶然情况下预期的一致率}"
+            "\\widehat{\\mathrm{pass@}k}=1-\\frac{\\binom{n-c}{k}}{\\binom{n}{k}},\\qquad \\widehat{\\mathrm{pass}^{k}}=\\frac{\\binom{c}{k}}{\\binom{n}{k}}"
           ],
-          "source": "Lecture 8 (2025) · p.14–25（Limitations）"
+          "source": "Lecture 7 (2026) · p.16–30"
         },
         {
-          "title": "基于规则的指标：METEOR、BLEU、ROUGE 及其局限",
+          "title": "给 LLM 裁判校准刻度",
           "body": [
-            "第一种替代思路：人只写一次标签（labels），把它当作参考答案（reference），以后每次都用规则化的指标比较模型输出和参考答案的重合程度，不用再找人。讲义列了三种常见指标，都来自机器翻译或摘要评测。",
-            "METEOR 把精确率 \\(P\\) 和召回率 \\(R\\) 合成 \\(F_{\\text{mean}}\\)，再乘上 \\((1 - p)\\) 的惩罚项；BLEU 把 1 到 \\(N\\) 元的 n-gram 精确率 \\(p_n\\) 取对数平均后指数化，再乘以简短惩罚 \\(\\mathrm{BP}\\)——候选句比参考短时 \\(\\mathrm{BP}\\) 小于 1；ROUGE 是偏重召回（recall-oriented）的一组指标，有 ROUGE-N、ROUGE-L 等多个变体。讲义只给出公式，没有给出 \\(\\alpha\\)、\\(\\beta\\)、\\(\\gamma\\)、\\(N\\) 等参数的取值，也没有数值例子。补充：按 METEOR 原论文，\\(P\\)、\\(R\\) 是一元词（unigram）的精确率与召回率，\\(c\\) 是匹配片段（chunk）数，\\(u_m\\) 是匹配的一元词数；这里只为帮助读公式，不作计算要求。",
-            "局限有三条。其一，不考虑风格差异：讲义给了三句意思几乎相同的话——「A plush teddy bear can comfort a child during bedtime.」「Soft stuffed bears often help kids feel safe as they fall asleep.」以及一句用 youngsters、toy companion 改写的句子——它们和彼此几乎没有共同的 n-gram，规则指标会判它们差别很大。其二，和人工评分的相关性并不高。其三，仍然需要人写参考答案。"
-          ],
-          "math": [
-            "\\mathrm{METEOR} = F_{\\text{mean}} \\times (1 - p)",
-            "F_{\\text{mean}} = \\frac{P\\times R}{\\alpha P + (1-\\alpha)R}",
-            "p = \\gamma \\times \\left(\\frac{c}{u_m}\\right)^{\\beta}",
-            "\\mathrm{BLEU} = \\mathrm{BP} \\times \\exp\\left(\\frac{1}{N}\\sum_{n} \\log p_n\\right)",
-            "\\mathrm{BP} = \\min\\left(1,\\ \\exp\\left(1 - \\frac{n_{\\text{ref}}}{n_{\\text{pred}}}\\right)\\right)"
-          ],
-          "source": "Lecture 8 (2025) · p.27–37（Rule-based metrics）"
-        },
-        {
-          "title": "LLM-as-a-Judge：让模型给模型打分",
-          "body": [
-            "LLM-as-a-Judge（LaaJ）的想法是用一个 LLM 来评价回答的质量。输入有三样：用户的 prompt（例：「Why are teddy bears comforting?」）、被评模型的回答（「They are comforting because they are soft and loyal companions.」）和评判标准（例：相关性 relevance）。裁判输出两样：理由（rationale，例：「直接解释，切题」）和分数（score，例：PASS）。讲义给出的提示词模板要求裁判返回 1–2 句理由，以及「大体相关记 1，大体不相关记 0」的分数。",
-            "实际使用时，需要保证裁判的输出能被程序可靠解析。这就用到前面讲过的 guided decoding：各家 API 都提供「结构化输出（structured outputs）」。做法分两步：先定义输出结构（rationale 是字符串，score 只能取 0 或 1），再把这个结构作为参数传给模型调用。",
-            "和之前的方法相比，LaaJ 有两个好处：不需要参考答案或标签（no need for reference / label）；理由让分数可以解释（interpretability via rationales），例如裁判会说明「没有语法错误、清楚易懂、对任务有帮助」。"
-          ],
-          "flow": [
-            "Prompt + 模型回答 + 评判标准",
-            "LLM-as-a-Judge",
-            "输出：先写 Rationale（理由），再给 Score（分数）"
-          ],
-          "code": "class Response:\n    rationale: str\n    score: Literal[0, 1]\n\nresponse = client.responses.parse(\n    model=model,\n    input=input,\n    text_format=Response,\n)",
-          "figure": {
-            "src": "figures/l07-llm-as-judge.webp",
-            "alt": "LLM-as-a-Judge 示意图：Prompt「Why are teddy bears comforting?」、模型回答和评判标准 Relevance 三个输入汇入 LLM-as-a-Judge，输出 Rationale「Direct explanation, is on topic」和 Score「PASS」。",
-            "caption": "看箭头的方向：三样输入（提示、被评回答、评判标准）进入裁判，裁判输出两样东西——理由和分数，而且不需要参考答案。",
-            "source": "Lecture 8 (2025) · p.45"
-          },
-          "source": "Lecture 8 (2025) · p.39–55（Overview of LLM-as-a-Judge / Enforce output format in practice / Benefits）"
-        },
-        {
-          "title": "两种形式与三种偏差",
-          "body": [
-            "LaaJ 主要有两种形式。pointwise：只给一条回答，让裁判评价它的质量（如「Very good」）。pairwise：同时给两条回答，问「Response A 和 Response B 哪个更好」，裁判给出偏好（如「Response A」）。",
-            "讲义重点讲了三种偏差，都以 pairwise 为例。位置偏差（position bias）：按 A、B 顺序给时裁判选 A，把顺序换成 B、A 后它又选 B，说明它偏爱排在前面的那条；补救是两种顺序都问一遍再取平均，或调整位置嵌入。冗长偏差（verbosity bias）：一条简短正确，一条啰嗦且帮助不大，裁判却选了长的那条；补救是写明确的评判准则、给 few-shot 例子，以及/或者对输出长度加惩罚。",
-            "自我增强偏差（self-enhancement bias）：一条是人工精心撰写、完美回答问题的答案，另一条是裁判模型自己生成的答案，裁判偏向自己的那条；补救很直接——不要让被评的模型同时充当裁判。"
+            "从人工已标注的样本开始，把任务、判据和期望输出写进评分提示。可以先生成判断依据，再给二元结论。用保留的人工样本核对分歧，尤其关注会影响决策的错误；要求返回格式正确，只能保证解析成功。",
+            "把两条回答换一个顺序再评，是成本很低的一次对照实验。如果两次都偏爱排第一的答案，就把顺序也当作影响分数的实验因素。"
           ],
           "table": {
             "columns": [
               "偏差",
-              "症状（讲义例子）",
-              "补救"
+              "如何发现",
+              "怎样校验"
             ],
             "rows": [
               [
-                "位置偏差 position bias",
-                "A/B 顺序选 A，交换成 B/A 后选 B",
-                "两种顺序取平均，或调整位置嵌入"
+                "位置偏差",
+                "交换回答后，胜者跟着第一个位置改变",
+                "按两种顺序评判并汇总"
               ],
               [
-                "冗长偏差 verbosity bias",
-                "「简短且正确」输给「细节多但大多不需要、整体帮助不大」",
-                "明确的准则、few-shot，和/或对输出长度加惩罚"
+                "冗长偏差",
+                "内容正确程度相同，裁判总选更长的回答",
+                "给出明确准则和长短对照样例"
               ],
               [
-                "自我增强偏差 self-enhancement bias",
-                "人工精写的完美答案输给裁判模型自己生成的答案",
-                "不要用被评模型本身当裁判"
+                "自我增强偏差",
+                "裁判系统性偏爱自己生成的答案",
+                "使用独立裁判，并与人工标签比对"
               ]
             ]
           },
-          "source": "Lecture 8 (2025) · p.56–72（Main variations of LaaJ / Position bias / Verbosity bias / Self-enhancement bias）"
+          "source": "Lecture 7 (2026) · p.32–56"
         },
         {
-          "title": "最佳实践与修订后的评估流程",
+          "title": "同一个错误答案可能来自三处",
           "body": [
-            "讲义列出六条最佳实践：准则要清晰明确（crisp guidelines）；优先用二元量表（binary scale），而不是更细的多档打分；先写理由，再输出分数（write rationale before outputting score）；主动缓解位置、冗长、自我增强等偏差；用人工判断来校准（calibrate with human judgements）；用低温度（low temperature）让结果可复现——温度低时下一个词的分布几乎集中在一个词上，多次运行给出相同判断。",
-            "有了裁判，评估流程就变了：原来模型每改一版都要等人工评分（讲义画了一只乌龟，表示慢）；现在内层是模型和 LLM-as-a-Judge 之间的快速循环（兔子），外层仍保留人工评分，用来检验和校准裁判本身。人工评分没有被取消，而是从「每次都评」变成「给裁判把关」。",
-            "评估时通常关心两大类维度：任务表现（task performance），包括有用性（usefulness）、事实性（factuality）、相关性（relevance）；对齐（alignment），包括语气（tone）、风格（style）、安全（safety）。下一段单独展开事实性。"
+            "讲义让 Agent 根据用户的位置寻找附近的商品。需要依次观察它挑了哪个函数、后端返回了什么、最终答复如何使用返回值。只看最终文本，会把接口超时和模型编造地址混成一种错误。",
+            "补充练习。日志显示函数名和位置参数都正确，工具返回“无结果”，最终却答复“已找到”。这条轨迹优先检查模型对空结果的解释。若根本没有调用任何工具，则应检查工具选择和触发条件。"
           ],
           "flow": [
-            "LLM 产生输出",
-            "LLM-as-a-Judge 快速打分（内循环）",
-            "据此改进 LLM",
-            "人工评分校准裁判（外循环，较慢）"
+            "检查工具与参数",
+            "检查后端实际返回值",
+            "核对最终回答中的事实"
           ],
-          "source": "Lecture 8 (2025) · p.73–86（Best practices / Revised workflow / Typical dimensions we want to evaluate）"
+          "source": "Lecture 7 (2026) · p.59–82"
         },
         {
-          "title": "手算：把一句话拆成事实，加权得到事实性分数",
+          "title": "读排行榜时，把成本和对手也放回图里",
           "body": [
-            "目标是给一段输出的事实性打一个分。讲义的原文是：「Teddy bears, first created in the 1920s, were named after President Theodore Roosevelt after he proudly wanted to shoot a captured bear on a hunting trip.」这句话有对有错（讲义标红了「1920s」和「proudly wanted to」），整句判对或判错都不合适——老师提出的开放问题是：怎样量化这种细微差别？",
-            "做法（Wei et al., 2024）是先做事实拆分（fact decomposition），把原文拆成四条独立事实，逐条判定真假，再给每条一个重要性权重 \\(\\alpha_i\\)：① 泰迪熊最早出现在 1920 年代，✗，\\(\\alpha=0.3\\)；② 泰迪熊以罗斯福总统命名，✓，\\(\\alpha=0.4\\)；③ 罗斯福在一次打猎中遇到一只被捉住的熊，✓，\\(\\alpha=0.2\\)；④ 罗斯福得意地想射杀那只熊，✗，\\(\\alpha=0.1\\)。",
-            "代入公式，正确事实 \\(\\text{score}_i=1\\)，错误事实 \\(\\text{score}_i=0\\)：\\(\\text{score} = 0.3\\times0 + 0.4\\times1 + 0.2\\times1 + 0.1\\times0 = 0.60\\)，与讲义 p.95 的结果一致。若不加权、只数对错，会得到 \\(2/4 = 0.5\\)；加权让「命名来源」这种核心事实比细枝末节的措辞更重要。"
+            "综合基准把不同能力的得分按指定权重聚合。权重、模型可用的工具、每题的时间预算都会改变排名的含义。对照具体应用时，先列出最相关的任务，再比较相同条件下的分项表现。讲义还列出为榜单特化、基准质量与版本变化等风险。",
+            "如果两个模型质量相当，较便宜的方案更有吸引力。质量与成本同时改进时，就能淘汰被全面超过的点。留下的帕累托前沿提示了哪些选择仍要取舍。",
+            "真实用户做两两比较可以补充固定题库。只看胜率会漏掉对手强弱。Elo 将预期胜率和实际结果的差用于更新分数，击败强对手会带来更大的调整；同时要留意愿意投票的用户与实际用户群是否相似。"
           ],
-          "math": [
-            "\\text{score} = \\sum_i \\alpha_i \\times \\text{score}_i = 0.4 + 0.2 = 0.60",
-            "\\alpha_i\\text{：第 }i\\text{ 条事实的重要性}"
-          ],
-          "kind": "worked-example",
-          "table": {
-            "columns": [
-              "拆出的事实",
-              "判定",
-              "权重 \\(\\alpha_i\\)",
-              "\\(\\alpha_i \\times \\text{score}_i\\)"
-            ],
-            "rows": [
-              [
-                "Teddy bears were first created in the 1920s.",
-                "✗",
-                "0.3",
-                "0"
-              ],
-              [
-                "Teddy bears were named after President Theodore Roosevelt.",
-                "✓",
-                "0.4",
-                "0.4"
-              ],
-              [
-                "Theodore Roosevelt was on a hunting trip where a bear was captured.",
-                "✓",
-                "0.2",
-                "0.2"
-              ],
-              [
-                "Theodore Roosevelt proudly wanted to shoot the captured bear.",
-                "✗",
-                "0.1",
-                "0"
-              ]
-            ]
-          },
-          "source": "Lecture 8 (2025) · p.87–95（Focus on factuality / Quantifying factuality）"
+          "source": "Lecture 7 (2026) · p.85–158"
         },
         {
-          "title": "延伸到 Agent：按工具调用的三个步骤找失败点",
+          "title": "把一项产品需求改写为可复测的指标",
           "body": [
-            "Agent 的一次调用会在 ReAct 的观察（observe）—计划（plan）—行动（act）循环里转很多圈，所以评估不能只看最终回答，要能定位是哪一步出了错。老师把一次工具调用拆成三步（沿用前面讲 tool calling 时的例子）：① 让 LLM 为合适的函数找出参数，例如对「Find a bear near me!」输出 location = (37.42, -122.17) 并选 find_teddy_bear()；② 真正执行函数调用，后端返回 {\"name\": \"Teddy\", …}；③ 让 LLM 根据结果写出最终回答。",
-            "第一步出错叫工具预测错误（tool prediction error），有四种：不用工具，直接回答「抱歉我不知道哪里有」；幻觉出不存在的工具，如 find_bear()；用错工具，例如用 send_message() 给本地商家发「may I buy a teddy bear?」；参数推断错误，如 location = (0,-0)。第二步出错叫工具调用错误（tool call error）：工具返回错误值或抛出 ValueError，或者干脆什么都不返回——后者常伴随最终回答被幻觉出来。第三步出错叫回答生成错误（response generation error）：工具明明返回了名叫 Teddy 的熊，模型却说「Didn't find any bear!」。",
-            "老师的总结分两类原因。模型方面：推理和 grounding 能力弱、上下文窗口里内容太多、工具建模不对；工具方面：工具本身有 bug、工具输出难以理解。排查这些问题需要格外细心和耐心。"
+            "把“帮用户办好事情”拆成组件指标与全程指标。一次商品查询可以分别考察位置参数正确率和最终任务成功率。组件数值给维修方向，全程数值对应用户体验。",
+            "先为必须成功的关键情形准备一组人工样例，再用日志覆盖常见请求。精确条件由程序判分，需要自然语言解释时使用经校准的裁判。保存出错的轨迹和判分依据，改动模型或工具后，用同一批用例检查回归。"
           ],
-          "flow": [
-            "① LLM 选函数并推断参数",
-            "② 执行函数调用（后端）",
-            "③ LLM 根据结果生成回答"
-          ],
-          "table": {
-            "columns": [
-              "阶段 · 失败",
-              "可能原因",
-              "补救"
-            ],
-            "rows": [
-              [
-                "① 不用工具",
-                "tool router 出错；模型不会用这个工具",
-                "重新训练 tool router；SFT 训练模型或改进目标 API 的提示"
-              ],
-              [
-                "① 幻觉出工具",
-                "模型太弱；API 命名不合逻辑；指令不清楚",
-                "换更强的模型；重新设计 API；迭代顶层指令"
-              ],
-              [
-                "① 用错工具",
-                "tool router 出错；模型选错了工具",
-                "重新训练 tool router；SFT 训练模型或改进目标 API 的提示"
-              ],
-              [
-                "① 参数推断错误",
-                "参数无法从上下文推断；模型不会用这个工具",
-                "引入辅助工具和/或确保上下文带有正确信息；SFT 或改提示"
-              ],
-              [
-                "② 返回错误值或报错",
-                "工具返回不正确的值；工具报错而不是返回值（有时报错是合理的，但不是常规做法）",
-                "修好工具实现"
-              ],
-              [
-                "② 无返回",
-                "工具实现的 bug，或刻意的「特性」",
-                "至少返回点东西，哪怕是空 JSON；一般原则是输出有意义的结果"
-              ],
-              [
-                "③ 回答没反映工具结果",
-                "模型缺乏 grounding 能力；工具返回内容塞满上下文；工具返回的信息表达不清",
-                "升级负责生成回答的 LLM；精简后端返回的信息；让工具输出格式更具描述性"
-              ]
-            ]
-          },
-          "source": "Lecture 8 (2025) · p.97–135（Agentic mindset / Failure modes / Common issues: takeaway）"
-        },
-        {
-          "title": "常用基准：知识、推理、编码、安全",
-          "body": [
-            "基准（benchmark）是一组固定题目加固定判分方式。知识类考查能否准确陈述世界知识，重「广度」而非「深度」，反映预训练质量，代表是 MMLU：57 个任务（初等数学、美国历史、计算机科学、法律等），每题 4 个选项，判分就是看是否选中正确的 A/B/C/D。",
-            "推理类考查多步求解，包括数学和常识两个子领域。AIME 约 30 道数学竞赛题（几何、代数、分析），要求给出正确的 3 位数答案；PIQA 约 20,000 道日常物理常识题，每题两个方案二选一，例如做户外枕头该往锡罐还是垃圾袋里吹气。编码类考查写出语法正确的代码，也被看作工具使用能力的代理指标，代表是 SWE-bench：2,294 个来自 12 个流行 Python 仓库真实 GitHub issue 的问题，每题有一个基础提交和一个已合并、带测试的 PR，模型生成的 PR 要通过全部测试才算对。",
-            "以上几类都是「写死的匹配」（hardcoded match）：答案或测试结果能被程序直接比对。安全类不同：HarmBench 有 510 种有害行为（400 种纯文本、110 种多模态），分为 Standard、Copyright、Contextual、Multimodal 四组，标准是是否违反法律和普遍规范，指标是攻击成功率（attack success rate, ASR），而判断一次回答是否有害要靠一个分类器（classifier）。"
-          ],
-          "table": {
-            "columns": [
-              "类别",
-              "考查什么",
-              "代表基准",
-              "判分方式"
-            ],
-            "rows": [
-              [
-                "Knowledge",
-                "准确陈述事实；广度多于深度；反映预训练质量",
-                "MMLU（57 个任务，4 选 1）",
-                "选对 A/B/C/D · hardcoded match"
-              ],
-              [
-                "Reasoning（数学）",
-                "多步求解；内部推理",
-                "AIME（约 30 题）",
-                "给出正确的 3 位数 · hardcoded match"
-              ],
-              [
-                "Reasoning（常识）",
-                "日常物理常识",
-                "PIQA（约 20,000 例，2 选 1）",
-                "选对 Sol1/Sol2 · hardcoded match"
-              ],
-              [
-                "Coding",
-                "写出正确代码；工具使用能力的代理",
-                "SWE-bench（2,294 个真实 issue）",
-                "生成的 PR 通过所有测试 · hardcoded match"
-              ],
-              [
-                "Safety",
-                "防止有害、有毒、不当行为；部署前暴露漏洞",
-                "HarmBench（510 种有害行为）",
-                "攻击成功率 ASR · classifier"
-              ]
-            ]
-          },
-          "source": "Lecture 8 (2025) · p.137–151（Common benchmarks）"
-        },
-        {
-          "title": "Agent 基准 τ-bench 与 pass^k：只看平均成功率会高估稳定性",
-          "body": [
-            "τ-bench（Tool-Agent-User Interaction Benchmark）给定数据库结构、API 和业务规则，覆盖两个领域：航空客服（500 个用户、300 个航班、2000 条预订，约 10 个工具、50 个任务）和零售客服（500 个用户、50 种商品、1000 个订单，约 10 个工具、115 个任务）。样例里用户要改签，Agent 先查预订、发现是基本经济舱不能改，但在 24 小时内可以取消重订，征得用户同意后执行 cancel_reservation，数据库状态变为 cancelled。评价标准是最大化奖励并报告 \\(\\text{pass}^k\\)。",
-            "\\(\\text{pass}^k\\) 衡量一致性/可靠性：「\\(k\\) 次尝试全部成功的概率」。对同一任务做 \\(n\\) 次尝试，其中 \\(c\\) 次成功、\\(n - c\\) 次失败；从这 \\(n\\) 次里随机取 \\(k\\) 次，全部落在成功那 c 次里的取法有 \\(\\binom{c}{k}\\) 种，总取法有 \\(\\binom{n}{k}\\) 种，于是 \\(\\text{pass}^k = \\binom{c}{k} / \\binom{n}{k}\\)。",
-            "补充：讲义没有给数值。示意图里画了 4 个方块（2 绿 2 红，编号写作 #1 #2 … #n），这里姑且取 \\(n=4\\)、\\(c=2\\) 来算。\\(k=1\\)：\\(\\binom{2}{1}/\\binom{4}{1} = 2/4 = 0.5\\)，就是平均成功率；\\(k=2\\)：\\(\\binom{2}{2}/\\binom{4}{2} = 1/6 \\approx 0.1667\\)；\\(k=3\\)：\\(\\binom{2}{3} = 0\\)（从 2 次成功里取不出 3 次），所以 \\(\\text{pass}^3 = 0\\)。平均成功率 0.5 看起来还行，但要求连续多次都成功时，可靠性迅速下降——这正是 Agent 场景要单独报告 \\(\\text{pass}^k\\) 的原因。"
-          ],
-          "math": [
-            "\\text{pass}^k = \\frac{\\binom{c}{k}}{\\binom{n}{k}}",
-            "n=4,\\ c=2\\text{ 时：}\\quad \\text{pass}^1 = 0.5,\\quad \\text{pass}^2 = \\frac{1}{6} \\approx 0.1667,\\quad \\text{pass}^3 = 0"
-          ],
-          "kind": "worked-example",
-          "source": "Lecture 8 (2025) · p.152–157（What about agents? / Metric for consistency/reliability）"
-        },
-        {
-          "title": "怎样读基准成绩：画像、帕累托前沿、数据污染与 Goodhart 定律",
-          "body": [
-            "老师以 Gemini 3 发布时的成绩表为例，把其中几行对应到前面的类别：AIME 2025 对应推理，SWE-Bench Verified 对应编码，τ2-bench 对应工具使用，MMMLU 和 Global PIQA 对应知识。每个基准只是性能在某一个轴上的投影（projection），不同模型擅长的东西不同，雷达图上两个模型可能各有长短；很多人也会形成自己的经验判断，例如某个系列擅长写代码、某个系列便宜。",
-            "帕累托曲线（Pareto curve）是在某个权衡下「做到最优」的一组方案：讲义的图以每百万 token 价格为横轴、Arena ELO 为纵轴，前沿上的模型在同等价格下质量最高。常见的权衡有质量与成本/延迟、质量与安全、质量与上下文长度。",
-            "还要提防数据污染（data contamination）：基准题目的线索可能已经混进训练集。讲义给了三种预防办法：给基准加一个标识（例如 BIG-bench 要求附带的 canary 哈希串），方便训练时过滤；模型带搜索工具时，用屏蔽名单（blocklist）挡住可能含答案的网站；在更新的测试版本上评估（例如用 AIME 2025）。最后是 Goodhart 定律：「当一个指标成为目标，它就不再是好指标。」所以不要过度依赖基准，要用 Chatbot Arena 这类更「自然」的视角补全图景，并亲自试几个模型。"
-          ],
-          "bullets": [
-            "基准分数高 ≠ 在你的任务上好：它只是某一个轴上的投影。",
-            "比较模型时要同时看代价，帕累托前沿上的模型才是「不被其他模型同时在质量和代价上压过」的选择。",
-            "数据污染的三个预防措施：canary 标识、工具 blocklist、新版本测试集。"
-          ],
-          "source": "Lecture 8 (2025) · p.158–169（In the news! / Profile / Pareto frontier / Beware of data contamination / Limitations）"
+          "source": "Lecture 7 (2026) · p.159–168"
         }
       ],
       "quiz": [
         {
-          "question": "在 τ-bench 上让 Agent 对同一任务尝试 \\(n=5\\) 次，其中 \\(c=4\\) 次成功。按讲义的定义，\\(\\text{pass}^2\\) 是多少？",
+          "question": "在 τ-bench 上让 Agent 对同一任务尝试 \\(n=5\\) 次，其中 \\(c=4\\) 次成功。按 2025 年延伸阅读中“全部成功”的定义，\\(\\text{pass}^2\\) 是多少？",
           "options": [
             "\\(c/n = 4/5 = 0.8\\)",
             "\\(\\binom{4}{2}/\\binom{5}{2} = 6/10 = 0.6\\)",
@@ -3005,7 +2803,7 @@
             "1"
           ],
           "answer": 1,
-          "explanation": "\\(\\text{pass}^k\\) 是「\\(k\\) 次尝试全部成功」的概率：从 5 次里取 2 次共 \\(\\binom{5}{2}=10\\) 种取法，两次都落在 4 次成功里的有 \\(\\binom{4}{2}=6\\) 种，所以是 0.6。0.8 是 \\(k=1\\) 的情形，即平均成功率，没有体现「每次都要成功」；0.64 是把 \\(4/5\\) 当作独立成功概率再平方，不是讲义 p.157 的组合公式（从已有的 n 次结果中不放回地取）；1 对应的是「两次里至少一次成功」——唯一的失败不可能同时占两个位置——这不是 \\(\\text{pass}^k\\) 的含义。"
+          "explanation": "\\(\\text{pass}^k\\) 是「\\(k\\) 次尝试全部成功」的概率：从 5 次里取 2 次共 \\(\\binom{5}{2}=10\\) 种取法，两次都落在 4 次成功里的有 \\(\\binom{4}{2}=6\\) 种，所以是 0.6。0.8 是 \\(k=1\\) 的情形，即平均成功率，没有体现「每次都要成功」；0.64 是把 \\(4/5\\) 当作独立成功概率再平方，不是2025 第 8 讲 p.157 的组合公式（从已有的 n 次结果中不放回地取）；1 对应的是「两次里至少一次成功」——唯一的失败不可能同时占两个位置——这不是 \\(\\text{pass}^k\\) 的含义。"
         },
         {
           "question": "用 LLM 做 pairwise 评判时，把两条回答按 A、B 的顺序给出，裁判选 A；交换成 B、A 后，裁判改选 B。这最可能是哪种偏差，讲义建议怎么补救？",
@@ -3016,24 +2814,47 @@
             "位置偏差；两种顺序都评一次再取平均，或调整位置嵌入"
           ],
           "answer": 3,
-          "explanation": "裁判总是选排在第一位的回答，判断随顺序翻转，是位置偏差（p.60–64），补救是取平均或调整位置嵌入。冗长偏差指偏爱更长、更啰嗦的回答，与顺序无关；自我增强偏差指偏爱自己生成的回答，这里两条回答内容没变、只换了位置；讲义的最佳实践恰恰建议用低温度保证可复现（p.78），调高温度不能消除顺序带来的系统性偏好。"
+          "explanation": "同一对答案换位以后，裁判仍挑排第一的那条。2026 第 7 讲 p.46–48 将这种现象称为位置偏差。两种顺序都评一次并汇总可以减弱顺序影响。长度与回答来源在本次对照中都保持不变。"
+        },
+        {
+          "question": "5 个候选里有 2 个通过测试。从这 5 个候选中不放回地随机挑 2 个，至少一个通过的概率是多少？",
+          "options": [
+            "1/10",
+            "4/10",
+            "7/10",
+            "9/10"
+          ],
+          "answer": 2,
+          "explanation": "共有 10 种取法，失败的 3 个候选两两搭配有 3 种。用 1 减去两次都失败的概率，得到 1 − 3/10 = 7/10。若要求两个都通过，则只有 1/10。"
         }
       ],
       "resources": [
         {
-          "title": "2025 第 8 讲官方课件 · LLM evaluation（agenda）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=8",
+          "title": "2026 第 7 讲官方课件 · 可验证任务与 pass@k",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=16",
           "type": "slides",
-          "local": "materials/fall25-cme295-lecture8.pdf"
+          "local": "materials/fall26-cme295-lecture7.pdf"
         },
         {
-          "title": "2025 第 8 讲官方课件 · LLM-as-a-Judge",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=39",
+          "title": "2026 第 7 讲官方课件 · LLM 裁判与偏差",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=32",
           "type": "slides",
-          "local": "materials/fall25-cme295-lecture8.pdf"
+          "local": "materials/fall26-cme295-lecture7.pdf"
         },
         {
-          "title": "2025 第 8 讲官方课件 · τ-bench 与 pass^k",
+          "title": "2026 第 7 讲官方课件 · Agent 工具轨迹",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=59",
+          "type": "slides",
+          "local": "materials/fall26-cme295-lecture7.pdf"
+        },
+        {
+          "title": "2026 第 7 讲官方课件 · 设计产品评测",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=159",
+          "type": "slides",
+          "local": "materials/fall26-cme295-lecture7.pdf"
+        },
+        {
+          "title": "延伸 · 2025 第 8 讲的 τ-bench 与 pass^k（全都成功）",
           "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=153",
           "type": "slides",
           "local": "materials/fall25-cme295-lecture8.pdf"
@@ -3045,216 +2866,72 @@
       "module": "evaluation",
       "title": "扩散语言模型：从逐词生成到并行去遮罩",
       "originalTitle": "Diffusion LLMs",
-      "sourceStatus": "2026 年第 8 讲（Diffusion LLMs）的讲义尚未公开。本讲依据 2025 年第 9 讲讲义中的 Diffusion LLMs 小节（PDF 第 70–98 页）整理，2026 年的实际内容可能会有变化。",
-      "summary": "自回归 LLM 推理时只能一个 token 接一个 token 地生成；本讲借用图像扩散“加噪—去噪”的思路，把 MASK 当作文本的“噪声”，介绍能用更少次前向计算完成解码的遮罩扩散模型（MDM），以及它的优势与尚未解决的问题。",
+      "summary": "从图像的连续噪声，到词表上的离散转移，再到只对遮罩位置计算的训练损失。沿着一句话追踪预测、提交和重新遮罩，最后比较扩散解码和自回归解码的计算成本。",
       "objectives": [
-        "说明自回归建模（ARM）为什么训练可以并行、推理时生成却不能并行。",
-        "用“从噪声变换到数据分布”这一目标，解释图像扩散的前向加噪过程和反向去噪过程。",
-        "说明文本扩散如何用 MASK 代替噪声，并用 “A teddy bear is reading” 描述遮罩扩散模型（MDM）的前向与反向过程。",
-        "概括讲义列出的扩散 LLM 的优势（每秒输出 token 数、某些任务更合适）与挑战（效果、移植 ARM 上的技术）。"
+        "说明自回归模型训练时如何同时预测多个位置，以及推理时为什么要等待先前生成的词。",
+        "比较图像与词嵌入上的连续加噪，解释从连续向量恢复离散词元的困难。",
+        "画出一个吸收态遮罩过程，说明哪些位置参与训练损失，并演示两轮去遮罩。",
+        "根据去噪轮数、单轮成本和上下文长度，判断扩散模型可能获得速度收益的条件。"
       ],
       "sections": [
         {
-          "title": "现状：自回归模型推理时只能一步一步走",
+          "title": "两个生成顺序：向后续写，也可以先填两端",
           "body": [
-            "老师先回到大家熟悉的生成方式：把 [BOS] 送进 LLM，得到第一个 token “A”；再把 “A” 接到输入后面做一次前向计算，得到 “teddy”；接着是 “bear”、“is”……每做一次前向计算（forward pass），只多出一个新 token。这种方式叫自回归建模（AutoRegressive Modeling，ARM），前几讲的 LLM 都属于这一范式。",
-            "讲义指出的问题是：推理时的生成不能并行（inference-time generation is not parallelizable）。原因在于第 \\(k\\) 个 token 的输入里包含前 \\(k-1\\) 个刚生成的 token，必须等前一步结束才能开始下一步。要生成 5 个 token，就要按顺序做 5 次前向计算。",
-            "讲义特别补了一句“although training is”：训练时整句目标文本已经给定，所有位置的“预测下一个 token”任务可以在同一次前向计算里一起完成（第 1 讲里解码器的 masked self-attention 保证每个位置只能看到它前面的内容）。所以瓶颈在推理阶段，不在训练阶段。"
+            "自回归模型先生成第一个词，再把它加入下一次预测的上下文。训练时给定完整目标，因果掩码允许所有位置同时学习“已知前缀，猜下一个词”。推理时前缀仍在生成，后面的词必须等待。",
+            "把空白看成一整行方格。扩散模型可以先确认两端清楚的词，再回头填中间的词。它能在一轮猜多个位置，后续轮次则用已经确定的词来改进其余预测。"
           ],
-          "flow": [
-            "[BOS] → A",
-            "[BOS] A → teddy",
-            "[BOS] A teddy → bear",
-            "[BOS] A teddy bear → is",
-            "[BOS] A teddy bear is → ？"
-          ],
-          "source": "Lecture 9 (2025) · p.71–81（Current approach and limitations）"
+          "source": "Lecture 8 (2026) · p.4–17"
         },
         {
-          "title": "另一条路线已经出现在新闻里",
+          "title": "连续扩散：图像像素和词嵌入有什么不同？",
           "body": [
-            "讲义用一页新闻截图说明扩散式 LLM 已经不只是论文概念：Google 在 2025 年 5 月 20 日的 I/O 上展示了实验性的文本扩散模型 Gemini Diffusion；创业公司 Inception 以“最快的 LLM”为卖点推出扩散 LLM，并在 2025 年 11 月宣布融资 5000 万美元，用于构建面向代码和文本的扩散模型；字节跳动在 2025 年 7 月 31 日发布了 Seed Diffusion Preview。",
-            "Seed Diffusion Preview 的公告里有一组具体数字：这是一个基于离散状态扩散（discrete-state diffusion）、专注代码生成的模型，推理速度 2,146 token/s，比同规模的自回归模型快 5.4 倍。这些都是厂商自己公布的数字，讲义把它们列出来，是为了说明业界关注扩散 LLM 的主要原因是速度。"
+            "图像扩散的前向过程逐步向数据加入高斯噪声，训练反向过程时可以给模型一张加噪图片，请它估计本次加入的噪声。根据预测误差更新模型，就能逐渐学会从噪声生成结构。",
+            "对文本也可以把词嵌入搬进连续空间，再对向量加噪。困难在最后一步：输出必须回到某个词表项。离目标向量的均方误差很小，仍可能跨过两个词的边界；大量向量甚至不对应任何有意义的词。这促使人们直接在离散词表上定义噪声。"
           ],
-          "bullets": [
-            "Gemini Diffusion：Google I/O，2025-05-20。",
-            "Inception：融资 5000 万美元（TechCrunch，2025-11-06），产品口号为 “The Fastest LLMs Ever Built”。",
-            "Seed Diffusion Preview：字节跳动，2025-07-31；2,146 token/s，相对同规模自回归模型 5.4 倍。"
-          ],
-          "source": "Lecture 9 (2025) · p.82（Alternative approach in the news）"
+          "source": "Lecture 8 (2026) · p.19–41"
         },
         {
-          "title": "先看图像生成：从噪声出发，学一个变换",
+          "title": "吸收态：把噪声写成一个词元",
           "body": [
-            "扩散的想法来自图像生成。讲义给出三条直觉：噪声很容易采样（noise is easy to sample）；从噪声到图片的变换可以学出来（learned transformation）；这个过程在数学上有明确定义（mathematically well-defined）。图上是一张彩色噪点图，箭头指向那张泰迪熊读书的照片。",
-            "老师用雕塑打比方：一块粗糙的石头最后被凿成一只泰迪熊。讲义还引了米开朗基罗的话，大意是雕像本来就在石块里，雕刻家只是把多余的部分凿掉。生成模型的工作类似：从一团噪声出发，一点点去掉“多余”的部分，留下想要的图像。",
-            "把这些直觉合在一起，就是图像生成模型的总目标：学习某种变换，把噪声映射到我们想要的数据分布（learn some transformation that goes from noise to desired data distribution）。"
-          ],
-          "source": "Lecture 9 (2025) · p.83–87（Context on image generation models）"
-        },
-        {
-          "title": "图像扩散：前向加噪，反向去噪",
-          "body": [
-            "扩散分两步。第一步是前向过程（forward process）：从原图 \\(x_0\\) 开始，每一步按 \\(q(x_t \\mid x_{t-1})\\) 加一点噪声，经过 \\(x_{t-1}\\)、\\(x_t\\)……一直加到 \\(x_T\\)，图片变成纯噪声。这一步不需要学习。",
-            "第二步是反向过程（reverse process）：训练一个带参数 \\(\\theta\\) 的模型 \\(p_\\theta(x_{t-1} \\mid x_t)\\)，学会把“稍微更吵”的 \\(x_t\\) 变回“稍微更干净”的 \\(x_{t-1}\\)。生成时从一张随机噪声 \\(x_T\\) 出发，反复应用这个去噪步骤，最后得到 \\(x_0\\)。讲义的配图（人脸逐渐变成噪声，再从噪声恢复）引自 Ho et al., 2020 的 DDPM 论文。",
-            "讲义只讲了这两步的直觉和记号，没有展开噪声的具体公式或训练损失；本讲也只需要理解“前向破坏、反向学习恢复”这个结构。"
-          ],
-          "math": [
-            "\\text{前向：}\\ q(x_t \\mid x_{t-1}),\\quad x_0 \\to \\cdots \\to x_T\\ \\text{（加噪）}",
-            "\\text{反向：}\\ p_\\theta(x_{t-1} \\mid x_t),\\quad x_T \\to \\cdots \\to x_0\\ \\text{（去噪）}"
-          ],
-          "flow": [
-            "\\(x_0\\) 原图",
-            "逐步加噪 \\(q(x_t \\mid x_{t-1})\\)",
-            "\\(x_T\\) 纯噪声",
-            "逐步去噪 \\(p_\\theta(x_{t-1} \\mid x_t)\\)",
-            "\\(x_0\\) 生成图像"
-          ],
-          "figure": {
-            "src": "figures/l08-image-diffusion.webp",
-            "alt": "图像扩散的两行链条：上行 1. Add noise to image（forward process），x₀ 的人脸照片经 q(x_t|x_{t−1}) 一步步变成 x_T 的噪声图；下行 2. Learn to denoise it（reverse process），从 x_T 的噪声经 p_θ(x_{t−1}|x_t) 逐步恢复成 x₀ 的人脸。",
-            "caption": "两行方向相反：上行的加噪 \\(q\\) 是固定的、不用学；下行的去噪 \\(p_\\theta\\) 才是要训练的模型，生成时就从噪声 \\(x_T\\) 沿下行走回 \\(x_0\\)。",
-            "source": "Lecture 9 (2025) · p.88–89"
-          },
-          "source": "Lecture 9 (2025) · p.88–89（Intuition behind diffusion for images）"
-        },
-        {
-          "title": "从图像到文本：用 MASK 充当噪声",
-          "body": [
-            "文本由离散的 token 组成，没法像像素那样“加一点噪声”。讲义的做法是把图像里的噪声对应到文本里的 MASK：图像被噪声完全覆盖，对应句子里的每个 token 都被换成 MASK。",
-            "前向过程变成：以一定概率把 token 换成 MASK（mask tokens with some probability）。以 \\(x_0\\) = “A teddy bear is reading” 为例，中间某一步可能是 \\(x_t\\) = “A MASK bear is MASK”，到 \\(x_T\\) 时五个位置全是 MASK。反向过程则是学习把 MASK 还原成 token（learn to unmask tokens）：从全 MASK 出发，经过 “A MASK bear is MASK” 这样的中间状态，最终恢复出整句话。记号仍是 \\(q(x_t \\mid x_{t-1})\\) 和 \\(p_\\theta(x_{t-1} \\mid x_t)\\)。",
-            "讲义没有给出遮罩概率的具体数值，也没有规定反向过程每一步解开几个 token，图中用省略号表示中间步数。补充：MASK 这个符号在第 2 讲 BERT 的掩码语言模型（MLM）里出现过，但讲义没有讨论两者的关系，这里不展开。"
-          ],
-          "table": {
-            "columns": [
-              "",
-              "图像扩散",
-              "文本扩散"
-            ],
-            "rows": [
-              [
-                "“噪声”是什么",
-                "随机噪声",
-                "MASK"
-              ],
-              [
-                "前向过程",
-                "逐步给图像加噪声",
-                "以一定概率把 token 换成 MASK"
-              ],
-              [
-                "\\(x_T\\)（终点）",
-                "纯噪声图",
-                "MASK MASK MASK MASK MASK"
-              ],
-              [
-                "反向过程",
-                "学习去噪",
-                "学习把 MASK 还原成 token（unmask）"
-              ]
-            ]
-          },
-          "figure": {
-            "src": "figures/l08-text-unmasking.webp",
-            "alt": "文本扩散的两行链条：前向过程把 “A teddy bear is reading” 以一定概率逐步换成 MASK，中间状态是 A MASK bear is MASK，终点 x_T 五个位置全是 MASK；反向过程从全 MASK 出发，经 A MASK bear is MASK，恢复成完整句子。",
-            "caption": "和上一节的图像扩散逐格对照：噪声换成了 MASK，记号 \\(q(x_t \\mid x_{t-1})\\)、\\(p_\\theta(x_{t-1} \\mid x_t)\\) 不变；反向过程每一步可以同时解开多个位置。",
-            "source": "Lecture 9 (2025) · p.91–92"
-          },
-          "source": "Lecture 9 (2025) · p.90–92（From image to text / Intuition behind diffusion for text）"
-        },
-        {
-          "title": "遮罩扩散模型（MDM）：更少的前向计算完成解码",
-          "body": [
-            "把上面的文本扩散用在 LLM 上，就是遮罩扩散模型（Masked Diffusion Model，MDM）。讲义的图里，五个 MASK 一起送进 Diffusion LLM，五个输出位置同时给出 “A teddy bear is reading”。和自回归模型每次前向只产出一个 token 不同，扩散 LLM 的一次前向计算可以同时填多个位置。",
-            "讲义由此得出结论：解码所需的前向计算次数更少（decoding done in fewer forward passes）。这正是前一节自回归模型“推理不能并行”问题的解决方向，也解释了新闻里那些速度数字从何而来。",
-            "讲义没有展开具体算法，只给了三篇推荐阅读：Lou et al., 2023（离散扩散，估计数据分布的比值）、Sahoo et al., 2024（简单有效的遮罩扩散语言模型）、Nie et al., 2025（Large Language Diffusion Models）。"
-          ],
-          "table": {
-            "columns": [
-              "",
-              "自回归 LLM（ARM）",
-              "遮罩扩散 LLM（MDM）"
-            ],
-            "rows": [
-              [
-                "起点",
-                "[BOS]",
-                "一串 MASK"
-              ],
-              [
-                "一次前向产出",
-                "1 个新 token",
-                "可同时填多个位置"
-              ],
-              [
-                "生成顺序",
-                "从左到右",
-                "不限于从左到右，多个位置一起恢复"
-              ],
-              [
-                "推理并行性",
-                "不能并行（训练可以）",
-                "前向次数更少"
-              ]
-            ]
-          },
-          "source": "Lecture 9 (2025) · p.93–96（Diffusion in LLMs）"
-        },
-        {
-          "title": "手算：生成 “A teddy bear is reading” 要几次前向计算",
-          "body": [
-            "自回归：讲义 p.71–81 的动画里，每次前向只新增一个 token。依次输入 [BOS]、[BOS] A、[BOS] A teddy、[BOS] A teddy bear、[BOS] A teddy bear is，分别得到 A、teddy、bear、is、reading，一共 5 次前向计算，并且必须按顺序进行。一般地，生成 \\(L\\) 个 token 需要 \\(L\\) 次前向计算。",
-            "遮罩扩散：按 p.94–95 的示意图，5 个 MASK 一次前向就全部填好，只需 1 次。补充：如果反向过程按 p.92 图中画出的三个状态分两步走（全 MASK → “A MASK bear is MASK” → 完整句子），第一次前向解开 A、bear、is 三个 token，第二次解开 teddy、reading 两个，共 2 次。一般地，若用 \\(S\\) 步去噪生成 \\(L\\) 个 token，前向次数是 \\(S\\)，平均每次解开 \\(L/S\\) 个 token。",
-            "比较：5 次 对 2 次，前向次数少了 2.5 倍；5 次 对 1 次，少了 5 倍。但前向次数之比不等于速度之比。讲义 p.97 写的 “10x output tokens per second” 和 p.82 Seed Diffusion 的 “2,146 token/s、5.4 倍” 都是具体系统实测或自报的结果，不能只靠数前向次数推出来。"
-          ],
-          "math": [
-            "\\text{ARM：}\\ L\\text{ 个 token} \\to L\\text{ 次前向}",
-            "\\text{MDM：}\\ S\\text{ 步去噪} \\to S\\text{ 次前向，平均每次 } L/S\\text{ 个 token}",
-            "\\text{本例 } L=5\\text{：ARM } 5\\text{ 次；MDM } 2\\text{ 次（补充假设）或 } 1\\text{ 次（p.95 示意）}"
+            "给每个时间步一个转移矩阵，它的一行表示当前词下一步变成各个词的概率。遮罩扩散取一个简单特例：未遮罩的词以给定概率保持原样，否则进入 [MASK]；已经是 [MASK] 的位置在前向链上继续保持 [MASK]。",
+            "补充手算。假设两个时间步独立地各保留一个尚未遮罩的词，概率都为 0.8。原词两步后仍可见的概率是 0.8 × 0.8 = 0.64，变成 [MASK] 的概率为 0.36。反向生成要学会的就是根据仍可见的上下文恢复缺词。"
           ],
           "kind": "worked-example",
-          "bullets": [
-            "两步方案只是按 p.92 图中画出的状态做的补充假设；讲义用省略号表示中间步数，没有规定步数。",
-            "按 Seed Diffusion 公告的两个数字反推，同规模自回归模型约为 \\(2{,}146 \\div 5.4 \\approx 397\\) token/s。"
+          "flow": [
+            "原句：A teddy bear is reading",
+            "遮住两个位置：A [MASK] bear is [MASK]",
+            "继续遮罩，直到只余 [MASK]"
           ],
-          "source": "Lecture 9 (2025) · p.71–95（Current approach and limitations / Diffusion in LLMs）"
+          "source": "Lecture 8 (2026) · p.43–52"
         },
         {
-          "title": "讨论：优势与挑战",
+          "title": "训练目标：为什么只在遮住的位置上打分？",
           "body": [
-            "讲义列了两条优势：一是每秒输出的 token 数约为自回归模型的 10 倍（10x output tokens per second compared to ARM）；二是更适合某些任务（better suited for some tasks）。讲义没有具体说是哪些任务；结合新闻页，几家公司都把代码生成放在突出位置（Seed Diffusion 专注代码，Inception 面向代码和文本）。",
-            "挑战和正在进行的工作也有两条：一是效果（Performance），也就是生成质量还要追上自回归模型；二是把为 ARM 开发的技术移植过来（Adapt ARM-based techniques）。补充：例如第 5 讲的 KV cache 就是围绕“前缀不变、逐个追加 token”设计的；讲义没有列出具体要移植哪些技术，也没有给出质量差距的数字。"
+            "从最大化句子似然出发，要把所有可能的中间噪声状态考虑进去。讲义用一个可计算的变分下界（ELBO）替代直接求和，再利用吸收态的性质化简各时间步的 KL 项。尚未遮罩的词已经可见，模型需要恢复的是被遮住的原词。",
+            "训练时抽取噪声水平，按它对应的遮罩比例扰动原句。模型为遮住的位置给出词表分布，损失取这些位置上正确词的负对数概率，再按噪声日程加权。补充例：两个缺词的正确概率分别为 0.5 与 0.25，未加权负对数概率之和为 −ln(0.5) − ln(0.25) ≈ 2.08，其他可见词不进入这个和。"
           ],
-          "table": {
-            "columns": [
-              "方面",
-              "讲义要点"
-            ],
-            "rows": [
-              [
-                "优势",
-                "10x output tokens per second compared to ARM"
-              ],
-              [
-                "优势",
-                "Better suited for some tasks"
-              ],
-              [
-                "挑战",
-                "Performance"
-              ],
-              [
-                "挑战",
-                "Adapt ARM-based techniques"
-              ]
-            ]
-          },
-          "source": "Lecture 9 (2025) · p.97–98（Discussion）"
+          "source": "Lecture 8 (2026) · p.53–78"
+        },
+        {
+          "title": "解码时反复校正局部猜测",
+          "body": [
+            "从预定长度的全遮罩序列开始，一轮给所有空位提出候选，只提交选中的位置。其余位置仍可结合新上下文再猜。BERT 也在遮罩位置预测词，但经典 MLM 训练使用近似固定的遮罩比例，目标是学习表示；这里训练覆盖多个噪声水平，生成时要走过多轮去噪。",
+            "并行预测的两个词可能各自合理，拼起来却不协调。讲义举例 “The teddy bears is reading”：单复数不一致。重新遮罩允许模型修改早先的提交；选择重做的位置时，应在当前句子上下文重新评估置信度，过早保存的分数可能已经失效。"
+          ],
+          "source": "Lecture 8 (2026) · p.80–107"
+        },
+        {
+          "title": "算一算并行填词的速度账",
+          "body": [
+            "一次填许多词，仍要乘上去噪轮数和每轮处理的上下文长度。当提示很长、回答很短时，反复扫描提示会抵消并行填词的收益。双向依赖还会让过去算出的键和值受新提交位置影响，不能直接照搬自回归模型的精确缓存。",
+            "块扩散在块之间按顺序生成，块内双向去噪。蒸馏尝试让学生用一步拟合教师的多步变化。另一种组合让扩散模型并行草拟若干词，让自回归模型验证。比较方案时要同时固定硬件、输入输出长度与质量目标。"
+          ],
+          "source": "Lecture 8 (2026) · p.108–153"
         }
       ],
       "quiz": [
         {
-          "question": "讲义说自回归模型 “inference-time generation is not parallelizable (although training is)”。为什么推理不能并行，训练却可以？",
+          "question": "自回归模型训练时可以同时预测多个位置，推理时却须等待前一个生成的词。为什么？",
           "options": [
             "推理时模型参数会被更新，所以每一步都要重新加载权重",
             "训练时用 MASK 替换了所有 token，因此可以并行；推理时不用 MASK",
@@ -3262,10 +2939,10 @@
             "推理时 GPU 只能做矩阵—向量运算，训练时才能做矩阵—矩阵运算"
           ],
           "answer": 2,
-          "explanation": "p.71–81 的动画里，每次前向的输入都包含前面刚生成的 token，所以只能按顺序进行；训练时整句已经给定，所有位置可以一起算。推理时参数并不更新；自回归训练也不依赖 MASK，MASK 是扩散方法的设定；矩阵运算的说法与讲义的论证无关。"
+          "explanation": "2026 第 8 讲 p.4–7、127–131 对比了训练与生成时可见的上下文。训练有整句真值，自回归掩码允许在一次前向中评分各位置。推理时下一位置的输入包含刚生成的词，必须等这个词产生。"
         },
         {
-          "question": "在讲义的文本扩散中，“A teddy bear is reading” 的前向过程和反向过程分别是什么？",
+          "question": "在本讲的吸收态遮罩模型中，前向加噪和反向生成分别怎样改变一句话？",
           "options": [
             "前向：以一定概率把 token 换成 MASK，直到全是 MASK；反向：学习把 MASK 还原成 token，从全 MASK 恢复整句",
             "前向：给每个 token 的嵌入加高斯噪声；反向：学习从噪声中预测下一个 token",
@@ -3273,21 +2950,44 @@
             "前向：学习把 MASK 还原成 token；反向：随机遮住 token 制造训练数据"
           ],
           "answer": 0,
-          "explanation": "p.91–92：前向过程是 mask tokens with some probability（\\(x_0\\) → “A MASK bear is MASK” → 全 MASK），反向过程是 learn to unmask tokens。讲义用 MASK，而不是在嵌入上加高斯噪声；“从 [BOS] 开始逐个生成”是自回归方式；说“前向是学习还原 MASK”的选项把两个过程弄反了，需要学习的是反向过程。"
+          "explanation": "2026 第 8 讲 p.43–52 将 [MASK] 定为前向链的吸收态，p.80–92 演示从遮罩预测、提交词元的反向过程。对词向量加高斯噪声属于另一种连续扩散方案。"
+        },
+        {
+          "question": "推理时，并行预测先得到 “The teddy bears is reading”。下一轮修改哪两个位置应参考什么信息？",
+          "options": [
+            "只查看最初提交各词时保存的置信度",
+            "用当前整句重新估计可疑词，挑出不协调的位置重新遮罩",
+            "固定已提交的每一个词，直到所有格填满",
+            "给每个位置的嵌入向量添加相同的高斯噪声"
+          ],
+          "answer": 1,
+          "explanation": "首次预测时，其他位置也许仍是 [MASK]。形成整句后，名词与动词的一致性提供了新的证据。第 105–107 页比较了旧置信度与按当前上下文重新评分两种做法。"
         }
       ],
       "resources": [
         {
-          "title": "2025 第 9 讲官方课件 · Diffusion LLMs：自回归的局限（第 71 页起）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=71",
+          "title": "2026 第 8 讲官方课件 · 从连续空间到离散词元",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=19",
           "type": "slides",
-          "local": "materials/fall25-cme295-lecture9.pdf"
+          "local": "materials/fall26-cme295-lecture8.pdf"
         },
         {
-          "title": "2025 第 9 讲官方课件 · 文本扩散与 MDM（第 90 页起）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=90",
+          "title": "2026 第 8 讲官方课件 · 吸收态与训练损失",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=43",
           "type": "slides",
-          "local": "materials/fall25-cme295-lecture9.pdf"
+          "local": "materials/fall26-cme295-lecture8.pdf"
+        },
+        {
+          "title": "2026 第 8 讲官方课件 · 从遮罩到完整句子",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=80",
+          "type": "slides",
+          "local": "materials/fall26-cme295-lecture8.pdf"
+        },
+        {
+          "title": "2026 第 8 讲官方课件 · 生成速度与缓存",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=108",
+          "type": "slides",
+          "local": "materials/fall26-cme295-lecture8.pdf"
         }
       ]
     },
@@ -3296,7 +2996,7 @@
       "module": "evaluation",
       "title": "Transformer 之外：视觉、多模态与 LLM 的发展趋势",
       "originalTitle": "Trending topics",
-      "sourceStatus": "2026 年第 9 讲（Trending topics）的讲义尚未公开。本讲依据 2025 年第 9 讲讲义中的 Beyond Transformer-based LLMs（PDF 第 42–69 页）与 Closing thoughts（PDF 第 99–126 页）两个小节整理，2026 年的实际内容可能会有变化。",
+      "sourceStatus": "2026 年第 9 讲（Trending topics）定于 12 月 4 日，截至 11 月 20 日官网尚未链接本讲课件。可先读 2025 年第 9 讲的 Beyond Transformer-based LLMs（PDF 第 42–69 页）与 Closing thoughts（PDF 第 99–126 页）。",
       "summary": "先看 Transformer 怎样从文本走向图像（ViT）和图文结合（VLM），再纵览讲义总结的趋势：模态之间互相借鉴、基础设计仍未定论、从追求最好效果转向质量/成本权衡、为注意力定制硬件、应用前景与待解决的问题，以及课后如何持续跟进。",
       "objectives": [
         "说明 ViT 如何把一张图片切成 patch，加上 [CLS] 和位置嵌入，经编码器后用 [CLS] 的输出完成分类。",
@@ -3855,7 +3555,7 @@
       "local": "materials/stanford-cme-295-transformers-large-language-models.zip"
     }
   ],
-  "notice": "Keep Learning Lab 中文导学，不是 Stanford 官方课程或译本。正文依据 CME295 官方公开讲义整理，每段注明讲义页码：第 01–06 讲依据 2026 秋季讲义；第 07–09 讲的 2026 讲义尚未公开（截至 2026-11-07），暂依据 2025 年第 8、9 讲讲义的对应小节整理，2026 年的内容和顺序可能会有变化。原始 PDF、视频及考试版权归各自作者。",
+  "notice": "Keep Learning Lab 根据 Stanford 公开资料编写中文导学。第 1–8 讲依据 2026 秋季讲义，各节注明 PDF 页码，第 1–6 讲附官方录像。2026 年第 9 讲定于 12 月 4 日，截至 11 月 20 日尚无公开讲义，预习材料选自 2025 年第 9 讲。历年课件、录像与考试的版权归各自作者。",
   "lectureAligned": true,
   "experimentsMode": "lesson",
   "experimentScripts": [

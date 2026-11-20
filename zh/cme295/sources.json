@@ -3,7 +3,7 @@
   "title": "Transformer 与大语言模型",
   "offering": "2026 秋季 · 2025 完整资料补充",
   "source_url": "https://cme295.stanford.edu/syllabus/",
-  "verified_at": "2026-11-06T17:32:06.192150+00:00",
+  "verified_at": "2026-11-20T20:13:46.285357+00:00",
   "scope": "Official publicly accessible course materials discovered from course pages and official repositories; videos and restricted materials remain source links. See discovery metadata for crawl scope and failures.",
   "resources": [
     {
@@ -153,17 +153,7 @@
       "lesson_references": [
         {
           "lesson_id": "07",
-          "title": "2025 第 8 讲官方课件 · LLM evaluation（agenda）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=8"
-        },
-        {
-          "lesson_id": "07",
-          "title": "2025 第 8 讲官方课件 · LLM-as-a-Judge",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=39"
-        },
-        {
-          "lesson_id": "07",
-          "title": "2025 第 8 讲官方课件 · τ-bench 与 pass^k",
+          "title": "延伸 · 2025 第 8 讲的 τ-bench 与 pass^k（全都成功）",
           "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture8.pdf#page=153"
         }
       ]
@@ -177,16 +167,6 @@
       "bytes": 6983081,
       "sha256": "b6767a5c30fb0ea26c4ec86d2b6b95f212e8b40f46d065872c1b93fc910440ad",
       "lesson_references": [
-        {
-          "lesson_id": "08",
-          "title": "2025 第 9 讲官方课件 · Diffusion LLMs：自回归的局限（第 71 页起）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=71"
-        },
-        {
-          "lesson_id": "08",
-          "title": "2025 第 9 讲官方课件 · 文本扩散与 MDM（第 90 页起）",
-          "url": "https://cme295.stanford.edu/slides/fall25-cme295-lecture9.pdf#page=90"
-        },
         {
           "lesson_id": "09",
           "title": "2025 第 9 讲官方课件 · Beyond Transformer-based LLMs：ViT（第 43 页起）",
@@ -670,6 +650,81 @@
       "type": "notes",
       "status": "external_link",
       "lesson_references": []
+    },
+    {
+      "title": "2026 第 6 讲官方录像",
+      "url": "https://www.youtube.com/watch?v=nU2a2lm6vDE",
+      "type": "video",
+      "status": "external_link",
+      "lesson_references": [
+        {
+          "lesson_id": "06",
+          "title": "2026 第 6 讲官方录像",
+          "url": "https://www.youtube.com/watch?v=nU2a2lm6vDE"
+        }
+      ]
+    },
+    {
+      "title": "2026 第 7 讲官方课件 · LLM evaluation",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture7.pdf",
+      "status": "downloaded",
+      "bytes": 5364682,
+      "sha256": "bd6f7cabe91c351c4c4134b22426b3335c1ccd3cd247b8532e1524e6cf75f09e",
+      "lesson_references": [
+        {
+          "lesson_id": "07",
+          "title": "2026 第 7 讲官方课件 · 可验证任务与 pass@k",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=16"
+        },
+        {
+          "lesson_id": "07",
+          "title": "2026 第 7 讲官方课件 · LLM 裁判与偏差",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=32"
+        },
+        {
+          "lesson_id": "07",
+          "title": "2026 第 7 讲官方课件 · Agent 工具轨迹",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=59"
+        },
+        {
+          "lesson_id": "07",
+          "title": "2026 第 7 讲官方课件 · 设计产品评测",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture7.pdf#page=159"
+        }
+      ]
+    },
+    {
+      "title": "2026 第 8 讲官方课件 · Diffusion LLMs",
+      "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf",
+      "type": "slides",
+      "local": "materials/fall26-cme295-lecture8.pdf",
+      "status": "downloaded",
+      "bytes": 6159754,
+      "sha256": "1bee661f45200f94ba4d958ede220396b64cd588fa61bacdca9648cb8d20807c",
+      "lesson_references": [
+        {
+          "lesson_id": "08",
+          "title": "2026 第 8 讲官方课件 · 从连续空间到离散词元",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=19"
+        },
+        {
+          "lesson_id": "08",
+          "title": "2026 第 8 讲官方课件 · 吸收态与训练损失",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=43"
+        },
+        {
+          "lesson_id": "08",
+          "title": "2026 第 8 讲官方课件 · 从遮罩到完整句子",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=80"
+        },
+        {
+          "lesson_id": "08",
+          "title": "2026 第 8 讲官方课件 · 生成速度与缓存",
+          "url": "https://cme295.stanford.edu/slides/fall26-cme295-lecture8.pdf#page=108"
+        }
+      ]
     }
   ],
   "discovery": {
@@ -998,17 +1053,41 @@
     ],
     "note": "Historical website links may be stale; successful archive replacements are mapped in course resources. A failed URL is not represented as a local file."
   },
-  "lesson_references_updated_at": "2026-11-06T21:00:23.187231+00:00",
+  "lesson_references_updated_at": "2026-11-20T20:13:46.285357+00:00",
   "local_files_verification": {
-    "verified_at": "2026-11-06T21:00:23.187231+00:00",
+    "verified_at": "2026-11-20T20:13:46.285357+00:00",
     "algorithm": "SHA-256",
-    "published_files": 38,
-    "published_bytes": 107001416,
+    "published_files": 40,
+    "published_bytes": 118525852,
     "verified_historical_downloads": 37,
     "discovery_only_files": [],
     "newly_archived_files": [
-      "materials/clip-radford2021.pdf"
+      "materials/clip-radford2021.pdf",
+      "materials/fall26-cme295-lecture7.pdf",
+      "materials/fall26-cme295-lecture8.pdf"
     ],
-    "result": "All 38 published files have verified sizes and hashes; 37 historical downloads retain matching metadata. Discovery-only files are not counted as published course resources."
+    "result": "All 40 published files have verified sizes and hashes; 37 historical downloads retain matching metadata."
+  },
+  "official_schedule_snapshot": {
+    "checked_at": "2026-11-20T20:13:46.285357+00:00",
+    "url": "https://cme295.stanford.edu/syllabus/",
+    "slides": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "videos": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06"
+    ]
   }
 }

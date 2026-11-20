@@ -50,7 +50,7 @@
         var p = pick(rnd, [10, 20, 50, 100, 200, 250, 500]), w = pick(rnd, [0.2, 0.5, 1, 1.5, 2, 3]), n = pick(rnd, [100, 200, 500, 1000, 3600]);
         var ask = pick(rnd, ["drift", "total"]);
         var drift = n * w, total = n * (p + w);
-        return { kind: "num", ans: ask === "drift" ? drift : total, abs: 0.01,
+        return { kind: "num", unit: "ms", ans: ask === "drift" ? drift : total, abs: 0.01,
           q: "循环里每次先做 <b>" + w + " ms</b> 的工作，再用 <code>nanosleep</code> 相对地睡 <b>" + p + " ms</b>。跑完 <b>" + n + "</b> 圈，" + (ask === "drift" ? "比理想时间（" + n + " × " + p + " ms）<b>晚了多少 ms</b>？" : "<b>实际一共用了多少 ms</b>？"),
           fmt: "ms，可以是小数",
           steps: ["相对睡眠从“醒来那一刻”重新算，工作时间不会被扣掉：每一圈实际是 " + p + " + " + w + " = " + fmt(p + w, 2) + " ms。",
@@ -133,7 +133,7 @@
           }
         }
         var k = int(rnd, 0, n - 1);
-        return { kind: "dec", ans: fin[k],
+        return { kind: "num", unit: "ms", ans: fin[k],
           q: n + " 个线程同时就绪，排队顺序 " + need.map(function (_, i) { return "T" + (i + 1); }).join("、") + "，各需 CPU " + need.map(function (x) { return x + " ms"; }).join("、") + "。单核、时间片 <b>" + q + " ms</b>、轮转调度、忽略切换开销。<b>T" + (k + 1) + "</b> 在第几 ms 结束？",
           fmt: "ms，十进制",
           steps: ["每个线程轮流用一个时间片，用完还没做完就排到队尾；剩下不足一片的，用完就让出。",
@@ -144,34 +144,7 @@
   };
 
   
-  function readings(s) {
-    s = String(s || "").trim().replace(/\s+/g, "");
-    if (!s) return [];
-    if (/^0x[0-9a-f]+$/i.test(s)) return [parseInt(s.slice(2), 16)];
-    if (/^[0-9a-f]+h$/i.test(s)) return [parseInt(s.slice(0, -1), 16)];
-    if (/^[0-9]+$/.test(s)) return [parseInt(s, 10), parseInt(s, 16)];
-    if (/^[0-9a-f]+$/i.test(s)) return [parseInt(s, 16)];
-    return [];
-  }
-  function num(s) {
-    var m = String(s || "").trim().replace(/,/g, ".").replace(/\s+/g, "").match(/^([-+−]?\d*\.?\d+)([kKmM]?)/);
-    if (!m) return NaN;
-    var v = parseFloat(m[1].replace("−", "-"));
-    if (m[2] === "k" || m[2] === "K") v *= 1e3; else if (m[2] === "M") v *= 1e6;
-    return v;
-  }
-  function check(item, input) {
-    if (item.kind === "num") {
-      var v = num(input);
-      if (!isFinite(v)) return false;
-      var tol = Math.max((item.tol || 0) * Math.abs(item.ans), item.abs || 0, 1e-9);
-      return Math.abs(v - item.ans) <= tol;
-    }
-    var r = readings(input);
-    
-    if (/^\s*[0-9]+\s*$/.test(String(input))) r = item.kind === "dec" ? r.slice(0, 1) : r.slice(1);
-    return r.indexOf(item.ans) >= 0;
-  }
+  var answers = window.EngineeringAnswers;
 
   function mount(box) {
     var key = box.getAttribute("data-drill");
@@ -185,7 +158,7 @@
       '<button type="button" class="btn primary" data-a="check">检查</button>' +
       '<button type="button" class="btn" data-a="show">看答案</button>' +
       '<button type="button" class="btn" data-a="new">换一题</button></div>' +
-      '<p class="fmt"></p><div class="fb" hidden></div>';
+      '<p class="fmt"></p><div class="fb" role="status" hidden></div>';
     var h = box.querySelector("h3"), tally = box.querySelector(".tally"), dq = box.querySelector(".dq");
     var inp = box.querySelector("input"), fmtEl = box.querySelector(".fmt"), fb = box.querySelector(".fb");
     h.textContent = g.title;
@@ -210,7 +183,7 @@
       if (a === "show") { if (!counted) { tries++; counted = true; upd(); } feedback(false, true); return; }
       if (a === "check") {
         if (!inp.value.trim()) { inp.focus(); return; }
-        var ok = check(item, inp.value);
+        var ok = answers.check(item, inp.value);
         if (!counted) { tries++; counted = true; if (ok) right++; upd(); }
         feedback(ok, false);
       }
@@ -220,5 +193,5 @@
   }
 
   Array.prototype.slice.call(document.querySelectorAll("[data-drill]")).forEach(mount);
-  window.MICROPractice = { GEN: GEN, check: check, readings: readings, num: num, hex: hex };
+  window.MICROPractice = { GEN: GEN, check: answers.check, readings: answers.readings, num: answers.num, hex: hex };
 })();

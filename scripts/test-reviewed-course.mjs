@@ -68,6 +68,21 @@ eq(s.window.COURSE.id,slug,'real generated course has requested identity');
 eq(s.window.COURSE.experimentsMode,'lesson',`${slug} uses explicit lesson experiments`);
 assert.deepEqual(plain(s.window.COURSE),expectedCourse,'generated data.js matches editable course source');checks++;
 eq(s.window.COURSE.lessons.length,lessonCount,'all lessons retained');
+for (const [kind, field, selector] of [['visual', 'visual', '.geometry-lab'], ['code', 'codeDemo', '.code-playground']]) {
+ const lesson = expectedCourse.lessons.find(item => item[field]);
+ if (lesson) {
+  const route = `lesson-${lesson.id}/${kind}`;
+  s.go('#' + route);
+  eq(d.querySelector(selector)?.id, route, `${slug} ${kind} deep link targets the mounted experiment`);
+  eq(d.querySelector('.course-nav [aria-current="page"]')?.getAttribute('href'), '#lesson-' + lesson.id, 'experiment route selects the lesson in the sidebar');
+ }
+ const fallback = expectedCourse.lessons.find(item => !item[field]);
+ if (fallback) {
+  s.go(`#lesson-${fallback.id}/${kind}`);
+  eq(d.querySelector('h1').textContent, fallback.title, 'missing experiment opens its lesson');
+  eq(d.querySelector(selector), null, 'no unrelated experiment substituted');
+ }
+}
 const hashes=new Set(),visualTitles=new Set(),codeTitles=new Set();const outputs={};
 for(const lesson of s.window.COURSE.lessons){
  const id=`${slug}-${lesson.id}`;
@@ -192,12 +207,24 @@ const resourceFixture=createSession({mutateCourse:course=>{
  ];
  for(const lesson of course.lessons)lesson.resources=[];
  course.lessons[0].resources=[{title:'Chapter-specific reading',type:'notes',local:'materials/shared.pdf',url:'https://chapter.example/shared.pdf#page=7'}];
+ course.lessons[1].resources=[{title:'Second assigned section',type:'paper',local:'materials/shared.pdf',url:'https://chapter.example/shared.pdf#page=14'}];
 }});
 resourceFixture.go('#resources');
 const resourceTitles=[...resourceFixture.document.querySelectorAll('.resource-grid .resource-card h3')].map(element=>element.textContent).sort();
 assert.deepEqual(resourceTitles,['Local A','Remote page one','Different local A','Different local B'].sort(),'source library deduplicates local aliases and remote page anchors while preserving distinct local files');checks++;
+const fixtureDoc=resourceFixture.document;
+resourceFixture.click('[data-resource-filter="paper"]');
+for (const query of ['lecture 02','第 2 讲','02','Second assigned section','Local B alias']) {
+ resourceFixture.input('#resource-search',query);
+ eq(fixtureDoc.querySelectorAll('.resource-card').length,1,'type and text filters keep chapter and catalog aliases');
+ eq(fixtureDoc.querySelector('.resource-card h3').textContent,'Local A','matching alias resolves to canonical file');
+ check(fixtureDoc.querySelector('.resource-lessons a[href="https://chapter.example/shared.pdf#page=14"]'),'result links to the assigned PDF page');
+}
 resourceFixture.go('01');
 eq(resourceFixture.document.querySelector('.lesson-aside .resource-link a').getAttribute('href'),'https://chapter.example/shared.pdf#page=7','chapter reading retains its precise original URL');
+resourceFixture.go('#resources');
+eq(fixtureDoc.querySelector('#resource-search').value,'Local B alias','returning from a lesson preserves the library query');
+eq(fixtureDoc.querySelector('[data-resource-filter="paper"]').getAttribute('aria-pressed'),'true','returning preserves the selected type');
 
 const oraclePath=path.join(root,'scripts/oracles',`${slug}.mjs`);
 check(fs.existsSync(oraclePath),`${slug} has an independent numerical oracle module`);

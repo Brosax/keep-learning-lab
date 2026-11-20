@@ -17,6 +17,7 @@ import sys
 import zipfile
 from datetime import date
 from pathlib import Path
+from urllib.parse import urljoin
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'content/spanish-grammar'
@@ -129,7 +130,7 @@ def counts(course):
 
 def write_csv(course):
     stream = io.StringIO()
-    writer = csv.writer(stream)
+    writer = csv.writer(stream, lineterminator='\n')
     writer.writerow(['题目ID', '级别', '模块', '课时', '题型', '题干', '选项JSON', '正确答案', '亦可接受JSON', '首次错答提示', '解析', '错误维度'])
     for module in course['modules']:
         for lesson in module['lessons']:
@@ -199,7 +200,7 @@ def build_teacher_guide(course):
                       '需平台另行支持的功能：教师收件与批改、同伴分组、云端同步、语音录制或自动语音评分。')
     doc.add_paragraph('学习记录保存在当前浏览器；课程页可导出详细记录，首页备份包含本课程的答题与草稿。文件版本与在线版本的记录不自动合并。'
                       '本课程暂未接入账号云端同步。文本题忽略大小写、首尾句子标点和多余空格，但保留重音符号；只错在重音时会给出专门提示。'
-                      '选择题精确区分选项。')
+                      '初次进入选择题和开启新一轮练习时，页面会随机排列选项。教师带练时可请学生说出所选词句。')
 
     doc.add_heading('设计参考', 1)
     doc.add_paragraph('以下参考用于组织教学流程、诊断练习与语法点分级；课程例句、题目和反馈为本项目原创。')
@@ -317,7 +318,21 @@ def build():
     if template.count('__COURSE_JSON__') != 1:
         fail('template must contain __COURSE_JSON__ exactly once')
     data = json.dumps(course, ensure_ascii=False, indent=2)
-    page = template.replace('__COURSE_JSON__', data.replace('<', '\\u003c'))
+    def player(offline):
+        materials = [
+            ('教师用书与完整课程.docx' if offline else 'materials/teacher-guide.docx', '教师用书（讲解、答案与评价标准）'),
+            ('course.json' if offline else 'materials/course.json', '可编辑课程数据（JSON）'),
+            ('互动题库.csv' if offline else 'materials/exercises.csv', '互动题库（CSV）'),
+        ]
+        if not offline:
+            materials.insert(1, ('materials/course-package.zip', '完整离线课程包'))
+        links = ''.join(f'<li><a href="{href}" download>{label}</a></li>' for href, label in materials)
+        return (template.replace('__HOME_URL__', urljoin(SITE, '../../') if offline else '../../')
+                .replace('__HOME_LABEL__', '在线首页' if offline else '首页')
+                .replace('__MATERIAL_LINKS__', links)
+                .replace('__COURSE_JSON__', data.replace('<', '\\u003c')))
+
+    page = player(offline=False)
     exercises = write_csv(course)
     guide = build_teacher_guide(course)
     readme = (f"{course['title']}\n\n在线入口：{SITE}\n\n用浏览器打开互动课程.html，即可离线学习。\n"
@@ -327,7 +342,7 @@ def build():
               "内容和原创代码：CC BY-NC-SA 4.0；不包含第三方付费课件。\n")
     package = io.BytesIO()
     with zipfile.ZipFile(package, 'w', zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr('互动课程.html', page)
+        archive.writestr('互动课程.html', player(offline=True))
         archive.writestr('教师用书与完整课程.docx', guide)
         archive.writestr('course.json', data + '\n')
         archive.writestr('互动题库.csv', exercises)
